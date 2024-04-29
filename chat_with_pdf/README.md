@@ -28,3 +28,6 @@ pip install -r requirements.txt
 ```bash
 streamlit run chat_pdf.py
 ```
+### Interactive Application Demo
+https://github.com/Shubhamsaboo/awesome-llm-apps/assets/31396011/12bdfc11-c877-4fc7-9e70-63f21d2eb977
+
