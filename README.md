@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="unwind.png" width="600px" alt="Unwind AI">
+  <img src="docs/banner/unwind.png" width="600px" alt="Unwind AI">
 </p>
 
 <p align="center">
