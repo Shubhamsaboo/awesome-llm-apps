@@ -9,8 +9,19 @@
   <a href="https://twitter.com/Saboo_Shubham_">
     <img src="https://img.shields.io/twitter/follow/Shubham Saboo" alt="Twitter">  </a>
 </p>
-
-<hr />
+<hr/>
 
 # 🌟 Awesome LLM Apps
-Collection of awesome LLM apps with RAG using OpenAI, Anthropic, Gemini and opensource models.
+A curated collection of awesome LLM apps using RAG with OpenAI, Anthropic, Gemini and opensource models.
+
+## 📂 Projects
+
+### 📨 Chat with Gmail
+Interact with your Gmail inbox using natural language. Get accurate answers to your questions based on the content of your emails with Retrieval Augmented Generation (RAG).
+
+### 📄 Chat with PDF
+Engage in intelligent conversation and question-answering based on the content of your PDF documents. Simply upload a PDF document and start asking questions. Chat with PDF will analyze the document, extract relevant information, and generate accurate responses to your queries.
+
+### 📽️ Chat with YouTube Videos
+Dive into the world of video content with interactive conversation and question-answering based on YouTube videos. Simply provide a YouTube video URL and start engaging with the video's content through natural language.
+
