@@ -1,4 +1,4 @@
-## Chat with YouTube Videos 📺
+## 📽️ Chat with YouTube Videos 
 
 LLM app with RAG to chat with YouTube Videos in just 30 lines of Python Code. The app uses Retrieval Augmented Generation (RAG) to provide accurate answers to questions based on the content of the uploaded video.
 
