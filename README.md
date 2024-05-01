@@ -18,6 +18,9 @@ A curated collection of awesome LLM apps using RAG with OpenAI, Anthropic, Gemin
 
 ## 📂 Projects
 
+## 💻 Local Lllama-3 with RAG
+Streamlit app that allows you to chat with any webpage using local Llama-3 and Retrieval Augmented Generation (RAG). This app runs entirely on your computer, making it 100% free and without the need for an internet connection.
+
 ### 📨 Chat with Gmail
 Interact with your Gmail inbox using natural language. Get accurate answers to your questions based on the content of your emails with Retrieval Augmented Generation (RAG).
 
