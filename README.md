@@ -24,6 +24,9 @@ Streamlit app that allows you to chat with any webpage using local Llama-3 and R
 ### 📨 Chat with Gmail
 Interact with your Gmail inbox using natural language. Get accurate answers to your questions based on the content of your emails with Retrieval Augmented Generation (RAG).
 
+### 📝 Chat with Substack Newsletter
+Streamlit app that allows you to chat with a Substack newsletter using OpenAI's API and the Embedchain library. This app leverages GPT-4 to provide accurate answers to questions based on the content of the specified Substack newsletter.
+
 ### 📄 Chat with PDF
 Engage in intelligent conversation and question-answering based on the content of your PDF documents. Simply upload a PDF document and start asking questions. Chat with PDF will analyze the document, extract relevant information, and generate accurate responses to your queries.
 
