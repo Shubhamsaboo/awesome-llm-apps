@@ -14,27 +14,35 @@
 <hr/>
 
 # 🌟 Awesome LLM Apps
-A curated collection of awesome LLM apps using RAG with OpenAI, Anthropic, Gemini and opensource models.
+A curated collection of awesome LLM apps built with RAG and AI agents. This repository features LLM apps that use models from OpenAI, Anthropic, Google, and even open-source models like LLaMA that you can run locally on your computer.
 
-## 📂 Projects
+## 🤔 Why Awesome LLM Apps?
+- 💡 Discover practical and creative ways LLMs can be applied across different domains, from code repositories to email inboxes and more.
+- 🔥 Explore apps that combines LLMs from OpenAI, Anthropic, Gemini, and open-source alternatives with RAG and AI Agents.
+- 🎓 Learn from well-documented projects and contribute to the growing opensource ecosystem of LLM-powered applications.
+
+## 📂 Featured Projects
 
 ### 💻 Local Lllama-3 with RAG
-Streamlit app that allows you to chat with any webpage using local Llama-3 and Retrieval Augmented Generation (RAG). This app runs entirely on your computer, making it 100% free and without the need for an internet connection.
+Chat with any webpage using local Llama-3 and Retrieval Augmented Generation (RAG) in a Streamlit app. Enjoy 100% free and offline functionality.
 
 ### 💬 Chat with GitHub Repo
-Engage in natural conversations with your GitHub repositories using GPT-4. Uncover valuable insights and documentation effortlessly, as if you were chatting with your codebase itself.
+Engage in natural conversations with your GitHub repositories using GPT-4. Uncover valuable insights and documentation effortlessly.
 
 ### 📨 Chat with Gmail
 Interact with your Gmail inbox using natural language. Get accurate answers to your questions based on the content of your emails with Retrieval Augmented Generation (RAG).
 
 ### 📝 Chat with Substack Newsletter
-Streamlit app that allows you to chat with a Substack newsletter using OpenAI's API and the Embedchain library. This app leverages GPT-4 to provide accurate answers to questions based on the content of the specified Substack newsletter.
+Chat with a Substack newsletter using OpenAI's API and the Embedchain library in a Streamlit app. Leverage GPT-4 for precise answers based on newsletter content.
 
 ### 📄 Chat with PDF
-Engage in intelligent conversation and question-answering based on the content of your PDF documents. Simply upload a PDF document and start asking questions. Chat with PDF will analyze the document, extract relevant information, and generate accurate responses to your queries.
+Engage in intelligent conversation and question-answering based on the content of your PDF documents. Simply upload and start asking questions.
 
 ### 📽️ Chat with YouTube Videos
-Dive into the world of video content with interactive conversation and question-answering based on YouTube videos. Simply provide a YouTube video URL and start engaging with the video's content through natural language.
+Dive into video content with interactive conversation and question-answering based on YouTube videos. Provide a URL and engage with the video's content through natural language.
+
+### 💻 Web Scraping AI Agent
+Intelligently scrape websites using OpenAI API and the scrapegraphai library. Specify the URL and extraction requirements, and let the AI agent handle the rest.
 
 
 ## 🚀 Getting Started
@@ -59,5 +67,5 @@ pip install -r requirements.txt
 
 4. Follow the project-specific instructions in each project's README.md file to set up and run the app.
 
-### 🤝 Contributing
-Contributions are welcome! If you have any ideas, improvements, or new apps to add, please submit a pull request. Make sure to follow the existing project structure and include a detailed README.md for each new app.
+## 🤝 Contributing to Opensource
+Contributions are welcome! If you have any ideas, improvements, or new apps to add, please create a new [GitHub Issue](https://github.com/Shubhamsaboo/awesome-llm-apps/issues) or submit a pull request. Make sure to follow the existing project structure and include a detailed README.md for each new app.
