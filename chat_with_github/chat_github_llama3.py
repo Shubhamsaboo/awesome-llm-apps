@@ -6,7 +6,7 @@ import streamlit as st
 
 loader = GithubLoader(
     config={
-        "token":"Your_GitHub_PAT",
+        "token":"Your GitHub Token",
         }
     )
 
@@ -22,12 +22,15 @@ def embedchain_bot(db_path):
 
 # Create Streamlit app
 st.title("Chat with GitHub Repository 💬")
-st.caption("This app allows you to chat with a GitHub Repo using OpenAI API")
+st.caption("This app allows you to chat with a GitHub Repo using Llama-3 running with Ollama")
 
+# Initialize the Embedchain App
 db_path = tempfile.mkdtemp()
 app = embedchain_bot(db_path)
+
 # Get the GitHub repo from the user
 git_repo = st.text_input("Enter the GitHub Repo", type="default")
+
 if git_repo:
     # Add the repo to the knowledge base
     app.add("repo:" + git_repo + " " + "type:repo", data_type="github", loader=loader)
