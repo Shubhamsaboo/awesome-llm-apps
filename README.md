@@ -69,3 +69,9 @@ pip install -r requirements.txt
 
 ## 🤝 Contributing to Opensource
 Contributions are welcome! If you have any ideas, improvements, or new apps to add, please create a new [GitHub Issue](https://github.com/Shubhamsaboo/awesome-llm-apps/issues) or submit a pull request. Make sure to follow the existing project structure and include a detailed README.md for each new app.
+
+### Thank you community for the support 🙏
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Shubhamsaboo/awesome-llm-apps&type=Date)](https://star-history.com/#Shubhamsaboo/awesome-llm-apps&Date)
+
+🌟 **Don’t miss out on future updates! Star the repo now and be the first to know about new and exciting LLM applications with RAG.**
