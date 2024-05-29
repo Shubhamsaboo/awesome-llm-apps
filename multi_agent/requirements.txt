@@ -1,0 +1,3 @@
+streamlit 
+phidata
+openai
