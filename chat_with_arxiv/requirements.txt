@@ -2,3 +2,4 @@ streamlit
 phidata
 arxiv
 openai
+pypdf
