@@ -5,8 +5,8 @@ from phi.tools.duckduckgo import DuckDuckGo
 from phi.llm.openai import OpenAIChat
 
 # Set up the Streamlit app
-st.title("AI Search Assistant 🤖")
-st.caption("This app allows you to search the web using AI")
+st.title("AI Web Search Assistant 🤖")
+st.caption("This app allows you to search the web using GPT-4o")
 
 # Get OpenAI API key from user
 openai_access_token = st.text_input("OpenAI API Key", type="password")
