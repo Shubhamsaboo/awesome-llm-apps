@@ -24,7 +24,7 @@ pip install -r requirements.txt
 
 4. Run the Streamlit App
 ```bash
-streamlit run ai_webagent.py
+streamlit run ai_websearch.py
 ```
 
 ### How It Works?
