@@ -5,8 +5,8 @@ from phi.llm.openai import OpenAIChat
 from phi.tools.arxiv_toolkit import ArxivToolkit
 
 # Set up the Streamlit app
-st.title("Chat with Arxiv 🔎🤖")
-st.caption("This app allows you to chat with arXiv using OpenAI GPT-4o model.")
+st.title("Chat with Research Papers 🔎🤖")
+st.caption("This app allows you to chat with arXiv research papers using OpenAI GPT-4o model.")
 
 # Get OpenAI API key from user
 openai_access_token = st.text_input("OpenAI API Key", type="password")
@@ -19,7 +19,7 @@ if openai_access_token:
         model="gpt-4o",
         max_tokens=1024,
         temperature=0.9,
-        api_key=openai_access_token) , tools=[ArxivToolkit()], show_tool_calls=True
+        api_key=openai_access_token) , tools=[ArxivToolkit()]
     )
 
     # Get the search query from the user

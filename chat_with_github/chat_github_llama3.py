@@ -5,9 +5,9 @@ from embedchain.loaders.github import GithubLoader
 import streamlit as st
 import os
 
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+GITHUB_TOKEN = os.getenv("Your GitHub Token")
+
 def get_loader():
-    print("Creating GithubLoader")
     loader = GithubLoader(
         config={
             "token": GITHUB_TOKEN
@@ -22,7 +22,6 @@ loader = st.session_state.loader
 
 # Define the embedchain_bot function
 def embedchain_bot(db_path):
-    print("Creating Embedchain App")
     return App.from_config(
         config={
             "llm": {"provider": "ollama", "config": {"model": "llama3:instruct", "max_tokens": 250, "temperature": 0.5, "stream": True, "base_url": 'http://localhost:11434'}},
@@ -36,7 +35,7 @@ def load_repo(git_repo):
     # Add the repo to the knowledge base
     print(f"Adding {git_repo} to knowledge base!")
     app.add("repo:" + git_repo + " " + "type:repo", data_type="github", loader=loader)
-#    st.success(f"Added {git_repo} to knowledge base!")
+    st.success(f"Added {git_repo} to knowledge base!")
 
 
 def make_db_path():
