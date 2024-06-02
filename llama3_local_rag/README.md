@@ -19,11 +19,7 @@ git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 ```bash
 pip install -r requirements.txt
 ```
-3. Get your OpenAI API Key
-
-- Sign up for an [OpenAI account](https://platform.openai.com/) (or the LLM provider of your choice) and obtain your API key.
-
-4. Run the Streamlit App
+3. Run the Streamlit App
 ```bash
 streamlit run llama3_local_rag.py
 ```
