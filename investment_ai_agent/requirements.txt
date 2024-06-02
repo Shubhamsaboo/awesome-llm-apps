@@ -1,3 +1,4 @@
 streamlit 
 phidata
 openai
+yfinance
