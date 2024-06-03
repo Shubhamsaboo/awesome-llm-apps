@@ -1,0 +1,6 @@
+streamlit 
+phidata
+openai
+google-search-results 
+newspaper3k 
+lxml_html_clean

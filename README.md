@@ -26,6 +26,7 @@ A curated collection of awesome LLM apps built with RAG and AI agents. This repo
   - [🎯 Generative AI Web Search Assistant](#-generative-ai-web-search-assistant)
   - [💬 Chat with GitHub Repo](#-chat-with-github-repo)
   - [📈 AI Investment Agent](#-ai-investment-agent)
+  - [🗞️ AI Journalist Agent](#-ai-journalist-agent)
   - [📰 Multi-Agent AI Researcher](#-multi-agent-ai-researcher)
   - [📄 Chat with PDF](#-chat-with-pdf)
   - [💻 Web Scraping AI Agent](#-web-scraping-ai-agent)
@@ -54,6 +55,9 @@ Engage in natural conversations with your GitHub repositories using GPT-4. Uncov
 
 ### 📈 AI Investment Agent
 AI investment agent that compares the performance of two stocks and generates detailed stock reports with company insights, news, and analyst recommendations to help you make smart investment choices.
+
+### 🗞️ AI Journalist Agent
+AI-powered journalist agent that generates high-quality articles using OpenAI GPT-4o. It automates the process of researching, writing, and editing articles, allowing you to create compelling content on any topic with ease.
 
 ### 📰 Multi-Agent AI Researcher
 Use a team of AI agents to research top HackerNews stories and users with GPT-4 to generate blog posts, reports, and social media content on autopilot.
