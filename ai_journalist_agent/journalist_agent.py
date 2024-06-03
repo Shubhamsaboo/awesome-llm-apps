@@ -4,6 +4,7 @@ from phi.assistant import Assistant
 from phi.tools.serpapi_tools import SerpApiTools
 from phi.tools.newspaper_toolkit import NewspaperToolkit
 import streamlit as st
+from phi.llm.openai import OpenAIChat
 
 # Set up the Streamlit app
 st.title("AI Journalist Agent 🗞️")
@@ -19,6 +20,7 @@ if openai_api_key and serp_api_key:
     searcher = Assistant(
         name="Searcher",
         role="Searches for top URLs based on a topic",
+        llm=OpenAIChat(model="gpt-4o", api_key=openai_api_key),
         description=dedent(
             """\
         You are a world-class journalist for the New York Times. Given a topic, generate a list of 3 search terms
@@ -32,12 +34,13 @@ if openai_api_key and serp_api_key:
             "From the results of all searcher, return the 10 most relevant URLs to the topic.",
             "Remember: you are writing for the New York Times, so the quality of the sources is important.",
         ],
-        tools=[SerpApiTools(api_key="649ee0e7d64c6704b8ff92f3b01a424accfe6dbece128d043b17641b875e5f69")],
+        tools=[SerpApiTools(api_key=serp_api_key)],
         add_datetime_to_instructions=True,
     )
     writer = Assistant(
         name="Writer",
         role="Retrieves text from URLs and writes a high-quality article",
+        llm=OpenAIChat(model="gpt-4o", api_key=openai_api_key),
         description=dedent(
             """\
         You are a senior writer for the New York Times. Given a topic and a list of URLs,
@@ -62,6 +65,7 @@ if openai_api_key and serp_api_key:
 
     editor = Assistant(
         name="Editor",
+        llm=OpenAIChat(model="gpt-4o", api_key=openai_api_key),
         team=[searcher, writer],
         description="You are a senior NYT editor. Given a topic, your goal is to write a NYT worthy article.",
         instructions=[
