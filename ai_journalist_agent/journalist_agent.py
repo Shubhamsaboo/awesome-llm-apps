@@ -78,7 +78,6 @@ if openai_api_key and serp_api_key:
             "Remember: you are the final gatekeeper before the article is published.",
         ],
         add_datetime_to_instructions=True,
-        # debug_mode=True,
         markdown=True,
     )
 
