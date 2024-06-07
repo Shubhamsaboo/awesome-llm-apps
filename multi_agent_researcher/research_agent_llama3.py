@@ -8,7 +8,6 @@ from phi.llm.ollama import Ollama
 st.title("Multi-Agent AI Researcher using Llama-3 🔍🤖")
 st.caption("This app allows you to research top stories and users on HackerNews and write blogs, reports and social posts.")
 
-
 # Create instances of the Assistant
 story_researcher = Assistant(
     name="HackerNews Story Researcher",
