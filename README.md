@@ -64,7 +64,7 @@ AI-powered journalist agent that generates high-quality articles using OpenAI GP
 ### 💰 AI Personal Finance Agent
 AI-powered personal finance planner that generates personalized financial plans using OpenAI GPT-4o. It automates the process of researching, planning, and creating tailored budgets, investment strategies, and savings goals.
 
-## 🛫 AI Travel Agent
+### 🛫 AI Travel Agent
 AI-powered travel Agent that generates personalized travel itineraries using OpenAI GPT-4o. It automates the process of researching, planning, and organizing your dream vacation, allowing you to explore exciting destinations with ease.
 
 ### 📰 Multi-Agent AI Researcher
