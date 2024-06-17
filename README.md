@@ -27,6 +27,7 @@ A curated collection of awesome LLM apps built with RAG and AI agents. This repo
   - [💬 Chat with GitHub Repo](#-chat-with-github-repo)
   - [📈 AI Investment Agent](#-ai-investment-agent)
   - [🗞️ AI Journalist Agent](#-ai-journalist-agent)
+  - [💰 AI Personal Finance Agent](#-ai-personal-finance-agent)
   - [🛫 AI Travel Agent](#-ai-travel-agent)
   - [📰 Multi-Agent AI Researcher](#-multi-agent-ai-researcher)
   - [📄 Chat with PDF](#-chat-with-pdf)
@@ -59,6 +60,9 @@ AI investment agent that compares the performance of two stocks and generates de
 
 ### 🗞️ AI Journalist Agent
 AI-powered journalist agent that generates high-quality articles using OpenAI GPT-4o. It automates the process of researching, writing, and editing articles, allowing you to create compelling content on any topic with ease.
+
+### 💰 AI Personal Finance Agent
+AI-powered personal finance planner that generates personalized financial plans using OpenAI GPT-4o. It automates the process of researching, planning, and creating tailored budgets, investment strategies, and savings goals.
 
 ## 🛫 AI Travel Agent
 AI-powered travel Agent that generates personalized travel itineraries using OpenAI GPT-4o. It automates the process of researching, planning, and organizing your dream vacation, allowing you to explore exciting destinations with ease.
