@@ -29,6 +29,7 @@ A curated collection of awesome LLM apps built with RAG and AI agents. This repo
   - [🗞️ AI Journalist Agent](#-ai-journalist-agent)
   - [💰 AI Personal Finance Agent](#-ai-personal-finance-agent)
   - [🛫 AI Travel Agent](#-ai-travel-agent)
+  - [🎬 AI Movie Production Agent](#-ai-movie-production-agent)
   - [📰 Multi-Agent AI Researcher](#-multi-agent-ai-researcher)
   - [📄 Chat with PDF](#-chat-with-pdf)
   - [💻 Web Scraping AI Agent](#-web-scraping-ai-agent)
@@ -66,6 +67,9 @@ AI-powered personal finance planner that generates personalized financial plans 
 
 ### 🛫 AI Travel Agent
 AI-powered travel Agent that generates personalized travel itineraries using OpenAI GPT-4o. It automates the process of researching, planning, and organizing your dream vacation, allowing you to explore exciting destinations with ease.
+
+### 🎬 AI Movie Production Agent
+AI-powered movie production assistant that helps bring your movie ideas to life using Claude 3.5 Sonnet model. It automates the process of script writing and casting, allowing you to create compelling movie concepts with ease.
 
 ### 📰 Multi-Agent AI Researcher
 Use a team of AI agents to research top HackerNews stories and users with GPT-4 to generate blog posts, reports, and social media content on autopilot.
