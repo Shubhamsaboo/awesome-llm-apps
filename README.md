@@ -31,6 +31,7 @@ A curated collection of awesome LLM apps built with RAG and AI agents. This repo
   - [🛫 AI Travel Agent](#-ai-travel-agent)
   - [🎬 AI Movie Production Agent](#-ai-movie-production-agent)
   - [📰 Multi-Agent AI Researcher](#-multi-agent-ai-researcher)
+  - [📚 AI Research Agent with Memory](#-ai-research-agent-with-memory)
   - [📄 Chat with PDF](#-chat-with-pdf)
   - [💻 Web Scraping AI Agent](#-web-scraping-ai-agent)
   - [📨 Chat with Gmail](#-chat-with-gmail)
@@ -73,6 +74,9 @@ AI-powered movie production assistant that helps bring your movie ideas to life 
 
 ### 📰 Multi-Agent AI Researcher
 Use a team of AI agents to research top HackerNews stories and users with GPT-4 to generate blog posts, reports, and social media content on autopilot.
+
+### 📚 AI Research Agent with Memory
+AI Research Agent that helps user find research papers on Arxiv based on their interests and past interactions with LLMs. It maintains a memory of user interests and past interactions using Mem0 and Qdrant.
 
 ### 📄 Chat with PDF
 Engage in intelligent conversation and question-answering based on the content of your PDF documents. Simply upload and start asking questions.
