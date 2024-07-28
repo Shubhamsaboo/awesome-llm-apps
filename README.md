@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://unwindai.substack.com">
+  <a href="http://www.theunwindai.com">
     <img src="docs/banner/unwind.png" width="600px" alt="Unwind AI">
   </a>
 </p>
