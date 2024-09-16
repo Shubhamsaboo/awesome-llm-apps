@@ -1,0 +1,9 @@
+streamlit 
+phidata
+openai
+psycopg-binary
+pgvector
+requests
+sqlalchemy
+pypdf
+duckduckgo-search
