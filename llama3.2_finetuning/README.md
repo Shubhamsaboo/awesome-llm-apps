@@ -15,7 +15,7 @@ This script demonstrates how to finetune the Llama 3.2 model using the [Unsloth]
 
 ```bash
 git clone https://github.com/your-username/llama-3-2-finetuning.git
-cd llama-3-2-finetuning
+cd llama3.2_finetuning
 ```
 
 2. Install the required dependencies:
