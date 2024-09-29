@@ -2,13 +2,13 @@
 
 LLM app with RAG to chat with Gmail in just 30 lines of Python Code. The app uses Retrieval Augmented Generation (RAG) to provide accurate answers to questions based on the content of your Gmail Inbox.
 
-## Features
+### Features
 
 - Connect to your Gmail Inbox
 - Ask questions about the content of your emails
 - Get accurate answers using RAG and the selected LLM
 
-## Installation
+### Installation
 
 1. Clone the repository
 
