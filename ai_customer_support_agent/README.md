@@ -1,5 +1,5 @@
 ## 🛒 AI Customer Support Agent with Memory
-This Streamlit app implements an AI-powered customer support agent for TechGadgets.com, an online electronics store. The agent uses OpenAI's GPT-4o model and maintains a memory of past interactions using the Mem0 library with Qdrant as the vector store.
+This Streamlit app implements an AI-powered customer support agent for synthetic data generated using GPT-4o. The agent uses OpenAI's GPT-4o model and maintains a memory of past interactions using the Mem0 library with Qdrant as the vector store.
 
 ### Features
 
