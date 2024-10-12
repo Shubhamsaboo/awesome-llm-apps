@@ -4,12 +4,12 @@ from scrapegraphai.graphs import SmartScraperGraph
 
 # Set up the Streamlit app
 st.title("Web Scrapping AI Agent 🕵️‍♂️")
-st.caption("This app allows you to scrape a website using OpenAI API")
+st.caption("This app allows you to scrape a website using Llama 3.2")
 
 # Set up the configuration for the SmartScraperGraph
 graph_config = {
     "llm": {
-        "model": "ollama/llama3",
+        "model": "ollama/llama3.2",
         "temperature": 0,
         "format": "json",  # Ollama needs the format to be specified explicitly
         "base_url": "http://localhost:11434",  # set Ollama URL
