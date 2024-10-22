@@ -1,0 +1,6 @@
+openai
+phidata
+duckduckgo-search
+yfinance
+fastapi[standard] 
+sqlalchemy
