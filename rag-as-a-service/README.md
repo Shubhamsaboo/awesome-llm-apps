@@ -2,11 +2,11 @@
 Build and deploy a production-ready Retrieval-Augmented Generation (RAG) service using Claude 3.5 Sonnet and Ragie.ai. This implementation allows you to create a document querying system with a user-friendly Streamlit interface in less than 50 lines of Python code.
 
 ### Features
-
-Production-ready RAG pipeline
-Integration with Claude 3.5 Sonnet for response generation
-Document upload from URLs
-Real-time document querying
+- Production-ready RAG pipeline
+- Integration with Claude 3.5 Sonnet for response generation
+- Document upload from URLs
+- Real-time document querying
+- Support for both fast and accurate document processing modes
 
 ### How to get Started?
 
