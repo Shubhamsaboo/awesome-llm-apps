@@ -1,0 +1,3 @@
+git+https://github.com/openai/swarm.git
+streamlit 
+duckduckgo-search
