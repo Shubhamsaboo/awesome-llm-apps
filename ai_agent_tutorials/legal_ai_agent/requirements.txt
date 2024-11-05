@@ -1,0 +1,7 @@
+streamlit
+phidata
+openai
+lancedb
+tantivy
+pypdf
+duckduckgo-search
