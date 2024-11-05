@@ -1,28 +1,27 @@
-## 🔎 Chat with Arxiv Research Papers
-This Streamlit app enables you to engage in interactive conversations with arXiv, a vast repository of scholarly articles, using GPT-4o. With this RAG application, you can easily access and explore the wealth of knowledge contained within arXiv.
+# Arxiv-researcher
+> 🏆
+> Arxiv Researcher won the MLH hackathon: https://www.linkedin.com/feed/update/urn:li:activity:7138579395396468740/
 
-### Features
-- Engage in conversational interactions with arXiv
-- Access and explore a vast collection of research papers
-- Utilize OpenAI GPT-4o for intelligent responses
+Arxiv-researcher helps you to understand and gain insights from Arxiv research papers faster by allowing you to chat with the research paper.
+Under the hood, the Arxiv paper gets downloaded and the text is extracted from the PDF and is converted into embeddings which are then stored in a vector database. When the user asks a question, the vector database retrieves relevant passages and then GPT summarises them, resulting in a coherent answer.
 
-### How to get Started?
-
-1. Clone the GitHub repository
-
-```bash
-git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
+# Get Started
+0. Get your openai api key: https://platform.openai.com/api-keys
+   
+1. clone the repo
+```python
+git clone https://github.com/hrushik98/Arxiv-researcher
 ```
-2. Install the required dependencies:
 
-```bash
+2. Install the requirements
+```python
 pip install -r requirements.txt
 ```
-3. Get your OpenAI API Key
 
-- Sign up for an [OpenAI account](https://platform.openai.com/) (or the LLM provider of your choice) and obtain your API key.
-
-4. Run the Streamlit App
-```bash
-streamlit run chat_arxiv.py
+3. Run the app
+```python
+streamlit run app.py
 ```
+
+# Demo
+[Watch the demo on youtube](https://www.youtube.com/watch?v=j7s0k7zqTXM&feature=youtu.be)
