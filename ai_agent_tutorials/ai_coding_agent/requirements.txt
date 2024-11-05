@@ -1,0 +1,11 @@
+streamlit
+pandas 
+crewai
+langchain_groq 
+streamlit_ace 
+crewai_tools 
+matplotlib
+python-dotenv
+seaborn
+scikit-learn
+tensorflow
