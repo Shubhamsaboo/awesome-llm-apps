@@ -25,20 +25,13 @@ A curated collection of awesome LLM apps built with RAG and AI agents. This repo
   </a>
 </p>
 
-## 📑 Table of Contents
-
-- [🤔 Why Awesome LLM Apps?](#-why-awesome-llm-apps)
-- [📂 Featured Projects](#-featured-projects)
-- [🚀 Getting Started](#-getting-started)
-- [🤝 Contributing to Open Source](#-contributing-to-open-source)
-
 ## 🤔 Why Awesome LLM Apps?
 
 - 💡 Discover practical and creative ways LLMs can be applied across different domains, from code repositories to email inboxes and more.
 - 🔥 Explore apps that combine LLMs from OpenAI, Anthropic, Gemini, and open-source alternatives with RAG and AI Agents.
 - 🎓 Learn from well-documented projects and contribute to the growing open-source ecosystem of LLM-powered applications.
 
-## 📂 Featured Projects
+## 📂 Featured AI Projects
 
 ### AI Agents
 - [💼 AI Customer Support Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_customer_support_agent)
