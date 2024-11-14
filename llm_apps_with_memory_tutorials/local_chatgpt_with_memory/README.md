@@ -29,7 +29,7 @@ docker pull qdrant/qdrant
 docker run -p 6333:6333 qdrant/qdrant
 ```
 
-4. Install [Ollama](https://ollama.com/download) and pull Llama 3.2
+4. Install [Ollama](https://ollama.com/download) and pull Llama 3.1
 ```bash
 ollama pull llama3.1
 ```
