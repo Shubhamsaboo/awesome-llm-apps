@@ -4,7 +4,7 @@ from openai import OpenAI
 import os
 from litellm import completion
 
-st.title("LLM App with Shared Memory 🧠")
+st.title("Multi-LLM App with Shared Memory 🧠")
 st.caption("LLM App with a personalized memory layer that remembers each user's choices and interests across multiple users and LLMs")
 
 openai_api_key = st.text_input("Enter OpenAI API Key", type="password")
@@ -50,9 +50,10 @@ if openai_api_key and anthropic_api_key:
         with st.spinner('Searching...'):
             relevant_memories = memory.search(query=prompt, user_id=user_id)
             context = "Relevant past information:\n"
-
-            for mem in relevant_memories:
-                context += f"- {mem['text']}\n"
+            if relevant_memories and "results" in relevant_memories:
+                for memory in relevant_memories["results"]:
+                    if "memory" in memory:
+                        context += f"- {memory['memory']}\n"
                 
             full_prompt = f"{context}\nHuman: {prompt}\nAI:"
 
@@ -76,12 +77,14 @@ if openai_api_key and anthropic_api_key:
 
             memory.add(answer, user_id=user_id)
 
+    # Sidebar option to show memory
     st.sidebar.title("Memory Info")
-    if st.sidebar.button("View Memory Info"):
-        memories = memory.get_all(user_id=user_id)
-        if memories:
-            st.sidebar.write(f"You are viewing memory for user **{user_id}**")
-            for mem in memories:
-                st.sidebar.write(f"- {mem['text']}")
-        else:
-            st.sidebar.info("No learning history found for this user ID.")
+    if st.button("View My Memory"):
+            memories = memory.get_all(user_id=user_id)
+            if memories and "results" in memories:
+                st.write(f"Memory history for **{user_id}**:")
+                for mem in memories["results"]:
+                    if "memory" in mem:
+                        st.write(f"- {mem['memory']}")
+            else:
+                st.sidebar.info("No learning history found for this user ID.")
