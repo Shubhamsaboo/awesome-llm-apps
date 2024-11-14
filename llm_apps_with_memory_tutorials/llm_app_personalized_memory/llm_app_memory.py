@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 from mem0 import Memory
 from openai import OpenAI
@@ -6,6 +7,7 @@ st.title("LLM App with Memory 🧠")
 st.caption("LLM App with personalized memory layer that remembers ever user's choice and interests")
 
 openai_api_key = st.text_input("Enter OpenAI API Key", type="password")
+os.environ["OPENAI_API_KEY"] = openai_api_key
 
 if openai_api_key:
     # Initialize OpenAI client
@@ -16,6 +18,7 @@ if openai_api_key:
         "vector_store": {
             "provider": "qdrant",
             "config": {
+                "collection_name": "llm_app_memory",
                 "host": "localhost",
                 "port": 6333,
             }
@@ -59,11 +62,12 @@ if openai_api_key:
 
     # Sidebar option to show memory
     st.sidebar.title("Memory Info")
-    if st.sidebar.button("View Memory Info"):
-        memories = memory.get_all(user_id=user_id)
-        if memories:
-            st.sidebar.write(f"You are viewing memory for user **{user_id}**")
-            for mem in memories:
-                st.sidebar.write(f"- {mem['text']}")
-        else:
-            st.sidebar.info("No learning history found for this user ID.")
+    if st.button("View My Memory"):
+            memories = memory.get_all(user_id=user_id)
+            if memories and "results" in memories:
+                st.write(f"Memory history for **{user_id}**:")
+                for mem in memories["results"]:
+                    if "memory" in mem:
+                        st.write(f"- {mem['memory']}")
+            else:
+                st.sidebar.info("No learning history found for this user ID.")

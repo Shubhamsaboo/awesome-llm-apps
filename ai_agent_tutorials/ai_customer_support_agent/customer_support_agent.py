@@ -34,8 +34,10 @@ if openai_api_key:
         def handle_query(self, query, user_id=None):
             relevant_memories = self.memory.search(query=query, user_id=user_id)
             context = "Relevant past information:\n"
-            for mem in relevant_memories:
-                context += f"- {mem['text']}\n"
+            if relevant_memories and "results" in relevant_memories:
+                for memory in relevant_memories["results"]:
+                    if "memory" in memory:
+                        context += f"- {memory['memory']}\n"
 
             full_prompt = f"{context}\nCustomer: {query}\nSupport Agent:"
 
@@ -126,8 +128,10 @@ if openai_api_key:
             memories = support_agent.get_memories(user_id=customer_id)
             if memories:
                 st.sidebar.write(f"Memory for customer **{customer_id}**:")
-                for mem in memories:
-                    st.sidebar.write(f"- {mem['text']}")
+                if memories and "results" in memories:
+                    for memory in memories["results"]:
+                        if "memory" in memory:
+                            st.write(f"- {memory['memory']}")
             else:
                 st.sidebar.info("No memory found for this customer ID.")
         else:
