@@ -34,17 +34,19 @@ if openai_api_key:
         st.session_state.messages = []
         st.session_state.previous_user_id = user_id
 
-    if st.sidebar.button("View Memory Info"):
-        if user_id:
-            memories = memory.get_all(user_id=user_id)
-            if memories:
-                st.sidebar.write(f"Memory for user **{user_id}**:")
-                for mem in memories:
-                    st.sidebar.write(f"- {mem['text']}")
-            else:
-                st.sidebar.info("No memory found for this user ID.")
+    # Sidebar option to show memory
+    st.sidebar.title("Memory Info")
+    if st.button("View My Memory"):
+        memories = memory.get_all(user_id=user_id)
+        if memories and "results" in memories:
+            st.write(f"Memory history for **{user_id}**:")
+            for mem in memories["results"]:
+                if "memory" in mem:
+                    st.write(f"- {mem['memory']}")
         else:
-            st.sidebar.error("Please enter a username to view memory info.")
+            st.sidebar.info("No learning history found for this user ID.")
+    else:
+        st.sidebar.error("Please enter a username to view memory info.")
 
     # Initialize the chat history
     if "messages" not in st.session_state:
@@ -67,8 +69,10 @@ if openai_api_key:
         # Retrieve relevant memories
         relevant_memories = memory.search(query=prompt, user_id=user_id)
         context = "Relevant past information:\n"
-        for mem in relevant_memories:
-            context += f"- {mem['text']}\n"
+        if relevant_memories and "results" in relevant_memories:
+            for memory in relevant_memories["results"]:
+                if "memory" in memory:
+                    context += f"- {memory['memory']}\n"
 
         # Prepare the full prompt
         full_prompt = f"{context}\nHuman: {prompt}\nAI:"
