@@ -28,7 +28,73 @@ This Streamlit application allows users to upload a video file or provide a YouT
 ### Installation
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/yourusername/video-qa-chatbot.git
    cd video-qa-chatbot
    ```
+
+2. **Install dependencies**:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Set up FFmpeg**:
+
+   - Install FFmpeg from [FFmpeg.org](https://ffmpeg.org/download.html).
+   - Add FFmpeg to your system PATH so the application can call it directly.
+
+4. **Configure YouTube URL Handling (Optional)**:
+   - If you plan to enable YouTube URL transcription, add your API key and YouTube download logic in `app.py`.
+
+### Running the Application
+
+To start the Streamlit app, run:
+
+```bash
+streamlit run app.py
+```
+
+Then open your web browser to `http://localhost:8501` to access the app.
+
+### Using the App
+
+1. **Upload a Video**:
+   - In the sidebar, upload a `.mp4`, `.mov`, or `.avi` file.
+   - Alternatively, paste a YouTube URL (if enabled).
+2. **Process Video**:
+
+   - Click the "Process Video" button to start extracting audio and generating a transcript.
+   - Wait for the transcript to be processed (may take a few moments).
+
+3. **Ask Questions**:
+
+   - Once the transcript is ready, type a question about the video in the input box and submit.
+   - The app will respond with an answer and suggest follow-up questions.
+
+4. **Explore Chat History**:
+   - View all previous questions and answers in the "Chat History" section.
+   - Click on any suggested questions to automatically ask follow-up questions based on the video content.
+
+## Troubleshooting
+
+### PermissionError on Temporary Files
+
+If you encounter a `PermissionError` related to temporary files, ensure the code removes or closes files properly by updating `app.py` as needed. Use the `shutil.copy()` method to avoid file access conflicts.
+
+### YouTube URL Handling
+
+If you'd like to enable support for YouTube URLs, implement the YouTube download and transcription code in `app.py`.
+
+## Future Enhancements
+
+- **YouTube URL Support**: Enable transcription and Q&A for YouTube videos.
+- **Improved NLP Models**: Experiment with other language models for potentially better answers and suggestions.
+- **Enhanced UI**: Add options for customizing chat appearance and managing multiple transcripts.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
