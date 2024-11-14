@@ -1,0 +1,5 @@
+langchain
+transformers
+moviepy
+openai-whisper
+open
