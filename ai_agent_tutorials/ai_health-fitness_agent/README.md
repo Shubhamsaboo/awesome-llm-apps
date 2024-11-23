@@ -42,20 +42,14 @@ Ensure these dependencies are installed via the `requirements.txt` file.
 
 Follow the steps below to set up and run the application:
 
-<<<<<<< HEAD
 Before anything else, Please get a free Gemini API Key provided by Google AI here: https://aistudio.google.com/apikey
-=======
-    Before anything else, Please get a free Gemini API Key provided by Google AI here: https://aistudio.google.com/apikey
->>>>>>> 0e9b896 (Added new Diet-Fitness Agent)
+
 
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-<<<<<<< HEAD
    cd ai_agent_tutorials
-=======
-   cd ai_agent_tutorials```
->>>>>>> 0e9b896 (Added new Diet-Fitness Agent)
+
 2. **Install the dependencies**
     ```bash
     pip install -r requirements.txt
