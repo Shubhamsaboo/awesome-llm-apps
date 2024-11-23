@@ -1,0 +1,4 @@
+phidata
+google-generativeai
+anthropic
+streamlit
