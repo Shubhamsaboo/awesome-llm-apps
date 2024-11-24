@@ -2,3 +2,4 @@ phidata
 qdrant-client
 ollama
 pypdf 
+openai
