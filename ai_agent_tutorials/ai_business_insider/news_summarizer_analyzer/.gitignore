@@ -1,3 +1,4 @@
 .env
 __pycache__/
 env
+ai_agent_tutorials/ai_business_insider/env
