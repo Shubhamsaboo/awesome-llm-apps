@@ -1,0 +1,10 @@
+annotated_types-0.7.0.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+annotated_types-0.7.0.dist-info/METADATA,sha256=7ltqxksJJ0wCYFGBNIQCWTlWQGeAH0hRFdnK3CB895E,15046
+annotated_types-0.7.0.dist-info/RECORD,,
+annotated_types-0.7.0.dist-info/WHEEL,sha256=zEMcRr9Kr03x1ozGwg5v9NQBKn3kndp6LSoSlVg-jhU,87
+annotated_types-0.7.0.dist-info/licenses/LICENSE,sha256=_hBJiEsaDZNCkB6I4H8ykl0ksxIdmXK2poBfuYJLCV0,1083
+annotated_types/__init__.py,sha256=RynLsRKUEGI0KimXydlD1fZEfEzWwDo0Uon3zOKhG1Q,13819
+annotated_types/__pycache__/__init__.cpython-39.pyc,,
+annotated_types/__pycache__/test_cases.cpython-39.pyc,,
+annotated_types/py.typed,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+annotated_types/test_cases.py,sha256=zHFX6EpcMbGJ8FzBYDbO56bPwx_DYIVSKbZM-4B3_lg,6421

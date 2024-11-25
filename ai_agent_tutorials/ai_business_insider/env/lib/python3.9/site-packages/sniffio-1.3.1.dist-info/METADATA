@@ -1,0 +1,104 @@
+Metadata-Version: 2.1
+Name: sniffio
+Version: 1.3.1
+Summary: Sniff out which async library your code is running under
+Author-email: "Nathaniel J. Smith" <njs@pobox.com>
+License: MIT OR Apache-2.0
+Project-URL: Homepage, https://github.com/python-trio/sniffio
+Project-URL: Documentation, https://sniffio.readthedocs.io/
+Project-URL: Changelog, https://sniffio.readthedocs.io/en/latest/history.html
+Keywords: async,trio,asyncio
+Classifier: License :: OSI Approved :: MIT License
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Framework :: Trio
+Classifier: Framework :: AsyncIO
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Intended Audience :: Developers
+Classifier: Development Status :: 5 - Production/Stable
+Requires-Python: >=3.7
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+License-File: LICENSE.APACHE2
+License-File: LICENSE.MIT
+
+.. image:: https://img.shields.io/badge/chat-join%20now-blue.svg
+   :target: https://gitter.im/python-trio/general
+   :alt: Join chatroom
+
+.. image:: https://img.shields.io/badge/docs-read%20now-blue.svg
+   :target: https://sniffio.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
+
+.. image:: https://img.shields.io/pypi/v/sniffio.svg
+   :target: https://pypi.org/project/sniffio
+   :alt: Latest PyPi version
+   
+.. image:: https://img.shields.io/conda/vn/conda-forge/sniffio.svg
+   :target: https://anaconda.org/conda-forge/sniffio 
+   :alt: Latest conda-forge version   
+
+.. image:: https://travis-ci.org/python-trio/sniffio.svg?branch=master
+   :target: https://travis-ci.org/python-trio/sniffio
+   :alt: Automated test status
+
+.. image:: https://codecov.io/gh/python-trio/sniffio/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/python-trio/sniffio
+   :alt: Test coverage
+
+=================================================================
+sniffio: Sniff out which async library your code is running under
+=================================================================
+
+You're writing a library. You've decided to be ambitious, and support
+multiple async I/O packages, like `Trio
+<https://trio.readthedocs.io>`__, and `asyncio
+<https://docs.python.org/3/library/asyncio.html>`__, and ... You've
+written a bunch of clever code to handle all the differences. But...
+how do you know *which* piece of clever code to run?
+
+This is a tiny package whose only purpose is to let you detect which
+async library your code is running under.
+
+* Documentation: https://sniffio.readthedocs.io
+
+* Bug tracker and source code: https://github.com/python-trio/sniffio
+
+* License: MIT or Apache License 2.0, your choice
+
+* Contributor guide: https://trio.readthedocs.io/en/latest/contributing.html
+
+* Code of conduct: Contributors are requested to follow our `code of
+  conduct
+  <https://trio.readthedocs.io/en/latest/code-of-conduct.html>`_
+  in all project spaces.
+
+This library is maintained by the Trio project, as a service to the
+async Python community as a whole.
+
+
+Quickstart
+----------
+
+.. code-block:: python3
+
+   from sniffio import current_async_library
+   import trio
+   import asyncio
+
+   async def print_library():
+       library = current_async_library()
+       print("This is:", library)
+
+   # Prints "This is trio"
+   trio.run(print_library)
+
+   # Prints "This is asyncio"
+   asyncio.run(print_library())
+
+For more details, including how to add support to new async libraries,
+`please peruse our fine manual <https://sniffio.readthedocs.io>`__.
