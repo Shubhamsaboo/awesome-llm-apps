@@ -9,10 +9,10 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 # Setting up Streamlit app
-st.title("AI Business Insider Agent 🌐")
-st.caption("Get the latest trend analysis and business opportunities based on your topic of interest in a click!.")
+st.title("AI Startup Trend Analysis Agent 📈")
+st.caption("Get the latest trend analysis and startup opportunities based on your topic of interest in a click!.")
 
-topic = st.text_input("Enter the topic for research:")
+topic = st.text_input("Enter the area of interest for your Startup:")
 anthropic_api_key = st.sidebar.text_input("Enter Anthropic API Key", type="password")
 
 if st.button("Generate Analysis"):
@@ -53,7 +53,7 @@ if st.button("Generate Analysis"):
                     name="Trend Analyzer",
                     role="Analyzes trends from summaries",
                     model=anthropic_model,
-                    instructions=["Identify emerging trends and business opportunities"],
+                    instructions=["Identify emerging trends and startup opportunities"],
                     show_tool_calls=True,
                     markdown=True,
                 )
@@ -67,7 +67,7 @@ if st.button("Generate Analysis"):
                         "Important: you must ensure that the summary writer receives all the article links to read.",
                         "Next, the summary writer will read the articles and prepare concise summaries of each.",
                         "After summarizing, the summaries will be passed to the trend analyzer.",
-                        "Finally, the trend analyzer will identify emerging trends and potential business opportunities based on the summaries provided in a detailed Report form so that any young entreprenur can get insane value reading this easily"
+                        "Finally, the trend analyzer will identify emerging trends and potential startup opportunities based on the summaries provided in a detailed Report form so that any young entreprenur can get insane value reading this easily"
                     ],
                     show_tool_calls=True,
                     markdown=True,
@@ -90,7 +90,7 @@ if st.button("Generate Analysis"):
                 # st.subheader("News Summaries")
                 # # st.write(summaries)
 
-                st.subheader("Trend Analysis and Potential Business Opportunities")
+                st.subheader("Trend Analysis and Potential Startup Opportunities")
                 st.write(analysis)
 
             except Exception as e:
