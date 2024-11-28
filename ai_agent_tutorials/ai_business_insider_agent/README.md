@@ -1,6 +1,4 @@
-## AI Business Insider - A News Summarizer and Analyst 
-
-### Summary
+## 📈 AI Business Insider Agent 
 The AI Business Insider is a user-friendly news summarization and analysis tool built using the Phidata framework. It leverages built-in tools like Newspaper4k and DuckDuckGo to efficiently retrieve and read articles, creating a detailed report of the emerging trends in that particular sector/industry and also gives potential business opportunities. The application utilizes Anthropic Claude's LLM for advanced language processing, enabling users to gain insights and identify potential business opportunities based on current trends.
 
 ### Features
@@ -14,7 +12,7 @@ The AI Business Insider is a user-friendly news summarization and analysis tool 
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git 
-   cd ai_agent_tutorials/ai_business_insider
+   cd ai_agent_tutorials/ai_business_insider_agent
    ```
 
 2. **Create and activate a virtual environment**:
@@ -35,7 +33,7 @@ The AI Business Insider is a user-friendly news summarization and analysis tool 
 
 4. **Run the application**:
    ```bash
-   streamlit run business_insider.py
+   streamlit run business_insider_agent.py
    ```
 ### Important Note
 - The system specifically uses Claude's API for advanced language processing. You can obtain your Anthropic API key from [Anthropic's website](https://www.anthropic.com/api).
