@@ -1,7 +1,6 @@
 import streamlit as st
-from crewai import Agent, Task, Crew, Process
-from langchain_openai import ChatOpenAI
-from langchain_anthropic import ChatAnthropic
+from crewai import Agent, Task, Crew, LLM
+from crewai.process import Process
 from crewai_tools import SerperDevTool
 import os
 
@@ -11,20 +10,16 @@ st.title("AI Meeting Preparation Agent 📝")
 
 # Sidebar for API keys
 st.sidebar.header("API Keys")
-openai_api_key = st.sidebar.text_input("OpenAI API Key", type="password")
 anthropic_api_key = st.sidebar.text_input("Anthropic API Key", type="password")
 serper_api_key = st.sidebar.text_input("Serper API Key", type="password")
 
 # Check if all API keys are set
-if openai_api_key and anthropic_api_key and serper_api_key:
-    # Set API keys as environment variables
-    os.environ["OPENAI_API_KEY"] = openai_api_key
+if anthropic_api_key and serper_api_key:
+    # # Set API keys as environment variables
     os.environ["ANTHROPIC_API_KEY"] = anthropic_api_key
     os.environ["SERPER_API_KEY"] = serper_api_key
 
-    # Initialize the AI models and tools
-    gpt4 = ChatOpenAI(model_name="gpt-4o-mini")
-    claude = ChatAnthropic(model_name="claude-3-5-sonnet-20240620")
+    claude = LLM(model="claude-3-5-sonnet-20240620", temperature= 0.7, api_key=anthropic_api_key)
     search_tool = SerperDevTool()
 
     # Input fields
@@ -41,7 +36,7 @@ if openai_api_key and anthropic_api_key and serper_api_key:
         backstory='You are an expert at quickly understanding complex business contexts and identifying critical information.',
         verbose=True,
         allow_delegation=False,
-        llm=gpt4,
+        llm=claude,
         tools=[search_tool]
     )
 
@@ -51,7 +46,7 @@ if openai_api_key and anthropic_api_key and serper_api_key:
         backstory='You are a seasoned industry analyst with a knack for spotting emerging trends and opportunities.',
         verbose=True,
         allow_delegation=False,
-        llm=gpt4,
+        llm=claude,
         tools=[search_tool]
     )
 
