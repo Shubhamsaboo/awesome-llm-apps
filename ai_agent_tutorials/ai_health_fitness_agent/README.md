@@ -6,6 +6,10 @@ Here's a small demo of the application:
 
 [Watch the demo video here](https://drive.google.com/file/d/1ZdAihfg9NuEnqEFTdDWyRqVe7qTWdz80/view?usp=sharing)
 
+
+https://github.com/user-attachments/assets/0061d3e9-e2dc-49a7-8710-5cea7fe08741
+
+
 ---
 
 ## Features
