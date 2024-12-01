@@ -17,9 +17,7 @@ The **AI Health & Fitness Planner** is a personalized health and fitness Agent p
   - Covers warm-ups, main workouts, and cool-downs.
   - Includes actionable fitness tips and progress tracking advice.
 
-- **Interactive Q&A**:
-  - Allows users to ask follow-up questions about their plans.
-  - Provides AI-generated responses for personalized guidance.
+- **Interactive Q&A**: Allows users to ask follow-up questions about their plans.
 
 
 ## Requirements
@@ -46,8 +44,7 @@ Before anything else, Please get a free Gemini API Key provided by Google AI her
     ```bash
     pip install -r requirements.txt
     ```
-3. **Run the Streamlit App(s)**
-    If you run the application:
+3. **Run the Streamlit app**
     ```bash
     streamlit run ai_health-fitness_agent/health_agent.py
     ```
