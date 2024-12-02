@@ -81,7 +81,7 @@ def initialize_agents(llm,file_name,Temp_dir):
         ),
         "Compiler_Agent":Agent(
             role = "Code_compiler",
-            goal = "Extract only the python code.",
+            goal = "Extract only the python code. Remove any other things like backticks ``` and any thing like ```python```",
             backstory = "You are the compiler which extract only the python code.",
             verbose = True,
             allow_delegation = False,

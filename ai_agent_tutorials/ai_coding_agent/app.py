@@ -35,7 +35,7 @@ def save_uploaded_file(uploaded_file):
 # load the .env file
 load_dotenv()
 # Set up Groq API key
-groq_api_key = os.environ.get("GROQ_API_KEY")  # os.environ["GROQ_API_KEY"] =
+groq_api_key = os.getenv("GROQ_API_KEY")  # os.environ["GROQ_API_KEY"] =
 
 
 def main():
@@ -62,7 +62,7 @@ def main():
     st.sidebar.title('LLM Model')
     model = st.sidebar.selectbox(
         'Model',
-        ["llama3-70b-8192"]
+        ["groq/llama-3.1-8b-instant"]
     )
 
     # Initialize LLM
@@ -102,13 +102,15 @@ def main():
             crew = Crew(
                 agents=list(agents.values()),
                 tasks=tasks,
-                verbose=2
+                verbose=True
             )
 
             result = crew.kickoff()
 
             if result:  # Only call st_ace if code has a valid value
-                code = result.strip("```")
+                code = str(result).strip("```")
+                if 'python' in code:
+                    code = code[code.index('python')+1:]
                 try:
                     filt_idx = code.index("```")
                     code = code[:filt_idx]
@@ -136,13 +138,13 @@ def main():
                     crew = Crew(
                         agents=list(agents.values()),
                         tasks=tasks,
-                        verbose=2
+                        verbose=True
                     )
 
                     result = crew.kickoff()
 
                     if result:  # Only call st_ace if code has a valid value
-                        code = result.strip("```")
+                        code = str(result).strip("```")
                         try:
                             filter_idx = code.index("```")
                             code = code[:filter_idx]
@@ -168,13 +170,13 @@ def main():
                     crew = Crew(
                         agents=list(agents.values()),
                         tasks=tasks,
-                        verbose=2
+                        verbose=True
                     )
 
                     result = crew.kickoff()
 
                     if result:  # Only call st_ace if code has a valid value
-                        code = result.strip("```")
+                        code = str(result).strip("```")
                         try:
                             filter_idx = code.index("```")
                             code = code[:filter_idx]
