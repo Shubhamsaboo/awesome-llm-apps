@@ -1,0 +1,70 @@
+chainlit_server:
+  cors:
+    allowed_origins: ["*"]
+
+project:
+  # Enable user environment variables
+  user_env:
+    - OPENAI_API_KEY
+    - ANTHROPIC_API_KEY
+    - COHERE_API_KEY
+    - DB_URL
+
+ui:
+  name: "LLM App with Hybrid Search and RAG - Claude"
+  description: "by unwind ai"
+  hide_cot: false
+  default_collapse_content: true
+  default_expand_messages: true
+  input_box:
+    width: "100%"
+    max_width: "600px"
+    placeholder: "Enter your message..."
+  layout:
+    mode: "wide"
+    centered: true
+  show_sidebar: true
+  sidebar_position: "left"
+
+# Configure the environment variables UI
+user_env:
+  OPENAI_API_KEY:
+    type: "secret"  # This will mask the input
+    description: "Your OpenAI API key for embeddings"
+    placeholder: "sk-..."
+    required: true
+    
+  ANTHROPIC_API_KEY:
+    type: "secret"
+    description: "Your Anthropic API key for Claude"
+    placeholder: "sk-ant-..."
+    required: true
+    
+  COHERE_API_KEY:
+    type: "secret"
+    description: "Your Cohere API key for reranking"
+    placeholder: "co-..."
+    required: true
+    
+  DB_URL:
+    type: "string"
+    description: "Your PostgreSQL database connection URL"
+    placeholder: "postgresql://user:pass@host:port/db"
+    required: true
+
+message_display:
+  timeout: 180
+
+features:
+  prompt_playground: false
+  secure_credentials: true
+
+theme:
+  light:
+    primary: "#2563eb"
+    background: "#ffffff"
+    sidebar: "#f7f7f8"
+  dark:
+    primary: "#2563eb"
+    background: "#1a1a1a"
+    sidebar: "#1e1e1e"
