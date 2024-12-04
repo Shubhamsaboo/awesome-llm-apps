@@ -2,7 +2,7 @@
 This Streamlit application implements an Autonomous Retrieval-Augmented Generation (RAG) system using OpenAI's GPT-4o model and PgVector database. It allows users to upload PDF documents, add them to a knowledge base, and query the AI assistant with context from both the knowledge base and web searches.
 Features
 
-### Freatures 
+### Features 
 - Chat interface for interacting with the AI assistant
 - PDF document upload and processing
 - Knowledge base integration using PostgreSQL and Pgvector
