@@ -10,14 +10,13 @@ from chainlit.input_widget import TextInput
 from chainlit import AskUserMessage
 import anthropic
 
-# Configure logging
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Initialize global config variable
 my_config = None
 
-# Define RAG system prompt
+# Defining the  RAG system prompt
 RAG_SYSTEM_PROMPT = """
 You are a friendly and knowledgeable assistant that provides complete and insightful answers.
 Answer the user's question using only the context below.
@@ -48,7 +47,7 @@ def process_document(file_path: str) -> None:
         import time
         start_time = time.time()
 
-        # Insert document into PostgreSQL database
+        # Inserting document into PostgreSQL database
         insert_document(Path(file_path), config=my_config)
 
         processing_time = time.time() - start_time
@@ -181,7 +180,16 @@ async def start() -> None:
         logger.info("Chat session started")
         cl.user_session.set("chat_history", [])
         
-        # Show settings form first
+        # Add header with markdown formatting
+        await cl.Message(
+            content="""# 🤖 LLM-Powered Hybrid Search-RAG Assistant powered by Claude
+            
+            Welcome! To get started:
+            Enter your API keys below on the ChatSettings widget
+            """
+        ).send()
+        
+        # Show settings form
         await cl.ChatSettings([
             TextInput(
                 id="OpenAIApiKey",
@@ -280,28 +288,53 @@ async def handle_fallback(query: str, msg: cl.Message) -> None:
     """Handle fallback to Claude when RAG is not available or fails."""
     try:
         user_env = cl.user_session.get("env")
+        if not user_env or "ANTHROPIC_API_KEY" not in user_env:
+            raise ValueError("Missing Anthropic API key in session")
+            
         client = anthropic.Anthropic(api_key=user_env["ANTHROPIC_API_KEY"])
-
+        
+        logger.info("Falling back to Claude for response")
+        
+        # Get response from Claude
         response = client.messages.create(
-            model="claude-3-5-sonnet-20241022",
-            max_tokens=1024,
+            model="claude-3-sonnet-20240229",
             messages=[
-                {"role": "user", "content": query}
-            ]
+                {
+                    "role": "system",
+                    "content": """You are a helpful AI assistant. When asked questions, provide informative responses 
+                    based on your general knowledge. You don't need to reference any specific documents or context.
+                    Just answer naturally as a knowledgeable assistant."""
+                },
+                {
+                    "role": "user",
+                    "content": query
+                }
+            ],
+            max_tokens=1024,
+            temperature=0.7
         )
-
+        
+        # Get the complete response
         full_response = response.content[0].text
-        await msg.send(content=full_response)
-
+        
+        # Create a new message for streaming
+        msg = cl.Message(content="")
+        await msg.send()
+        
+        # Stream the response word by word
+        for word in full_response.split():
+            await msg.stream_token(word + " ")
+        
         # Update chat history
         chat_history = cl.user_session.get("chat_history", [])
         chat_history.append((query, full_response))
         cl.user_session.set("chat_history", chat_history)
-
+        logger.info("Successfully generated fallback response")
+        
     except Exception as e:
         error_msg = f"Fallback error: {str(e)}"
         logger.error(error_msg)
-        await msg.send(content=error_msg)
+        await cl.Message(content=f"❌ {error_msg}").send()
 
 if __name__ == "__main__":
     cl.run()

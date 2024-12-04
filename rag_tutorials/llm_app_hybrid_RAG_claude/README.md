@@ -1,13 +1,16 @@
-# Hybrid RAG Claude Chat 🤖
+# LLM Hybrid Search-RAG Assistant - Claude 🤖
 
-A powerful document Q&A application that combines Hybrid Search (RAG) with Claude's general knowledge. This is built on the RAGLite framework and Chainlit for the UI. 
+A powerful document Q&A application that leverages Hybrid Search (RAG) and Claude's advanced language capabilities to provide comprehensive answers. Built with RAGLite for robust document processing and retrieval, and Chainlit for an intuitive chat interface, this system seamlessly combines document-specific knowledge with Claude's general intelligence to deliver accurate and contextual responses.
+
+## Demo
+
+![Demo](rag_tutorials/llm_app_hybrid_RAG_claude/LLM-Hybrid-RagLite-Claude.mp4)
 
 ## Features
 
-- **Hybrid Question Answering**
+- **Hybrid Search Question Answering**
     - RAG-based answers for document-specific queries
     - Fallback to Claude for general knowledge questions
-    - Seamless switching between modes
 
 - **Document Processing**:
   - PDF document upload and processing
@@ -15,16 +18,10 @@ A powerful document Q&A application that combines Hybrid Search (RAG) with Claud
   - Hybrid search combining semantic and keyword matching
   - Reranking for better context selection
 
-- **Interactive Chat Interface**:
-  - Real-time streaming responses
-  - Chat history preservation
-  - Error handling with retry options
-  - File upload validation
-
 - **Multi-Model Integration**:
-  - Claude for text generation
-  - OpenAI for embeddings
-  - Cohere for reranking (tried using the new Cohere 3.5 reranker)
+  - Claude for text generation - tested with Claude 3 Opus 
+  - OpenAI for embeddings - tested with text-embedding-3-large
+  - Cohere for reranking - tested with Cohere 3.5 reranker
 
 ## Prerequisites
 
@@ -40,11 +37,11 @@ You'll need the following API keys and database setup:
    - [Anthropic API key](https://console.anthropic.com/settings/keys) for Claude
    - [Cohere API key](https://dashboard.cohere.com/api-keys) for reranking
 
-## Installation
+## How to get Started?
 
 1. **Clone the Repository**:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd rag_tutorials/llm_app_hybrid_RAG_claude
    ```
 
@@ -66,11 +63,11 @@ You'll need the following API keys and database setup:
 ## Usage
 
 1. Start the application
-2. When prompted, enter your:
+2. Enter your important keys in the ChatSettings widget:
    - OpenAI API key
    - Anthropic API key
    - Cohere API key
-   - Neon PostgreSQL URL
+   - Neon PostgreSQL URL 
 3. Upload PDF documents
 4. Start asking questions!
    - Document-specific questions will use RAG
