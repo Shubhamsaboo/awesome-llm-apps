@@ -34,7 +34,7 @@ The AI Startup Trend Analysis Agent is tool for budding entrepreneurs that gener
 
 4. **Run the application**:
    ```bash
-   streamlit run business_insider_agent.py
+   streamlit run startup_trends_agent.py
    ```
 ### Important Note
 - The system specifically uses Claude's API for advanced language processing. You can obtain your Anthropic API key from [Anthropic's website](https://www.anthropic.com/api).
