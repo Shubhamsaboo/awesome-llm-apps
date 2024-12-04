@@ -11,8 +11,8 @@ project:
     - DB_URL
 
 ui:
-  name: "LLM App with Hybrid Search and RAG - Claude"
-  description: "by unwind ai"
+  name: "🤖 RAG-Powered Document Assistant"
+  description: "Upload documents and ask questions using hybrid RAG with Claude"
   hide_cot: false
   default_collapse_content: true
   default_expand_messages: true
@@ -25,6 +25,7 @@ ui:
     centered: true
   show_sidebar: true
   sidebar_position: "left"
+  theme: light
 
 # Configure the environment variables UI
 user_env:
@@ -68,3 +69,29 @@ theme:
     primary: "#2563eb"
     background: "#1a1a1a"
     sidebar: "#1e1e1e"
+
+chat_profiles: []
+default_expand_messages: false
+markdown: true
+message_html: true
+show_readme_as_default: true
+default_collapse_content: true
+theme: light
+
+features:
+  speech_to_text: false
+  task_list: true
+
+ui:
+  name: Hybrid RAG Assistant
+  description: Ask questions about your documents
+  hide_cot: false
+  show_docs: false
+  show_debugger: false
+  show_file_upload: true
+
+file_upload:
+  max_size_mb: 20
+  max_files: 5
+  accept:
+    - application/pdf
