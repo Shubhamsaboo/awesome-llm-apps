@@ -4,7 +4,9 @@ A powerful document Q&A application that leverages Hybrid Search (RAG) and Claud
 
 ## Demo
 
-![Demo](rag_tutorials/llm_app_hybrid_RAG_claude/LLM-Hybrid-RagLite-Claude.mp4)
+
+https://github.com/user-attachments/assets/f119c363-4433-40c8-b87e-53e434d03c7b
+
 
 ## Features
 
