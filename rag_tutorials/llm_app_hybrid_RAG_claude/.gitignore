@@ -50,3 +50,6 @@ temp/
 .env
 
 raglite.sqlite
+
+.chainlit/
+.flashrank_cache/
