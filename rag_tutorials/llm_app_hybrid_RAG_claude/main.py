@@ -79,182 +79,98 @@ def perform_search(query: str) -> List[dict]:
         logger.error(f"Search error: {str(e)}")
         return []
 
+@cl.on_settings_update
+async def handle_settings_update(settings: dict):
+    """Handle settings updates when user submits the form."""
+    try:
+        # Validate API keys
+        def validate_key(key: str, key_type: str, valid_prefixes: tuple) -> bool:
+            if not key:
+                raise ValueError(f"{key_type} API key is required")
+            if valid_prefixes and not any(key.startswith(prefix) for prefix in valid_prefixes):
+                raise ValueError(f"Invalid {key_type} API key format")
+            return True
+
+        # Validate DB URL
+        def validate_db_url(url: str) -> bool:
+            valid_prefixes = ('postgresql://', 'mysql://', 'sqlite:///')
+            if not url:
+                raise ValueError("Database URL is required")
+            if not any(url.startswith(prefix) for prefix in valid_prefixes):
+                raise ValueError("Invalid database URL format")
+            return True
+
+        # Validate all inputs
+        validate_key(settings["OpenAIApiKey"], "OpenAI", ("sk-", "sk-proj-"))
+        validate_key(settings["AnthropicApiKey"], "Anthropic", ("sk-ant-",))
+        validate_key(settings["CohereApiKey"], "Cohere", tuple())
+        validate_db_url(settings["DBUrl"])
+
+        # Store validated values in user_env
+        user_env = {
+            "OPENAI_API_KEY": settings["OpenAIApiKey"],
+            "ANTHROPIC_API_KEY": settings["AnthropicApiKey"],
+            "COHERE_API_KEY": settings["CohereApiKey"],
+            "DB_URL": settings["DBUrl"]
+        }
+
+        # Store in user session
+        cl.user_session.set("env", user_env)
+        
+        # Initialize RAGLite config
+        global my_config
+        my_config = initialize_config(user_env)
+        
+        await cl.Message(content="✅ Successfully configured with your API keys!").send()
+
+        # Automatically prompt for PDF upload
+        await cl.AskFileMessage(
+            content="Please upload one or more PDF documents to begin!",
+            accept=["application/pdf"],
+            max_size_mb=20,
+            max_files=5
+        ).send()
+
+    except Exception as e:
+        error_msg = f"❌ Error with provided settings: {str(e)}"
+        logger.error(error_msg)
+        await cl.Message(content=error_msg).send()
+
 @cl.on_chat_start
 async def start() -> None:
     try:
         logger.info("Chat session started")
         cl.user_session.set("chat_history", [])
 
-        # Helper function to validate and get API key - so that if the user enters the wrong key, they can try again
-        async def get_valid_api_key(key_type: str, validation_prefix: tuple) -> str:
-            while True:
-                key_response = await cl.AskUserMessage(
-                    content=f"Please enter your {key_type} API key:",
-                    timeout=180
-                ).send()
-
-                if not key_response or 'output' not in key_response:
-                    await cl.Message(content=f"❌ {key_type} API key is required").send()
-                    continue
-
-                key_value = key_response['output'].strip()
-                if not any(key_value.startswith(prefix) for prefix in validation_prefix):
-                    await cl.Message(
-                        content=f"❌ Invalid {key_type} API key format. Please try again."
-                    ).send()
-                    continue
-                
-                return key_value
-
-        # this is the helper function to validate and get DB URL, so that if the user enters the wrong URL, they can try again
-        async def get_valid_db_url() -> str:
-            valid_db_prefixes = ('postgresql://', 'mysql://', 'sqlite:///')
-            while True:
-                db_url_response = await cl.AskUserMessage(
-                    content="Please enter your Database URL:\nSupported formats:\n- PostgreSQL: postgresql://user:pass@host:port/db\n- MySQL: mysql://user:pass@host:port/db\n- SQLite: sqlite:///path/to/db.sqlite",
-                    timeout=180
-                ).send()
-
-                if not db_url_response or 'output' not in db_url_response:
-                    await cl.Message(content="❌ Database URL is required").send()
-                    continue
-
-                db_url_value = db_url_response['output'].strip()
-                if not any(db_url_value.startswith(prefix) for prefix in valid_db_prefixes):
-                    await cl.Message(
-                        content="❌ Invalid database URL format. Must start with one of:\n- postgresql://\n- mysql://\n- sqlite://\nPlease try again."
-                    ).send()
-                    continue
-                
-                return db_url_value
-
-        # Get and validate API keys with retry
-        openai_key = await get_valid_api_key("OpenAI", ("sk-", "sk-proj-"))
-        anthropic_key = await get_valid_api_key("Anthropic", ("sk-ant-",))
-        cohere_key = await get_valid_api_key("Cohere", ("",))  # Cohere keys don't have a specific prefix
-        
-        # Get and validate DB URL with retry
-        db_url = await get_valid_db_url()
-
-        # Store validated values in user_env
-        user_env = {
-            "OPENAI_API_KEY": openai_key,
-            "ANTHROPIC_API_KEY": anthropic_key,
-            "COHERE_API_KEY": cohere_key,
-            "DB_URL": db_url
-        }
-
-        # Store in user session
-        cl.user_session.set("env", user_env)
-        logger.info("API keys stored in user session")
-
-        # Initialize RAGLite config with retry
-        while True:
-            try:
-                global my_config
-                my_config = initialize_config(user_env)
-                await cl.Message(content="✅ Successfully configured with your API keys!").send()
-                break
-            except Exception as e:
-                logger.error(f"Configuration error: {str(e)}")
-                await cl.Message(content=f"❌ Error configuring with provided keys: {str(e)}\nPlease check your credentials and try again.").send()
-                # Retry getting all credentials
-                openai_key = await get_valid_api_key("OpenAI", ("sk-", "sk-proj-"))
-                anthropic_key = await get_valid_api_key("Anthropic", ("sk-ant-",))
-                cohere_key = await get_valid_api_key("Cohere", ("",))
-                db_url = await get_valid_db_url()
-                user_env.update({
-                    "OPENAI_API_KEY": openai_key,
-                    "ANTHROPIC_API_KEY": anthropic_key,
-                    "COHERE_API_KEY": cohere_key,
-                    "DB_URL": db_url
-                })
-                cl.user_session.set("env", user_env)
-
-        async def get_valid_documents() -> List[cl.File]:
-            while True:
-                files = await cl.AskFileMessage(
-                    content="Please upload one or more PDF documents to begin!",
-                    accept=["application/pdf"],
-                    max_size_mb=20,
-                    max_files=5
-                ).send()
-
-                if not files:
-                    await cl.Message(content="❌ No files were uploaded. Please try again.").send()
-                    continue
-                
-                return files
-
-        # Process documents with retry for each file
-        async def process_documents(files: List[cl.File]) -> bool:
-            """Process uploaded documents with retry functionality for failed files."""
-            processed_files = set()
-            files_to_process = files.copy()
-            
-            while files_to_process:
-                current_file = files_to_process.pop(0)
-                
-                if current_file.name in processed_files:
-                    continue
-                    
-                logger.info(f"Processing file: {current_file.name}")
-                step = cl.Step(name=f"Processing {current_file.name}...")
-                async with step:  # Use step as context manager
-                    try:
-                        process_document(current_file.path)
-                        processed_files.add(current_file.name)
-                        await cl.Message(
-                            content=f"✅ The Document '{current_file.name}' is processed successfully."
-                        ).send()
-                    except Exception as e:
-                        logger.error(f"Failed to process '{current_file.name}': {str(e)}")
-                        error_message = f"❌ Failed to process '{current_file.name}': {str(e)}"
-                        
-                        # Ask user if they want to retry this file
-                        retry = await cl.AskUserMessage(
-                            content=f"{error_message}\nWould you like to try uploading this file again? (yes/no)",
-                            timeout=180
-                        ).send()
-                        
-                        if retry and retry['output'].lower().strip() == 'yes':
-                            new_file = await cl.AskFileMessage(
-                                content=f"Please upload '{current_file.name}' again:",
-                                accept=["application/pdf"],
-                                max_size_mb=20,
-                                max_files=1
-                            ).send()
-                            
-                            if new_file:
-                                files_to_process.append(new_file[0])
-                
-                # Ensure step is completed
-                await step.end()
-            
-            if not processed_files:
-                await cl.Message(content="❌ No documents were processed successfully. Please try uploading new documents.").send()
-                return False
-            
-            # Send final success message and return to chat
-            final_msg = cl.Message(content="✅ Document processing completed. You can now ask questions!")
-            await final_msg.send()
-            return True
-
-        # Main document processing loop
-        while True:
-            files = await get_valid_documents()
-            if await process_documents(files):
-                break
-            
-            # Ask if user wants to try uploading different documents
-            retry = await cl.AskUserMessage(
-                content="Would you like to try uploading different documents? (yes/no)",
-                timeout=180
-            ).send()
-            
-            if not retry or retry['output'].lower().strip() != 'yes':
-                await cl.Message(content="❌ Stopping due to document processing failures.").send()
-                return
+        # Just show the settings form
+        await cl.ChatSettings(
+            [
+                TextInput(
+                    id="OpenAIApiKey",
+                    label="OpenAI API Key",
+                    initial="",
+                    placeholder="Enter your OpenAI API Key (starts with 'sk-')"
+                ),
+                TextInput(
+                    id="AnthropicApiKey",
+                    label="Anthropic API Key",
+                    initial="",
+                    placeholder="Enter your Anthropic API Key (starts with 'sk-ant-')"
+                ),
+                TextInput(
+                    id="CohereApiKey",
+                    label="Cohere API Key",
+                    initial="",
+                    placeholder="Enter your Cohere API Key"
+                ),
+                TextInput(
+                    id="DBUrl",
+                    label="Database URL",
+                    initial="",
+                    placeholder="Enter your Database URL (e.g., postgresql://user:pass@host:port/db)"
+                ),
+            ]
+        ).send()
 
     except Exception as e:
         logger.error(f"Error in chat start: {str(e)}")
