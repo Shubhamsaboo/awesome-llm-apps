@@ -4,6 +4,10 @@ A powerful document Q&A application that leverages Hybrid Search (RAG) and local
 
 ## Demo:
 
+
+https://github.com/user-attachments/assets/375da089-1ab9-4bf4-b6f3-733f44e47403
+
+
 ## Quick Start
 
 For immediate testing, use these tested model configurations:
