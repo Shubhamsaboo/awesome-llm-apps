@@ -5,12 +5,13 @@ import streamlit as st
 from instructor import OpenAISchema
 import asyncio
 
-# New Tools
+# Custom Tools - Startup Analysis, Strategic Decision, Technical Requirements, Technical Feasibility
 class StartupAnalysis(OpenAISchema):
     """Schema for startup analysis results"""
     market_potential: Literal["high", "medium", "low"]
     technical_complexity: Literal["high", "medium", "low"]
     resource_requirements: Literal["high", "medium", "low"]
+    rationale: str = Field(description="Explanation for the analysis")
     
 class AnalyzeStartupTool(BaseTool):
     """Tool to analyze startup ideas"""
@@ -18,25 +19,45 @@ class AnalyzeStartupTool(BaseTool):
     target_market: str = Field(..., description="Target market description")
     
     def run(self):
-        # Tool implementation
-        analysis = StartupAnalysis(
-            market_potential="high",
-            technical_complexity="medium",
-            resource_requirements="low"
-        )
-        return analysis.dict()
+        """Run startup analysis based on CEO's evaluation"""
+        prompt = f"""
+        Analyze this startup idea:
+        Idea: {self.startup_idea}
+        Target Market: {self.target_market}
+        
+        Provide a comprehensive analysis including:
+        1. Market potential (high/medium/low)
+        2. Technical complexity (high/medium/low)
+        3. Resource requirements (high/medium/low)
+        4. A brief rationale for your decisions
+        
+        Format your response as a StartupAnalysis object.
+        """
+        response = self._llm.invoke(prompt)
+        analysis = StartupAnalysis.from_response(response)
+        
+        # Store analysis in shared state for other tools to access
+        self._shared_state.set("startup_analysis", analysis)
+        return analysis
 
 class MakeStrategicDecision(BaseTool):
     """Tool for CEO to make and track strategic decisions"""
-    decision: str = Field(..., description="The strategic decision to be recorded and taken for this particular startup idea")
+    decision: str = Field(..., description="The strategic decision to be made for this startup idea")
     decision_type: Literal["product", "technical", "marketing", "financial"] = Field(..., description="Type of decision")
     
     def run(self):
-        analysis = self._shared_state.get("startup_analysis", None)
-        if analysis is None:
-            raise ValueError("Please analyze the startup idea first using QueryStartupIdea tool.")
+        """Execute and record strategic decision"""
+        analysis = self._shared_state.get("startup_analysis")
+        if not analysis:
+            return "Please analyze the startup idea first using AnalyzeStartupTool"
         
-        return f"Decision recorded: {self.decision} (Type: {self.decision_type}) based on analysis"
+        decision_record = {
+            "decision": self.decision,
+            "type": self.decision_type,
+            "based_on_analysis": analysis
+        }
+        
+        return f"Strategic decision recorded: {self.decision} (Type: {self.decision_type})"
 
 class QueryTechnicalRequirements(BaseTool):
     """Tool to analyze technical requirements"""
@@ -110,9 +131,28 @@ def main():
         name="CEO",
         description="Strategic leader and final decision maker for the startup",
         instructions="""
-        Analyze the given startup idea and take the authority of a CEO of the startup to make strategic decisions.
-        Use the AnalyzeStartupTool to evaluate the startup idea, and use the MakeStrategicDecision tool to make strategic decisions.
-        Coordinate with team members using the built-in SendMessage tool.
+        You are an experienced CEO with deep expertise in evaluating startup ideas.
+        Your role involves two main responsibilities:
+
+        1. ANALYZING STARTUP IDEAS:
+        When analyzing startup ideas, carefully consider:
+        - Market Potential (high/medium/low): market size, growth, competition, accessibility
+        - Technical Complexity (high/medium/low): tech stack, scalability, timeline
+        - Resource Requirements (high/medium/low): capital, team, marketing costs
+        
+        2. MAKING STRATEGIC DECISIONS:
+        After analysis, you should make clear strategic decisions:
+        - Product decisions: features, roadmap, priorities
+        - Technical decisions: architecture, stack choices
+        - Marketing decisions: go-to-market strategy, channels
+        - Financial decisions: funding, resource allocation
+
+        Process:
+        1. First use AnalyzeStartupTool to evaluate the idea
+        2. Then use MakeStrategicDecision to record your strategic choices
+        3. Always base decisions on your previous analysis
+        
+        Provide clear, actionable insights and decisions.
         """,
         tools=[AnalyzeStartupTool, MakeStrategicDecision],
         temperature=0.7,
@@ -157,7 +197,7 @@ def main():
         api_headers=api_headers
     )
 
-    # Initialize agency with communication paths
+    # Initializing the agency with communication paths
     agency = Agency(
         [
             ceo, cto, product_manager, developer, marketing_manager,
@@ -169,7 +209,7 @@ def main():
             [product_manager, developer],
             [product_manager, marketing_manager]
         ],
-        async_mode='threading',
+        async_mode='threading',  # Runs agent tasks in separate threads for concurrent execution
         shared_files='shared_files'
     )
 
@@ -280,3 +320,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
