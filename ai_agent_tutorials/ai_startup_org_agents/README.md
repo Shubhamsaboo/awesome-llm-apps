@@ -4,6 +4,10 @@ An intelligent multi-agent system that provides comprehensive startup analysis a
 
 ## Demo: 
 
+
+https://github.com/user-attachments/assets/64a240b1-4597-48b0-84b2-9230753e1228
+
+
 ## Features
 
 ### 🤖 Agency Swarm Agents
