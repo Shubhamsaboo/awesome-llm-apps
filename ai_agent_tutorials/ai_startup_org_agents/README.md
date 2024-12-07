@@ -33,6 +33,12 @@ An intelligent multi-agent system that provides comprehensive startup analysis a
   - Plans customer acquisition approaches
   - Coordinates with product team
 
+### Custom Tools
+
+The agency uses specialized tools built with OpenAI Schema for structured analysis:
+- **Analysis Tools**: AnalyzeStartupTool for market evaluation, MakeStrategicDecision for decision tracking
+- **Technical Tools**: QueryTechnicalRequirements and EvaluateTechnicalFeasibility for technical assessment
+
 ### 🔄 Asynchronous Communication
 
 The agency operates in async mode, enabling:
@@ -47,6 +53,7 @@ The agency operates in async mode, enabling:
 - Product Manager ↔️ Marketing Manager (Go-to-Market Strategy)
 - Product Manager ↔️ Developer (Feature Implementation)
 - (and more!)
+
 ## How to Run
 
 Follow the steps below to set up and run the application:
@@ -69,10 +76,3 @@ Before anything else, Please get your OpenAI API Key here: https://platform.open
     ```
 
 4. **Enter your OpenAI API Key** in the sidebar when prompted and start analyzing your startup idea!
-
-## Project Structure
-
-ai_startup_org_agents/
-├── main.py              # Main application file with agents and tools
-├── requirements.txt     # Project dependencies
-└── README.md           # Project documentation
