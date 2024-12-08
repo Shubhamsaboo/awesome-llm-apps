@@ -5,7 +5,9 @@ An intelligent multi-agent system that provides comprehensive startup analysis a
 ## Demo: 
 
 
-https://github.com/user-attachments/assets/64a240b1-4597-48b0-84b2-9230753e1228
+
+https://github.com/user-attachments/assets/a0befa3a-f4c3-400d-9790-4b9e37254405
+
 
 
 ## Features
