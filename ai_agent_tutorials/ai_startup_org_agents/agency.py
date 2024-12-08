@@ -5,27 +5,6 @@ import streamlit as st
 from instructor import OpenAISchema
 import asyncio
 
-# Schema Classes
-class ProjectRequirements(OpenAISchema):
-    """Schema for project requirements analysis"""
-    project_scope: str
-    complexity: Literal["high", "medium", "low"]
-    estimated_timeline: str
-    key_deliverables: List[str]
-    technical_requirements: List[str]
-    budget_range: str
-    potential_challenges: List[str]
-
-class TechnicalSpecification(OpenAISchema):
-    """Schema for technical architecture and specifications"""
-    architecture_type: str
-    core_technologies: List[str]
-    api_requirements: List[str]
-    database_design: Dict[str, List[str]]
-    security_requirements: List[str]
-    scalability_considerations: List[str]
-    estimated_development_hours: int
-
 # Tools
 class AnalyzeProjectRequirements(BaseTool):
     """Tool for comprehensive project analysis"""
