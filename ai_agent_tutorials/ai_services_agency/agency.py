@@ -61,7 +61,7 @@ def main() -> None:
     st.set_page_config(page_title="AI Services Agency", layout="wide")
     init_session_state()
     
-    st.title("🚀 AI Services Agency")
+    st.title("AI Services Agency 👨‍💼")
     
     # API Configuration
     with st.sidebar:
