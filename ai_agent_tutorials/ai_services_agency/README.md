@@ -1,18 +1,14 @@
-# AI Startup Services Agency 🚀
+# AI Services Agency 👨‍💼
 
-An intelligent multi-agent system that provides comprehensive startup analysis and strategic guidance for a startup you'd want to build using Agency Swarm framework and OpenAI's GPT models
+An AI application that simulates a full-service digital agency using multiple AI agents to analyze and plan software projects. Each agent represents a different role in the project lifecycle, from strategic planning to technical implementation.
 
 ## Demo: 
 
-
-
 https://github.com/user-attachments/assets/a0befa3a-f4c3-400d-9790-4b9e37254405
-
-
 
 ## Features
 
-### 🤖 Agency Swarm Agents
+### Five specialized AI agents 
 
 - **CEO Agent**: Strategic leader and final decision maker
   - Analyzes startup ideas using structured evaluation
@@ -78,7 +74,7 @@ Before anything else, Please get your OpenAI API Key here: https://platform.open
 
 3. **Run the Streamlit app**:
     ```bash
-    streamlit run ai_startup_org_agents/agency.py
+    streamlit run ai_services_agency/agency.py
     ```
 
 4. **Enter your OpenAI API Key** in the sidebar when prompted and start analyzing your startup idea!
