@@ -1,4 +1,4 @@
-# LLM Hybrid Search-RAG Assistant - Claude 🤖
+# 👀 RAG App with Hybrid Search 
 
 A powerful document Q&A application that leverages Hybrid Search (RAG) and Claude's advanced language capabilities to provide comprehensive answers. Built with RAGLite for robust document processing and retrieval, and Streamlit for an intuitive chat interface, this system seamlessly combines document-specific knowledge with Claude's general intelligence to deliver accurate and contextual responses.
 

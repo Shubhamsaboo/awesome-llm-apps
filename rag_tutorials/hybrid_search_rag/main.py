@@ -108,7 +108,7 @@ def main():
             except Exception as e:
                 st.error(f"Configuration error: {str(e)}")
 
-    st.title("LLM-Powered Hybrid Search-RAG Assistant")
+    st.title("👀 RAG App with Hybrid Search")
 
     if st.session_state.my_config:
         uploaded_files = st.file_uploader("Upload PDF documents", type=["pdf"], accept_multiple_files=True, key="pdf_uploader")

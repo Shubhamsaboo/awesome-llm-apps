@@ -130,7 +130,7 @@ def main():
             except Exception as e:
                 st.error(f"Configuration error: {str(e)}")
 
-    st.title("Local LLM-Powered Hybrid Search-RAG Assistant")
+    st.title("🖥️ Local RAG App with Hybrid Search")
 
     if st.session_state.my_config:
         uploaded_files = st.file_uploader(
