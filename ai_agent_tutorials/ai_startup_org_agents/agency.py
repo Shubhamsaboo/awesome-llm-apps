@@ -1,54 +1,73 @@
 from typing import List, Literal, Dict, Optional
 from agency_swarm import Agent, Agency, set_openai_key, BaseTool
-from pydantic import Field
+from pydantic import Field, BaseModel
 import streamlit as st
-from instructor import OpenAISchema
-import asyncio
 
-# Tools
 class AnalyzeProjectRequirements(BaseTool):
-    """Tool for comprehensive project analysis"""
-    project_description: str = Field(..., description="Client's project description")
-    business_requirements: str = Field(..., description="Business requirements and goals")
-    budget_constraints: Optional[str] = Field(None, description="Budget constraints if any")
-    
-    def run(self):
-        prompt = f"""
-        Analyze this project request:
-        Project: {self.project_description}
-        Business Requirements: {self.business_requirements}
-        Budget Constraints: {self.budget_constraints}
+    project_name: str = Field(..., description="Name of the project")
+    project_description: str = Field(..., description="Project description and goals")
+    project_type: Literal["Web Application", "Mobile App", "API Development", 
+                         "Data Analytics", "AI/ML Solution", "Other"] = Field(..., 
+                         description="Type of project")
+    budget_range: Literal["$10k-$25k", "$25k-$50k", "$50k-$100k", "$100k+"] = Field(..., 
+                         description="Budget range for the project")
+
+    class ToolConfig:
+        name = "analyze_project"
+        description = "Analyzes project requirements and feasibility"
+        one_call_at_a_time = True
+
+    def run(self) -> str:
+        """Analyzes project and stores results in shared state"""
+        if self._shared_state.get("project_analysis", None) is not None:
+            raise ValueError("Project analysis already exists. Please proceed with technical specification.")
         
-        Provide a comprehensive analysis including:
-        1. Project scope and complexity
-        2. Estimated timeline
-        3. Key deliverables
-        4. Technical requirements
-        5. Potential challenges
-        """
-        return self._llm.invoke(prompt)
+        analysis = {
+            "name": self.project_name,
+            "type": self.project_type,
+            "complexity": "high",
+            "timeline": "6 months",
+            "budget_feasibility": "within range",
+            "requirements": ["Scalable architecture", "Security", "API integration"]
+        }
+        
+        self._shared_state.set("project_analysis", analysis)
+        return "Project analysis completed. Please proceed with technical specification."
 
 class CreateTechnicalSpecification(BaseTool):
-    """Tool for creating detailed technical specifications"""
-    requirements: str = Field(..., description="Project requirements")
-    tech_context: Optional[str] = Field(None, description="Additional technical context")
-    
-    def run(self):
-        prompt = f"""
-        Create technical specifications for:
-        Requirements: {self.requirements}
-        Technical Context: {self.tech_context or 'None provided'}
+    architecture_type: Literal["monolithic", "microservices", "serverless", "hybrid"] = Field(
+        ..., 
+        description="Proposed architecture type"
+    )
+    core_technologies: str = Field(
+        ..., 
+        description="Comma-separated list of main technologies and frameworks"
+    )
+    scalability_requirements: Literal["high", "medium", "low"] = Field(
+        ..., 
+        description="Scalability needs"
+    )
+
+    class ToolConfig:
+        name = "create_technical_spec"
+        description = "Creates technical specifications based on project analysis"
+        one_call_at_a_time = True
+
+    def run(self) -> str:
+        """Creates technical specification based on analysis"""
+        project_analysis = self._shared_state.get("project_analysis", None)
+        if project_analysis is None:
+            raise ValueError("Please analyze project requirements first using AnalyzeProjectRequirements tool.")
         
-        Provide detailed technical analysis including:
-        1. Architecture type and patterns
-        2. Core technologies and frameworks
-        3. API requirements
-        4. Database design
-        5. Security requirements
-        6. Scalability considerations
-        7. Development effort estimation
-        """
-        return self._llm.invoke(prompt)
+        spec = {
+            "project_name": project_analysis["name"],
+            "architecture": self.architecture_type,
+            "technologies": self.core_technologies.split(","),
+            "scalability": self.scalability_requirements
+        }
+        
+        self._shared_state.set("technical_specification", spec)
+        return f"Technical specification created for {project_analysis['name']}."
 
 def init_session_state() -> None:
     """Initialize session state variables"""
@@ -136,11 +155,19 @@ def main() -> None:
                 # Create agents
                 ceo = Agent(
                     name="Project Director",
-                    description="Experienced project director with expertise in technical project evaluation.",
+                    description="You are a CEO of multiple companies in the past and have a lot of experience in evaluating projects and making strategic decisions.",
                     instructions="""
-                    - Lead project analysis and strategic planning
-                    - Evaluate project feasibility and resource requirements
-                    - Make high-level decisions on project direction
+                    You are an experienced CEO who evaluates projects. Follow these steps strictly:
+
+                    1. FIRST, use the AnalyzeProjectRequirements tool with:
+                       - project_name: The name from the project details
+                       - project_description: The full project description
+                       - project_type: The type of project (Web Application, Mobile App, etc)
+                       - budget_range: The specified budget range
+
+                    2. WAIT for the analysis to complete before proceeding.
+                    
+                    3. Review the analysis results and provide strategic recommendations.
                     """,
                     tools=[AnalyzeProjectRequirements],
                     api_headers=api_headers,
@@ -152,9 +179,16 @@ def main() -> None:
                     name="Technical Architect",
                     description="Senior technical architect with deep expertise in system design.",
                     instructions="""
-                    - Design technical architecture and evaluate feasibility
-                    - Make technology stack recommendations
-                    - Review technical specifications
+                    You are a technical architect. Follow these steps strictly:
+
+                    1. WAIT for the project analysis to be completed by the CEO.
+                    
+                    2. Use the CreateTechnicalSpecification tool with:
+                       - architecture_type: Choose from monolithic/microservices/serverless/hybrid
+                       - core_technologies: List main technologies as comma-separated values
+                       - scalability_requirements: Choose high/medium/low based on project needs
+
+                    3. Review the technical specification and provide additional recommendations.
                     """,
                     tools=[CreateTechnicalSpecification],
                     api_headers=api_headers,
@@ -166,9 +200,8 @@ def main() -> None:
                     name="Product Manager",
                     description="Experienced product manager focused on delivery excellence.",
                     instructions="""
-                    - Manage project scope and timeline
-                    - Define product requirements
-                    - Ensure product quality
+                    - Manage project scope and timeline giving the roadmap of the project
+                    - Define product requirements and you should give potential products and features that can be built for the startup
                     """,
                     api_headers=api_headers,
                     temperature=0.4,
@@ -235,16 +268,25 @@ def main() -> None:
                     try:
                         # Get analysis from each agent using agency.get_completion()
                         ceo_response = agency.get_completion(
-                            message=f"Analyze this project proposal: {str(project_info)}",
-                            recipient_agent=ceo,
-                            additional_instructions="Provide a strategic analysis of the project using the AnalyzeProjectRequirements tool to make best possible strategic decisions for the project."
-
+                            message=f"""Analyze this project using the AnalyzeProjectRequirements tool:
+                            Project Name: {project_name}
+                            Project Description: {project_description}
+                            Project Type: {project_type}
+                            Budget Range: {budget_range}
+                            
+                            Use these exact values with the tool and wait for the analysis results.""",
+                            recipient_agent=ceo
                         )
                         
                         cto_response = agency.get_completion(
-                            message=f"Analyze technical requirements: {str(project_info)}",
-                            recipient_agent=cto,
-                            additional_instructions="Evaluate technical feasibility using CreateTechnicalSpecification tool, eventually building a scalable and efficient tech product for the startup."
+                            message=f"""Review the project analysis and create technical specifications using the CreateTechnicalSpecification tool.
+                            Choose the most appropriate:
+                            - architecture_type (monolithic/microservices/serverless/hybrid)
+                            - core_technologies (comma-separated list)
+                            - scalability_requirements (high/medium/low)
+                            
+                            Base your choices on the project requirements and analysis.""",
+                            recipient_agent=cto
                         )
                         
                         pm_response = agency.get_completion(
