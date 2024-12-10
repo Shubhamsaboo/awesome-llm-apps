@@ -1,10 +1,6 @@
-# AI Legal Agent Team
+# 👨‍⚖️ AI Legal Agent Team
 
-An intelligent legal document analysis Agent Team powered by GPT-4 and Qdrant vector database. The system uses a team of specialized AI agents to analyze legal documents, providing comprehensive insights, key points, and recommendations. We used phi-agent to create the agent team.
-
-## Demo:
-
-https://github.com/user-attachments/assets/e89f2fc9-6a66-4eac-98dd-b4cb04e50419
+A Streamlit application that simulates a full-service legal team using multiple AI agents to analyze legal documents and provide comprehensive legal insights. Each agent represents a different legal specialist role, from research and contract analysis to strategic planning, working together to provide thorough legal analysis and recommendations.
 
 ## Features
 
@@ -54,7 +50,7 @@ https://github.com/user-attachments/assets/e89f2fc9-6a66-4eac-98dd-b4cb04e50419
 ## Notes
 
 - Supports PDF documents only
-- Uses GPT-4 for analysis
+- Uses GPT-4o for analysis
 - Uses text-embedding-3-small for embeddings
 - Requires stable internet connection
 - API usage costs apply
