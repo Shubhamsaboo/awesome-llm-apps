@@ -4,6 +4,8 @@ An intelligent legal document analysis Agent Team powered by GPT-4 and Qdrant ve
 
 ## Demo:
 
+https://github.com/user-attachments/assets/e89f2fc9-6a66-4eac-98dd-b4cb04e50419
+
 ## Features
 
 - **Specialized Agent Team**
