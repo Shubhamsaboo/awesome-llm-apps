@@ -20,7 +20,7 @@ def init_qdrant():
     return Qdrant(
         collection="legal_knowledge",
         url="http://localhost:6333", 
-        embedder=OllamaEmbedder(model="openhermes")  
+        embedder=OllamaEmbedder(model="openhermes")
     )
 
 def process_document(uploaded_file, vector_db: Qdrant):
