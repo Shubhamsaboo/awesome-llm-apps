@@ -38,7 +38,7 @@ A Streamlit application that simulates a full-service legal team using multiple 
 
 3. **Run the Application**
    ```bash
-   streamlit run main.py
+   streamlit run legal_agent_team.py
    ```
 4. **Use the Interface**
    - Enter API credentials
