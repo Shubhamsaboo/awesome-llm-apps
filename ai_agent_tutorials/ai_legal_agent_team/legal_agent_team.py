@@ -7,6 +7,7 @@ from phi.model.openai import OpenAIChat
 from phi.embedder.openai import OpenAIEmbedder
 import tempfile
 import os
+
 #initializing the session state variables
 def init_session_state():
     """Initialize session state variables"""
@@ -30,7 +31,7 @@ def init_qdrant():
     if not st.session_state.qdrant_url:
         raise ValueError("Qdrant URL not provided")
         
-    return Qdrant(          #from the phidata Qdrant docs
+    return Qdrant(          
         collection="legal_knowledge",
         url=st.session_state.qdrant_url,
         api_key=st.session_state.qdrant_api_key,
@@ -76,7 +77,7 @@ def main():
     st.set_page_config(page_title="Legal Document Analyzer", layout="wide")
     init_session_state()
 
-    st.title("AI Legal Agent Team")
+    st.title("AI Legal Agent Team 👨‍⚖️")
 
     with st.sidebar:
         st.header("🔑 API Configuration")
@@ -131,7 +132,7 @@ def main():
                         legal_researcher = Agent(
                             name="Legal Researcher",
                             role="Legal research specialist",
-                            model=OpenAIChat(model="gpt-4"),
+                            model=OpenAIChat(model="gpt-4o"),
                             tools=[DuckDuckGo()],
                             knowledge=st.session_state.knowledge_base,
                             search_knowledge=True,
@@ -148,7 +149,7 @@ def main():
                         contract_analyst = Agent(
                             name="Contract Analyst",
                             role="Contract analysis specialist",
-                            model=OpenAIChat(model="gpt-4"),
+                            model=OpenAIChat(model="gpt-4o"),
                             knowledge=knowledge_base,
                             search_knowledge=True,
                             instructions=[
@@ -162,7 +163,7 @@ def main():
                         legal_strategist = Agent(
                             name="Legal Strategist", 
                             role="Legal strategy specialist",
-                            model=OpenAIChat(model="gpt-4"),
+                            model=OpenAIChat(model="gpt-4o"),
                             knowledge=knowledge_base,
                             search_knowledge=True,
                             instructions=[
@@ -177,7 +178,7 @@ def main():
                         st.session_state.legal_team = Agent(
                             name="Legal Team Lead",
                             role="Legal team coordinator",
-                            model=OpenAIChat(model="gpt-4"),
+                            model=OpenAIChat(model="gpt-4o"),
                             team=[legal_researcher, contract_analyst, legal_strategist],
                             knowledge=st.session_state.knowledge_base,
                             search_knowledge=True,
@@ -218,7 +219,17 @@ def main():
     elif not uploaded_file:
         st.info("👈 Please upload a legal document to begin analysis")
     elif st.session_state.legal_team:
-        st.header("Document Analysis")
+        # Create a dictionary for analysis type icons
+        analysis_icons = {
+            "Contract Review": "📑",
+            "Legal Research": "🔍",
+            "Risk Assessment": "⚠️",
+            "Compliance Check": "✅",
+            "Custom Query": "💭"
+        }
+
+        # Dynamic header with icon
+        st.header(f"{analysis_icons[analysis_type]} {analysis_type} Analysis")
   
         analysis_configs = {
             "Contract Review": {
@@ -249,15 +260,22 @@ def main():
         }
 
         st.info(f"📋 {analysis_configs[analysis_type]['description']}")
-        st.write(f"🤖 Active Agents: {', '.join(analysis_configs[analysis_type]['agents'])}")  #dictionary!!
+        st.write(f"🤖 Active Legal AI Agents: {', '.join(analysis_configs[analysis_type]['agents'])}")  #dictionary!!
 
-        user_query = st.text_area(
-            "Enter your specific query:",
-            help="Add any specific questions or points you want to analyze"
-        )
+        # Replace the existing user_query section with this:
+        if analysis_type == "Custom Query":
+            user_query = st.text_area(
+                "Enter your specific query:",
+                help="Add any specific questions or points you want to analyze"
+            )
+        else:
+            user_query = None  # Set to None for non-custom queries
+
 
         if st.button("Analyze"):
-            if user_query or analysis_type != "Custom Query":
+            if analysis_type == "Custom Query" and not user_query:
+                st.warning("Please enter a query")
+            else:
                 with st.spinner("Analyzing document..."):
                     try:
                         # Ensure OpenAI API key is set
@@ -269,14 +287,19 @@ def main():
                             Using the uploaded document as reference:
                             
                             Primary Analysis Task: {analysis_configs[analysis_type]['query']}
-                            Additional User Query: {user_query if user_query else 'None'}
-                            
                             Focus Areas: {', '.join(analysis_configs[analysis_type]['agents'])}
                             
                             Please search the knowledge base and provide specific references from the document.
                             """
                         else:
-                            combined_query = user_query
+                            combined_query = f"""
+                            Using the uploaded document as reference:
+                            
+                            {user_query}
+                            
+                            Please search the knowledge base and provide specific references from the document.
+                            Focus Areas: {', '.join(analysis_configs[analysis_type]['agents'])}
+                            """
 
                         response = st.session_state.legal_team.run(combined_query)
                         
@@ -326,8 +349,6 @@ def main():
 
                     except Exception as e:
                         st.error(f"Error during analysis: {str(e)}")
-            else:
-                st.warning("Please enter a query or select an analysis type")
     else:
         st.info("Please upload a legal document to begin analysis")
 
