@@ -84,7 +84,7 @@ def main():
                 legal_researcher = Agent(
                     name="Legal Researcher",
                     role="Legal research specialist",
-                    model=Ollama(id="llama3.1"),  
+                    model=Ollama(id="llama3.1:8b"),  
                     knowledge=st.session_state.knowledge_base,
                     search_knowledge=True,
                     instructions=[
@@ -98,7 +98,7 @@ def main():
                 contract_analyst = Agent(
                     name="Contract Analyst",
                     role="Contract analysis specialist",
-                    model=Ollama(id="llama3.1"),
+                    model=Ollama(id="llama3.1:8b"),
                     knowledge=knowledge_base,
                     search_knowledge=True,
                     instructions=[
@@ -112,7 +112,7 @@ def main():
                 legal_strategist = Agent(
                     name="Legal Strategist", 
                     role="Legal strategy specialist",
-                    model=Ollama(id="llama3.1"),
+                    model=Ollama(id="llama3.1:8b"),
                     knowledge=knowledge_base,
                     search_knowledge=True,
                     instructions=[

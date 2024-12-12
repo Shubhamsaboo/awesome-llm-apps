@@ -1,6 +1,4 @@
-phidata==2.5.33
+phidata==2.6.7
 streamlit==1.40.2
 qdrant-client==1.12.1
-pypdf
-python-dotenv
-ollama==0.1.6
+ollama==0.4.4
