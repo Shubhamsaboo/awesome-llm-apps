@@ -50,6 +50,7 @@ A curated collection of awesome LLM apps built with RAG and AI agents. This repo
 - [🌐 Local News Agent OpenAI Swarm](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/local_news_agent_openai_swarm)
 - [📊 AI Finance Agent with xAI Grok](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/xai_finance_agent)
 - [🧠 AI Reasoning Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_reasoning_agent)
+- [🧬 Multimodal AI Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/multimodal_ai_agent)
 
 ### RAG (Retrieval Augmented Generation)
 - [🔍 Autonomous RAG](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/autonomous_rag)
