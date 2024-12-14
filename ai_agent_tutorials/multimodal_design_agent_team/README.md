@@ -1,24 +1,17 @@
 # Multimodal AI Design Agent Team
 
-A multimodal design analysis tool powered by Google's Gemini 2.0 multimodal capabilities. This application leverages multiple specialized AI agents to provide comprehensive analysis of UI/UX designs of your product and your competitors, combining visual understanding, user experience evaluation, and market research insights.
+A Streamlit application that provides comprehensive design analysis using a team of specialized AI agents powered by Google's Gemini model. 
 
-## Demo
-
-
-https://github.com/user-attachments/assets/1a389bb3-a24f-408b-bfed-e491e3d8cac4
-
-
-
-## About
-
-The Design Agent Team utilizes Gemini 2.0's advanced multimodal capabilities to analyze design assets from multiple perspectives:
-
-- 🎨 **Visual Design Analysis**: Evaluates design elements, patterns, color schemes, typography, and visual hierarchy
-- 🔄 **UX Analysis**: Assesses user flows, interaction patterns, usability, and accessibility
-- 📊 **Market Analysis**: Provides market insights, competitor analysis, and positioning recommendations
+This application leverages multiple specialized AI agents to provide comprehensive analysis of UI/UX designs of your product and your competitors, combining visual understanding, user experience evaluation, and market research insights.
 
 ## Features
 
+- **Specialized Legal AI Agent Team**
+
+   - 🎨 **Visual Design Agent**: Evaluates design elements, patterns, color schemes, typography, and visual hierarchy
+   - 🔄 **UX Analysis Agent**: Assesses user flows, interaction patterns, usability, and accessibility
+   - 📊 **Market Analysis Agent**: Provides market insights, competitor analysis, and positioning recommendations
+   
 - **Multiple Analysis Types**: Choose from Visual Design, UX, and Market Analysis
 - **Comparative Analysis**: Upload competitor designs for comparative insights
 - **Customizable Focus Areas**: Select specific aspects for detailed analysis
@@ -32,7 +25,7 @@ The Design Agent Team utilizes Gemini 2.0's advanced multimodal capabilities to 
    ```bash
    # Clone the repository
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-   cd ai_agent_tutorials/ai_multimodal_design_agent
+   cd ai_agent_tutorials/multimodal_design_agent_team
 
    # Create and activate virtual environment (optional)
    python -m venv venv
@@ -43,8 +36,7 @@ The Design Agent Team utilizes Gemini 2.0's advanced multimodal capabilities to 
    ```
 
 2. **Get API Key**
-   - Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
-   - Create or select a project
+   - Visit [Google AI Studio](https://aistudio.google.com/apikey)
    - Generate an API key
 
 3. **Run the Application**
