@@ -5,3 +5,5 @@ cohere==5.11.4
 qdrant-client==1.12.1
 duckduckgo-search==4.1.1
 streamlit==1.40.2
+langchain-cohere==0.3.2
+langchain-qdrant==0.2.0
