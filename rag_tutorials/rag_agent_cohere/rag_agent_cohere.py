@@ -247,7 +247,7 @@ def post_process(answer, sources):
         formatted_sources.append(formatted_source)
     return answer, formatted_sources
 
-st.title("RAG Agent with Cohere 🤖")
+st.title("RAG Agent with Cohere ⌘R")
 
 uploaded_file = st.file_uploader("Choose a PDF or Image File", type=["pdf", "jpg", "jpeg"])
 
