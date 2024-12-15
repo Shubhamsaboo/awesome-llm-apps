@@ -2,10 +2,6 @@
 
 A RAG Agentic system built with Cohere's new model Command-r7b-12-2024, Qdrant for vector storage, Langchain for RAG and LangGraph for orchestration. This application allows users to upload documents, ask questions about them, and get AI-powered responses with fallback to web search when needed.
 
-## Demo
-
-
-
 ## Features
 
 - **Document Processing**
