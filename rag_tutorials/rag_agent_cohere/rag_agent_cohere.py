@@ -219,7 +219,7 @@ def process_query(vectorstore, query) -> tuple[str, list]:
                         last_message = response["messages"][-1]
                         answer = last_message.content if hasattr(last_message, 'content') else str(last_message)
                         
-                        return f"""Comprehensive Research Results:
+                        return f"""Web Search Result:
 {answer}
 """, []
                     
