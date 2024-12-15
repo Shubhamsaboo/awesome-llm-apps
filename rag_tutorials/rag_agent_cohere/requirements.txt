@@ -1,6 +1,6 @@
-langgraph>=0.2.53
-langchain>=0.3.11
-langchain-community>=0.0.10
+langgraph==0.2.53
+langchain==0.3.11
+langchain-community==0.0.10
 cohere==5.11.4
 qdrant-client==1.12.1
 duckduckgo-search==4.1.1
