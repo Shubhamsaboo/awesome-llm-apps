@@ -12,6 +12,7 @@ This repository contains a Streamlit application that demonstrates a multimodal 
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
+cd awesome-llm-apps/advanced_tools_frameworks/gemini_multimodal_chatbot
 ```
 2. Install the required dependencies:
 
