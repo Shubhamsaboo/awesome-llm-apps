@@ -13,12 +13,13 @@ This Streamlit application implements a fully local ChatGPT-like experience usin
 1. Clone the GitHub repository
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
+cd awesome-llm-apps/llm_apps_with_memory_tutorials/local_chatgpt_with_memory
 ```
 
 2. Install the required dependencies:
 
 ```bash
-cd rag_tutorials/local_rag_agent
+cd awesome-llm-apps/rag_tutorials/local_rag_agent
 pip install -r requirements.txt
 ```
 
