@@ -1,0 +1,6 @@
+# Core dependencies
+streamlit==1.40.2
+phidata==2.7.3
+Pillow==10.0.0
+duckduckgo-search==6.4.1
+
