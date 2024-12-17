@@ -2,7 +2,7 @@
 from textwrap import dedent
 from phi.assistant import Assistant
 from phi.tools.serpapi_tools import SerpApiTools
-from phi.tools.newspaper_toolkit import NewspaperToolkit
+from phi.tools.newspaper4k import Newspaper4k as NewspaperToolkit
 import streamlit as st
 from phi.llm.openai import OpenAIChat
 
