@@ -19,7 +19,7 @@ git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 2. Install the required dependencies:
 
 ```bash
-cd rag_tutorials/local_rag_agent
+cd awesome-llm-apps/rag_tutorials/local_rag_agent
 pip install -r requirements.txt
 ```
 

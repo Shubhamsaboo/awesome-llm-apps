@@ -99,7 +99,7 @@ A curated collection of awesome LLM apps built with RAG and AI agents. This repo
 2. **Navigate to the desired project directory**
 
     ```bash 
-    cd awesome-llm-apps/chat_with_gmail 
+    cd awesome-llm-apps/chat_with_X_tutorials/chat_with_gmail
     ```
 
 3. **Install the required dependencies**
