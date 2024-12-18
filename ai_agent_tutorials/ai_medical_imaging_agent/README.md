@@ -10,7 +10,7 @@ A Medical Imaging Diagnosis Agent build on phidata powered by Gemini 2.0 Flash E
   - Key Findings and Observations
   - Potential Abnormalities Detection
   - Image Quality Assessment
-  - Severity Assessment
+  - Research and Reference
 
 ## How to Run
 
@@ -18,7 +18,7 @@ A Medical Imaging Diagnosis Agent build on phidata powered by Gemini 2.0 Flash E
    ```bash
    # Clone the repository
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-   cd ai_medical_diagnosis_agent
+   cd ai_agent_tutorials/ai_medical_imaging_agent
 
    # Install dependencies
    pip install -r requirements.txt
@@ -29,7 +29,7 @@ A Medical Imaging Diagnosis Agent build on phidata powered by Gemini 2.0 Flash E
 
 3. **Run the Application**
    ```bash
-   streamlit run medical_image_diagnosis.py
+   streamlit run ai_medical_imaging.py
    ```
 
 ## Analysis Components
