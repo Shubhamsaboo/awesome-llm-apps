@@ -13,10 +13,8 @@ from phi.model.openai import OpenAIChat
 from phi.tools.email import EmailTools
 from phi.tools.zoom import ZoomTool
 from phi.utils.log import logger
-from dotenv import load_dotenv
 from streamlit_pdf_viewer import pdf_viewer
 
-load_dotenv()
 
 
 class CustomZoomTool(ZoomTool):
@@ -93,7 +91,7 @@ def init_session_state() -> None:
     defaults = {
         'candidate_email': "", 'openai_api_key': "", 'resume_text': "", 'analysis_complete': False,
         'is_selected': False, 'zoom_account_id': "", 'zoom_client_id': "", 'zoom_client_secret': "",
-        'email_sender': "", 'email_passkey': "", 'company_name': ""
+        'email_sender': "", 'email_passkey': "", 'company_name': "", 'current_pdf': None
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -362,7 +360,23 @@ def main() -> None:
     role = st.selectbox("Select the role you're applying for:", ["ai_ml_engineer", "frontend_engineer", "backend_engineer"])
     with st.expander("View Required Skills", expanded=True): st.markdown(ROLE_REQUIREMENTS[role])
 
-    resume_file = st.file_uploader("Upload your resume (PDF)", type=["pdf"])
+    # Add a "New Application" button before the resume upload
+    if st.button("📝 New Application"):
+        # Clear only the application-related states
+        keys_to_clear = ['resume_text', 'analysis_complete', 'is_selected', 'candidate_email', 'current_pdf']
+        for key in keys_to_clear:
+            if key in st.session_state:
+                st.session_state[key] = None if key == 'current_pdf' else ""
+        st.rerun()
+
+    resume_file = st.file_uploader("Upload your resume (PDF)", type=["pdf"], key="resume_uploader")
+    if resume_file is not None and resume_file != st.session_state.get('current_pdf'):
+        st.session_state.current_pdf = resume_file
+        st.session_state.resume_text = ""
+        st.session_state.analysis_complete = False
+        st.session_state.is_selected = False
+        st.rerun()
+
     if resume_file:
         st.subheader("Uploaded Resume")
         col1, col2 = st.columns([4, 1])
@@ -378,7 +392,6 @@ def main() -> None:
         
         with col2:
             st.download_button(label="📥 Download", data=resume_file, file_name=resume_file.name, mime="application/pdf")
-            if st.button("🗑️ Clear"): st.session_state.resume_text = ""; st.rerun()
         # Process the resume text
         if not st.session_state.resume_text:
             with st.spinner("Processing your resume..."):
