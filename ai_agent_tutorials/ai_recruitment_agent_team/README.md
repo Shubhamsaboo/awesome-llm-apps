@@ -1,25 +1,23 @@
 # AI Recruitment Agent Team
 
-An Agentic recruitment system built on phidata and Streamlitthat automates the technical hiring proces which helps the lives of recruiters easy. The agent team consists of multiple specialized agents working together to handle resume analysis, interview scheduling with zoom and candidate communications.
-
-## Demo
+A Streamlit application that simulates a full-service recruitment team using multiple AI agents to automate and streamline the hiring process. Each agent represents a different recruitment specialist role - from resume analysis and candidate evaluation to interview scheduling and communication - working together to provide comprehensive hiring solutions. The system combines the expertise of technical recruiters, HR coordinators, and scheduling specialists into a cohesive automated workflow.
 
 ## Features
 
-- **Automated Resume Analysis**
-  - Skills Matching based on the role requirements - [AI/ML Engineer, Frontend Engineer, Backend Engineer]
-  - Experience Assessment- If the resume clears 70% of the requirements, the candidate is selected for the next round
+#### Specialized AI Agents
 
-- **Automated Communications**
-  - Acceptance Email and a Technical Interview Email
-  - Rejection Feedback
-  - Interview Scheduling with Zoom
+- Technical Recruiter Agent: Analyzes resumes and evaluates technical skills
+- Communication Agent: Handles professional email correspondence
+- Scheduling Coordinator Agent: Manages interview scheduling and coordination
+- Each agent has specific expertise and collaborates for comprehensive recruitment
 
-- **Intelligent Scheduling**
-  - Automated Zoom Meeting Setup
-  - Timezone Management
-  - Calendar Integration
-  - Reminder System
+
+#### End-to-End Recruitment Process
+- Automated resume screening and analysis
+- Role-specific technical evaluation
+- Professional candidate communication
+- Automated interview scheduling
+- Integrated feedback system
 
 ## Important Things to do before running the application
 
