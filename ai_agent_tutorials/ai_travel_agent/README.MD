@@ -12,6 +12,7 @@ This Streamlit app is an AI-powered travel Agent that generates personalized tra
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
+cd awesome-llm-apps/ai_agent_tutorials/ai_travel_agent
 ```
 2. Install the required dependencies:
 

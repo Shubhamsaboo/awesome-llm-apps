@@ -14,6 +14,7 @@ LLM app with RAG to chat with PDF in just 30 lines of Python Code. The app uses 
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
+cd awesome-llm-apps/chat_with_X_tutorials/chat_with_pdf
 ```
 2. Install the required dependencies
 
