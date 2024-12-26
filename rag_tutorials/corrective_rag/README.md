@@ -93,3 +93,5 @@ Ambiguous Documents: The system combines the refined knowledge from the "Correct
 The refined knowledge from the retrieved documents and/or web searches is presented to a generative language model.    
 The language model generates a response to the user query based on this knowledge
 
+<img width="1470" alt="Screenshot 2024-12-26 at 12 53 30 PM" src="https://github.com/user-attachments/assets/b05fa33e-5c7e-4838-b112-e5b3e378e8b1" />
+
