@@ -2,13 +2,16 @@
 
 This project demonstrates Corrective RAG (Retrieval Augmented Generation), an advanced approach to RAG that incorporates self-reflection / self-grading on retrieved documents - document relevance checking, query transformation, and web search fallback mechanisms to improve the quality of responses by far. Complete explanation of CRAG down below.
 
+## Demo
+
+
 ## Features
 
 - **Smart Document Retrieval**: Uses Qdrant vector store for efficient document retrieval
-- **Document Relevance Grading**: Employs Claude 3 to assess document relevance
+- **Document Relevance Grading**: Employs Claude 3.5 sonnet to assess document relevance
 - **Query Transformation**: Improves search results by optimizing queries when needed
 - **Web Search Fallback**: Uses Tavily API for web search when local documents aren't sufficient
-- **Multi-Model Approach**: Combines OpenAI embeddings and Claude 3 for different tasks
+- **Multi-Model Approach**: Combines OpenAI embeddings and Claude 3.5 sonnet for different tasks
 - **Interactive UI**: Built with Streamlit for easy document upload and querying
 
 ## How to Run?
