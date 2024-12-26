@@ -37,8 +37,8 @@ An Agentic recruitment system built on phidata and Streamlitthat automates the t
 1. **Setup Environment**
    ```bash
    # Clone the repository
-   git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-   cd ai_agent_tutorials/ai_recruitment_agent_team
+    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
+    cd ai_agent_tutorials/ai_recruitment_agent_team
 
    # Install dependencies
    pip install -r requirements.txt
