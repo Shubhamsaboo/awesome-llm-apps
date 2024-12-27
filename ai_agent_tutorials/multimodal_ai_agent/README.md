@@ -35,5 +35,5 @@ GOOGLE_API_KEY=your_api_key_here
 
 5. Run the Streamlit App
 ```bash
-streamlit run multimodal_agent.py
+python -m streamlit run multimodal_agent.py
 ```

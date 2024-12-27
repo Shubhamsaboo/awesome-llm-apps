@@ -1,8 +1,17 @@
 import streamlit as st
 from phi.agent import Agent
 from phi.model.google import Gemini
-import tempfile
+from phi.tools.duckduckgo import DuckDuckGo
+from dotenv import load_dotenv
+import google.generativeai as genai
+from google.generativeai import upload_file, get_file
+import time
 import os
+from pathlib import Path
+import tempfile
+
+load_dotenv()
+genai.configure(api_key=os.environ['GOOGLE_API_KEY'])
 
 def main():
     # Set up the reasoning agent
