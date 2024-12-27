@@ -1,13 +1,6 @@
 # RAG Agent with Database Routing
 
-This project showcases the RAG with database routing capabilities - which is a very efficient way to retrieve information from a large set of documents. The application allows users to:
-
-1. Upload documents to three different databases:
-   - Product Information
-   - Customer Support & FAQ
-   - Financial Information
-
-2. Query information using natural language, with automatic routing to the most relevant database.
+A Streamlit application that demonstrates an advanced implementation of RAG Agent with intelligent query routing. The system combines multiple specialized databases with smart fallback mechanisms to ensure reliable and accurate responses to user queries.
 
 ## Features
 
@@ -39,7 +32,15 @@ This project showcases the RAG with database routing capabilities - which is a v
    streamlit run rag_database_routing.py
    ```
 
-4. **Configure API Key**: Obtain an OpenAI API key and set it in the application. This is required for initializing the language models used in the application.
+4. **Get OpenAI API Key**: Obtain an OpenAI API key and set it in the application. This is required for initializing the language models used in the application.
+
+5. **Setup Qdrant Cloud** 
+- Visit [Qdrant Cloud](https://cloud.qdrant.io/)
+- Create an account or sign in
+- Create a new cluster
+- Get your credentials:
+   - Qdrant API Key: Found in API Keys section
+   - Qdrant URL: Your cluster URL (format: https://xxx-xxx.aws.cloud.qdrant.io)
 
 5. **Upload Documents**: Use the document upload section to add PDF documents to the desired database.
 
@@ -51,6 +52,24 @@ This project showcases the RAG with database routing capabilities - which is a v
 - **Phidata Agent**: Used as the router agent to determine the most relevant database for a given query.
 - **LangGraph Agent**: Acts as a fallback mechanism, utilizing DuckDuckGo for web research when necessary.
 - **Streamlit**: Provides a user-friendly interface for document upload and querying.
-- **ChromaDB**: Used for managing the databases, storing and retrieving document embeddings efficiently.
+- **Qdrant**: Used for managing the databases, storing and retrieving document embeddings efficiently.
 
-This application is designed to streamline the process of retrieving information from large sets of documents, making it easier for users to find the answers they need quickly and efficiently.
+## How It Works?
+
+**1. Query Routing**
+The system uses a three-stage routing approach:
+- Vector similarity search across all databases
+- LLM-based routing for ambiguous queries
+- Web search fallback for unknown topics
+
+**2. Document Processing**
+- Automatic text extraction from PDFs
+- Smart text chunking with overlap
+- Vector embedding generation
+- Efficient database storage
+
+**3. Answer Generation**
+- Context-aware retrieval
+- Smart document combination
+- Confidence-based responses
+- Web research integration
