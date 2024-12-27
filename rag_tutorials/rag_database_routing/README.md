@@ -1,4 +1,4 @@
-# RAG Agent with Database Routing
+# 📠 RAG Agent with Database Routing
 
 A Streamlit application that demonstrates an advanced implementation of RAG Agent with intelligent query routing. The system combines multiple specialized databases with smart fallback mechanisms to ensure reliable and accurate responses to user queries.
 
@@ -11,8 +11,6 @@ A Streamlit application that demonstrates an advanced implementation of RAG Agen
 - **RAG Orchestration**: Utilizes Langchain for orchestrating the retrieval augmented generation process, ensuring that the most relevant information is retrieved and presented to the user.
 
 - **Fallback Mechanism**: If no relevant documents are found in the databases, a LangGraph agent with a DuckDuckGo search tool is used to perform web research and provide an answer.
-
-- **User Interface**: Built with Streamlit, providing an intuitive and interactive user experience.
 
 ## How to Run?
 

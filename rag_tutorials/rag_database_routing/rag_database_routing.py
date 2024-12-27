@@ -286,7 +286,7 @@ def _handle_web_fallback(question: str) -> tuple[str, list]:
 def main():
     """Main application function."""
     st.set_page_config(page_title="RAG Agent with Database Routing", page_icon="📚")
-    st.title("📚 RAG Agent with Database Routing")
+    st.title("📠 RAG Agent with Database Routing")
     
     # Sidebar for API keys and configuration
     with st.sidebar:
