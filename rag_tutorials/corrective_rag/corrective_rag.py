@@ -429,7 +429,7 @@ workflow.add_edge("generate", END)
 
 app = workflow.compile()
 
-st.title("Corrective RAG Demo")
+st.title("🔄 Corrective RAG Agent")
 
 st.text("A possible query: What are the experiment results and ablation studies in this research paper?")
 
