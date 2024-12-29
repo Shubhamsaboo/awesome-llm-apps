@@ -9,7 +9,6 @@ langchain-community==0.3.12
 langchain-core==0.3.28
 streamlit==1.41.1
 tenacity==8.5.0
-
 anthropic>=0.7.0
 openai>=1.12.0
 tiktoken>=0.6.0
