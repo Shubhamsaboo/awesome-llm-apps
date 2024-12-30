@@ -1,0 +1,7 @@
+streamlit==1.41.1
+openai==1.58.1
+duckduckgo-search==6.4.1
+praisonaiagents==0.0.12
+praisonai-tools==0.0.8
+praisonai==2.0.16
+typing-extensions>=4.5.0
