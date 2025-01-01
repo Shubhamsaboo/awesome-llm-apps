@@ -2,6 +2,11 @@
 
 An AI data analysis Agent built using the phidata Agent framework and openai's gpt-4o model. This agent helps users analyze their data - csv, excel files through natural language queries, powered by OpenAI's language models and DuckDB for efficient data processing - making data analysis accessible to users regardless of their SQL expertise.
 
+## Demo
+
+
+https://github.com/user-attachments/assets/c6e3a9db-9fea-4610-b0e3-3360ec825d0a
+
 
 ## Features
 
