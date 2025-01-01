@@ -2,6 +2,13 @@
 
 An interactive Tic-Tac-Toe game where two AI agents powered by different language models compete against each other built on phidata Agent Framework and Streamlit as UI. Watch as GPT-4O battles against either DeepSeek V3 or Google's Gemini 1.5 Flash in this classic game!
 
+## Demo
+
+
+https://github.com/user-attachments/assets/071597e8-0f06-4cb0-bd19-dccf229b7317
+
+
+
 ## Features 🌟
 
 - Player X: Powered by OpenAI's GPT-4o (o1 models as api is yet to roll out for tier)
