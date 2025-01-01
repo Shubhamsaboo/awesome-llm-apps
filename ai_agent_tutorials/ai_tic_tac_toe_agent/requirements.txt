@@ -1,0 +1,4 @@
+streamlit==1.41.1
+phidata==2.7.3
+openai==1.58.1
+google-generativeai==0.8.3
