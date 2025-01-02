@@ -1,0 +1,4 @@
+autogen
+numpy
+openai
+streamlit
