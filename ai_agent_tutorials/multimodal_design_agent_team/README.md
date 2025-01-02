@@ -25,7 +25,7 @@ This application leverages multiple specialized AI agents to provide comprehensi
    ```bash
    # Clone the repository
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-   cd ai_agent_tutorials/multimodal_design_agent_team
+   cd awesome-llm-apps/ai_agent_tutorials/multimodal_design_agent_team
 
    # Create and activate virtual environment (optional)
    python -m venv venv

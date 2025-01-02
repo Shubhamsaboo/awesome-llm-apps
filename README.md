@@ -37,12 +37,14 @@ A curated collection of awesome LLM apps built with RAG and AI agents. This repo
 - [💼 AI Customer Support Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_customer_support_agent)
 - [📈 AI Investment Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_investment_agent)
 - [👨‍⚖️ AI Legal Agent Team](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_legal_agent_team)
+- [💼 AI Recruitment Agent Team](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_recruitment_agent_team)
 - [👨‍💼 AI Services Agency](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_services_agency)
 - [🏋️‍♂️ AI Health & Fitness Planner Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_health_fitness_agent)
 - [📈 AI Startup Trend Analysis Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_startup_trend_analysis_agent)
 - [🗞️ AI Journalist Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_journalist_agent)
 - [💲 AI Finance Agent Team](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_finance_agent_team)
 - [💰 AI Personal Finance Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_personal_finance_agent)
+- [🩻 AI Medical Scan Diagnosis Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_medical_imaging_agent)
 - [🛫 AI Travel Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_travel_agent)
 - [🎬 AI Movie Production Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_movie_production_agent)
 - [📰 Multi-Agent AI Researcher](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/multi_agent_researcher)
@@ -60,6 +62,8 @@ A curated collection of awesome LLM apps built with RAG and AI agents. This repo
 - [🦙 Local RAG Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/local_rag_agent)
 - [👀 RAG App with Hybrid Search](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/hybrid_search_rag)
 - [🖥️ Local RAG App with Hybrid Search](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/local_hybrid_search_rag)
+- [📠 RAG Agent with Database Routing](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/rag_database_routing)
+- [🔄 Corrective RAG Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/corrective_rag)
 
 ### LLM Apps with Memory
 - [💾 AI Arxiv Agent with Memory](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/llm_apps_with_memory_tutorials/ai_arxiv_agent_memory)
@@ -99,7 +103,7 @@ A curated collection of awesome LLM apps built with RAG and AI agents. This repo
 2. **Navigate to the desired project directory**
 
     ```bash 
-    cd awesome-llm-apps/chat_with_gmail 
+    cd awesome-llm-apps/chat_with_X_tutorials/chat_with_gmail
     ```
 
 3. **Install the required dependencies**

@@ -2,12 +2,6 @@
 
 A powerful document Q&A application that leverages Hybrid Search (RAG) and Claude's advanced language capabilities to provide comprehensive answers. Built with RAGLite for robust document processing and retrieval, and Streamlit for an intuitive chat interface, this system seamlessly combines document-specific knowledge with Claude's general intelligence to deliver accurate and contextual responses.
 
-## Demo video:
-
-
-https://github.com/user-attachments/assets/b576bf6e-4a48-4a43-9600-48bcc8f359a5
-
-
 ## Features
 
 - **Hybrid Search Question Answering**
@@ -44,7 +38,7 @@ You'll need the following API keys and database setup:
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-   cd rag_tutorials/hybrid_search_rag
+   cd awesome-llm-apps/rag_tutorials/hybrid_search_rag
    ```
 
 2. **Install Dependencies**:

@@ -12,6 +12,7 @@ This Streamlit app combines the power of search engines and LLMs to provide you 
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
+cd awesome-llm-apps/advanced_tools_frameworks/web_search_ai_assistant
 ```
 2. Install the required dependencies:
 
