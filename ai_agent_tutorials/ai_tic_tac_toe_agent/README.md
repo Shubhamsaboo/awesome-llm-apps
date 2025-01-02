@@ -1,30 +1,32 @@
-# AI vs AI Tic-Tac-Toe Game 🎮
+# 🎮 Agent X vs Agent O: Tic-Tac-Toe Game
 
-An interactive Tic-Tac-Toe game where two AI agents powered by different language models compete against each other built on phidata Agent Framework and Streamlit as UI. Watch as GPT-4O battles against either DeepSeek V3 or Google's Gemini 1.5 Flash in this classic game!
+An interactive Tic-Tac-Toe game where two AI agents powered by different language models compete against each other built on phidata Agent Framework and Streamlit as UI. Watch as GPT-4O battles against either DeepSeek V3 or Google's Gemini 1.5 Flash in this classic game.
 
-## Demo
+## Features
 
+### Multi-Agent System
+- Player X: OpenAI's Gemini Flash 2.0
+- Player O: DeepSeek v3
+- Judge: GPT-4o for game outcome validation
 
-https://github.com/user-attachments/assets/071597e8-0f06-4cb0-bd19-dccf229b7317
+### Interactive Interface
+- Real-time game board visualization
+- Move-by-move analysis
+- Agent response tracking
+- Clear game status updates
 
+### Strategic Gameplay
+- AI-powered move decisions
+- Winning strategy implementation
+- Opponent move blocking
+- Victory condition monitoring
 
-
-## Features 🌟
-
-- Player X: Powered by OpenAI's GPT-4o (o1 models as api is yet to roll out for tier)
-- Player O: Choice between DeepSeek AI or Google's Gemini
-- Interactive game board using Streamlit
-- Real-time move visualization
-- AI Judge to determine game outcomes
-- Clean and intuitive user interface
-
-## Prerequisites 📋
-
+## Prerequisites 
 - Python 3.8+
 - OpenAI API key
 - Either DeepSeek API key or Google API key (for Player O)
 
-## How to Run 🚀
+## How to Run 
 
 1. **Setup Environment**
    ```bash
@@ -52,16 +54,16 @@ https://github.com/user-attachments/assets/071597e8-0f06-4cb0-bd19-dccf229b7317
    - Watch as the AI agents battle it out!
    - Monitor the game progress and final results
 
-## Game Components 🎯
+## Game Components
 
 - **Game Board**
   - 3x3 interactive grid
   - Real-time move visualization
   - Clear symbol placement (X/O)
 
-- **AI Players**
-  - Player X (GPT-4o): Strategic offensive moves
-  - Player O (DeepSeek/Gemini): Defensive countermoves since this agent started later
+- **AI Agent Players**
+  - Player X: Strategic offensive moves
+  - Player O: Defensive countermoves since this agent started later
   - AI Judge: Game outcome validation
 
 - **Game Flow**

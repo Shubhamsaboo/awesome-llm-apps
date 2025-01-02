@@ -6,7 +6,7 @@ from phi.model.deepseek import DeepSeekChat
 from phi.model.google import Gemini
 
 # Streamlit App Title
-st.title("🤖 Tic-Tac-Toe: AI vs AI")
+st.title("🎮 Agent X vs Agent O: Tic-Tac-Toe Game")
 
 # Enhanced Welcome Message
 with st.chat_message("assistant"):
@@ -16,8 +16,8 @@ with st.chat_message("assistant"):
         Here's what you need to know:
     """)
     st.info("""
-        - **Player X**: Powered by OpenAI's GPT-4.  
-        - **Player O**: Powered by DeepSeek's AI or Google's Gemini (if DeepSeek API key is not provided).  
+        - **Player X**: Powered by Google's Gemini Flash 2.0.  
+        - **Player O**: Powered by DeepSeek v3.  
         - **How to Play**: Enter your API keys in the sidebar, click **Start Game**, and watch the AI battle it out!  
         - **Goal**: The first player to get three of their symbols in a row (horizontally, vertically, or diagonally) wins.  
         - **Draw**: If the board fills up without a winner, the game ends in a draw.  
@@ -106,7 +106,7 @@ if google_api_key:
 if 'openai_api_key' in st.session_state:
     player_x = Agent(
         name="Player X",
-        model=OpenAIChat(id="gpt-4o", temperature=0.1, api_key=st.session_state.openai_api_key),
+        model=Gemini(id="gemini-2.0-flash-exp", api_key=st.session_state.google_api_key),
         instructions=[
             "You are a Tic-Tac-Toe player using the symbol 'X'.",
             "Your opponent is using the symbol 'O'. Block their potential winning moves.",
@@ -123,20 +123,6 @@ if 'openai_api_key' in st.session_state:
         player_o = Agent(
             name="Player O",
             model=DeepSeekChat(api_key=st.session_state.deepseek_api_key),
-            instructions=[
-                "You are a Tic-Tac-Toe player using the symbol 'O'.",
-                "Your opponent is using the symbol 'X'. Block their potential winning moves.",
-                "Make your move in the format 'row, col' based on the current board state.",
-                "Strategize to win by placing your symbol in a way that blocks your opponent from forming a straight line.",
-                "Do not include any explanations or extra text. Only provide the move.",
-                "Row and column indices start from 0.",
-            ],
-            markdown=True,
-        )
-    elif 'google_api_key' in st.session_state:
-        player_o = Agent(
-            name="Player O",
-            model=Gemini(id="gemini-1.5-flash", api_key=st.session_state.google_api_key),
             instructions=[
                 "You are a Tic-Tac-Toe player using the symbol 'O'.",
                 "Your opponent is using the symbol 'X'. Block their potential winning moves.",
