@@ -1,6 +1,5 @@
 import os
 import random
-import numpy as np
 from autogen import ConversableAgent
 
 # Function to get OpenAI API key from user input
@@ -11,7 +10,7 @@ def get_openai_api_key():
     return api_key
 
 # Set OpenAI API key as environment variable
-os.environ["OPENAI_API_KEY"] = get_openai_api_key()
+OPENAI_API_KEY = get_openai_api_key()
 
 # Initialize deck
 suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
@@ -40,28 +39,31 @@ def calculate_hand_value(hand):
         aces -= 1
     return value
 
-# Define the Player AI and Dealer AI using AutoGen
+# Define the Player AI using AutoGen
 player_ai = ConversableAgent(
     "player_ai",
     system_message="""
-    You are the Player AI in a game of Blackjack. Your goal is to maximize your winnings.
-    - You will receive your hand and the dealer's upcard.
+    You are the Player AI in a game of Blackjack. Your goal is to maximize your winnings by making strategic decisions.
+    - You will receive your current hand and the dealer's upcard.
     - Decide whether to 'Hit' or 'Stand'.
     - Respond with only 'H' for Hit or 'S' for Stand.
     """,
-    llm_config={"config_list": [{"model": "gpt-4", "temperature": 0.2, "api_key": os.environ.get("OPENAI_API_KEY")}]},
+    llm_config={"config_list": [{"model": "gpt-4", "temperature": 0.2, "api_key": OPENAI_API_KEY}]},
     human_input_mode="NEVER",
 )
 
+# Define the Dealer AI using AutoGen
 dealer_ai = ConversableAgent(
     "dealer_ai",
     system_message="""
-    You are the Dealer AI in a game of Blackjack.
-    - You will receive the player's decision and manage the game accordingly.
-    - Follow standard dealer rules: Hit until hand value is at least 17.
-    - Do not make decisions for the player.
+    You are the Dealer AI in a game of Blackjack. Follow these rules:
+    1. Start with two cards, one face up and one face down.
+    2. After the player finishes their turn, reveal your hidden card.
+    3. Hit until your hand value is at least 17.
+    4. If your hand value exceeds 21, you bust.
+    5. Do not make decisions for the player; only manage your own hand.
     """,
-    llm_config={"config_list": [{"model": "gpt-4", "temperature": 0.2, "api_key": os.environ.get("OPENAI_API_KEY")}]},
+    llm_config={"config_list": [{"model": "gpt-4", "temperature": 0.2, "api_key": OPENAI_API_KEY}]},
     human_input_mode="NEVER",
 )
 
