@@ -47,7 +47,7 @@ def preprocess_and_save(file):
         return None, None, None
 
 # Streamlit app
-st.title("Data Analyst Agent with Phidata")
+st.title("📊 Data Analyst Agent")
 
 # Sidebar for API keys
 with st.sidebar:
