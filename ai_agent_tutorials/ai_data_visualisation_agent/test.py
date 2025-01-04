@@ -7,6 +7,9 @@ from together import Together
 from e2b_code_interpreter import Sandbox
 from typing import Optional, List, Any
 import tempfile
+import base64
+from io import BytesIO
+from PIL import Image
 
 # Load environment variables
 load_dotenv()
@@ -86,7 +89,7 @@ def chat_with_llm(e2b_code_interpreter, user_message):
         user_message: User's query string
     
     Returns:
-        List of results from code execution
+        Base64-encoded image data or None if no image is generated
     """
     print(f"\n{'='*50}\nUser message: {user_message}\n{'='*50}")
 
@@ -119,10 +122,15 @@ Important: Always use '/data.csv' as the path when reading the dataset.
     if python_code:
         # Execute the code in the sandbox
         code_interpreter_results = code_interpret(e2b_code_interpreter, python_code)
-        return code_interpreter_results
+        
+        # Return the base64-encoded image data
+        if code_interpreter_results and hasattr(code_interpreter_results[0], "png"):
+            return code_interpreter_results[0].png
+        else:
+            return None
     else:
         print(f"Failed to match any Python code in model's response: {response_message}")
-        return []
+        return None
 
 # Function to upload a dataset to the E2B Sandbox
 def upload_dataset(code_interpreter: Sandbox, uploaded_file: Any) -> str:
@@ -177,19 +185,18 @@ def main():
                 
                 # Get and execute the visualization code
                 with st.spinner("Generating visualization..."):
-                    code_results = chat_with_llm(code_interpreter, user_query)
+                    image_data = chat_with_llm(code_interpreter, user_query)
                 
                 # Display results
-                if code_results:
-                    first_result = code_results[0]
+                if image_data:
+                    # Decode the base64-encoded image data
+                    image_bytes = base64.b64decode(image_data)
+                    image = Image.open(BytesIO(image_bytes))
                     
-                    # If there's an image output
-                    if hasattr(first_result, "png"):
-                        st.image(first_result.png, caption="Generated Visualization")
-                    else:
-                        st.write("Results:", first_result)
+                    # Display the image in Streamlit
+                    st.image(image, caption="Generated Visualization")
                 else:
-                    st.error("No results generated")
+                    st.error("No visualization generated")
                     
         except Exception as e:
             st.error(f"An error occurred: {e}")
