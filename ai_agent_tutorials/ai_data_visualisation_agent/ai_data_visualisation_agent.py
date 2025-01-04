@@ -1,14 +1,14 @@
 import streamlit as st
 import pandas as pd
 import tempfile
-import os
 import re
 from together import Together
 import csv
-import uuid
 from dotenv import load_dotenv
-from e2b_code_interpreter import Sandbox
-from typing import Optional, Union, List
+import base64
+import matplotlib.pyplot as plt
+import io
+import seaborn as sns
 
 # Load environment variables
 load_dotenv()
@@ -25,6 +25,10 @@ def preprocess_and_save(file):
             st.error("Unsupported file format. Please upload a CSV or Excel file.")
             return None, None, None
         
+        # Log the data types of columns before preprocessing
+        st.write("Data types before preprocessing:")
+        st.write(df.dtypes)
+        
         # Ensure string columns are properly quoted
         for col in df.select_dtypes(include=['object']):
             df[col] = df[col].astype(str).replace({r'"': '""'}, regex=True)
@@ -35,10 +39,23 @@ def preprocess_and_save(file):
                 df[col] = pd.to_datetime(df[col], errors='coerce')
             elif df[col].dtype == 'object':
                 try:
-                    df[col] = pd.to_numeric(df[col])
+                    # Handle columns with values like "4.1/5"
+                    if df[col].str.contains('/').any():
+                        # Split the values and take the first part (e.g., "4.1/5" -> 4.1)
+                        df[col] = df[col].str.split('/').str[0]
+                    # Convert to numeric, coerce errors to NaN
+                    df[col] = pd.to_numeric(df[col], errors='coerce')
                 except (ValueError, TypeError):
                     # Keep as is if conversion fails
+                    st.warning(f"Could not convert column '{col}' to numeric. Keeping as string.")
                     pass
+        
+        # Drop rows with all NaN values
+        df.dropna(how='all', inplace=True)
+        
+        # Log the data types of columns after preprocessing
+        st.write("Data types after preprocessing:")
+        st.write(df.dtypes)
         
         # Create a temporary file to save the preprocessed data
         with tempfile.NamedTemporaryFile(delete=False, suffix=".csv") as temp_file:
@@ -51,33 +68,38 @@ def preprocess_and_save(file):
         st.error(f"Error processing file: {e}")
         return None, None, None
 
-# Function to execute Python code in E2B sandbox
-def code_interpret(code: str) -> str:
-    """
-    Execute Python code in E2B sandbox.
-    
-    Args:
-        code: Python code to execute
-        
-    Returns:
-        String containing stdout from code execution
-    """
-    print("Running code in E2B sandbox...")
-    
-    sbx = Sandbox(api_key=st.session_state.e2b_api_key)
-    
+# Function to execute Python code and generate plots
+def execute_code(code: str, df):
     try:
-        execution = sbx.run_code("code")
-        # Convert list output to string if needed
-        stdout = execution.logs.stdout
-        if isinstance(stdout, list):
-            return '\n'.join(map(str, stdout))
-        return stdout if stdout else ""
+        # Define locals with necessary imports and the DataFrame
+        local_env = {
+            'pd': pd,
+            'df': df,
+            'plt': plt,
+            'sns': sns  # if seaborn is needed
+        }
+        # Execute the code in the local environment
+        exec(code, globals(), local_env)
+        
+        # Check if a plot was generated
+        if 'plt' in local_env:
+            # Save the plot to a BytesIO object
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png')
+            plt.close()
+            buf.seek(0)
+            # Encode the plot as base64
+            base64_image = base64.b64encode(buf.read()).decode('utf-8')
+            return base64_image
+        else:
+            st.warning("No plot generated. Ensure the data being plotted is numeric.")
+            return None
     except Exception as e:
-        return f"Error executing code: {str(e)}"
+        st.error(f"Error executing code: {e}")
+        return None
 
-# Function to communicate with LLM
-def chat_with_llm(user_message, file_path, columns):
+# Function to communicate with Together AI
+def chat_with_llm(user_message, file_path, columns, df):
     print(f"\n{'='*50}\nUser message: {user_message}\n{'='*50}")
 
     # Update the system prompt with the file path, columns, and plot path
@@ -107,16 +129,12 @@ def chat_with_llm(user_message, file_path, columns):
     print("Extracted Python Code:", python_code)  # Debug: Print the extracted code
 
     if python_code:
-        # Modify the code to handle the 'approx_cost(for two people)' column correctly
-        python_code = python_code.replace(
-            "df['approx_cost(for two people)'] = df['approx_cost(for two people)'].str.replace(',', '')",
-            "df['approx_cost(for two people)'] = df['approx_cost(for two people)'].astype(str).str.replace(',', '')"
-        )
-        stdout = code_interpret(python_code)
-        return response_message, stdout, None
+        # Execute the code and generate the plot
+        base64_image = execute_code(python_code, df)
+        return response_message, base64_image
     else:
         print(f"Failed to match any Python code in model's response {response_message}")
-        return response_message, None, None
+        return response_message, None
 
 # Set up Streamlit app
 st.title("AI Data Scientist")
@@ -124,13 +142,10 @@ st.title("AI Data Scientist")
 # Sidebar for API keys and file upload
 st.sidebar.header("API Keys")
 together_api_key = st.sidebar.text_input("Together AI API Key", type="password")
-e2b_api_key = st.sidebar.text_input("E2B API Key", type="password")
 
-# Store API keys in session state
+# Store API key in session state
 if 'together_api_key' not in st.session_state:
     st.session_state.together_api_key = None
-if 'e2b_api_key' not in st.session_state:
-    st.session_state.e2b_api_key = None
 
 uploaded_file = st.sidebar.file_uploader("Upload CSV or Excel File", type=['csv', 'xlsx'])
 
@@ -141,6 +156,7 @@ The dataset has the following columns: {columns}.
 You can read this file into a DataFrame using `df = pd.read_csv('{file_path}')` and perform data analysis tasks based on user queries.
 Make sure to handle missing values and data type inconsistencies. When generating plots,
 use matplotlib or seaborn and output the plot as a base64 string.
+Always check if the data being plotted is numeric. If the data is not numeric, preprocess it to convert it to numeric values.
 Always respond with the Python code to answer the user's query, and include visualizations only if explicitly requested.
 """
 
@@ -156,65 +172,38 @@ def match_code_blocks(llm_response):
         return code
     return ""
 
-# Function to extract base64 image from stdout
-def extract_base64_image(stdout: Optional[Union[str, List[str]]]) -> Optional[str]:
-    """
-    Extract base64 image from stdout content.
-    
-    Args:
-        stdout: String or list of strings containing output
-        
-    Returns:
-        Base64 encoded image string if found, None otherwise
-    """
-    if stdout is None:
-        return None
-    
-    # Convert list to string if needed
-    if isinstance(stdout, list):
-        stdout = '\n'.join(map(str, stdout))
-    elif not isinstance(stdout, str):
-        stdout = str(stdout)
-    
-    # Look for base64 image data in the stdout
-    image_pattern = re.compile(r'base64_image:\s*(.*?)\n', re.DOTALL)
-    match = image_pattern.search(stdout)
-    if match:
-        return match.group(1)
-    return None
-
 # Main app logic
-if 'together_api_key' in st.session_state and 'e2b_api_key' in st.session_state and uploaded_file:
-    # Preprocess and save the uploaded file to a temporary file
-    temp_path, columns, df = preprocess_and_save(uploaded_file)
-    if temp_path:
-        # Initialize Together AI client using the API key from session state
-        client = Together(api_key=st.session_state.together_api_key)
-        
-        # User query input
-        user_query = st.text_input("Ask a query about the data:")
-        if st.button("Submit Query"):
-            # Chat with LLM
-            response_message, stdout, stderr = chat_with_llm(user_query, temp_path, columns)
-            # Display AI's response
-            st.write("AI's Response:")
-            st.write(response_message)
-            
-            # Display any printed output
-            if stdout:
-                st.write("Code Output:")
-                st.write(stdout)
-            else:
-                st.write("No output produced by the code.")
-            
-            # Extract base64 image from stdout
-            base64_image = extract_base64_image(stdout)
-            if base64_image:
-                # Display the image
-                st.image(base64_image, use_container_width=True)
-            else:
-                st.write("No plot generated.")
+if uploaded_file:
+    if not together_api_key:
+        st.warning("Please provide the Together AI API key.")
     else:
-        st.error("Failed to preprocess and save the data.")
+        # Update session state with API key
+        st.session_state.together_api_key = together_api_key
+        
+        # Initialize Together AI client only after confirming API key exists
+        try:
+            client = Together(api_key=together_api_key)
+            
+            # Preprocess and save the uploaded file
+            temp_path, columns, df = preprocess_and_save(uploaded_file)
+            if temp_path:
+                # Rest of your code for user query handling
+                user_query = st.text_input("Ask a query about the data:")
+                if st.button("Submit Query"):
+                    response_message, base64_image = chat_with_llm(user_query, temp_path, columns, df)
+                    
+                    # Display AI's response
+                    st.write("AI's Response:")
+                    st.write(response_message)
+                    
+                    # Display the plot if generated
+                    if base64_image:
+                        st.image(base64.b64decode(base64_image), use_container_width=True)
+                    else:
+                        st.write("No plot generated.")
+            else:
+                st.error("Failed to preprocess and save the data.")
+        except Exception as e:
+            st.error(f"Error initializing Together AI client: {str(e)}")
 else:
-    st.warning("Please provide API keys and upload a file.")
+    st.warning("Please upload a file.")
