@@ -2,6 +2,10 @@
 
 This Assistant is designed to help anyone create and visualize data using natural language commands, and it is built using Together AI and E2B Code Interpreter. User gets to upload a dataset and ask questions to the LLM to get the data visualized. This demo can be considered as a demo for the E2B Code Interpreter and Together AI, for anyone who's getting started with these libraries!
 
+## Demo
+
+https://github.com/user-attachments/assets/d8414c37-5edd-4e4d-a7b1-b9ab500bd8cd
+
 ## Features
 
 - 🎨 Natural language-driven visualization creation
