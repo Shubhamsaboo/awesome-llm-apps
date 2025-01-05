@@ -25,9 +25,6 @@ def preprocess_and_save(file):
             st.error("Unsupported file format. Please upload a CSV or Excel file.")
             return None, None, None
         
-        # Log the data types of columns before preprocessing
-        st.write("Data types before preprocessing:")
-        st.write(df.dtypes)
         
         # Ensure string columns are properly quoted
         for col in df.select_dtypes(include=['object']):
@@ -52,10 +49,6 @@ def preprocess_and_save(file):
         
         # Drop rows with all NaN values
         df.dropna(how='all', inplace=True)
-        
-        # Log the data types of columns after preprocessing
-        st.write("Data types after preprocessing:")
-        st.write(df.dtypes)
         
         # Create a temporary file to save the preprocessed data
         with tempfile.NamedTemporaryFile(delete=False, suffix=".csv") as temp_file:
@@ -137,7 +130,7 @@ def chat_with_llm(user_message, file_path, columns, df):
         return response_message, None
 
 # Set up Streamlit app
-st.title("AI Data Scientist")
+st.title("AI Data Visualisation Agent")
 
 # Sidebar for API keys and file upload
 st.sidebar.header("API Keys")
@@ -151,7 +144,7 @@ uploaded_file = st.sidebar.file_uploader("Upload CSV or Excel File", type=['csv'
 
 # System prompt (dynamic based on the uploaded file)
 SYSTEM_PROMPT = """
-You are a Python data scientist. You have access to a CSV file located at '{file_path}'.
+You are a Python data scientist and Visualisation expert. You have access to a CSV file located at '{file_path}'.
 The dataset has the following columns: {columns}.
 You can read this file into a DataFrame using `df = pd.read_csv('{file_path}')` and perform data analysis tasks based on user queries.
 Make sure to handle missing values and data type inconsistencies. When generating plots,

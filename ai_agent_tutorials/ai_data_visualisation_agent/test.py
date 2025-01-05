@@ -1,209 +1,179 @@
-import streamlit as st
 import os
-from dotenv import load_dotenv
 import json
 import re
-from together import Together
-from e2b_code_interpreter import Sandbox
-from typing import Optional, List, Any
-import tempfile
+from typing import Optional, List, Any, Tuple
+from dotenv import load_dotenv
+from PIL import Image
+import io
+import streamlit as st
+import pandas as pd
 import base64
 from io import BytesIO
 from PIL import Image
+from together import Together
+from e2b_code_interpreter import Sandbox
 
 # Load environment variables
 load_dotenv()
 
-# Get API keys from environment variables
-TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
-E2B_API_KEY = os.getenv("E2B_API_KEY")
-
-# Define the Together AI model to use
-MODEL_NAME = "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo"
-
-# System prompt for the LLM
-SYSTEM_PROMPT = """You are a highly skilled Python data scientist. Your task is to analyze datasets and generate Python code to solve data-related problems. Follow these guidelines:
-
-1. **Data Preprocessing**:
-   - Always check for missing or invalid values in the dataset.
-   - Handle missing values by either removing rows/columns or imputing them appropriately.
-   - Convert columns to the correct data types (e.g., numeric, datetime).
-   - Filter out rows with invalid or inconsistent data.
-
-2. **Data Analysis**:
-   - Perform exploratory data analysis (EDA) to understand the dataset.
-   - Use statistical methods to analyze relationships between variables.
-   - If the task involves machine learning (e.g., linear regression), ensure the data is properly prepared (e.g., feature scaling, train-test split).
-
-3. **Visualization**:
-   - Use libraries like `matplotlib` or `seaborn` for creating visualizations.
-   - Ensure plots are clear, labeled, and informative (e.g., include titles, axis labels, legends).
-   - Save plots as images (e.g., PNG) and return them as base64-encoded strings.
-
-4. **Code Quality**:
-   - Write clean, modular, and well-commented Python code.
-   - Handle potential errors gracefully (e.g., invalid data, missing columns).
-   - Include necessary imports (e.g., `pandas`, `numpy`, `matplotlib`, `seaborn`).
-
-5. **Output**:
-   - Always return the Python code to solve the task.
-   - If the task involves visualization, include the code to generate and save the plot."""
-
-# Function to execute code in the E2B Sandbox
-def code_interpret(e2b_code_interpreter, code):
-    print("Running code interpreter...")
-    exec = e2b_code_interpreter.run_code(
-        code,
-        on_stderr=lambda stderr: print("[Code Interpreter]", stderr),
-        on_stdout=lambda stdout: print("[Code Interpreter]", stdout),
-    )
-
-    if exec.error:
-        print("[Code Interpreter ERROR]", exec.error)
-    else:
-        return exec.results
-
-# Initialize Together AI client
-client = Together(api_key=TOGETHER_API_KEY)
-
-# Regex pattern to extract Python code blocks from LLM responses
+# Regex pattern to extract code from LLM response
 pattern = re.compile(r"```python\n(.*?)\n```", re.DOTALL)
 
-# Function to extract Python code from LLM responses
-def match_code_blocks(llm_response):
+def code_interpret(e2b_code_interpreter: Sandbox, code: str) -> Optional[List[Any]]:
+    """
+    Runs the given Python code in the E2B sandbox.
+    
+    Args:
+        e2b_code_interpreter: The E2B sandbox instance
+        code: Python code to execute
+        
+    Returns:
+        Optional[List[Any]]: Results from code execution
+    """
+    with st.spinner('Executing code in E2B sandbox...'):
+        exec = e2b_code_interpreter.run_code(code,
+            on_stderr=lambda stderr: st.error(f"[Code Interpreter] {stderr}"),
+            on_stdout=lambda stdout: st.info(f"[Code Interpreter] {stdout}"))
+
+        if exec.error:
+            st.error(f"[Code Interpreter ERROR] {exec.error}")
+            return None
+        return exec.results
+
+def match_code_blocks(llm_response: str) -> str:
+    """
+    Extracts Python code blocks from the LLM response.
+    
+    Args:
+        llm_response: The response from the LLM
+        
+    Returns:
+        str: Extracted Python code or empty string
+    """
     match = pattern.search(llm_response)
     if match:
         code = match.group(1)
-        print("Extracted Python code:")
-        print(code)
         return code
     return ""
 
-# Function to interact with the LLM and execute code in the sandbox
-def chat_with_llm(e2b_code_interpreter, user_message):
+def chat_with_llm(e2b_code_interpreter: Sandbox, user_message: str, dataset_path: str) -> Tuple[Optional[List[Any]], str]:
     """
-    Interact with LLM and execute code in sandbox.
+    Sends the user message to the LLM and executes the generated code.
     
     Args:
-        e2b_code_interpreter: The E2B Sandbox instance
-        user_message: User's query string
-    
+        e2b_code_interpreter: The E2B sandbox instance
+        user_message: User's query message
+        dataset_path: Path to the uploaded dataset
+        
     Returns:
-        Base64-encoded image data or None if no image is generated
+        Tuple[Optional[List[Any]], str]: Code execution results and LLM response
     """
-    print(f"\n{'='*50}\nUser message: {user_message}\n{'='*50}")
+    # Update system prompt to include dataset path information
+    system_prompt = f"""You're a Python data scientist and data visualization expert. You are given a dataset at path '{dataset_path}' and also the user's query.
+You need to analyze the dataset and answer the user's query with a response and you run Python code to solve them.
+IMPORTANT: Always use the dataset path variable '{dataset_path}' in your code when reading the CSV file."""
 
-    # Add file path information to the user message
-    enhanced_message = f"""
-The dataset is located at '/data.csv' in the current directory. 
-User query: {user_message}
-Important: Always use '/data.csv' as the path when reading the dataset.
-"""
-
-    # Prepare messages for the LLM
     messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": enhanced_message},
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_message},
     ]
 
-    # Get response from Together AI
-    response = client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=messages,
-    )
+    with st.spinner('Getting response from together AI...'):
+        client = Together(api_key=st.session_state.together_api_key)
+        response = client.chat.completions.create(
+            model=st.session_state.model_name,
+            messages=messages,
+        )
 
-    # Extract the response message
-    response_message = response.choices[0].message.content
-    print("LLM Response:")
-    print(response_message)
-
-    # Extract Python code from the response
-    python_code = match_code_blocks(response_message)
-    if python_code:
-        # Execute the code in the sandbox
-        code_interpreter_results = code_interpret(e2b_code_interpreter, python_code)
+        response_message = response.choices[0].message
+        python_code = match_code_blocks(response_message.content)
         
-        # Return the base64-encoded image data
-        if code_interpreter_results and hasattr(code_interpreter_results[0], "png"):
-            return code_interpreter_results[0].png
+        if python_code:
+            code_interpreter_results = code_interpret(e2b_code_interpreter, python_code)
+            return code_interpreter_results, response_message.content
         else:
-            return None
-    else:
-        print(f"Failed to match any Python code in model's response: {response_message}")
-        return None
+            st.warning(f"Failed to match any Python code in model's response")
+            return None, response_message.content
 
-# Function to upload a dataset to the E2B Sandbox
-def upload_dataset(code_interpreter: Sandbox, uploaded_file: Any) -> str:
+def upload_dataset(code_interpreter: Sandbox, uploaded_file) -> str:
     """
-    Upload a dataset to the E2B Sandbox from Streamlit's uploaded file.
+    Uploads the dataset to the E2B sandbox.
     
     Args:
-        code_interpreter: The E2B Sandbox instance
-        uploaded_file: Streamlit's UploadedFile object
-    
+        code_interpreter: The E2B sandbox instance
+        uploaded_file: Streamlit uploaded file
+        
     Returns:
-        str: Path to the uploaded dataset in the sandbox
+        str: Path where file was uploaded
     """
-    print("Uploading dataset to Code Interpreter sandbox...")
+    dataset_path = f"./{uploaded_file.name}"
     
     try:
-        # Create a temporary file to store the uploaded content
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.csv') as tmp_file:
-            tmp_file.write(uploaded_file.getvalue())
-            dataset_path = tmp_file.name
-
-        # Upload the dataset to the sandbox
-        with open(dataset_path, "rb") as f:
-            code_interpreter.files.write("/data.csv", f)
-
-        # Clean up the temporary file
-        os.unlink(dataset_path)
-        
-        print("Dataset uploaded to: /data.csv")
-        return "/data.csv"
+        code_interpreter.files.write(dataset_path, uploaded_file)
+        return dataset_path
     except Exception as error:
-        print("Error during file upload:", error)
+        st.error(f"Error during file upload: {error}")
         raise error
 
+
 def main():
-    """Main function to run the Streamlit application."""
-    st.title("AI Data Visualization Agent")
+    """Main Streamlit application."""
+    st.title("AI Data Visualization Assistant")
     st.write("Upload your dataset and ask questions about it!")
 
-    # File uploader
+    # Sidebar for API keys and model name
+    with st.sidebar:
+        st.header("API Keys and Model Configuration")
+        st.session_state.together_api_key = st.text_input("Enter Together API Key", type="password")
+        st.session_state.e2b_api_key = st.text_input("Enter E2B API Key", type="password")
+        st.session_state.model_name = st.text_input("Enter Model Name", value="meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo")
+
     uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
     
-    # Text input for the query
-    user_query = st.text_input("Enter your visualization query:")
-    
-    # Process button
-    if st.button("Generate Visualization") and uploaded_file is not None and user_query:
-        try:
-            with Sandbox(api_key=E2B_API_KEY) as code_interpreter:
-                # Upload the dataset
-                upload_dataset(code_interpreter, uploaded_file)
-                
-                # Get and execute the visualization code
-                with st.spinner("Generating visualization..."):
-                    image_data = chat_with_llm(code_interpreter, user_query)
-                
-                # Display results
-                if image_data:
-                    # Decode the base64-encoded image data
-                    image_bytes = base64.b64decode(image_data)
-                    image = Image.open(BytesIO(image_bytes))
+    if uploaded_file is not None:
+        # Display dataset preview
+        df = pd.read_csv(uploaded_file)
+        st.write("Dataset Preview:")
+        st.dataframe(df.head())
+        
+        # Query input
+        query = st.text_area("What would you like to know about your data?",
+                            "Can you compare the average cost for two people between different categories?")
+        
+        if st.button("Analyze"):
+            if not st.session_state.together_api_key or not st.session_state.e2b_api_key:
+                st.error("Please enter both API keys in the sidebar.")
+            else:
+                with Sandbox(api_key=st.session_state.e2b_api_key) as code_interpreter:
+                    # Upload the dataset
+                    dataset_path = upload_dataset(code_interpreter, uploaded_file)
                     
-                    # Display the image in Streamlit
-                    st.image(image, caption="Generated Visualization")
-                else:
-                    st.error("No visualization generated")
+                    # Pass dataset_path to chat_with_llm
+                    code_results, llm_response = chat_with_llm(code_interpreter, query, dataset_path)
                     
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
-    elif not uploaded_file:
-        st.warning("Please upload a dataset first")
-    elif not user_query:
-        st.warning("Please enter a query")
+                    # Display LLM's text response
+                    st.write("AI Response:")
+                    st.write(llm_response)
+                    
+                    # Display results/visualizations
+                    if code_results:
+                        for result in code_results:
+                            if hasattr(result, 'png') and result.png:  # Check if PNG data is available
+                                # Decode the base64-encoded PNG data
+                                png_data = base64.b64decode(result.png)
+                                
+                                # Convert PNG data to an image and display it
+                                image = Image.open(BytesIO(png_data))
+                                st.image(image, caption="Generated Visualization", use_container_width=False)
+                            elif hasattr(result, 'figure'):  # For matplotlib figures
+                                fig = result.figure  # Extract the matplotlib figure
+                                st.pyplot(fig)  # Display using st.pyplot
+                            elif hasattr(result, 'show'):  # For plotly figures
+                                st.plotly_chart(result)
+                            elif isinstance(result, (pd.DataFrame, pd.Series)):
+                                st.dataframe(result)
+                            else:
+                                st.write(result)  
 
 if __name__ == "__main__":
     main()
