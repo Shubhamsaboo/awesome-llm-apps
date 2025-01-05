@@ -1,4 +1,9 @@
+together>=0.2.8
+e2b>=0.12.0
 python-dotenv
-together
-e2b
+Pillow
 streamlit
+pandas
+matplotlib
+plotly
+seaborn>=0.12.0
