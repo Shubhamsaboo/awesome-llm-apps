@@ -1,4 +1,4 @@
-# AI Blackjack Game
+# AI Chess Game - Autogen
 
 This is a simple Chess game that uses an AI agents - Player black and player white to play the game. There's also a board proxy agent to execute the tools and manage the game. It is important to use a board proxy as a non-LLM "guard rail" to ensure the game is played correctly and to prevent agents from making illegal moves.
 
