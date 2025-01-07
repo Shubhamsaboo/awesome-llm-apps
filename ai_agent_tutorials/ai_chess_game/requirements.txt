@@ -1,5 +1,5 @@
-autogen
-numpy
-openai
 streamlit
-chess
+python-chess
+autogen
+cairosvg
+pillow
