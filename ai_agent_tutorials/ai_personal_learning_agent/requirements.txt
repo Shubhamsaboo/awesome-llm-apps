@@ -5,3 +5,4 @@ typing-extensions>=4.5.0
 phidata==2.7.3
 composio-phidata==0.6.9
 composio_core
+composio==0.1.1
