@@ -169,18 +169,19 @@ if st.button("Start"):
         # Display responses in the Streamlit UI using pprint_run_response
         st.markdown("### KnowledgeBuilder Response:")
         st.markdown(knowledge_response.content)
-        st.markdown(pprint_run_response(knowledge_response, markdown=True))
+        pprint_run_response(knowledge_response, markdown=True)
 
         st.markdown("### RoadmapArchitect Response:")
         st.markdown(roadmap_response.content)
-        st.markdown(pprint_run_response(roadmap_response, markdown=True))
+        pprint_run_response(roadmap_response, markdown=True)
 
         st.markdown("### ResourceCurator Response:")
         st.markdown(resource_response.content)
-        st.markdown(pprint_run_response(resource_response, markdown=True))
+        pprint_run_response(resource_response, markdown=True)
 
         st.markdown("### PracticeDesigner Response:")
-        st.markdown(pprint_run_response(practice_response, markdown=True))
+        st.markdown(practice_response.content)
+        pprint_run_response(practice_response, markdown=True)
 
 # Information about the agents
 st.markdown("---")
