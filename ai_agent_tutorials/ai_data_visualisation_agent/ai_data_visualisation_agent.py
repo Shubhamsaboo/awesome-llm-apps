@@ -89,7 +89,7 @@ def upload_dataset(code_interpreter: Sandbox, uploaded_file) -> str:
 
 def main():
     """Main Streamlit application."""
-    st.title("AI Data Visualization Agent")
+    st.title("📊 AI Data Visualization Agent")
     st.write("Upload your dataset and ask questions about it!")
 
     # Initialize session state variables
