@@ -3,7 +3,9 @@ from phi.agent import Agent, RunResponse
 from phi.model.openai import OpenAIChat
 from composio_phidata import Action, ComposioToolSet
 import os
+from phi.tools.arxiv_toolkit import ArxivToolkit
 from phi.utils.pprint import pprint_run_response
+from phi.tools.duckduckgo import DuckDuckGo
 
 # Set page configuration
 st.set_page_config(page_title="Learning Path Generator", layout="centered")
@@ -21,6 +23,9 @@ with st.sidebar:
     st.title("API Keys Configuration")
     st.session_state['openai_api_key'] = st.text_input("Enter your OpenAI API Key", type="password").strip()
     st.session_state['composio_api_key'] = st.text_input("Enter your Composio API Key", type="password").strip()
+    
+    # Add info about terminal responses
+    st.info("Note: You can also view detailed agent responses\nin your terminal after execution.")
 
 # Validate API keys
 if not st.session_state['openai_api_key'] or not st.session_state['composio_api_key']:
@@ -33,6 +38,7 @@ os.environ["OPENAI_API_KEY"] = st.session_state['openai_api_key']
 try:
     composio_toolset = ComposioToolSet(api_key=st.session_state['composio_api_key'])
     google_docs_tool = composio_toolset.get_tools(actions=[Action.GOOGLEDOCS_CREATE_DOCUMENT])[0]
+    google_docs_tool_update = composio_toolset.get_tools(actions=[Action.GOOGLEDOCS_UPDATE_EXISTING_DOCUMENT])[0]
 except Exception as e:
     st.error(f"Error initializing ComposioToolSet: {e}")
     st.stop()
@@ -40,14 +46,15 @@ except Exception as e:
 # Create the KnowledgeBuilder agent
 knowledge_agent = Agent(
     name="KnowledgeBuilder",
-    role="Research and Knowledge Specialist",
+    role="Research and Knowledge Specialist", 
     model=OpenAIChat(id="gpt-4o"),
-    tools=[google_docs_tool],
+    tools=[google_docs_tool, DuckDuckGo()],
     instructions=[
         "Research the given topic thoroughly using internet sources.",
+        "Use the DuckDuckGo search tool to find up-to-date information and resources.",
         "Create a comprehensive knowledge base that covers fundamental concepts, advanced topics, and current developments.",
         "Include key terminology, core principles, and practical applications and make it as a detailed report that anyone who's starting out can read and get maximum value out of it.",
-        "Always include sources and citations for your findings.",
+        "Always include sources and citations for your findings. DONT FORGET TO CREATE THE GOOGLE DOCUMENT.",
         "Open a new Google Doc and write down the response of the agent neatly with great formatting and structure in it. **Include the Google Doc link in your response.**",
     ],
     show_tool_calls=True,
@@ -64,8 +71,9 @@ roadmap_agent = Agent(
         "Using the knowledge base for the given topic, create a detailed learning roadmap.",
         "Break down the topic into logical subtopics and arrange them in order of progression, a detailed report of roadmap that includes all the subtopics in order to be an expert in this topic.",
         "Include estimated time commitments for each section.",
-        "Present the roadmap in a clear, structured format.",
+        "Present the roadmap in a clear, structured format. DONT FORGET TO CREATE THE GOOGLE DOCUMENT.",
         "Open a new Google Doc and write down the response of the agent neatly with great formatting and structure in it. **Include the Google Doc link in your response.**",
+
     ],
     show_tool_calls=True,
     markdown=True,
@@ -76,12 +84,13 @@ resource_agent = Agent(
     name="ResourceCurator",
     role="Learning Resource Specialist",
     model=OpenAIChat(id="gpt-4o"),
-    tools=[google_docs_tool],
+    tools=[google_docs_tool, ArxivToolkit(), DuckDuckGo()],
     instructions=[
         "Find and validate high-quality learning resources for the given topic.",
+        "Use the DuckDuckGo search tool to find current and relevant learning materials.",
         "Include technical blogs, GitHub repositories, official documentation, video tutorials, and courses.",
         "Verify the credibility and relevance of each resource.",
-        "Present the resources in a curated list with descriptions and quality assessments.",
+        "Present the resources in a curated list with descriptions and quality assessments. DONT FORGET TO CREATE THE GOOGLE DOCUMENT.",
         "Open a new Google Doc and write down the response of the agent neatly with great formatting and structure in it. **Include the Google Doc link in your response.**",
     ],
     show_tool_calls=True,
@@ -93,12 +102,13 @@ practice_agent = Agent(
     name="PracticeDesigner",
     role="Exercise Creator",
     model=OpenAIChat(id="gpt-4o"),
-    tools=[google_docs_tool],
+    tools=[google_docs_tool, DuckDuckGo()],
     instructions=[
         "Create comprehensive practice materials for the given topic.",
+        "Use the DuckDuckGo search tool to find example problems and real-world applications.",
         "Include progressive exercises, quizzes, hands-on projects, and real-world application scenarios.",
         "Ensure the materials align with the roadmap progression.",
-        "Provide detailed solutions and explanations for all practice materials.",
+        "Provide detailed solutions and explanations for all practice materials.DONT FORGET TO CREATE THE GOOGLE DOCUMENT.",
         "Open a new Google Doc and write down the response of the agent neatly with great formatting and structure in it. **Include the Google Doc link in your response.**",
     ],
     show_tool_calls=True,
@@ -106,8 +116,11 @@ practice_agent = Agent(
 )
 
 # Streamlit main UI
-st.title("AI Personal Learning Agent")
+st.title("AI Learning Roadmap Agent")
 st.markdown("Enter a topic to generate a detailed learning path and resources")
+
+# Add info message about Google Docs
+st.info("📝 The agents will create detailed Google Docs for each section (Knowledge Base, Learning Roadmap, Resources, and Practice Materials). The links to these documents will be displayed below after processing.")
 
 # Query bar for topic input
 st.session_state['topic'] = st.text_input("Enter the topic you want to learn about:", placeholder="e.g., Machine Learning, LoRA, etc.")
@@ -170,19 +183,21 @@ if st.button("Start"):
         st.markdown("### KnowledgeBuilder Response:")
         st.markdown(knowledge_response.content)
         pprint_run_response(knowledge_response, markdown=True)
-
+        st.divider()
         st.markdown("### RoadmapArchitect Response:")
         st.markdown(roadmap_response.content)
         pprint_run_response(roadmap_response, markdown=True)
+        st.divider()
 
         st.markdown("### ResourceCurator Response:")
         st.markdown(resource_response.content)
         pprint_run_response(resource_response, markdown=True)
+        st.divider()
 
         st.markdown("### PracticeDesigner Response:")
         st.markdown(practice_response.content)
         pprint_run_response(practice_response, markdown=True)
-
+        st.divider()
 # Information about the agents
 st.markdown("---")
 st.markdown("### About the Agents:")
