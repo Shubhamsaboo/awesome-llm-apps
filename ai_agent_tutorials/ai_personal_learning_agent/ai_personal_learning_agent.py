@@ -47,14 +47,12 @@ except Exception as e:
 knowledge_agent = Agent(
     name="KnowledgeBuilder",
     role="Research and Knowledge Specialist", 
-    model=OpenAIChat(id="gpt-4o"),
-    tools=[google_docs_tool, DuckDuckGo()],
+    model=OpenAIChat(id="gpt-4o", api_key=st.session_state['openai_api_key']),
+    tools=[google_docs_tool],
     instructions=[
-        "Research the given topic thoroughly using internet sources.",
-        "Use the DuckDuckGo search tool to find up-to-date information and resources.",
-        "Create a comprehensive knowledge base that covers fundamental concepts, advanced topics, and current developments.",
+        "Create a comprehensive knowledge base that covers fundamental concepts, advanced topics, and current developments of the given topic.",
         "Include key terminology, core principles, and practical applications and make it as a detailed report that anyone who's starting out can read and get maximum value out of it.",
-        "Always include sources and citations for your findings. DONT FORGET TO CREATE THE GOOGLE DOCUMENT.",
+        "Make sure it is formatted in a way that is easy to read and understand. DONT FORGET TO CREATE THE GOOGLE DOCUMENT.",
         "Open a new Google Doc and write down the response of the agent neatly with great formatting and structure in it. **Include the Google Doc link in your response.**",
     ],
     show_tool_calls=True,
@@ -65,7 +63,7 @@ knowledge_agent = Agent(
 roadmap_agent = Agent(
     name="RoadmapArchitect",
     role="Learning Path Designer",
-    model=OpenAIChat(id="gpt-4o"),
+    model=OpenAIChat(id="gpt-4o", api_key=st.session_state['openai_api_key']),
     tools=[google_docs_tool],
     instructions=[
         "Using the knowledge base for the given topic, create a detailed learning roadmap.",
@@ -76,15 +74,15 @@ roadmap_agent = Agent(
 
     ],
     show_tool_calls=True,
-    markdown=True,
+    markdown=True
 )
 
 # Create the ResourceCurator agent
 resource_agent = Agent(
     name="ResourceCurator",
     role="Learning Resource Specialist",
-    model=OpenAIChat(id="gpt-4o"),
-    tools=[google_docs_tool, ArxivToolkit(), DuckDuckGo()],
+    model=OpenAIChat(id="gpt-4o", api_key=st.session_state['openai_api_key']),
+    tools=[google_docs_tool, ArxivToolkit(), DuckDuckGo(fixed_max_results=10)],
     instructions=[
         "Find and validate high-quality learning resources for the given topic.",
         "Use the DuckDuckGo search tool to find current and relevant learning materials.",
@@ -101,8 +99,8 @@ resource_agent = Agent(
 practice_agent = Agent(
     name="PracticeDesigner",
     role="Exercise Creator",
-    model=OpenAIChat(id="gpt-4o"),
-    tools=[google_docs_tool, DuckDuckGo()],
+    model=OpenAIChat(id="gpt-4o", api_key=st.session_state['openai_api_key']),
+    tools=[google_docs_tool, DuckDuckGo(fixed_max_results=10)],
     instructions=[
         "Create comprehensive practice materials for the given topic.",
         "Use the DuckDuckGo search tool to find example problems and real-world applications.",
