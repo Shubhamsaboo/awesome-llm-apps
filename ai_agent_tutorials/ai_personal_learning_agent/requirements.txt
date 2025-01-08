@@ -4,3 +4,5 @@ duckduckgo-search==6.4.1
 autogen==0.6.1
 pyautogen==0.6.1
 typing-extensions>=4.5.0
+phi-python
+serpapi
