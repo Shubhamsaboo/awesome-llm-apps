@@ -2,6 +2,13 @@
 
 A Personal learning Roadmap Architect assistant built on Phidata Framework that explains a particular topic, creates learning plans and roadmaps using multiple specialized AI agents which are hierarchical. The system uses OpenAI's GPT-4o to generate comprehensive learning materials, roadmaps, and practice exercises. This uses streamlit for UI.
 
+## Demo
+
+
+https://github.com/user-attachments/assets/67e81377-d80e-4221-b1f2-e25cffb71c93
+
+
+
 ## Features
 
 - 🧠 Knowledge Building: Researches and creates comprehensive knowledge bases
