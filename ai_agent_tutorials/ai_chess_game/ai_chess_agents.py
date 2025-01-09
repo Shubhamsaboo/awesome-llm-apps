@@ -194,12 +194,9 @@ if st.session_state.openai_api_key:
         chat_result = player_black.initiate_chat(
             player_white,
             message="Let's play chess! You go first, its your move.",
-            max_turns=100,  # Set a high enough number to allow the game to complete
+            max_turns=5,  # Set a high enough number to allow the game to complete
         )
-        st.write(chat_result)
+        st.markdown(chat_result.summary)
 
-    # Display the chessboard SVG
-    if st.session_state.board_svg:
-        st.image(st.session_state.board_svg, caption="Chess Board", use_column_width=True)
 else:
     st.warning("Please enter your OpenAI API key in the sidebar to start the game.")
