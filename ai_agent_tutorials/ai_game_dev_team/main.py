@@ -4,6 +4,7 @@ from autogen import AssistantAgent
 from autogen.agentchat.groupchat import RoundRobinGroupChat
 from autogen.agentchat.conditions import TextMentionTermination
 from autogen.oai.client import OpenAIWrapper
+from bs4 import BeautifulSoup
 
 # Initialize session state
 if 'output' not in st.session_state:
@@ -91,8 +92,36 @@ if st.button("Generate Game Concept"):
             "story_agent",
             model_client=model_client,
             system_message="""
-            You are a game story designer. Your task is to create a compelling narrative for the game.
-            Include details about the world, characters, and plot. Make the story immersive and engaging.
+            You are an experienced game story designer specializing in narrative design and world-building. Your task is to:
+            1. Create a compelling narrative that aligns with the specified game type and target audience
+            2. Design memorable characters with clear motivations and character arcs
+            3. Develop the game's world, including its history, culture, and key locations
+            4. Plan story progression and major plot points
+            5. Integrate the narrative with the specified mood/atmosphere
+            6. Consider how the story supports the core gameplay mechanics
+            
+            Structure your response using these XML tags:
+            <story>
+                <world_overview>
+                    [Describe the game world, its history, and setting]
+                </world_overview>
+                <main_characters>
+                    <character>
+                        <name>[Character name]</name>
+                        <role>[Character role]</role>
+                        <motivation>[Character motivation]</motivation>
+                        <arc>[Character development arc]</arc>
+                    </character>
+                </main_characters>
+                <plot_structure>
+                    <beginning>[Opening act]</beginning>
+                    <middle>[Main story development]</middle>
+                    <climax>[Story climax]</climax>
+                    <resolution>[Story resolution]</resolution>
+                </plot_structure>
+                <key_moments>[List of pivotal story moments]</key_moments>
+                <gameplay_integration>[How story elements connect with gameplay]</gameplay_integration>
+            </story>
             """
         )
 
@@ -100,8 +129,34 @@ if st.button("Generate Game Concept"):
             "gameplay_agent",
             model_client=model_client,
             system_message="""
-            You are a game mechanics designer. Your task is to define the core gameplay mechanics, features, and systems.
-            Include details about combat, exploration, progression, and unique features.
+            You are a senior game mechanics designer with expertise in player engagement and systems design. Your task is to:
+            1. Design core gameplay loops that match the specified game type and mechanics
+            2. Create progression systems (character development, skills, abilities)
+            3. Define player interactions and control schemes for the chosen perspective
+            4. Balance gameplay elements for the target audience
+            5. Design multiplayer interactions if applicable
+            6. Specify game modes and difficulty settings
+            7. Consider the budget and development time constraints
+            
+            Structure your response using these XML tags:
+            <gameplay>
+                <core_loop>
+                    <primary_loop>[Main gameplay loop]</primary_loop>
+                    <secondary_loops>[Supporting gameplay loops]</secondary_loops>
+                </core_loop>
+                <controls>
+                    <input_scheme>[Control scheme details]</input_scheme>
+                    <player_actions>[List of player actions]</player_actions>
+                </controls>
+                <progression>
+                    <character_development>[Skills, abilities, stats]</character_development>
+                    <unlockables>[Items, features, content]</unlockables>
+                    <achievements>[Key milestones and rewards]</achievements>
+                </progression>
+                <game_modes>[List and description of game modes]</game_modes>
+                <multiplayer_features>[Multiplayer mechanics if applicable]</multiplayer_features>
+                <balance>[Game balance considerations]</balance>
+            </gameplay>
             """
         )
 
@@ -109,8 +164,41 @@ if st.button("Generate Game Concept"):
             "visuals_agent",
             model_client=model_client,
             system_message="""
-            You are a visual and audio designer. Your task is to define the art style, environment design, and audio elements.
-            Include details about the color palette, character design, and sound effects.
+            You are a creative art director with expertise in game visual and audio design. Your task is to:
+            1. Define the visual style guide matching the specified art style
+            2. Design character and environment aesthetics
+            3. Plan visual effects and animations
+            4. Create the audio direction including music style, sound effects, and ambient sound
+            5. Consider technical constraints of chosen platforms
+            6. Align visual elements with the game's mood/atmosphere
+            7. Work within the specified budget constraints
+            
+            Structure your response using these XML tags:
+            <visuals>
+                <style_guide>
+                    <color_palette>[Color scheme details]</color_palette>
+                    <art_direction>[Overall visual direction]</art_direction>
+                    <reference_materials>[Visual references]</reference_materials>
+                </style_guide>
+                <character_design>
+                    <main_characters>[Main character visual details]</main_characters>
+                    <npc_guidelines>[NPC design guidelines]</npc_guidelines>
+                </character_design>
+                <environment>
+                    <world_aesthetics>[World design principles]</world_aesthetics>
+                    <key_locations>[Notable location designs]</key_locations>
+                </environment>
+                <vfx_animation>
+                    <effects_style>[VFX guidelines]</effects_style>
+                    <animation_principles>[Animation guidelines]</animation_principles>
+                </vfx_animation>
+                <audio>
+                    <music>[Music style and themes]</music>
+                    <sound_effects>[SFX guidelines]</sound_effects>
+                    <ambient>[Environmental audio]</ambient>
+                </audio>
+                <technical_specs>[Platform-specific considerations]</technical_specs>
+            </visuals>
             """
         )
 
@@ -118,8 +206,43 @@ if st.button("Generate Game Concept"):
             "tech_agent",
             model_client=model_client,
             system_message="""
-            You are a technical expert. Your task is to recommend the technology stack, tools, and implementation plan.
-            Include details about the game engine, programming languages, and tools for asset creation.
+            You are a technical director with extensive game development experience. Your task is to:
+            1. Recommend appropriate game engine and development tools
+            2. Define technical requirements for all target platforms
+            3. Plan the development pipeline and asset workflow
+            4. Identify potential technical challenges and solutions
+            5. Estimate resource requirements within the budget
+            6. Consider scalability and performance optimization
+            7. Plan for multiplayer infrastructure if applicable
+            
+            Structure your response using these XML tags:
+            <technical>
+                <stack>
+                    <engine>[Game engine choice and rationale]</engine>
+                    <tools>[Development tools list]</tools>
+                    <languages>[Programming languages]</languages>
+                </stack>
+                <pipeline>
+                    <asset_workflow>[Asset creation and management]</asset_workflow>
+                    <build_process>[Build and deployment process]</build_process>
+                    <version_control>[Version control strategy]</version_control>
+                </pipeline>
+                <requirements>
+                    <platforms>[Platform-specific requirements]</platforms>
+                    <performance>[Performance targets]</performance>
+                    <networking>[Network requirements if applicable]</networking>
+                </requirements>
+                <resources>
+                    <team>[Team composition and roles]</team>
+                    <hardware>[Hardware requirements]</hardware>
+                    <hosting>[Server infrastructure if needed]</hosting>
+                </resources>
+                <timeline>
+                    <phases>[Development phases]</phases>
+                    <milestones>[Key technical milestones]</milestones>
+                    <risks>[Technical risks and mitigation]</risks>
+                </timeline>
+            </technical>
             """
         )
 
@@ -143,10 +266,14 @@ if st.button("Generate Game Concept"):
         result = loop.run_until_complete(run_agents(task))
 
         # Parse the result and update session state
-        st.session_state.output['story'] = result.split("Story:")[1].split("Gameplay:")[0].strip()
-        st.session_state.output['gameplay'] = result.split("Gameplay:")[1].split("Visuals:")[0].strip()
-        st.session_state.output['visuals'] = result.split("Visuals:")[1].split("Tech:")[0].strip()
-        st.session_state.output['tech'] = result.split("Tech:")[1].strip()
+        # Create BeautifulSoup object from the result
+        soup = BeautifulSoup(result, 'xml')
+
+        # Extract sections
+        st.session_state.output['story'] = str(soup.find('story'))
+        st.session_state.output['gameplay'] = str(soup.find('gameplay'))
+        st.session_state.output['visuals'] = str(soup.find('visuals'))
+        st.session_state.output['tech'] = str(soup.find('technical'))
 
         # Display the outputs in containers
         with st.container():
