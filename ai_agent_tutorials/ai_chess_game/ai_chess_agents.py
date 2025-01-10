@@ -196,7 +196,7 @@ if st.session_state.openai_api_key:
             message="Let's play chess! You go first, its your move.",
             max_turns=5,  # Set a high enough number to allow the game to complete
         )
-        st.markdown(chat_result.summary)
+        st.markdown(chat_result.chat_history)
 
 else:
     st.warning("Please enter your OpenAI API key in the sidebar to start the game.")
