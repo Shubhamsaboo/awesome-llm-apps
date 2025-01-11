@@ -64,7 +64,7 @@ if "openai_api_key" in st.session_state and "firecrawl_api_key" in st.session_st
         if url:
             result = exa.find_similar(
                 url=url,
-                num_results=2,
+                num_results=3,
                 exclude_source_domain=True,
                 category="company"
             )
@@ -74,7 +74,7 @@ if "openai_api_key" in st.session_state and "firecrawl_api_key" in st.session_st
                 type="neural",
                 category="company",
                 use_autoprompt=True,
-                num_results=2
+                num_results=3
             )
         else:
             raise ValueError("Please provide either a URL or a description.")
