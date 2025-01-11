@@ -43,9 +43,9 @@ except Exception as e:
     st.error(f"Error initializing ComposioToolSet: {e}")
     st.stop()
 
-# Create the KnowledgeBuilder agent
-knowledge_agent = Agent(
-    name="KnowledgeBuilder",
+# Create the Professor agent
+professor = Agent(
+    name="Professor",
     role="Research and Knowledge Specialist", 
     model=OpenAIChat(id="gpt-4o", api_key=st.session_state['openai_api_key']),
     tools=[google_docs_tool],
@@ -59,9 +59,9 @@ knowledge_agent = Agent(
     markdown=True,
 )
 
-# Create the RoadmapArchitect agent
-roadmap_agent = Agent(
-    name="RoadmapArchitect",
+# Create the Academic Advisor agent
+advisor = Agent(
+    name="Academic Advisor",
     role="Learning Path Designer",
     model=OpenAIChat(id="gpt-4o", api_key=st.session_state['openai_api_key']),
     tools=[google_docs_tool],
@@ -71,15 +71,14 @@ roadmap_agent = Agent(
         "Include estimated time commitments for each section.",
         "Present the roadmap in a clear, structured format. DONT FORGET TO CREATE THE GOOGLE DOCUMENT.",
         "Open a new Google Doc and write down the response of the agent neatly with great formatting and structure in it. **Include the Google Doc link in your response.**",
-
     ],
     show_tool_calls=True,
     markdown=True
 )
 
-# Create the ResourceCurator agent
-resource_agent = Agent(
-    name="ResourceCurator",
+# Create the Research Librarian agent
+librarian = Agent(
+    name="Research Librarian",
     role="Learning Resource Specialist",
     model=OpenAIChat(id="gpt-4o", api_key=st.session_state['openai_api_key']),
     tools=[google_docs_tool, ArxivToolkit(), DuckDuckGo(fixed_max_results=10)],
@@ -95,9 +94,9 @@ resource_agent = Agent(
     markdown=True,
 )
 
-# Create the PracticeDesigner agent
-practice_agent = Agent(
-    name="PracticeDesigner",
+# Create the Teaching Assistant agent
+assistant = Agent(
+    name="Teaching Assistant",
     role="Exercise Creator",
     model=OpenAIChat(id="gpt-4o", api_key=st.session_state['openai_api_key']),
     tools=[google_docs_tool, DuckDuckGo(fixed_max_results=10)],
@@ -106,7 +105,7 @@ practice_agent = Agent(
         "Use the DuckDuckGo search tool to find example problems and real-world applications.",
         "Include progressive exercises, quizzes, hands-on projects, and real-world application scenarios.",
         "Ensure the materials align with the roadmap progression.",
-        "Provide detailed solutions and explanations for all practice materials.DONT FORGET TO CREATE THE GOOGLE DOCUMENT.",
+        "Provide detailed solutions and explanations for all practice materials. DONT FORGET TO CREATE THE GOOGLE DOCUMENT.",
         "Open a new Google Doc and write down the response of the agent neatly with great formatting and structure in it. **Include the Google Doc link in your response.**",
     ],
     show_tool_calls=True,
@@ -130,78 +129,78 @@ if st.button("Start"):
     else:
         # Display loading animations while generating responses
         with st.spinner("Generating Knowledge Base..."):
-            knowledge_response: RunResponse = knowledge_agent.run(
+            professor_response: RunResponse = professor.run(
                 f"the topic is: {st.session_state['topic']},Don't forget to add the Google Doc link in your response.",
                 stream=False
             )
             
         with st.spinner("Generating Learning Roadmap..."):
-            roadmap_response: RunResponse = roadmap_agent.run(
+            advisor_response: RunResponse = advisor.run(
                 f"the topic is: {st.session_state['topic']},Don't forget to add the Google Doc link in your response.",
                 stream=False
             )
             
         with st.spinner("Curating Learning Resources..."):
-            resource_response: RunResponse = resource_agent.run(
+            librarian_response: RunResponse = librarian.run(
                 f"the topic is: {st.session_state['topic']},Don't forget to add the Google Doc link in your response.",
                 stream=False
             )
             
         with st.spinner("Creating Practice Materials..."):
-            practice_response: RunResponse = practice_agent.run(
+            assistant_response: RunResponse = assistant.run(
                 f"the topic is: {st.session_state['topic']},Don't forget to add the Google Doc link in your response.",
                 stream=False
             )
 
         # Extract Google Doc links from the responses
         def extract_google_doc_link(response_content):
-            # Assuming the Google Doc link is embedded in the response content
-            # You may need to adjust this logic based on the actual response format
             if "https://docs.google.com" in response_content:
                 return response_content.split("https://docs.google.com")[1].split()[0]
             return None
 
-        knowledge_doc_link = extract_google_doc_link(knowledge_response.content)
-        roadmap_doc_link = extract_google_doc_link(roadmap_response.content)
-        resource_doc_link = extract_google_doc_link(resource_response.content)
-        practice_doc_link = extract_google_doc_link(practice_response.content)
+        professor_doc_link = extract_google_doc_link(professor_response.content)
+        advisor_doc_link = extract_google_doc_link(advisor_response.content)
+        librarian_doc_link = extract_google_doc_link(librarian_response.content)
+        assistant_doc_link = extract_google_doc_link(assistant_response.content)
 
         # Display Google Doc links at the top of the Streamlit UI
         st.markdown("### Google Doc Links:")
-        if knowledge_doc_link:
-            st.markdown(f"- **KnowledgeBuilder Document:** [View Document](https://docs.google.com{knowledge_doc_link})")
-        if roadmap_doc_link:
-            st.markdown(f"- **RoadmapArchitect Document:** [View Document](https://docs.google.com{roadmap_doc_link})")
-        if resource_doc_link:
-            st.markdown(f"- **ResourceCurator Document:** [View Document](https://docs.google.com{resource_doc_link})")
-        if practice_doc_link:
-            st.markdown(f"- **PracticeDesigner Document:** [View Document](https://docs.google.com{practice_doc_link})")
+        if professor_doc_link:
+            st.markdown(f"- **Professor's Document:** [View Document](https://docs.google.com{professor_doc_link})")
+        if advisor_doc_link:
+            st.markdown(f"- **Academic Advisor's Document:** [View Document](https://docs.google.com{advisor_doc_link})")
+        if librarian_doc_link:
+            st.markdown(f"- **Research Librarian's Document:** [View Document](https://docs.google.com{librarian_doc_link})")
+        if assistant_doc_link:
+            st.markdown(f"- **Teaching Assistant's Document:** [View Document](https://docs.google.com{assistant_doc_link})")
 
         # Display responses in the Streamlit UI using pprint_run_response
-        st.markdown("### KnowledgeBuilder Response:")
-        st.markdown(knowledge_response.content)
-        pprint_run_response(knowledge_response, markdown=True)
+        st.markdown("### Professor's Response:")
+        st.markdown(professor_response.content)
+        pprint_run_response(professor_response, markdown=True)
         st.divider()
-        st.markdown("### RoadmapArchitect Response:")
-        st.markdown(roadmap_response.content)
-        pprint_run_response(roadmap_response, markdown=True)
-        st.divider()
-
-        st.markdown("### ResourceCurator Response:")
-        st.markdown(resource_response.content)
-        pprint_run_response(resource_response, markdown=True)
+        
+        st.markdown("### Academic Advisor's Response:")
+        st.markdown(advisor_response.content)
+        pprint_run_response(advisor_response, markdown=True)
         st.divider()
 
-        st.markdown("### PracticeDesigner Response:")
-        st.markdown(practice_response.content)
-        pprint_run_response(practice_response, markdown=True)
+        st.markdown("### Research Librarian's Response:")
+        st.markdown(librarian_response.content)
+        pprint_run_response(librarian_response, markdown=True)
         st.divider()
+
+        st.markdown("### Teaching Assistant's Response:")
+        st.markdown(assistant_response.content)
+        pprint_run_response(assistant_response, markdown=True)
+        st.divider()
+
 # Information about the agents
 st.markdown("---")
 st.markdown("### About the Agents:")
 st.markdown("""
-- **KnowledgeBuilder**: Researches the topic and creates a detailed knowledge base.
-- **RoadmapArchitect**: Designs a structured learning roadmap for the topic.
-- **ResourceCurator**: Curates high-quality learning resources.
-- **PracticeDesigner**: Creates practice materials, exercises, and projects.
+- **Professor**: Researches the topic and creates a detailed knowledge base.
+- **Academic Advisor**: Designs a structured learning roadmap for the topic.
+- **Research Librarian**: Curates high-quality learning resources.
+- **Teaching Assistant**: Creates practice materials, exercises, and projects.
 """)
