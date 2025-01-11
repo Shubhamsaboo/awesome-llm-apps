@@ -2,25 +2,26 @@ from exa_py import Exa
 from phi.agent import Agent
 from phi.tools.firecrawl import FirecrawlTools
 from phi.model.openai import OpenAIChat
+from phi.tools.duckduckgo import DuckDuckGo
 
-exa = Exa(api_key="50a85")
+exa = Exa(api_key="")
 
 firecrawl_tools = FirecrawlTools(
-    api_key="f2",
+    api_key="fc-",
     scrape=False,
     crawl=True,
     limit=5
 )
 
 firecrawl_agent = Agent(
-    model=OpenAIChat(id="gpt-4o-mini", api_key="s"),
-    tools=[firecrawl_tools, ],
+    model=OpenAIChat(id="gpt-4o-mini", api_key="sk-proj-"),
+    tools=[firecrawl_tools, DuckDuckGo() ],
     show_tool_calls=True,
     markdown=True
 )
 
 analysis_agent = Agent(
-    model=OpenAIChat(id="gpt-4o-mini", api_key="s"),
+    model=OpenAIChat(id="gpt-4o-mini", api_key="sk-proj-"),
     show_tool_calls=True,
     markdown=True
 )
@@ -30,8 +31,7 @@ def get_competitor_urls(url=None, description=None):
     if url:
         result = exa.find_similar(
             url=url,
-            excludeDomains=[url],
-            num_results=3,
+            num_results=2,
             exclude_source_domain=True,
             category="company"
         )
@@ -41,7 +41,7 @@ def get_competitor_urls(url=None, description=None):
             type="neural",
             category="company",
             use_autoprompt=True,
-            num_results=3
+            num_results=2
         )
     else:
         raise ValueError("Please provide either a URL or a description.")
@@ -60,7 +60,7 @@ def extract_competitor_info(competitor_url: str):
             - Technology stack information
             - Marketing messaging/positioning
             - Customer testimonials/case studies
-            - Latest news and developements
+            - Latest news and developements (use DuckDuckGo to search for the latest news and developements)
 
             Crawled Data:
             {crawled_data}
@@ -81,21 +81,25 @@ def generate_analysis_report(competitor_data: list):
     combined_data = "\n\n".join([str(data) for data in competitor_data])
     
     report = analysis_agent.run(
-        f"""Analyze the following competitor data and generate a detailed report:
+        f"""Analyze the following competitor data and identify market opportunities to improve my own company:
         {combined_data}
 
         Tasks:
-        1. Compare pricing and identify opportunities for competitive pricing.
-        2. Analyze features and highlight unique or missing features.
-        3. Evaluate marketing messaging and suggest positioning strategies.
-        4. Summarize customer testimonials and case studies.
-        5. Provide actionable insights for market positioning.
+        1. Identify market gaps and opportunities based on competitor offerings
+        2. Analyze competitor weaknesses that we can capitalize on
+        3. Recommend unique features or capabilities we should develop
+        4. Suggest pricing and positioning strategies to gain competitive advantage
+        5. Outline specific growth opportunities in underserved market segments
+        6. Provide actionable recommendations for product development and go-to-market strategy
+
+        Focus on finding opportunities where we can differentiate and do better than competitors.
+        Highlight any unmet customer needs or pain points we can address.
         """
     )
-    return report.response
+    return report.content
 
 def main():
-    competitor_urls = get_competitor_urls(url="https://jenni.ai")
+    competitor_urls = get_competitor_urls(url="https://www.harvey.ai")
     print(f"Competitor URLs: {competitor_urls}")
     
     competitor_data = []
