@@ -8,7 +8,7 @@ from phi.utils.pprint import pprint_run_response
 from phi.tools.duckduckgo import DuckDuckGo
 
 # Set page configuration
-st.set_page_config(page_title="Learning Path Generator", layout="centered")
+st.set_page_config(page_title="👨‍🏫 AI Teaching Agent Team", layout="centered")
 
 # Initialize session state for API keys and topic
 if 'openai_api_key' not in st.session_state:
@@ -114,7 +114,7 @@ practice_agent = Agent(
 )
 
 # Streamlit main UI
-st.title("AI Learning Roadmap Agent")
+st.title("👨‍🏫 AI Teaching Agent Team")
 st.markdown("Enter a topic to generate a detailed learning path and resources")
 
 # Add info message about Google Docs
