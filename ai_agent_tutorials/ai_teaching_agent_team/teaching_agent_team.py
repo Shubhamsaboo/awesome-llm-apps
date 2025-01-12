@@ -5,16 +5,18 @@ from composio_phidata import Action, ComposioToolSet
 import os
 from phi.tools.arxiv_toolkit import ArxivToolkit
 from phi.utils.pprint import pprint_run_response
-from phi.tools.duckduckgo import DuckDuckGo
+from phi.tools.serpapi_tools import SerpApiTools
 
 # Set page configuration
-st.set_page_config(page_title="👨‍🏫 AI Teaching Agent Team", layout="centered")
+st.set_page_config(page_title="Learning Path Generator", layout="centered")
 
 # Initialize session state for API keys and topic
 if 'openai_api_key' not in st.session_state:
     st.session_state['openai_api_key'] = ''
 if 'composio_api_key' not in st.session_state:
     st.session_state['composio_api_key'] = ''
+if 'serpapi_api_key' not in st.session_state:
+    st.session_state['serpapi_api_key'] = ''
 if 'topic' not in st.session_state:
     st.session_state['topic'] = ''
 
@@ -23,13 +25,14 @@ with st.sidebar:
     st.title("API Keys Configuration")
     st.session_state['openai_api_key'] = st.text_input("Enter your OpenAI API Key", type="password").strip()
     st.session_state['composio_api_key'] = st.text_input("Enter your Composio API Key", type="password").strip()
+    st.session_state['serpapi_api_key'] = st.text_input("Enter your SerpAPI Key", type="password").strip()
     
     # Add info about terminal responses
     st.info("Note: You can also view detailed agent responses\nin your terminal after execution.")
 
 # Validate API keys
-if not st.session_state['openai_api_key'] or not st.session_state['composio_api_key']:
-    st.error("Please enter both OpenAI and Composio API keys in the sidebar.")
+if not st.session_state['openai_api_key'] or not st.session_state['composio_api_key'] or not st.session_state['serpapi_api_key']:
+    st.error("Please enter OpenAI, Composio, and SerpAPI keys in the sidebar.")
     st.stop()
 
 # Set the OpenAI API key and Composio API key from session state
@@ -43,15 +46,15 @@ except Exception as e:
     st.error(f"Error initializing ComposioToolSet: {e}")
     st.stop()
 
-# Create the Professor agent
-professor = Agent(
-    name="Professor",
+# Create the KnowledgeBuilder agent
+knowledge_agent = Agent(
+    name="KnowledgeBuilder",
     role="Research and Knowledge Specialist", 
     model=OpenAIChat(id="gpt-4o", api_key=st.session_state['openai_api_key']),
     tools=[google_docs_tool],
     instructions=[
         "Create a comprehensive knowledge base that covers fundamental concepts, advanced topics, and current developments of the given topic.",
-        "Include key terminology, core principles, and practical applications and make it as a detailed report that anyone who's starting out can read and get maximum value out of it.",
+        "Exlain the topic from first principles first. Include key terminology, core principles, and practical applications and make it as a detailed report that anyone who's starting out can read and get maximum value out of it.",
         "Make sure it is formatted in a way that is easy to read and understand. DONT FORGET TO CREATE THE GOOGLE DOCUMENT.",
         "Open a new Google Doc and write down the response of the agent neatly with great formatting and structure in it. **Include the Google Doc link in your response.**",
     ],
@@ -59,9 +62,9 @@ professor = Agent(
     markdown=True,
 )
 
-# Create the Academic Advisor agent
-advisor = Agent(
-    name="Academic Advisor",
+# Create the RoadmapArchitect agent
+roadmap_agent = Agent(
+    name="RoadmapArchitect",
     role="Learning Path Designer",
     model=OpenAIChat(id="gpt-4o", api_key=st.session_state['openai_api_key']),
     tools=[google_docs_tool],
@@ -71,22 +74,22 @@ advisor = Agent(
         "Include estimated time commitments for each section.",
         "Present the roadmap in a clear, structured format. DONT FORGET TO CREATE THE GOOGLE DOCUMENT.",
         "Open a new Google Doc and write down the response of the agent neatly with great formatting and structure in it. **Include the Google Doc link in your response.**",
+
     ],
     show_tool_calls=True,
     markdown=True
 )
 
-# Create the Research Librarian agent
-librarian = Agent(
-    name="Research Librarian",
+# Create the ResourceCurator agent
+resource_agent = Agent(
+    name="ResourceCurator",
     role="Learning Resource Specialist",
     model=OpenAIChat(id="gpt-4o", api_key=st.session_state['openai_api_key']),
-    tools=[google_docs_tool, ArxivToolkit(), DuckDuckGo(fixed_max_results=10)],
+    tools=[google_docs_tool, SerpApiTools(api_key=st.session_state['serpapi_api_key']) ],
     instructions=[
-        "Find and validate high-quality learning resources for the given topic.",
-        "Use the DuckDuckGo search tool to find current and relevant learning materials.",
-        "Include technical blogs, GitHub repositories, official documentation, video tutorials, and courses.",
-        "Verify the credibility and relevance of each resource.",
+        "Make a list of high-quality learning resources for the given topic.",
+        "Use the SerpApi search tool to find current and relevant learning materials.",
+        "Using SerpApi search tool, Include technical blogs, GitHub repositories, official documentation, video tutorials, and courses.",
         "Present the resources in a curated list with descriptions and quality assessments. DONT FORGET TO CREATE THE GOOGLE DOCUMENT.",
         "Open a new Google Doc and write down the response of the agent neatly with great formatting and structure in it. **Include the Google Doc link in your response.**",
     ],
@@ -94,18 +97,18 @@ librarian = Agent(
     markdown=True,
 )
 
-# Create the Teaching Assistant agent
-assistant = Agent(
-    name="Teaching Assistant",
+# Create the PracticeDesigner agent
+practice_agent = Agent(
+    name="PracticeDesigner",
     role="Exercise Creator",
     model=OpenAIChat(id="gpt-4o", api_key=st.session_state['openai_api_key']),
-    tools=[google_docs_tool, DuckDuckGo(fixed_max_results=10)],
+    tools=[google_docs_tool, SerpApiTools(api_key=st.session_state['serpapi_api_key'])],
     instructions=[
         "Create comprehensive practice materials for the given topic.",
-        "Use the DuckDuckGo search tool to find example problems and real-world applications.",
+        "Use the SerpApi search tool to find example problems and real-world applications.",
         "Include progressive exercises, quizzes, hands-on projects, and real-world application scenarios.",
         "Ensure the materials align with the roadmap progression.",
-        "Provide detailed solutions and explanations for all practice materials. DONT FORGET TO CREATE THE GOOGLE DOCUMENT.",
+        "Provide detailed solutions and explanations for all practice materials.DONT FORGET TO CREATE THE GOOGLE DOCUMENT.",
         "Open a new Google Doc and write down the response of the agent neatly with great formatting and structure in it. **Include the Google Doc link in your response.**",
     ],
     show_tool_calls=True,
@@ -113,7 +116,7 @@ assistant = Agent(
 )
 
 # Streamlit main UI
-st.title("👨‍🏫 AI Teaching Agent Team")
+st.title("AI Learning Roadmap Agent")
 st.markdown("Enter a topic to generate a detailed learning path and resources")
 
 # Add info message about Google Docs
@@ -129,78 +132,78 @@ if st.button("Start"):
     else:
         # Display loading animations while generating responses
         with st.spinner("Generating Knowledge Base..."):
-            professor_response: RunResponse = professor.run(
+            knowledge_response: RunResponse = knowledge_agent.run(
                 f"the topic is: {st.session_state['topic']},Don't forget to add the Google Doc link in your response.",
                 stream=False
             )
             
         with st.spinner("Generating Learning Roadmap..."):
-            advisor_response: RunResponse = advisor.run(
+            roadmap_response: RunResponse = roadmap_agent.run(
                 f"the topic is: {st.session_state['topic']},Don't forget to add the Google Doc link in your response.",
                 stream=False
             )
             
         with st.spinner("Curating Learning Resources..."):
-            librarian_response: RunResponse = librarian.run(
+            resource_response: RunResponse = resource_agent.run(
                 f"the topic is: {st.session_state['topic']},Don't forget to add the Google Doc link in your response.",
                 stream=False
             )
             
         with st.spinner("Creating Practice Materials..."):
-            assistant_response: RunResponse = assistant.run(
+            practice_response: RunResponse = practice_agent.run(
                 f"the topic is: {st.session_state['topic']},Don't forget to add the Google Doc link in your response.",
                 stream=False
             )
 
         # Extract Google Doc links from the responses
         def extract_google_doc_link(response_content):
+            # Assuming the Google Doc link is embedded in the response content
+            # You may need to adjust this logic based on the actual response format
             if "https://docs.google.com" in response_content:
                 return response_content.split("https://docs.google.com")[1].split()[0]
             return None
 
-        professor_doc_link = extract_google_doc_link(professor_response.content)
-        advisor_doc_link = extract_google_doc_link(advisor_response.content)
-        librarian_doc_link = extract_google_doc_link(librarian_response.content)
-        assistant_doc_link = extract_google_doc_link(assistant_response.content)
+        knowledge_doc_link = extract_google_doc_link(knowledge_response.content)
+        roadmap_doc_link = extract_google_doc_link(roadmap_response.content)
+        resource_doc_link = extract_google_doc_link(resource_response.content)
+        practice_doc_link = extract_google_doc_link(practice_response.content)
 
         # Display Google Doc links at the top of the Streamlit UI
         st.markdown("### Google Doc Links:")
-        if professor_doc_link:
-            st.markdown(f"- **Professor's Document:** [View Document](https://docs.google.com{professor_doc_link})")
-        if advisor_doc_link:
-            st.markdown(f"- **Academic Advisor's Document:** [View Document](https://docs.google.com{advisor_doc_link})")
-        if librarian_doc_link:
-            st.markdown(f"- **Research Librarian's Document:** [View Document](https://docs.google.com{librarian_doc_link})")
-        if assistant_doc_link:
-            st.markdown(f"- **Teaching Assistant's Document:** [View Document](https://docs.google.com{assistant_doc_link})")
+        if knowledge_doc_link:
+            st.markdown(f"- **KnowledgeBuilder Document:** [View Document](https://docs.google.com{knowledge_doc_link})")
+        if roadmap_doc_link:
+            st.markdown(f"- **RoadmapArchitect Document:** [View Document](https://docs.google.com{roadmap_doc_link})")
+        if resource_doc_link:
+            st.markdown(f"- **ResourceCurator Document:** [View Document](https://docs.google.com{resource_doc_link})")
+        if practice_doc_link:
+            st.markdown(f"- **PracticeDesigner Document:** [View Document](https://docs.google.com{practice_doc_link})")
 
         # Display responses in the Streamlit UI using pprint_run_response
-        st.markdown("### Professor's Response:")
-        st.markdown(professor_response.content)
-        pprint_run_response(professor_response, markdown=True)
+        st.markdown("### KnowledgeBuilder Response:")
+        st.markdown(knowledge_response.content)
+        pprint_run_response(knowledge_response, markdown=True)
         st.divider()
-        
-        st.markdown("### Academic Advisor's Response:")
-        st.markdown(advisor_response.content)
-        pprint_run_response(advisor_response, markdown=True)
-        st.divider()
-
-        st.markdown("### Research Librarian's Response:")
-        st.markdown(librarian_response.content)
-        pprint_run_response(librarian_response, markdown=True)
+        st.markdown("### RoadmapArchitect Response:")
+        st.markdown(roadmap_response.content)
+        pprint_run_response(roadmap_response, markdown=True)
         st.divider()
 
-        st.markdown("### Teaching Assistant's Response:")
-        st.markdown(assistant_response.content)
-        pprint_run_response(assistant_response, markdown=True)
+        st.markdown("### ResourceCurator Response:")
+        st.markdown(resource_response.content)
+        pprint_run_response(resource_response, markdown=True)
         st.divider()
 
+        st.markdown("### PracticeDesigner Response:")
+        st.markdown(practice_response.content)
+        pprint_run_response(practice_response, markdown=True)
+        st.divider()
 # Information about the agents
 st.markdown("---")
 st.markdown("### About the Agents:")
 st.markdown("""
-- **Professor**: Researches the topic and creates a detailed knowledge base.
-- **Academic Advisor**: Designs a structured learning roadmap for the topic.
-- **Research Librarian**: Curates high-quality learning resources.
-- **Teaching Assistant**: Creates practice materials, exercises, and projects.
+- **KnowledgeBuilder**: Researches the topic and creates a detailed knowledge base.
+- **RoadmapArchitect**: Designs a structured learning roadmap for the topic.
+- **ResourceCurator**: Curates high-quality learning resources.
+- **PracticeDesigner**: Creates practice materials, exercises, and projects.
 """)
