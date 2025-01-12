@@ -86,137 +86,141 @@ if st.button("Generate Game Concept"):
     if not api_key:
         st.error("Please enter your OpenAI API key.")
     else:
-        # Prepare the task based on user inputs
-        task = f"""
-        Create a game concept with the following details:
-        - Background Vibe: {background_vibe}
-        - Game Type: {game_type}
-        - Game Goal: {game_goal}
-        - Target Audience: {target_audience}
-        - Player Perspective: {player_perspective}
-        - Multiplayer Support: {multiplayer}
-        - Art Style: {art_style}
-        - Target Platforms: {', '.join(platform)}
-        - Development Time: {development_time} months
-        - Budget: ${cost:,}
-        - Core Mechanics: {', '.join(core_mechanics)}
-        - Mood/Atmosphere: {', '.join(mood)}
-        - Inspiration: {inspiration}
-        - Unique Features: {unique_features}
-        - Detail Level: {depth}
-        """
-
-        # Configure OpenAI model client with the API key
-        llm_config = {
-            "timeout": 600,
-            "cache_seed": 44,  # change the seed for different trials
-            "config_list": [
-                {
-                    "model": "gpt-4o-mini",
-                    "api_key": api_key,
-                }
-            ],
-            "temperature": 0,
-        }
-
-        # Define a task-provider agent
-        task_agent = autogen.AssistantAgent(
-            name="task_agent",
-            llm_config=llm_config,
-            system_message="You are a task provider. Your only job is to provide the task details to the other agents.",
-        )
-
-        # Define agents with detailed system prompts
-        story_agent = autogen.AssistantAgent(
-            name="story_agent",
-            llm_config=llm_config,
-            system_message="""
-            You are an experienced game story designer specializing in narrative design and world-building. Your task is to:
-            1. Create a compelling narrative that aligns with the specified game type and target audience.
-            2. Design memorable characters with clear motivations and character arcs.
-            3. Develop the game's world, including its history, culture, and key locations.
-            4. Plan story progression and major plot points.
-            5. Integrate the narrative with the specified mood/atmosphere.
-            6. Consider how the story supports the core gameplay mechanics.
-            Provide your response in a detailed, well-structured report format. Do not use XML tags.
+        with st.spinner('🤖 AI Agents are collaborating on your game concept...'):
+            # Prepare the task based on user inputs
+            task = f"""
+            Create a game concept with the following details:
+            - Background Vibe: {background_vibe}
+            - Game Type: {game_type}
+            - Game Goal: {game_goal}
+            - Target Audience: {target_audience}
+            - Player Perspective: {player_perspective}
+            - Multiplayer Support: {multiplayer}
+            - Art Style: {art_style}
+            - Target Platforms: {', '.join(platform)}
+            - Development Time: {development_time} months
+            - Budget: ${cost:,}
+            - Core Mechanics: {', '.join(core_mechanics)}
+            - Mood/Atmosphere: {', '.join(mood)}
+            - Inspiration: {inspiration}
+            - Unique Features: {unique_features}
+            - Detail Level: {depth}
             """
-        )
 
-        gameplay_agent = autogen.AssistantAgent(
-            name="gameplay_agent",
-            llm_config=llm_config,
-            system_message="""
-            You are a senior game mechanics designer with expertise in player engagement and systems design. Your task is to:
-            1. Design core gameplay loops that match the specified game type and mechanics.
-            2. Create progression systems (character development, skills, abilities).
-            3. Define player interactions and control schemes for the chosen perspective.
-            4. Balance gameplay elements for the target audience.
-            5. Design multiplayer interactions if applicable.
-            6. Specify game modes and difficulty settings.
-            7. Consider the budget and development time constraints.
-            Provide your response in a detailed, well-structured report format. Do not use XML tags.
-            """
-        )
-
-        visuals_agent = autogen.AssistantAgent(
-            name="visuals_agent",
-            llm_config=llm_config,
-            system_message="""
-            You are a creative art director with expertise in game visual and audio design. Your task is to:
-            1. Define the visual style guide matching the specified art style.
-            2. Design character and environment aesthetics.
-            3. Plan visual effects and animations.
-            4. Create the audio direction including music style, sound effects, and ambient sound.
-            5. Consider technical constraints of chosen platforms.
-            6. Align visual elements with the game's mood/atmosphere.
-            7. Work within the specified budget constraints.
-            Provide your response in a detailed, well-structured report format. Do not use XML tags.
-            """
-        )
-
-        tech_agent = autogen.AssistantAgent(
-            name="tech_agent",
-            llm_config=llm_config,
-            system_message="""
-            You are a technical director with extensive game development experience. Your task is to:
-            1. Recommend appropriate game engine and development tools.
-            2. Define technical requirements for all target platforms.
-            3. Plan the development pipeline and asset workflow.
-            4. Identify potential technical challenges and solutions.
-            5. Estimate resource requirements within the budget.
-            6. Consider scalability and performance optimization.
-            7. Plan for multiplayer infrastructure if applicable.
-            Provide your response in a detailed, well-structured report format. Do not use XML tags.
-            """
-        )
-
-        # Function to run agents sequentially
-        def run_agents_sequentially(task):
-            # Task agent provides the task to each agent one by one
-            task_agent.initiate_chat(story_agent, message=task, max_turns=1)
-            story_response = story_agent.last_message()["content"]
-
-            task_agent.initiate_chat(gameplay_agent, message=task, max_turns=1)
-            gameplay_response = gameplay_agent.last_message()["content"]
-
-            task_agent.initiate_chat(visuals_agent, message=task, max_turns=1)
-            visuals_response = visuals_agent.last_message()["content"]
-
-            task_agent.initiate_chat(tech_agent, message=task, max_turns=1)
-            tech_response = tech_agent.last_message()["content"]
-
-            return {
-                "story": story_response,
-                "gameplay": gameplay_response,
-                "visuals": visuals_response,
-                "tech": tech_response,
+            # Configure OpenAI model client with the API key
+            llm_config = {
+                "timeout": 600,
+                "cache_seed": 44,  # change the seed for different trials
+                "config_list": [
+                    {
+                        "model": "gpt-4o-mini",
+                        "api_key": api_key,
+                    }
+                ],
+                "temperature": 0,
             }
 
-        # Run the agents sequentially and capture their responses
-        individual_responses = run_agents_sequentially(task)
+            # Define a task-provider agent
+            task_agent = autogen.AssistantAgent(
+                name="task_agent",
+                llm_config=llm_config,
+                system_message="You are a task provider. Your only job is to provide the task details to the other agents.",
+            )
 
-        # Update session state with the individual responses
-        st.session_state.output = individual_responses
+            # Define agents with detailed system prompts
+            story_agent = autogen.AssistantAgent(
+                name="story_agent",
+                llm_config=llm_config,
+                system_message="""
+                You are an experienced game story designer specializing in narrative design and world-building. Your task is to:
+                1. Create a compelling narrative that aligns with the specified game type and target audience.
+                2. Design memorable characters with clear motivations and character arcs.
+                3. Develop the game's world, including its history, culture, and key locations.
+                4. Plan story progression and major plot points.
+                5. Integrate the narrative with the specified mood/atmosphere.
+                6. Consider how the story supports the core gameplay mechanics.
+                Provide your response in a detailed, well-structured report format. Do not use XML tags.
+                """
+            )
+
+            gameplay_agent = autogen.AssistantAgent(
+                name="gameplay_agent",
+                llm_config=llm_config,
+                system_message="""
+                You are a senior game mechanics designer with expertise in player engagement and systems design. Your task is to:
+                1. Design core gameplay loops that match the specified game type and mechanics.
+                2. Create progression systems (character development, skills, abilities).
+                3. Define player interactions and control schemes for the chosen perspective.
+                4. Balance gameplay elements for the target audience.
+                5. Design multiplayer interactions if applicable.
+                6. Specify game modes and difficulty settings.
+                7. Consider the budget and development time constraints.
+                Provide your response in a detailed, well-structured report format. Do not use XML tags.
+                """
+            )
+
+            visuals_agent = autogen.AssistantAgent(
+                name="visuals_agent",
+                llm_config=llm_config,
+                system_message="""
+                You are a creative art director with expertise in game visual and audio design. Your task is to:
+                1. Define the visual style guide matching the specified art style.
+                2. Design character and environment aesthetics.
+                3. Plan visual effects and animations.
+                4. Create the audio direction including music style, sound effects, and ambient sound.
+                5. Consider technical constraints of chosen platforms.
+                6. Align visual elements with the game's mood/atmosphere.
+                7. Work within the specified budget constraints.
+                Provide your response in a detailed, well-structured report format. Do not use XML tags.
+                """
+            )
+
+            tech_agent = autogen.AssistantAgent(
+                name="tech_agent",
+                llm_config=llm_config,
+                system_message="""
+                You are a technical director with extensive game development experience. Your task is to:
+                1. Recommend appropriate game engine and development tools.
+                2. Define technical requirements for all target platforms.
+                3. Plan the development pipeline and asset workflow.
+                4. Identify potential technical challenges and solutions.
+                5. Estimate resource requirements within the budget.
+                6. Consider scalability and performance optimization.
+                7. Plan for multiplayer infrastructure if applicable.
+                Provide your response in a detailed, well-structured report format. Do not use XML tags.
+                """
+            )
+
+            # Function to run agents sequentially
+            def run_agents_sequentially(task):
+                # Task agent provides the task to each agent one by one
+                task_agent.initiate_chat(story_agent, message=task, max_turns=1)
+                story_response = story_agent.last_message()["content"]
+
+                task_agent.initiate_chat(gameplay_agent, message=task, max_turns=1)
+                gameplay_response = gameplay_agent.last_message()["content"]
+
+                task_agent.initiate_chat(visuals_agent, message=task, max_turns=1)
+                visuals_response = visuals_agent.last_message()["content"]
+
+                task_agent.initiate_chat(tech_agent, message=task, max_turns=1)
+                tech_response = tech_agent.last_message()["content"]
+
+                return {
+                    "story": story_response,
+                    "gameplay": gameplay_response,
+                    "visuals": visuals_response,
+                    "tech": tech_response,
+                }
+
+            # Run the agents sequentially and capture their responses
+            individual_responses = run_agents_sequentially(task)
+
+            # Update session state with the individual responses
+            st.session_state.output = individual_responses
+
+        # Display success message after completion
+        st.success('✨ Game concept generated successfully!')
 
         # Display the individual outputs in expanders
         with st.expander("Story Design"):
