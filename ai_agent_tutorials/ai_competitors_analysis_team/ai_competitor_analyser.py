@@ -4,6 +4,7 @@ from phi.agent import Agent
 from phi.tools.firecrawl import FirecrawlTools
 from phi.model.openai import OpenAIChat
 from phi.tools.duckduckgo import DuckDuckGo
+import pandas as pd
 
 # Streamlit UI
 st.set_page_config(page_title="AI Competitor Intelligence Agent", layout="wide")
@@ -48,14 +49,21 @@ if "openai_api_key" in st.session_state and "firecrawl_api_key" in st.session_st
     )
 
     firecrawl_agent = Agent(
-        model=OpenAIChat(id="gpt-4", api_key=st.session_state.openai_api_key),
+        model=OpenAIChat(id="gpt-4o-mini", api_key=st.session_state.openai_api_key),
         tools=[firecrawl_tools, DuckDuckGo()],
         show_tool_calls=True,
         markdown=True
     )
 
     analysis_agent = Agent(
-        model=OpenAIChat(id="gpt-4", api_key=st.session_state.openai_api_key),
+        model=OpenAIChat(id="gpt-4o-mini", api_key=st.session_state.openai_api_key),
+        show_tool_calls=True,
+        markdown=True
+    )
+
+    # New agent for comparing competitor data
+    comparison_agent = Agent(
+        model=OpenAIChat(id="gpt-4o-mini", api_key=st.session_state.openai_api_key),
         show_tool_calls=True,
         markdown=True
     )
@@ -87,28 +95,98 @@ if "openai_api_key" in st.session_state and "firecrawl_api_key" in st.session_st
             crawl_response = firecrawl_agent.run(f"Crawl and summarize {competitor_url}")
             crawled_data = crawl_response.content
             
-            structured_info = firecrawl_agent.run(
-                f"""Extract the following information from the crawled data:
-                - Product pricing and features: Extract exact pricing numbers from their pricing page.
-                - Technology stack information
-                - Marketing messaging/positioning
-                - Customer testimonials/case studies
-                - Latest news and developments (use DuckDuckGo to search for the latest news and developments)
-
-                Crawled Data:
-                {crawled_data}
-                """
-            )
-            
             return {
                 "competitor": competitor_url,
-                "data": structured_info.content
+                "data": crawled_data
             }
         except Exception as e:
+            st.error(f"Error extracting info for {competitor_url}: {e}")
             return {
                 "competitor": competitor_url,
                 "error": str(e)
             }
+
+    def generate_comparison_report(competitor_data: list) -> None:
+        """
+        Generate and display a comparison report of competitor data.
+        
+        Args:
+            competitor_data: List of dictionaries containing competitor information
+        """
+        # Combine all competitor data into a single string
+        combined_data = "\n\n".join([str(data) for data in competitor_data])
+
+        # Updated system prompt for more structured output
+        system_prompt = """
+        As an expert business analyst, analyze the competitor data and create a structured comparison table.
+        
+        Format the data in EXACTLY this markdown table structure:
+        | Company | Pricing | Key Features | Tech Stack | Marketing Focus | Customer Feedback |
+        |---------|---------|--------------|------------|-----------------|-------------------|
+        | [Company Name 1] | ... | ... | ... | ... | ... |
+        | [Company Name 2] | ... | ... | ... | ... | ... |
+        | [Company Name 3] | ... | ... | ... | ... | ... |
+        
+        Rules:
+        1. Always include all columns
+        2. Use the exact column names specified above
+        3. Keep entries concise but informative
+        4. Use pipe symbols (|) to separate columns
+        5. Include the separator row (|---|) after headers
+        
+        Competitor Data:
+        {combined_data}
+        """
+
+        # Get comparison table from agent
+        comparison_response = comparison_agent.run(
+            system_prompt.format(combined_data=combined_data)
+        )
+        
+        # Display the raw markdown table first
+        # st.subheader("Competitor Comparison (Markdown)")
+        # st.markdown(comparison_response.content)
+        
+        try:
+            # Split the markdown table into lines and clean them
+            table_lines = [
+                line.strip() 
+                for line in comparison_response.content.split('\n') 
+                if line.strip() and '|' in line
+            ]
+            
+            # Extract headers (first row)
+            headers = [
+                col.strip() 
+                for col in table_lines[0].split('|') 
+                if col.strip()
+            ]
+            
+            # Extract data rows (skip header and separator rows)
+            data_rows = []
+            for line in table_lines[2:]:  # Skip header and separator rows
+                row_data = [
+                    cell.strip() 
+                    for cell in line.split('|') 
+                    if cell.strip()
+                ]
+                if len(row_data) == len(headers):
+                    data_rows.append(row_data)
+            
+            # Create DataFrame with explicit index
+            df = pd.DataFrame(
+                data_rows,
+                columns=headers,
+                index=range(len(data_rows))
+            )
+            
+            # Display the DataFrame
+            st.subheader("Competitor Comparison (Table)")
+            st.table(df)
+            
+        except Exception as e:
+            st.error(f"Error converting table to DataFrame: {str(e)}")
+            st.write("Raw table data for debugging:", table_lines)
 
     def generate_analysis_report(competitor_data: list):
         combined_data = "\n\n".join([str(data) for data in competitor_data])
@@ -144,11 +222,16 @@ if "openai_api_key" in st.session_state and "firecrawl_api_key" in st.session_st
                     competitor_info = extract_competitor_info(url)
                     competitor_data.append(competitor_info)
             
+            # Generate and display comparison report
+            with st.spinner("Generating comparison table..."):
+                generate_comparison_report(competitor_data)
+            
+            # Generate and display final analysis report
             with st.spinner("Generating analysis report..."):
                 analysis_report = generate_analysis_report(competitor_data)
+                st.subheader("Competitor Analysis Report")
+                st.markdown(analysis_report)
             
             st.success("Analysis complete!")
-            st.subheader("Competitor Analysis Report")
-            st.markdown(analysis_report)
         else:
             st.error("Please provide either a URL or a description.")
