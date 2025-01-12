@@ -1,3 +1,4 @@
-agentarium==0.3.0
+pyautogen>=0.2.0
 beautifulsoup4==4.12.2
 lxml==4.9.3
+streamlit>=1.30.0

@@ -1,9 +1,7 @@
 import streamlit as st
 import asyncio
-from autogen import AssistantAgent
-from autogen.agentchat.groupchat import RoundRobinGroupChat
-from autogen.agentchat.conditions import TextMentionTermination
-from autogen.oai.client import OpenAIWrapper
+import autogen
+from autogen.agentchat import GroupChat, GroupChatManager
 from bs4 import BeautifulSoup
 
 # Initialize session state
@@ -82,15 +80,22 @@ if st.button("Generate Game Concept"):
         """
 
         # Configure OpenAI model client with the API key
-        model_client = OpenAIWrapper(
-            model="gpt-4-0613",
-            api_key=api_key
-        )
+        llm_config = {
+            "timeout": 600,
+            "cache_seed": 44,  # change the seed for different trials
+            "config_list": [
+                {
+                    "model": "gpt-4",
+                    "api_key": api_key,
+                }
+            ],
+            "temperature": 0,
+        }
 
         # Define agents with detailed system prompts
-        story_agent = AssistantAgent(
-            "story_agent",
-            model_client=model_client,
+        story_agent = autogen.AssistantAgent(
+            name="story_agent",
+            llm_config=llm_config,
             system_message="""
             You are an experienced game story designer specializing in narrative design and world-building. Your task is to:
             1. Create a compelling narrative that aligns with the specified game type and target audience
@@ -125,9 +130,9 @@ if st.button("Generate Game Concept"):
             """
         )
 
-        gameplay_agent = AssistantAgent(
-            "gameplay_agent",
-            model_client=model_client,
+        gameplay_agent = autogen.AssistantAgent(
+            name="gameplay_agent",
+            llm_config=llm_config,
             system_message="""
             You are a senior game mechanics designer with expertise in player engagement and systems design. Your task is to:
             1. Design core gameplay loops that match the specified game type and mechanics
@@ -160,9 +165,9 @@ if st.button("Generate Game Concept"):
             """
         )
 
-        visuals_agent = AssistantAgent(
-            "visuals_agent",
-            model_client=model_client,
+        visuals_agent = autogen.AssistantAgent(
+            name="visuals_agent",
+            llm_config=llm_config,
             system_message="""
             You are a creative art director with expertise in game visual and audio design. Your task is to:
             1. Define the visual style guide matching the specified art style
@@ -202,9 +207,9 @@ if st.button("Generate Game Concept"):
             """
         )
 
-        tech_agent = AssistantAgent(
-            "tech_agent",
-            model_client=model_client,
+        tech_agent = autogen.AssistantAgent(
+            name="tech_agent",
+            llm_config=llm_config,
             system_message="""
             You are a technical director with extensive game development experience. Your task is to:
             1. Recommend appropriate game engine and development tools
@@ -246,19 +251,26 @@ if st.button("Generate Game Concept"):
             """
         )
 
-        # Define termination condition
-        text_termination = TextMentionTermination("APPROVE")
+        # Create the group chat
+        groupchat = GroupChat(
+            agents=[story_agent, gameplay_agent, visuals_agent, tech_agent],
+            messages=[],
+            speaker_selection_method="round_robin",
+            allow_repeat_speaker=False,
+            max_round=12,
+        )
 
-        # Create the team
-        team = RoundRobinGroupChat(
-            [story_agent, gameplay_agent, visuals_agent, tech_agent],
-            termination_condition=text_termination
+        # Create the group chat manager
+        manager = GroupChatManager(
+            groupchat=groupchat,
+            llm_config=llm_config,
+            is_termination_msg=lambda x: x.get("content", "").find("TERMINATE") >= 0,
         )
 
         # Function to run the agent collaboration
         async def run_agents(task):
-            result = await team.run(task=task)
-            return result.content
+            await story_agent.initiate_chat(manager, message=task)
+            return manager.last_message()["content"]
 
         # Run the agents and get the result
         loop = asyncio.new_event_loop()
@@ -266,7 +278,6 @@ if st.button("Generate Game Concept"):
         result = loop.run_until_complete(run_agents(task))
 
         # Parse the result and update session state
-        # Create BeautifulSoup object from the result
         soup = BeautifulSoup(result, 'xml')
 
         # Extract sections
