@@ -10,8 +10,37 @@ if 'output' not in st.session_state:
 st.sidebar.title("API Key")
 api_key = st.sidebar.text_input("Enter your OpenAI API Key", type="password")
 
+# Add guidance in sidebar
+st.sidebar.success("""
+✨ **Getting Started**
+
+Please provide inputs and features for your dream game! Consider:
+- The overall vibe and setting
+- Core gameplay elements
+- Target audience and platforms
+- Visual style preferences
+- Technical requirements
+
+The AI agents will collaborate to develop a comprehensive game concept based on your specifications.
+""")
+
 # Main app UI
-st.title("Game Development AI Agent Collaboration")
+st.title("AI Game Development Agent Advisory")
+
+# Add agent information below title
+st.info("""
+**Meet Your AI Game Development Team:**
+
+🎭 **Story Agent** - Crafts compelling narratives and rich worlds
+
+🎮 **Gameplay Agent** - Creates engaging mechanics and systems
+
+🎨 **Visuals Agent** - Shapes the artistic vision and style
+
+⚙️ **Tech Agent** - Provides technical direction and solutions
+                
+These agents collaborate to create a comprehensive game concept based on your inputs.
+""")
 
 # User inputs
 st.subheader("Game Details")
@@ -83,7 +112,7 @@ if st.button("Generate Game Concept"):
             "cache_seed": 44,  # change the seed for different trials
             "config_list": [
                 {
-                    "model": "gpt-4",
+                    "model": "gpt-4o-mini",
                     "api_key": api_key,
                 }
             ],
@@ -94,7 +123,7 @@ if st.button("Generate Game Concept"):
         task_agent = autogen.AssistantAgent(
             name="task_agent",
             llm_config=llm_config,
-            system_message="You are a task provider. Your only job is to provide the task details to the group chat.",
+            system_message="You are a task provider. Your only job is to provide the task details to the other agents.",
         )
 
         # Define agents with detailed system prompts
@@ -161,7 +190,47 @@ if st.button("Generate Game Concept"):
             """
         )
 
-        # Create the group chat
+        # Function to run agents sequentially
+        def run_agents_sequentially(task):
+            # Task agent provides the task to each agent one by one
+            task_agent.initiate_chat(story_agent, message=task, max_turns=1)
+            story_response = story_agent.last_message()["content"]
+
+            task_agent.initiate_chat(gameplay_agent, message=task, max_turns=1)
+            gameplay_response = gameplay_agent.last_message()["content"]
+
+            task_agent.initiate_chat(visuals_agent, message=task, max_turns=1)
+            visuals_response = visuals_agent.last_message()["content"]
+
+            task_agent.initiate_chat(tech_agent, message=task, max_turns=1)
+            tech_response = tech_agent.last_message()["content"]
+
+            return {
+                "story": story_response,
+                "gameplay": gameplay_response,
+                "visuals": visuals_response,
+                "tech": tech_response,
+            }
+
+        # Run the agents sequentially and capture their responses
+        individual_responses = run_agents_sequentially(task)
+
+        # Update session state with the individual responses
+        st.session_state.output = individual_responses
+
+        # Display the individual outputs in expanders
+        with st.expander("Story Design"):
+            st.markdown(st.session_state.output['story'])
+
+        with st.expander("Gameplay Mechanics"):
+            st.markdown(st.session_state.output['gameplay'])
+
+        with st.expander("Visual and Audio Design"):
+            st.markdown(st.session_state.output['visuals'])
+
+        with st.expander("Technical Recommendations"):
+            st.markdown(st.session_state.output['tech'])
+
         groupchat = GroupChat(
             agents=[task_agent, story_agent, gameplay_agent, visuals_agent, tech_agent],
             messages=[],
@@ -186,22 +255,3 @@ if st.button("Generate Game Concept"):
                 "visuals": visuals_agent.last_message()["content"],
                 "tech": tech_agent.last_message()["content"],
             }
-
-        # Run the agents and get the result
-        result = run_agents(task)
-
-        # Update session state with the results
-        st.session_state.output = result
-
-        # Display the outputs in expanders
-        with st.expander("Story Design"):
-            st.markdown(st.session_state.output['story'])
-
-        with st.expander("Gameplay Mechanics"):
-            st.markdown(st.session_state.output['gameplay'])
-
-        with st.expander("Visual and Audio Design"):
-            st.markdown(st.session_state.output['visuals'])
-
-        with st.expander("Technical Recommendations"):
-            st.markdown(st.session_state.output['tech'])
