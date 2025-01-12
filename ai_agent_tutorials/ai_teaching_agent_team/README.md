@@ -57,6 +57,8 @@ A Streamlit application that brings together a team of specialized AI teaching a
   - Select Google Account and Done.
   - On the composio account website, go to apps, select google docs tool, and [click create integration](https://app.composio.dev/app/googledocs) (violet button) and click Try connecting default’s googldocs button and we are done. 
 
+3. Sign up and get the [SerpAPI Key](https://serpapi.com/)
+
 ## How to Use? 
 
 1. Start the Streamlit app
