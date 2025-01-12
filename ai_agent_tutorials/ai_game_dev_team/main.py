@@ -109,7 +109,6 @@ if st.button("Generate Game Concept"):
             4. Plan story progression and major plot points.
             5. Integrate the narrative with the specified mood/atmosphere.
             6. Consider how the story supports the core gameplay mechanics.
-
             Provide your response in a detailed, well-structured report format. Do not use XML tags.
             """
         )
@@ -126,7 +125,6 @@ if st.button("Generate Game Concept"):
             5. Design multiplayer interactions if applicable.
             6. Specify game modes and difficulty settings.
             7. Consider the budget and development time constraints.
-
             Provide your response in a detailed, well-structured report format. Do not use XML tags.
             """
         )
@@ -143,7 +141,6 @@ if st.button("Generate Game Concept"):
             5. Consider technical constraints of chosen platforms.
             6. Align visual elements with the game's mood/atmosphere.
             7. Work within the specified budget constraints.
-
             Provide your response in a detailed, well-structured report format. Do not use XML tags.
             """
         )
@@ -160,7 +157,6 @@ if st.button("Generate Game Concept"):
             5. Estimate resource requirements within the budget.
             6. Consider scalability and performance optimization.
             7. Plan for multiplayer infrastructure if applicable.
-
             Provide your response in a detailed, well-structured report format. Do not use XML tags.
             """
         )
