@@ -1,0 +1,12 @@
+langchain_google_genai
+langchain-huggingface
+langchain_community
+langchain-chroma
+langchain_core
+langchain_text_splitters
+nltk
+tiktoken
+sentence-transformers
+unstructured[all-docs]
+jq
+pypdf
