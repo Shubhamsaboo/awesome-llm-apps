@@ -34,7 +34,7 @@ st.info(
 )
 
 # Input fields for URL and description
-url = st.text_input("Enter your company URL (optional):")
+url = st.text_input("Enter your company URL :")
 description = st.text_area("Enter a description of your company (if URL is not available):")
 
 # Initialize API keys and tools
@@ -144,8 +144,8 @@ if "openai_api_key" in st.session_state and "firecrawl_api_key" in st.session_st
         )
         
         # Display the raw markdown table first
-        # st.subheader("Competitor Comparison (Markdown)")
-        # st.markdown(comparison_response.content)
+        st.subheader("Competitor Comparison")
+        st.markdown(comparison_response.content)
         
         try:
             # Split the markdown table into lines and clean them
@@ -180,9 +180,9 @@ if "openai_api_key" in st.session_state and "firecrawl_api_key" in st.session_st
                 index=range(len(data_rows))
             )
             
-            # Display the DataFrame
-            st.subheader("Competitor Comparison (Table)")
-            st.table(df)
+            # # Display the DataFrame
+            # st.subheader("Competitor Comparison Table")
+            # st.table(df)
             
         except Exception as e:
             st.error(f"Error converting table to DataFrame: {str(e)}")
