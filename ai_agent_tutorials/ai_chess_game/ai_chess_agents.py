@@ -220,9 +220,16 @@ The game is managed by a **Game Master** that:
             )
             st.markdown(chat_result.summary)
 
+            # Display the move history (boards for each move)
             st.subheader("Move History")
             for i, move_svg in enumerate(st.session_state.move_history):
-                st.write(f"Move {i + 1}")
+                # Determine which agent made the move
+                if i % 2 == 0:
+                    move_by = "Agent White"  # Even-indexed moves are by White
+                else:
+                    move_by = "Agent Black"  # Odd-indexed moves are by Black
+                
+                st.write(f"Move {i + 1} by {move_by}")
                 st.image(move_svg)
 
         if st.button("Reset Game"):
