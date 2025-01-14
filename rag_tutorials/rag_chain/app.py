@@ -84,6 +84,7 @@ def run_rag_chain(query):
     # Initialize a Generator (i.e. Chat Model)
     chat_model = ChatGoogleGenerativeAI(
         model="gemini-1.5-pro",
+        api_key=st.session_state.get("gemini_api_key"),
         temperature=1
     )
 
@@ -117,8 +118,20 @@ def main():
                 st.write(result)
 
     with st.sidebar:
-        st.title("Upload your research documents (Optional) :memo:")
-        pdf_docs = st.file_uploader("Enhance your query by uploading PDF files related to Pharmaceutical Sciences.",
+        st.title("API Keys")
+        gemini_api_key = st.text_input("Enter your Gemini API key:", type="password")
+
+        if st.button("Enter"):
+            if gemini_api_key:
+                st.session_state.gemini_api_key = gemini_api_key
+                st.success("API key saved!")
+
+            else:
+                st.warning("Please enter your Gemini API key to proceed.")
+    
+    with st.sidebar:
+        st.markdown("---")
+        pdf_docs = st.file_uploader("Upload your research documents related to Pharmaceutical Sciences (Optional) :memo:",
                                     type=["pdf"],
                                     accept_multiple_files=True
         )
