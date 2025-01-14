@@ -24,9 +24,9 @@ if openai_api_key:
     st.sidebar.success("API key saved!")
 
 # Function to get legal moves
-def get_legal_moves() -> Annotated[str, "A list of legal moves in UCI format"]:
-    legal_moves = [str(move) for move in st.session_state.board.legal_moves]
-    return "Possible moves are: " + ",".join(legal_moves)
+def available_moves() -> Annotated[str, "A list of available legal moves in the UCI format"]:
+    available_moves = [str(move) for move in st.session_state.board.legal_moves]
+    return "Available moves are: " + ",".join(available_moves)
 
 # Function to make a move
 def make_move(move: Annotated[str, "A move in UCI format."]) -> Annotated[str, "Result of the move."]:
@@ -83,14 +83,14 @@ def check_made_move(msg):
 if st.session_state.openai_api_key:
     player_white_config_list = [
         {
-            "model": "gpt-4-turbo-preview",
+            "model": "gpt-4o-mini",
             "api_key": st.session_state.openai_api_key,
         },
     ]
 
     player_black_config_list = [
         {
-            "model": "gpt-4-turbo-preview",
+            "model": "gpt-4o-mini",
             "api_key": st.session_state.openai_api_key,
         },
     ]
@@ -130,10 +130,10 @@ if st.session_state.openai_api_key:
     )
 
     register_function(
-        get_legal_moves,
+        available_moves,
         caller=player_white,
         executor=board_proxy,
-        name="get_legal_moves",
+        name="available_moves",
         description="Get legal moves.",
     )
 
@@ -146,10 +146,10 @@ if st.session_state.openai_api_key:
     )
 
     register_function(
-        get_legal_moves,
+        available_moves,
         caller=player_black,
         executor=board_proxy,
-        name="get_legal_moves",
+        name="available_moves",
         description="Get legal moves.",
     )
 
@@ -192,11 +192,12 @@ if st.session_state.openai_api_key:
 
         # Initiate the chat between Player_White and Board_Proxy
         chat_result = player_black.initiate_chat(
-            player_white,
+            recipient=player_white,
             message="Let's play chess! You go first, its your move.",
-            max_turns=5,  # Set a high enough number to allow the game to complete
+            max_turns=5, 
+            summary_method="reflection_with_llm" # Set a high enough number to allow the game to complete
         )
-        st.markdown(chat_result.chat_history)
+        st.markdown(chat_result.summary)
 
 else:
     st.warning("Please enter your OpenAI API key in the sidebar to start the game.")
