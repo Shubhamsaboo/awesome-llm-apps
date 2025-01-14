@@ -3,8 +3,8 @@
 ## Overview
 PharmaQuery is an advanced Pharmaceutical Insight Retrieval System designed to help users gain meaningful insights from research papers and documents in the pharmaceutical domain.
 
-## PharmaQuery Architecture
-![PharmaQuery-Architecture](https://github.com/user-attachments/assets/c8a2cff7-f004-415c-8b1e-5387999680b4)
+## Demo
+https://github.com/user-attachments/assets/c12ee305-86fe-4f71-9219-57c7f438f291
 
 ## Features
 - **Natural Language Querying**: Ask complex questions about the pharmaceutical industry and get concise, accurate answers.
@@ -28,21 +28,13 @@ PharmaQuery is an advanced Pharmaceutical Insight Retrieval System designed to h
    pip install -r requirements.txt
    ```
 
-2. **Set Up Environment Variables**:
-   Create a `.env` file in the project root directory with the following variables:
-
-    ```bash
-    GOOGLE_API_KEY="your_google_gemini_api_key"
-    ```
-
-    `Note:` Replace `your_google_gemini_api_key` with actual key.
-
-3. **Run the Application**:
+2. **Run the Application**:
    ```bash
    streamlit run app.py
    ```
 
-4. **Use the Application**:
+3. **Use the Application**:
+   - Paste your Google API Key in the sidebar.
    - Enter your query in the main interface.
    - Optionally, upload research papers in the sidebar to enhance the database.
 
