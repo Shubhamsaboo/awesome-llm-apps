@@ -2,6 +2,10 @@
 
 This is a simple Chess game that uses an AI agents - Player black and player white to play the game. There's also a board proxy agent to execute the tools and manage the game. It is important to use a board proxy as a non-LLM "guard rail" to ensure the game is played correctly and to prevent agents from making illegal moves.
 
+Two agents (player_white and player_black) are initialized using the OpenAI API key. These agents are configured to play chess as white and black, respectively.
+A board_proxy agent is created to manage the board state and validate moves.
+Functions (make_move and available_moves) are registered with the agents to allow them to interact with the board.
+
 
 ### How to get Started?
 
