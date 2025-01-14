@@ -52,25 +52,28 @@ def execute_move(move: str) -> str:
         if chess_move not in st.session_state.board.legal_moves:
             return f"Invalid move: {move}. Please call available_moves() to see valid moves."
         
+        # Update board state
         st.session_state.board.push(chess_move)
         st.session_state.made_move = True
 
-        board_svg = chess.svg.board(
-            st.session_state.board,
-            arrows=[(chess_move.from_square, chess_move.to_square)],
-            fill={chess_move.from_square: "gray"},
-            size=400
-        )
+        # Generate and store board visualization
+        board_svg = chess.svg.board(st.session_state.board,
+                                  arrows=[(chess_move.from_square, chess_move.to_square)],
+                                  fill={chess_move.from_square: "gray"},
+                                  size=400)
         st.session_state.board_svg = board_svg
         st.session_state.move_history.append(board_svg)
 
+        # Get piece information
         moved_piece = st.session_state.board.piece_at(chess_move.to_square)
         piece_unicode = moved_piece.unicode_symbol()
         piece_type_name = chess.piece_name(moved_piece.piece_type)
         piece_name = piece_type_name.capitalize() if piece_unicode.isupper() else piece_type_name
         
-        move_desc = f"Moved {piece_name} ({piece_unicode}) from {chess.SQUARE_NAMES[chess_move.from_square]} to {chess.SQUARE_NAMES[chess_move.to_square]}."
-        
+        # Generate move description
+        from_square = chess.SQUARE_NAMES[chess_move.from_square]
+        to_square = chess.SQUARE_NAMES[chess_move.to_square]
+        move_desc = f"Moved {piece_name} ({piece_unicode}) from {from_square} to {to_square}."
         if st.session_state.board.is_checkmate():
             winner = 'White' if st.session_state.board.turn == chess.BLACK else 'Black'
             move_desc += f"\nCheckmate! {winner} wins!"
@@ -111,7 +114,7 @@ if st.session_state.openai_api_key:
         agent_white = ConversableAgent(
             name="Agent_White",  
             system_message="You are a professional chess player and you play as white. "
-            "First call available_moves() first, to get list of legal moves. "
+            "First call available_moves() first, to get list of legal available moves. "
             "Then call execute_move(move) to make a move.",
             llm_config={"config_list": agent_white_config_list, "cache_seed": None},
         )
@@ -119,7 +122,7 @@ if st.session_state.openai_api_key:
         agent_black = ConversableAgent(
             name="Agent_Black",  
             system_message="You are a professional chess player and you play as black. "
-            "First call available_moves() first, to get list of legal moves. "
+            "First call available_moves() first, to get list of legal available moves. "
             "Then call execute_move(move) to make a move.",
             llm_config={"config_list": agent_black_config_list, "cache_seed": None},
         )
