@@ -14,8 +14,6 @@ company_name = "Rollout AI"
 company_description = "voice cloning open source models or api"
 keywords = "https://rollout.site"
 
-# Craft the query
-query = f" website blogs, forums, and reddit communities URL to {company_description}, where i can find people looking for similar services"
 query1 = f" reddit and quora websites where people are looking for {company_description} services"
 
 # Set the payload
@@ -45,3 +43,24 @@ if response.status_code == 200:
 else:
     print(f"Failed to retrieve data. Status code: {response.status_code}")
 
+
+
+    firecrawl_tools = FirecrawlTools(
+        api_key=st.session_state.firecrawl_api_key,
+        scrape=False,
+        crawl=True,
+        limit=5
+    )
+
+    firecrawl_agent = Agent(
+        model=OpenAIChat(id="gpt-4o-mini", api_key=st.session_state.openai_api_key),
+        tools=[firecrawl_tools, DuckDuckGo()],
+        show_tool_calls=True,
+        markdown=True
+    )
+
+    analysis_agent = Agent(
+        model=OpenAIChat(id="gpt-4o-mini", api_key=st.session_state.openai_api_key),
+        show_tool_calls=True,
+        markdown=True
+    )
