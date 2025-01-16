@@ -22,7 +22,7 @@ class QuoraPageSchema(BaseModel):
     interactions: List[QuoraUserInteractionSchema] = Field(description="List of all user interactions (questions and answers) on the page")
 
 # Step 1: Search for relevant URLs using Firecrawl
-def search_for_urls(company_description, firecrawl_api_key):
+def search_for_urls(company_description, firecrawl_api_key, num_links):
     print("Step 1: Searching for relevant URLs using Firecrawl...")
     url = "https://api.firecrawl.dev/v1/search"
     headers = {
@@ -32,7 +32,7 @@ def search_for_urls(company_description, firecrawl_api_key):
     query1 = f"quora websites where people are looking for {company_description} services"
     payload = {
         "query": query1,
-        "limit": 3,  # Adjust the limit as needed
+        "limit": num_links,  # Use the num_links parameter here
         "lang": "en",
         "location": "United States",
         "timeout": 60000,
@@ -151,12 +151,23 @@ def main():
     st.title("AI Lead Generation Agent")
     st.info("This firecrawl powered agent helps you generate leads from Quora by searching for relevant posts and extracting user information.")
 
-    # Sidebar for API keys
+    # Sidebar for API keys and number of links
     with st.sidebar:
         st.header("API Keys")
         firecrawl_api_key = st.text_input("Firecrawl API Key", type="password")
+        st.caption(" Get your Firecrawl API key from [Firecrawl's website](https://www.firecrawl.dev/app/api-keys)")
         openai_api_key = st.text_input("OpenAI API Key", type="password")
+        st.caption(" Get your Composio API key from [Composio's website](https://composio.ai)")
         composio_api_key = st.text_input("Composio API Key", type="password")
+        st.caption(" Get your OpenAI API key from [OpenAI's website](https://platform.openai.com/api-keys)")
+        
+        # Add a numeric input for the number of links
+        num_links = st.number_input("Number of links to search", min_value=1, max_value=10, value=3)
+        
+        # Reset button
+        if st.button("Reset"):
+            st.session_state.clear()
+            st.experimental_rerun()
 
     # Main input for company description
     company_description = st.text_input("Enter your company description or the niche you want to find leads in:", placeholder="e.g. AI voice cloning, Video Generation AI tools")
@@ -166,7 +177,7 @@ def main():
             st.error("Please fill in all the API keys and the company description.")
         else:
             with st.spinner("Searching for relevant URLs..."):
-                urls = search_for_urls(company_description, firecrawl_api_key)
+                urls = search_for_urls(company_description, firecrawl_api_key, num_links)  # Pass num_links to search_for_urls
             
             if urls:
                 st.subheader("Quora Links Used:")
