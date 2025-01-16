@@ -1,16 +1,34 @@
+import streamlit as st
 import requests
 from phi.agent import Agent
 from phi.tools.firecrawl import FirecrawlTools
 from phi.model.openai import OpenAIChat
+from firecrawl import FirecrawlApp
+from pydantic import BaseModel, Field
+from typing import List
+from composio_phidata import Action, ComposioToolSet
+
+# Define a schema for a single user interaction (question or answer)
+class QuoraUserInteractionSchema(BaseModel):
+    username: str = Field(description="The username of the user who posted the question or answer")
+    bio: str = Field(description="The bio or description of the user")
+    post_type: str = Field(description="The type of post, either 'question' or 'answer'")
+    timestamp: str = Field(description="When the question or answer was posted")
+    upvotes: int = Field(default=0, description="Number of upvotes received")
+    links: List[str] = Field(default_factory=list, description="Any links included in the post")
+
+# Define a schema for the entire page, containing multiple interactions
+class QuoraPageSchema(BaseModel):
+    interactions: List[QuoraUserInteractionSchema] = Field(description="List of all user interactions (questions and answers) on the page")
 
 # Step 1: Search for relevant URLs using Firecrawl
-def search_for_urls():
+def search_for_urls(company_description, firecrawl_api_key):
+    print("Step 1: Searching for relevant URLs using Firecrawl...")
     url = "https://api.firecrawl.dev/v1/search"
     headers = {
-        "Authorization": "Bearer fc-",  # Replace with your Firecrawl API key
+        "Authorization": f"Bearer {firecrawl_api_key}",
         "Content-Type": "application/json"
     }
-    company_description = "voice cloning open source models or api"
     query1 = f"quora websites where people are looking for {company_description} services"
     payload = {
         "query": query1,
@@ -24,6 +42,7 @@ def search_for_urls():
         data = response.json()
         if data.get("success"):
             results = data.get("data", [])
+            print(f"Found {len(results)} relevant URLs.")
             return [result["url"] for result in results]
         else:
             print("Search request was not successful.")
@@ -32,89 +51,145 @@ def search_for_urls():
         print(f"Failed to retrieve data. Status code: {response.status_code}")
     return []
 
-# Step 2: Set up the Firecrawl Agent
-firecrawl_tools = FirecrawlTools(
-    api_key="fc-",  # Replace with your Firecrawl API key
-    scrape=True,    # Enable scraping to extract detailed content
-    crawl=True,     # Enable crawling
-    limit=5         # Limit the number of pages to crawl
-)
-
-# First Agent: Crawls the website and retrieves content
-firecrawl_agent = Agent(
-    model=OpenAIChat(id="gpt-4o-mini", api_key="sk-proj-"),  # Replace with your OpenAI API key
-    tools=[firecrawl_tools],  # Add Firecrawl tools
-    show_tool_calls=False,    # Disable verbose tool call output
-    markdown=True
-)
-
-# Second Agent: Processes verbose output and extracts user information
-extraction_agent = Agent(
-    model=OpenAIChat(id="gpt-4o-mini", api_key="sk-proj-"),  # Replace with your OpenAI API key
-    show_tool_calls=False,
-    system_prompt="You are an expert at extracting user information from responses. You are given a long response of extracted and crawled website information and you need to extract the user information only. Focus on extracting information about both the question asker and the answerers, as they are potential leads.",
-    markdown=True
-)
-
-# Step 3: Define a function to analyze user info directly from URLs
-def analyze_user_info_from_urls(urls):
+# Step 2: Extract user info from URLs using Firecrawl's LLM extract
+def extract_user_info_from_urls(urls, firecrawl_api_key):
+    print("\nStep 2: Extracting user info from URLs using Firecrawl's LLM extract...")
     user_info_list = []
+    firecrawl_app = FirecrawlApp(api_key=firecrawl_api_key)
     for website_url in urls:
-        print(f"Analyzing website: {website_url}")
+        print(f"Extracting user info from: {website_url}")
         
-        # Step 3.1: Directly instruct the first agent to crawl and analyze the website
-        analysis_prompt = (
-            f"Visit the website {website_url} using Firecrawl and analyze its content to extract the following information:\n"
-            "1. Username of the person asking the question.\n"
-            "2. The content of their question.\n"
-            "3. Usernames of people answering the question.\n"
-            "4. The content of their answers.\n"
-            "5. Any additional relevant information (e.g., timestamp, upvotes, links, user bio, location).\n\n"
-            "Return the extracted information in a structured format."
-        )
+        # Use Firecrawl's LLM extract to get structured data
+        data = firecrawl_app.scrape_url(website_url, {
+            'formats': ['extract'],
+            'extract': {
+                'schema': QuoraPageSchema.model_json_schema(),
+            }
+        })
         
-        # Step 3.2: Run the first agent with the analysis prompt
-        analysis_response = firecrawl_agent.run(analysis_prompt)
-        analysis_result = analysis_response.content
+        # Extract the interactions from the response
+        extracted_data = data.get("extract", {})
+        interactions = extracted_data.get("interactions", [])
         
-        # Step 3.3: Use the second agent to extract only the user information
-        extraction_prompt = (
-            f"Extract only the following user information from the content below:\n"
-            "1. Username (for both question asker and answerers)\n"
-            "2. Post content (question or answer)\n"
-            "3. Timestamp\n"
-            "4. Upvotes\n"
-            "5. Links (if available)\n"
-            "6. Any additional relevant information (e.g., user bio, location)\n\n"
-            f"Content:\n{analysis_result}"
-        )
-        extraction_response = extraction_agent.run(extraction_prompt)
-        extracted_info = extraction_response.content
-        
-        # Step 3.4: Store the results
+        # Store the results
         user_info_list.append({
             "website_url": website_url,
-            "user_info": extracted_info
+            "user_info": interactions
         })
+        print(f"Extracted {len(interactions)} interactions from {website_url}.")
     return user_info_list
 
-# Step 4: Main workflow
-def main():
-    # Step 4.1: Search for relevant URLs
-    urls = search_for_urls()
-    print("Relevant URLs Found:")
-    for url in urls:
-        print(url)
-
-    # Step 4.2: Analyze user info directly from the URLs
-    user_info_list = analyze_user_info_from_urls(urls)
-
-    # Step 4.3: Print the extracted information in a detailed format
-    print("\nExtracted User Information:")
+# Step 3: Format the extracted user info into a flattened JSON structure
+def format_user_info_to_flattened_json(user_info_list):
+    print("\nStep 3: Formatting the extracted user info into a flattened JSON structure...")
+    flattened_data = []
+    
     for info in user_info_list:
-        print(f"Website: {info['website_url']}")
-        print(f"User Info:\n{info['user_info']}\n")
+        website_url = info["website_url"]
+        user_info = info["user_info"]
+        
+        for interaction in user_info:
+            flattened_interaction = {
+                "Website URL": website_url,
+                "Username": interaction.get("username", ""),
+                "Bio": interaction.get("bio", ""),
+                "Post Type": interaction.get("post_type", ""),
+                "Timestamp": interaction.get("timestamp", ""),
+                "Upvotes": interaction.get("upvotes", 0),
+                "Links": ", ".join(interaction.get("links", [])),  # Convert list of links to a single string
+            }
+            flattened_data.append(flattened_interaction)
+    
+    print(f"Formatted {len(flattened_data)} interactions into flattened JSON.")
+    return flattened_data
 
-# Run the main workflow
+# Step 4: Create a new Phidata agent to interact with Google Sheets
+def create_google_sheets_agent(composio_api_key, openai_api_key):
+    print("\nStep 4: Creating a new Phidata agent to interact with Google Sheets...")
+    # Initialize Composio Toolset
+    composio_toolset = ComposioToolSet(api_key=composio_api_key)
+    
+    # Get the Google Sheets tool
+    google_sheets_tool = composio_toolset.get_tools(actions=[Action.GOOGLESHEETS_SHEET_FROM_JSON])[0]
+    
+    # Create the agent
+    google_sheets_agent = Agent(
+        model=OpenAIChat(id="gpt-4o-mini", api_key=openai_api_key),
+        tools=[google_sheets_tool],
+        show_tool_calls=True,  # Enable verbose tool call output for debugging
+        system_prompt="You are an expert at creating and updating Google Sheets. You will be given user information in JSON format, and you need to write it into a new Google Sheet.",
+        markdown=True
+    )
+    print("Google Sheets agent created successfully.")
+    return google_sheets_agent
+
+# Step 5: Write formatted user info to Google Sheets
+def write_to_google_sheets(flattened_data, composio_api_key, openai_api_key):
+    print("\nStep 5: Writing formatted user info to Google Sheets...")
+    # Create the Google Sheets agent
+    google_sheets_agent = create_google_sheets_agent(composio_api_key, openai_api_key)
+    
+    # Create a new Google Sheet from the flattened JSON data
+    print("Creating a new Google Sheet with the flattened JSON data...")
+    create_sheet_response = google_sheets_agent.run(
+        f"Create a new Google Sheet with the following data:\n"
+        f"Title: Quora User Info\n"
+        f"Sheet Name: Sheet1\n"
+        f"Sheet JSON: {flattened_data}"
+    )
+    print("Create Sheet Response:", create_sheet_response.content)
+    
+    # Extract the Google Sheets link from the response
+    if "https://docs.google.com/spreadsheets/d/" in create_sheet_response.content:
+        google_sheets_link = create_sheet_response.content.split("https://docs.google.com/spreadsheets/d/")[1].split(" ")[0]
+        google_sheets_link = f"https://docs.google.com/spreadsheets/d/{google_sheets_link}"
+        return google_sheets_link
+    return None
+
+# Streamlit UI
+def main():
+    st.title("AI Lead Generation Agent")
+    st.info("This app helps you generate leads from Quora by searching for relevant posts and extracting user information.")
+
+    # Sidebar for API keys
+    with st.sidebar:
+        st.header("API Keys")
+        firecrawl_api_key = st.text_input("Firecrawl API Key", type="password")
+        openai_api_key = st.text_input("OpenAI API Key", type="password")
+        composio_api_key = st.text_input("Composio API Key", type="password")
+
+    # Main input for company description
+    company_description = st.text_input("Enter the company description or niche to find leads in:")
+
+    if st.button("Generate Leads"):
+        if not all([firecrawl_api_key, openai_api_key, composio_api_key, company_description]):
+            st.error("Please fill in all the API keys and the company description.")
+        else:
+            with st.spinner("Searching for relevant URLs..."):
+                urls = search_for_urls(company_description, firecrawl_api_key)
+            
+            if urls:
+                st.subheader("Quora Links Used:")
+                for url in urls:
+                    st.write(url)
+                
+                with st.spinner("Extracting user info from URLs..."):
+                    user_info_list = extract_user_info_from_urls(urls, firecrawl_api_key)
+                
+                with st.spinner("Formatting user info..."):
+                    flattened_data = format_user_info_to_flattened_json(user_info_list)
+                
+                with st.spinner("Writing to Google Sheets..."):
+                    google_sheets_link = write_to_google_sheets(flattened_data, composio_api_key, openai_api_key)
+                
+                if google_sheets_link:
+                    st.success("Lead generation and data writing to Google Sheets completed successfully!")
+                    st.subheader("Google Sheets Link:")
+                    st.markdown(f"[View Google Sheet]({google_sheets_link})")
+                else:
+                    st.error("Failed to retrieve the Google Sheets link.")
+            else:
+                st.warning("No relevant URLs found.")
+
 if __name__ == "__main__":
     main()
