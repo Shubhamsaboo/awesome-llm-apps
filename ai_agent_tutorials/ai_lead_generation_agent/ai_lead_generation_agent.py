@@ -149,7 +149,7 @@ def write_to_google_sheets(flattened_data, composio_api_key, openai_api_key):
 # Streamlit UI
 def main():
     st.title("AI Lead Generation Agent")
-    st.info("This app helps you generate leads from Quora by searching for relevant posts and extracting user information.")
+    st.info("This firecrawl powered agent helps you generate leads from Quora by searching for relevant posts and extracting user information.")
 
     # Sidebar for API keys
     with st.sidebar:
@@ -159,7 +159,7 @@ def main():
         composio_api_key = st.text_input("Composio API Key", type="password")
 
     # Main input for company description
-    company_description = st.text_input("Enter the company description or niche to find leads in:")
+    company_description = st.text_input("Enter your company description or the niche you want to find leads in:", placeholder="e.g. AI voice cloning, Video Generation AI tools")
 
     if st.button("Generate Leads"):
         if not all([firecrawl_api_key, openai_api_key, composio_api_key, company_description]):
