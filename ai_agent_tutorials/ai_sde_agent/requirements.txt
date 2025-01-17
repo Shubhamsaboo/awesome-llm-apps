@@ -1,0 +1,4 @@
+swekit
+composio-core
+composio-crewai
+crewai
