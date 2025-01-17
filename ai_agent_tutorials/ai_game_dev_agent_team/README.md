@@ -1,6 +1,6 @@
-# AI Game Development Agent Advisory 🎮
+# AI Game Development Agent Team 🎮
 
-The AI Game Development Team is a collaborative game design system powered by Autogen's AI Agent framework. This app generates comprehensive game concepts through the coordination of multiple specialized AI agents, each focusing on different aspects of game development based on user inputs such as game type, target audience, art style, and technical requirements. This is built on Autogen's GroupChat methods and AssistantAgent features, run through initiate_chat() method.
+The AI Game Development Agent Team is a collaborative game design system powered by Autogen's AI Agent framework. This app generates comprehensive game concepts through the coordination of multiple specialized AI agents, each focusing on different aspects of game development based on user inputs such as game type, target audience, art style, and technical requirements. This is built on Autogen's GroupChat methods and AssistantAgent features, run through initiate_chat() method.
 
 ## Demo
 
@@ -52,7 +52,7 @@ Follow these steps to set up and run the application:
 
 4. **Run the Streamlit App**:
    ```bash
-   streamlit run ai_game_dev_team/ai_game_dev_agents.py
+   streamlit run ai_game_dev_agent_team/game_dev_agent_team.py
    ```
 
 ## Usage
