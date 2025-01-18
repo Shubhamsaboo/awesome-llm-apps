@@ -2,13 +2,9 @@
 
 The AI Game Development Agent Team is a collaborative game design system powered by Autogen's AI Agent framework. This app generates comprehensive game concepts through the coordination of multiple specialized AI agents, each focusing on different aspects of game development based on user inputs such as game type, target audience, art style, and technical requirements. This is built on Autogen's GroupChat methods and AssistantAgent features, run through initiate_chat() method.
 
-## Demo
-
-https://github.com/user-attachments/assets/4ae71428-9fd4-473a-8349-7a62e888bfbc
-
 ## Features
 
-- **Multi-Agent Collaboration System**
+- **Specialized Game Development Agent Team**
     - 🎭 **Story Agent**: Specializes in narrative design and world-building, including character development, plot arcs, dialogue writing, and lore creation
     - 🎮 **Gameplay Agent**: Focuses on game mechanics and systems design, including player progression, combat systems, resource management, and balancing
     - 🎨 **Visuals Agent**: Handles art direction and audio design, covering UI/UX, character/environment art style, sound effects, and music composition

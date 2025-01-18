@@ -25,7 +25,7 @@ The AI agents will collaborate to develop a comprehensive game concept based on 
 """)
 
 # Main app UI
-st.title("AI Game Development Agent Team")
+st.title("🎮 AI Game Development Agent Team")
 
 # Add agent information below title
 st.info("""
