@@ -1,4 +1,3 @@
-pyautogen>=0.7.0
-autogen==0.6.1
 streamlit==1.41.1
-openai
+autogen-agentchat>=0.4.2,<0.5
+autogen-ext[openai]>=0.4.2,<0.5

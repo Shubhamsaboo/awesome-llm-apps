@@ -1,6 +1,10 @@
+import asyncio
 import streamlit as st
-import autogen
-from autogen.agentchat import GroupChat, GroupChatManager
+from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.teams import RoundRobinGroupChat
+from autogen_agentchat.conditions import TextMentionTermination
+from autogen_agentchat.ui import Console
+from autogen_ext.models.openai import OpenAIChatCompletionClient
 
 # Initialize session state
 if 'output' not in st.session_state:
@@ -108,29 +112,13 @@ if st.button("Generate Game Concept"):
             """
 
             # Configure OpenAI model client with the API key
-            llm_config = {
-                "timeout": 600,
-                "cache_seed": 44,  # change the seed for different trials
-                "config_list": [
-                    {
-                        "model": "gpt-4o-mini",
-                        "api_key": api_key,
-                    }
-                ],
-                "temperature": 0,
-            }
 
-            # Define a task-provider agent
-            task_agent = autogen.AssistantAgent(
-                name="task_agent",
-                llm_config=llm_config,
-                system_message="You are a task provider. Your only job is to provide the task details to the other agents.",
-            )
+            model_client = OpenAIChatCompletionClient(model="gpt-4o-mini", api_key=api_key, temperature=0.0)
 
             # Define agents with detailed system prompts
-            story_agent = autogen.AssistantAgent(
-                name="story_agent",
-                llm_config=llm_config,
+            story_agent = AssistantAgent(
+                "story_agent",
+                model_client=model_client,
                 system_message="""
                 You are an experienced game story designer specializing in narrative design and world-building. Your task is to:
                 1. Create a compelling narrative that aligns with the specified game type and target audience.
@@ -143,9 +131,9 @@ if st.button("Generate Game Concept"):
                 """
             )
 
-            gameplay_agent = autogen.AssistantAgent(
-                name="gameplay_agent",
-                llm_config=llm_config,
+            gameplay_agent = AssistantAgent(
+                "gameplay_agent",
+                model_client=model_client,
                 system_message="""
                 You are a senior game mechanics designer with expertise in player engagement and systems design. Your task is to:
                 1. Design core gameplay loops that match the specified game type and mechanics.
@@ -159,9 +147,9 @@ if st.button("Generate Game Concept"):
                 """
             )
 
-            visuals_agent = autogen.AssistantAgent(
-                name="visuals_agent",
-                llm_config=llm_config,
+            visuals_agent = AssistantAgent(
+                "visuals_agent",
+                model_client=model_client,
                 system_message="""
                 You are a creative art director with expertise in game visual and audio design. Your task is to:
                 1. Define the visual style guide matching the specified art style.
@@ -175,9 +163,9 @@ if st.button("Generate Game Concept"):
                 """
             )
 
-            tech_agent = autogen.AssistantAgent(
+            tech_agent = AssistantAgent(
                 name="tech_agent",
-                llm_config=llm_config,
+                model_client=model_client,
                 system_message="""
                 You are a technical director with extensive game development experience. Your task is to:
                 1. Recommend appropriate game engine and development tools.
@@ -194,17 +182,10 @@ if st.button("Generate Game Concept"):
             # Function to run agents sequentially
             def run_agents_sequentially(task):
                 # Task agent provides the task to each agent one by one
-                task_agent.initiate_chat(story_agent, message=task, max_turns=1)
-                story_response = story_agent.last_message()["content"]
-
-                task_agent.initiate_chat(gameplay_agent, message=task, max_turns=1)
-                gameplay_response = gameplay_agent.last_message()["content"]
-
-                task_agent.initiate_chat(visuals_agent, message=task, max_turns=1)
-                visuals_response = visuals_agent.last_message()["content"]
-
-                task_agent.initiate_chat(tech_agent, message=task, max_turns=1)
-                tech_response = tech_agent.last_message()["content"]
+                story_response = asyncio.run(story_agent.run(task=task)).messages[-1].content
+                gameplay_response = asyncio.run(gameplay_agent.run(task=task)).messages[-1].content
+                visuals_response = asyncio.run(visuals_agent.run(task=task)).messages[-1].content
+                tech_response = asyncio.run(tech_agent.run(task=task)).messages[-1].content
 
                 return {
                     "story": story_response,
@@ -235,27 +216,25 @@ if st.button("Generate Game Concept"):
         with st.expander("Technical Recommendations"):
             st.markdown(st.session_state.output['tech'])
 
-        groupchat = GroupChat(
-            agents=[task_agent, story_agent, gameplay_agent, visuals_agent, tech_agent],
-            messages=[],
-            speaker_selection_method="round_robin",  # Ensures agents speak in order
-            allow_repeat_speaker=False,  # Prevents agents from speaking more than once
-            max_round=5,  # Each agent speaks exactly once
-        )
+        termination = TextMentionTermination("TERMINATE")
 
-        # Create the group chat manager
-        manager = GroupChatManager(
-            groupchat=groupchat,
-            llm_config=llm_config,
-            is_termination_msg=lambda x: x.get("content", "").find("TERMINATE") >= 0,
+        groupchat = RoundRobinGroupChat(
+            [story_agent, gameplay_agent, visuals_agent, tech_agent],
+            termination_condition=termination,
+            max_turns=4, # Each agent gets 1 turn
         )
 
         # Function to run the agent collaboration
         def run_agents(task):
-            task_agent.initiate_chat(manager, message=task)
-            return {
-                "story": story_agent.last_message()["content"],
-                "gameplay": gameplay_agent.last_message()["content"],
-                "visuals": visuals_agent.last_message()["content"],
-                "tech": tech_agent.last_message()["content"],
-            }
+            result = asyncio.run(Console(groupchat.run_stream(task=task)))
+            responses = {}
+            for message in result.messages:
+                if message.source == "story_agent":
+                    responses["story"] = message.content
+                elif message.source == "gameplay_agent":
+                    responses["gameplay"] = message.content
+                elif message.source == "visuals_agent":
+                    responses["visuals"] = message.content
+                elif message.source == "tech_agent":
+                    responses["tech"] = message.content
+            return responses
