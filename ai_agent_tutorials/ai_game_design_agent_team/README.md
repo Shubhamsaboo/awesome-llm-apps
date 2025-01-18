@@ -1,10 +1,10 @@
-# AI Game Development Agent Team 🎮
+# AI Game Design Agent Team 🎮
 
-The AI Game Development Agent Team is a collaborative game design system powered by Autogen's AI Agent framework. This app generates comprehensive game concepts through the coordination of multiple specialized AI agents, each focusing on different aspects of game development based on user inputs such as game type, target audience, art style, and technical requirements. This is built on Autogen's GroupChat methods and AssistantAgent features, run through initiate_chat() method.
+The AI Game Design Agent Team is a collaborative game design system powered by Autogen's AI Agent framework. This app generates comprehensive game concepts through the coordination of multiple specialized AI agents, each focusing on different aspects of game design based on user inputs such as game type, target audience, art style, and technical requirements. This is built on Autogen's GroupChat methods and AssistantAgent features, run through initiate_chat() method.
 
 ## Features
 
-- **Specialized Game Development Agent Team**
+- **Specialized Game Design Agent Team**
     - 🎭 **Story Agent**: Specializes in narrative design and world-building, including character development, plot arcs, dialogue writing, and lore creation
     - 🎮 **Gameplay Agent**: Focuses on game mechanics and systems design, including player progression, combat systems, resource management, and balancing
     - 🎨 **Visuals Agent**: Handles art direction and audio design, covering UI/UX, character/environment art style, sound effects, and music composition
@@ -34,7 +34,7 @@ Follow these steps to set up and run the application:
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-   cd ai_agent_tutorials/ai_game_dev_team
+   cd ai_agent_tutorials/ai_game_design_team
    ```
 
 2. **Install Dependencies**:
@@ -48,7 +48,7 @@ Follow these steps to set up and run the application:
 
 4. **Run the Streamlit App**:
    ```bash
-   streamlit run ai_game_dev_agent_team/game_dev_agent_team.py
+   streamlit run ai_game_design_agent_team/game_design_agent_team.py
    ```
 
 ## Usage
