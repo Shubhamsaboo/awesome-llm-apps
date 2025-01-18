@@ -148,7 +148,7 @@ def write_to_google_sheets(flattened_data, composio_api_key, openai_api_key):
 
 # Streamlit UI
 def main():
-    st.title("AI Lead Generation Agent")
+    st.title("🎯 AI Lead Generation Agent")
     st.info("This firecrawl powered agent helps you generate leads from Quora by searching for relevant posts and extracting user information.")
 
     # Sidebar for API keys and number of links
