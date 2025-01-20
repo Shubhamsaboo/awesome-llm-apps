@@ -2,3 +2,4 @@ swekit
 composio-core
 composio-crewai
 crewai
+langchain-aws
