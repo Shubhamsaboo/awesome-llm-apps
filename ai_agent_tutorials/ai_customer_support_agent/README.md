@@ -29,7 +29,7 @@ The app expects Qdrant to be running on localhost:6333. Adjust the configuration
 docker pull qdrant/qdrant
 
 docker run -p 6333:6333 -p 6334:6334 \
-    -v $(pwd)/qdrant_storage:/qdrant/storage:z \
+    -v "$(pwd)/qdrant_storage:/qdrant/storage:z" \
     qdrant/qdrant
 ```
 
