@@ -1,3 +1,2 @@
 streamlit==1.41.1
-autogen-agentchat>=0.4.2,<0.5
-autogen-ext[openai]>=0.4.2,<0.5
+autogen

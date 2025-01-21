@@ -1,6 +1,6 @@
 # AI Game Design Agent Team 🎮
 
-The AI Game Design Agent Team is a collaborative game design system powered by Autogen's AI Agent framework. This app generates comprehensive game concepts through the coordination of multiple specialized AI agents, each focusing on different aspects of game design based on user inputs such as game type, target audience, art style, and technical requirements. This is built on Autogen's GroupChat methods and AssistantAgent features, run through initiate_chat() method.
+The AI Game Design Agent Team is a collaborative game design system powered by [AG2](https://github.com/ag2ai/ag2?tab=readme-ov-file)(formerly AutoGen)'s AI Agent framework. This app generates comprehensive game concepts through the coordination of multiple specialized AI agents, each focusing on different aspects of game design based on user inputs such as game type, target audience, art style, and technical requirements. This is built on AG2's new swarm feature run through initiate_chat() method.
 
 ## Features
 
@@ -17,6 +17,7 @@ The AI Game Design Agent Team is a collaborative game design system powered by A
   - Visual and audio direction
   - Technical specifications and requirements
   - Development timeline and budget considerations
+  - Coherent game design from the team.
 
 - **Customizable Input Parameters**:
   - Game type and target audience
@@ -25,7 +26,9 @@ The AI Game Design Agent Team is a collaborative game design system powered by A
   - Development constraints (time, budget)
   - Core mechanics and gameplay features
 
-- **Interactive Results**: Results are presented in expandable sections for easy navigation and reference
+- **Interactive Results**: 
+   - Quick show of game design ideas from each agent 
+   - Detailed results are presented in expandable sections for easy navigation and reference
 
 ## How to Run
 
