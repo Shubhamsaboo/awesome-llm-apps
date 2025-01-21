@@ -29,8 +29,8 @@ st.markdown("""
 ### Find the Best Products Across Multiple Stores
 1. Enter your product requirements below
 2. Click the Start Search button
-3. We'll search Amazon, Flipkart, and Walmart
-4. Get the best options compared for you!
+3. We'll search Amazon and Flipkart
+4. Get the best option from each store!
 """)
 
 # User Input Form
@@ -80,23 +80,26 @@ if st.session_state.get('search_triggered', False):
         Go to {site}.in, search for {params['product_name']} {params['brand_preference']} with:
         - Price between ${params['min_price']} and ${params['max_price']}
         - Minimum rating of {params['min_rating']} stars
-        Sort by price low to high, retrieve the 3 best options with their:
+        Sort by price low to high, retrieve the single best option with:
         - Product name
         - Price
         - Rating
         - Review count
         - Product URL
+        You can scroll through the page to find more products.
+        After finding this information, stop searching and return the result.
         """
         search_tasks.append(task)
     
     # Comparison task
     comparison_task = f"""
-    Analyze and compare products from Amazon, Flipkart, and Walmart based on:
+    Compare the two products from Amazon and Flipkart based on:
     - Price competitiveness (giving weight to lower prices)
     - Rating and review quality (minimum {params['min_rating']}+ stars)
     {"- Brand preference: " + params['brand_preference'] if params['brand_preference'] else ""}
     - Overall value for money
-    Select and recommend the top 3 best overall options with detailed justification.
+    Recommend which one is the better choice and explain why.
+    After providing the recommendation, end the task.
     """
     
     async def run_search():
@@ -124,10 +127,11 @@ if st.session_state.get('search_triggered', False):
                     st.markdown(f"**{site} Results**")
                     st.code(result.split("Final Answer")[-1].strip(), language="markdown")
             
-            st.subheader("🏆 Smart Comparison Results")
+            st.subheader("🏆 Final Recommendation")
             st.markdown(comparison_result.split("Final Answer")[-1].strip())
             
             await browser.close()
+            return
     
     asyncio.run(run_search())
     
