@@ -32,7 +32,7 @@ else:
 def get_crew(repo_path: str, workspace_id: str):
 
     composio_toolset = ComposioToolSet(
-        workspace_config=WorkspaceType.Docker(),
+        workspace_config=WorkspaceType.Host(),
         metadata={
             App.CODE_ANALYSIS_TOOL: {
                 "dir_to_index_path": repo_path,

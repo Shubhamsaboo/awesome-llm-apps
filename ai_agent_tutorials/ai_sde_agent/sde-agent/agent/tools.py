@@ -16,7 +16,7 @@ def create_pr(owner: str, repo: str, head: str, base: str, title: str) -> dict:
     :return response: Response from GitHub API containing PR details
     """
     # Get GitHub token from environment
-    github_token = os.getenv('GITHUB_ACCESS_TOKEN')
+    github_token = ""
     if not github_token:
         raise ValueError("GITHUB_ACCESS_TOKEN environment variable not set")
 
