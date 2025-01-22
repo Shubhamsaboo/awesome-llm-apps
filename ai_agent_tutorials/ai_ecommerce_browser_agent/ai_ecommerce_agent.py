@@ -1,160 +1,152 @@
-# sudoku_agent.py
 from phi.agent import Agent
 from phi.model.deepseek import DeepSeekChat
 from phi.tools import ToolRegistry
 from sudoku import Sudoku
 import json
-import time
 
-class SudokuGame:
-    def __init__(self, difficulty=0.5):
-        """Initialize Sudoku puzzle with validation"""
-        self.puzzle = Sudoku(3).difficulty(difficulty)
-        self.solution = self.puzzle.solve()
-        self.initial_board = [[num or 0 for num in row] for row in self.puzzle.board]
-        self.puzzle.board = [row.copy() for row in self.initial_board]
-
-    def get_board(self) -> list:
-        """Return current board state with 0 for empty cells"""
-        return [[num or 0 for num in row] for row in self.puzzle.board]
-
-    def is_valid_move(self, row: int, col: int, number: int) -> bool:
-        """Validate move against Sudoku rules"""
-        if self.initial_board[row][col] != 0:
-            return False
-        if number in self.puzzle.board[row]:
-            return False
-        if number in [self.puzzle.board[i][col] for i in range(9)]:
-            return False
-        start_row, start_col = 3*(row//3), 3*(col//3)
-        for i in range(3):
-            for j in range(3):
-                if self.puzzle.board[start_row+i][start_col+j] == number:
-                    return False
-        return True
-
-    def make_move(self, row: int, col: int, number: int) -> dict:
-        """Apply move with clear error messages"""
-        try:
-            if not (0 <= row <= 8 and 0 <= col <= 8):
-                return {"valid": False, "message": "Coordinates must be 0-8"}
-            
-            if not (1 <= number <= 9):
-                return {"valid": False, "message": "Number must be 1-9"}
-            
-            if self.initial_board[row][col] != 0:
-                return {"valid": False, "message": "Cannot modify initial clue"}
-            
-            if not self.is_valid_move(row, col, number):
-                return {"valid": False, "message": "Violates Sudoku rules"}
-            
-            self.puzzle.board[row][col] = number
-            return {"valid": True, "message": "Valid move"}
-        
-        except Exception as e:
-            return {"valid": False, "message": f"System error: {str(e)}"}
-
+# ================== Shared Tools ==================
 class SudokuTools(ToolRegistry):
     def __init__(self):
         super().__init__(name="sudoku_tools")
-        self.game = SudokuGame(difficulty=0.5)
+        self.puzzle = None
+        self.solution = None
+        self.register(self.generate_puzzle)
         self.register(self.get_board)
-        self.register(self.make_move)
+        self.register(self.validate_solution)
 
-    def get_board(self) -> str:
+    def generate_puzzle(self, difficulty: float = 0.5) -> str:
+        """Generate a new Sudoku puzzle"""
+        self.puzzle = Sudoku(3).difficulty(difficulty)
+        self.solution = self.puzzle.solve()
         return json.dumps({
-            "board": self.game.get_board(),
-            "instructions": "0 = empty cell (.), 1-9 = numbers"
+            "puzzle": [[num or 0 for num in row] for row in self.puzzle.board],
+            "solution": [[num or 0 for num in row] for row in self.solution.board]
         })
 
-    def make_move(self, arguments: str) -> str:
-        """Handle JSON input with validation"""
-        try:
-            data = json.loads(arguments)
-            result = self.game.make_move(
-                int(data["row"]),
-                int(data["col"]),
-                int(data["number"])
-            )
-            return json.dumps(result)
-        except Exception as e:
-            return json.dumps({
-                "valid": False,
-                "message": f"Invalid request format: {str(e)}"
-            })
+    def get_board(self) -> str:
+        """Return current board state"""
+        if not self.puzzle:
+            return json.dumps({"error": "No puzzle generated"})
+        return json.dumps({
+            "board": [[num or 0 for num in row] for row in self.puzzle.board]
+        })
 
+    def validate_solution(self, board: str) -> str:
+        """Validate the final solution"""
+        try:
+            board_data = json.loads(board)
+            if not isinstance(board_data, list) or len(board_data) != 9:
+                return json.dumps({"valid": False, "message": "Invalid board format"})
+            
+            # Check against solution
+            if board_data == [[num or 0 for num in row] for row in self.solution.board]:
+                return json.dumps({"valid": True, "message": "Solution is correct"})
+            return json.dumps({"valid": False, "message": "Solution is incorrect"})
+        except Exception as e:
+            return json.dumps({"valid": False, "message": f"Validation error: {str(e)}"})
+
+# ================== Helper Function ==================
 def print_board(board: list):
-    """Display board with . for empty cells"""
+    """Display Sudoku board with proper formatting"""
     print("\nCurrent Sudoku:")
     for i, row in enumerate(board):
         if i % 3 == 0 and i != 0:
             print("------+-------+------")
-        displayed = ["." if num == 0 else str(num) for num in row]
-        print(" ".join(displayed[0:3]), end=" | ")
-        print(" ".join(displayed[3:6]), end=" | ")
-        print(" ".join(displayed[6:9]))
+        row_str = [str(num) if num != 0 else "." for num in row]
+        print(" ".join(row_str[0:3]), end=" | ")
+        print(" ".join(row_str[3:6]), end=" | ")
+        print(" ".join(row_str[6:9]))
 
-sudoku_agent = Agent(
+# ================== Agent 1: Puzzle Analyzer ==================
+puzzle_analyzer = Agent(
+    model=DeepSeekChat(
+        id="deepseek-chat",
+        api_key="sk-",
+        temperature=0.1
+    ),
+    tools=[SudokuTools()],
+    system_prompt="""You are a Sudoku puzzle analyzer. Your tasks:
+1. Generate a Sudoku puzzle
+2. Analyze its difficulty
+3. Prepare it for solving""",
+    instructions=[
+        "Use generate_puzzle to create a new puzzle",
+        "Analyze the number of empty cells",
+        "Estimate difficulty (easy/medium/hard)",
+        "Format output for the solver agent"
+    ]
+)
+
+# ================== Agent 2: Solver ==================
+solver_agent = Agent(
     model=DeepSeekChat(
         id="deepseek-chat",
         api_key="sk-",
         temperature=0.0
     ),
     tools=[SudokuTools()],
-    system_prompt="""You are a Sudoku expert. Follow these rules:
-
-    1. GOAL: Fill empty cells (marked . or 0) with 1-9
-    2. RULES:
-       - No duplicates in rows/columns/3x3 boxes
-       - Never modify initial numbers
-    3. RESPONSE FORMAT:
-       a. Analyze current board
-       b. Identify next best move
-       c. Output JSON: {"row": 0-8, "col": 0-8, "number": 1-9}
-    4. ERROR HANDLING:
-       - If move fails, analyze why and try again""",
+    system_prompt="""You are a Sudoku solver. Follow these rules:
+1. Analyze the current board state
+2. Use logical deduction to fill empty cells
+3. Validate each move against Sudoku rules
+4. Format moves as {"row": 0-8, "col": 0-8, "number": 1-9}""",
     instructions=[
-        "First: Find empty cells (0 or .)",
-        "Second: Check row/column/box constraints",
-        "Third: Start with cells having fewest options",
-        "Fourth: Validate move before submitting",
-        "Fifth: If error occurs, debug and retry"
-    ],
-    show_tool_calls=True,
-    debug_mode=True
+        "Start with cells having fewest possibilities",
+        "Check row/column/box constraints",
+        "If stuck, re-examine related cells",
+        "Stop when all cells are filled"
+    ]
 )
 
+# ================== Agent 3: Validator ==================
+validator_agent = Agent(
+    model=DeepSeekChat(
+        id="deepseek-chat",
+        api_key="sk-",
+        temperature=0.0
+    ),
+    tools=[SudokuTools()],
+    system_prompt="""You are a Sudoku validator. Your tasks:
+1. Verify the final solution
+2. Check for rule violations
+3. Confirm puzzle completion""",
+    instructions=[
+        "Validate rows for duplicates",
+        "Validate columns for duplicates",
+        "Validate 3x3 boxes for duplicates",
+        "Confirm all cells are filled"
+    ]
+)
+
+# ================== Workflow Execution ==================
 def main():
-    print("Starting Sudoku Solver with DeepSeek-R1")
+    print("Starting Multi-Agent Sudoku Solver...")
     tools = SudokuTools()
     
-    # Initial state
-    current_board = json.loads(tools.get_board())["board"]
-    print_board(current_board)
+    # Step 1: Generate and analyze puzzle
+    print("\n--- Step 1: Puzzle Analysis ---")
+    puzzle_response = puzzle_analyzer.run("Generate and analyze a medium Sudoku puzzle")
+    print(f"Puzzle Analyzer Response:\n{puzzle_response.content}")
     
-    # Solving loop
-    max_steps = 30
-    for step in range(1, max_steps + 1):
-        print(f"\n--- Step {step} ---")
-        start_time = time.time()
-        
-        try:
-            response = sudoku_agent.run("Analyze and make next move")
-            print(f"\nResponse received in {time.time()-start_time:.2f}s")
-            print(f"AI Response:\n{response}")
-            
-            # Update and display board
-            current_board = json.loads(tools.get_board())["board"]
-            print_board(current_board)
-            
-            # Check solution
-            if all(0 not in row for row in current_board):
-                print("\n✅ Sudoku Solved Successfully!")
-                break
-                
-        except Exception as e:
-            print(f"🚨 Error: {str(e)}")
-            break
+    # Display initial puzzle
+    initial_board = json.loads(tools.get_board())["board"]
+    print("\nInitial Sudoku Puzzle:")
+    print_board(initial_board)
+    
+    # Step 2: Solve the puzzle
+    print("\n--- Step 2: Solving ---")
+    solver_response = solver_agent.run("Solve the Sudoku puzzle")
+    print(f"Solver Agent Response:\n{solver_response.content}")
+    
+    # Display final solved puzzle
+    final_board = json.loads(tools.get_board())["board"]
+    print("\nFinal Solved Sudoku:")
+    print_board(final_board)
+    
+    # Step 3: Validate the solution
+    print("\n--- Step 3: Validation ---")
+    validation_response = validator_agent.run(f"Validate this solution: {json.dumps(final_board)}")
+    print(f"Validator Agent Response:\n{validation_response.content}")
 
 if __name__ == "__main__":
     main()
