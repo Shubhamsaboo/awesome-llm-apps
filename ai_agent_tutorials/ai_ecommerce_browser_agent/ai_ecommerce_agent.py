@@ -15,13 +15,21 @@ class SudokuTools(ToolRegistry):
         self.register(self.validate_solution)
 
     def generate_puzzle(self, difficulty: float = 0.5) -> str:
-        """Generate a new Sudoku puzzle"""
-        self.puzzle = Sudoku(3).difficulty(difficulty)
-        self.solution = self.puzzle.solve()
-        return json.dumps({
-            "puzzle": [[num or 0 for num in row] for row in self.puzzle.board],
-            "solution": [[num or 0 for num in row] for row in self.solution.board]
-        })
+        """Generate a new Sudoku puzzle with valid difficulty"""
+        try:
+            # Ensure difficulty is between 0 and 1
+            if not (0 < difficulty < 1):
+                difficulty = 0.5  # Default to medium difficulty
+                print("Warning: Difficulty reset to 0.5 (must be between 0 and 1)")
+            
+            self.puzzle = Sudoku(3).difficulty(difficulty)
+            self.solution = self.puzzle.solve()
+            return json.dumps({
+                "puzzle": [[num or 0 for num in row] for row in self.puzzle.board],
+                "solution": [[num or 0 for num in row] for row in self.solution.board]
+            })
+        except Exception as e:
+            return json.dumps({"error": f"Failed to generate puzzle: {str(e)}"})
 
     def get_board(self) -> str:
         """Return current board state"""
@@ -66,11 +74,11 @@ puzzle_analyzer = Agent(
     ),
     tools=[SudokuTools()],
     system_prompt="""You are a Sudoku puzzle analyzer. Your tasks:
-1. Generate a Sudoku puzzle
+1. Generate a Sudoku puzzle with difficulty between 0 and 1
 2. Analyze its difficulty
 3. Prepare it for solving""",
     instructions=[
-        "Use generate_puzzle to create a new puzzle",
+        "Use generate_puzzle with difficulty=0.5 (medium)",
         "Analyze the number of empty cells",
         "Estimate difficulty (easy/medium/hard)",
         "Format output for the solver agent"
@@ -125,7 +133,7 @@ def main():
     
     # Step 1: Generate and analyze puzzle
     print("\n--- Step 1: Puzzle Analysis ---")
-    puzzle_response = puzzle_analyzer.run("Generate and analyze a medium Sudoku puzzle")
+    puzzle_response = puzzle_analyzer.run("Generate and analyze a medium Sudoku puzzle with difficulty=0.5")
     print(f"Puzzle Analyzer Response:\n{puzzle_response.content}")
     
     # Display initial puzzle
