@@ -8,13 +8,14 @@ from pydantic import BaseModel, Field
 from typing import List
 from composio_phidata import Action, ComposioToolSet
 
+# Define a schema for a single user interaction (question or answer)
 class QuoraUserInteractionSchema(BaseModel):
     username: str = Field(description="The username of the user who posted the question or answer")
     bio: str = Field(description="The bio or description of the user")
     post_type: str = Field(description="The type of post, either 'question' or 'answer'")
     timestamp: str = Field(description="When the question or answer was posted")
     upvotes: int = Field(default=0, description="Number of upvotes received")
-    links: List[str] = Field(default_factory=list, description="Any links included in the post")
+    links: List[str] = Field(default_factory=list, description="The link to the user's profile or the question/answer post")
 
 # Define a schema for the entire page, containing multiple interactions
 class QuoraPageSchema(BaseModel):
@@ -50,32 +51,50 @@ def search_for_urls(company_description, firecrawl_api_key, num_links):
         print(f"Failed to retrieve data. Status code: {response.status_code}")
     return []
 
-# Step 2: Extract user info from URLs using Firecrawl's LLM extract
+# Step 2: Extract user info from URLs using Firecrawl's scrape endpoint
 def extract_user_info_from_urls(urls, firecrawl_api_key):
-    print("\nStep 2: Extracting user info from URLs using Firecrawl's LLM extract...")
+    print("\nStep 2: Extracting user info from URLs using Firecrawl's scrape endpoint...")
     user_info_list = []
     firecrawl_app = FirecrawlApp(api_key=firecrawl_api_key)
-    for website_url in urls:
-        print(f"Extracting user info from: {website_url}")
-        
-        # Use Firecrawl's LLM extract to get structured data
-        data = firecrawl_app.scrape_url(website_url, {
-            'formats': ['extract'],
-            'extract': {
+    
+    try:
+        # Use the new scrape endpoint with all URLs at once
+        response = firecrawl_app.extract(
+            urls,
+            {
+                'prompt': 'Extract all user information including username, bio, post type (question/answer), timestamp, upvotes, and links to user profile or Quora posts. Focus on identifying potential leads who are asking questions or providing answers related to the topic.',
                 'schema': QuoraPageSchema.model_json_schema(),
             }
-        })
+        )
         
-        # Extract the interactions from the response
-        extracted_data = data.get("extract", {})
-        interactions = extracted_data.get("interactions", [])
+        print("Raw response:", response)  # Debug print
         
-        # Store the results
-        user_info_list.append({
-            "website_url": website_url,
-            "user_info": interactions
-        })
-        print(f"Extracted {len(interactions)} interactions from {website_url}.")
+        # Process the extracted data from the new response format
+        if response.get('success') and response.get('status') == 'completed':
+            # Get all interactions from the data
+            interactions = response.get('data', {}).get('interactions', [])
+            
+            if interactions:
+                # Store all interactions with their source URL
+                for url in urls:
+                    user_info_list.append({
+                        "website_url": url,
+                        "user_info": interactions  # Each URL gets all interactions since they're combined
+                    })
+                
+                print(f"Extracted {len(interactions)} user interactions")
+                print("Sample users found:")
+                for user in interactions[:3]:  # Show first 3 users as sample
+                    print(f"- {user['username']} ({user['post_type']}) - {user['bio'][:50]}...")
+        else:
+            print("Failed to get successful response or incomplete status")
+            if response:
+                print("Response status:", response.get('status'))
+                print("Success flag:", response.get('success'))
+    
+    except Exception as e:
+        print(f"Error during extraction: {str(e)}")
+    
     return user_info_list
 
 # Step 3: Format the extracted user info into a flattened JSON structure
@@ -128,24 +147,51 @@ def write_to_google_sheets(flattened_data, composio_api_key, openai_api_key):
     # Create the Google Sheets agent
     google_sheets_agent = create_google_sheets_agent(composio_api_key, openai_api_key)
     
-    # Create a new Google Sheet from the flattened JSON data
-    print("Creating a new Google Sheet with the flattened JSON data...")
-    create_sheet_response = google_sheets_agent.run(
-        f"Create a new Google Sheet with the following data:\n"
-        f"Title: Quora User Info\n"
-        f"Sheet Name: Sheet1\n"
-        f"Sheet JSON: {flattened_data}"
-    )
-    print("Create Sheet Response:", create_sheet_response.content)
-    
-    # Extract the Google Sheets link from the response
-    if "https://docs.google.com/spreadsheets/d/" in create_sheet_response.content:
-        google_sheets_link = create_sheet_response.content.split("https://docs.google.com/spreadsheets/d/")[1].split(" ")[0]
-        google_sheets_link = f"https://docs.google.com/spreadsheets/d/{google_sheets_link}"
-        return google_sheets_link
+    try:
+        # Create a new Google Sheet from the flattened JSON data
+        print("Creating a new Google Sheet with the flattened JSON data...")
+        create_sheet_response = google_sheets_agent.run(
+            f"Create a new Google Sheet with the following data:\n"
+            f"Title: Quora User Info\n"
+            f"Sheet Name: Sheet1\n"
+            f"Sheet JSON: {flattened_data}"
+        )
+        print("Create Sheet Response:", create_sheet_response.content)
+        
+        # Extract the Google Sheets link from the response
+        if "https://docs.google.com/spreadsheets/d/" in create_sheet_response.content:
+            google_sheets_link = create_sheet_response.content.split("https://docs.google.com/spreadsheets/d/")[1].split(" ")[0]
+            google_sheets_link = f"https://docs.google.com/spreadsheets/d/{google_sheets_link}"
+            return google_sheets_link
+    except Exception as e:
+        print(f"Error creating Google Sheet: {str(e)}")
     return None
 
-# Streamlit UI
+def create_prompt_transformation_agent(openai_api_key):
+    """Create a Phidata agent that transforms user queries into concise company descriptions."""
+    return Agent(
+        model=OpenAIChat(id="gpt-4-turbo", api_key=openai_api_key),
+        system_prompt="""You are an expert at transforming detailed user queries into concise company descriptions.
+Your task is to extract the core business/product focus in 3-4 words.
+
+Examples:
+Input: "Generate leads looking for AI-powered customer support chatbots for e-commerce stores."
+Output: "AI customer support chatbots"
+
+Input: "Find people interested in voice cloning technology for creating audiobooks and podcasts"
+Output: "voice cloning technology"
+
+Input: "Looking for users who need automated video editing software with AI capabilities"
+Output: "AI video editing software"
+
+Input: "Need to find businesses interested in implementing machine learning solutions for fraud detection"
+Output: "ML fraud detection"
+
+Always focus on the core product/service and keep it concise but clear.""",
+        markdown=True
+    )
+
+# Modify the Streamlit UI
 def main():
     st.title("🎯 AI Lead Generation Agent")
     st.info("This firecrawl powered agent helps you generate leads from Quora by searching for relevant posts and extracting user information.")
@@ -156,27 +202,35 @@ def main():
         firecrawl_api_key = st.text_input("Firecrawl API Key", type="password")
         st.caption(" Get your Firecrawl API key from [Firecrawl's website](https://www.firecrawl.dev/app/api-keys)")
         openai_api_key = st.text_input("OpenAI API Key", type="password")
-        st.caption(" Get your Composio API key from [Composio's website](https://composio.ai)")
-        composio_api_key = st.text_input("Composio API Key", type="password")
         st.caption(" Get your OpenAI API key from [OpenAI's website](https://platform.openai.com/api-keys)")
+        composio_api_key = st.text_input("Composio API Key", type="password")
+        st.caption(" Get your Composio API key from [Composio's website](https://composio.ai)")
         
-        # Add a numeric input for the number of links
         num_links = st.number_input("Number of links to search", min_value=1, max_value=10, value=3)
         
-        # Reset button
         if st.button("Reset"):
             st.session_state.clear()
             st.experimental_rerun()
 
-    # Main input for company description
-    company_description = st.text_input("Enter your company description or the niche you want to find leads in:", placeholder="e.g. AI voice cloning, Video Generation AI tools")
+    # Main input for detailed query
+    user_query = st.text_area(
+        "Describe what kind of leads you're looking for:",
+        placeholder="e.g., Looking for users who need automated video editing software with AI capabilities",
+        help="Be specific about the product/service and target audience. The AI will convert this into a focused search query."
+    )
 
     if st.button("Generate Leads"):
-        if not all([firecrawl_api_key, openai_api_key, composio_api_key, company_description]):
-            st.error("Please fill in all the API keys and the company description.")
+        if not all([firecrawl_api_key, openai_api_key, composio_api_key, user_query]):
+            st.error("Please fill in all the API keys and describe what leads you're looking for.")
         else:
+            # First, transform the user query into a concise company description
+            with st.spinner("Processing your query..."):
+                transform_agent = create_prompt_transformation_agent(openai_api_key)
+                company_description = transform_agent.run(f"Transform this query into a concise 3-4 word company description: {user_query}")
+                st.write("🎯 Searching for:", company_description.content)
+            
             with st.spinner("Searching for relevant URLs..."):
-                urls = search_for_urls(company_description, firecrawl_api_key, num_links)  # Pass num_links to search_for_urls
+                urls = search_for_urls(company_description.content, firecrawl_api_key, num_links)
             
             if urls:
                 st.subheader("Quora Links Used:")
