@@ -8,7 +8,6 @@ from pydantic import BaseModel, Field
 from typing import List
 from composio_phidata import Action, ComposioToolSet
 
-# Define a schema for a single user interaction (question or answer)
 class QuoraUserInteractionSchema(BaseModel):
     username: str = Field(description="The username of the user who posted the question or answer")
     bio: str = Field(description="The bio or description of the user")
