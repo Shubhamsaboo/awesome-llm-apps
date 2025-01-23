@@ -7,6 +7,7 @@ from firecrawl import FirecrawlApp
 from pydantic import BaseModel, Field
 from typing import List
 from composio_phidata import Action, ComposioToolSet
+import json
 
 # Define a schema for a single user interaction (question or answer)
 class QuoraUserInteractionSchema(BaseModel):
@@ -15,7 +16,7 @@ class QuoraUserInteractionSchema(BaseModel):
     post_type: str = Field(description="The type of post, either 'question' or 'answer'")
     timestamp: str = Field(description="When the question or answer was posted")
     upvotes: int = Field(default=0, description="Number of upvotes received")
-    links: List[str] = Field(default_factory=list, description="The link to the user's profile or the question/answer post")
+    links: List[str] = Field(default_factory=list, description="Any links included in the post")
 
 # Define a schema for the entire page, containing multiple interactions
 class QuoraPageSchema(BaseModel):
@@ -53,58 +54,58 @@ def search_for_urls(company_description, firecrawl_api_key, num_links):
 
 # Step 2: Extract user info from URLs using Firecrawl's scrape endpoint
 def extract_user_info_from_urls(urls, firecrawl_api_key):
-    print("\nStep 2: Extracting user info from URLs using Firecrawl's scrape endpoint...")
+    print("\nStep 2: Extracting user info from URLs using Firecrawl's extract endpoint...")
     user_info_list = []
     firecrawl_app = FirecrawlApp(api_key=firecrawl_api_key)
     
     try:
-        # Use the new scrape endpoint with all URLs at once
-        response = firecrawl_app.extract(
-            urls,
-            {
-                'prompt': 'Extract all user information including username, bio, post type (question/answer), timestamp, upvotes, and links to user profile or Quora posts. Focus on identifying potential leads who are asking questions or providing answers related to the topic.',
-                'schema': QuoraPageSchema.model_json_schema(),
-            }
-        )
-        
-        print("Raw response:", response)  # Debug print
-        
-        # Process the extracted data from the new response format
-        if response.get('success') and response.get('status') == 'completed':
-            # Get all interactions from the data
-            interactions = response.get('data', {}).get('interactions', [])
+        # Process URLs one by one to maintain URL-interaction mapping
+        for url in urls:
+            print(f"\nProcessing URL: {url}")
+            response = firecrawl_app.extract(
+                [url],  # Process single URL
+                {
+                    'prompt': 'Extract all user information including username, bio, post type (question/answer), timestamp, upvotes, and any links from Quora posts. Focus on identifying potential leads who are asking questions or providing answers related to the topic.',
+                    'schema': QuoraPageSchema.model_json_schema(),
+                }
+            )
             
-            if interactions:
-                # Store all interactions with their source URL
-                for url in urls:
-                    user_info_list.append({
-                        "website_url": url,
-                        "user_info": interactions  # Each URL gets all interactions since they're combined
-                    })
+            # Process the extracted data for this URL
+            if response.get('success') and response.get('status') == 'completed':
+                interactions = response.get('data', {}).get('interactions', [])
                 
-                print(f"Extracted {len(interactions)} user interactions")
-                print("Sample users found:")
-                for user in interactions[:3]:  # Show first 3 users as sample
-                    print(f"- {user['username']} ({user['post_type']}) - {user['bio'][:50]}...")
-        else:
-            print("Failed to get successful response or incomplete status")
-            if response:
-                print("Response status:", response.get('status'))
-                print("Success flag:", response.get('success'))
+                if interactions:
+                    user_info_list.append({
+                        "website_url": url,  # Store interactions with their source URL
+                        "user_info": interactions
+                    })
+                    print(f"Extracted {len(interactions)} interactions from {url}")
+                    print("Sample users:")
+                    for user in interactions[:2]:  # Show first 2 users as sample
+                        print(f"- {user['username']} ({user['post_type']}) - {user['bio'][:50]}...")
+                else:
+                    print(f"No interactions found for {url}")
+            else:
+                print(f"Failed to get successful response for {url}")
     
     except Exception as e:
         print(f"Error during extraction: {str(e)}")
+    
+    print(f"\nTotal URLs processed: {len(urls)}")
+    print(f"URLs with successful extractions: {len(user_info_list)}")
     
     return user_info_list
 
 # Step 3: Format the extracted user info into a flattened JSON structure
 def format_user_info_to_flattened_json(user_info_list):
     print("\nStep 3: Formatting the extracted user info into a flattened JSON structure...")
+    print(f"Processing data from {len(user_info_list)} URLs")
     flattened_data = []
     
     for info in user_info_list:
         website_url = info["website_url"]
         user_info = info["user_info"]
+        print(f"\nProcessing {len(user_info)} interactions from {website_url}")
         
         for interaction in user_info:
             flattened_interaction = {
@@ -114,11 +115,12 @@ def format_user_info_to_flattened_json(user_info_list):
                 "Post Type": interaction.get("post_type", ""),
                 "Timestamp": interaction.get("timestamp", ""),
                 "Upvotes": interaction.get("upvotes", 0),
-                "Links": ", ".join(interaction.get("links", [])),  # Convert list of links to a single string
+                "Links": ", ".join(interaction.get("links", [])),
             }
             flattened_data.append(flattened_interaction)
     
-    print(f"Formatted {len(flattened_data)} interactions into flattened JSON.")
+    print(f"\nTotal flattened interactions: {len(flattened_data)}")
+    print(flattened_data)
     return flattened_data
 
 # Step 4: Create a new Phidata agent to interact with Google Sheets
@@ -150,12 +152,15 @@ def write_to_google_sheets(flattened_data, composio_api_key, openai_api_key):
     try:
         # Create a new Google Sheet from the flattened JSON data
         print("Creating a new Google Sheet with the flattened JSON data...")
-        create_sheet_response = google_sheets_agent.run(
-            f"Create a new Google Sheet with the following data:\n"
-            f"Title: Quora User Info\n"
-            f"Sheet Name: Sheet1\n"
-            f"Sheet JSON: {flattened_data}"
+        
+        message = (
+            "Create a new Google Sheet with this data. "
+            "The sheet should have these columns: Website URL, Username, Bio, Post Type, Timestamp, Upvotes, and Links in the same order as mentioned. "
+            "Here's the data in JSON format:\n\n"
+            f"{json.dumps(flattened_data, indent=2)}"
         )
+        
+        create_sheet_response = google_sheets_agent.run(message)
         print("Create Sheet Response:", create_sheet_response.content)
         
         # Extract the Google Sheets link from the response
@@ -165,12 +170,13 @@ def write_to_google_sheets(flattened_data, composio_api_key, openai_api_key):
             return google_sheets_link
     except Exception as e:
         print(f"Error creating Google Sheet: {str(e)}")
+        print(f"Data sample: {str(flattened_data[:2])}")  # Print sample for debugging
     return None
 
 def create_prompt_transformation_agent(openai_api_key):
     """Create a Phidata agent that transforms user queries into concise company descriptions."""
     return Agent(
-        model=OpenAIChat(id="gpt-4-turbo", api_key=openai_api_key),
+        model=OpenAIChat(id="gpt-4o-mini", api_key=openai_api_key),
         system_prompt="""You are an expert at transforming detailed user queries into concise company descriptions.
 Your task is to extract the core business/product focus in 3-4 words.
 
