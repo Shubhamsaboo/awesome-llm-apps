@@ -60,10 +60,11 @@ if generate_btn and query:
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": query}
                 ],
-                max_tokens=2048  # Fixed token count
+                max_tokens=1  
             )
 
-        reasoning_content = deepseek_response.choices[0].message.content
+        reasoning_content = deepseek_response.choices[0].message.reasoning_content
+        print("\nDeepseek Reasoning:\n", reasoning_content)
         with st.expander("R1's Reasoning"):      
             st.write(reasoning_content)
 
