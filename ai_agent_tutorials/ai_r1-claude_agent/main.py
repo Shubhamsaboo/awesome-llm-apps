@@ -2,6 +2,9 @@ from openai import OpenAI
 from phi.agent import Agent
 from phi.model.deepseek import DeepSeekChat
 from phi.model.anthropic import Claude
+from langchain import hub
+from langchain_openai import ChatOpenAI
+from composio_langchain import ComposioToolSet, Action, App
 
 # Initialize Deepseek client
 deepseek_client = OpenAI(
@@ -26,9 +29,13 @@ deepseek_response = deepseek_client.chat.completions.create(
 reasoning_content = deepseek_response.choices[0].message.reasoning_content
 print("\nDeepseek Reasoning:\n", reasoning_content)
 
+
+composio_toolset = ComposioToolSet(api_key="")
+tools = composio_toolset.get_tools(actions=['CODEINTERPRETER_EXECUTE_CODE'])
+
 # Initialize Claude agent
 claude_agent = Agent(
-    model=Claude(id="claude-3-5-sonnet-20240620", api_key="sk-anA"),
+    model=Claude(id="claude-3-5-sonnet-20240620", api_key="sk-ant-aA", tools=tools),
     markdown=True
 )
 
@@ -36,7 +43,7 @@ claude_agent = Agent(
 extraction_prompt = f"""Extract ONLY the Python code from the following content which is reasoning of a particular query to make a pygame script. 
 Return nothing but the raw code without any explanations, or markdown backticks:
 
-{reasoning_content}"""
+{reasoning_content} ; Take that python code and run it in the code interpreter through the composio tool - displaying a visualisation of the pygame script. """
 
 # Get and print code extraction
 code_response = claude_agent.run(extraction_prompt)
