@@ -206,7 +206,7 @@ if st.button("Generate Game Concept"):
                     agent.llm_config['tool_choice'] = None
                     agent.client = OpenAIWrapper(**agent.llm_config)
                     # the agent has given a summary, now it should generate a detailed response
-                    system_prompt += f"\n\nYour task\nYou task is write the {current_gen} part of the report. Do not include any other parts. Do not use XML tags.\nStart your reponse with: '## {current_gen.capitalize()} Design'."    
+                    system_prompt += f"\n\nYour task\nYou task is write the {current_gen} part of the report. Do not include any other parts. Do not use XML tags.\nStart your response with: '## {current_gen.capitalize()} Design'."    
                     
                     # Remove all messages except the first one with less cost
                     k = list(agent._oai_messages.keys())[-1]
