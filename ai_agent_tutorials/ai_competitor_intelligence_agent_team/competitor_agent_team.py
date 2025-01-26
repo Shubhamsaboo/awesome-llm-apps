@@ -24,7 +24,7 @@ else:
     st.sidebar.warning("Please enter all API keys to proceed.")
 
 # Main UI
-st.title("🧲 AI Competitor Intelligence Agent")
+st.title("🧲 AI Competitor Intelligence Agent Team")
 st.info(
     """
     This app helps businesses analyze their competitors by extracting structured data from competitor websites and generating insights using AI.
