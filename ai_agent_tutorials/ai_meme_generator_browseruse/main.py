@@ -1,11 +1,37 @@
 import asyncio
+import streamlit as st
 from browser_use import Agent, SystemPrompt
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
 
-async def generate_meme(query: str) -> None:
-    api_key = "A"  # Replace with your actual DeepSeek API key
+def create_ui() -> tuple[str, str]:
+    st.title("🎭 AI Meme Generator with Browser Use")
+    
+    # Sidebar for API key
+    with st.sidebar:
+        st.header("Configuration")
+        api_key = st.text_input("Enter your Anthropic API Key:", type="password")
+    
+    # Main content
+    st.info("""
+    🤖 This browser agent will help you generate loads of memes by going to imgflip.com and searching for the perfect template for your given query.
+    """)
+    
+    query = st.text_input(
+        "What would you like to generate a meme for?",
+        placeholder="Example: India losing against New Zealand in the final of the world cup",
+        help="Try to be specific and include context for better results"
+    )
+    
+    return api_key, query
+
+async def generate_meme(query: str, api_key: str) -> None:
+    """
+    Generates a meme using browser automation.
+    
+    Args:
+        query (str): User's meme request
+        api_key (str): Anthropic API key
+    """
     llm = ChatAnthropic(
         model="claude-3-5-sonnet-20240620",
         api_key=api_key
@@ -30,8 +56,26 @@ async def generate_meme(query: str) -> None:
         max_failures=25
     )
 
-    await agent.run()
+    with st.spinner("🎨 Generating your meme... Please wait"):
+        await agent.run()
+
+def main() -> None:
+    """
+    Main function to run the Streamlit app.
+    """
+    st.set_page_config(page_title="AI Meme Generator", page_icon="🎭")
+    
+    api_key, query = create_ui()
+    
+    if st.button("Generate Meme", disabled=not (api_key and query)):
+        if not api_key:
+            st.error("Please enter your Anthropic API key in the sidebar")
+            return
+        if not query:
+            st.error("Please enter what meme you'd like to generate")
+            return
+            
+        asyncio.run(generate_meme(query, api_key))
 
 if __name__ == '__main__':
-    query = "Elon Musk bullying sam altman about trump winning the election"
-    asyncio.run(generate_meme(query))
+    main()
