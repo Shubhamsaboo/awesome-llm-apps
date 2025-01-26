@@ -7,7 +7,7 @@ from phi.tools.duckduckgo import DuckDuckGo
 import pandas as pd
 
 # Streamlit UI
-st.set_page_config(page_title="AI Competitor Intelligence Agent", layout="wide")
+st.set_page_config(page_title="AI Competitor Intelligence Agent Team", layout="wide")
 
 # Sidebar for API keys
 st.sidebar.title("API Keys")
@@ -24,7 +24,7 @@ else:
     st.sidebar.warning("Please enter all API keys to proceed.")
 
 # Main UI
-st.title("AI Competitor Intelligence Agent")
+st.title("🧲 AI Competitor Intelligence Agent")
 st.info(
     """
     This app helps businesses analyze their competitors by extracting structured data from competitor websites and generating insights using AI.
