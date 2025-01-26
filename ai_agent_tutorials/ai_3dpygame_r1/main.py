@@ -71,7 +71,7 @@ if generate_btn and query:
         # Initialize Claude agent
         claude_agent = Agent(
             model=Claude(
-                id="claude-3-5-sonnet-20240620",
+                id="claude-3-5-sonnet-20241022",
                 api_key=st.session_state.api_keys["claude"]
             ),
             show_tool_calls=True,
