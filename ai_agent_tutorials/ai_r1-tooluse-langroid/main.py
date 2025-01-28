@@ -18,35 +18,29 @@ class ModelChain:
     def __init__(self, deepseek_api_key: str, anthropic_api_key: str) -> None:
         self.client = OpenAI(
             api_key=deepseek_api_key,
-            base_url="https://api.deepseek.com"  # Added /v1 to the base URL
+            base_url="https://api.deepseek.com" 
         )
         self.claude_client = anthropic.Anthropic(api_key=anthropic_api_key)
         
         self.deepseek_messages: List[Dict[str, str]] = []
         self.claude_messages: List[Dict[str, Any]] = []
         self.current_model: str = CLAUDE_MODEL
-        self.show_reasoning = True
 
     def get_deepseek_reasoning(self, user_input: str) -> str:    
         start_time = time.time()
 
         try:
-            # Debug print
-            st.write("Sending request to DeepSeek with messages:", json.dumps(self.deepseek_messages, indent=2))
-            
+           
             deepseek_response = self.client.chat.completions.create(
-                model=DEEPSEEK_MODEL,
+                model="deepseek-reasoner",
                 messages=[
                     {"role": "system", "content": "You are an expert at reasoning and thinking from first principles."},
                     {"role": "user", "content": user_input}
                 ],
                 max_tokens=1,
-                stream=False      # Explicitly set stream to False
+                stream=False   
             )
-            
-            # Debug print
-            st.write("Raw response by DeepSeek:", deepseek_response)
-            
+
             reasoning_content = deepseek_response.choices[0].message.reasoning_content
             
             # Create expander for reasoning
@@ -106,18 +100,17 @@ class ModelChain:
 
 def main() -> None:
     """Main function to run the Streamlit app."""
-    st.title("🤖 AI Assistant")
+    st.title("🤖 AI Project with deepseek + R1")
 
     # Sidebar for API keys
     with st.sidebar:
         st.header("⚙️ Configuration")
         deepseek_api_key = st.text_input("DeepSeek API Key", type="password")
         anthropic_api_key = st.text_input("Anthropic API Key", type="password")
-        show_reasoning = st.toggle("Show Reasoning Process", value=True)
         
         if st.button("🗑️ Clear Chat History"):
             st.session_state.messages = []
-            st.experimental_rerun()
+            st.rerun()
 
     # Initialize session state for messages
     if "messages" not in st.session_state:
@@ -144,11 +137,9 @@ def main() -> None:
 
         # Get AI response
         with st.chat_message("assistant"):
-            if show_reasoning:
-                with st.spinner("🤔 Thinking..."):
-                    reasoning = chain.get_deepseek_reasoning(prompt)
-            else:
-                reasoning = ""
+            with st.spinner("🤔 Thinking..."):
+                reasoning = chain.get_deepseek_reasoning(prompt)
+            
             
             with st.spinner("✍️ Responding..."):
                 response = chain.get_claude_response(prompt, reasoning)
