@@ -5,6 +5,7 @@ import streamlit as st
 from openai import OpenAI
 import anthropic
 from dotenv import load_dotenv
+import json
 
 # Model Constants
 DEEPSEEK_MODEL: str = "deepseek-reasoner"
@@ -15,9 +16,9 @@ load_dotenv()
 
 class ModelChain:
     def __init__(self, deepseek_api_key: str, anthropic_api_key: str) -> None:
-        self.deepseek_client = OpenAI(
+        self.client = OpenAI(
             api_key=deepseek_api_key,
-            base_url="https://api.deepseek.com"
+            base_url="https://api.deepseek.com"  # Added /v1 to the base URL
         )
         self.claude_client = anthropic.Anthropic(api_key=anthropic_api_key)
         
@@ -26,24 +27,28 @@ class ModelChain:
         self.current_model: str = CLAUDE_MODEL
         self.show_reasoning = True
 
-    def set_model(self, model_name):
-        self.current_model = model_name
-
-    def get_model_display_name(self):
-        return self.current_model
-
     def get_deepseek_reasoning(self, user_input: str) -> str:    
         start_time = time.time()
-        self.deepseek_messages.append({"role": "user", "content": user_input})
 
         try:
-            response = self.deepseek_client.chat.completions.create(
-                max_tokens=1,  # Keep max_tokens=1 to only get reasoning
+            # Debug print
+            st.write("Sending request to DeepSeek with messages:", json.dumps(self.deepseek_messages, indent=2))
+            
+            deepseek_response = self.client.chat.completions.create(
                 model=DEEPSEEK_MODEL,
-                messages=self.deepseek_messages
+                messages=[
+                    {"role": "system", "content": "You are an expert at reasoning and thinking from first principles."},
+                    {"role": "user", "content": user_input}
+                ],
+                max_tokens=1,
+                temperature=0.7,  # Added temperature
+                stream=False      # Explicitly set stream to False
             )
             
-            reasoning_content = response.choices[0].message.reasoning_content
+            # Debug print
+            st.write("Raw response from DeepSeek:", deepseek_response)
+            
+            reasoning_content = deepseek_response.choices[0].message.reasoning_content
             
             # Create expander for reasoning
             with st.expander("💭 Reasoning Process", expanded=True):
@@ -56,6 +61,8 @@ class ModelChain:
 
         except Exception as e:
             st.error(f"Error getting DeepSeek reasoning: {str(e)}")
+            st.error("Full error details:")
+            st.exception(e)
             return "Error occurred while getting reasoning"
 
     def get_claude_response(self, user_input: str, reasoning: str) -> str:
