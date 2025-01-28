@@ -41,12 +41,11 @@ class ModelChain:
                     {"role": "user", "content": user_input}
                 ],
                 max_tokens=1,
-                temperature=0.7,  # Added temperature
                 stream=False      # Explicitly set stream to False
             )
             
             # Debug print
-            st.write("Raw response from DeepSeek:", deepseek_response)
+            st.write("Raw response by DeepSeek:", deepseek_response)
             
             reasoning_content = deepseek_response.choices[0].message.reasoning_content
             
