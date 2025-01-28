@@ -5,10 +5,6 @@ import streamlit as st
 from openai import OpenAI
 import anthropic
 from dotenv import load_dotenv
-from rich import print as rprint
-from rich.panel import Panel
-from prompt_toolkit import PromptSession
-from prompt_toolkit.styles import Style
 
 # Model Constants
 DEEPSEEK_MODEL: str = "deepseek-reasoner"
@@ -36,49 +32,33 @@ class ModelChain:
     def get_model_display_name(self):
         return self.current_model
 
-    def get_deepseek_reasoning(self, user_input: str) -> str:
+    def get_deepseek_reasoning(self, user_input: str) -> str:    
         start_time = time.time()
         self.deepseek_messages.append({"role": "user", "content": user_input})
 
-        response = self.deepseek_client.chat.completions.create(
-            model=DEEPSEEK_MODEL,
-            max_tokens=1,
-            messages=self.deepseek_messages,
-            stream=True
-        )
-
-        reasoning_content = ""
-        final_content = ""
-
-        # Create expander for reasoning
-        with st.expander("💭 Reasoning Process", expanded=True):
-            reasoning_placeholder = st.empty()
+        try:
+            response = self.deepseek_client.chat.completions.create(
+                max_tokens=1,  # Keep max_tokens=1 to only get reasoning
+                model=DEEPSEEK_MODEL,
+                messages=self.deepseek_messages
+            )
             
-            for chunk in response:
-                if chunk.choices[0].delta.reasoning_content:
-                    reasoning_piece = chunk.choices[0].delta.reasoning_content
-                    reasoning_content += reasoning_piece
-                    reasoning_placeholder.markdown(reasoning_content)
-                elif chunk.choices[0].delta.content:
-                    final_content += chunk.choices[0].delta.content
+            reasoning_content = response.choices[0].message.reasoning_content
+            
+            # Create expander for reasoning
+            with st.expander("💭 Reasoning Process", expanded=True):
+                st.markdown(reasoning_content)
+                elapsed_time = time.time() - start_time
+                time_str = f"{elapsed_time/60:.1f} minutes" if elapsed_time >= 60 else f"{elapsed_time:.1f} seconds"
+                st.caption(f"⏱️ Thought for {time_str}")
 
-            elapsed_time = time.time() - start_time
-            time_str = f"{elapsed_time/60:.1f} minutes" if elapsed_time >= 60 else f"{elapsed_time:.1f} seconds"
-            st.caption(f"⏱️ Thought for {time_str}")
+            return reasoning_content
 
-        return reasoning_content
+        except Exception as e:
+            st.error(f"Error getting DeepSeek reasoning: {str(e)}")
+            return "Error occurred while getting reasoning"
 
     def get_claude_response(self, user_input: str, reasoning: str) -> str:
-        """
-        Get response from Claude model.
-        
-        Args:
-            user_input: User's input text
-            reasoning: Reasoning from DeepSeek
-            
-        Returns:
-            str: Claude's response
-        """
         user_message = {
             "role": "user",
             "content": [{"type": "text", "text": user_input}]
@@ -106,16 +86,16 @@ class ModelChain:
                         full_response += text
                         response_placeholder.markdown(full_response)
 
+                # Store the messages in Claude's history only
                 self.claude_messages.extend([user_message, {
                     "role": "assistant", 
                     "content": [{"type": "text", "text": full_response}]
                 }])
-                self.deepseek_messages.append({"role": "assistant", "content": full_response})
 
                 return full_response
 
         except Exception as e:
-            st.error(f"Error in response: {str(e)}")
+            st.error(f"Error in Claude response: {str(e)}")
             return "Error occurred while getting response"
 
 def main() -> None:
