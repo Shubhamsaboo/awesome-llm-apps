@@ -18,7 +18,7 @@ load_dotenv()
 
 class ArchitecturePattern(str, Enum):
     MICROSERVICES = "microservices"
-    MONOLITHIC = "monolithic"
+    MONOLITHIC = "monolithic" 
     SERVERLESS = "serverless"
     EVENT_DRIVEN = "event_driven"
     LAYERED = "layered"
@@ -41,22 +41,6 @@ class DatabaseType(str, Enum):
     GRAPH = "graph"
     TIME_SERIES = "time_series"
     HYBRID = "hybrid"
-
-class DevTool(BaseModel):
-    name: str
-    purpose: str
-    complexity: int = Field(ge=1, le=10)
-    setup_time_minutes: int
-    learning_curve: int = Field(ge=1, le=10)
-    alternatives: List[str]
-
-class InfrastructureComponent(BaseModel):
-    service_name: str
-    provider: str
-    estimated_cost: float
-    scaling_capability: ScalabilityRequirement
-    region: Optional[str]
-    backup_strategy: Optional[str]
 
 class ComplianceStandard(str, Enum):
     HIPAA = "hipaa"
@@ -94,16 +78,6 @@ class MLCapability(BaseModel):
     hardware_requirements: Dict[str, str] = Field(..., description="GPU/CPU/Memory requirements")
     regulatory_constraints: List[str] = Field(..., description="Regulatory requirements for ML models")
 
-class DataIntegration(BaseModel):
-    """Defines integration points with external systems"""
-    system_name: str
-    integration_type: IntegrationType
-    data_frequency: str = Field(..., description="Frequency of data exchange")
-    data_volume: str = Field(..., description="Expected data volume per time unit")
-    transformation_rules: List[str] = Field(..., description="Data transformation requirements")
-    error_handling: Dict[str, str] = Field(..., description="Error handling strategies")
-    fallback_mechanism: Optional[str] = Field(None, description="Fallback approach when integration fails")
-
 class SecurityMeasure(BaseModel):
     """Enhanced security measures for healthcare systems"""
     measure_type: str
@@ -115,62 +89,78 @@ class SecurityMeasure(BaseModel):
     access_control_policy: Dict[str, List[str]] = Field(..., description="Role-based access control definitions")
     audit_requirements: List[str] = Field(..., description="Audit logging requirements")
 
-class PerformanceRequirement(BaseModel):
-    """System performance requirements"""
-    metric_name: str = Field(..., description="Name of the performance metric")
-    threshold: float = Field(..., description="Required threshold value")
-    measurement_unit: str = Field(..., description="Unit of measurement")
-    criticality: int = Field(ge=1, le=5, description="How critical is this metric")
-    monitoring_frequency: str = Field(..., description="How often to monitor this metric")
-
 class ArchitectureDecision(BaseModel):
+    """Architecture decision details"""
     pattern: ArchitecturePattern
-    reasoning: str
+    rationale: str
     trade_offs: Dict[str, List[str]]
-    estimated_implementation_time_months: float
+    estimated_cost: Dict[str, float]
 
-class TechnicalDebtItem(BaseModel):
-    description: str
-    severity: int = Field(ge=1, le=5)
-    estimated_fix_time_days: int
-    affected_components: List[str]
-    potential_risks: List[str]
+class InfrastructureResource(BaseModel):
+    """Infrastructure resource requirements"""
+    resource_type: str
+    specifications: Dict[str, str]
+    scaling_policy: Dict[str, Any]
+    estimated_cost: float
+
+class DataIntegration(BaseModel):
+    """Data integration specifications"""
+    integration_type: IntegrationType
+    data_format: str
+    frequency: str
+    volume: str
+    security_requirements: Dict[str, str]
+
+class PerformanceRequirement(BaseModel):
+    """Performance requirements specification"""
+    metric_name: str
+    target_value: float
+    measurement_unit: str
+    priority: int
+
+class AuditConfig(BaseModel):
+    """Audit configuration settings"""
+    log_retention_period: int
+    audit_events: List[str]
+    compliance_mapping: Dict[str, List[str]]
+
+class APIConfig(BaseModel):
+    """API configuration settings"""
+    version: str
+    auth_method: str
+    rate_limits: Dict[str, int]
+    documentation_url: str
+
+class ErrorHandlingConfig(BaseModel):
+    """Error handling configuration"""
+    retry_policy: Dict[str, Any]
+    fallback_strategies: List[str]
+    notification_channels: List[str]
 
 class ProjectAnalysis(BaseModel):
     """Enhanced project analysis for healthcare systems"""
     architecture_decision: ArchitectureDecision
-    recommended_tools: List[DevTool]
-    infrastructure: List[InfrastructureComponent]
+    infrastructure_resources: List[InfrastructureResource]
     security_measures: List[SecurityMeasure]
     database_choice: DatabaseType
-    technical_debt_assessment: List[TechnicalDebtItem]
     estimated_team_size: int
     critical_path_components: List[str]
     risk_assessment: Dict[str, str]
     maintenance_considerations: List[str]
     
-    # New healthcare-specific fields
-    compliance_requirements: List[ComplianceStandard] = Field(
-        ..., description="Required compliance standards"
-    )
-    data_integrations: List[DataIntegration] = Field(
-        ..., description="External system integrations"
-    )
-    ml_capabilities: List[MLCapability] = Field(
-        ..., description="ML model requirements and capabilities"
-    )
-    performance_requirements: List[PerformanceRequirement] = Field(
-        ..., description="System performance requirements"
-    )
-    data_retention_policy: Dict[str, str] = Field(
-        ..., description="Data retention requirements by type"
-    )
-    disaster_recovery: Dict[str, Any] = Field(
-        ..., description="Disaster recovery and business continuity plans"
-    )
-    interoperability_standards: List[str] = Field(
-        ..., description="Required healthcare interoperability standards"
-    )
+    # Healthcare-specific fields
+    compliance_requirements: List[ComplianceStandard]
+    data_integrations: List[DataIntegration]
+    ml_capabilities: List[MLCapability]
+    performance_requirements: List[PerformanceRequirement]
+    data_retention_policy: Dict[str, str]
+    disaster_recovery: Dict[str, Any]
+    interoperability_standards: List[str]
+    
+    # New fields
+    audit_config: AuditConfig
+    api_config: APIConfig
+    error_handling: ErrorHandlingConfig
 
 class ModelChain:
     def __init__(self, deepseek_api_key: str, anthropic_api_key: str) -> None:
@@ -183,13 +173,88 @@ class ModelChain:
         self.deepseek_messages: List[Dict[str, str]] = []
         self.claude_messages: List[Dict[str, Any]] = []
         self.current_model: str = CLAUDE_MODEL
-
     def get_deepseek_reasoning(self, user_input: str) -> str:    
         start_time = time.time()
 
         system_prompt = """You are an expert software architect and technical advisor. Analyze the user's project requirements 
-        and provide structured reasoning about architecture, tools, and implementation strategies. Your output must be a valid 
-        JSON that matches the ProjectAnalysis schema. Consider scalability, security, maintenance, and technical debt in your analysis.
+        and provide structured reasoning about architecture, tools, and implementation strategies. 
+        
+        IMPORTANT: Your response must be a valid JSON object (not a string or any other format) that matches the schema provided below.
+        Do not include any explanatory text, markdown formatting, or code blocks - only return the JSON object.
+        
+        Schema:
+        {
+            "architecture_decision": {
+                "pattern": "one of: microservices|monolithic|serverless|event_driven|layered",
+                "rationale": "string",
+                "trade_offs": {"advantage": ["list of strings"], "disadvantage": ["list of strings"]},
+                "estimated_cost": {"implementation": float, "maintenance": float}
+            },
+            "infrastructure_resources": [{
+                "resource_type": "string",
+                "specifications": {"key": "value"},
+                "scaling_policy": {"key": "value"},
+                "estimated_cost": float
+            }],
+            "security_measures": [{
+                "measure_type": "string",
+                "implementation_priority": "integer 1-5",
+                "compliance_standards": ["hipaa", "gdpr", "soc2", "hitech", "iso27001", "pci_dss"],
+                "estimated_setup_time_days": "integer",
+                "data_classification": "one of: protected_health_information|personally_identifiable_information|confidential|public",
+                "encryption_requirements": {"key": "value"},
+                "access_control_policy": {"role": ["permissions"]},
+                "audit_requirements": ["list of strings"]
+            }],
+            "database_choice": "one of: sql|nosql|graph|time_series|hybrid",
+            "ml_capabilities": [{
+                "model_type": "string",
+                "training_frequency": "string",
+                "input_data_types": ["list of strings"],
+                "performance_requirements": {"metric": float},
+                "hardware_requirements": {"resource": "specification"},
+                "regulatory_constraints": ["list of strings"]
+            }],
+            "data_integrations": [{
+                "integration_type": "one of: hl7|fhir|dicom|rest|soap|custom",
+                "data_format": "string",
+                "frequency": "string",
+                "volume": "string",
+                "security_requirements": {"key": "value"}
+            }],
+            "performance_requirements": [{
+                "metric_name": "string",
+                "target_value": float,
+                "measurement_unit": "string",
+                "priority": "integer 1-5"
+            }],
+            "audit_config": {
+                "log_retention_period": "integer",
+                "audit_events": ["list of strings"],
+                "compliance_mapping": {"standard": ["requirements"]}
+            },
+            "api_config": {
+                "version": "string",
+                "auth_method": "string",
+                "rate_limits": {"role": "requests_per_minute"},
+                "documentation_url": "string"
+            },
+            "error_handling": {
+                "retry_policy": {"key": "value"},
+                "fallback_strategies": ["list of strings"],
+                "notification_channels": ["list of strings"]
+            },
+            "estimated_team_size": "integer",
+            "critical_path_components": ["list of strings"],
+            "risk_assessment": {"risk": "mitigation"},
+            "maintenance_considerations": ["list of strings"],
+            "compliance_requirements": ["list of compliance standards"],
+            "data_retention_policy": {"data_type": "retention_period"},
+            "disaster_recovery": {"key": "value"},
+            "interoperability_standards": ["list of strings"]
+        }
+
+        Consider scalability, security, maintenance, and technical debt in your analysis.
         Focus on practical, modern solutions while being mindful of trade-offs."""
 
         try:
@@ -204,23 +269,21 @@ class ModelChain:
             )
 
             reasoning_content = deepseek_response.choices[0].message.reasoning_content
+            normal_content = deepseek_response.choices[0].message.content
             
-            # Validate the reasoning content as ProjectAnalysis
-            try:
-                project_analysis = ProjectAnalysis.parse_raw(reasoning_content)
-                formatted_reasoning = json.dumps(json.loads(reasoning_content), indent=2)
+            # Display the reasoning separately
+            with st.expander("DeepSeek Reasoning", expanded=True):
+                st.markdown(reasoning_content)
+            
                 
-                with st.expander("💭 Technical Analysis", expanded=True):
-                    st.json(formatted_reasoning)
-                    elapsed_time = time.time() - start_time
-                    time_str = f"{elapsed_time/60:.1f} minutes" if elapsed_time >= 60 else f"{elapsed_time:.1f} seconds"
-                    st.caption(f"⏱️ Analysis completed in {time_str}")
+            with st.expander("💭 Technical Analysis", expanded=True):
+                st.markdown(normal_content)
+                elapsed_time = time.time() - start_time
+                time_str = f"{elapsed_time/60:.1f} minutes" if elapsed_time >= 60 else f"{elapsed_time:.1f} seconds"
+                st.caption(f"⏱️ Analysis completed in {time_str}")
 
+                # Return the validated structured output for Claude
                 return reasoning_content
-
-            except Exception as validation_error:
-                st.error(f"Invalid analysis format: {str(validation_error)}")
-                return "Error in analysis format"
 
         except Exception as e:
             st.error(f"Error in DeepSeek analysis: {str(e)}")
@@ -251,6 +314,7 @@ class ModelChain:
                 
                 with self.claude_client.messages.stream(
                     model=self.current_model,
+                    system=system_prompt,
                     messages=messages,
                     max_tokens=8000
                 ) as stream:
