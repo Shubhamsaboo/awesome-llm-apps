@@ -1,10 +1,12 @@
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Union
 import os
 import time
 import streamlit as st
 from openai import OpenAI
 import anthropic
 from dotenv import load_dotenv
+from pydantic import BaseModel, Field
+from enum import Enum
 import json
 
 # Model Constants
@@ -13,6 +15,162 @@ CLAUDE_MODEL: str = "claude-3-5-sonnet-20241022"
 
 # Load environment variables
 load_dotenv()
+
+class ArchitecturePattern(str, Enum):
+    MICROSERVICES = "microservices"
+    MONOLITHIC = "monolithic"
+    SERVERLESS = "serverless"
+    EVENT_DRIVEN = "event_driven"
+    LAYERED = "layered"
+
+class SecurityLevel(str, Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    VERY_HIGH = "very_high"
+
+class ScalabilityRequirement(str, Enum):
+    SMALL = "small"
+    MEDIUM = "medium"
+    LARGE = "large"
+    ENTERPRISE = "enterprise"
+
+class DatabaseType(str, Enum):
+    SQL = "sql"
+    NOSQL = "nosql"
+    GRAPH = "graph"
+    TIME_SERIES = "time_series"
+    HYBRID = "hybrid"
+
+class DevTool(BaseModel):
+    name: str
+    purpose: str
+    complexity: int = Field(ge=1, le=10)
+    setup_time_minutes: int
+    learning_curve: int = Field(ge=1, le=10)
+    alternatives: List[str]
+
+class InfrastructureComponent(BaseModel):
+    service_name: str
+    provider: str
+    estimated_cost: float
+    scaling_capability: ScalabilityRequirement
+    region: Optional[str]
+    backup_strategy: Optional[str]
+
+class ComplianceStandard(str, Enum):
+    HIPAA = "hipaa"
+    GDPR = "gdpr"
+    SOC2 = "soc2"
+    HITECH = "hitech"
+    ISO27001 = "iso27001"
+    PCI_DSS = "pci_dss"
+
+class DataClassification(str, Enum):
+    PHI = "protected_health_information"
+    PII = "personally_identifiable_information"
+    CONFIDENTIAL = "confidential"
+    PUBLIC = "public"
+
+class IntegrationType(str, Enum):
+    HL7 = "hl7"
+    FHIR = "fhir"
+    DICOM = "dicom"
+    REST = "rest"
+    SOAP = "soap"
+    CUSTOM = "custom"
+
+class DataProcessingType(str, Enum):
+    REAL_TIME = "real_time"
+    BATCH = "batch"
+    HYBRID = "hybrid"
+
+class MLCapability(BaseModel):
+    """Defines machine learning capabilities and requirements"""
+    model_type: str = Field(..., description="Type of ML model (e.g., diagnostic, predictive, monitoring)")
+    training_frequency: str = Field(..., description="How often the model needs retraining")
+    input_data_types: List[str] = Field(..., description="Types of data the model processes")
+    performance_requirements: Dict[str, float] = Field(..., description="Required metrics like accuracy, latency")
+    hardware_requirements: Dict[str, str] = Field(..., description="GPU/CPU/Memory requirements")
+    regulatory_constraints: List[str] = Field(..., description="Regulatory requirements for ML models")
+
+class DataIntegration(BaseModel):
+    """Defines integration points with external systems"""
+    system_name: str
+    integration_type: IntegrationType
+    data_frequency: str = Field(..., description="Frequency of data exchange")
+    data_volume: str = Field(..., description="Expected data volume per time unit")
+    transformation_rules: List[str] = Field(..., description="Data transformation requirements")
+    error_handling: Dict[str, str] = Field(..., description="Error handling strategies")
+    fallback_mechanism: Optional[str] = Field(None, description="Fallback approach when integration fails")
+
+class SecurityMeasure(BaseModel):
+    """Enhanced security measures for healthcare systems"""
+    measure_type: str
+    implementation_priority: int = Field(ge=1, le=5, description="Priority level for implementation")
+    compliance_standards: List[ComplianceStandard]
+    estimated_setup_time_days: int
+    data_classification: DataClassification
+    encryption_requirements: Dict[str, str] = Field(..., description="Encryption requirements for different states")
+    access_control_policy: Dict[str, List[str]] = Field(..., description="Role-based access control definitions")
+    audit_requirements: List[str] = Field(..., description="Audit logging requirements")
+
+class PerformanceRequirement(BaseModel):
+    """System performance requirements"""
+    metric_name: str = Field(..., description="Name of the performance metric")
+    threshold: float = Field(..., description="Required threshold value")
+    measurement_unit: str = Field(..., description="Unit of measurement")
+    criticality: int = Field(ge=1, le=5, description="How critical is this metric")
+    monitoring_frequency: str = Field(..., description="How often to monitor this metric")
+
+class ArchitectureDecision(BaseModel):
+    pattern: ArchitecturePattern
+    reasoning: str
+    trade_offs: Dict[str, List[str]]
+    estimated_implementation_time_months: float
+
+class TechnicalDebtItem(BaseModel):
+    description: str
+    severity: int = Field(ge=1, le=5)
+    estimated_fix_time_days: int
+    affected_components: List[str]
+    potential_risks: List[str]
+
+class ProjectAnalysis(BaseModel):
+    """Enhanced project analysis for healthcare systems"""
+    architecture_decision: ArchitectureDecision
+    recommended_tools: List[DevTool]
+    infrastructure: List[InfrastructureComponent]
+    security_measures: List[SecurityMeasure]
+    database_choice: DatabaseType
+    technical_debt_assessment: List[TechnicalDebtItem]
+    estimated_team_size: int
+    critical_path_components: List[str]
+    risk_assessment: Dict[str, str]
+    maintenance_considerations: List[str]
+    
+    # New healthcare-specific fields
+    compliance_requirements: List[ComplianceStandard] = Field(
+        ..., description="Required compliance standards"
+    )
+    data_integrations: List[DataIntegration] = Field(
+        ..., description="External system integrations"
+    )
+    ml_capabilities: List[MLCapability] = Field(
+        ..., description="ML model requirements and capabilities"
+    )
+    performance_requirements: List[PerformanceRequirement] = Field(
+        ..., description="System performance requirements"
+    )
+    data_retention_policy: Dict[str, str] = Field(
+        ..., description="Data retention requirements by type"
+    )
+    disaster_recovery: Dict[str, Any] = Field(
+        ..., description="Disaster recovery and business continuity plans"
+    )
+    interoperability_standards: List[str] = Field(
+        ..., description="Required healthcare interoperability standards"
+    )
 
 class ModelChain:
     def __init__(self, deepseek_api_key: str, anthropic_api_key: str) -> None:
@@ -29,36 +187,51 @@ class ModelChain:
     def get_deepseek_reasoning(self, user_input: str) -> str:    
         start_time = time.time()
 
+        system_prompt = """You are an expert software architect and technical advisor. Analyze the user's project requirements 
+        and provide structured reasoning about architecture, tools, and implementation strategies. Your output must be a valid 
+        JSON that matches the ProjectAnalysis schema. Consider scalability, security, maintenance, and technical debt in your analysis.
+        Focus on practical, modern solutions while being mindful of trade-offs."""
+
         try:
-           
             deepseek_response = self.client.chat.completions.create(
                 model="deepseek-reasoner",
                 messages=[
-                    {"role": "system", "content": "You are an expert at reasoning and thinking from first principles."},
+                    {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_input}
                 ],
-                max_tokens=1,
+                max_tokens=3000,
                 stream=False   
             )
 
             reasoning_content = deepseek_response.choices[0].message.reasoning_content
             
-            # Create expander for reasoning
-            with st.expander("💭 Reasoning Process", expanded=True):
-                st.markdown(reasoning_content)
-                elapsed_time = time.time() - start_time
-                time_str = f"{elapsed_time/60:.1f} minutes" if elapsed_time >= 60 else f"{elapsed_time:.1f} seconds"
-                st.caption(f"⏱️ Thought for {time_str}")
+            # Validate the reasoning content as ProjectAnalysis
+            try:
+                project_analysis = ProjectAnalysis.parse_raw(reasoning_content)
+                formatted_reasoning = json.dumps(json.loads(reasoning_content), indent=2)
+                
+                with st.expander("💭 Technical Analysis", expanded=True):
+                    st.json(formatted_reasoning)
+                    elapsed_time = time.time() - start_time
+                    time_str = f"{elapsed_time/60:.1f} minutes" if elapsed_time >= 60 else f"{elapsed_time:.1f} seconds"
+                    st.caption(f"⏱️ Analysis completed in {time_str}")
 
-            return reasoning_content
+                return reasoning_content
+
+            except Exception as validation_error:
+                st.error(f"Invalid analysis format: {str(validation_error)}")
+                return "Error in analysis format"
 
         except Exception as e:
-            st.error(f"Error getting DeepSeek reasoning: {str(e)}")
-            st.error("Full error details:")
-            st.exception(e)
-            return "Error occurred while getting reasoning"
+            st.error(f"Error in DeepSeek analysis: {str(e)}")
+            return "Error occurred while analyzing"
 
     def get_claude_response(self, user_input: str, reasoning: str) -> str:
+        system_prompt = """You are a senior software architect and implementation advisor. Using the provided technical analysis, 
+        give detailed, actionable advice for implementing the solution. Include code snippets, configuration examples, and 
+        step-by-step implementation guidelines where appropriate. Focus on practical implementation details while maintaining 
+        best practices and addressing potential challenges."""
+
         user_message = {
             "role": "user",
             "content": [{"type": "text", "text": user_input}]
@@ -69,7 +242,7 @@ class ModelChain:
             "content": [{"type": "text", "text": f"<thinking>{reasoning}</thinking>"}]
         }
 
-        messages = [user_message, assistant_prefill]
+        messages = [assistant_prefill]
         
         try:
             # Create expander for Claude's response
@@ -86,7 +259,6 @@ class ModelChain:
                         full_response += text
                         response_placeholder.markdown(full_response)
 
-                # Store the messages in Claude's history only
                 self.claude_messages.extend([user_message, {
                     "role": "assistant", 
                     "content": [{"type": "text", "text": full_response}]
@@ -100,7 +272,7 @@ class ModelChain:
 
 def main() -> None:
     """Main function to run the Streamlit app."""
-    st.title("🤖 AI Project with deepseek + R1")
+    st.title("🤖 AI Project with Deepseek + R1")
 
     # Sidebar for API keys
     with st.sidebar:
