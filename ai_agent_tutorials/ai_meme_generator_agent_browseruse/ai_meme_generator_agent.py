@@ -64,7 +64,7 @@ def main():
     # Custom CSS styling
 
 
-    st.title("🤖 AI Meme Generator - Browser Use Web Agent")
+    st.title("🥸 AI Meme Generator Agent - Browser Use")
     st.info("This AI browser agent does browser automation to generate memes based on your input with browser use. Please enter your API key and describe the meme you want to generate.")
     
     # Sidebar configuration
