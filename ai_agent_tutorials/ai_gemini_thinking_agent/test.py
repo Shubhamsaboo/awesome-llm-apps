@@ -11,10 +11,10 @@ config = {'thinking_config': {'include_thoughts': True}}
 
 async def main():
     chat = client.aio.chats.create(
-        model='gemini-2.0-flash-thinking-exp',
+        model='gemini-2.0-flash-thinking-exp-01-21',
         config=config
     )
-    response = await chat.send_message('What is your name?')
+    response = await chat.send_message('Explain Deep Q Networks from first principles')
     print(response.text)
     response = await chat.send_message('What did you just say before this?')
     print(response.text)
