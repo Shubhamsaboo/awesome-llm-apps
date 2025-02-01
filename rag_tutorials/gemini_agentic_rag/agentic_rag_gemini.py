@@ -36,11 +36,11 @@ class GeminiEmbedder(Embeddings):
 
 
 # Constants
-COLLECTION_NAME = "indecisive"
+COLLECTION_NAME = "gemini-thinking-agent-agno"
 
 
 # Streamlit App Initialization
-st.title("🤖 AI Agent with Gemini & Qdrant RAG")
+st.title("🤖 Agentic RAG with Gemini Thinking and Agno")
 
 # Session State Initialization
 if 'google_api_key' not in st.session_state:
@@ -313,7 +313,7 @@ if st.session_state.google_api_key:
     agent = Agent(
         name="Gemini RAG Agent",
         model=Gemini(id="gemini-2.0-flash-thinking-exp-01-21"),
-        instructions="You are AGI. You are an elite specialist in all fields and an expert in all fields. Answer user's questions clearly, if any document is added, Use retrieved documents to answer questions accurately.",
+        instructions="You are an Intelligent Agent. You are an elite specialist and an expert in all fields. Answer user's questions clearly, if any document is added, Use retrieved documents to answer questions accurately.",
         show_tool_calls=True,
         markdown=True,
     )
