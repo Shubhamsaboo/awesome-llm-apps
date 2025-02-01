@@ -1,15 +1,19 @@
 import streamlit as st
-import ollama
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_ollama import OllamaEmbeddings
+from langchain_ollama import ChatOllama
 
 st.title("Chat with Webpage 🌐")
 st.caption("This app allows you to chat with a webpage using local llama3 and RAG")
 
 # Get the webpage URL from the user
 webpage_url = st.text_input("Enter Webpage URL", type="default")
+# Connect to Ollama
+ollama_endpoint = "http://127.0.0.1:11434"
+ollama_model = "llama3.1"
+ollama = ChatOllama(model=ollama_model, base_url=ollama_endpoint)
 
 if webpage_url:
     # 1. Load the data
@@ -19,14 +23,14 @@ if webpage_url:
     splits = text_splitter.split_documents(docs)
 
     # 2. Create Ollama embeddings and vector store
-    embeddings = OllamaEmbeddings(model="llama3.1")
+    embeddings = OllamaEmbeddings(model=ollama_model, base_url=ollama_endpoint)
     vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
 
     # 3. Call Ollama Llama3 model
     def ollama_llm(question, context):
         formatted_prompt = f"Question: {question}\n\nContext: {context}"
-        response = ollama.chat(model='llama3.1', messages=[{'role': 'user', 'content': formatted_prompt}])
-        return response['message']['content']
+        response = ollama.invoke([('human', formatted_prompt)])
+        return response.content.strip()
 
     # 4. RAG Setup
     retriever = vectorstore.as_retriever()
