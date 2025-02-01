@@ -15,10 +15,6 @@ from phi.model.anthropic import Claude
 DEEPSEEK_MODEL: str = "deepseek-reasoner"
 CLAUDE_MODEL: str = "claude-3-5-sonnet-20241022"
 
-# Load environment variables
-load_dotenv()
-
-
 class ArchitecturePattern(str, Enum):
     """Architectural patterns for system design."""
     MICROSERVICES = "microservices"  # Decomposed into small, independent services

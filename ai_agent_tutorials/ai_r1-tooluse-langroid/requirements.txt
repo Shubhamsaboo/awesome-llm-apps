@@ -1,4 +1,0 @@
-streamlit
-openai
-anthropic
-python-dotenv
