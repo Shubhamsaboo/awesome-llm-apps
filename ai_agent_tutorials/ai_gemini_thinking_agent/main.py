@@ -14,6 +14,7 @@ from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams
 from langchain_core.embeddings import Embeddings
+from agno.tools.exa import ExaTools
 
 
 # Custom Classes
@@ -35,7 +36,7 @@ class GeminiEmbedder(Embeddings):
 
 
 # Constants
-COLLECTION_NAME = "gemini-rag-agno"
+COLLECTION_NAME = "indecisive"
 
 
 # Streamlit App Initialization
@@ -54,6 +55,10 @@ if 'processed_documents' not in st.session_state:
     st.session_state.processed_documents = []
 if 'history' not in st.session_state:
     st.session_state.history = []
+if 'exa_api_key' not in st.session_state:
+    st.session_state.exa_api_key = ""
+if 'use_web_search' not in st.session_state:
+    st.session_state.use_web_search = False
 
 
 # Sidebar Configuration
@@ -74,6 +79,28 @@ st.session_state.google_api_key = google_api_key
 st.session_state.qdrant_api_key = qdrant_api_key
 st.session_state.qdrant_url = qdrant_url
 
+# Add in the sidebar configuration section, after the existing API inputs
+st.sidebar.header("🌐 Web Search Configuration")
+st.session_state.use_web_search = st.sidebar.checkbox("Enable Web Search Fallback", value=st.session_state.use_web_search)
+
+if st.session_state.use_web_search:
+    exa_api_key = st.sidebar.text_input(
+        "Exa AI API Key", 
+        type="password",
+        value=st.session_state.exa_api_key,
+        help="Required for web search fallback when no relevant documents are found"
+    )
+    st.session_state.exa_api_key = exa_api_key
+    
+    # Optional domain filtering
+    default_domains = ["arxiv.org", "wikipedia.org", "github.com", "medium.com"]
+    custom_domains = st.sidebar.text_input(
+        "Custom domains (comma-separated)", 
+        value=",".join(default_domains),
+        help="Enter domains to search from, e.g.: arxiv.org,wikipedia.org"
+    )
+    search_domains = [d.strip() for d in custom_domains.split(",") if d.strip()]
+
 
 # Utility Functions
 def init_qdrant():
@@ -89,6 +116,24 @@ def init_qdrant():
     except Exception as e:
         st.error(f"🔴 Qdrant connection failed: {str(e)}")
         return None
+
+
+def get_web_search_results(query: str) -> str:
+    """Perform web search using Exa AI and return formatted results."""
+    try:
+        exa_agent = Agent(
+            name="Web Search Agent",
+            tools=[ExaTools(
+                api_key=st.session_state.exa_api_key,
+                include_domains=search_domains
+            )],
+            show_tool_calls=True
+        )
+        response = exa_agent.run(f"Search for the query: {query}")
+        return response.content
+    except Exception as e:
+        st.error(f"🌐 Web search error: {str(e)}")
+        return ""
 
 
 # Document Processing Functions
@@ -268,7 +313,7 @@ if st.session_state.google_api_key:
     agent = Agent(
         name="Gemini RAG Agent",
         model=Gemini(id="gemini-2.0-flash-thinking-exp-01-21"),
-        instructions="You are AGI. You are an elite specialist in all fields and an expert in all fields. Answer user's questions clearly, if any document is added, Use retrieved documents to answer questions accurately",
+        instructions="You are AGI. You are an elite specialist in all fields and an expert in all fields. Answer user's questions clearly, if any document is added, Use retrieved documents to answer questions accurately.",
         show_tool_calls=True,
         markdown=True,
     )
@@ -312,7 +357,23 @@ if st.session_state.google_api_key:
         # Generate response
         with st.spinner("🤖 Thinking..."):
             try:
-                full_prompt = f"Context: {context}\n\nOriginal Question: {prompt}\nRewritten Question: {rewritten_query}"
+                # Check if we have relevant documents
+                if context:
+                    full_prompt = f"Context: {context}\n\nOriginal Question: {prompt}\nRewritten Question: {rewritten_query}"
+                # If no relevant documents and web search is enabled
+                elif st.session_state.use_web_search and st.session_state.exa_api_key:
+                    with st.spinner("🔍 Searching the web..."):
+                        web_results = get_web_search_results(rewritten_query)
+                        if web_results:
+                            full_prompt = f"Web Search Results: {web_results}\n\nOriginal Question: {prompt}\nRewritten Question: {rewritten_query}"
+                            st.info("ℹ️ No relevant documents found in the database. Using web search results.")
+                        else:
+                            full_prompt = f"Original Question: {prompt}\nRewritten Question: {rewritten_query}"
+                else:
+                    full_prompt = f"Original Question: {prompt}\nRewritten Question: {rewritten_query}"
+                    if not context:
+                        st.info("ℹ️ No relevant documents found in the database.")
+
                 response = agent.run(full_prompt)
                 
                 # Add assistant response to history
@@ -324,14 +385,20 @@ if st.session_state.google_api_key:
                 with st.chat_message("assistant"):
                     st.write(response.content)
                     
+                    # Show sources if available
                     if st.session_state.vector_store and docs:
-                        with st.expander("🔍 See sources"):
+                        with st.expander("🔍 See document sources"):
                             for i, doc in enumerate(docs, 1):
                                 source_type = doc.metadata.get("source_type", "unknown")
                                 source_icon = "📄" if source_type == "pdf" else "🌐"
                                 source_name = doc.metadata.get("file_name" if source_type == "pdf" else "url", "unknown")
                                 st.write(f"{source_icon} Source {i} from {source_name}:")
                                 st.write(f"{doc.page_content[:200]}...")
+                    
+                    # Show web search results if used
+                    elif 'web_results' in locals() and web_results:
+                        with st.expander("🌐 See web search results"):
+                            st.write(web_results)
                                 
             except Exception as e:
                 st.error(f"❌ Error generating response: {str(e)}")
