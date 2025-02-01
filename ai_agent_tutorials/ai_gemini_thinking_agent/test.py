@@ -1,22 +1,12 @@
-from google import genai
+import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 load_dotenv()
 
-client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"), http_options={'api_version':'v1alpha'})
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-import asyncio
+result = genai.embed_content(
+        model="models/text-embedding-004",
+        content="What is the meaning of life?")
 
-config = {'thinking_config': {'include_thoughts': True}}
-
-async def main():
-    chat = client.aio.chats.create(
-        model='gemini-2.0-flash-thinking-exp-01-21',
-        config=config
-    )
-    response = await chat.send_message('Explain Deep Q Networks from first principles')
-    print(response.text)
-    response = await chat.send_message('What did you just say before this?')
-    print(response.text)
-
-asyncio.run(main())
+print(str(result['embedding']))
