@@ -52,6 +52,8 @@ if 'vector_store' not in st.session_state:
     st.session_state.vector_store = None
 if 'processed_documents' not in st.session_state:
     st.session_state.processed_documents = []
+if 'history' not in st.session_state:
+    st.session_state.history = []
 
 
 # Sidebar Configuration
@@ -61,6 +63,11 @@ qdrant_api_key = st.sidebar.text_input("Qdrant API Key", type="password", value=
 qdrant_url = st.sidebar.text_input("Qdrant URL", 
                                  placeholder="https://your-cluster.cloud.qdrant.io:6333",
                                  value=st.session_state.qdrant_url)
+
+# Clear Chat Button
+if st.sidebar.button("🗑️ Clear Chat History"):
+    st.session_state.history = []
+    st.rerun()
 
 # Update session state
 st.session_state.google_api_key = google_api_key
@@ -178,6 +185,38 @@ def create_vector_store(client, texts):
         return None
 
 
+# Add this after the GeminiEmbedder class
+def get_query_rewriter_agent() -> Agent:
+    """Initialize a query rewriting agent."""
+    return Agent(
+        name="Query Rewriter",
+        model=Gemini(id="gemini-exp-1206"),
+        instructions="""You are an expert at reformulating questions to be more precise and detailed. 
+        Your task is to:
+        1. Analyze the user's question
+        2. Judge the query first, if you think it is clear enough, just return the same query
+        3. Take the user's question and rewrite it to be more specific and search-friendly 
+        3. Rewrite it to be more specific and search-friendly (RAG and Web Search)
+        4. Expand any acronyms or technical terms
+        5. Return ONLY the rewritten query without explanations
+        
+        Example:
+        User: "What is DQN?"
+        Rewritten: "Explain Deep Q-Networks (DQN), including their architecture, how they combine Q-learning with neural networks, their key innovations like experience replay and target networks, and their applications in reinforcement learning for complex environments"
+        
+        Example 2:
+        User: "What's the price?"
+        Rewritten: "What is the current market price of the product we discussed in our previous conversation about electric vehicles, specifically the Tesla Model 3?"
+
+        Example 3:
+        User: "AWS costs too much"
+        Rewritten: "What are the effective strategies and best practices for optimizing and reducing AWS cloud infrastructure costs, including resource management and cost-saving features?"
+        """,
+        show_tool_calls=False,
+        markdown=True,
+    )
+
+
 # Main Application Flow
 if st.session_state.google_api_key:
     os.environ["GOOGLE_API_KEY"] = st.session_state.google_api_key
@@ -228,16 +267,13 @@ if st.session_state.google_api_key:
     # Initialize Agent
     agent = Agent(
         name="Gemini RAG Agent",
-        model=Gemini(id="gemini-2.0-flash-exp"),
-        instructions="You are AGI. You are elite speicialist in all fields and an expert in all fields. Answer user's questions clearly, if any document is added, Use retrieved documents to answer questions accurately",
+        model=Gemini(id="gemini-2.0-flash-thinking-exp-01-21"),
+        instructions="You are AGI. You are an elite specialist in all fields and an expert in all fields. Answer user's questions clearly, if any document is added, Use retrieved documents to answer questions accurately",
         show_tool_calls=True,
         markdown=True,
     )
 
     # Chat Interface
-    if 'history' not in st.session_state:
-        st.session_state.history = []
-        
     # Display chat messages
     for msg in st.session_state.history:
         with st.chat_message(msg["role"]):
@@ -250,20 +286,33 @@ if st.session_state.google_api_key:
         with st.chat_message("user"):
             st.write(prompt)
             
-        # Retrieve relevant documents
+        # Rewrite query for better retrieval
+        with st.spinner("🤔 Reformulating query..."):
+            try:
+                query_rewriter = get_query_rewriter_agent()
+                rewritten_query = query_rewriter.run(f"Rewrite this query: {prompt}").content
+                
+                with st.expander("🔄 See rewritten query"):
+                    st.write(f"Original: {prompt}")
+                    st.write(f"Rewritten: {rewritten_query}")
+            except Exception as e:
+                st.error(f"❌ Error rewriting query: {str(e)}")
+                rewritten_query = prompt  # Fallback to original query
+            
+        # Retrieve relevant documents using rewritten query
         context = ""
         if st.session_state.vector_store:
             retriever = st.session_state.vector_store.as_retriever(
                 search_type="similarity_score_threshold",
                 search_kwargs={"k": 5, "score_threshold": 0.7}
             )
-            docs = retriever.invoke(prompt)
+            docs = retriever.invoke(rewritten_query)  # Use rewritten query
             context = "\n\n".join([d.page_content for d in docs])
-        
+
         # Generate response
         with st.spinner("🤖 Thinking..."):
             try:
-                full_prompt = f"Context: {context}\n\nQuestion: {prompt}"
+                full_prompt = f"Context: {context}\n\nOriginal Question: {prompt}\nRewritten Question: {rewritten_query}"
                 response = agent.run(full_prompt)
                 
                 # Add assistant response to history
