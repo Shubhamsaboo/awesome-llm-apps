@@ -1,6 +1,6 @@
 # 🤖 AI System Architect Advisor with R1
 
-A Streamlit application that provides expert software architecture analysis and recommendations using a dual-model approach combining DeepSeek R1's Reasoning and Claude. The system provides detailed technical analysis, implementation roadmaps, and architectural decisions for complex software systems.
+An Agno agentic system that provides expert software architecture analysis and recommendations using a dual-model approach combining DeepSeek R1's Reasoning and Claude. The system provides detailed technical analysis, implementation roadmaps, and architectural decisions for complex software systems.
 
 ## Features
 
