@@ -8,8 +8,8 @@ from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 from enum import Enum
 import json
-from phi.agent import Agent, RunResponse
-from phi.model.anthropic import Claude
+from agno.agent import Agent, RunResponse
+from agno.models.anthropic import Claude
 
 # Model Constants
 DEEPSEEK_MODEL: str = "deepseek-reasoner"
@@ -74,14 +74,22 @@ class ModelChain:
             base_url="https://api.deepseek.com" 
         )
         self.claude_client = anthropic.Anthropic(api_key=anthropic_api_key)
-        self.agent = Agent(
-            model=Claude(id="claude-3-5-sonnet-20241022", api_key=anthropic_api_key),
+        
+        # Create Claude model with system prompt
+        claude_model = Claude(
+            id="claude-3-5-sonnet-20241022", 
+            api_key=anthropic_api_key,
             system_prompt="""Given the user's query and the DeepSeek reasoning:
             1. Provide a detailed analysis of the architecture decisions
             2. Generate a project implementation roadmap
             3. Create a comprehensive technical specification document
             4. Format the output in clean markdown with proper sections
-            5. Include diagrams descriptions in mermaid.js format""",
+            5. Include diagrams descriptions in mermaid.js format"""
+        )
+        
+        # Initialize agent with configured model
+        self.agent = Agent(
+            model=claude_model,
             markdown=True
         )
         
