@@ -1,9 +1,9 @@
 import re
 import streamlit as st
-from phi.agent import Agent
-from phi.model.openai import OpenAIChat
-from phi.model.deepseek import DeepSeekChat
-from phi.model.google import Gemini
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+from agno.models.deepseek import DeepSeek
+from agno.models.google import Gemini
 
 # Streamlit App Title
 st.title("🎮 Agent X vs Agent O: Tic-Tac-Toe Game")
@@ -122,7 +122,7 @@ if 'openai_api_key' in st.session_state:
     if 'deepseek_api_key' in st.session_state:
         player_o = Agent(
             name="Player O",
-            model=DeepSeekChat(api_key=st.session_state.deepseek_api_key),
+            model=DeepSeek(id="deepseek-chat", api_key=st.session_state.deepseek_api_key),
             instructions=[
                 "You are a Tic-Tac-Toe player using the symbol 'O'.",
                 "Your opponent is using the symbol 'X'. Block their potential winning moves.",

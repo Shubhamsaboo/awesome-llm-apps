@@ -1,10 +1,10 @@
 import streamlit as st
-from phi.agent import Agent
-from phi.knowledge.pdf import PDFKnowledgeBase, PDFReader
-from phi.vectordb.qdrant import Qdrant
-from phi.tools.duckduckgo import DuckDuckGo
-from phi.model.openai import OpenAIChat
-from phi.embedder.openai import OpenAIEmbedder
+from agno.agent import Agent
+from agno.knowledge.pdf import PDFKnowledgeBase, PDFReader
+from agno.vectordb.qdrant import Qdrant
+from agno.tools.duckduckgo import DuckDuckGoTools
+from agno.models.openai import OpenAIChat
+from agno.embedder.openai import OpenAIEmbedder
 import tempfile
 import os
 
@@ -133,7 +133,7 @@ def main():
                             name="Legal Researcher",
                             role="Legal research specialist",
                             model=OpenAIChat(model="gpt-4o"),
-                            tools=[DuckDuckGo()],
+                            tools=[DuckDuckGoTools()],
                             knowledge=st.session_state.knowledge_base,
                             search_knowledge=True,
                             instructions=[

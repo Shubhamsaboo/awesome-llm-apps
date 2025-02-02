@@ -1,9 +1,9 @@
 import streamlit as st
-from phi.agent import Agent
-from phi.tools.duckduckgo import DuckDuckGo
-from phi.model.anthropic import Claude
-from phi.tools.newspaper4k import Newspaper4k
-from phi.tools import Tool
+from agno.agent import Agent
+from agno.tools.duckduckgo import DuckDuckGoTools
+from agno.models.anthropic import Claude
+from agno.tools.newspaper4k import Newspaper4kTools
+from agno.tools import Tool
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
@@ -25,7 +25,7 @@ if st.button("Generate Analysis"):
                 anthropic_model = Claude(id ="claude-3-5-sonnet-20240620",api_key=anthropic_api_key)
 
                 # Define News Collector Agent - Duckduckgo_search tool enables an Agent to search the web for information.
-                search_tool = DuckDuckGo(search=True, news=True, fixed_max_results=5)
+                search_tool = DuckDuckGoTools(search=True, news=True, fixed_max_results=5)
                 news_collector = Agent(
                     name="News Collector",
                     role="Collects recent news articles on the given topic",
@@ -37,7 +37,7 @@ if st.button("Generate Analysis"):
                 )
 
                 # Define Summary Writer Agent
-                news_tool = Newspaper4k(read_article=True, include_summary=True)
+                news_tool = Newspaper4kTools(read_article=True, include_summary=True)
                 summary_writer = Agent(
                     name="Summary Writer",
                     role="Summarizes collected news articles",
