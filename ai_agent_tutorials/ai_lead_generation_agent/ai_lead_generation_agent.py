@@ -1,8 +1,8 @@
 import streamlit as st
 import requests
-from phi.agent import Agent
-from phi.tools.firecrawl import FirecrawlTools
-from phi.model.openai import OpenAIChat
+from agno.agent import Agent
+from agno.tools.firecrawl import FirecrawlTools
+from agno.models.openai import OpenAIChat
 from firecrawl import FirecrawlApp
 from pydantic import BaseModel, Field
 from typing import List

@@ -1,8 +1,8 @@
 # Import the required libraries
 import streamlit as st
-from phi.assistant import Assistant
-from phi.tools.hackernews import HackerNews
-from phi.llm.openai import OpenAIChat
+from agno.agent import Agent
+from agno.tools.hackernews import HackerNewsTools
+from agno.models.openai import OpenAIChat
 
 # Set up the Streamlit app
 st.title("Multi-Agent AI Researcher 🔍🤖")
@@ -13,23 +13,23 @@ openai_api_key = st.text_input("OpenAI API Key", type="password")
 
 if openai_api_key:
     # Create instances of the Assistant
-    story_researcher = Assistant(
+    story_researcher = Agent(
         name="HackerNews Story Researcher",
         role="Researches hackernews stories and users.",
-        tools=[HackerNews()],
+        tools=[HackerNewsTools()],
     )
 
-    user_researcher = Assistant(
+    user_researcher = Agent(
         name="HackerNews User Researcher",
         role="Reads articles from URLs.",
-        tools=[HackerNews()],
+        tools=[HackerNewsTools()],
     )
 
-    hn_assistant = Assistant(
+    hn_assistant = Agent(
         name="Hackernews Team",
         team=[story_researcher, user_researcher],
-        llm=OpenAIChat(
-            model="gpt-4o",
+        model=OpenAIChat(
+            id="gpt-4o",
             max_tokens=1024,
             temperature=0.5,
             api_key=openai_api_key
@@ -42,4 +42,4 @@ if openai_api_key:
     if query:
         # Get the response from the assistant
         response = hn_assistant.run(query, stream=False)
-        st.write(response)
+        st.write(response.content)

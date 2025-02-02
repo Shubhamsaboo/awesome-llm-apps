@@ -1,11 +1,11 @@
-from phi.agent import Agent
-from phi.model.google import Gemini
-from phi.tools.duckduckgo import DuckDuckGo
+from agno.agent import Agent
+from agno.models.google import Gemini
+from agno.tools.duckduckgo import DuckDuckGoTools
 from google.generativeai import upload_file, get_file
 import time
 
 # 1. Initialize the Multimodal Agent
-agent = Agent(model=Gemini(id="gemini-2.0-flash-exp"), tools=[DuckDuckGo()], markdown=True)
+agent = Agent(model=Gemini(id="gemini-2.0-flash-exp"), tools=[DuckDuckGoTools()], markdown=True)
 
 # 2. Image Input
 image_url = "https://example.com/sample_image.jpg"

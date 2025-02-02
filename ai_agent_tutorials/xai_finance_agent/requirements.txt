@@ -1,4 +1,4 @@
-phidata
+agno
 duckduckgo-search
 yfinance
 fastapi[standard] 

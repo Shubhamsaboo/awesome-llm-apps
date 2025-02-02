@@ -1,8 +1,8 @@
 # Import the required libraries
 import streamlit as st
-from phi.assistant import Assistant
-from phi.llm.openai import OpenAIChat
-from phi.tools.yfinance import YFinanceTools
+from agno.agent import Assistant
+from agno.models.openai import OpenAIChat
+from agno.tools.yfinance import YFinanceTools
 
 # Set up the Streamlit app
 st.title("AI Investment Agent 📈🤖")
@@ -27,4 +27,4 @@ if openai_api_key:
         # Get the response from the assistant
         query = f"Compare {stock1} to {stock2}. Use every tool you have."
         response = assistant.run(query, stream=False)
-        st.write(response)
+        st.write(response.content)

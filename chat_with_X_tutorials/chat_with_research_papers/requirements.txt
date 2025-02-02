@@ -1,5 +1,5 @@
 streamlit 
-phidata
+agno
 arxiv
 openai
 pypdf

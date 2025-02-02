@@ -1,5 +1,5 @@
 streamlit 
-phidata
+agno
 openai
 psycopg-binary
 pgvector

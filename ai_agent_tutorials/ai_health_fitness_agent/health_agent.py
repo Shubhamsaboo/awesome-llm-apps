@@ -1,6 +1,6 @@
 import streamlit as st
-from phi.agent import Agent
-from phi.model.google import Gemini
+from agno.agent import Agent
+from agno.models.google import Gemini
 
 st.set_page_config(
     page_title="AI Health & Fitness Planner",

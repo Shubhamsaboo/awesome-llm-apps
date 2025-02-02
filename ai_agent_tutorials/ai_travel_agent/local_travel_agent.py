@@ -1,21 +1,21 @@
 from textwrap import dedent
-from phi.assistant import Assistant
-from phi.tools.serpapi_tools import SerpApiTools
+from agno.agent import Agent
+from agno.tools.serpapi import SerpApiTools
 import streamlit as st
-from phi.llm.ollama import Ollama
+from agno.models.ollama import Ollama
 
 # Set up the Streamlit app
-st.title("AI Travel Planner using Llama-3 ✈️")
+st.title("AI Travel Planner using Llama-3.2 ✈️")
 st.caption("Plan your next adventure with AI Travel Planner by researching and planning a personalized itinerary on autopilot using local Llama-3")
 
 # Get SerpAPI key from the user
 serp_api_key = st.text_input("Enter Serp API Key for Search functionality", type="password")
 
 if serp_api_key:
-    researcher = Assistant(
+    researcher = Agent(
         name="Researcher",
         role="Searches for travel destinations, activities, and accommodations based on user preferences",
-        llm=Ollama(model="llama3:instruct", max_tokens=1024),
+        model=Ollama(id="llama3.2", max_tokens=1024),
         description=dedent(
             """\
         You are a world-class travel researcher. Given a travel destination and the number of days the user wants to travel for,
@@ -32,10 +32,10 @@ if serp_api_key:
         tools=[SerpApiTools(api_key=serp_api_key)],
         add_datetime_to_instructions=True,
     )
-    planner = Assistant(
+    planner = Agent(
         name="Planner",
         role="Generates a draft itinerary based on user preferences and research results",
-        llm=Ollama(model="llama3:instruct", max_tokens=1024),
+        model=Ollama(id="llama3.2", max_tokens=1024),
         description=dedent(
             """\
         You are a senior travel planner. Given a travel destination, the number of days the user wants to travel for, and a list of research results,
@@ -51,8 +51,6 @@ if serp_api_key:
             "Never make up facts or plagiarize. Always provide proper attribution.",
         ],
         add_datetime_to_instructions=True,
-        add_chat_history_to_prompt=True,
-        num_history_messages=3,
     )
 
     # Input fields for the user's destination and the number of days they want to travel for
@@ -63,4 +61,4 @@ if serp_api_key:
         with st.spinner("Processing..."):
             # Get the response from the assistant
             response = planner.run(f"{destination} for {num_days} days", stream=False)
-            st.write(response)
+            st.write(response.content)

@@ -1,6 +1,6 @@
-from phi.agent import Agent
-from phi.model.google import Gemini
-from phi.tools.duckduckgo import DuckDuckGo
+from agno.agent import Agent
+from agno.models.google import Gemini
+from agno.tools.duckduckgo import DuckDuckGoTools
 import streamlit as st
 from PIL import Image
 from typing import List, Optional
@@ -37,7 +37,7 @@ def initialize_agents(api_key: str) -> tuple[Agent, Agent, Agent]:
 
         market_agent = Agent(
             model=model,
-            tools=[DuckDuckGo(search=True)],
+            tools=[DuckDuckGoTools()],
             instructions=[
                 "You are a market research expert that:",
                 "1. Identifies market trends and competitor patterns",

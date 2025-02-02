@@ -1,6 +1,6 @@
-from phi.agent import Agent
-from phi.model.ollama import Ollama
-from phi.playground import Playground, serve_playground_app
+from agno.agent import Agent
+from agno.models.ollama import Ollama
+from agno.playground import Playground, serve_playground_app
 
 reasoning_agent = Agent(name="Reasoning Agent", model=Ollama(id="qwq:32b"), markdown=True)
 

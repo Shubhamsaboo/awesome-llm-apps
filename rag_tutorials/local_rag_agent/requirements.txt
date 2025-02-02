@@ -1,4 +1,4 @@
-phidata
+agno
 qdrant-client
 ollama
 pypdf 

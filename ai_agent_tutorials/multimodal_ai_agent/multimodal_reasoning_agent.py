@@ -1,6 +1,6 @@
 import streamlit as st
-from phi.agent import Agent
-from phi.model.google import Gemini
+from agno.agent import Agent
+from agno.models.google import Gemini
 import tempfile
 import os
 

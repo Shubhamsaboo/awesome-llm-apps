@@ -1,14 +1,14 @@
 import streamlit as st
 import nest_asyncio
 from io import BytesIO
-from phi.assistant import Assistant
-from phi.document.reader.pdf import PDFReader
-from phi.llm.openai import OpenAIChat
-from phi.knowledge import AssistantKnowledge
-from phi.tools.duckduckgo import DuckDuckGo
-from phi.embedder.openai import OpenAIEmbedder
-from phi.vectordb.pgvector import PgVector2
-from phi.storage.assistant.postgres import PgAssistantStorage
+from agno.agent import Agent
+from agno.document.reader.pdf_reader import PDFReader
+from agno.models.openai import OpenAIChat
+from agno.knowledge.pdf_url import PDFUrlKnowledgeBase
+from agno.tools.duckduckgo import DuckDuckGoTools
+from agno.embedder.openai import OpenAIEmbedder
+from agno.vectordb.pgvector import PgVector, SearchType
+from agno.storage.agent.postgres import PostgresAgentStorage
 
 # Apply nest_asyncio to allow nested event loops, required for running async functions in Streamlit
 nest_asyncio.apply()
@@ -18,22 +18,22 @@ DB_URL = "postgresql+psycopg://ai:ai@localhost:5532/ai"
 
 # Function to set up the Assistant, utilizing caching for resource efficiency
 @st.cache_resource
-def setup_assistant(api_key: str) -> Assistant:
-    llm = OpenAIChat(model="gpt-4o-mini", api_key=api_key)
+def setup_assistant(api_key: str) -> Agent:
+    llm = OpenAIChat(id="gpt-4o-mini", api_key=api_key)
     # Set up the Assistant with storage, knowledge base, and tools
-    return Assistant(
-        name="auto_rag_assistant",  # Name of the Assistant
-        llm=llm,  # Language model to be used
-        storage=PgAssistantStorage(table_name="auto_rag_storage", db_url=DB_URL),  
-        knowledge_base=AssistantKnowledge(
-            vector_db=PgVector2(
+    return Agent(
+        id="auto_rag_agent",  # Name of the Assistant
+        model=llm,  # Language model to be used
+        storage=PostgresAgentStorage(table_name="auto_rag_storage", db_url=DB_URL),  
+        knowledge_base=PDFUrlKnowledgeBase(
+            vector_db=PgVector(
                 db_url=DB_URL,  
                 collection="auto_rag_docs",  
-                embedder=OpenAIEmbedder(model="text-embedding-ada-002", dimensions=1536, api_key=api_key),  
+                embedder=OpenAIEmbedder(id="text-embedding-ada-002", dimensions=1536, api_key=api_key),  
             ),
             num_documents=3,  
         ),
-        tools=[DuckDuckGo()],  # Additional tool for web search via DuckDuckGo
+        tools=[DuckDuckGoTools()],  # Additional tool for web search via DuckDuckGo
         instructions=[
             "Search your knowledge base first.",  
             "If not found, search the internet.",  
@@ -41,24 +41,23 @@ def setup_assistant(api_key: str) -> Assistant:
         ],
         show_tool_calls=True,  
         search_knowledge=True,  
-        read_chat_history=True,  
         markdown=True,  
         debug_mode=True,  
     )
 
 # Function to add a PDF document to the knowledge base
-def add_document(assistant: Assistant, file: BytesIO):
+def add_document(agent: Agent, file: BytesIO):
     reader = PDFReader()
     docs = reader.read(file)
     if docs:
-        assistant.knowledge_base.load_documents(docs, upsert=True)
+        agent.knowledge_base.load_documents(docs, upsert=True)
         st.success("Document added to the knowledge base.")
     else:
         st.error("Failed to read the document.")
 
 # Function to query the Assistant and return a response
-def query_assistant(assistant: Assistant, question: str) -> str:
-    return "".join([delta for delta in assistant.run(question)])
+def query_assistant(agent: Agent, question: str) -> str:
+    return "".join([delta for delta in agent.run(question)])
 
 # Main function to handle Streamlit app layout and interactions
 def main():
@@ -87,7 +86,7 @@ def main():
             with st.spinner("🤔 Thinking..."):
                 # Query the assistant and display the response
                 answer = query_assistant(assistant, question)
-                st.write("📝 **Response:**", answer)
+                st.write("📝 **Response:**", answer.content)
         else:
             # Show an error if the question input is empty
             st.error("Please enter a question.")
