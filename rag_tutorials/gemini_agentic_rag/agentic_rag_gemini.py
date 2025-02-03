@@ -17,7 +17,6 @@ from langchain_core.embeddings import Embeddings
 from agno.tools.exa import ExaTools
 
 
-# Custom Classes
 class GeminiEmbedder(Embeddings):
     def __init__(self, model_name="models/text-embedding-004"):
         genai.configure(api_key=st.session_state.google_api_key)
@@ -59,6 +58,10 @@ if 'exa_api_key' not in st.session_state:
     st.session_state.exa_api_key = ""
 if 'use_web_search' not in st.session_state:
     st.session_state.use_web_search = False
+if 'force_web_search' not in st.session_state:
+    st.session_state.force_web_search = False
+if 'similarity_threshold' not in st.session_state:
+    st.session_state.similarity_threshold = 0.7
 
 
 # Sidebar Configuration
@@ -101,6 +104,16 @@ if st.session_state.use_web_search:
     )
     search_domains = [d.strip() for d in custom_domains.split(",") if d.strip()]
 
+# Add this to the sidebar configuration section
+st.sidebar.header("🎯 Search Configuration")
+st.session_state.similarity_threshold = st.sidebar.slider(
+    "Document Similarity Threshold",
+    min_value=0.0,
+    max_value=1.0,
+    value=0.7,
+    help="Lower values will return more documents but might be less relevant. Higher values are more strict."
+)
+
 
 # Utility Functions
 def init_qdrant():
@@ -116,24 +129,6 @@ def init_qdrant():
     except Exception as e:
         st.error(f"🔴 Qdrant connection failed: {str(e)}")
         return None
-
-
-def get_web_search_results(query: str) -> str:
-    """Perform web search using Exa AI and return formatted results."""
-    try:
-        exa_agent = Agent(
-            name="Web Search Agent",
-            tools=[ExaTools(
-                api_key=st.session_state.exa_api_key,
-                include_domains=search_domains
-            )],
-            show_tool_calls=True
-        )
-        response = exa_agent.run(f"Search for the query: {query}")
-        return response.content
-    except Exception as e:
-        st.error(f"🌐 Web search error: {str(e)}")
-        return ""
 
 
 # Document Processing Functions
@@ -239,27 +234,86 @@ def get_query_rewriter_agent() -> Agent:
         instructions="""You are an expert at reformulating questions to be more precise and detailed. 
         Your task is to:
         1. Analyze the user's question
-        2. Judge the query first, if you think it is clear enough, just return the same query
-        3. Take the user's question and rewrite it to be more specific and search-friendly 
-        3. Rewrite it to be more specific and search-friendly (RAG and Web Search)
-        4. Expand any acronyms or technical terms
-        5. Return ONLY the rewritten query without explanations
+        2. Rewrite it to be more specific and search-friendly
+        3. Expand any acronyms or technical terms
+        4. Return ONLY the rewritten query without any additional text or explanations
         
-        Example:
-        User: "What is DQN?"
-        Rewritten: "Explain Deep Q-Networks (DQN), including their architecture, how they combine Q-learning with neural networks, their key innovations like experience replay and target networks, and their applications in reinforcement learning for complex environments"
+        Example 1:
+        User: "What does it say about ML?"
+        Output: "What are the key concepts, techniques, and applications of Machine Learning (ML) discussed in the context?"
         
         Example 2:
-        User: "What's the price?"
-        Rewritten: "What is the current market price of the product we discussed in our previous conversation about electric vehicles, specifically the Tesla Model 3?"
-
-        Example 3:
-        User: "AWS costs too much"
-        Rewritten: "What are the effective strategies and best practices for optimizing and reducing AWS cloud infrastructure costs, including resource management and cost-saving features?"
+        User: "Tell me about transformers"
+        Output: "Explain the architecture, mechanisms, and applications of Transformer neural networks in natural language processing and deep learning"
         """,
         show_tool_calls=False,
         markdown=True,
     )
+
+
+def get_web_search_agent() -> Agent:
+    """Initialize a web search agent."""
+    return Agent(
+        name="Web Search Agent",
+        model=Gemini(id="gemini-exp-1206"),
+        tools=[ExaTools(
+            api_key=st.session_state.exa_api_key,
+            include_domains=search_domains,
+            num_results=5
+        )],
+        instructions="""You are a web search expert. Your task is to:
+        1. Search the web for relevant information about the query
+        2. Compile and summarize the most relevant information
+        3. Include sources in your response
+        """,
+        show_tool_calls=True,
+        markdown=True,
+    )
+
+
+def get_rag_agent() -> Agent:
+    """Initialize the main RAG agent."""
+    return Agent(
+        name="Gemini RAG Agent",
+        model=Gemini(id="gemini-2.0-flash-thinking-exp-01-21"),
+        instructions="""You are an Intelligent Agent specializing in providing accurate answers.
+        
+        When given context from documents:
+        - Focus on information from the provided documents
+        - Be precise and cite specific details
+        
+        When given web search results:
+        - Clearly indicate that the information comes from web search
+        - Synthesize the information clearly
+        
+        Always maintain high accuracy and clarity in your responses.
+        """,
+        show_tool_calls=True,
+        markdown=True,
+    )
+
+
+def check_document_relevance(query: str, vector_store, threshold: float = 0.7) -> tuple[bool, List]:
+    """
+    Check if documents in vector store are relevant to the query.
+    
+    Args:
+        query: The search query
+        vector_store: The vector store to search in
+        threshold: Similarity threshold
+        
+    Returns:
+        tuple[bool, List]: (has_relevant_docs, relevant_docs)
+    """
+    if not vector_store:
+        return False, []
+        
+    retriever = vector_store.as_retriever(
+        search_type="similarity_score_threshold",
+        search_kwargs={"k": 5, "score_threshold": threshold}
+    )
+    docs = retriever.invoke(query)
+    return bool(docs), docs
 
 
 # Main Application Flow
@@ -309,72 +363,88 @@ if st.session_state.google_api_key:
             else:
                 st.sidebar.text(f"🌐 {source}")
 
-    # Initialize Agent
-    agent = Agent(
-        name="Gemini RAG Agent",
-        model=Gemini(id="gemini-2.0-flash-thinking-exp-01-21"),
-        instructions="You are an Intelligent Agent. You are an elite specialist and an expert in all fields. Answer user's questions clearly, if any document is added, Use retrieved documents to answer questions accurately.",
-        show_tool_calls=True,
-        markdown=True,
-    )
-
     # Chat Interface
-    # Display chat messages
-    for msg in st.session_state.history:
-        with st.chat_message(msg["role"]):
-            st.write(msg["content"])
-    
-    # Handle user input
-    if prompt := st.chat_input("Ask about your documents..."):
+    # Create two columns for chat input and search toggle
+    chat_col, toggle_col = st.columns([0.9, 0.1])
+
+    with chat_col:
+        prompt = st.chat_input("Ask about your documents...")
+
+    with toggle_col:
+        st.session_state.force_web_search = st.toggle('🌐', help="Force web search")
+
+    if prompt:
         # Add user message to history
         st.session_state.history.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.write(prompt)
-            
-        # Rewrite query for better retrieval
+
+        # Step 1: Rewrite the query for better retrieval
         with st.spinner("🤔 Reformulating query..."):
             try:
                 query_rewriter = get_query_rewriter_agent()
-                rewritten_query = query_rewriter.run(f"Rewrite this query: {prompt}").content
+                rewritten_query = query_rewriter.run(prompt).content
                 
                 with st.expander("🔄 See rewritten query"):
                     st.write(f"Original: {prompt}")
                     st.write(f"Rewritten: {rewritten_query}")
             except Exception as e:
                 st.error(f"❌ Error rewriting query: {str(e)}")
-                rewritten_query = prompt  # Fallback to original query
-            
-        # Retrieve relevant documents using rewritten query
+                rewritten_query = prompt
+
+        # Step 2: Choose search strategy based on force_web_search toggle
         context = ""
-        if st.session_state.vector_store:
+        docs = []
+        if not st.session_state.force_web_search and st.session_state.vector_store:
+            # Try document search first
             retriever = st.session_state.vector_store.as_retriever(
                 search_type="similarity_score_threshold",
-                search_kwargs={"k": 5, "score_threshold": 0.7}
+                search_kwargs={
+                    "k": 5, 
+                    "score_threshold": st.session_state.similarity_threshold
+                }
             )
-            docs = retriever.invoke(rewritten_query)  # Use rewritten query
-            context = "\n\n".join([d.page_content for d in docs])
+            docs = retriever.invoke(rewritten_query)
+            if docs:
+                context = "\n\n".join([d.page_content for d in docs])
+                st.info(f"📊 Found {len(docs)} relevant documents (similarity > {st.session_state.similarity_threshold})")
+            elif st.session_state.use_web_search:
+                st.info("🔄 No relevant documents found in database, falling back to web search...")
 
-        # Generate response
+        # Step 3: Use web search if:
+        # 1. Web search is forced ON via toggle, or
+        # 2. No relevant documents found AND web search is enabled in settings
+        if (st.session_state.force_web_search or not context) and st.session_state.use_web_search and st.session_state.exa_api_key:
+            with st.spinner("🔍 Searching the web..."):
+                try:
+                    web_search_agent = get_web_search_agent()
+                    web_results = web_search_agent.run(rewritten_query).content
+                    if web_results:
+                        context = f"Web Search Results:\n{web_results}"
+                        if st.session_state.force_web_search:
+                            st.info("ℹ️ Using web search as requested via toggle.")
+                        else:
+                            st.info("ℹ️ Using web search as fallback since no relevant documents were found.")
+                except Exception as e:
+                    st.error(f"❌ Web search error: {str(e)}")
+
+        # Step 4: Generate response using the RAG agent
         with st.spinner("🤖 Thinking..."):
             try:
-                # Check if we have relevant documents
+                rag_agent = get_rag_agent()
+                
                 if context:
-                    full_prompt = f"Context: {context}\n\nOriginal Question: {prompt}\nRewritten Question: {rewritten_query}"
-                # If no relevant documents and web search is enabled
-                elif st.session_state.use_web_search and st.session_state.exa_api_key:
-                    with st.spinner("🔍 Searching the web..."):
-                        web_results = get_web_search_results(rewritten_query)
-                        if web_results:
-                            full_prompt = f"Web Search Results: {web_results}\n\nOriginal Question: {prompt}\nRewritten Question: {rewritten_query}"
-                            st.info("ℹ️ No relevant documents found in the database. Using web search results.")
-                        else:
-                            full_prompt = f"Original Question: {prompt}\nRewritten Question: {rewritten_query}"
+                    full_prompt = f"""Context: {context}
+
+Original Question: {prompt}
+Rewritten Question: {rewritten_query}
+
+Please provide a comprehensive answer based on the available information."""
                 else:
                     full_prompt = f"Original Question: {prompt}\nRewritten Question: {rewritten_query}"
-                    if not context:
-                        st.info("ℹ️ No relevant documents found in the database.")
+                    st.info("ℹ️ No relevant information found in documents or web search.")
 
-                response = agent.run(full_prompt)
+                response = rag_agent.run(full_prompt)
                 
                 # Add assistant response to history
                 st.session_state.history.append({
@@ -382,11 +452,12 @@ if st.session_state.google_api_key:
                     "content": response.content
                 })
                 
+                # Display assistant response
                 with st.chat_message("assistant"):
                     st.write(response.content)
                     
                     # Show sources if available
-                    if st.session_state.vector_store and docs:
+                    if not st.session_state.force_web_search and 'docs' in locals() and docs:
                         with st.expander("🔍 See document sources"):
                             for i, doc in enumerate(docs, 1):
                                 source_type = doc.metadata.get("source_type", "unknown")
@@ -394,12 +465,7 @@ if st.session_state.google_api_key:
                                 source_name = doc.metadata.get("file_name" if source_type == "pdf" else "url", "unknown")
                                 st.write(f"{source_icon} Source {i} from {source_name}:")
                                 st.write(f"{doc.page_content[:200]}...")
-                    
-                    # Show web search results if used
-                    elif 'web_results' in locals() and web_results:
-                        with st.expander("🌐 See web search results"):
-                            st.write(web_results)
-                                
+
             except Exception as e:
                 st.error(f"❌ Error generating response: {str(e)}")
 
