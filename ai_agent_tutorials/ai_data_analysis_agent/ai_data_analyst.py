@@ -3,9 +3,9 @@ import tempfile
 import csv
 import streamlit as st
 import pandas as pd
-from phi.model.openai import OpenAIChat
+from agno.models.openai import OpenAIChat
 from phi.agent.duckdb import DuckDbAgent
-from phi.tools.pandas import PandasTools
+from agno.tools.pandas import PandasTools
 import re
 
 # Function to preprocess and save the uploaded file

@@ -1,5 +1,5 @@
 streamlit 
-phidata
+agno
 openai
 google-search-results 
 newspaper4k 

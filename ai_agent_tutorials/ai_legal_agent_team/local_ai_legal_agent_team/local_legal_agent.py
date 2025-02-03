@@ -1,9 +1,9 @@
 import streamlit as st
-from phi.agent import Agent
-from phi.knowledge.pdf import PDFKnowledgeBase, PDFReader
-from phi.vectordb.qdrant import Qdrant
-from phi.model.ollama import Ollama
-from phi.embedder.ollama import OllamaEmbedder
+from agno.agent import Agent
+from agno.knowledge.pdf import PDFKnowledgeBase, PDFReader
+from agno.vectordb.qdrant import Qdrant
+from agno.models.ollama import Ollama
+from agno.embedder.ollama import OllamaEmbedder
 import tempfile
 import os
 

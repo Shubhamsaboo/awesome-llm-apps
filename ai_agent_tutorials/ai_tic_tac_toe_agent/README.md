@@ -1,6 +1,6 @@
 # 🎮 Agent X vs Agent O: Tic-Tac-Toe Game
 
-An interactive Tic-Tac-Toe game where two AI agents powered by different language models compete against each other built on phidata Agent Framework and Streamlit as UI. Watch as GPT-4O battles against either DeepSeek V3 or Google's Gemini 1.5 Flash in this classic game.
+An interactive Tic-Tac-Toe game where two AI agents powered by different language models compete against each other built on Agno Agent Framework and Streamlit as UI. Watch as GPT-4O battles against either DeepSeek V3 or Google's Gemini 1.5 Flash in this classic game.
 
 ## Features
 

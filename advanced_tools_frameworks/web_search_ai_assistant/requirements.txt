@@ -1,4 +1,4 @@
 streamlit
 openai
-phidata
+agno
 duckduckgo-search

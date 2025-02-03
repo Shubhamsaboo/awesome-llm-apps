@@ -1,10 +1,10 @@
 # Import the required libraries
 from textwrap import dedent
-from phi.assistant import Assistant
-from phi.tools.serpapi_tools import SerpApiTools
-from phi.tools.newspaper4k import Newspaper4k as NewspaperToolkit
+from agno.agent import Agent
+from agno.tools.serpapi import SerpApiTools
+from agno.tools.newspaper4k import Newspaper4kTools
 import streamlit as st
-from phi.llm.openai import OpenAIChat
+from agno.models.openai import OpenAIChat
 
 # Set up the Streamlit app
 st.title("AI Journalist Agent 🗞️")
@@ -17,10 +17,10 @@ openai_api_key = st.text_input("Enter OpenAI API Key to access GPT-4o", type="pa
 serp_api_key = st.text_input("Enter Serp API Key for Search functionality", type="password")
 
 if openai_api_key and serp_api_key:
-    searcher = Assistant(
+    searcher = Agent(
         name="Searcher",
         role="Searches for top URLs based on a topic",
-        llm=OpenAIChat(model="gpt-4o", api_key=openai_api_key),
+        model=OpenAIChat(id="gpt-4o", api_key=openai_api_key),
         description=dedent(
             """\
         You are a world-class journalist for the New York Times. Given a topic, generate a list of 3 search terms
@@ -37,10 +37,10 @@ if openai_api_key and serp_api_key:
         tools=[SerpApiTools(api_key=serp_api_key)],
         add_datetime_to_instructions=True,
     )
-    writer = Assistant(
+    writer = Agent(
         name="Writer",
         role="Retrieves text from URLs and writes a high-quality article",
-        llm=OpenAIChat(model="gpt-4o", api_key=openai_api_key),
+        model=OpenAIChat(id="gpt-4o", api_key=openai_api_key),
         description=dedent(
             """\
         You are a senior writer for the New York Times. Given a topic and a list of URLs,
@@ -57,15 +57,14 @@ if openai_api_key and serp_api_key:
             "Focus on clarity, coherence, and overall quality.",
             "Never make up facts or plagiarize. Always provide proper attribution.",
         ],
-        tools=[NewspaperToolkit()],
+        tools=[Newspaper4kTools()],
         add_datetime_to_instructions=True,
-        add_chat_history_to_prompt=True,
-        num_history_messages=3,
+        markdown=True,
     )
 
-    editor = Assistant(
+    editor = Agent(
         name="Editor",
-        llm=OpenAIChat(model="gpt-4o", api_key=openai_api_key),
+        model=OpenAIChat(id="gpt-4o", api_key=openai_api_key),
         team=[searcher, writer],
         description="You are a senior NYT editor. Given a topic, your goal is to write a NYT worthy article.",
         instructions=[
@@ -88,4 +87,4 @@ if openai_api_key and serp_api_key:
         with st.spinner("Processing..."):
             # Get the response from the assistant
             response = editor.run(query, stream=False)
-            st.write(response)
+            st.write(response.content)

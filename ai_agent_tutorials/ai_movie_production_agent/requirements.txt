@@ -1,5 +1,5 @@
 streamlit 
-phidata
+agno
 anthropic
 google-search-results  
 lxml_html_clean

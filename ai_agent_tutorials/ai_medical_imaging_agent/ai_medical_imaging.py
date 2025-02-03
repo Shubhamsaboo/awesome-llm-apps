@@ -1,9 +1,9 @@
 import os
 from PIL import Image
-from phi.agent import Agent
-from phi.model.google import Gemini
+from agno.agent import Agent
+from agno.models.google import Gemini
 import streamlit as st
-from phi.tools.duckduckgo import DuckDuckGo
+from agno.tools.duckduckgo import DuckDuckGoTools
 
 if "GOOGLE_API_KEY" not in st.session_state:
     st.session_state.GOOGLE_API_KEY = None
@@ -45,7 +45,7 @@ medical_agent = Agent(
         api_key=st.session_state.GOOGLE_API_KEY,
         id="gemini-2.0-flash-exp"
     ),
-    tools=[DuckDuckGo()],
+    tools=[DuckDuckGoTools()],
     markdown=True
 ) if st.session_state.GOOGLE_API_KEY else None
 
