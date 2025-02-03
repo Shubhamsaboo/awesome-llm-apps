@@ -1,10 +1,10 @@
 # Import necessary libraries
-from phi.agent import Agent
-from phi.model.ollama import Ollama
-from phi.knowledge.pdf import PDFUrlKnowledgeBase
-from phi.vectordb.qdrant import Qdrant
-from phi.embedder.ollama import OllamaEmbedder
-from phi.playground import Playground, serve_playground_app
+from agno.agent import Agent
+from agno.models.ollama import Ollama
+from agno.knowledge.pdf_url import PDFUrlKnowledgeBase
+from agno.vectordb.qdrant import Qdrant
+from agno.embedder.ollama import OllamaEmbedder
+from agno.playground import Playground, serve_playground_app
 
 # Define the collection name for the vector database
 collection_name = "thai-recipe-index"

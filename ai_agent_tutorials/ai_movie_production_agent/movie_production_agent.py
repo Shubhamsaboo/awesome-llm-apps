@@ -1,8 +1,8 @@
 # Import the required libraries
 import streamlit as st
-from phi.assistant import Assistant
-from phi.tools.serpapi_tools import SerpApiTools
-from phi.llm.anthropic import Claude
+from agno.agent import Agent
+from agno.tools.serpapi import SerpApiTools
+from agno.models.anthropic import Claude
 from textwrap import dedent
 
 # Set up the Streamlit app
@@ -15,9 +15,9 @@ anthropic_api_key = st.text_input("Enter Anthropic API Key to access Claude Sonn
 serp_api_key = st.text_input("Enter Serp API Key for Search functionality", type="password")
 
 if anthropic_api_key and serp_api_key:
-    script_writer = Assistant(
+    script_writer = Agent(
         name="ScriptWriter",
-        llm=Claude(model="claude-3-5-sonnet-20240620", api_key=anthropic_api_key),
+        model=Claude(id="claude-3-5-sonnet-20240620", api_key=anthropic_api_key),
         description=dedent(
             """\
         You are an expert screenplay writer. Given a movie idea and genre, 
@@ -31,9 +31,9 @@ if anthropic_api_key and serp_api_key:
         ],
     )
 
-    casting_director = Assistant(
+    casting_director = Agent(
         name="CastingDirector",
-        llm=Claude(model="claude-3-5-sonnet-20240620", api_key=anthropic_api_key),
+        model=Claude(id="claude-3-5-sonnet-20240620", api_key=anthropic_api_key),
         description=dedent(
             """\
         You are a talented casting director. Given a script outline and character descriptions,
@@ -49,9 +49,9 @@ if anthropic_api_key and serp_api_key:
         tools=[SerpApiTools(api_key=serp_api_key)],
     )
 
-    movie_producer = Assistant(
+    movie_producer = Agent(
         name="MovieProducer",
-        llm=Claude(model="claude-3-5-sonnet-20240620", api_key=anthropic_api_key),
+        model=Claude(id="claude-3-5-sonnet-20240620", api_key=anthropic_api_key),
         team=[script_writer, casting_director],
         description="Experienced movie producer overseeing script and casting.",
         instructions=[

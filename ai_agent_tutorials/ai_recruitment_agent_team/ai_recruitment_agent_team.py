@@ -8,9 +8,9 @@ from datetime import datetime, timedelta
 import pytz
 
 import streamlit as st
-from phi.agent import Agent
-from phi.model.openai import OpenAIChat
-from phi.tools.email import EmailTools
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+from agno.tools.email import EmailTools
 from phi.tools.zoom import ZoomTool
 from phi.utils.log import logger
 from streamlit_pdf_viewer import pdf_viewer

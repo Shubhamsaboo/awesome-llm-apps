@@ -10,8 +10,6 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
-from dotenv import load_dotenv
-load_dotenv()
 
 # Initialize embedding model
 embedding_model = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
