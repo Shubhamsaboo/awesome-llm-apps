@@ -1,4 +1,4 @@
-# Agentic RAG with Gemini Thinking ⌘G
+# 🤔 Agentic RAG with Gemini Thinking
 
 A RAG Agentic system built with the new Gemini 2.0 Flash Thinking model and gemini-exp-1206, Qdrant for vector storage, and Agno (phidata prev) for agent orchestration. This application features intelligent query rewriting, document processing, and web search fallback capabilities to provide comprehensive AI-powered responses.
 
