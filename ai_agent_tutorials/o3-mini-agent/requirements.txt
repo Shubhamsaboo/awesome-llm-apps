@@ -1,5 +1,0 @@
-streamlit
-python-dotenv
-e2b
-agno
-Pillow 
