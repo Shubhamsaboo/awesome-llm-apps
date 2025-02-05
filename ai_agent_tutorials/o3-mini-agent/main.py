@@ -8,6 +8,7 @@ import os
 from dotenv import load_dotenv
 from PIL import Image
 from io import BytesIO
+import base64
 load_dotenv()
 
 def initialize_session_state() -> None:
@@ -38,7 +39,7 @@ def setup_sidebar() -> None:
 def create_agents() -> tuple[Agent, Agent, Agent]:
     """Create vision, coding, and execution agents with API keys from session state."""
     vision_agent = Agent(
-        model=Gemini(id="gemini-2.0-flash-exp", api_key=st.session_state.gemini_key),
+        model=Gemini(id="gemini-exp-1206", api_key=st.session_state.gemini_key),
         markdown=True,
     )
 
@@ -75,26 +76,21 @@ def create_agents() -> tuple[Agent, Agent, Agent]:
     return vision_agent, coding_agent, execution_agent
 
 def initialize_sandbox() -> None:
-    """Initialize or reset the e2b sandbox."""
+    """Initialize or reset the e2b sandbox with proper timeout configuration."""
     try:
         if st.session_state.sandbox:
-            st.session_state.sandbox.close()
+            try:
+                st.session_state.sandbox.close()
+            except:
+                pass
         os.environ['E2B_API_KEY'] = st.session_state.e2b_key
-        st.session_state.sandbox = Sandbox()
+        # Initialize sandbox with 60 second timeout
+        st.session_state.sandbox = Sandbox(timeout=60)
     except Exception as e:
         st.error(f"Failed to initialize sandbox: {str(e)}")
         st.session_state.sandbox = None
 
 def run_code_in_sandbox(code: str) -> Dict[str, Any]:
-    """
-    Run code in e2b sandbox and return execution results.
-    
-    Args:
-        code: Python code to execute
-        
-    Returns:
-        Dict containing execution logs and any output
-    """
     if not st.session_state.sandbox:
         initialize_sandbox()
     
@@ -107,13 +103,6 @@ def run_code_in_sandbox(code: str) -> Dict[str, Any]:
 def process_image_with_gemini(vision_agent: Agent, image: Image) -> str:
     """
     Process uploaded image with Gemini Vision to extract code problem.
-    
-    Args:
-        vision_agent: Initialized Gemini vision agent
-        image: Uploaded image to process
-        
-    Returns:
-        str: Extracted problem description in natural language
     """
     prompt = """Analyze this image and extract any coding problem or code snippet shown. 
     Describe it in clear natural language, including any:
@@ -122,23 +111,46 @@ def process_image_with_gemini(vision_agent: Agent, image: Image) -> str:
     3. Constraints or requirements
     Format it as a proper coding problem description."""
     
-    # Convert image to bytes for Gemini
-    img_byte_arr = BytesIO()
-    image.save(img_byte_arr, format=image.format)
-    img_byte_arr = img_byte_arr.getvalue()
-    
-    response = vision_agent.run(prompt, images=[img_byte_arr])
-    return response.content
+    # Save image to a temporary file
+    temp_path = "temp_image.png"
+    try:
+        # Convert to RGB if needed
+        if image.mode != 'RGB':
+            image = image.convert('RGB')
+        image.save(temp_path, format="PNG")
+        
+        # Read the file and create image data
+        with open(temp_path, 'rb') as img_file:
+            img_bytes = img_file.read()
+            
+        # Pass image to Gemini
+        response = vision_agent.run(
+            prompt,
+            images=[{"filepath": temp_path}]  # Use filepath instead of content
+        )
+        return response.content
+    except Exception as e:
+        st.error(f"Error processing image: {str(e)}")
+        return "Failed to process the image. Please try again or use text input instead."
+    finally:
+        # Clean up temporary file
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
 
 def execute_code_with_agent(execution_agent: Agent, code: str, sandbox: Sandbox) -> str:
     """
     Use execution agent to run and explain code results.
     """
     try:
+        # Set timeout to 30 seconds for code execution
+        sandbox.set_timeout(30)
         execution = sandbox.run_code(code)
         
         # Handle execution errors
         if execution.error:
+            if "TimeoutException" in str(execution.error):
+                return "⚠️ Execution Timeout: The code took too long to execute (>30 seconds). Please optimize your solution or try a smaller input."
+            
             error_prompt = f"""The code execution resulted in an error:
             Error: {execution.error}
             
@@ -146,23 +158,37 @@ def execute_code_with_agent(execution_agent: Agent, code: str, sandbox: Sandbox)
             response = execution_agent.run(error_prompt)
             return f"⚠️ Execution Error:\n{response.content}"
         
+        # Get files list safely
+        try:
+            files = sandbox.files.list("/")
+        except:
+            files = []
+        
         prompt = f"""Here is the code execution result:
         Logs: {execution.logs}
-        Files: {sandbox.files.list("/")}
+        Files: {str(files)}
         
         Please provide a clear explanation of the results and any outputs."""
         
         response = execution_agent.run(prompt)
         return response.content
     except Exception as e:
+        # Reinitialize sandbox on error
+        try:
+            initialize_sandbox()
+        except:
+            pass
         return f"⚠️ Sandbox Error: {str(e)}"
 
 def main() -> None:
     """Main application function."""
-    st.title("O3-Mini Coding Assistant")
+    st.title("O3-Mini Coding Agent")
     
+    # Add timeout info in sidebar
     initialize_session_state()
     setup_sidebar()
+    with st.sidebar:
+        st.info("⏱️ Code execution timeout: 30 seconds")
     
     # Check all required API keys
     if not (st.session_state.openai_key and 
@@ -180,7 +206,7 @@ def main() -> None:
     )
     
     if uploaded_image:
-        st.image(uploaded_image, caption="Uploaded Image", use_column_width=True)
+        st.image(uploaded_image, caption="Uploaded Image", use_container_width=True)
     
     user_query = st.text_area(
         "Or type your coding problem here:",
@@ -193,16 +219,25 @@ def main() -> None:
         if uploaded_image and not user_query:
             # Process image with Gemini
             with st.spinner("Processing image..."):
-                image = Image.open(uploaded_image)
-                extracted_query = process_image_with_gemini(vision_agent, image)
-                
-                st.info("📝 Extracted Problem:")
-                st.write(extracted_query)
-                
-                # Pass extracted query to coding agent
-                with st.spinner("Generating solution..."):
-                    response = coding_agent.run(extracted_query)
+                try:
+                    # Save uploaded file to temporary location
+                    image = Image.open(uploaded_image)
+                    extracted_query = process_image_with_gemini(vision_agent, image)
                     
+                    if extracted_query.startswith("Failed to process"):
+                        st.error(extracted_query)
+                        return
+                    
+                    st.info("📝 Extracted Problem:")
+                    st.write(extracted_query)
+                    
+                    # Pass extracted query to coding agent
+                    with st.spinner("Generating solution..."):
+                        response = coding_agent.run(extracted_query)
+                except Exception as e:
+                    st.error(f"Error processing image: {str(e)}")
+                    return
+                
         elif user_query and not uploaded_image:
             # Direct text input processing
             with st.spinner("Generating solution..."):
@@ -230,25 +265,29 @@ def main() -> None:
                 
                 # Execute code with execution agent
                 with st.spinner("Executing code..."):
-                    if not st.session_state.sandbox:
-                        initialize_sandbox()
+                    # Always initialize a fresh sandbox for each execution
+                    initialize_sandbox()
                     
-                    execution_results = execute_code_with_agent(
-                        execution_agent,
-                        code,
-                        st.session_state.sandbox
-                    )
-                    
-                    # Display execution results
-                    st.divider()
-                    st.subheader("🚀 Execution Results")
-                    st.markdown(execution_results)
-                    
-                    # Display any generated files
-                    files = st.session_state.sandbox.files.list("/")
-                    if files:
-                        st.markdown("📁 **Generated Files:**")
-                        st.json(files)
+                    if st.session_state.sandbox:
+                        execution_results = execute_code_with_agent(
+                            execution_agent,
+                            code,
+                            st.session_state.sandbox
+                        )
+                        
+                        # Display execution results
+                        st.divider()
+                        st.subheader("🚀 Execution Results")
+                        st.markdown(execution_results)
+                        
+                        # Try to display files if available
+                        try:
+                            files = st.session_state.sandbox.files.list("/")
+                            if files:
+                                st.markdown("📁 **Generated Files:**")
+                                st.json(files)
+                        except:
+                            pass
 
 if __name__ == "__main__":
     main()
