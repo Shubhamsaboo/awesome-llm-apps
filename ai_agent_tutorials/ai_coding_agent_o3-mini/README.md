@@ -1,4 +1,4 @@
-# 💻 Multimodal AI Coding Agent with o3-mini and Gemini
+# 💻 Multimodal AI Coding Agent Team with o3-mini and Gemini
 An AI Powered Streamlit application that serves as your personal coding assistant, powered by multiple Agents built on the new o3-mini model. You can also upload an image of a coding problem or describe it in text, and the AI agent will analyze, generate an optimal solution, and execute it in a sandbox environment.
 
 ## Features
