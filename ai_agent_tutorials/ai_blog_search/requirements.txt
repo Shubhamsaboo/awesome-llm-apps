@@ -1,0 +1,10 @@
+langchain
+langgraph
+langchainhub
+langchain-community
+langchain-google-genai
+langchain-qdrant
+langchain-text-splitters
+tiktoken
+beautifulsoup4
+python-dotenv
