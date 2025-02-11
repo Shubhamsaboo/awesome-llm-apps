@@ -49,6 +49,8 @@ if 'qdrant_api_key' not in st.session_state:
     st.session_state.qdrant_api_key = ""
 if 'qdrant_url' not in st.session_state:
     st.session_state.qdrant_url = ""
+if 'model_version' not in st.session_state:
+    st.session_state.model_version = "deepseek-r1:1.5b"  # Default to lighter model
 if 'vector_store' not in st.session_state:
     st.session_state.vector_store = None
 if 'processed_documents' not in st.session_state:
@@ -69,6 +71,24 @@ if 'rag_enabled' not in st.session_state:
 
 # Sidebar Configuration
 st.sidebar.header("🤖 Agent Configuration")
+
+# Model Selection
+st.sidebar.header("📦 Model Selection")
+model_help = """
+- 1.5b: Lighter model, suitable for most laptops
+- 7b: More capable but requires better GPU/RAM
+
+Choose based on your hardware capabilities.
+"""
+st.session_state.model_version = st.sidebar.radio(
+    "Select Model Version",
+    options=["deepseek-r1:1.5b", "deepseek-r1:7b"],
+    help=model_help
+)
+st.sidebar.info("Run ollama pull deepseek-r1:7b or deepseek-r1:1.5b respectively")
+
+# RAG Mode Toggle
+st.sidebar.header("🔍 RAG Configuration")
 st.session_state.rag_enabled = st.sidebar.toggle("Enable RAG Mode", value=st.session_state.rag_enabled)
 
 # Clear Chat Button
@@ -285,7 +305,7 @@ def get_rag_agent() -> Agent:
     """Initialize the main RAG agent."""
     return Agent(
         name="DeepSeek RAG Agent",
-        model=Ollama(id="deepseek-r1:1.5b"),
+        model=Ollama(id=st.session_state.model_version),
         instructions="""You are an Intelligent Agent specializing in providing accurate answers.
 
         When asked a question:
