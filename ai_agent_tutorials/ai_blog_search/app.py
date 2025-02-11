@@ -111,7 +111,7 @@ def grade_documents(state) -> Literal["generate", "rewrite"]:
         binary_score: str = Field(description="Relevance score 'yes' or 'no'")
 
     # LLM
-    model = ChatGoogleGenerativeAI(api_key=st.session_state.gemini_api_key, temperature=0, model="gemini-1.5-pro", streaming=True)
+    model = ChatGoogleGenerativeAI(api_key=st.session_state.gemini_api_key, temperature=0, model="gemini-2.0-flash", streaming=True)
 
     # LLM with tool and validation
     llm_with_tool = model.with_structured_output(grade)
@@ -163,7 +163,7 @@ def agent(state, tools):
     """
     print("---CALL AGENT---")
     messages = state["messages"]
-    model = ChatGoogleGenerativeAI(api_key=st.session_state.gemini_api_key, temperature=0, streaming=True, model="gemini-1.5-pro")
+    model = ChatGoogleGenerativeAI(api_key=st.session_state.gemini_api_key, temperature=0, streaming=True, model="gemini-2.0-flash")
     model = model.bind_tools(tools)
     response = model.invoke(messages)
     
@@ -199,7 +199,7 @@ def rewrite(state):
     ]
 
     # Grader
-    model = ChatGoogleGenerativeAI(api_key=st.session_state.gemini_api_key, temperature=0, model="gemini-1.5-pro", streaming=True)
+    model = ChatGoogleGenerativeAI(api_key=st.session_state.gemini_api_key, temperature=0, model="gemini-2.0-flash", streaming=True)
     response = model.invoke(msg)
     return {"messages": [response]}
 
@@ -225,7 +225,7 @@ def generate(state):
     prompt_template = hub.pull("rlm/rag-prompt")
 
     # Initialize a Generator (i.e. Chat Model)
-    chat_model = ChatGoogleGenerativeAI(api_key=st.session_state.gemini_api_key, model="gemini-1.5-pro", temperature=0, streaming=True)
+    chat_model = ChatGoogleGenerativeAI(api_key=st.session_state.gemini_api_key, model="gemini-2.0-flash", temperature=0, streaming=True)
 
     # Initialize a Output Parser
     output_parser = StrOutputParser()
