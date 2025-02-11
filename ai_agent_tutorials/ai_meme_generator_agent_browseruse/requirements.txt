@@ -1,0 +1,6 @@
+streamlit
+browser-use==0.1.26
+playwright==1.49.1 
+langchain-openai
+langchain-anthropic
+asyncio

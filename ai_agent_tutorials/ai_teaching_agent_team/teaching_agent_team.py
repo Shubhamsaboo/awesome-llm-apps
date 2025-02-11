@@ -1,11 +1,11 @@
 import streamlit as st
-from phi.agent import Agent, RunResponse
-from phi.model.openai import OpenAIChat
+from agno.agent import Agent, RunResponse
+from agno.models.openai import OpenAIChat
 from composio_phidata import Action, ComposioToolSet
 import os
-from phi.tools.arxiv_toolkit import ArxivToolkit
-from phi.utils.pprint import pprint_run_response
-from phi.tools.serpapi_tools import SerpApiTools
+from agno.tools.arxiv import ArxivTools
+from agno.utils.pprint import pprint_run_response
+from agno.tools.serpapi import SerpApiTools
 
 # Set page configuration
 st.set_page_config(page_title="👨‍🏫 AI Teaching Agent Team", layout="centered")

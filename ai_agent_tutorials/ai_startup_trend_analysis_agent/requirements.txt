@@ -1,4 +1,4 @@
-phidata==2.5.33
+agno
 streamlit==1.40.2
 duckduckgo_search==6.3.7
 newspaper4k==0.9.3.1

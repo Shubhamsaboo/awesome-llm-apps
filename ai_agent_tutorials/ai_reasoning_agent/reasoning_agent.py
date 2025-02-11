@@ -1,9 +1,9 @@
-from phi.agent import Agent
-from phi.model.openai import OpenAIChat
-from phi.cli.console import console
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+from rich.console import Console
 
 regular_agent = Agent(model=OpenAIChat(id="gpt-4o-mini"), markdown=True)
-
+console = Console()
 reasoning_agent = Agent(
     model=OpenAIChat(id="gpt-4o"),
     reasoning=True,
