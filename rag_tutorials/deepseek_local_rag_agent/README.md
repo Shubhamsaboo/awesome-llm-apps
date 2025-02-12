@@ -1,12 +1,12 @@
-# Deepseek r1 Knowledge Agent 🤔
+# Deepseek Local RAG Reasoning Agent 🤔
 
-A versatile knowledge companion built with Deepseek r1 (via Ollama), Gemini for embeddings, Qdrant for vector storage, and Agno for agent orchestration. This application features dual-mode operation - a simple chat mode using local Deepseek r1 and an advanced RAG mode with document processing and web search capabilities.
+A powerful reasoning agent that combines local Deepseek models with RAG capabilities. Built using Deepseek (via Ollama), Gemini for embeddings, Qdrant for vector storage, and Agno for agent orchestration, this application offers both simple local chat and advanced RAG-enhanced interactions with comprehensive document processing and web search capabilities.
 
 ## Features
 
 - **Dual Operation Modes**
-  - Simple Chat Mode: Direct interaction with Deepseek r1 locally
-  - RAG Mode: Enhanced responses with document context and web search
+  - Local Chat Mode: Direct interaction with Deepseek locally
+  - RAG Mode: Enhanced reasoning with document context and web search integration
 
 - **Document Processing** (RAG Mode)
   - PDF document upload and processing
@@ -72,7 +72,7 @@ ollama pull deepseek-r1:7b
 1. Clone the repository:
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-cd ai_agent_tutorials/ai_knowledge_companion_r1_agent
+cd rag_tutorials/deepseek_local_rag_agent
 ```
 
 2. Install dependencies:
@@ -82,6 +82,6 @@ pip install -r requirements.txt
 
 3. Run the application:
 ```bash
-streamlit run ai_knowledge_r1_agent.py
+streamlit run deepseek_rag_agent.py
 ```
 
