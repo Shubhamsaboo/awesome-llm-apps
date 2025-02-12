@@ -2,7 +2,6 @@ import os
 import tempfile
 from datetime import datetime
 from typing import List
-
 import streamlit as st
 import google.generativeai as genai
 import bs4
@@ -40,7 +39,7 @@ COLLECTION_NAME = "deepseek-r1-agno"
 
 
 # Streamlit App Initialization
-st.title("🤔 Deepseek r1 Knowledge Agent ")
+st.title("🤔 Deepseek Local RAG Reasoning Agent")
 
 # Session State Initialization
 if 'google_api_key' not in st.session_state:
