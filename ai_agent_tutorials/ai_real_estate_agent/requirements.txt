@@ -1,0 +1,3 @@
+agno
+firecrawl
+pydantic
