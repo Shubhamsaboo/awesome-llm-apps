@@ -26,12 +26,12 @@ class FirecrawlResponse(BaseModel):
     status: str
     expiresAt: str
 
-class PriceFindingAgent:
+class PropertyFindingAgent:
     """Agent responsible for finding properties and providing recommendations"""
     
-    def __init__(self, firecrawl_api_key: str):
+    def __init__(self, firecrawl_api_key: str, openai_api_key: str):
         self.agent = Agent(
-            model=OpenAIChat(id="o3-mini"),
+            model=OpenAIChat(id="o3-mini", api_key=openai_api_key),
             markdown=True,
             description="I am a real estate expert who helps find and analyze properties based on user preferences."
         )
@@ -52,7 +52,6 @@ class PriceFindingAgent:
             f"https://www.99acres.com/property-in-{formatted_location}-ffid/*",
             f"https://housing.com/in/buy/{formatted_location}/{formatted_location}",
             f"https://www.squareyards.com/sale/property-for-sale-in-{formatted_location}/*",
-            f"https://www.nobroker.in/*",
             f"https://www.nobroker.in/property/sale/{city}/{formatted_location}",
             f"https://www.magicbricks.com/*"
         ]
@@ -62,7 +61,7 @@ class PriceFindingAgent:
         raw_response = self.firecrawl.extract(
             urls=urls,
             params={
-                'prompt': f"""Extract {property_category} {property_type_prompt} from {city} that cost less than {max_price} crores.
+                'prompt': f"""Extract at least 2-3 different {property_category} {property_type_prompt} from {city} that cost less than {max_price} crores.
                 
                 Requirements:
                 - Property Category: {property_category} properties only
@@ -70,11 +69,11 @@ class PriceFindingAgent:
                 - Location: {city}
                 - Maximum Price: {max_price} crores
                 - Include complete property details with exact location
+                - IMPORTANT: Return at least 2 different property listings
                 """,
                 'schema': PropertyData.model_json_schema()
-            }
-        )
-        
+            }        )
+        print(raw_response)
         # Process the properties data
         properties = []
         if isinstance(raw_response, dict):
@@ -83,7 +82,7 @@ class PriceFindingAgent:
         elif isinstance(raw_response, list):
             responses = [FirecrawlResponse(**item) for item in raw_response]
             properties = [resp.data for resp in responses]
-
+        print(properties)
         # Now use the agent to analyze and provide recommendations
         properties_context = "\n".join([
             f"Property: {p['Building_name']}\nPrice: {p['Price']}\nLocation: {p['location_address']}\nType: {p['Property_type']}\nDescription: {p['Description']}"
@@ -114,9 +113,9 @@ class PriceFindingAgent:
 class MarketAnalysisAgent:
     """Agent responsible for analyzing market trends and conditions"""
     
-    def __init__(self, firecrawl_api_key: str):
+    def __init__(self, firecrawl_api_key: str, openai_api_key: str):
         self.agent = Agent(
-            model=OpenAIChat(id="o3-mini"),
+            model=OpenAIChat(id="o3-mini", api_key=openai_api_key),
             markdown=True,
             description="I am a real estate market analyst who provides insights on market trends and conditions."
         )
@@ -186,10 +185,11 @@ class MarketAnalysisAgent:
 def main():
     """Main function to demonstrate the agents"""
     firecrawl_api_key = "YOUR_FIRECRAWL_API_KEY"
+    openai_api_key = "OPENAI_API_KEY"
     
     try:
         # Initialize agents
-        property_agent = PriceFindingAgent(firecrawl_api_key)
+        property_agent = PropertyFindingAgent(firecrawl_api_key, openai_api_key)
         market_agent = MarketAnalysisAgent(firecrawl_api_key)
         
         # Get property recommendations
