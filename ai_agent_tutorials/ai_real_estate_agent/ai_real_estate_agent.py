@@ -99,19 +99,42 @@ class PropertyFindingAgent:
             Properties Found in json format:
             {properties}
 
-            **IMPORTANT: IN THESE VARIOUS PROPERTIES, RETRIEVE THE BEST 5-10 PROPERTIES ONLY BASED ON PRICE OF PROPERTY. IT SHOULD BE AS CLOSE AS POSSIBLE TO THE {max_price} CRORES.**
+            **IMPORTANT INSTRUCTIONS:**
+            1. ONLY analyze properties from the above JSON data that match the user's requirements:
+               - Property Category: {property_category}
+               - Property Type: {property_type}
+               - Maximum Price: {max_price} crores
+            2. DO NOT create new categories or property types
+            3. From the matching properties, select 5-6 properties with prices closest to {max_price} crores
 
-            Please provide:
-            1 FIRST RETRIEVE THE BEST 5-10 PROPERTIES ONLY BASED ON PRICE OF PROPERTY. IT SHOULD BE AS CLOSE AS POSSIBLE TO THE {max_price} CRORES.
-            2. Bullet Point Information for each of retrieved propertiesthat are available based on the user's requirements.
-            3. Best value properties based on current market rates
-            4. Location-specific advantages and price trends
-            5. Specific recommendations based on the {property_category} {property_type} requirement
-            6. Investment potential based on price trends
-            7. Any red flags or concerns to consider
-            7. Negotiation tips for the best properties
+            Please provide your analysis in this format:
+            
+            🏠 SELECTED PROPERTIES
+            • List only 5-6 best matching properties with prices closest to {max_price} crores
+            • For each property include:
+              - Name and Location
+              - Price (with value analysis)
+              - Key Features
+              - Pros and Cons
 
-            Format your response in a clear, structured way that helps the user make an informed decision.
+            💰 BEST VALUE ANALYSIS
+            • Compare the selected properties based on:
+              - Price per sq ft
+              - Location advantage
+              - Amenities offered
+
+            📍 LOCATION INSIGHTS
+            • Specific advantages of the areas where selected properties are located
+
+            💡 RECOMMENDATIONS
+            • Top 3 properties from the selection with reasoning
+            • Investment potential
+            • Points to consider before purchase
+
+            🤝 NEGOTIATION TIPS
+            • Property-specific negotiation strategies
+
+            Format your response in a clear, structured way using the above sections.
             """
         )
         
@@ -279,8 +302,6 @@ def main():
                 st.success("✅ Property search completed!")
                 
                 st.subheader("🏘️ Property Recommendations")
-                with st.expander("🏘️ Property Recommendations"):
-                    st.write(property)
                 st.markdown(property_results)
                 
                 st.divider()
