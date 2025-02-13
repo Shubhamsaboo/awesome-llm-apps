@@ -12,6 +12,21 @@ class PropertyData(BaseModel):
     price: str = Field(description="Price of the property", alias="Price")
     description: str = Field(description="Detailed description of the property", alias="Description")
 
+class PropertiesResponse(BaseModel):
+    """Schema for multiple properties response"""
+    properties: List[PropertyData] = Field(description="List of property details")
+
+class LocationData(BaseModel):
+    """Schema for location price trends"""
+    location: str
+    price_per_sqft: float
+    percent_increase: float
+    rental_yield: float
+
+class LocationsResponse(BaseModel):
+    """Schema for multiple locations response"""
+    locations: List[LocationData] = Field(description="List of location data points")
+
 class MarketNewsData(BaseModel):
     """Schema for market news extraction"""
     title: str = Field(description="Title of the article/news")
@@ -49,9 +64,9 @@ class PropertyFindingAgent:
         
         # First, extract properties using Firecrawl
         urls = [
+            f"https://www.squareyards.com/sale/property-for-sale-in-{formatted_location}/*",
             f"https://www.99acres.com/property-in-{formatted_location}-ffid/*",
             f"https://housing.com/in/buy/{formatted_location}/{formatted_location}",
-            f"https://www.squareyards.com/sale/property-for-sale-in-{formatted_location}/*",
             f"https://www.nobroker.in/property/sale/{city}/{formatted_location}",
             f"https://www.magicbricks.com/*"
         ]
@@ -61,7 +76,7 @@ class PropertyFindingAgent:
         raw_response = self.firecrawl.extract(
             urls=urls,
             params={
-                'prompt': f"""Extract at least 2-3 different {property_category} {property_type_prompt} from {city} that cost less than {max_price} crores.
+                'prompt': f"""Extract at least 3-6 different {property_category} {property_type_prompt} from {city} that cost less than {max_price} crores.
                 
                 Requirements:
                 - Property Category: {property_category} properties only
@@ -69,38 +84,47 @@ class PropertyFindingAgent:
                 - Location: {city}
                 - Maximum Price: {max_price} crores
                 - Include complete property details with exact location
-                - IMPORTANT: Return at least 2 different property listings
+                - IMPORTANT: Return data for at least 3 different properties
+                - Format as a list of properties with their respective details
                 """,
-                'schema': PropertyData.model_json_schema()
-            }        )
-        print(raw_response)
+                'schema': PropertiesResponse.model_json_schema()
+            }
+        )
+        
+        print("Raw Property Response:", raw_response)
+        
         # Process the properties data
-        properties = []
-        if isinstance(raw_response, dict):
-            response = FirecrawlResponse(**raw_response)
-            properties = [response.data]
-        elif isinstance(raw_response, list):
-            responses = [FirecrawlResponse(**item) for item in raw_response]
-            properties = [resp.data for resp in responses]
-        print(properties)
+        if isinstance(raw_response, dict) and raw_response.get('success'):
+            properties = raw_response['data'].get('properties', [])
+        else:
+            properties = []
+            
+        print("Processed Properties:", properties)
+
         # Now use the agent to analyze and provide recommendations
         properties_context = "\n".join([
             f"Property: {p['Building_name']}\nPrice: {p['Price']}\nLocation: {p['location_address']}\nType: {p['Property_type']}\nDescription: {p['Description']}"
             for p in properties
         ])
         
+        # Get location price trends
+        price_trends = self.get_location_trends(city)
+        
         analysis = self.agent.run(
-            f"""As a real estate expert, analyze these properties and provide detailed recommendations:
+            f"""As a real estate expert, analyze these properties and market trends:
 
             Properties Found:
             {properties_context}
 
+            Location Price Trends:
+            {price_trends}
+
             Please provide:
             1. A summary of available properties
-            2. Best value properties and why
-            3. Location-specific advantages
-            4. Price comparison with market rates
-            5. Specific recommendations based on the {property_category} {property_type} requirement
+            2. Best value properties based on current market rates
+            3. Location-specific advantages and price trends
+            4. Specific recommendations based on the {property_category} {property_type} requirement
+            5. Investment potential based on price trends
             6. Any red flags or concerns to consider
             7. Negotiation tips for the best properties
 
@@ -109,6 +133,63 @@ class PropertyFindingAgent:
         )
         
         return analysis
+
+    def get_location_trends(self, city: str) -> str:
+        """Get price trends for different localities in the city"""
+        raw_response = self.firecrawl.extract([
+            f"https://www.99acres.com/property-rates-and-price-trends-in-{city.lower()}-prffid/*"
+        ], {
+            'prompt': """Extract price trends data for ALL major localities in the city. 
+            IMPORTANT: 
+            - Return data for at least 5-10 different localities
+            - Include both premium and affordable areas
+            - Do not skip any locality mentioned in the source
+            - Format as a list of locations with their respective data
+            """,
+            'schema': LocationsResponse.model_json_schema(),
+        })
+        
+        if isinstance(raw_response, dict) and raw_response.get('success'):
+            locations = raw_response['data'].get('locations', [])
+            
+    
+            # Use agent to analyze the trends
+            analysis = self.agent.run(
+                f"""As a real estate expert, analyze these location price trends for {city}:
+
+                {locations}
+
+                Please provide:
+                1. A bullet-point summary of the price trends for each location
+                2. Identify the top 3 locations with:
+                   - Highest price appreciation
+                   - Best rental yields
+                   - Best value for money
+                3. Investment recommendations:
+                   - Best locations for long-term investment
+                   - Best locations for rental income
+                   - Areas showing emerging potential
+                4. Specific advice for investors based on these trends
+
+                Format the response as follows:
+                
+                📊 LOCATION TRENDS SUMMARY
+                • [Bullet points for each location]
+
+                🏆 TOP PERFORMING AREAS
+                • [Bullet points for best areas]
+
+                💡 INVESTMENT INSIGHTS
+                • [Bullet points with investment advice]
+
+                🎯 RECOMMENDATIONS
+                • [Bullet points with specific recommendations]
+                """
+            )
+            
+            return analysis.content
+            
+        return "No price trends data available"
 
 class MarketAnalysisAgent:
     """Agent responsible for analyzing market trends and conditions"""
@@ -126,7 +207,7 @@ class MarketAnalysisAgent:
         # Extract market information from news and analysis sites
         urls = [
             "https://www.moneycontrol.com/real-estate-property/*",
-            "https://economictimes.indiatimes.com/wealth/real-estate/*",
+            f"https://www.99acres.com/property-rates-and-price-trends-in-{city.lower()}/*",
             "https://housing.com/news/*",
             f"https://www.99acres.com/articles/real-estate-market-{city.lower()}*"
         ]
