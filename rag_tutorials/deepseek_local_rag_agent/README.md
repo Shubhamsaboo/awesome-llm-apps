@@ -1,17 +1,17 @@
 # Deepseek Local RAG Reasoning Agent 🤔
 
-A powerful reasoning agent that combines local Deepseek models with RAG capabilities. Built using Deepseek (via Ollama), Gemini for embeddings, Qdrant for vector storage, and Agno for agent orchestration, this application offers both simple local chat and advanced RAG-enhanced interactions with comprehensive document processing and web search capabilities.
+A powerful reasoning agent that combines local Deepseek models with RAG capabilities. Built using Deepseek (via Ollama), Snowflake for embeddings, Qdrant for vector storage, and Agno for agent orchestration, this application offers both simple local chat and advanced RAG-enhanced interactions with comprehensive document processing and web search capabilities.
 
 ## Features
 
 - **Dual Operation Modes**
   - Local Chat Mode: Direct interaction with Deepseek locally
-  - RAG Mode: Enhanced reasoning with document context and web search integration
+  - RAG Mode: Enhanced reasoning with document context and web search integration - llama3.1:8b
 
 - **Document Processing** (RAG Mode)
   - PDF document upload and processing
   - Web page content extraction
-  - Automatic text chunking
+  - Automatic text chunking and embedding
   - Vector storage in Qdrant cloud
 
 - **Intelligent Querying** (RAG Mode)
@@ -32,7 +32,7 @@ A powerful reasoning agent that combines local Deepseek models with RAG capabili
   - Flexible model selection:
     - Deepseek r1 1.5b (lighter, suitable for most laptops)
     - Deepseek r1 7b (more capable, requires better hardware)
-  - Gemini Embedding model for vector embeddings
+  - Snowflake Arctic Embedding model (SOTA) for vector embeddings
   - Agno Agent framework for orchestration
   - Streamlit-based interactive interface
 
@@ -47,6 +47,9 @@ ollama pull deepseek-r1:1.5b
 
 # For the more capable model (if your hardware supports it)
 ollama pull deepseek-r1:7b
+
+ollama pull snowflake-arctic-embed
+ollama pull llama3.1:8b
 ```
 
 ### 2. Google API Key (for RAG Mode)
