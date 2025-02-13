@@ -38,9 +38,9 @@ class FirecrawlResponse(BaseModel):
 class PropertyFindingAgent:
     """Agent responsible for finding properties and providing recommendations"""
     
-    def __init__(self, firecrawl_api_key: str, openai_api_key: str):
+    def __init__(self, firecrawl_api_key: str, openai_api_key: str, model_id: str = "o3-mini"):
         self.agent = Agent(
-            model=OpenAIChat(id="o3-mini", api_key=openai_api_key),
+            model=OpenAIChat(id=model_id, api_key=openai_api_key),
             markdown=True,
             description="I am a real estate expert who helps find and analyze properties based on user preferences."
         )
@@ -183,7 +183,8 @@ def create_property_agent():
     if 'property_agent' not in st.session_state:
         st.session_state.property_agent = PropertyFindingAgent(
             firecrawl_api_key=st.session_state.firecrawl_key,
-            openai_api_key=st.session_state.openai_key
+            openai_api_key=st.session_state.openai_key,
+            model_id=st.session_state.model_id
         )
 
 def main():
@@ -196,6 +197,17 @@ def main():
     with st.sidebar:
         st.title("🔑 API Configuration")
         
+        st.subheader("🤖 Model Selection")
+        model_id = st.selectbox(
+            "Choose OpenAI Model",
+            options=["o3-mini", "gpt-4o"],
+            help="Select the AI model to use. Choose gpt-4o if your api doesn't have access to o3-mini"
+        )
+        st.session_state.model_id = model_id
+        
+        st.divider()
+        
+        st.subheader("🔐 API Keys")
         firecrawl_key = st.text_input(
             "Firecrawl API Key",
             type="password",
