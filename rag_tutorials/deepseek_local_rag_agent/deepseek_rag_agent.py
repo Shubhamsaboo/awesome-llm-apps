@@ -15,27 +15,22 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams
 from langchain_core.embeddings import Embeddings
 from agno.tools.exa import ExaTools
+from agno.embedder.ollama import OllamaEmbedder
 
 
-class GeminiEmbedder(Embeddings):
-    def __init__(self, model_name="models/text-embedding-004"):
-        genai.configure(api_key=st.session_state.google_api_key)
-        self.model = model_name
+class OllamaEmbedderr(Embeddings):
+    def __init__(self, model_name="snowflake-arctic-embed"):
+        self.embedder = OllamaEmbedder(id=model_name, dimensions=1024)
 
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
         return [self.embed_query(text) for text in texts]
 
     def embed_query(self, text: str) -> List[float]:
-        response = genai.embed_content(
-            model=self.model,
-            content=text,
-            task_type="retrieval_document"
-        )
-        return response['embedding']
+        return self.embedder.get_embedding(text)
 
 
 # Constants
-COLLECTION_NAME = "deepseek-r1-agno"
+COLLECTION_NAME = "test-deepseek-r1"
 
 
 # Streamlit App Initialization
@@ -98,14 +93,12 @@ if st.sidebar.button("🗑️ Clear Chat History"):
 # Show API Configuration only if RAG is enabled
 if st.session_state.rag_enabled:
     st.sidebar.header("🔑 API Configuration")
-    google_api_key = st.sidebar.text_input("Google API Key", type="password", value=st.session_state.google_api_key)
     qdrant_api_key = st.sidebar.text_input("Qdrant API Key", type="password", value=st.session_state.qdrant_api_key)
     qdrant_url = st.sidebar.text_input("Qdrant URL", 
                                      placeholder="https://your-cluster.cloud.qdrant.io:6333",
                                      value=st.session_state.qdrant_url)
 
     # Update session state
-    st.session_state.google_api_key = google_api_key
     st.session_state.qdrant_api_key = qdrant_api_key
     st.session_state.qdrant_url = qdrant_url
     
@@ -228,7 +221,7 @@ def create_vector_store(client, texts):
             client.create_collection(
                 collection_name=COLLECTION_NAME,
                 vectors_config=VectorParams(
-                    size=768,  # Gemini embedding-004 dimension
+                    size=1024,  
                     distance=Distance.COSINE
                 )
             )
@@ -241,7 +234,7 @@ def create_vector_store(client, texts):
         vector_store = QdrantVectorStore(
             client=client,
             collection_name=COLLECTION_NAME,
-            embedding=GeminiEmbedder()
+            embedding=OllamaEmbedderr()
         )
         
         # Add documents
@@ -254,37 +247,11 @@ def create_vector_store(client, texts):
         st.error(f"🔴 Vector store error: {str(e)}")
         return None
 
-
-# Add this after the GeminiEmbedder class
-def get_query_rewriter_agent() -> Agent:
-    """Initialize a query rewriting agent."""
-    return Agent(
-        name="Query Rewriter",
-        model=Gemini(id="gemini-exp-1206"),
-        instructions="""You are an expert at reformulating questions to be more precise and detailed. 
-        1. Analyze the user's question
-        2. Rewrite it to be more specific and search-friendly
-        3. Expand any acronyms or technical terms
-        4. Return ONLY the rewritten query without any additional text or explanations
-        
-        Example 1:
-        User: "What does it say about ML?"
-        Output: "What are the key concepts, techniques, and applications of Machine Learning (ML) discussed in the context?"
-        
-        Example 2:
-        User: "Tell me about transformers"
-        Output: "Explain the architecture, mechanisms, and applications of Transformer neural networks in natural language processing and deep learning"
-        """,
-        show_tool_calls=False,
-        markdown=True,
-    )
-
-
 def get_web_search_agent() -> Agent:
     """Initialize a web search agent."""
     return Agent(
         name="Web Search Agent",
-        model=Gemini(id="gemini-exp-1206", api_key=st.session_state.google_api_key),
+        model=Ollama(id="llama3.2"),
         tools=[ExaTools(
             api_key=st.session_state.exa_api_key,
             include_domains=search_domains,
@@ -340,10 +307,6 @@ def check_document_relevance(query: str, vector_store, threshold: float = 0.7) -
     return bool(docs), docs
 
 
-# Main Application Flow
-
-# Chat Interface
-# Create two columns for chat input and search toggle
 chat_col, toggle_col = st.columns([0.9, 0.1])
 
 with chat_col:
@@ -352,16 +315,8 @@ with chat_col:
 with toggle_col:
     st.session_state.force_web_search = st.toggle('🌐', help="Force web search")
 
-# Check if RAG is enabled but no API key
-if st.session_state.rag_enabled and not st.session_state.google_api_key:
-    st.error("Please enter your Google API Key to continue with RAG mode")
-    st.stop()
-
-# Initialize Qdrant and configure APIs if RAG is enabled
-if st.session_state.rag_enabled and st.session_state.google_api_key:
-    os.environ["GOOGLE_API_KEY"] = st.session_state.google_api_key
-    genai.configure(api_key=st.session_state.google_api_key)
-    
+# Check if RAG is enabled 
+if st.session_state.rag_enabled:
     qdrant_client = init_qdrant()
     
     # File/URL Upload Section
@@ -411,15 +366,14 @@ if prompt:
         st.write(prompt)
 
     if st.session_state.rag_enabled:
+
             # Existing RAG flow remains unchanged
-            with st.spinner("🤔 Reformulating query..."):
+            with st.spinner("🤔Evaluating the Query..."):
                 try:
-                    query_rewriter = get_query_rewriter_agent()
-                    rewritten_query = query_rewriter.run(prompt).content
+                    rewritten_query = prompt
                     
-                    with st.expander("🔄 See rewritten query"):
-                        st.write(f"Original: {prompt}")
-                        st.write(f"Rewritten: {rewritten_query}")
+                    with st.expander("Evaluating the query"):
+                        st.write(f"User's Prompt: {prompt}")
                 except Exception as e:
                     st.error(f"❌ Error rewriting query: {str(e)}")
                     rewritten_query = prompt
@@ -469,11 +423,9 @@ if prompt:
                         full_prompt = f"""Context: {context}
 
 Original Question: {prompt}
-Rewritten Question: {rewritten_query}
-
 Please provide a comprehensive answer based on the available information."""
                     else:
-                        full_prompt = f"Original Question: {prompt}\nRewritten Question: {rewritten_query}"
+                        full_prompt = f"Original Question: {prompt}\n"
                         st.info("ℹ️ No relevant information found in documents or web search.")
 
                     response = rag_agent.run(full_prompt)
