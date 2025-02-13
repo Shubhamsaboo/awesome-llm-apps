@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 from firecrawl import FirecrawlApp
+import streamlit as st
 
 class PropertyData(BaseModel):
     """Schema for property data extraction"""
@@ -26,13 +27,6 @@ class LocationData(BaseModel):
 class LocationsResponse(BaseModel):
     """Schema for multiple locations response"""
     locations: List[LocationData] = Field(description="List of location data points")
-
-class MarketNewsData(BaseModel):
-    """Schema for market news extraction"""
-    title: str = Field(description="Title of the article/news")
-    content: str = Field(description="Main content of the article")
-    date: str = Field(description="Publication date")
-    source: str = Field(description="Source of the article")
 
 class FirecrawlResponse(BaseModel):
     """Schema for Firecrawl API response"""
@@ -62,13 +56,11 @@ class PropertyFindingAgent:
         """Find and analyze properties based on user preferences"""
         formatted_location = city.lower()
         
-        # First, extract properties using Firecrawl
         urls = [
             f"https://www.squareyards.com/sale/property-for-sale-in-{formatted_location}/*",
             f"https://www.99acres.com/property-in-{formatted_location}-ffid/*",
             f"https://housing.com/in/buy/{formatted_location}/{formatted_location}",
             f"https://www.nobroker.in/property/sale/{city}/{formatted_location}",
-            f"https://www.magicbricks.com/*"
         ]
         
         property_type_prompt = "Flats" if property_type == "Flat" else "Individual Houses"
@@ -76,7 +68,7 @@ class PropertyFindingAgent:
         raw_response = self.firecrawl.extract(
             urls=urls,
             params={
-                'prompt': f"""Extract at least 3-6 different {property_category} {property_type_prompt} from {city} that cost less than {max_price} crores.
+                'prompt': f"""Extract at least 3-10 different {property_category} {property_type_prompt} from {city} that cost less than {max_price} crores.
                 
                 Requirements:
                 - Property Category: {property_category} properties only
@@ -84,7 +76,7 @@ class PropertyFindingAgent:
                 - Location: {city}
                 - Maximum Price: {max_price} crores
                 - Include complete property details with exact location
-                - IMPORTANT: Return data for at least 3 different properties
+                - IMPORTANT: Return data for at least 3 different properties. MAXIMUM 10.
                 - Format as a list of properties with their respective details
                 """,
                 'schema': PropertiesResponse.model_json_schema()
@@ -93,7 +85,6 @@ class PropertyFindingAgent:
         
         print("Raw Property Response:", raw_response)
         
-        # Process the properties data
         if isinstance(raw_response, dict) and raw_response.get('success'):
             properties = raw_response['data'].get('properties', [])
         else:
@@ -101,13 +92,11 @@ class PropertyFindingAgent:
             
         print("Processed Properties:", properties)
 
-        # Now use the agent to analyze and provide recommendations
         properties_context = "\n".join([
             f"Property: {p['Building_name']}\nPrice: {p['Price']}\nLocation: {p['location_address']}\nType: {p['Property_type']}\nDescription: {p['Description']}"
             for p in properties
         ])
         
-        # Get location price trends
         price_trends = self.get_location_trends(city)
         
         analysis = self.agent.run(
@@ -132,7 +121,7 @@ class PropertyFindingAgent:
             """
         )
         
-        return analysis
+        return analysis.content
 
     def get_location_trends(self, city: str) -> str:
         """Get price trends for different localities in the city"""
@@ -151,9 +140,7 @@ class PropertyFindingAgent:
         
         if isinstance(raw_response, dict) and raw_response.get('success'):
             locations = raw_response['data'].get('locations', [])
-            
     
-            # Use agent to analyze the trends
             analysis = self.agent.run(
                 f"""As a real estate expert, analyze these location price trends for {city}:
 
@@ -191,105 +178,115 @@ class PropertyFindingAgent:
             
         return "No price trends data available"
 
-class MarketAnalysisAgent:
-    """Agent responsible for analyzing market trends and conditions"""
-    
-    def __init__(self, firecrawl_api_key: str, openai_api_key: str):
-        self.agent = Agent(
-            model=OpenAIChat(id="o3-mini", api_key=openai_api_key),
-            markdown=True,
-            description="I am a real estate market analyst who provides insights on market trends and conditions."
+def create_property_agent():
+    """Create PropertyFindingAgent with API keys from session state"""
+    if 'property_agent' not in st.session_state:
+        st.session_state.property_agent = PropertyFindingAgent(
+            firecrawl_api_key=st.session_state.firecrawl_key,
+            openai_api_key=st.session_state.openai_key
         )
-        self.firecrawl = FirecrawlApp(api_key=firecrawl_api_key)
-
-    def analyze_market(self, city: str) -> str:
-        """Analyze market conditions using news and market reports"""
-        # Extract market information from news and analysis sites
-        urls = [
-            "https://www.moneycontrol.com/real-estate-property/*",
-            f"https://www.99acres.com/property-rates-and-price-trends-in-{city.lower()}/*",
-            "https://housing.com/news/*",
-            f"https://www.99acres.com/articles/real-estate-market-{city.lower()}*"
-        ]
-        
-        raw_response = self.firecrawl.extract(
-            urls=urls,
-            params={
-                'prompt': f"""Extract recent real estate market information and trends for {city}.
-                Focus on:
-                - Market trends
-                - Price movements
-                - Development projects
-                - Infrastructure updates
-                - Investment potential
-                Only extract articles from the last 6 months.
-                """,
-                'schema': MarketNewsData.model_json_schema()
-            }
-        )
-        
-        # Process the market data
-        market_data = []
-        if isinstance(raw_response, dict):
-            response = FirecrawlResponse(**raw_response)
-            market_data = [response.data]
-        elif isinstance(raw_response, list):
-            responses = [FirecrawlResponse(**item) for item in raw_response]
-            market_data = [resp.data for resp in responses]
-
-        # Analyze the market data
-        market_context = "\n".join([
-            f"Title: {article['title']}\nDate: {article['date']}\nContent: {article['content']}\nSource: {article['source']}"
-            for article in market_data
-        ])
-        
-        analysis = self.agent.run(
-            f"""As a real estate market analyst, provide a comprehensive market analysis for {city}:
-
-            Market Data:
-            {market_context}
-
-            Please provide:
-            1. Current market overview
-            2. Price trends and predictions
-            3. Development and infrastructure updates
-            4. Investment opportunities and risks
-            5. Regulatory changes affecting the market
-            6. Future outlook
-
-            Format your response as a detailed market report with clear sections and actionable insights.
-            """
-        )
-        
-        return analysis
 
 def main():
-    """Main function to demonstrate the agents"""
-    firecrawl_api_key = "YOUR_FIRECRAWL_API_KEY"
-    openai_api_key = "OPENAI_API_KEY"
-    
-    try:
-        # Initialize agents
-        property_agent = PropertyFindingAgent(firecrawl_api_key, openai_api_key)
-        market_agent = MarketAnalysisAgent(firecrawl_api_key)
+    st.set_page_config(
+        page_title="AI Real Estate Agent",
+        page_icon="🏠",
+        layout="wide"
+    )
+
+    with st.sidebar:
+        st.title("🔑 API Configuration")
         
-        # Get property recommendations
-        print("=== Property Analysis ===")
-        property_analysis = property_agent.find_properties(
-            city="Hyderabad",
-            max_price=5.0,
-            property_category="Residential",
-            property_type="Flat"
+        firecrawl_key = st.text_input(
+            "Firecrawl API Key",
+            type="password",
+            help="Enter your Firecrawl API key"
         )
-        print(property_analysis)
+        openai_key = st.text_input(
+            "OpenAI API Key",
+            type="password",
+            help="Enter your OpenAI API key"
+        )
         
-        # Get market analysis
-        print("\n=== Market Analysis ===")
-        market_analysis = market_agent.analyze_market("Hyderabad")
-        print(market_analysis)
+        if firecrawl_key and openai_key:
+            st.session_state.firecrawl_key = firecrawl_key
+            st.session_state.openai_key = openai_key
+            create_property_agent()
+
+    st.title("🏠 AI Real Estate Agent")
+    st.info(
+        """
+        Welcome to the AI Real Estate Agent! 
+        Enter your search criteria below to get property recommendations 
+        and location insights.
+        """
+    )
+
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        city = st.text_input(
+            "City",
+            placeholder="Enter city name (e.g., Bangalore)",
+            help="Enter the city where you want to search for properties"
+        )
+        
+        property_category = st.selectbox(
+            "Property Category",
+            options=["Residential", "Commercial"],
+            help="Select the type of property you're interested in"
+        )
+
+    with col2:
+        max_price = st.number_input(
+            "Maximum Price (in Crores)",
+            min_value=0.1,
+            max_value=100.0,
+            value=5.0,
+            step=0.1,
+            help="Enter your maximum budget in Crores"
+        )
+        
+        property_type = st.selectbox(
+            "Property Type",
+            options=["Flat", "Individual House"],
+            help="Select the specific type of property"
+        )
+
+    if st.button("🔍 Start Search", use_container_width=True):
+        if 'property_agent' not in st.session_state:
+            st.error("⚠️ Please enter your API keys in the sidebar first!")
+            return
             
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
+        if not city:
+            st.error("⚠️ Please enter a city name!")
+            return
+            
+        try:
+            with st.spinner("🔍 Searching for properties..."):
+                property_results = st.session_state.property_agent.find_properties(
+                    city=city,
+                    max_price=max_price,
+                    property_category=property_category,
+                    property_type=property_type
+                )
+                
+                st.success("✅ Property search completed!")
+                
+                st.subheader("🏘️ Property Recommendations")
+                st.markdown(property_results)
+                
+                st.divider()
+                
+                with st.spinner("📊 Analyzing location trends..."):
+                    location_trends = st.session_state.property_agent.get_location_trends(city)
+                    
+                    st.success("✅ Location analysis completed!")
+                    
+                    with st.expander("📈 Location Trends Analysis"):
+                        st.markdown(location_trends)
+                
+        except Exception as e:
+            st.error(f"❌ An error occurred: {str(e)}")
 
 if __name__ == "__main__":
     main()
