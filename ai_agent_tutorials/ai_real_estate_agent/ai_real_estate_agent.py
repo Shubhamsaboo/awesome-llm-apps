@@ -60,7 +60,7 @@ class PropertyFindingAgent:
             f"https://www.squareyards.com/sale/property-for-sale-in-{formatted_location}/*",
             f"https://www.99acres.com/property-in-{formatted_location}-ffid/*",
             f"https://housing.com/in/buy/{formatted_location}/{formatted_location}",
-            f"https://www.nobroker.in/property/sale/{city}/{formatted_location}",
+            # f"https://www.nobroker.in/property/sale/{city}/{formatted_location}",
         ]
         
         property_type_prompt = "Flats" if property_type == "Flat" else "Individual Houses"
@@ -92,24 +92,15 @@ class PropertyFindingAgent:
             
         print("Processed Properties:", properties)
 
-        properties_context = "\n".join([
-            f"Property: {p['Building_name']}\nPrice: {p['Price']}\nLocation: {p['location_address']}\nType: {p['Property_type']}\nDescription: {p['Description']}"
-            for p in properties
-        ])
-        
-        price_trends = self.get_location_trends(city)
         
         analysis = self.agent.run(
             f"""As a real estate expert, analyze these properties and market trends:
 
-            Properties Found:
-            {properties_context}
-
-            Location Price Trends:
-            {price_trends}
+            Properties Found in json format:
+            {properties}
 
             Please provide:
-            1. A summary of available properties
+            1. Bullet Point Information for each property that are available based on the user's requirements.
             2. Best value properties based on current market rates
             3. Location-specific advantages and price trends
             4. Specific recommendations based on the {property_category} {property_type} requirement
@@ -285,6 +276,8 @@ def main():
                 st.success("✅ Property search completed!")
                 
                 st.subheader("🏘️ Property Recommendations")
+                with st.expander("🏘️ Property Recommendations"):
+                    st.write(property)
                 st.markdown(property_results)
                 
                 st.divider()
@@ -294,7 +287,7 @@ def main():
                     
                     st.success("✅ Location analysis completed!")
                     
-                    with st.expander("📈 Location Trends Analysis"):
+                    with st.expander("📈 Location Trends Analysis of the city"):
                         st.markdown(location_trends)
                 
         except Exception as e:
