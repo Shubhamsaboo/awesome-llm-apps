@@ -29,6 +29,17 @@ if all(api_keys.values()):
     search_query = st.text_input("Research paper search query")
 
     def process_with_gpt4(result):
+        """Processes an arXiv search result to produce a structured markdown output.
+
+    This function takes a search result from arXiv and generates a markdown-formatted
+    table containing details about each paper. The table includes columns for the 
+    paper's title, authors, a brief abstract, and a link to the paper on arXiv. 
+
+    Args:
+        result (str): The raw search result from arXiv, typically in a text format.
+
+    Returns:
+        str: A markdown-formatted string containing a table with paper details."""
         prompt = f"""
         Based on the following arXiv search result, provide a proper structured output in markdown that is readable by the users. 
         Each paper should have a title, authors, abstract, and link.
