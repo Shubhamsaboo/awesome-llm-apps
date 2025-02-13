@@ -68,7 +68,7 @@ class PropertyFindingAgent:
         raw_response = self.firecrawl.extract(
             urls=urls,
             params={
-                'prompt': f"""Extract at least 3-10 different {property_category} {property_type_prompt} from {city} that cost less than {max_price} crores.
+                'prompt': f"""Extract ONLY 10 OR LESS different {property_category} {property_type_prompt} from {city} that cost less than {max_price} crores.
                 
                 Requirements:
                 - Property Category: {property_category} properties only
@@ -99,13 +99,16 @@ class PropertyFindingAgent:
             Properties Found in json format:
             {properties}
 
+            **IMPORTANT: IN THESE VARIOUS PROPERTIES, RETRIEVE THE BEST 5-10 PROPERTIES ONLY BASED ON PRICE OF PROPERTY. IT SHOULD BE AS CLOSE AS POSSIBLE TO THE {max_price} CRORES.**
+
             Please provide:
-            1. Bullet Point Information for each property that are available based on the user's requirements.
-            2. Best value properties based on current market rates
-            3. Location-specific advantages and price trends
-            4. Specific recommendations based on the {property_category} {property_type} requirement
-            5. Investment potential based on price trends
-            6. Any red flags or concerns to consider
+            1 FIRST RETRIEVE THE BEST 5-10 PROPERTIES ONLY BASED ON PRICE OF PROPERTY. IT SHOULD BE AS CLOSE AS POSSIBLE TO THE {max_price} CRORES.
+            2. Bullet Point Information for each of retrieved propertiesthat are available based on the user's requirements.
+            3. Best value properties based on current market rates
+            4. Location-specific advantages and price trends
+            5. Specific recommendations based on the {property_category} {property_type} requirement
+            6. Investment potential based on price trends
+            7. Any red flags or concerns to consider
             7. Negotiation tips for the best properties
 
             Format your response in a clear, structured way that helps the user make an informed decision.
