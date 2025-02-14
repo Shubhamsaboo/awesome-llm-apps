@@ -48,7 +48,6 @@ ollama pull deepseek-r1:1.5b
 ollama pull deepseek-r1:7b
 
 ollama pull snowflake-arctic-embed
-ollama run llama3.2
 ollama pull llama3.2
 ```
 
