@@ -21,7 +21,7 @@ An AI Powered Streamlit application that serves as your personal coding assistan
 - 30-second execution timeout protection
 
 #### Multi-Agent Architecture
-- Vision Agent (Gemini-exp-1206) for image processing
+- Vision Agent (Gemini-2.0-flash) for image processing
 - Coding Agent (OpenAI- o3-mini) for solution generation
 - Execution Agent (OpenAI) for code running and result analysis
 - E2B Sandbox for secure code execution

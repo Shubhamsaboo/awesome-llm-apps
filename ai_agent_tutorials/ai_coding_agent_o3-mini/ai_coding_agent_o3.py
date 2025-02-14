@@ -34,7 +34,7 @@ def setup_sidebar() -> None:
 
 def create_agents() -> tuple[Agent, Agent, Agent]:
     vision_agent = Agent(
-        model=Gemini(id="gemini-exp-1206", api_key=st.session_state.gemini_key),
+        model=Gemini(id="gemini-2.0-flash", api_key=st.session_state.gemini_key),
         markdown=True,
     )
 
