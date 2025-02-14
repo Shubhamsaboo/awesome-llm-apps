@@ -3,10 +3,8 @@ import tempfile
 from datetime import datetime
 from typing import List
 import streamlit as st
-import google.generativeai as genai
 import bs4
 from agno.agent import Agent
-from agno.models.google import Gemini
 from agno.models.ollama import Ollama
 from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -18,8 +16,14 @@ from agno.tools.exa import ExaTools
 from agno.embedder.ollama import OllamaEmbedder
 
 
-class OllamaEmbedderr(Embeddings):
+class OllamaEmbedder(Embeddings):
     def __init__(self, model_name="snowflake-arctic-embed"):
+        """
+        Initialize the OllamaEmbedderr with a specific model.
+
+        Args:
+            model_name (str): The name of the model to use for embedding.
+        """
         self.embedder = OllamaEmbedder(id=model_name, dimensions=1024)
 
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
@@ -139,8 +143,13 @@ if st.session_state.use_web_search:
 
 
 # Utility Functions
-def init_qdrant():
-    """Initialize Qdrant client with configured settings."""
+def init_qdrant() -> QdrantClient | None:
+    """Initialize Qdrant client with configured settings.
+
+    Returns:
+        QdrantClient: The initialized Qdrant client if successful.
+        None: If the initialization fails.
+    """
     if not all([st.session_state.qdrant_api_key, st.session_state.qdrant_url]):
         return None
     try:
@@ -234,7 +243,7 @@ def create_vector_store(client, texts):
         vector_store = QdrantVectorStore(
             client=client,
             collection_name=COLLECTION_NAME,
-            embedding=OllamaEmbedderr()
+            embedding=OllamaEmbedder()
         )
         
         # Add documents
