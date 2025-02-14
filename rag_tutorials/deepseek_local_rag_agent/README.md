@@ -6,7 +6,7 @@ A powerful reasoning agent that combines local Deepseek models with RAG capabili
 
 - **Dual Operation Modes**
   - Local Chat Mode: Direct interaction with Deepseek locally
-  - RAG Mode: Enhanced reasoning with document context and web search integration - llama3.1:8b
+  - RAG Mode: Enhanced reasoning with document context and web search integration - llama3.2
 
 - **Document Processing** (RAG Mode)
   - PDF document upload and processing
@@ -15,7 +15,6 @@ A powerful reasoning agent that combines local Deepseek models with RAG capabili
   - Vector storage in Qdrant cloud
 
 - **Intelligent Querying** (RAG Mode)
-  - Query rewriting using Gemini
   - RAG-based document retrieval
   - Similarity search with threshold filtering
   - Automatic fallback to web search
@@ -50,14 +49,10 @@ ollama pull deepseek-r1:7b
 
 ollama pull snowflake-arctic-embed
 ollama run llama3.2
+ollama pull llama3.2
 ```
 
-### 2. Google API Key (for RAG Mode)
-1. Go to [Google AI Studio](https://aistudio.google.com/apikey)
-2. Sign up or log in to your account
-3. Create a new API key
-
-### 3. Qdrant Cloud Setup (for RAG Mode)
+### 2. Qdrant Cloud Setup (for RAG Mode)
 1. Visit [Qdrant Cloud](https://cloud.qdrant.io/)
 2. Create an account or sign in
 3. Create a new cluster
@@ -65,7 +60,7 @@ ollama run llama3.2
    - Qdrant API Key: Found in API Keys section
    - Qdrant URL: Your cluster URL (format: `https://xxx-xxx.cloud.qdrant.io`)
 
-### 4. Exa AI API Key (Optional)
+### 3. Exa AI API Key (Optional)
 1. Visit [Exa AI](https://exa.ai)
 2. Sign up for an account
 3. Generate an API key for web search capabilities
