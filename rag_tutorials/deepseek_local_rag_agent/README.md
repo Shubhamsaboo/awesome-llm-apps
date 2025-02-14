@@ -49,7 +49,7 @@ ollama pull deepseek-r1:1.5b
 ollama pull deepseek-r1:7b
 
 ollama pull snowflake-arctic-embed
-ollama pull llama3.1:8b
+ollama run llama3.2
 ```
 
 ### 2. Google API Key (for RAG Mode)
