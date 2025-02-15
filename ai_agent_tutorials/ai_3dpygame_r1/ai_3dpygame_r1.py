@@ -1,10 +1,10 @@
 import streamlit as st
 from openai import OpenAI
-from phi.agent import Agent as PhiAgent
-from phi.model.anthropic import Claude
+from agno.agent import Agent as AgnoAgent
+from agno.models.openai import OpenAIChat as AgnoOpenAIChat
+from langchain_openai import ChatOpenAI 
 import asyncio
-from browser_use import Agent as BrowserAgent, SystemPrompt
-from langchain_anthropic import ChatAnthropic
+from browser_use import Browser
 
 st.set_page_config(page_title="PyGame Code Generator", layout="wide")
 
@@ -12,7 +12,7 @@ st.set_page_config(page_title="PyGame Code Generator", layout="wide")
 if "api_keys" not in st.session_state:
     st.session_state.api_keys = {
         "deepseek": "",
-        "claude": ""
+        "openai": ""
     }
 
 # Streamlit sidebar for API keys
@@ -23,11 +23,23 @@ with st.sidebar:
         type="password",
         value=st.session_state.api_keys["deepseek"]
     )
-    st.session_state.api_keys["claude"] = st.text_input(
-        "Claude API Key",
+    st.session_state.api_keys["openai"] = st.text_input(
+        "OpenAI API Key",
         type="password",
-        value=st.session_state.api_keys["claude"]
+        value=st.session_state.api_keys["openai"]
     )
+    
+    st.markdown("---")
+    st.info("""
+    📝 How to use:
+    1. Enter your API keys above
+    2. Write your PyGame visualization query
+    3. Click 'Generate Code' to get the code
+    4. Click 'Generate Visualization' to:
+       - Open Trinket.io PyGame editor
+       - Copy and paste the generated code
+       - Watch it run automatically
+    """)
 
 # Main UI
 st.title("AI 3D Visualizer with R1")
@@ -37,10 +49,14 @@ query = st.text_area(
     height=70,
     placeholder=f"e.g.: {example_query}"
 )
-generate_btn = st.button("Generate Code and Visualisation")
 
-if generate_btn and query:
-    if not st.session_state.api_keys["deepseek"] or not st.session_state.api_keys["claude"]:
+# Split the buttons into columns
+col1, col2 = st.columns(2)
+generate_code_btn = col1.button("Generate Code")
+generate_vis_btn = col2.button("Generate Visualization")
+
+if generate_code_btn and query:
+    if not st.session_state.api_keys["deepseek"] or not st.session_state.api_keys["openai"]:
         st.error("Please provide both API keys in the sidebar")
         st.stop()
 
@@ -72,10 +88,10 @@ if generate_btn and query:
             st.write(reasoning_content)
 
         # Initialize Claude agent (using PhiAgent)
-        claude_agent = PhiAgent(
-            model=Claude(
-                id="claude-3-5-sonnet-20241022",
-                api_key=st.session_state.api_keys["claude"]
+        openai_agent = AgnoAgent(
+            model=AgnoOpenAIChat(
+                id="gpt-4o",
+                api_key=st.session_state.api_keys["openai"]
             ),
             show_tool_calls=True,
             markdown=True
@@ -87,52 +103,71 @@ if generate_btn and query:
         {reasoning_content}"""
 
         with st.spinner("Extracting code..."):
-            code_response = claude_agent.run(extraction_prompt)
+            code_response = openai_agent.run(extraction_prompt)
             extracted_code = code_response.content
 
-        with st.expander("Generated PyGame Code"):      
+        # Store the generated code in session state
+        st.session_state.generated_code = extracted_code
+        
+        # Display the code
+        with st.expander("Generated PyGame Code", expanded=True):      
             st.code(extracted_code, language="python")
-
-        # Initialize browser agent for Trinket interaction
-        async def run_pygame_on_trinket(code: str) -> None:
-            task_description = (
-                "You are a Trinket.io PyGame expert. Follow these steps precisely:\n"
-                "1. Navigate to https://trinket.io/features/pygame\n"
-                "2. In the main.py file, clear any existing code in the editor\n"
-                "3. Paste this code into the editor:\n{0}\n"
-                "4. Click the Run button on the right to execute the code\n"
-                "5. Wait for the pygame visualisation to appear, once it does, view it for 10 seconds and then Quit the pygame window\n"
-            ).format(code)
-
-            browser_agent = BrowserAgent(
-                task=task_description,
-                llm=ChatAnthropic(
-                    model="claude-3-5-sonnet-20240620",
-                    api_key=st.session_state.api_keys["claude"]
-                ),
-                max_actions_per_step=5,
-                max_failures=3
-            )
-
-            with st.spinner("Running code on Trinket..."):
-                try:
-                    result = await browser_agent.run()
-                    if result and hasattr(result, 'final_response'):
-                        share_url = result.final_response
-                        st.success("Code is running on Trinket!")
-                        st.write("You can view the visualization here:")
-                        st.write(share_url)
-                    else:
-                        st.error("Failed to get a sharing URL from Trinket")
-                except Exception as e:
-                    st.error(f"Error running code on Trinket: {str(e)}")
-                    st.info("You can still copy the code above and run it manually on Trinket")
-
-        # Run the async function
-        asyncio.run(run_pygame_on_trinket(extracted_code))
+            
+        st.success("Code generated successfully! Click 'Generate Visualization' to run it.")
 
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
 
-elif generate_btn and not query:
+elif generate_vis_btn:
+    if "generated_code" not in st.session_state:
+        st.warning("Please generate code first before visualization")
+    else:
+        async def run_pygame_on_trinket(code: str) -> None:
+            browser = Browser()
+            from browser_use import Agent 
+            async with await browser.new_context() as context:
+                model = ChatOpenAI(
+                    model="gpt-4o", 
+                    api_key=st.session_state.api_keys["openai"]
+                )
+                
+                agent1 = Agent(
+                    task='Go to https://trinket.io/features/pygame, thats your only job.',
+                    llm=model,
+                    browser_context=context,
+                )
+                
+                executor = Agent(
+                    task='Executor. Execute the code written by the User by clicking on the run button on the right. ',
+                    llm=model,
+                    browser_context=context
+                )
+
+                coder = Agent(
+                    task='Coder. Your job is to wait for the user for 10 seconds to write the code in the code editor.',
+                    llm=model,
+                    browser_context=context
+                )
+                
+                viewer = Agent(
+                    task='Viewer. Your job is to just view the pygame window for 10 seconds.',
+                    llm=model,
+                    browser_context=context,
+                )
+
+                with st.spinner("Running code on Trinket..."):
+                    try:
+                        await agent1.run()
+                        await coder.run()
+                        await executor.run()
+                        await viewer.run()
+                        st.success("Code is running on Trinket!")
+                    except Exception as e:
+                        st.error(f"Error running code on Trinket: {str(e)}")
+                        st.info("You can still copy the code above and run it manually on Trinket")
+
+        # Run the async function with the stored code
+        asyncio.run(run_pygame_on_trinket(st.session_state.generated_code))
+
+elif generate_code_btn and not query:
     st.warning("Please enter a query before generating code")
