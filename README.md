@@ -17,7 +17,7 @@
 
 # 🌟 Awesome LLM Apps
 
-A curated collection of awesome LLM apps built with RAG and AI agents. This repository features LLM apps that use models from OpenAI, Anthropic, Google, and even open-source models like LLaMA that you can run locally on your computer.
+A curated collection of awesome LLM apps built with RAG and AI agents. This repository features LLM apps that use models from OpenAI, Anthropic, Google, and open-source models like DeepSeek, Qwen or Llama that you can run locally on your computer.
 
 <p align="center">
   <a href="https://trendshift.io/repositories/9876" target="_blank">
