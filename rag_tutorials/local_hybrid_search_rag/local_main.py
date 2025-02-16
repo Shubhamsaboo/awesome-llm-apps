@@ -20,6 +20,23 @@ Instead, you MUST treat the context as if its contents are entirely part of your
 """.strip()
 
 def initialize_config(settings: Dict[str, Any]) -> RAGLiteConfig:
+    """Initializes and returns a RAGLiteConfig object based on provided settings.
+
+    This function constructs a RAGLiteConfig object using the database URL, 
+    language model path, and embedder path specified in the `settings` dictionary.
+    The configuration includes default options for embedder normalization and 
+    chunk size. A reranker is also initialized with a predefined model.
+
+    Args:
+        settings (Dict[str, Any]): A dictionary containing configuration 
+        parameters. Expected keys are 'DBUrl', 'LLMPath', and 'EmbedderPath'.
+
+    Returns:
+        RAGLiteConfig: An initialized configuration object for RAGLite.
+
+    Raises:
+        ValueError: If there is an error in the configuration process, such as 
+        missing keys or invalid values in the settings dictionary."""
     try:
         return RAGLiteConfig(
             db_url=settings["DBUrl"],
@@ -33,6 +50,17 @@ def initialize_config(settings: Dict[str, Any]) -> RAGLiteConfig:
         raise ValueError(f"Configuration error: {e}")
 
 def process_document(file_path: str) -> bool:
+    """Processes a document by inserting it into a system with a given configuration.
+
+    This function attempts to insert a document specified by the file path into
+    a system using a predefined configuration stored in the session state. It
+    logs an error if the operation fails.
+
+    Args:
+        file_path (str): The path to the document file that needs to be processed.
+
+    Returns:
+        bool: True if the document is successfully processed; False if an error occurs."""
     try:
         if not st.session_state.get('my_config'):
             raise ValueError("Configuration not initialized")
@@ -43,6 +71,18 @@ def process_document(file_path: str) -> bool:
         return False
 
 def perform_search(query: str) -> List[dict]:
+    """Conducts a hybrid search and returns reranked results.
+
+    This function performs a hybrid search using the provided query and
+    attempts to retrieve and rerank relevant chunks. It returns a list of
+    reranked search results.
+
+    Args:
+        query (str): The search query string.
+
+    Returns:
+        List[dict]: A list of dictionaries containing reranked search results.
+        Returns an empty list if no results are found or if an error occurs."""
     try:
         chunk_ids, scores = hybrid_search(query, num_results=10, config=st.session_state.my_config)
         if not chunk_ids:
