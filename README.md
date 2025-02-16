@@ -17,7 +17,7 @@
 
 # 🌟 Awesome LLM Apps
 
-A curated collection of awesome LLM apps built with RAG and AI agents. This repository features LLM apps that use models from OpenAI, Anthropic, Google, and even open-source models like LLaMA that you can run locally on your computer.
+A curated collection of awesome LLM apps built with RAG and AI agents. This repository features LLM apps that use models from OpenAI, Anthropic, Google, and open-source models like DeepSeek, Qwen or Llama that you can run locally on your computer.
 
 <p align="center">
   <a href="https://trendshift.io/repositories/9876" target="_blank">
@@ -51,12 +51,14 @@ A curated collection of awesome LLM apps built with RAG and AI agents. This repo
 - [👨‍🏫 AI Teaching Agent Team](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_teaching_agent_team)
 - [🛫 AI Travel Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_travel_agent)
 - [🎬 AI Movie Production Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_movie_production_agent)
--[💻 Multimodal AI Coding Agent Team with o3-mini and Gemini](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_coding_agent_o3-mini)
 - [📰 Multi-Agent AI Researcher](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/multi_agent_researcher)
+- [💻 Multimodal AI Coding Agent Team with o3-mini and Gemini](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_coding_agent_o3-mini)
 - [📑 AI Meeting Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_meeting_agent)
 - [♜ AI Chess Agent Game](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_chess_agent)
+- [🏠 AI Real Estate Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_real_estate_agent)
 - [🌐 Local News Agent OpenAI Swarm](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/local_news_agent_openai_swarm)
 - [📊 AI Finance Agent with xAI Grok](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/xai_finance_agent)
+- [🎮 AI 3D PyGame Visualizer with DeepSeek R1](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_3dpygame_r1)
 - [🧠 AI Reasoning Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_reasoning_agent)
 - [🧬 Multimodal AI Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/multimodal_ai_agent)
 
@@ -64,6 +66,7 @@ A curated collection of awesome LLM apps built with RAG and AI agents. This repo
 - [🔍 Autonomous RAG](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/autonomous_rag)
 - [🔗 Agentic RAG](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/agentic_rag)
 - [🤔 Agentic RAG with Gemini Flash Thinking](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/gemini_agentic_rag)
+- [🐋 Deepseek Local RAG Reasoning Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/deepseek_local_rag_agent)
 - [🔄 Llama3.1 Local RAG](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/llama3.1_local_rag)
 - [🧩 RAG-as-a-Service](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/rag-as-a-service)
 - [🦙 Local RAG Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/local_rag_agent)

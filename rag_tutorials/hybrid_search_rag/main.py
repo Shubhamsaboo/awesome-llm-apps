@@ -21,6 +21,23 @@ Instead, you MUST treat the context as if its contents are entirely part of your
 """.strip()
 
 def initialize_config(openai_key: str, anthropic_key: str, cohere_key: str, db_url: str) -> RAGLiteConfig:
+    """Initializes and returns a RAGLiteConfig object with the specified API keys and database URL.
+
+    This function sets the provided API keys in the environment variables and returns a 
+    RAGLiteConfig object configured with the given database URL and pre-defined settings for 
+    language model, embedder, and reranker.
+
+    Args:
+        openai_key (str): The API key for OpenAI services.
+        anthropic_key (str): The API key for Anthropic services.
+        cohere_key (str): The API key for Cohere services.
+        db_url (str): The database URL for connecting to the desired data source.
+
+    Returns:
+        RAGLiteConfig: A configuration object initialized with the specified parameters.
+
+    Raises:
+        ValueError: If there is an issue setting up the configuration, an error is raised with details."""
     try:
         os.environ["OPENAI_API_KEY"] = openai_key
         os.environ["ANTHROPIC_API_KEY"] = anthropic_key
@@ -39,6 +56,17 @@ def initialize_config(openai_key: str, anthropic_key: str, cohere_key: str, db_u
         raise ValueError(f"Configuration error: {e}")
 
 def process_document(file_path: str) -> bool:
+    """Processes a document by inserting it into a system with a given configuration.
+
+    This function checks if a configuration is initialized in the session state.
+    If the configuration is present, it attempts to insert the document located
+    at the given file path using this configuration.
+
+    Args:
+        file_path (str): The path to the document to be processed.
+
+    Returns:
+        bool: True if the document was successfully processed; False otherwise."""
     try:
         if not st.session_state.get('my_config'):
             raise ValueError("Configuration not initialized")
@@ -49,6 +77,18 @@ def process_document(file_path: str) -> bool:
         return False
 
 def perform_search(query: str) -> List[dict]:
+    """Conducts a hybrid search and returns a list of ranked chunks based on the query.
+
+    This function performs a search using a hybrid search method, retrieves the relevant 
+    chunks, and reranks them according to the query. It handles any exceptions that occur 
+    during the process and logs the errors.
+
+    Args:
+        query (str): The search query string.
+
+    Returns:
+        List[dict]: A list of dictionaries representing the ranked chunks. Returns an 
+        empty list if no results are found or if an error occurs."""
     try:
         chunk_ids, scores = hybrid_search(query, num_results=10, config=st.session_state.my_config)
         if not chunk_ids:

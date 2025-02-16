@@ -13,6 +13,18 @@ if 'SERPAPI_API_KEY' not in os.environ:
     st.stop()
 
 def get_assistant(tools):
+    """Creates and returns a configured assistant agent.
+
+    This function initializes an assistant agent with a specific model and toolset. 
+    The assistant is capable of accessing tools selected by the user and includes 
+    additional features such as showing tool call details, running in debug mode, 
+    and appending the current datetime to its instructions.
+
+    Args:
+        tools (list): A list of tools that the assistant can access.
+
+    Returns:
+        Agent: A configured assistant agent with specified capabilities and settings."""
     return Agent(
         name="llama3_assistant",
         model=Ollama(id="llama3.1:8b"),

@@ -7,6 +7,17 @@ import os
 gpt4_model = None
 
 def create_article_crew(topic):
+    """Creates a team of agents to research, write, and edit an article on a given topic.
+
+    This function sets up a crew consisting of three agents: a researcher, a writer, and an editor. 
+    Each agent is assigned a specific task to ensure the production of a well-researched, 
+    well-written, and polished article. The article is formatted using markdown standards.
+
+    Args:
+        topic (str): The subject matter on which the article will be based.
+
+    Returns:
+        Crew: A crew object that contains the agents and tasks necessary to complete the article."""
     # Create agents
     researcher = Agent(
         role='Researcher',
