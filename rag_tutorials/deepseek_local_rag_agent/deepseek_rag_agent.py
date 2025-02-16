@@ -16,7 +16,7 @@ from agno.tools.exa import ExaTools
 from agno.embedder.ollama import OllamaEmbedder
 
 
-class OllamaEmbedder(Embeddings):
+class OllamaEmbedderr(Embeddings):
     def __init__(self, model_name="snowflake-arctic-embed"):
         """
         Initialize the OllamaEmbedderr with a specific model.
@@ -243,7 +243,7 @@ def create_vector_store(client, texts):
         vector_store = QdrantVectorStore(
             client=client,
             collection_name=COLLECTION_NAME,
-            embedding=OllamaEmbedder()
+            embedding=OllamaEmbedderr()
         )
         
         # Add documents
