@@ -42,7 +42,7 @@ with st.sidebar:
     """)
 
 # Main UI
-st.title("AI 3D Visualizer with R1")
+st.title("🎮 AI 3D Visualizer with DeepSeek R1")
 example_query = "Create a particle system simulation where 100 particles emit from the mouse position and respond to keyboard-controlled wind forces"
 query = st.text_area(
     "Enter your PyGame query:",

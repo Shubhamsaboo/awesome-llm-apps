@@ -1,4 +1,4 @@
-## 🎮 AI 3D PyGame Visualizer with R1
+# 🎮 AI 3D PyGame Visualizer with DeepSeek R1
 This Project demonstrates R1's code capabilities with a PyGame code generator and visualizer with browser use. The system uses DeepSeek for reasoning, OpenAI for code extraction, and browser automation agents to visualize the code on Trinket.io.
 
 ### Features
