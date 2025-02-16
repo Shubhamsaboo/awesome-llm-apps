@@ -1,4 +1,4 @@
-# Deepseek Local RAG Reasoning Agent 🤔
+# 🐋 Deepseek Local RAG Reasoning Agent 
 
 A powerful reasoning agent that combines local Deepseek models with RAG capabilities. Built using Deepseek (via Ollama), Snowflake for embeddings, Qdrant for vector storage, and Agno for agent orchestration, this application offers both simple local chat and advanced RAG-enhanced interactions with comprehensive document processing and web search capabilities.
 

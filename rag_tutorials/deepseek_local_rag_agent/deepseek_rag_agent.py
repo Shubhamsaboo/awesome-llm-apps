@@ -38,7 +38,7 @@ COLLECTION_NAME = "test-deepseek-r1"
 
 
 # Streamlit App Initialization
-st.title("🤔 Deepseek Local RAG Reasoning Agent")
+st.title("🐋 Deepseek Local RAG Reasoning Agent")
 
 # Session State Initialization
 if 'google_api_key' not in st.session_state:
