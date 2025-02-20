@@ -4,7 +4,8 @@ from pydantic import BaseModel, Field
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 from firecrawl import FirecrawlApp
-import streamlit as st
+import gradio as gr
+import json
 
 class AQIResponse(BaseModel):
     success: bool
@@ -45,11 +46,11 @@ class AQIAnalyzer:
         state_clean = state.lower().replace(' ', '-')
         return f"https://www.aqi.in/dashboard/{country_clean}/{state_clean}/{city_clean}"
     
-    def fetch_aqi_data(self, city: str, state: str, country: str) -> Dict[str, float]:
+    def fetch_aqi_data(self, city: str, state: str, country: str) -> tuple[Dict[str, float], str]:
         """Fetch AQI data using Firecrawl"""
         try:
             url = self._format_url(country, state, city)
-            st.info(f"Accessing URL: {url}")  # Display URL being accessed
+            info_msg = f"Accessing URL: {url}"
             
             response = self.firecrawl.extract(
                 urls=[f"{url}/*"],
@@ -63,27 +64,10 @@ class AQIAnalyzer:
             if not aqi_response.success:
                 raise ValueError(f"Failed to fetch AQI data: {aqi_response.status}")
             
-            with st.expander("📦 Raw AQI Data", expanded=True):
-                st.json({
-                    "url_accessed": url,
-                    "timestamp": aqi_response.expiresAt,
-                    "data": aqi_response.data
-                })
-                
-                st.warning("""
-                    ⚠️ Note: The data shown may not match real-time values on the website. 
-                    This could be due to:
-                    - Cached data in Firecrawl
-                    - Rate limiting
-                    - Website updates not being captured
-                    
-                    Consider refreshing or checking the website directly for real-time values.
-                """)
-                
-            return aqi_response.data
+            return aqi_response.data, info_msg
             
         except Exception as e:
-            st.error(f"Error fetching AQI data: {str(e)}")
+            error_msg = f"Error fetching AQI data: {str(e)}"
             return {
                 'aqi': 0,
                 'temperature': 0,
@@ -92,7 +76,7 @@ class AQIAnalyzer:
                 'pm25': 0,
                 'pm10': 0,
                 'co': 0
-            }
+            }, error_msg
 
 class HealthRecommendationAgent:
     
@@ -138,128 +122,150 @@ class HealthRecommendationAgent:
         """
 
 def analyze_conditions(
-    user_input: UserInput,
-    api_keys: Dict[str, str]
-) -> str:
-    aqi_analyzer = AQIAnalyzer(firecrawl_key=api_keys['firecrawl'])
-    health_agent = HealthRecommendationAgent(openai_key=api_keys['openai'])
-    
-    aqi_data = aqi_analyzer.fetch_aqi_data(
-        city=user_input.city,
-        state=user_input.state,
-        country=user_input.country
-    )
-    
-    return health_agent.get_recommendations(aqi_data, user_input)
-
-def initialize_session_state():
-    if 'api_keys' not in st.session_state:
-        st.session_state.api_keys = {
-            'firecrawl': '',
-            'openai': ''
-        }
-
-def setup_page():
-    st.set_page_config(
-        page_title="AQI Analysis Agent",
-        page_icon="🌍",
-        layout="wide"
-    )
-    
-    st.title("🌍 AQI Analysis Agent")
-    st.info("Get personalized health recommendations based on air quality conditions.")
-
-def render_sidebar():
-    """Render sidebar with API configuration"""
-    with st.sidebar:
-        st.header("🔑 API Configuration")
+    city: str,
+    state: str,
+    country: str,
+    medical_conditions: str,
+    planned_activity: str,
+    firecrawl_key: str,
+    openai_key: str
+) -> tuple[str, str, str, str]:
+    """Analyze conditions and return AQI data, recommendations, and status messages"""
+    try:
+        # Initialize analyzers
+        aqi_analyzer = AQIAnalyzer(firecrawl_key=firecrawl_key)
+        health_agent = HealthRecommendationAgent(openai_key=openai_key)
         
-        new_firecrawl_key = st.text_input(
-            "Firecrawl API Key",
-            type="password",
-            value=st.session_state.api_keys['firecrawl'],
-            help="Enter your Firecrawl API key"
-        )
-        new_openai_key = st.text_input(
-            "OpenAI API Key",
-            type="password",
-            value=st.session_state.api_keys['openai'],
-            help="Enter your OpenAI API key"
+        # Create user input
+        user_input = UserInput(
+            city=city,
+            state=state,
+            country=country,
+            medical_conditions=medical_conditions,
+            planned_activity=planned_activity
         )
         
-        if (new_firecrawl_key and new_openai_key and
-            (new_firecrawl_key != st.session_state.api_keys['firecrawl'] or 
-             new_openai_key != st.session_state.api_keys['openai'])):
-            st.session_state.api_keys.update({
-                'firecrawl': new_firecrawl_key,
-                'openai': new_openai_key
-            })
-            st.success("✅ API keys updated!")
-
-def render_main_content():
-    st.header("📍 Location Details")
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        city = st.text_input("City", placeholder="e.g., Mumbai")
-        state = st.text_input("State", placeholder="If it's a Union Territory or a city in the US, leave it blank")
-        country = st.text_input("Country", value="India", placeholder="United States")
-    
-    with col2:
-        st.header("👤 Personal Details")
-        medical_conditions = st.text_area(
-            "Medical Conditions (optional)",
-            placeholder="e.g., asthma, allergies"
+        # Get AQI data
+        aqi_data, info_msg = aqi_analyzer.fetch_aqi_data(
+            city=user_input.city,
+            state=user_input.state,
+            country=user_input.country
         )
-        planned_activity = st.text_area(
-            "Planned Activity",
-            placeholder="e.g., morning jog for 2 hours"
-        )
-    
-    return UserInput(
-        city=city,
-        state=state,
-        country=country,
-        medical_conditions=medical_conditions,
-        planned_activity=planned_activity
-    )
-
-def main():
-    """Main application entry point"""
-    initialize_session_state()
-    setup_page()
-    render_sidebar()
-    user_input = render_main_content()
-    
-    result = None
-    
-    if st.button("🔍 Analyze & Get Recommendations"):
-        if not all([user_input.city, user_input.planned_activity]):
-            st.error("Please fill in all required fields (state and medical conditions are optional)")
-        elif not all(st.session_state.api_keys.values()):
-            st.error("Please provide both API keys in the sidebar")
-        else:
-            try:
-                with st.spinner("🔄 Analyzing conditions..."):
-                    result = analyze_conditions(
-                        user_input=user_input,
-                        api_keys=st.session_state.api_keys
-                    )
-                    st.success("✅ Analysis completed!")
-            
-            except Exception as e:
-                st.error(f"❌ Error: {str(e)}")
-
-    if result:
-        st.markdown("### 📦 Recommendations")
-        st.markdown(result)
         
-        st.download_button(
-            "💾 Download Recommendations",
-            data=result,
-            file_name=f"aqi_recommendations_{user_input.city}_{user_input.state}.txt",
-            mime="text/plain"
+        # Format AQI data for display
+        aqi_json = json.dumps({
+            "Air Quality Index (AQI)": aqi_data['aqi'],
+            "PM2.5": f"{aqi_data['pm25']} µg/m³",
+            "PM10": f"{aqi_data['pm10']} µg/m³",
+            "Carbon Monoxide (CO)": f"{aqi_data['co']} ppb",
+            "Temperature": f"{aqi_data['temperature']}°C",
+            "Humidity": f"{aqi_data['humidity']}%",
+            "Wind Speed": f"{aqi_data['wind_speed']} km/h"
+        }, indent=2)
+        
+        # Get recommendations
+        recommendations = health_agent.get_recommendations(aqi_data, user_input)
+        
+        warning_msg = """
+        ⚠️ Note: The data shown may not match real-time values on the website. 
+        This could be due to:
+        - Cached data in Firecrawl
+        - Rate limiting
+        - Website updates not being captured
+        
+        Consider refreshing or checking the website directly for real-time values.
+        """
+        
+        return aqi_json, recommendations, info_msg, warning_msg
+        
+    except Exception as e:
+        error_msg = f"Error occurred: {str(e)}"
+        return "", "Analysis failed", error_msg, ""
+
+def create_demo() -> gr.Blocks:
+    """Create and configure the Gradio interface"""
+    with gr.Blocks(title="AQI Analysis Agent") as demo:
+        gr.Markdown(
+            """
+            # 🌍 AQI Analysis Agent
+            Get personalized health recommendations based on air quality conditions.
+            """
         )
+        
+        # API Configuration
+        with gr.Accordion("API Configuration", open=False):
+            firecrawl_key = gr.Textbox(
+                label="Firecrawl API Key",
+                type="password",
+                placeholder="Enter your Firecrawl API key"
+            )
+            openai_key = gr.Textbox(
+                label="OpenAI API Key",
+                type="password",
+                placeholder="Enter your OpenAI API key"
+            )
+        
+        # Location Details
+        with gr.Row():
+            with gr.Column():
+                city = gr.Textbox(label="City", placeholder="e.g., Mumbai")
+                state = gr.Textbox(
+                    label="State",
+                    placeholder="Leave blank for Union Territories or US cities",
+                    value=""
+                )
+                country = gr.Textbox(label="Country", value="India")
+        
+        # Personal Details
+        with gr.Row():
+            with gr.Column():
+                medical_conditions = gr.Textbox(
+                    label="Medical Conditions (optional)",
+                    placeholder="e.g., asthma, allergies",
+                    lines=2
+                )
+                planned_activity = gr.Textbox(
+                    label="Planned Activity",
+                    placeholder="e.g., morning jog for 2 hours",
+                    lines=2
+                )
+        
+        # Status Messages
+        info_box = gr.Textbox(label="ℹ️ Status", interactive=False)
+        warning_box = gr.Textbox(label="⚠️ Warning", interactive=False)
+        
+        # Output Areas
+        aqi_data_json = gr.JSON(label="📊 Current Air Quality Data")
+        recommendations = gr.Markdown(label="🏥 Health Recommendations")
+        
+        # Analyze Button
+        analyze_btn = gr.Button("🔍 Analyze & Get Recommendations", variant="primary")
+        analyze_btn.click(
+            fn=analyze_conditions,
+            inputs=[
+                city,
+                state,
+                country,
+                medical_conditions,
+                planned_activity,
+                firecrawl_key,
+                openai_key
+            ],
+            outputs=[aqi_data_json, recommendations, info_box, warning_box]
+        )
+        
+        # Examples
+        gr.Examples(
+            examples=[
+                ["Mumbai", "Maharashtra", "India", "asthma", "morning walk for 30 minutes"],
+                ["Delhi", "", "India", "", "outdoor yoga session"],
+                ["New York", "", "United States", "allergies", "afternoon run"]
+            ],
+            inputs=[city, state, country, medical_conditions, planned_activity]
+        )
+    
+    return demo
 
 if __name__ == "__main__":
-    main()
+    demo = create_demo()
+    demo.launch(share=True)
