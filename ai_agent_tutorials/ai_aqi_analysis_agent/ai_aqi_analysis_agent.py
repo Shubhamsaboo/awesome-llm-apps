@@ -5,7 +5,6 @@ from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 from firecrawl import FirecrawlApp
 import streamlit as st
-import asyncio
 
 class AQIResponse(BaseModel):
     success: bool
