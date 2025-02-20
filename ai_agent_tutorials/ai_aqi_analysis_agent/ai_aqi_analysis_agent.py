@@ -146,6 +146,7 @@ def setup_page():
     st.info("Get personalized health recommendations based on air quality conditions.")
 
 def render_sidebar():
+    """Render sidebar with API configuration"""
     with st.sidebar:
         st.header("🔑 API Configuration")
         
@@ -162,8 +163,10 @@ def render_sidebar():
             help="Enter your OpenAI API key"
         )
         
-        if (new_firecrawl_key != st.session_state.api_keys['firecrawl'] or 
-            new_openai_key != st.session_state.api_keys['openai']):
+        # Update session state only if both keys are provided
+        if (new_firecrawl_key and new_openai_key and
+            (new_firecrawl_key != st.session_state.api_keys['firecrawl'] or 
+             new_openai_key != st.session_state.api_keys['openai'])):
             st.session_state.api_keys.update({
                 'firecrawl': new_firecrawl_key,
                 'openai': new_openai_key
