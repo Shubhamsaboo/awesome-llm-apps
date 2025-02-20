@@ -25,6 +25,17 @@ if 'output' not in st.session_state:
 st.sidebar.title("OpenAI API Key")
 api_key = st.sidebar.text_input("Enter your OpenAI API Key", type="password")
 
+# Add privacy notice in sidebar
+st.sidebar.warning("""
+## ⚠️ Important Notice
+
+This application is a supportive tool and does not replace professional mental health care. If you're experiencing thoughts of self-harm or severe crisis:
+
+- Call National Crisis Hotline: 988
+- Call Emergency Services: 911
+- Seek immediate professional help
+""")
+
 # Main app UI
 st.title("🧠 Mental Health Crisis Navigator")
 
@@ -70,13 +81,6 @@ current_symptoms = st.multiselect(
      "Mood Swings", "Physical Discomfort"]
 )
 
-# Emergency notice
-st.warning("""
-⚠️ **Important**: If you're having thoughts of self-harm or experiencing a severe crisis,
-please immediately contact emergency services or crisis hotlines:
-- National Crisis Hotline: 988
-- Emergency: 911
-""")
 
 # Button to start the agent collaboration
 if st.button("Get Support Plan"):
