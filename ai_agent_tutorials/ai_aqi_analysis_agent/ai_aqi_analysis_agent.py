@@ -53,11 +53,12 @@ class AQIAnalyzer:
         """Fetch AQI data using Firecrawl"""
         try:
             url = self._format_url(country, state, city)
+            st.info(f"Accessing URL: {url}")  # Display URL being accessed
             
             response = self.firecrawl.extract(
                 urls=[f"{url}/*"],
                 params={
-                    'prompt': 'Extract the AQI, temperature, humidity, wind speed, PM2.5, PM10, and CO levels from the page.',
+                    'prompt': 'Extract the current real-time AQI, temperature, humidity, wind speed, PM2.5, PM10, and CO levels from the page. Also extract the timestamp of the data.',
                     'schema': ExtractSchema.model_json_schema()
                 }
             )
@@ -67,9 +68,24 @@ class AQIAnalyzer:
             if not aqi_response.success:
                 raise ValueError(f"Failed to fetch AQI data: {aqi_response.status}")
             
-            # Display raw data in expander
+            # Display raw data in expander with timestamp
             with st.expander("📊 Raw AQI Data", expanded=True):
-                st.json(aqi_response.data)
+                st.json({
+                    "url_accessed": url,
+                    "timestamp": aqi_response.expiresAt,
+                    "data": aqi_response.data
+                })
+                
+                # Add warning if data seems stale or inconsistent
+                st.warning("""
+                    ⚠️ Note: The data shown may not match real-time values on the website. 
+                    This could be due to:
+                    - Cached data in Firecrawl
+                    - Rate limiting
+                    - Website updates not being captured
+                    
+                    Consider refreshing or checking the website directly for real-time values.
+                """)
                 
             return aqi_response.data
             
@@ -224,11 +240,11 @@ def main():
     render_sidebar()
     user_input = render_main_content()
     
-    result = None  # Initialize result variable
+    result = None
     
     if st.button("🔍 Analyze & Get Recommendations"):
-        if not all([user_input.city, user_input.state, user_input.planned_activity]):
-            st.error("Please fill in all required fields (medical conditions are optional)")
+        if not all([user_input.city, user_input.planned_activity]):
+            st.error("Please fill in all required fields (state and medical conditions are optional)")
         elif not all(st.session_state.api_keys.values()):
             st.error("Please provide both API keys in the sidebar")
         else:
@@ -246,7 +262,7 @@ def main():
     # Display recommendations if available
     if result:
         st.markdown("### 📊 Recommendations")
-        st.markdown(result)
+        st.info(result)
         
         st.download_button(
             "💾 Download Recommendations",
