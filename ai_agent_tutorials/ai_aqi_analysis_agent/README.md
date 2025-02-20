@@ -28,6 +28,7 @@ The AQI Analysis Agent is a powerful air quality monitoring and health recommend
   - Medical condition considerations
   - Activity-specific recommendations
   - Downloadable reports
+  - Example queries for quick testing
 
 ## How to Run
 
@@ -48,17 +49,23 @@ Follow these steps to set up and run the application:
     - Get an OpenAI API key from: https://platform.openai.com/api-keys
     - Get a Firecrawl API key from: [Firecrawl website](https://www.firecrawl.dev/app/api-keys)
 
-4. **Run the Streamlit app**:
+4. **Run the Gradio app**:
     ```bash
-    streamlit run ai_aqi_analysis_agent.py
+    python ai_aqi_analysis_agent.py
     ```
+
+5. **Access the Web Interface**:
+    - The terminal will display two URLs:
+      - Local URL: `http://127.0.0.1:7860` (for local access)
+      - Public URL: `https://xxx-xxx-xxx.gradio.live` (for temporary public access)
+    - Click on either URL to open the web interface in your browser
 
 ## Usage
 
-1. Enter your API keys in the sidebar
+1. Enter your API keys in the API Configuration section
 2. Input location details:
    - City name
-   - State (optional)
+   - State (optional for Union Territories/US cities)
    - Country
 3. Provide personal information:
    - Medical conditions (optional)
@@ -67,7 +74,7 @@ Follow these steps to set up and run the application:
    - Current air quality data
    - Health impact analysis
    - Activity safety recommendations
-   - Downloadable report
+5. Try the example queries for quick testing
 
 ## Note
 
