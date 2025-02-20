@@ -36,7 +36,18 @@ class AQIAnalyzer:
         self.firecrawl = FirecrawlApp(api_key=firecrawl_key)
     
     def _format_url(self, country: str, state: str, city: str) -> str:
-        return f"https://www.aqi.in/dashboard/{country.lower().replace(' ', '-')}/{state.lower().replace(' ', '-')}/{city.lower().replace(' ', '-')}"
+        """Format URL based on location, handling cases with and without state"""
+        # Clean and format the components
+        country_clean = country.lower().replace(' ', '-')
+        city_clean = city.lower().replace(' ', '-')
+        
+        # If state is None or empty, use direct city URL
+        if not state or state.lower() == 'none':
+            return f"https://www.aqi.in/dashboard/{country_clean}/{city_clean}"
+        
+        # Regular case with state included
+        state_clean = state.lower().replace(' ', '-')
+        return f"https://www.aqi.in/dashboard/{country_clean}/{state_clean}/{city_clean}"
     
     def fetch_aqi_data(self, city: str, state: str, country: str) -> Dict[str, float]:
         """Fetch AQI data using Firecrawl"""
@@ -184,8 +195,8 @@ def render_main_content():
     
     with col1:
         city = st.text_input("City", placeholder="e.g., Mumbai")
-        state = st.text_input("State", placeholder="e.g., Maharashtra")
-        country = st.text_input("Country", value="India")
+        state = st.text_input("State", placeholder="If it's a Union Territory or a city in the US, leave it blank")
+        country = st.text_input("Country", value="India", placeholder="United States")
     
     with col2:
         st.header("👤 Personal Details")
