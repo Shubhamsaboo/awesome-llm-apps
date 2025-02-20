@@ -37,15 +37,12 @@ class AQIAnalyzer:
     
     def _format_url(self, country: str, state: str, city: str) -> str:
         """Format URL based on location, handling cases with and without state"""
-        # Clean and format the components
         country_clean = country.lower().replace(' ', '-')
         city_clean = city.lower().replace(' ', '-')
         
-        # If state is None or empty, use direct city URL
         if not state or state.lower() == 'none':
             return f"https://www.aqi.in/dashboard/{country_clean}/{city_clean}"
         
-        # Regular case with state included
         state_clean = state.lower().replace(' ', '-')
         return f"https://www.aqi.in/dashboard/{country_clean}/{state_clean}/{city_clean}"
     
@@ -63,20 +60,17 @@ class AQIAnalyzer:
                 }
             )
             
-            # Parse Firecrawl response
             aqi_response = AQIResponse(**response)
             if not aqi_response.success:
                 raise ValueError(f"Failed to fetch AQI data: {aqi_response.status}")
             
-            # Display raw data in expander with timestamp
-            with st.expander("📊 Raw AQI Data", expanded=True):
+            with st.expander("📦 Raw AQI Data", expanded=True):
                 st.json({
                     "url_accessed": url,
                     "timestamp": aqi_response.expiresAt,
                     "data": aqi_response.data
                 })
                 
-                # Add warning if data seems stale or inconsistent
                 st.warning("""
                     ⚠️ Note: The data shown may not match real-time values on the website. 
                     This could be due to:
@@ -137,12 +131,11 @@ class HealthRecommendationAgent:
         User's Context:
         - Medical Conditions: {user_input.medical_conditions or 'None'}
         - Planned Activity: {user_input.planned_activity}
-        
-        Provide detailed health recommendations considering:
-        1. Current air quality impacts on health
-        2. Safety precautions needed for the planned activity of User based on the air quality conditions
-        3. Whether the planned activity is advisable or not, if its not advisable then provide alternative activity suggestions
-        4. Best time to conduct the activity if applicable
+        **Comprehensive Health Recommendations:**
+        1. **Impact of Current Air Quality on Health:**
+        2. **Necessary Safety Precautions for Planned Activity:**
+        3. **Advisability of Planned Activity:**
+        4. **Best Time to Conduct the Activity:**
         """
 
 def analyze_conditions(
@@ -169,12 +162,12 @@ def initialize_session_state():
 
 def setup_page():
     st.set_page_config(
-        page_title="AQI Analysis Assistant",
+        page_title="AQI Analysis Agent",
         page_icon="🌍",
         layout="wide"
     )
     
-    st.title("🌍 AQI Analysis Assistant")
+    st.title("🌍 AQI Analysis Agent")
     st.info("Get personalized health recommendations based on air quality conditions.")
 
 def render_sidebar():
@@ -195,7 +188,6 @@ def render_sidebar():
             help="Enter your OpenAI API key"
         )
         
-        # Update session state only if both keys are provided
         if (new_firecrawl_key and new_openai_key and
             (new_firecrawl_key != st.session_state.api_keys['firecrawl'] or 
              new_openai_key != st.session_state.api_keys['openai'])):
@@ -259,10 +251,9 @@ def main():
             except Exception as e:
                 st.error(f"❌ Error: {str(e)}")
 
-    # Display recommendations if available
     if result:
-        st.markdown("### 📊 Recommendations")
-        st.info(result)
+        st.markdown("### 📦 Recommendations")
+        st.markdown(result)
         
         st.download_button(
             "💾 Download Recommendations",
