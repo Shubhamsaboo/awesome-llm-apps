@@ -1,8 +1,0 @@
-autogen-agentchat
-autogen-ext
-playwright install --with-deps chromium
-
-pyautogen
-agentops
-
-streamlit
