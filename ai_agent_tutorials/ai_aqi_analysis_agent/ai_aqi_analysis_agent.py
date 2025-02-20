@@ -39,6 +39,7 @@ class AQIAnalyzer:
         return f"https://www.aqi.in/dashboard/{country.lower().replace(' ', '-')}/{state.lower().replace(' ', '-')}/{city.lower().replace(' ', '-')}"
     
     def fetch_aqi_data(self, city: str, state: str, country: str) -> Dict[str, float]:
+        """Fetch AQI data using Firecrawl"""
         try:
             url = self._format_url(country, state, city)
             
@@ -50,9 +51,14 @@ class AQIAnalyzer:
                 }
             )
             
+            # Parse Firecrawl response
             aqi_response = AQIResponse(**response)
             if not aqi_response.success:
                 raise ValueError(f"Failed to fetch AQI data: {aqi_response.status}")
+            
+            # Display raw data in expander
+            with st.expander("📊 Raw AQI Data", expanded=True):
+                st.json(aqi_response.data)
                 
             return aqi_response.data
             
@@ -107,10 +113,9 @@ class HealthRecommendationAgent:
         
         Provide detailed health recommendations considering:
         1. Current air quality impacts on health
-        2. Safety precautions needed
-        3. Whether the planned activity is advisable
-        4. Alternative activity suggestions if needed
-        5. Best time to conduct the activity if applicable
+        2. Safety precautions needed for the planned activity of User based on the air quality conditions
+        3. Whether the planned activity is advisable or not, if its not advisable then provide alternative activity suggestions
+        4. Best time to conduct the activity if applicable
         """
 
 def analyze_conditions(
@@ -202,10 +207,13 @@ def render_main_content():
     )
 
 def main():
+    """Main application entry point"""
     initialize_session_state()
     setup_page()
     render_sidebar()
     user_input = render_main_content()
+    
+    result = None  # Initialize result variable
     
     if st.button("🔍 Analyze & Get Recommendations"):
         if not all([user_input.city, user_input.state, user_input.planned_activity]):
@@ -219,20 +227,22 @@ def main():
                         user_input=user_input,
                         api_keys=st.session_state.api_keys
                     )
-                    
                     st.success("✅ Analysis completed!")
-                    st.markdown("### 📊 Recommendations")
-                    st.info(result)
-                    
-                    st.download_button(
-                        "💾 Download Recommendations",
-                        data=result,
-                        file_name=f"aqi_recommendations_{user_input.city}_{user_input.state}.txt",
-                        mime="text/plain"
-                    )
             
             except Exception as e:
                 st.error(f"❌ Error: {str(e)}")
+
+    # Display recommendations if available
+    if result:
+        st.markdown("### 📊 Recommendations")
+        st.markdown(result)
+        
+        st.download_button(
+            "💾 Download Recommendations",
+            data=result,
+            file_name=f"aqi_recommendations_{user_input.city}_{user_input.state}.txt",
+            mime="text/plain"
+        )
 
 if __name__ == "__main__":
     main()
