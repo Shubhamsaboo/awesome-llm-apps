@@ -1,0 +1,6 @@
+agno
+openai
+firecrawl-py==1.9.0
+gradio==5.9.1
+pydantic
+dataclasses
