@@ -18,10 +18,10 @@ os.environ["AUTOGEN_USE_DOCKER"] = "0"
 # Initialize session state
 if 'output' not in st.session_state:
     st.session_state.output = {
-        'climate': '',
-        'urban': '',
-        'economic': '',
-        'community': ''
+        'psychology': '',
+        'resources': '',
+        'action': '',
+        'followup': ''
     }
 
 # Sidebar for API key input
@@ -32,28 +32,63 @@ st.sidebar.title("AgentOps API Key")
 agentops_key = st.sidebar.text_input("Enter your AgentOps API Key", type="password", value="4e725ba8-b57e-49b5-809a-4eeef18d92ed")
 
 # Main app UI
-st.title("🌍 Climate Impact Response Planner")
+st.title("🧠 Mental Health Crisis Navigator")
 
 # Add agent information below title
 st.info("""
-**Meet Your Climate Planning Team:**
+**Meet Your Mental Health Support Team:**
 
-🌡️ **Climate Analysis Agent** - Analyzes climate data and risk projections
-🏙️ **Urban Planning Agent** - Develops infrastructure and zoning strategies
-💰 **Economic Impact Agent** - Assesses financial implications
-👥 **Community Engagement Agent** - Plans public involvement and behavior change
+🧠 **Psychology Agent** - Analyzes emotional state and psychological needs
+📋 **Resource Agent** - Identifies relevant support services and professionals
+🎯 **Action Agent** - Creates immediate step-by-step action plans
+🔄 **Follow-up Agent** - Designs ongoing support and prevention strategies
 """)
 
-# User input
-st.subheader("City Information")
-city_name = st.text_input("Enter City Name", "")
-city_description = st.text_area("Brief description of the city (population, geography, main industries, etc.)", "")
+# User inputs
+st.subheader("Personal Information")
+col1, col2 = st.columns(2)
+
+with col1:
+    mental_state = st.text_area("How have you been feeling recently?", 
+        placeholder="Describe your emotional state, thoughts, or concerns...")
+    sleep_pattern = st.select_slider(
+        "Sleep Pattern (hours per night)",
+        options=[f"{i}" for i in range(0, 13)],
+        value="7"
+    )
+    
+with col2:
+    stress_level = st.slider("Current Stress Level (1-10)", 1, 10, 5)
+    support_system = st.multiselect(
+        "Current Support System",
+        ["Family", "Friends", "Therapist", "Support Groups", "None"]
+    )
+
+# Additional context
+recent_changes = st.text_area(
+    "Any significant life changes or events recently?",
+    placeholder="Job changes, relationships, losses, etc..."
+)
+
+current_symptoms = st.multiselect(
+    "Current Symptoms",
+    ["Anxiety", "Depression", "Insomnia", "Fatigue", "Loss of Interest", 
+     "Difficulty Concentrating", "Changes in Appetite", "Social Withdrawal",
+     "Mood Swings", "Physical Discomfort"]
+)
+
+# Emergency notice
+st.warning("""
+⚠️ **Important**: If you're having thoughts of self-harm or experiencing a severe crisis,
+please immediately contact emergency services or crisis hotlines:
+- National Crisis Hotline: 988
+- Emergency: 911
+""")
 
 @contextmanager
 def agentops_session(api_key: str, tags: list):
     """Context manager for AgentOps sessions"""
     try:
-        # Initialize new session
         agentops.init(
             api_key=api_key,
             tags=tags,
@@ -62,27 +97,83 @@ def agentops_session(api_key: str, tags: list):
         )
         yield
     finally:
-        # Always ensure session is ended
         try:
             agentops.end_session("Success")
         except Exception as e:
             print(f"Failed to end AgentOps session: {e}")
 
 # Button to start the agent collaboration
-if st.button("Generate Climate Response Plan"):
+if st.button("Get Support Plan"):
     if not api_key:
         st.error("Please enter your OpenAI API key.")
     else:
-        with st.spinner('🤖 AI Agents are collaborating on your climate response plan...'):
-            with agentops_session(api_key=agentops_key, tags=["aqi_agent"]):
+        with st.spinner('🤖 AI Agents are analyzing your situation...'):
+            with agentops_session(api_key=agentops_key, tags=["mental_health_navigator"]):
                 try:
                     task = f"""
-                    Create a comprehensive climate impact response plan for:
-                    City: {city_name}
-                    Description: {city_description}
+                    Create a comprehensive mental health support plan based on:
                     
-                    Consider all aspects of climate adaptation including environmental, infrastructural, economic, and social factors.
+                    Emotional State: {mental_state}
+                    Sleep: {sleep_pattern} hours per night
+                    Stress Level: {stress_level}/10
+                    Support System: {', '.join(support_system) if support_system else 'None reported'}
+                    Recent Changes: {recent_changes}
+                    Current Symptoms: {', '.join(current_symptoms) if current_symptoms else 'None reported'}
                     """
+
+                    system_messages = {
+                        "psychology_agent": """
+                        You are an experienced mental health professional speaking directly to the user. Your task is to:
+                        1. Analyze their emotional state and psychological symptoms with empathy
+                        2. Help them understand potential mental health concerns
+                        3. Assess their risk levels and urgency
+                        4. Suggest therapeutic approaches that would work for them
+                        5. Help them understand how their life changes and stressors are affecting them
+                        6. Provide supportive psychological insights
+                        
+                        Always use "you" and "your" when addressing the user. Maintain a warm, supportive, and non-judgmental tone.
+                        Example: "Based on what you've shared about your sleep patterns..." instead of "The individual's sleep patterns..."
+                        """,
+                        
+                        "resource_agent": """
+                        You are a mental health resource coordinator speaking directly to the user. Your task is to:
+                        1. Connect you with appropriate mental health services
+                        2. Suggest support groups or communities that would benefit you
+                        3. Recommend professional care options for your situation
+                        4. Provide crisis resources when needed
+                        5. Consider what resources would be most accessible for you
+                        6. Share specific contact information for your local resources
+                        
+                        Always address the user directly using "you" and "your". Focus on practical, accessible resources.
+                        Example: "Given your current situation, these resources might help..." instead of "The following resources are recommended..."
+                        """,
+                        
+                        "action_agent": """
+                        You are a crisis intervention specialist speaking directly to the user. Your task is to:
+                        1. Help you develop immediate coping strategies
+                        2. Work with you to create a daily wellness routine
+                        3. Teach you stress management techniques
+                        4. Guide you in improving your sleep habits
+                        5. Help you make healthy lifestyle adjustments
+                        6. Create an emergency response plan with you if needed
+                        
+                        Use "you" and "your" when providing guidance. Give clear, actionable steps.
+                        Example: "Here are steps you can take right now..." instead of "The following steps are recommended..."
+                        """,
+                        
+                        "followup_agent": """
+                        You are a mental health recovery planner speaking directly to the user. Your task is to:
+                        1. Help you develop long-term support strategies
+                        2. Create a progress monitoring plan that works for you
+                        3. Work with you on relapse prevention strategies
+                        4. Plan how to engage your support system
+                        5. Guide you through lifestyle modifications
+                        6. Set up maintenance and check-in schedules with you
+                        
+                        Always use "you" and "your" in your recommendations. Focus on sustainable, long-term solutions.
+                        Example: "To maintain your progress, you might want to..." instead of "The following maintenance plan is suggested..."
+                        """
+                    }
 
                     # Then modify the agent configurations
                     llm_config = {
@@ -91,78 +182,36 @@ if st.button("Generate Climate Response Plan"):
 
                     # Context management for agent communication
                     context_variables = {
-                        "climate": None,
-                        "urban": None,
-                        "economic": None,
-                        "community": None,
+                        "psychology": None,
+                        "resources": None,
+                        "action": None,
+                        "followup": None,
                     }
 
                     # Update functions for each agent
-                    def update_climate_overview(climate_summary: str, context_variables: dict) -> SwarmResult:
+                    def update_psychology_overview(psychology_summary: str, context_variables: dict) -> SwarmResult:
                         """Keep the summary as short as possible."""
-                        context_variables["climate"] = climate_summary
-                        st.sidebar.success('Climate Analysis: ' + climate_summary)
-                        return SwarmResult(agent="urban_agent", context_variables=context_variables)
+                        context_variables["psychology"] = psychology_summary
+                        st.sidebar.success('Psychology Analysis: ' + psychology_summary)
+                        return SwarmResult(agent="resource_agent", context_variables=context_variables)
                         
-                    def update_urban_overview(urban_summary: str, context_variables: dict) -> SwarmResult:
+                    def update_resource_overview(resource_summary: str, context_variables: dict) -> SwarmResult:
                         """Keep the summary as short as possible."""
-                        context_variables["urban"] = urban_summary
-                        st.sidebar.success('Urban Planning: ' + urban_summary)
-                        return SwarmResult(agent="economic_agent", context_variables=context_variables)
+                        context_variables["resources"] = resource_summary
+                        st.sidebar.success('Resource Identification: ' + resource_summary)
+                        return SwarmResult(agent="action_agent", context_variables=context_variables)
 
-                    def update_economic_overview(economic_summary: str, context_variables: dict) -> SwarmResult:
+                    def update_action_overview(action_summary: str, context_variables: dict) -> SwarmResult:
                         """Keep the summary as short as possible."""
-                        context_variables["economic"] = economic_summary
-                        st.sidebar.success('Economic Impact: ' + economic_summary)
-                        return SwarmResult(agent="community_agent", context_variables=context_variables)
+                        context_variables["action"] = action_summary
+                        st.sidebar.success('Action Plan: ' + action_summary)
+                        return SwarmResult(agent="followup_agent", context_variables=context_variables)
 
-                    def update_community_overview(community_summary: str, context_variables: dict) -> SwarmResult:
+                    def update_followup_overview(followup_summary: str, context_variables: dict) -> SwarmResult:
                         """Keep the summary as short as possible."""
-                        context_variables["community"] = community_summary
-                        st.sidebar.success('Community Engagement: ' + community_summary)
-                        return SwarmResult(agent="climate_agent", context_variables=context_variables)
-
-                    system_messages = {
-                        "climate_agent": """
-                        You are an expert climate scientist and risk analyst. Your task is to:
-                        1. Analyze historical climate data and future projections for the specified city
-                        2. Identify key climate risks (flooding, heat waves, storms, etc.)
-                        3. Assess vulnerability of different city areas and systems
-                        4. Prioritize climate threats based on likelihood and impact
-                        5. Recommend key areas for climate resilience focus
-                        6. Provide specific climate scenarios the city should prepare for
-                        """,
-                        
-                        "urban_agent": """
-                        You are an experienced urban planner specializing in climate adaptation. Your task is to:
-                        1. Design infrastructure modifications for climate resilience
-                        2. Develop zoning recommendations for risk reduction
-                        3. Plan green infrastructure and nature-based solutions
-                        4. Identify critical infrastructure vulnerabilities
-                        5. Create phased implementation strategies
-                        6. Consider both immediate and long-term adaptation needs
-                        """,
-                        
-                        "economic_agent": """
-                        You are a climate economics and finance specialist. Your task is to:
-                        1. Calculate potential economic impacts of climate risks
-                        2. Identify funding sources for adaptation projects
-                        3. Analyze cost-benefit ratios of proposed solutions
-                        4. Assess impacts on local industries and businesses
-                        5. Develop economic incentives for climate adaptation
-                        6. Create budget allocation recommendations
-                        """,
-                        
-                        "community_agent": """
-                        You are a community engagement and behavior change expert. Your task is to:
-                        1. Design public communication strategies
-                        2. Plan community involvement in adaptation efforts
-                        3. Develop education and awareness programs
-                        4. Create behavior change initiatives
-                        5. Plan vulnerable population support systems
-                        6. Design feedback and monitoring systems
-                        """
-                    }
+                        context_variables["followup"] = followup_summary
+                        st.sidebar.success('Follow-up Strategy: ' + followup_summary)
+                        return SwarmResult(agent="psychology_agent", context_variables=context_variables)
 
                     def update_system_message_func(agent: SwarmAgent, messages) -> str:
                         """"""
@@ -196,42 +245,42 @@ if st.button("Generate Climate Response Plan"):
                     state_update = UPDATE_SYSTEM_MESSAGE(update_system_message_func)
 
                     # Define agents with proper code execution config
-                    climate_agent = SwarmAgent(
-                        "climate_agent", 
+                    psychology_agent = SwarmAgent(
+                        "psychology_agent", 
                         llm_config=llm_config,
-                        functions=update_climate_overview,
+                        functions=update_psychology_overview,
                         update_agent_state_before_reply=[state_update]
                     )
 
-                    urban_agent = SwarmAgent(
-                        "urban_agent",
+                    resource_agent = SwarmAgent(
+                        "resource_agent",
                         llm_config=llm_config,
-                        functions=update_urban_overview,
+                        functions=update_resource_overview,
                         update_agent_state_before_reply=[state_update]
                     )
 
-                    economic_agent = SwarmAgent(
-                        "economic_agent",
+                    action_agent = SwarmAgent(
+                        "action_agent",
                         llm_config=llm_config,
-                        functions=update_economic_overview,
+                        functions=update_action_overview,
                         update_agent_state_before_reply=[state_update]
                     )
 
-                    community_agent = SwarmAgent(
-                        name="community_agent",
+                    followup_agent = SwarmAgent(
+                        name="followup_agent",
                         llm_config=llm_config,
-                        functions=update_community_overview,
+                        functions=update_followup_overview,
                         update_agent_state_before_reply=[state_update]
                     )
 
-                    climate_agent.register_hand_off(AFTER_WORK(urban_agent))
-                    urban_agent.register_hand_off(AFTER_WORK(economic_agent))
-                    economic_agent.register_hand_off(AFTER_WORK(community_agent))
-                    community_agent.register_hand_off(AFTER_WORK(climate_agent))
+                    psychology_agent.register_hand_off(AFTER_WORK(resource_agent))
+                    resource_agent.register_hand_off(AFTER_WORK(action_agent))
+                    action_agent.register_hand_off(AFTER_WORK(followup_agent))
+                    followup_agent.register_hand_off(AFTER_WORK(psychology_agent))
 
                     result, _, _ = initiate_swarm_chat(
-                        initial_agent=climate_agent,
-                        agents=[climate_agent, urban_agent, economic_agent, community_agent],
+                        initial_agent=psychology_agent,
+                        agents=[psychology_agent, resource_agent, action_agent, followup_agent],
                         user_agent=None,
                         messages=task,
                         max_rounds=13,
@@ -239,27 +288,27 @@ if st.button("Generate Climate Response Plan"):
 
                     # Update session state with the individual responses
                     st.session_state.output = {
-                        'climate': result.chat_history[-4]['content'],
-                        'urban': result.chat_history[-3]['content'],
-                        'economic': result.chat_history[-2]['content'],
-                        'community': result.chat_history[-1]['content']
+                        'psychology': result.chat_history[-4]['content'],
+                        'resources': result.chat_history[-3]['content'],
+                        'action': result.chat_history[-2]['content'],
+                        'followup': result.chat_history[-1]['content']
                     }
 
                     # Display success message after completion
-                    st.success('✨ Climate response plan generated successfully!')
+                    st.success('✨ Mental health support plan generated successfully!')
 
                     # Display the individual outputs in expanders
-                    with st.expander("Climate Analysis"):
-                        st.markdown(st.session_state.output['climate'])
+                    with st.expander("Psychology Analysis"):
+                        st.markdown(st.session_state.output['psychology'])
 
-                    with st.expander("Urban Planning"):
-                        st.markdown(st.session_state.output['urban'])
+                    with st.expander("Resource Identification"):
+                        st.markdown(st.session_state.output['resources'])
 
-                    with st.expander("Economic Impact"):
-                        st.markdown(st.session_state.output['economic'])
+                    with st.expander("Action Plan"):
+                        st.markdown(st.session_state.output['action'])
 
-                    with st.expander("Community Engagement"):
-                        st.markdown(st.session_state.output['community'])
+                    with st.expander("Follow-up Strategy"):
+                        st.markdown(st.session_state.output['followup'])
 
                 except Exception as e:
                     st.error(f"An error occurred: {str(e)}")
