@@ -259,7 +259,8 @@ def create_demo() -> gr.Blocks:
             examples=[
                 ["Mumbai", "Maharashtra", "India", "asthma", "morning walk for 30 minutes"],
                 ["Delhi", "", "India", "", "outdoor yoga session"],
-                ["New York", "", "United States", "allergies", "afternoon run"]
+                ["New York", "", "United States", "allergies", "afternoon run"],
+                ["Kakinada", "Andhra Pradesh", "India", "none", "Tennis for 2 hours"]
             ],
             inputs=[city, state, country, medical_conditions, planned_activity]
         )
