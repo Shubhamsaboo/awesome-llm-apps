@@ -1,6 +1,6 @@
 # 🩻 Medical Imaging Diagnosis Agent
 
-A Medical Imaging Diagnosis Agent build on agno powered by Gemini 2.0 Flash Experimental that provides AI-assisted analysis of medical images of various scans. The agent acts as a medical imaging diagnosis expert to analyze various types of medical images and videos, providing detailed diagnostic insights and explanations.
+A Medical Imaging Diagnosis Agent build on agno powered by Gemini 2.0 Flash that provides AI-assisted analysis of medical images of various scans. The agent acts as a medical imaging diagnosis expert to analyze various types of medical images and videos, providing detailed diagnostic insights and explanations.
 
 ## Features
 
@@ -57,7 +57,7 @@ A Medical Imaging Diagnosis Agent build on agno powered by Gemini 2.0 Flash Expe
 
 - Uses Gemini 2.0 Flash for analysis
 - Requires stable internet connection
-- API usage costs apply
+- Free API usage costs -  1,500 free requests per day by google!
 - For educational and development purposes only
 - Not a replacement for professional medical diagnosis
 
