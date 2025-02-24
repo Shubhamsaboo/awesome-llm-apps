@@ -1,9 +1,10 @@
 import os
-from PIL import Image
+from PIL import Image as PILImage
 from agno.agent import Agent
 from agno.models.google import Gemini
 import streamlit as st
 from agno.tools.duckduckgo import DuckDuckGoTools
+from agno.media import Image as AgnoImage
 
 if "GOOGLE_API_KEY" not in st.session_state:
     st.session_state.GOOGLE_API_KEY = None
@@ -42,8 +43,8 @@ with st.sidebar:
 
 medical_agent = Agent(
     model=Gemini(
-        api_key=st.session_state.GOOGLE_API_KEY,
-        id="gemini-2.0-flash-exp"
+        id="gemini-2.0-flash",
+        api_key=st.session_state.GOOGLE_API_KEY
     ),
     tools=[DuckDuckGoTools()],
     markdown=True
@@ -108,11 +109,9 @@ with upload_container:
 
 if uploaded_file is not None:
     with image_container:
-        # Center the image using columns
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            image = Image.open(uploaded_file)
-            # Calculate aspect ratio for resizing
+            image = PILImage.open(uploaded_file)
             width, height = image.size
             aspect_ratio = width / height
             new_width = 500
@@ -133,13 +132,16 @@ if uploaded_file is not None:
     
     with analysis_container:
         if analyze_button:
-            image_path = "temp_medical_image.png"
-            with open(image_path, "wb") as f:
-                f.write(uploaded_file.getbuffer())
-            
             with st.spinner("🔄 Analyzing image... Please wait."):
                 try:
-                    response = medical_agent.run(query, images=[image_path])
+                    temp_path = "temp_resized_image.png"
+                    resized_image.save(temp_path)
+                    
+                    # Create AgnoImage object
+                    agno_image = AgnoImage(filepath=temp_path)  # Adjust if constructor differs
+                    
+                    # Run analysis
+                    response = medical_agent.run(query, images=[agno_image])
                     st.markdown("### 📋 Analysis Results")
                     st.markdown("---")
                     st.markdown(response.content)
@@ -150,8 +152,5 @@ if uploaded_file is not None:
                     )
                 except Exception as e:
                     st.error(f"Analysis error: {e}")
-                finally:
-                    if os.path.exists(image_path):
-                        os.remove(image_path)
 else:
     st.info("👆 Please upload a medical image to begin analysis")
