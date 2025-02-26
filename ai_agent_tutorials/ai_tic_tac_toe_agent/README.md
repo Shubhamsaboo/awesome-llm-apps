@@ -1,32 +1,23 @@
 # 🎮 Agent X vs Agent O: Tic-Tac-Toe Game
 
-An interactive Tic-Tac-Toe game where two AI agents powered by different language models compete against each other built on Agno Agent Framework and Streamlit as UI. Watch as GPT-4O battles against either DeepSeek V3 or Google's Gemini 1.5 Flash in this classic game.
+An interactive Tic-Tac-Toe game where two AI agents powered by different language models compete against each other built on Agno Agent Framework and Streamlit as UI.
+
+This example shows how to build an interactive Tic Tac Toe game where AI agents compete against each other. The application showcases how to:
+- Coordinate multiple AI agents in a turn-based game
+- Use different language models for different players
+- Create an interactive web interface with Streamlit
+- Handle game state and move validation
+- Display real-time game progress and move history
 
 ## Features
+- Multiple AI models support (GPT-4, Claude, Gemini, etc.)
+- Real-time game visualization
+- Move history tracking with board states
+- Interactive player selection
+- Game state management
+- Move validation and coordination
 
-### Multi-Agent System
-- Player X: OpenAI's Gemini Flash 2.0
-- Player O: DeepSeek v3
-- Judge: GPT-4o for game outcome validation
-
-### Interactive Interface
-- Real-time game board visualization
-- Move-by-move analysis
-- Agent response tracking
-- Clear game status updates
-
-### Strategic Gameplay
-- AI-powered move decisions
-- Winning strategy implementation
-- Opponent move blocking
-- Victory condition monitoring
-
-## Prerequisites 
-- Python 3.8+
-- OpenAI API key
-- Either DeepSeek API key or Google API key (for Player O)
-
-## How to Run 
+## How to Run? 
 
 1. **Setup Environment**
    ```bash
@@ -38,40 +29,78 @@ An interactive Tic-Tac-Toe game where two AI agents powered by different languag
    pip install -r requirements.txt
    ```
 
-2. **Configure API Keys**
-   - Get OpenAI API key from [OpenAI Platform](https://platform.openai.com)
-   - Get Google API key from [Google AI Studio](https://aistudio.google.com) (if using Gemini)
-   - Get DeepSeek API key from DeepSeek platform [Deepseek platform](https://www.deepseek.com) (if using DeepSeek v3 model)
+### 2. Install dependencies
 
-4. **Run the Application**
-   ```bash
-   streamlit run ai_tic_tac_toe_agent.py
-   ```
+```shell
+pip install -r requirements.txt
+```
 
-5. **Using the Interface**
-   - Enter your API keys in the sidebar
-   - Click "Start Game" to begin
-   - Watch as the AI agents battle it out!
-   - Monitor the game progress and final results
+### 3. Export API Keys
 
-## Game Components
+The game supports multiple AI models. Export the API keys for the models you want to use:
 
-- **Game Board**
-  - 3x3 interactive grid
-  - Real-time move visualization
-  - Clear symbol placement (X/O)
+```shell
+# Required for OpenAI models
+export OPENAI_API_KEY=***
 
-- **AI Agent Players**
-  - Player X: Strategic offensive moves
-  - Player O: Defensive countermoves since this agent started later
-  - AI Judge: Game outcome validation
+# Optional - for additional models
+export ANTHROPIC_API_KEY=***  # For Claude models
+export GOOGLE_API_KEY=***     # For Gemini models
+export GROQ_API_KEY=***       # For Groq models
+```
 
-- **Game Flow**
-  - Alternating turns between AIs
-  - Move validation and error handling
-  - Winner determination
-  - Draw detection
+### 4. Run the Game
 
-## Disclaimer ⚠️
+```shell
+streamlit run app.py
+```
 
-This is a demonstration project showcasing AI capabilities in game playing. API costs will apply based on your usage of the OpenAI, DeepSeek, or Google APIs.
+- Open [localhost:8501](http://localhost:8501) to view the game interface
+
+## How It Works
+
+The game consists of three agents:
+
+1. **Master Agent (Referee)**
+   - Coordinates the game
+   - Validates moves
+   - Maintains game state
+   - Determines game outcome
+
+2. **Two Player Agents**
+   - Make strategic moves
+   - Analyze board state
+   - Follow game rules
+   - Respond to opponent moves
+
+## Available Models
+
+The game supports various AI models:
+- GPT-4o (OpenAI)
+- GPT-o3-mini (OpenAI)
+- Gemini (Google)
+- Llama 3 (Groq)
+- Claude (Anthropic)
+
+## Game Features
+
+1. **Interactive Board**
+   - Real-time updates
+   - Visual move tracking
+   - Clear game status display
+
+2. **Move History**
+   - Detailed move tracking
+   - Board state visualization
+   - Player action timeline
+
+3. **Game Controls**
+   - Start/Pause game
+   - Reset board
+   - Select AI models
+   - View game history
+
+4. **Performance Analysis**
+   - Move timing
+   - Strategy tracking
+   - Game statistics
