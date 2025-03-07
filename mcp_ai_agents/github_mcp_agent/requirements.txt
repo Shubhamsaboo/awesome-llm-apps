@@ -1,0 +1,5 @@
+streamlit>=1.28.0
+agno>=1.1.0
+mcp>=0.1.0
+openai>=1.0.0
+asyncio>=3.4.3
