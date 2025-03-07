@@ -75,6 +75,9 @@ A curated collection of awesome LLM apps built with RAG and AI agents. This repo
 - [📠 RAG Agent with Database Routing](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/rag_database_routing)
 - [🔄 Corrective RAG Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/corrective_rag)
 
+### MCP AI Agents
+- [🐙 MCP GitHub Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/mcp_ai_agents/github_mcp_agent)
+
 ### LLM Apps with Memory
 - [💾 AI Arxiv Agent with Memory](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/llm_apps_with_memory_tutorials/ai_arxiv_agent_memory)
 - [📝 LLM App with Personalized Memory](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/llm_apps_with_memory_tutorials/llm_app_personalized_memory)
