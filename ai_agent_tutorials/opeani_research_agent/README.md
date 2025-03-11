@@ -38,7 +38,7 @@ export OPENAI_API_KEY='your-api-key-here'
 
 4. Run the team of AI Agents
 ```bash
-python openai_researcher_agent.py
+streamlit run openai_researcher_agent.py
 ```
 
 Then open your browser and navigate to the URL shown in the terminal (typically http://localhost:8501).
