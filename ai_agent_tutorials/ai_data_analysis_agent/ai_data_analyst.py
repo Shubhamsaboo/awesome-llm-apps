@@ -87,7 +87,7 @@ if uploaded_file is not None and "openai_key" in st.session_state:
         
         # Initialize the DuckDbAgent for SQL query generation
         duckdb_agent = DuckDbAgent(
-            model=OpenAIChat(model="gpt-4", api_key=st.session_state.openai_key),
+            model=OpenAIChat(api_key=st.session_state.openai_key),  # Removed 'model' parameter
             semantic_model=json.dumps(semantic_model),
             tools=[PandasTools()],
             markdown=True,
