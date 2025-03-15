@@ -1,0 +1,4 @@
+agno
+ollama
+fastapi
+uvicorn
