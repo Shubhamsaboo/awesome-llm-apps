@@ -91,18 +91,28 @@ def format_user_info_to_flattened_json(user_info_list: List[dict]) -> List[dict]
 
 def create_google_sheets_agent(composio_api_key: str, openai_api_key: str) -> Agent:
     composio_toolset = ComposioToolSet(api_key=composio_api_key)
-    google_sheets_tool = composio_toolset.get_tools(actions=[Action.GOOGLESHEETS_SHEET_FROM_JSON])[0]
+    google_sheets_tool = composio_toolset.get_tools(actions=['GOOGLESHEETS_SHEET_FROM_JSON'])
     
     google_sheets_agent = Agent(
-        model=OpenAIChat(id="gpt-4o-mini", api_key=openai_api_key),
+        model=OpenAIChat(id="gpt-4o", api_key=openai_api_key),
         tools=[google_sheets_tool],
         show_tool_calls=True,
-        system_prompt="You are an expert at creating and updating Google Sheets. You will be given user information in JSON format, and you need to write it into a new Google Sheet.",
+        description="You are an expert at creating and updating Google Sheets. You will be given user information in JSON format, and you need to write it into a new Google Sheet.",
         markdown=True
     )
     return google_sheets_agent
 
 def write_to_google_sheets(flattened_data: List[dict], composio_api_key: str, openai_api_key: str) -> str:
+    # Add data validation
+    if not flattened_data:
+        st.warning("No data to write to Google Sheets.")
+        return None
+    
+    # Debug the data structure
+    st.write(f"Data to write: {len(flattened_data)} records")
+    if len(flattened_data) > 0:
+        st.write("Sample record:", flattened_data[0])
+    
     google_sheets_agent = create_google_sheets_agent(composio_api_key, openai_api_key)
     
     try:
@@ -115,17 +125,27 @@ def write_to_google_sheets(flattened_data: List[dict], composio_api_key: str, op
         
         create_sheet_response = google_sheets_agent.run(message)
         
+        # Add debugging output to see the actual response
+        st.write("Google Sheets API Response:", create_sheet_response.content)
+        
         if "https://docs.google.com/spreadsheets/d/" in create_sheet_response.content:
             google_sheets_link = create_sheet_response.content.split("https://docs.google.com/spreadsheets/d/")[1].split(" ")[0]
             return f"https://docs.google.com/spreadsheets/d/{google_sheets_link}"
-    except Exception:
-        pass
+        else:
+            # If the link format is different, log the entire response
+            st.error(f"Could not find Google Sheets link in response: {create_sheet_response.content}")
+    except Exception as e:
+        # Improve error handling to see what's going wrong
+        st.error(f"Error creating Google Sheet: {str(e)}")
+        import traceback
+        st.error(traceback.format_exc())
+    
     return None
 
 def create_prompt_transformation_agent(openai_api_key: str) -> Agent:
     return Agent(
-        model=OpenAIChat(id="gpt-4o-mini", api_key=openai_api_key),
-        system_prompt="""You are an expert at transforming detailed user queries into concise company descriptions.
+        model=OpenAIChat(id="gpt-4o", api_key=openai_api_key),
+        description="""You are an expert at transforming detailed user queries into concise company descriptions.
 Your task is to extract the core business/product focus in 3-4 words.
 
 Examples:
