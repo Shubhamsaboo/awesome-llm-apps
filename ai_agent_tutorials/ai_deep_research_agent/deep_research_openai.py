@@ -8,8 +8,8 @@ from agents.tool import function_tool
 
 # Set page configuration
 st.set_page_config(
-    page_title="Enhanced Research Assistant",
-    page_icon="🔍",
+    page_title="OpenAI Deep Research Agent",
+    page_icon="📘",
     layout="wide"
 )
 
@@ -40,7 +40,7 @@ with st.sidebar:
         st.session_state.firecrawl_api_key = firecrawl_api_key
 
 # Main content
-st.title("🔍 Enhanced Deep Research Agent")
+st.title("📘 OpenAI Deep Research Agent")
 st.markdown("This OpenAI Agent from the OpenAI Agents SDK performs deep research on any topic using Firecrawl")
 
 # Research topic input
@@ -100,7 +100,8 @@ research_agent = Agent(
     3. Review the research results and organize them into a well-structured report
     4. Include proper citations for all sources
     5. Highlight key findings and insights
-    """
+    """,
+    tools=[deep_research]
 )
 
 elaboration_agent = Agent(
@@ -121,9 +122,6 @@ elaboration_agent = Agent(
     5. Ensure all additions are relevant and valuable to the topic
     """
 )
-
-# Attach the deep research tool to the research agent
-research_agent.tools.append(deep_research)
 
 async def run_research_process(topic: str):
     """Run the complete research process."""
