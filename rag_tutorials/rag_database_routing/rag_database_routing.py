@@ -75,7 +75,7 @@ def initialize_models():
         
         os.environ["OPENAI_API_KEY"] = st.session_state.openai_api_key
         st.session_state.embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
-        st.session_state.model = ChatOpenAI(temperature=0)
+        st.session_state.llm = ChatOpenAI(temperature=0)
         
         try:
             client = QdrantClient(
