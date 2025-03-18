@@ -9,8 +9,8 @@ from langchain_community.vectorstores import Qdrant
 from langchain_openai import OpenAIEmbeddings
 from langchain_openai import ChatOpenAI
 import tempfile
-from phi.agent import Agent
-from phi.model.openai import OpenAIChat
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
 from langchain.schema import HumanMessage
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
@@ -78,7 +78,6 @@ def initialize_models():
         st.session_state.llm = ChatOpenAI(temperature=0)
         
         try:
-            # Initialize Qdrant client with session state credentials
             client = QdrantClient(
                 url=st.session_state.qdrant_url,
                 api_key=st.session_state.qdrant_api_key
@@ -259,7 +258,7 @@ def query_database(db: Qdrant, question: str) -> tuple[str, list]:
     except Exception as e:
         st.error(f"Error: {str(e)}")
         return "I encountered an error. Please try rephrasing your question.", []
-
+    
 def _handle_web_fallback(question: str) -> tuple[str, list]:
     st.info("No relevant documents found. Searching web...")
     fallback_agent = create_fallback_agent(st.session_state.llm)
