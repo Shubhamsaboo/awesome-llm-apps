@@ -21,10 +21,129 @@ import asyncio
 import json
 from datetime import datetime
 import time
+import streamlit as st
 
 load_dotenv()
 
+def init_session_state():
+    """Initialize session state variables for storing API keys and configurations."""
+    defaults = {
+        "initialized": False,
+        "qdrant_url": "",
+        "qdrant_api_key": "",
+        "firecrawl_api_key": "",
+        "openai_api_key": "",
+        "doc_url": "",
+        "setup_complete": False,
+        "client": None,
+        "embedding_model": None,
+        "processor_agent": None,
+        "tts_agent": None,
+        "selected_voice": "coral"  # Default voice
+    }
+    
+    for key, value in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = value
 
+def sidebar_config():
+    """Render and handle the configuration sidebar."""
+    with st.sidebar:
+        st.title("🔑 Configuration")
+        st.markdown("---")
+        
+        # API Keys and URLs
+        st.session_state.qdrant_url = st.text_input(
+            "Qdrant URL",
+            value=st.session_state.qdrant_url,
+            type="password"
+        )
+        st.session_state.qdrant_api_key = st.text_input(
+            "Qdrant API Key",
+            value=st.session_state.qdrant_api_key,
+            type="password"
+        )
+        st.session_state.firecrawl_api_key = st.text_input(
+            "Firecrawl API Key",
+            value=st.session_state.firecrawl_api_key,
+            type="password"
+        )
+        st.session_state.openai_api_key = st.text_input(
+            "OpenAI API Key",
+            value=st.session_state.openai_api_key,
+            type="password"
+        )
+        
+        st.markdown("---")
+        st.session_state.doc_url = st.text_input(
+            "Documentation URL",
+            value=st.session_state.doc_url,
+            placeholder="https://docs.example.com"
+        )
+        
+        # Voice selection
+        st.markdown("---")
+        st.markdown("### 🎤 Voice Settings")
+        voices = ["alloy", "ash", "ballad", "coral", "echo", "fable", "onyx", "nova", "sage", "shimmer", "verse"]
+        st.session_state.selected_voice = st.selectbox(
+            "Select Voice",
+            options=voices,
+            index=voices.index(st.session_state.selected_voice),
+            help="Choose the voice for the audio response"
+        )
+        
+        # Setup button
+        if st.button("Initialize System", type="primary"):
+            if all([
+                st.session_state.qdrant_url,
+                st.session_state.qdrant_api_key,
+                st.session_state.firecrawl_api_key,
+                st.session_state.openai_api_key,
+                st.session_state.doc_url
+            ]):
+                progress_placeholder = st.empty()
+                with progress_placeholder.container():
+                    try:
+                        # Setup Qdrant
+                        st.markdown("🔄 Setting up Qdrant connection...")
+                        client, embedding_model = setup_qdrant_collection(
+                            st.session_state.qdrant_url,
+                            st.session_state.qdrant_api_key
+                        )
+                        st.session_state.client = client
+                        st.session_state.embedding_model = embedding_model
+                        st.markdown("✅ Qdrant setup complete!")
+                        
+                        # Crawl documentation
+                        st.markdown("🔄 Crawling documentation pages...")
+                        pages = crawl_documentation(
+                            st.session_state.firecrawl_api_key,
+                            st.session_state.doc_url
+                        )
+                        st.markdown(f"✅ Crawled {len(pages)} documentation pages!")
+                        
+                        # Store embeddings
+                        store_embeddings(
+                            client,
+                            embedding_model,
+                            pages,
+                            "docs_embeddings"
+                        )
+                        
+                        # Setup agents
+                        processor_agent, tts_agent = setup_agents(
+                            st.session_state.openai_api_key
+                        )
+                        st.session_state.processor_agent = processor_agent
+                        st.session_state.tts_agent = tts_agent
+                        
+                        st.session_state.setup_complete = True
+                        st.success("✅ System initialized successfully!")
+                        
+                    except Exception as e:
+                        st.error(f"Error during setup: {str(e)}")
+            else:
+                st.error("Please fill in all the required fields!")
 
 def setup_qdrant_collection(qdrant_url: str, qdrant_api_key: str, collection_name: str = "docs_embeddings"):
     print("\n--- Step 1: Setting up Qdrant Collection ---")
@@ -194,167 +313,157 @@ async def process_query(
     collection_name: str,
     openai_api_key: str
 ):
-    print("\n--- Step 5: Processing Query ---")
     try:
         # Generate query embedding
-        print("Generating query embedding...")
         query_embedding = list(embedding_model.embed([query]))[0]
-        print(f"✓ Generated query embedding with shape: {len(query_embedding)}")
-        print(f"Vector sample (first 5 elements): {query_embedding[:5]}")
         
-        # Try to get collection info first
-        print("\nVerifying collection status...")
-        try:
-            collection_info = client.get_collection(collection_name)
-            print(f"Collection exists with {collection_info.points_count} points")
-        except Exception as e:
-            print(f"Warning: Could not get collection info: {str(e)}")
+        # Search in Qdrant
+        search_response = client.query_points(
+            collection_name=collection_name,
+            query=query_embedding.tolist(),
+            limit=3,
+            with_payload=True
+        )
         
-        # Attempt search with query parameter (confirmed working)
-        print("\nAttempting vector search...")
-        try:
-            print("Querying with 'query' parameter...")
-            search_response = client.query_points(
-                collection_name=collection_name,
-                query=query_embedding.tolist(),
-                limit=3,
-                with_payload=True
-            )
-            print("✓ Query successful")
-            
-            # Debug search response
-            print("\nSearch Response Debug:")
-            print(f"Response type: {type(search_response)}")
-            
-            # Get points from the response
-            if hasattr(search_response, 'points'):
-                search_results = search_response.points
-            else:
-                search_results = []
+        search_results = search_response.points if hasattr(search_response, 'points') else []
+        
+        if not search_results:
+            raise Exception("No relevant documents found in the vector database")
+        
+        # Build context from search results
+        context = "Based on the following documentation:\n\n"
+        for result in search_results:
+            payload = result.payload
+            if not payload:
+                continue
+            url = payload.get('url', 'Unknown URL')
+            content = payload.get('content', '')
+            context += f"From {url}:\n{content}\n\n"
+        
+        context += f"\nUser Question: {query}\n\n"
+        context += "Please provide a clear, concise answer that can be easily spoken out loud."
+        
+        # Process response with agents
+        processor_result = await Runner.run(processor_agent, context)
+        processor_response = processor_result.final_output
+        
+        tts_result = await Runner.run(tts_agent, processor_response)
+        tts_response = tts_result.final_output
+        
+        # Generate audio
+        async_openai = AsyncOpenAI(api_key=openai_api_key)
+        audio_response = await async_openai.audio.speech.create(
+            model="gpt-4o-mini-tts",
+            voice=st.session_state.selected_voice,
+            input=processor_response,
+            instructions=tts_response,
+            response_format="mp3"
+        )
+        
+        # Save audio to a temporary file
+        temp_dir = tempfile.gettempdir()
+        audio_path = os.path.join(temp_dir, f"response_{uuid.uuid4()}.mp3")
+        
+        # Write the audio content to the file
+        with open(audio_path, "wb") as f:
+            f.write(audio_response.content)
                 
-            print(f"\n✓ Found {len(search_results)} relevant documents")
-            
-            if not search_results:
-                raise Exception("No relevant documents found in the vector database")
-            
-            # Build context from search results
-            context = "Based on the following documentation:\n\n"
-            for result in search_results:
-                payload = result.payload
-                if not payload:
-                    print(f"Warning: Result missing payload")
-                    continue
-                    
-                url = payload.get('url', 'Unknown URL')
-                content = payload.get('content', '')
-                score = getattr(result, 'score', 'N/A')
-                
-                print(f"\nDocument from {url}")
-                print(f"Relevance score: {score}")
-                context += f"From {url}:\n{content}\n\n"
-            
-            context += f"\nUser Question: {query}\n\n"
-            context += "Please provide a clear, concise answer that can be easily spoken out loud."
-            
-            # Process response with agents
-            print("\nProcessing with Documentation Agent...")
-            processor_result = await Runner.run(processor_agent, context)
-            processor_response = processor_result.final_output
-            print("✓ Generated text response")
-            
-            print("\nProcessing with TTS Agent...")
-            tts_result = await Runner.run(tts_agent, processor_response)
-            tts_response = tts_result.final_output
-            print("✓ Generated TTS instructions")
-            
-            # Generate and play audio
-            print("\nGenerating audio response...")
-            async_openai = AsyncOpenAI(api_key=openai_api_key)
-            async with async_openai.audio.speech.with_streaming_response.create(
-                model="tts-1",
-                voice="alloy",
-                input=processor_response,
-                instructions=tts_response,
-                response_format="pcm"
-            ) as response:
-                print("✓ Streaming audio response")
-                await LocalAudioPlayer().play(response)
-                
-            return {
-                "status": "success",
-                "text_response": processor_response,
-                "tts_instructions": tts_response,
-                "sources": [r.payload.get("url", "Unknown URL") for r in search_results if r.payload],
-                "query_details": {
-                    "vector_size": len(query_embedding),
-                    "results_found": len(search_results),
-                    "collection_name": collection_name
-                }
+        return {
+            "status": "success",
+            "text_response": processor_response,
+            "tts_instructions": tts_response,
+            "audio_path": audio_path,
+            "sources": [r.payload.get("url", "Unknown URL") for r in search_results if r.payload],
+            "query_details": {
+                "vector_size": len(query_embedding),
+                "results_found": len(search_results),
+                "collection_name": collection_name
             }
-            
-        except Exception as e:
-            print(f"Error during vector search: {str(e)}")
-            print("Full error details:")
-            import traceback
-            traceback.print_exc()
-            raise
+        }
     
     except Exception as e:
         print(f"\nError processing query: {str(e)}")
-        print("Full error details:")
-        import traceback
-        traceback.print_exc()
-        
         return {
             "status": "error",
             "error": str(e),
-            "error_details": traceback.format_exc(),
             "query": query
         }
 
-async def main():
-    try:
-        env_vars = get_env_vars()
-        print("✓ Loaded environment variables")
-        
-        client, embedding_model = setup_qdrant_collection(
-            env_vars["QDRANT_URL"],
-            env_vars["QDRANT_API_KEY"]
-        )
-        
-        pages = crawl_documentation(
-            env_vars["FIRECRAWL_API_KEY"],
-            "https://docs.agentmail.to/api-reference",
-            "crawled_docs"
-        )
-        
-        store_embeddings(client, embedding_model, pages, "docs_embeddings")
-        
-        processor_agent, tts_agent = setup_agents(env_vars["OPENAI_API_KEY"])
-        
-        query = "What are the required parameters for List Threads API of Agent Mail?"
-        result = await process_query(
-            query,
-            client,
-            embedding_model,
-            processor_agent,
-            tts_agent,
-            "docs_embeddings",
-            env_vars["OPENAI_API_KEY"]
-        )
-        
-        print("\n--- Final Results ---")
-        print(json.dumps(result, indent=2))
-        
-    except ValueError as e:
-        print(f"\nConfiguration Error: {str(e)}")
-        print("\nPlease ensure your .env file contains all required variables:")
-        print("FIRECRAWL_API_KEY=your_key")
-        print("QDRANT_URL=your_qdrant_url")
-        print("QDRANT_API_KEY=your_qdrant_key")
-        print("OPENAI_API_KEY=your_openai_key")
-    except Exception as e:
-        print(f"\nError: {str(e)}")
+def run_streamlit():
+    """Main Streamlit application."""
+    st.set_page_config(
+        page_title="AI Voice Documentation Agent Team",
+        page_icon="🎙️",
+        layout="wide"
+    )
+    
+    init_session_state()
+    sidebar_config()
+    
+    # Main content area
+    st.title("🎙️ AI Voice Documentation Agent Team")
+    st.markdown("""
+    Get OpenAI SDK voice-powered answers to your documentation questions! Simply:
+    1. Configure your API keys in the sidebar
+    2. Enter the documentation URL you want to learn about or have questions about
+    3. Ask your question below and get both text and voice responses
+    """)
+    
+    # Query input and processing
+    query = st.text_input(
+        "What would you like to know about the documentation?",
+        placeholder="e.g., How do I authenticate API requests?",
+        disabled=not st.session_state.setup_complete
+    )
+    
+    if query and st.session_state.setup_complete:
+        with st.status("Processing your query...", expanded=True) as status:
+            try:
+                st.markdown("🔄 Searching documentation and generating response...")
+                result = asyncio.run(process_query(
+                    query,
+                    st.session_state.client,
+                    st.session_state.embedding_model,
+                    st.session_state.processor_agent,
+                    st.session_state.tts_agent,
+                    "docs_embeddings",
+                    st.session_state.openai_api_key
+                ))
+                
+                if result["status"] == "success":
+                    status.update(label="✅ Query processed!", state="complete")
+                    
+                    st.markdown("### Response:")
+                    st.write(result["text_response"])
+                    
+                    if "audio_path" in result:
+                        st.markdown(f"### 🔊 Audio Response (Voice: {st.session_state.selected_voice})")
+                        # Pass the file path directly to st.audio
+                        st.audio(result["audio_path"], format="audio/mp3", start_time=0)
+                        
+                        # For download button, we still need to read the bytes
+                        with open(result["audio_path"], "rb") as audio_file:
+                            audio_bytes = audio_file.read()
+                            st.download_button(
+                                label="📥 Download Audio Response",
+                                data=audio_bytes,
+                                file_name=f"voice_response_{st.session_state.selected_voice}.mp3",
+                                mime="audio/mp3"
+                            )
+                    
+                    st.markdown("### Sources:")
+                    for source in result["sources"]:
+                        st.markdown(f"- {source}")
+                else:
+                    status.update(label="❌ Error processing query", state="error")
+                    st.error(f"Error: {result.get('error', 'Unknown error occurred')}")
+                    
+            except Exception as e:
+                status.update(label="❌ Error processing query", state="error")
+                st.error(f"Error processing query: {str(e)}")
+    
+    elif not st.session_state.setup_complete:
+        st.info("👈 Please configure the system using the sidebar first!")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    run_streamlit()
