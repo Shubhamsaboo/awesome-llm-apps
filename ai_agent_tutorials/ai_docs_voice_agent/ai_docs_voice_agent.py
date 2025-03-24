@@ -15,6 +15,7 @@ import tempfile
 import uuid
 import numpy as np
 from typing import Callable
+from urllib.parse import urlparse
 
 @dataclass
 class VoiceAgentConfig:
@@ -25,6 +26,13 @@ class VoiceAgentConfig:
     openai_api_key: str
     collection_name: str = "docs_embeddings"
     tts_voice: str = "alloy"  # Default voice from OpenAI TTS
+
+    def __post_init__(self):
+        """Validate URLs after initialization."""
+        # Validate Qdrant URL
+        parsed = urlparse(self.qdrant_url)
+        if not parsed.scheme or not parsed.netloc:
+            raise ValueError("Invalid Qdrant URL. Must include scheme (http:// or https://)")
 
 class VoiceAgent:
     """A voice-enabled AI agent for documentation support."""
@@ -51,8 +59,9 @@ class VoiceAgent:
             speed=1.0  # Normal speed
         )
         self.tts_model = OpenAITTSModel(
-            model_name="tts-1",
-            settings=tts_settings
+            model="tts-1",
+            settings=tts_settings,
+            openai_api_key=self.config.openai_api_key
         )
 
     def _setup_collection(self) -> None:
@@ -155,7 +164,7 @@ class VoiceAgent:
         agent = Agent(
             name="Documentation Support Agent",
             instructions="You are a helpful documentation support agent. Provide clear and concise answers based on the documentation.",
-            model="gpt-4",
+            model="gpt-4o",
             tools=[self.retrieve_relevant_content, self.generate_voice_response]
         )
         
@@ -179,24 +188,28 @@ def main():
     """Example usage of the VoiceAgent."""
     config = VoiceAgentConfig(
         firecrawl_api_key="fc-YOUR_API_KEY",
-        qdrant_url="YOUR_QDRANT_URL",
+        qdrant_url="https://your-qdrant-url:6333",  # Make sure to include https://
         qdrant_api_key="YOUR_QDRANT_API_KEY",
         openai_api_key="YOUR_OPENAI_API_KEY",
         tts_voice="alloy"  # You can choose from: alloy, echo, fable, onyx, nova, shimmer
     )
     
-    agent = VoiceAgent(config)
-    
-    # Example: Crawl documentation
-    docs_url = "https://example.com/docs"
-    agent.crawl_documentation(docs_url)
-    
-    # Example: Process a query
-    query = "How do I install the package?"
-    result = agent.process_query(query)
-    
-    print(f"Text Response: {result['text_response']}")
-    print(f"Voice Response saved to: {result['voice_file']}")
+    try:
+        agent = VoiceAgent(config)
+        
+        # Example: Crawl documentation
+        docs_url = "https://example.com/docs"
+        agent.crawl_documentation(docs_url)
+        
+        # Example: Process a query
+        query = "How do I install the package?"
+        result = agent.process_query(query)
+        
+        print(f"Text Response: {result['text_response']}")
+        print(f"Voice Response saved to: {result['voice_file']}")
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        print("Please check your API keys and URLs are correct.")
 
 if __name__ == "__main__":
     main()
