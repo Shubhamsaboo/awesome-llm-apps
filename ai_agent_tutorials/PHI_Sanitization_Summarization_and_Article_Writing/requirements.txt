@@ -1,0 +1,5 @@
+camel-ai[all]==0.2.32
+chunkr-ai>=0.0.41
+docx2markdown>=0.1.1
+gradio>=3.50.2
+streamlit
