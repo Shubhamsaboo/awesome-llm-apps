@@ -1,9 +1,9 @@
 import streamlit as st
 import os
-from phi.assistant import Assistant
-from phi.llm.ollama import Ollama
-from phi.tools.yfinance import YFinanceTools
-from phi.tools.serpapi_tools import SerpApiTools
+from agno.agent import Agent
+from agno.models.ollama import Ollama
+from agno.tools.yfinance import YFinanceTools
+from agno.tools.serpapi import SerpApiTools
 
 st.set_page_config(page_title="Llama-3 Tool Use", page_icon="🦙")
 
@@ -13,9 +13,21 @@ if 'SERPAPI_API_KEY' not in os.environ:
     st.stop()
 
 def get_assistant(tools):
-    return Assistant(
+    """Creates and returns a configured assistant agent.
+
+    This function initializes an assistant agent with a specific model and toolset. 
+    The assistant is capable of accessing tools selected by the user and includes 
+    additional features such as showing tool call details, running in debug mode, 
+    and appending the current datetime to its instructions.
+
+    Args:
+        tools (list): A list of tools that the assistant can access.
+
+    Returns:
+        Agent: A configured assistant agent with specified capabilities and settings."""
+    return Agent(
         name="llama3_assistant",
-        llm=Ollama(model="llama3"),
+        model=Ollama(id="llama3.1:8b"),
         tools=tools,
         description="You are a helpful assistant that can access specific tools based on user selection.",
         show_tool_calls=True,
@@ -25,7 +37,7 @@ def get_assistant(tools):
 
     )
 
-st.title("🦙 Local Llama-3 Tool Use")
+st.title("🦙 Local Llama-3.1 Tool Use")
 st.markdown("""
 This app demonstrates function calling with the local Llama3 model using Ollama.
 Select tools in the sidebar and ask relevant questions!

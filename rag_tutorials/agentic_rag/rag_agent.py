@@ -1,9 +1,9 @@
-from phi.agent import Agent
-from phi.model.openai import OpenAIChat
-from phi.knowledge.pdf import PDFUrlKnowledgeBase
-from phi.vectordb.lancedb import LanceDb, SearchType
-from phi.playground import Playground, serve_playground_app
-from phi.tools.duckduckgo import DuckDuckGo
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+from agno.knowledge.pdf_url import PDFUrlKnowledgeBase
+from agno.vectordb.lancedb import LanceDb, SearchType
+from agno.playground import Playground, serve_playground_app
+from agno.tools.duckduckgo import DuckDuckGoTools
 
 db_uri = "tmp/lancedb"
 # Create a knowledge base from a PDF
@@ -19,7 +19,7 @@ rag_agent = Agent(
     model=OpenAIChat(id="gpt-4o"),
     agent_id="rag-agent",
     knowledge=knowledge_base, # Add the knowledge base to the agent
-    tools=[DuckDuckGo()],
+    tools=[DuckDuckGoTools()],
     show_tool_calls=True,
     markdown=True,
 )

@@ -18,7 +18,7 @@ This Streamlit application implements a sophisticated news processing pipeline u
 1. Clone the GitHub repository
 ```bash
 git clone https://github.com/your-username/ai-news-processor.git
-cd local_news_agent_openai_swarm
+cd awesome-llm-apps/ai_agent_tutorials/local_news_agent_openai_swarm
 ```
 
 2. Install the required dependencies:

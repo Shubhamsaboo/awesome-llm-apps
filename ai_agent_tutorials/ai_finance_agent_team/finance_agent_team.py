@@ -1,16 +1,16 @@
-from phi.agent import Agent
-from phi.model.openai import OpenAIChat
-from phi.storage.agent.sqlite import SqlAgentStorage
-from phi.tools.duckduckgo import DuckDuckGo
-from phi.tools.yfinance import YFinanceTools
-from phi.playground import Playground, serve_playground_app
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+from agno.storage.agent.sqlite import SqliteAgentStorage
+from agno.tools.duckduckgo import DuckDuckGoTools
+from agno.tools.yfinance import YFinanceTools
+from agno.playground import Playground, serve_playground_app
 
 web_agent = Agent(
     name="Web Agent",
     role="Search the web for information",
     model=OpenAIChat(id="gpt-4o"),
-    tools=[DuckDuckGo()],
-    storage=SqlAgentStorage(table_name="web_agent", db_file="agents.db"),
+    tools=[DuckDuckGoTools()],
+    storage=SqliteAgentStorage(table_name="web_agent", db_file="agents.db"),
     add_history_to_messages=True,
     markdown=True,
 )
@@ -21,7 +21,7 @@ finance_agent = Agent(
     model=OpenAIChat(id="gpt-4o"),
     tools=[YFinanceTools(stock_price=True, analyst_recommendations=True, company_info=True, company_news=True)],
     instructions=["Always use tables to display data"],
-    storage=SqlAgentStorage(table_name="finance_agent", db_file="agents.db"),
+    storage=SqliteAgentStorage(table_name="finance_agent", db_file="agents.db"),
     add_history_to_messages=True,
     markdown=True,
 )
