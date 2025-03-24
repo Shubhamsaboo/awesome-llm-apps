@@ -1,0 +1,6 @@
+google-generativeai==0.8.3
+streamlit==1.41.1
+agno
+Pillow==11.0.0
+duckduckgo-search==6.3.7
+

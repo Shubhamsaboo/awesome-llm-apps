@@ -13,7 +13,7 @@ This Streamlit app demonstrates function calling with the local Llama3 model usi
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-cd local-llama3-tool-use
+cd awesome-llm-apps/advanced_tools_frameworks/local_llama3.1_tool_use
 ```
 2. Install the required dependencies:
 

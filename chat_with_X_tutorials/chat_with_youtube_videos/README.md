@@ -1,6 +1,6 @@
 ## 📽️ Chat with YouTube Videos 
 
-LLM app with RAG to chat with YouTube Videos in just 30 lines of Python Code. The app uses Retrieval Augmented Generation (RAG) to provide accurate answers to questions based on the content of the uploaded video.
+LLM app with RAG to chat with YouTube Videos with OpenAI's gpt-4o, mem0/embedchain as memory and the youtube-transcript-api. The app uses Retrieval Augmented Generation (RAG) to provide accurate answers to questions based on the content of the uploaded video.
 
 ### Features
 
@@ -14,6 +14,7 @@ LLM app with RAG to chat with YouTube Videos in just 30 lines of Python Code. Th
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
+cd awesome-llm-apps/chat_with_X_tutorials/chat_with_youtube_videos
 ```
 2. Install the required dependencies:
 

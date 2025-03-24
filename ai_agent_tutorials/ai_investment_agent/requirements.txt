@@ -1,4 +1,4 @@
 streamlit 
-phidata
+agno
 openai
 yfinance

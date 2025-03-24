@@ -12,6 +12,7 @@ This Streamlit app empowers you to research top stories and users on HackerNews 
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
+cd awesome-llm-apps/ai_agent_tutorials/multi_agent_researcher
 ```
 2. Install the required dependencies:
 

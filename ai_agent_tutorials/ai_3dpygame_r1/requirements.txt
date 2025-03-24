@@ -1,0 +1,4 @@
+agno
+langchain-openai
+browser-use
+streamlit

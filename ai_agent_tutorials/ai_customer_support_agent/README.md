@@ -13,6 +13,7 @@ This Streamlit app implements an AI-powered customer support agent for synthetic
 1. Clone the GitHub repository
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
+cd awesome-llm-apps/ai_agent_tutorials/ai_customer_support_agent
 ```
 
 2. Install the required dependencies:
@@ -28,7 +29,7 @@ The app expects Qdrant to be running on localhost:6333. Adjust the configuration
 docker pull qdrant/qdrant
 
 docker run -p 6333:6333 -p 6334:6334 \
-    -v $(pwd)/qdrant_storage:/qdrant/storage:z \
+    -v "$(pwd)/qdrant_storage:/qdrant/storage:z" \
     qdrant/qdrant
 ```
 
