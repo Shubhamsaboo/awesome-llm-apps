@@ -136,4 +136,4 @@ This project is licensed under the MIT License.
 
 ## 📞 Support
 
-For issues or questions, please open a GitHub issue or contact [Your Contact Information].
+For issues or questions, please open a GitHub issue or contact shawneilrodrigues@gmail.com.
