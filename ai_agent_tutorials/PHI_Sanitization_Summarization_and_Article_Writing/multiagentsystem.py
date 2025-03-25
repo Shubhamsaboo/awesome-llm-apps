@@ -1,5 +1,4 @@
 import streamlit as st
-from dotenv import load_dotenv
 from pathlib import Path
 import os
 
@@ -20,9 +19,7 @@ from owl.utils import DocumentProcessingToolkit
 # Set log level to see detailed logs (optional)
 set_log_level("DEBUG")
 
-# Load environment variables from .env file if available
 
-load_dotenv()
 
 def construct_society(question: str) -> RolePlaying:
     r"""Construct a society of agents based on the given question.
@@ -85,7 +82,7 @@ def summarize_section():
     if st.button("Summarize"):
         if text:
             # Create a task prompt for summarization
-            task_prompt = f"Summarize the following medical text:\n\n{text}"
+            task_prompt = f"Summarize the following medical text:\n\n{text}\n\n and save it locally"
             society = construct_society(task_prompt)
             with st.spinner("Running summarization society..."):
                 answer, chat_history, token_count = run_society(society)
@@ -102,7 +99,7 @@ def write_and_refine_article_section():
     if st.button("Write and Refine Article"):
         if topic:
             # Create a task prompt for article writing and refinement
-            task_prompt = f"Write a research article and save it locally on the topic: {topic}."
+            task_prompt = f"Write a research article on the topic: {topic}. and save it locally"
             if outline.strip():
                 task_prompt += f" Use the following outline as guidance:\n{outline}"
             society = construct_society(task_prompt)
@@ -134,6 +131,19 @@ def sanitize_data_section():
 def main():
     st.set_page_config(page_title="Multi-Agent AI System with Camel & OWL", layout="wide")
     st.title("Multi-Agent AI System with Camel-AI and OWL")
+    st.sidebar.subheader("API Keys")
+    openai_api_key = st.sidebar.text_input("Enter OpenAI API Key", type="password")
+    chunker_api_key = st.sidebar.text_input("Enter Chunker API Key", type="password")
+    firecrawl_api_key = st.sidebar.text_input("Enter FireCrawl API Key", type="password")
+
+    # If keys are provided, set them in the environment
+    if openai_api_key:
+        os.environ["OPENAI_API_KEY"] = openai_api_key
+    if chunker_api_key:
+        os.environ["CHUNKER_API_KEY"] = chunker_api_key
+    if firecrawl_api_key:
+        os.environ["FIRECRAWL_API_KEY"] = firecrawl_api_key
+    
 
     st.sidebar.title("Select Task")
     task = st.sidebar.selectbox("Choose a task:", [
