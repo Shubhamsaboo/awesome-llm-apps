@@ -1,0 +1,6 @@
+streamlit
+langchain
+langchain-google-genai
+fastapi
+python-docx
+uvicorn
