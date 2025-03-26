@@ -1,6 +1,6 @@
 # 🚀 Collaborative Multi-Agent AI System
 
-Welcome to my latest project: a **multi-agent AI platform** that automates complex tasks through teamwork! This system combines the power of **CAMEL-AI**, **OWL**, and **Streamlit** to create a seamless, interactive experience for task automation and collaboration.
+This is a streamlit application: **multi-agent AI platform** that automates complex tasks through teamwork! This system combines the power of **CAMEL-AI**, **OWL**, and **Streamlit** to create a seamless, interactive experience for task automation and collaboration.
 
 ---
 
@@ -14,6 +14,20 @@ Welcome to my latest project: a **multi-agent AI platform** that automates compl
   - Summarize medical texts in seconds.
   - Automate research article generation.
   - Sanitize PHI data for compliance.
+
+---
+## 🌐 APIs Used
+
+This project integrates the following APIs to enhance functionality:
+
+- **Chunker API** 
+  Processes and segments large input data into manageable chunks, enabling efficient handling of large datasets or documents. Ideal for parallel processing and performance optimization.
+
+- **OpenAI API**  
+  Powers the AI models used for natural language processing, text generation, and other intelligent capabilities within the multi-agent system.
+
+- **Firecrawl API**  
+  Provides web scraping functionality to collect and process web data dynamically, enabling agents to fetch and analyze up-to-date information from online sources.
 
 ---
 
@@ -56,7 +70,7 @@ Welcome to my latest project: a **multi-agent AI platform** that automates compl
 
 5. **Run the Streamlit app**:  
    ```bash  
-   streamlit run app.py  
+   streamlit run multiagentsystem.py
    ```  
 
 ---
