@@ -25,7 +25,7 @@ class Architecture(BaseModel):
 architecture_agent = Agent(
     name="ArchitectureAgent",
     instructions=ARCHITECTURE_AGENT_INSTRUCTIONS,
-    model="gpt-4o",
+    model="gpt-4o-mini",
     tools=[WebSearchTool()],
     model_settings=ModelSettings(tool_choice="required"),
     output_type=Architecture
@@ -55,7 +55,7 @@ class Culinary(BaseModel):
 culinary_agent = Agent(
     name="CulinaryAgent",
     instructions=CULINARY_AGENT_INSTRUCTIONS,
-    model="gpt-4o",
+    model="gpt-4o-mini",
     tools=[WebSearchTool()],
     model_settings=ModelSettings(tool_choice="required"),
     output_type=Culinary
@@ -84,7 +84,7 @@ class Culture(BaseModel):
 culture_agent = Agent(
     name="CulturalAgent",
     instructions=CULTURE_AGENT_INSTRUCTIONS,
-    model="gpt-4o",
+    model="gpt-4o-mini",
     tools=[WebSearchTool()],
     model_settings=ModelSettings(tool_choice="required"),
     output_type=Culture
@@ -113,7 +113,7 @@ class History(BaseModel):
 historical_agent = Agent(
     name="HistoricalAgent",
     instructions=HISTORY_AGENT_INSTRUCTIONS,
-    model="gpt-4o",
+    model="gpt-4o-mini",
     output_type=History,
     tools=[WebSearchTool()],
     model_settings=ModelSettings(tool_choice="required"),
@@ -197,7 +197,7 @@ class FinalTour(BaseModel):
 orchestrator_agent = Agent(
     name="OrchestratorAgent",
     instructions=ORCHESTRATOR_INSTRUCTIONS,
-    model="gpt-4o",
+    model="gpt-4o-mini",
     output_type=FinalTour,
 )
 
