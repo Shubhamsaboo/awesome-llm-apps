@@ -1,6 +1,6 @@
 # 🚀 Collaborative Multi-Agent AI System
 
-This is a streamlit application: **multi-agent AI platform** that automates complex tasks through teamwork! This system combines the power of **CAMEL-AI**, **OWL**, and **Streamlit** to create a seamless, interactive experience for task automation and collaboration.
+**Multi-agent AI platform** is a streamlit application that automates complex tasks through teamwork! This system combines the power of **CAMEL-AI**, **OWL**, and **Streamlit** to create a seamless, interactive experience for task automation and collaboration.
 
 ---
 
