@@ -1,0 +1,8 @@
+openai-agents
+streamlit
+qdrant-client
+fastembed
+langchain
+langchain-community
+langchain-openai
+openai
