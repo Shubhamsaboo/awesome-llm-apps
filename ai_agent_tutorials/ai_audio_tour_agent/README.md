@@ -1,4 +1,4 @@
-# 🗺️ Self-Guided Audio Tour Agent
+# 🎧 Self-Guided AI Audio Tour Agent
 
 A conversational voice agent system that generates immersive, self-guided audio tours based on the user’s **location**, **areas of interest**, and **tour duration**. Built on a multi-agent architecture using OpenAI Agents SDK, real-time information retrieval, and expressive TTS for natural speech output.
 
@@ -43,11 +43,7 @@ A conversational voice agent system that generates immersive, self-guided audio 
 
 ### 🔊 Expressive Speech Output
 
-- High-quality audio generated using **Text-to-Speech (TTS)**
-
-
-
-
+- High-quality audio generated using **Gpt-4o Mini Audio**
 
 ### How to get Started?
 
