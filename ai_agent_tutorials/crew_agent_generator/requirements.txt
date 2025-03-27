@@ -1,0 +1,4 @@
+streamlit==1.32.0
+textwrap==0.2.0
+crewai==0.11.2   
+langgraph==0.0.19 
