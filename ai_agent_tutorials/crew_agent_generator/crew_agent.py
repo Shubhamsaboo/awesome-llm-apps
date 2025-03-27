@@ -58,6 +58,6 @@ if st.button("Generate Code"):
     else:
         st.warning("Please enter a requirement.")
 
-# Copy & Download Options
+    #Copy & Download Options
 if 'code' in locals():
     st.download_button("Download Code", code, file_name="agent_code.py")
