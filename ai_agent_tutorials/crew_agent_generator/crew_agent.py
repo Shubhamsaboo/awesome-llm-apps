@@ -1,7 +1,7 @@
 import streamlit as st
 import textwrap
 
-# Function to generate agent code
+ # Function to generate agent code
 def generate_agent_code(requirement, framework):
     if framework == "CrewAI":
         return textwrap.dedent(f"""
