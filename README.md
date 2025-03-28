@@ -97,7 +97,7 @@ If you're a company in the AI agent ecosystem or would like to judge the hackath
 - [🎮 AI 3D PyGame Visualizer with DeepSeek R1](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_3dpygame_r1)
 - [🧠 AI Reasoning Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/ai_reasoning_agent)
 - [🧬 Multimodal AI Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/multimodal_ai_agent)
-
+- [🌟 Kaggle Challenge Solver AI Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/ai_agent_tutorials/kaggle_agent)
 ### RAG (Retrieval Augmented Generation)
 - [🔍 Autonomous RAG](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/autonomous_rag)
 - [🔗 Agentic RAG](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/agentic_rag)
