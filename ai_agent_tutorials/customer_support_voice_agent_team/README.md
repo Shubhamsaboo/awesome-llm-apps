@@ -1,4 +1,4 @@
-# 🎙️ AI Customer Support Voice Agent Team for Documentations
+# 🎙️ Customer Support Voice Agent Team
 
 An OpenAISDK powered Agent application that transforms technical documentation into interactive voice-powered responses using OpenAI's GPT-4o-mini and TTS capabilities. The system crawls through documentation websites with firecrawl's Crawl Endpoint, processes the content and embeds them in qdrant, and provides both text and voice responses to user queries, making documentation more accessible and interactive.
 
