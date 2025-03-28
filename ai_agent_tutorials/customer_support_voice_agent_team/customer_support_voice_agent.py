@@ -320,7 +320,7 @@ async def process_query(
 
 def run_streamlit():
     st.set_page_config(
-        page_title="Customer Support Voice Agent Team",
+        page_title="Customer Support Voice Agent",
         page_icon="🎙️",
         layout="wide"
     )
@@ -328,7 +328,7 @@ def run_streamlit():
     init_session_state()
     sidebar_config()
     
-    st.title("🎙️ Customer Support Voice Agent Team")
+    st.title("🎙️ Customer Support Voice Agent")
     st.markdown("""
     Get OpenAI SDK voice-powered answers to your documentation questions! Simply:
     1. Configure your API keys in the sidebar
