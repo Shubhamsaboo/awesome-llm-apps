@@ -31,6 +31,42 @@ A curated collection of awesome LLM apps built with RAG and AI agents. This repo
 - 🔥 Explore apps that combine LLMs from OpenAI, Anthropic, Gemini, and open-source alternatives with RAG and AI Agents.
 - 🎓 Learn from well-documented projects and contribute to the growing open-source ecosystem of LLM-powered applications.
 
+## 🚨 Open Source AI Agent Hackathon! 🚨
+
+We're launching a Global AI Agent Hackathon in collaboration with AI Agent ecosystem partners — open to all developers, builders, and startups working on agents, RAG, tool use, or multi-agent systems.
+
+### 💰 Win up to $20,000 in cash by building Agents
+
+- 🏅 10 winners: $300 each
+- 🥉 10 winners: $500 each
+- 🥈 5 winners: $1,000 each
+- 🥇 1 winner: $2,000
+- 🏆 GRAND PRIZE: $5,000 🏆
+
+### 🎁 Bonus
+- Top 5 projects will be featured in the top trending [Awesome LLM Apps](https://github.com/Shubhamsaboo/awesome-llm-apps) repo.
+
+### 🤝 Partners
+
+[Unwind AI](https://www.theunwindai.com), [Agno](https://www.agno.com) and more Agent ecosystem companies joining soon.
+
+### 📅 Here's the timeline:
+
+- April 3rd - Final dates revealed
+- April 10th - Prize and success criteria announced
+- April 15th (tentative) - Hackathon starts
+- May 30th (tentative) - Hackathon ends
+
+Join us for a month of building Agents!
+
+> Prizes will be distributed on an ongoing basis and continue till all prizes are awarded.
+
+⭐ Star this repo and follow along to stay updated.
+
+### 🤝 Want to join us as a partner or judge?
+
+If you're a company in the AI agent ecosystem or would like to judge the hackathon, reach out to [Shubham Saboo](https://x.com/Saboo_Shubham_) or [Ashpreet Bedi](https://x.com/ashpreetbedi) on X to partner. Let’s make this the biggest open source AI Agent hackathon.
+
 ## 📂 Featured AI Projects
 
 ### AI Agents
