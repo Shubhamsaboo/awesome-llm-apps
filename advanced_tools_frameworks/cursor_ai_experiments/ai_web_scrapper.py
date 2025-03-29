@@ -43,7 +43,4 @@ if st.button("Scrape"):
 st.markdown("""
 ### Instructions
 1. Enter the information you want to extract in the first input box.
-2. Enter the source URL from which you want to extract the information.
-3. Enter your OpenAI API key.
-4. Click on the "Scrape" button to start the scraping process.
-""")
+2. Enter the source URL from which you want to extract the information
