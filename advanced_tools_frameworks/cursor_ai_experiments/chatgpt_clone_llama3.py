@@ -38,3 +38,4 @@ st.sidebar.title("About")
 st.sidebar.info("This is a local ChatGPT clone using Ollama's llama3.1:latest model and Streamlit.")
 st.sidebar.markdown("---")
 st.sidebar.markdown("Made with ❤️ by Your Name")
+怎么不能合并啊
