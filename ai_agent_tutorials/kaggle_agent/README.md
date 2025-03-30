@@ -59,7 +59,7 @@ graph TB
 
     %% Annotations
     classDef annotation fill:#fff,stroke:none,color:#333,font-size:12px;
-    class B,G,D,F,C,E annotation;
+    class B,G,D,F,E annotation;
 
     %% Annotating Feedback Loops
     E -. Feedback Loop .-> F
@@ -102,7 +102,7 @@ graph TB
      ```
 
    - Open the `.env` file and fill in the required environment variables.
-   - **sReview** and update the `config.ini` file if necessary.
+   - **Review** and update the `config.ini` file if necessary.
 
 5. Run the main script:
 
