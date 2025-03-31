@@ -89,7 +89,7 @@ IMPORTANT: Use the DuckDuckGo search tool to:
 - Research any relevant technological advances
 - Include 2-3 key references to support your analysis
 
-Format your response using clear markdown headers and bullet points. Be concise yet thorough. All answer and titles in portuguese
+Format your response using clear markdown headers and bullet points. Be concise yet thorough. Write all in portuguese include the titles 
 """
 
 st.title("🏥 Medical Imaging Diagnosis Agent")
