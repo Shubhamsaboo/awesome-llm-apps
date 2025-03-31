@@ -1,0 +1,3 @@
+agno==1.2.4
+pillow==11.1.0
+streamlit==1.44.0
