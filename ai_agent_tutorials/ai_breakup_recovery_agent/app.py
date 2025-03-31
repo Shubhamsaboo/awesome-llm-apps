@@ -20,7 +20,6 @@ if submit_button:
 
 # --- User Input ---
 user_input = st.text_area("Describe how you're feeling...")
-print(user_input)
 
 # --- Image Upload ---
 uploaded_image = st.file_uploader("Upload a chat screenshot (optional)", type=["png", "jpg", "jpeg"])
@@ -46,7 +45,6 @@ if st.button("Get Recovery Support"):
             # Set environment variables
             import os
             os.environ["OPENAI_API_KEY"] = st.session_state.get("openai_api_key", "")
-            # os.environ["AGNO_API_KEY"] = st.session_state.get("agno_api_key", "")
 
             # Prepare the input
             input_data = user_input
