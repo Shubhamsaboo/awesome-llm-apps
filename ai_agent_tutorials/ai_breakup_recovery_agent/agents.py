@@ -2,8 +2,6 @@ from agno.agent import Agent
 from agno.team.team import Team
 from agno.models.google import Gemini
 from agno.tools.duckduckgo import DuckDuckGoTools
-from PIL import Image
-import easyocr
 import os
 
 # --- Therapist Agent ---
@@ -22,7 +20,7 @@ def create_therapist_agent():
             api_key=os.environ.get("GEMINI_API_KEY")
         ),
         tools=[DuckDuckGoTools()],
-        add_datetime_to_instructions=True,     # Add timestamp context
+        add_datetime_to_instructions=True,   
         show_tool_calls=True,
         markdown=True
     )
@@ -43,7 +41,7 @@ def create_closure_agent():
             api_key=os.environ.get("GEMINI_API_KEY")
         ),
         tools=[DuckDuckGoTools()],
-        add_datetime_to_instructions=True,    # Add timestamp context
+        add_datetime_to_instructions=True,    
         show_tool_calls=True,
         markdown=True
     )
@@ -85,7 +83,6 @@ def create_honesty_agent():
             "Include reasons why the user should move on, based on the situation.",
             "Format the output clearly with a header: **Brutal Honesty**",
         ],
-        # model=Gemini(id="gemini-2.0-flash"),
         model=Gemini(
             id="gemini-2.0-flash",
             api_key=os.environ.get("GEMINI_API_KEY")
@@ -96,23 +93,11 @@ def create_honesty_agent():
         markdown=True
     )
 
-
-# # --- Texts Analyzer Agent (Updated with easyocr) ---
-# def extract_text_with_easyocr(image):
-#     """Extract text from image using EasyOCR."""
-#     reader = easyocr.Reader(['en'])  # Specify language
-#     results = reader.readtext(image)
-
-#     # Extract and combine text
-#     extracted_text = " ".join([result[1] for result in results])
-#     return extracted_text
-
 # --- Team Leader (Breakup Recovery Team) ---
 def create_breakup_team():
     return Team(
         name="Breakup Recovery Team",
         mode="coordinate",  # Team execution mode: coordinate or parallel
-        # model=Gemini(id="gemini-2.0-flash"),
         model=Gemini(
             id="gemini-2.0-flash",
             api_key=os.environ.get("GEMINI_API_KEY")
@@ -120,9 +105,8 @@ def create_breakup_team():
         members=[
             create_therapist_agent(),
             create_closure_agent(),
-            create_routine_agent(),   # Added Routine Planner Agent
-            create_honesty_agent(),   # Added Brutal Honesty Agent
-            # extract_text_with_easyocr()
+            create_routine_agent(),   
+            create_honesty_agent(),  
         ],
         description="You are a team helping someone recover from a breakup.",
         instructions=[

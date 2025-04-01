@@ -3,7 +3,6 @@ from agno.media import Image
 from agno.models.google import Gemini
 from agno.tools.duckduckgo import DuckDuckGoTools
 from PIL import Image as PILImage
-import base64
 from io import BytesIO
 import os
 
@@ -18,13 +17,6 @@ def load_image(image_data):
     img_bytes = buffered.getvalue()
     
     return img_bytes
-
-# # Check for Google API key
-# if "GOOGLE_API_KEY" not in os.environ:
-#     raise EnvironmentError(
-#         "Please set your GOOGLE_API_KEY environment variable. "
-#         "You can get one from https://makersuite.google.com/app/apikey"
-#     )
 
 def create_chat_analysis_agent():
     """Creates a specialized agent for analyzing chat patterns"""
@@ -68,19 +60,3 @@ def analyze_chat_screenshot(image_data):
         
     except Exception as e:
         return f"Error analyzing chat screenshot: {str(e)}"
-
-# Example local image path - replace with your image path
-image_path = "breakup.jpg"
-
-try:
-    # Load and process the image
-    image_data = load_image(image_path)
-    
-    # Create the response using the agent
-    agent.print_response(
-        "Tell me about this image and give me the latest news about it.",
-        images=[Image(content=image_data)],
-        stream=True,
-    )
-except Exception as e:
-    print(f"Error processing image: {e}")
