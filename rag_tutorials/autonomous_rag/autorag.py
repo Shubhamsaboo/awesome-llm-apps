@@ -35,13 +35,13 @@ def setup_assistant(api_key: str) -> Agent:
     llm = OpenAIChat(id="gpt-4o-mini", api_key=api_key)
     # Set up the Assistant with storage, knowledge base, and tools
     return Agent(
-        id="auto_rag_agent",  # Name of the Assistant
+        agent_id="auto_rag_agent",  # Name of the Assistant
         model=llm,  # Language model to be used
         storage=PostgresAgentStorage(table_name="auto_rag_storage", db_url=DB_URL),  
-        knowledge_base=PDFUrlKnowledgeBase(
+        knowledge=PDFUrlKnowledgeBase(
             vector_db=PgVector(
                 db_url=DB_URL,  
-                collection="auto_rag_docs",  
+                table_name="auto_rag_docs",  
                 embedder=OpenAIEmbedder(id="text-embedding-ada-002", dimensions=1536, api_key=api_key),  
             ),
             num_documents=3,  
