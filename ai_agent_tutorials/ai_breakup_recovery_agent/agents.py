@@ -1,9 +1,10 @@
 from agno.agent import Agent
 from agno.team.team import Team
-from agno.models.openai import OpenAIChat
+from agno.models.google import Gemini
 from agno.tools.duckduckgo import DuckDuckGoTools
 from PIL import Image
 import easyocr
+import os
 
 # --- Therapist Agent ---
 def create_therapist_agent():
@@ -16,7 +17,10 @@ def create_therapist_agent():
             "Offer coping strategies without being dismissive.",
             "Validate their experiences and provide emotional support.",
         ],
-        model=OpenAIChat(id="gpt-4o-mini"),
+        model=Gemini(
+            id="gemini-2.0-flash",
+            api_key=os.environ.get("GEMINI_API_KEY")
+        ),
         tools=[DuckDuckGoTools()],
         add_datetime_to_instructions=True,     # Add timestamp context
         show_tool_calls=True,
@@ -31,10 +35,13 @@ def create_closure_agent():
         instructions=[
             "Create emotional messages that express raw, honest feelings.",
             "The messages should NOT be sent — they are only for emotional release.",
-            "Format the output clearly with a header: **Message Drafts You Shouldn’t Send**",
+            "Format the output clearly with a header: **Message Drafts You Shouldn't Send**",
             "Ensure the tone is heartfelt, authentic, and honest.",
         ],
-        model=OpenAIChat(id="gpt-4o-mini"),
+        model=Gemini(
+            id="gemini-2.0-flash",
+            api_key=os.environ.get("GEMINI_API_KEY")
+        ),
         tools=[DuckDuckGoTools()],
         add_datetime_to_instructions=True,    # Add timestamp context
         show_tool_calls=True,
@@ -55,7 +62,10 @@ def create_routine_agent():
             "Include healthy distractions, such as hobbies, reading, or new experiences.",
             "Format the output clearly with a header: **Daily Recovery Routine**",
         ],
-        model=OpenAIChat(id="gpt-4o-mini"),
+        model=Gemini(
+            id="gemini-2.0-flash",
+            api_key=os.environ.get("GEMINI_API_KEY")
+        ),
         tools=[DuckDuckGoTools()],
         add_datetime_to_instructions=True,
         show_tool_calls=True,
@@ -75,7 +85,11 @@ def create_honesty_agent():
             "Include reasons why the user should move on, based on the situation.",
             "Format the output clearly with a header: **Brutal Honesty**",
         ],
-        model=OpenAIChat(id="gpt-4o-mini"),
+        # model=Gemini(id="gemini-2.0-flash"),
+        model=Gemini(
+            id="gemini-2.0-flash",
+            api_key=os.environ.get("GEMINI_API_KEY")
+        ),
         tools=[DuckDuckGoTools()],
         add_datetime_to_instructions=True,
         show_tool_calls=True,
@@ -98,7 +112,11 @@ def create_breakup_team():
     return Team(
         name="Breakup Recovery Team",
         mode="coordinate",  # Team execution mode: coordinate or parallel
-        model=OpenAIChat(id="gpt-4o-mini"),
+        # model=Gemini(id="gemini-2.0-flash"),
+        model=Gemini(
+            id="gemini-2.0-flash",
+            api_key=os.environ.get("GEMINI_API_KEY")
+        ),
         members=[
             create_therapist_agent(),
             create_closure_agent(),
