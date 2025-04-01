@@ -61,7 +61,7 @@ Join us for a month of building Agents!
 
 > Prizes will be distributed on an ongoing basis and continue till all prizes are awarded.
 
-⭐ Star this repo and follow along to stay updated.
+⭐ Star this repo and subscribe to [Unwind AI](https://www.theunwindai.com) for latest updates.
 
 ### 🤝 Want to join us as a partner or judge?
 
