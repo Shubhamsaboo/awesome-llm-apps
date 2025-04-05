@@ -1,0 +1,7 @@
+[project]
+name = "mcp-multi-agents"
+version = "0.1.0"
+description = "Travel Planner Multi-agent MCP Server"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []

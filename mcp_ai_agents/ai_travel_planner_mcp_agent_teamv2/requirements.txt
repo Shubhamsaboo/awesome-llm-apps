@@ -1,0 +1,17 @@
+agno==1.2.8
+fastmcp==0.4.1
+google==3.0.0
+google-api-core==2.24.2
+google-api-python-client==2.166.0
+google-auth==2.38.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.1
+googleapis-common-protos==1.69.2
+googlemaps==4.10.0
+httpx==0.28.1
+mcp==1.6.0
+openai==1.70.0
+python-dotenv==1.1.0
+requests==2.32.3
+rich==14.0.0
+uvicorn==0.34.0
