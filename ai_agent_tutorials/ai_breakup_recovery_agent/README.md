@@ -13,7 +13,7 @@ This is an AI-powered application designed to help users emotionally recover fro
 - 📷 **Chat Screenshot Analysis:**
     - Upload screenshots for chat analysis.
 - 🔑 **API Key Management:**
-    - Store and manage your OpenAI API keys securely via Streamlit's sidebar.
+    - Store and manage your Gemini API keys securely via Streamlit's sidebar.
 - ⚡ **Parallel Execution:** 
     - Agents process inputs in coordination mode for comprehensive results.
 - ✅ **User-Friendly Interface:** 
