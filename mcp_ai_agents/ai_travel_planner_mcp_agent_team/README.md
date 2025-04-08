@@ -41,8 +41,6 @@ pip install -r requirements.txt
 GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 ACCUWEATHER_API_KEY=your_accuweather_api_key
 OPENAI_API_KEY=your_openai_api_key
-
-
 ---
 
 ## 🧠 Built With
@@ -57,3 +55,29 @@ OPENAI_API_KEY=your_openai_api_key
 -- Airbnb MCP
 
 -- Accuweather
+
+---
+
+## 📅 Calendar MCP Server (`calendar_mcp.py`)
+
+This script is a dedicated MCP (Modular Cognitive Process) server that integrates with **Google Calendar** to create events via API calls. It works seamlessly with the rest of the multi-agent system built with Agno and FastMCP.
+
+---
+
+### 🛠 Features
+
+- Creates Google Calendar events using the `create_event` tool
+- Accepts event title, description, date/time, location, attendees, and reminders
+- Uses a refresh token for persistent access (no re-authentication needed)
+
+---
+
+### 🌱 Setup
+
+Add the following to your `.env` file in the root directory:
+
+```env
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_REFRESH_TOKEN=your_refresh_token
+```

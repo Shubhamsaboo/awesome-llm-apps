@@ -10,17 +10,20 @@ from dotenv import load_dotenv
 load_dotenv()
 
 async def run_agent(message: str) -> None:
-    """Run the Airbnb, Google Maps, Weather agent with the given message."""
+    """Run the Airbnb, Google Maps, Weather and Calendar agent with the given message."""
 
     google_maps_key = os.getenv("GOOGLE_MAPS_API_KEY")
     accuweather_key = os.getenv("ACCUWEATHER_API_KEY")
     openai_key = os.getenv("OPENAI_API_KEY")
+    google_maps_key = os.getenv("GOOGLE_CLIENT_ID")
     if not google_maps_key:
         raise ValueError("🚨 Missing GOOGLE_MAPS_API_KEY in environment variables.")
     elif not accuweather_key:
         raise ValueError("🚨 Missing ACCUWEATHER_API_KEY in environment variables.")
     elif not openai_key:
         raise ValueError("🚨 Missing OPENAI_API_KEY in environment variables.")
+    elif not google_maps_key:
+        raise ValueError("🚨 Missing GOOGLE_CLIENT_ID in environment variables.")
     env = {
         **os.environ,
         "GOOGLE_MAPS_API_KEY": os.getenv("GOOGLE_MAPS_API_KEY"),
@@ -33,7 +36,7 @@ async def run_agent(message: str) -> None:
             "npx -y @openbnb/mcp-server-airbnb --ignore-robots-txt", # ✅ Airbnb mcp added
             "npx -y @modelcontextprotocol/server-google-maps", # ✅ Google Maps mcp added
             "uvx --from git+https://github.com/adhikasp/mcp-weather.git mcp-weather", # ✅ Weather mcp added
-            # "https://www.gumloop.com/mcp/gcalendar",
+            "/Users/priyanshmaheshwari/Desktop/EchovibeLabs/awesome-llm-apps/mcp_ai_agents/ai_travel_planner_mcp_agent_team/calendar_mcp.py" # ✅ Calendar mcp added
 
         ],
         env=env,
@@ -58,8 +61,14 @@ async def run_agent(message: str) -> None:
             goal="Connects to Booking.com and Airbnb APIs to search and filter accommodations based on user preferences (price range, amenities, location)"
         )
 
+        calendar_agent = Agent(
+            tools=[mcp_tools],
+            name="Calendar Agent",
+            goal="Creates calendar events for travel plans, including reminders and location details."
+        )
+
         team = Team(
-            members=[maps_agent, weather_agent, booking_agent],
+            members=[maps_agent, weather_agent, booking_agent, calendar_agent],
             name="Travel Planning Team",
             markdown=True,
             show_tool_calls=True
