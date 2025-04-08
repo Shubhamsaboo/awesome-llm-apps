@@ -1,0 +1,9 @@
+streamlit==1.44.0
+torch==1.13.0
+torchvision==0.14.0
+scikit-image==0.24.0
+scipy==1.13.1
+pillow=11.1.0
+tqdm==4.67.1
+websockets==15.0.1
+typer==0.15.2
