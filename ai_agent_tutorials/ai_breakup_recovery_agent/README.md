@@ -1,7 +1,7 @@
 
 # 💔 Breakup Recovery Agent Team
 
-This is an AI-powered application designed to help users emotionally recover from breakups by providing support, guidance, and emotional outlet messages from a team of specialized AI agents. The app is built using **Streamlit** and **Agno**, leveraging **OpenAI's GPT models**.
+This is an AI-powered application designed to help users emotionally recover from breakups by providing support, guidance, and emotional outlet messages from a team of specialized AI agents. The app is built using **Streamlit** and **Agno**, leveraging **Gemini 2.0 Flash (Google Vision Model)   **.
 
 ## 🚀 Features
 
@@ -10,7 +10,7 @@ This is an AI-powered application designed to help users emotionally recover fro
     - **Closure Agent:** Writes emotional messages users shouldn't send for catharsis.
     - **Routine Planner Agent:** Suggests daily routines for emotional recovery.
     - **Brutal Honesty Agent:** Provides direct, no-nonsense feedback on the breakup.
-- 📷 **Chat Screenshot Analysis:** (Planned)
+- 📷 **Chat Screenshot Analysis:**
     - Upload screenshots for chat analysis.
 - 🔑 **API Key Management:**
     - Store and manage your OpenAI API keys securely via Streamlit's sidebar.
@@ -24,9 +24,9 @@ This is an AI-powered application designed to help users emotionally recover fro
 ## 🛠️ Tech Stack
 
 - **Frontend:** Streamlit (Python)
-- **AI Models:** OpenAI GPT-4o (via Agno)
+- **AI Models:** Gemini 2.0 Flash (Google Vision Model)
 - **Image Processing:** PIL (for displaying screenshots)
-- **Text Extraction:** EasyOCR (planned feature for extracting text from screenshots)
+- **Text Extraction:** Google's Gemini Vision model to analyze chat screenshots
 - **Environment Variables:** API keys managed with `st.session_state` in Streamlit
 
 ---
@@ -59,9 +59,9 @@ This is an AI-powered application designed to help users emotionally recover fro
 
 ## 🔑 Environment Variables
 
-Make sure to provide your **OpenAI API key** in the Streamlit sidebar:
+Make sure to provide your **Gemini API key** in the Streamlit sidebar:
 
-- `OpenAI API Key` → Add your API key in the sidebar form.
+- GEMINI_API_KEY=your_google_gemini_api_key
 
 ---
 
@@ -70,7 +70,7 @@ Make sure to provide your **OpenAI API key** in the Streamlit sidebar:
 1. **Enter Your Feelings:** 
     - Describe how you're feeling in the text area.
 2. **Upload Screenshot (Optional):**
-    - Upload a chat screenshot (PNG, JPG, JPEG) for analysis (planned feature).
+    - Upload a chat screenshot (PNG, JPG, JPEG) for analysis.
 3. **Execute Agents:**
     - Click **"Get Recovery Support"** to run the multi-agent team.
 4. **View Results:**
@@ -83,7 +83,7 @@ Make sure to provide your **OpenAI API key** in the Streamlit sidebar:
 
 - **Therapist Agent**
     - Provides empathetic support and coping strategies.
-    - Uses **OpenAI GPT-4o-mini** and DuckDuckGo tools for insights.
+    - Uses **Gemini 2.0 Flash (Google Vision Model)** and DuckDuckGo tools for insights.
   
 - **Closure Agent**
     - Generates unsent emotional messages for emotional release.
@@ -99,14 +99,6 @@ Make sure to provide your **OpenAI API key** in the Streamlit sidebar:
 
 ---
 
-## 🔥 Future Enhancements
-
-- ✅ **Text Extraction from Screenshots:** 
-    - Use EasyOCR to extract text from uploaded screenshots for chat analysis.
-- ✅ **Improved Image Analysis:** 
-    - Integrate image analysis tools for detecting visual patterns in chat screenshots.
-
----
 
 ## 📄 License
 
