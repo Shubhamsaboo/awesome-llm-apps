@@ -2,6 +2,7 @@ import asyncio
 import os
 
 from agno.agent import Agent
+from agno.team.team import Team
 from agno.tools.mcp import MultiMCPTools
 import streamlit as st
 
@@ -37,17 +38,39 @@ async def run_agent(message: str) -> None:
         ],
         env=env,
     ) as mcp_tools:
-        agent = Agent(
+        
+        #Define sepcialized agents
+        maps_agent = Agent(
             tools=[mcp_tools],
-            markdown=True,
-            show_tool_calls=True,
+            name="Maps Agent",
+            goal="Integrates with Google Maps server to provide routing information, travel time estimates, and points of interest proximity analysis"
         )
 
-        await agent.aprint_response(message, stream=True)
+        weather_agent = Agent(
+            tools=[mcp_tools],
+            name="Weather Agent",
+            goal="Pulls data from OpenWeatherMap to provide weather forecasts for planned dates and locations, allowing for weather-appropriate activity planning."
+        )
+
+        booking_agent = Agent(
+            tools=[mcp_tools],
+            name="Booking Agent",
+            goal="Connects to Booking.com and Airbnb APIs to search and filter accommodations based on user preferences (price range, amenities, location)"
+        )
+
+        team = Team(
+            members=[maps_agent, weather_agent, booking_agent],
+            name="Travel Planning Team",
+            markdown=True,
+            show_tool_calls=True
+        )
+
+        await team.aprint_response(message, stream=True)
 
 # -------------------- Terminal Interaction Loop --------------------
 
-if _name_ == "_main_": # type: ignore
+if __name__ == "__main__":  # ✅ correct
+
     print("🌍 Travel Planning Agent — Airbnb, Maps, Weather, Calendar (type 'exit' to quit)\n")
     try:
         while True:
