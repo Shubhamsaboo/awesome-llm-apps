@@ -1,3 +1,6 @@
 agno==1.2.13
 mcp==1.6.0
 streamlit==1.44.1
+google-api-python-client
+google-auth
+google-auth-oauthlib
