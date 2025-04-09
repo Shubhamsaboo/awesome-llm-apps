@@ -1,9 +1,17 @@
 from agno.agent import Agent
 from agno.models.google import Gemini
+from agno.media import Image as AgnoImage
 from agno.tools.duckduckgo import DuckDuckGoTools
 import streamlit as st
-from PIL import Image
 from typing import List, Optional
+import logging
+from pathlib import Path
+import tempfile
+import os
+
+# Configure logging for errors only
+logging.basicConfig(level=logging.ERROR)
+logger = logging.getLogger(__name__)
 
 def initialize_agents(api_key: str) -> tuple[Agent, Agent, Agent]:
     try:
@@ -54,6 +62,9 @@ def initialize_agents(api_key: str) -> tuple[Agent, Agent, Agent]:
         st.error(f"Error initializing agents: {str(e)}")
         return None, None, None
 
+# Set page config and UI elements
+st.set_page_config(page_title="Multimodal AI Design Agent Team", layout="wide")
+
 # Sidebar for API key input
 with st.sidebar:
     st.header("🔑 API Configuration")
@@ -79,6 +90,7 @@ with st.sidebar:
         st.markdown("""
         To get your API key:
         1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
+        2. Enable the Generative Language API in your [Google Cloud Console](https://console.developers.google.com/apis/api/generativelanguage.googleapis.com)
         """)
 
 st.title("Multimodal AI Design Agent Team")
@@ -101,8 +113,7 @@ if st.session_state.api_key_input:
             
             if design_files:
                 for file in design_files:
-                    image = Image.open(file)
-                    st.image(image, caption=file.name, use_container_width=True)
+                    st.image(file, caption=file.name, use_container_width=True)
 
         with col2:
             competitor_files = st.file_uploader(
@@ -114,8 +125,7 @@ if st.session_state.api_key_input:
             
             if competitor_files:
                 for file in competitor_files:
-                    image = Image.open(file)
-                    st.image(image, caption=f"Competitor: {file.name}", use_container_width=True)
+                    st.image(file, caption=f"Competitor: {file.name}", use_container_width=True)
 
         # Analysis Configuration
         st.header("🎯 Analysis Configuration")
@@ -143,27 +153,21 @@ if st.session_state.api_key_input:
                 try:
                     st.header("📊 Analysis Results")
                     
-                    # Process images once
                     def process_images(files):
                         processed_images = []
                         for file in files:
                             try:
-                                # Create a temporary file path for the image
-                                import tempfile
-                                import os
-
                                 temp_dir = tempfile.gettempdir()
                                 temp_path = os.path.join(temp_dir, f"temp_{file.name}")
                                 
-                                # Save the uploaded file to temp location
                                 with open(temp_path, "wb") as f:
                                     f.write(file.getvalue())
                                 
-                                # Add the path to processed images
-                                processed_images.append(temp_path)
+                                agno_image = AgnoImage(filepath=Path(temp_path))
+                                processed_images.append(agno_image)
                                 
                             except Exception as e:
-                                st.error(f"Error processing image {file.name}: {str(e)}")
+                                logger.error(f"Error processing image {file.name}: {str(e)}")
                                 continue
                         return processed_images
                     
@@ -233,20 +237,10 @@ if st.session_state.api_key_input:
                             
                             st.subheader("📊 Market Analysis")
                             st.markdown(response.content)
-                    
-                    # Combined Insights
-                    if len(analysis_types) > 1:
-                        st.subheader("🎯 Key Takeaways")
-                        st.info("""
-                        Above you'll find detailed analysis from multiple specialized AI agents, each focusing on their area of expertise:
-                        - Visual Design Agent: Analyzes design elements and patterns
-                        - UX Agent: Evaluates user experience and interactions
-                        - Market Research Agent: Provides market context and opportunities
-                        """)
-                
+                            
                 except Exception as e:
-                    st.error(f"An error occurred during analysis: {str(e)}")
-                    st.error("Please check your API key and try again.")
+                    logger.error(f"Error during analysis: {str(e)}")
+                    st.error("An error occurred during analysis. Please check the logs for details.")
             else:
                 st.warning("Please upload at least one design to analyze.")
     else:
