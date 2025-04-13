@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Optional, Any
 import os
 import asyncio
 from datetime import datetime
@@ -13,14 +13,10 @@ from pydantic import BaseModel, Field
 import csv
 from io import StringIO
 
-from google.adk.agents import LlmAgent, SequentialAgent, BaseAgent
-from google.adk.agents.invocation_context import InvocationContext
-from google.adk.events import Event, EventActions
-from google.adk.sessions import InMemorySessionService, Session
+from google.adk.agents import LlmAgent, SequentialAgent
+from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
 from google.genai import types
-from google.adk.agents.callback_context import CallbackContext
-from google.adk.models import LlmResponse, LlmRequest
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -91,8 +87,14 @@ class DebtReduction(BaseModel):
     recommendations: Optional[List[DebtRecommendation]] = Field(None, description="Recommendations for debt reduction")
 
 load_dotenv()
-
 GEMINI_API_KEY = os.getenv("GOOGLE_API_KEY")
+
+def parse_json_safely(data: str, default_value: Any = None) -> Any:
+    """Safely parse JSON data with error handling"""
+    try:
+        return json.loads(data) if isinstance(data, str) else data
+    except json.JSONDecodeError:
+        return default_value
 
 class FinanceAdvisorSystem:
     def __init__(self):
@@ -219,12 +221,10 @@ IMPORTANT: Store your final plan in state['debt_reduction'] and ensure it aligns
                 state=initial_state
             )
             
-            transactions = session.state.get("transactions")
-            if transactions:
+            if session.state.get("transactions"):
                 self._preprocess_transactions(session)
             
-            manual_expenses = session.state.get("manual_expenses")
-            if manual_expenses:
+            if session.state.get("manual_expenses"):
                 self._preprocess_manual_expenses(session)
             
             default_results = self._create_default_results(financial_data)
@@ -249,27 +249,9 @@ IMPORTANT: Store your final plan in state['debt_reduction'] and ensure it aligns
             )
             
             results = {}
-            
             for key in ["budget_analysis", "savings_strategy", "debt_reduction"]:
                 value = updated_session.state.get(key)
-                if value is not None:
-                    if value == "":
-                        results[key] = default_results[key]
-                        continue
-                    
-                    if isinstance(value, str):
-                        try:
-                            parsed_value = json.loads(value)
-                            results[key] = parsed_value
-                        except json.JSONDecodeError:
-                            if key in default_results:
-                                results[key] = default_results[key]
-                            else:
-                                results[key] = value
-                    else:
-                        results[key] = value
-                else:
-                    results[key] = default_results[key]
+                results[key] = parse_json_safely(value, default_results[key]) if value else default_results[key]
             
             return results
             
@@ -291,96 +273,81 @@ IMPORTANT: Store your final plan in state['debt_reduction'] and ensure it aligns
         df = pd.DataFrame(transactions)
         
         if 'Date' in df.columns:
-            df['Date'] = pd.to_datetime(df['Date'])
-            df['Month'] = df['Date'].dt.month
-            df['Year'] = df['Date'].dt.year
+            df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%Y-%m-%d')
         
         if 'Category' in df.columns and 'Amount' in df.columns:
             category_spending = df.groupby('Category')['Amount'].sum().to_dict()
             session.state["category_spending"] = category_spending
-            total_spending = df['Amount'].sum()
-            session.state["total_spending"] = total_spending
+            session.state["total_spending"] = df['Amount'].sum()
     
     def _preprocess_manual_expenses(self, session):
         manual_expenses = session.state.get("manual_expenses", {})
         if not manual_expenses:
             return
         
-        total_manual_spending = sum(manual_expenses.values())
-        session.state["total_manual_spending"] = total_manual_spending
-        session.state["manual_category_spending"] = manual_expenses
+        session.state.update({
+            "total_manual_spending": sum(manual_expenses.values()),
+            "manual_category_spending": manual_expenses
+        })
 
     def _create_default_results(self, financial_data: Dict[str, Any]) -> Dict[str, Any]:
         monthly_income = financial_data.get("monthly_income", 0)
-        expenses = {}
+        expenses = financial_data.get("manual_expenses", {})
         
-        if financial_data.get("manual_expenses"):
-            expenses = financial_data.get("manual_expenses")
-        elif financial_data.get("transactions"):
-            for transaction in financial_data.get("transactions", []):
+        if not expenses and financial_data.get("transactions"):
+            expenses = {}
+            for transaction in financial_data["transactions"]:
                 category = transaction.get("Category", "Uncategorized")
                 amount = transaction.get("Amount", 0)
-                if category in expenses:
-                    expenses[category] += amount
-                else:
-                    expenses[category] = amount
+                expenses[category] = expenses.get(category, 0) + amount
         
         total_expenses = sum(expenses.values())
         
-        default_budget = {
-            "total_expenses": total_expenses,
-            "monthly_income": monthly_income,
-            "spending_categories": [
-                {"category": cat, "amount": amt, "percentage": (amt / total_expenses * 100) if total_expenses > 0 else 0}
-                for cat, amt in expenses.items()
-            ],
-            "recommendations": [
-                {"category": "General", "recommendation": "Consider reviewing your expenses carefully", "potential_savings": total_expenses * 0.1}
-            ]
-        }
-        
-        default_savings = {
-            "emergency_fund": {
-                "recommended_amount": total_expenses * 6,
-                "current_amount": 0,
-                "current_status": "Not started"
-            },
-            "recommendations": [
-                {"category": "Emergency Fund", "amount": total_expenses * 0.1, "rationale": "Build emergency fund first"},
-                {"category": "Retirement", "amount": monthly_income * 0.15, "rationale": "Long-term savings"}
-            ],
-            "automation_techniques": [
-                {"name": "Automatic Transfer", "description": "Set up automatic transfers on payday"}
-            ]
-        }
-        
-        default_debts = financial_data.get("debts", [])
-        total_debt = sum(debt.get("amount", 0) for debt in default_debts)
-        
-        default_debt = {
-            "total_debt": total_debt,
-            "debts": default_debts,
-            "payoff_plans": {
-                "avalanche": {
-                    "total_interest": total_debt * 0.2,
-                    "months_to_payoff": 24,
-                    "monthly_payment": total_debt / 24
-                },
-                "snowball": {
-                    "total_interest": total_debt * 0.25,
-                    "months_to_payoff": 24,
-                    "monthly_payment": total_debt / 24
-                }
-            },
-            "recommendations": [
-                {"title": "Increase Payments", "description": "Increase your monthly payments", "impact": "Reduces total interest paid"}
-            ]
-        }
-        
         return {
-            "budget_analysis": default_budget,
-            "savings_strategy": default_savings,
-            "debt_reduction": default_debt
+            "budget_analysis": {
+                "total_expenses": total_expenses,
+                "monthly_income": monthly_income,
+                "spending_categories": [
+                    {"category": cat, "amount": amt, "percentage": (amt / total_expenses * 100) if total_expenses > 0 else 0}
+                    for cat, amt in expenses.items()
+                ],
+                "recommendations": [
+                    {"category": "General", "recommendation": "Consider reviewing your expenses carefully", "potential_savings": total_expenses * 0.1}
+                ]
+            },
+            "savings_strategy": {
+                "emergency_fund": {
+                    "recommended_amount": total_expenses * 6,
+                    "current_amount": 0,
+                    "current_status": "Not started"
+                },
+                "recommendations": [
+                    {"category": "Emergency Fund", "amount": total_expenses * 0.1, "rationale": "Build emergency fund first"},
+                    {"category": "Retirement", "amount": monthly_income * 0.15, "rationale": "Long-term savings"}
+                ],
+                "automation_techniques": [
+                    {"name": "Automatic Transfer", "description": "Set up automatic transfers on payday"}
+                ]
+            },
+            "debt_reduction": {
+                "total_debt": sum(debt.get("amount", 0) for debt in financial_data.get("debts", [])),
+                "debts": financial_data.get("debts", []),
+                "payoff_plans": {
+                    "avalanche": {
+                        "total_interest": sum(debt.get("amount", 0) for debt in financial_data.get("debts", [])) * 0.2,
+                        "months_to_payoff": 24,
+                        "monthly_payment": sum(debt.get("amount", 0) for debt in financial_data.get("debts", [])) / 24
+                    },
+                    "snowball": {
+                        "total_interest": sum(debt.get("amount", 0) for debt in financial_data.get("debts", [])) * 0.25,
+                        "months_to_payoff": 24,
+                        "monthly_payment": sum(debt.get("amount", 0) for debt in financial_data.get("debts", [])) / 24
+                    }
+                },
+                "recommendations": [
+                    {"title": "Increase Payments", "description": "Increase your monthly payments", "impact": "Reduces total interest paid"}
+                ]
+            }
         }
 
 def display_budget_analysis(analysis: Dict[str, Any]):
