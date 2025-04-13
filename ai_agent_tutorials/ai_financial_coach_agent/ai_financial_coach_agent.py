@@ -20,16 +20,13 @@ from google.genai import types
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.models import LlmResponse, LlmRequest
 
-# Set up logging
-logging.basicConfig(level=logging.INFO, 
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Constants for session management
 APP_NAME = "finance_advisor"
 USER_ID = "default_user"
 
-# Define Pydantic models for output schemas
+# Pydantic models for output schemas
 class SpendingCategory(BaseModel):
     category: str = Field(..., description="Expense category name")
     amount: float = Field(..., description="Amount spent in this category")
@@ -91,23 +88,14 @@ class DebtReduction(BaseModel):
     payoff_plans: PayoffPlans = Field(..., description="Debt payoff strategies")
     recommendations: Optional[List[DebtRecommendation]] = Field(None, description="Recommendations for debt reduction")
 
-# Load environment variables
 load_dotenv()
 
-# Get API key from environment
 GEMINI_API_KEY = os.getenv("GOOGLE_API_KEY")
-if not GEMINI_API_KEY:
-    raise ValueError("GOOGLE_API_KEY environment variable not set")
 
 class FinanceAdvisorSystem:
-    """Main class to manage finance advisor agents"""
-    
     def __init__(self):
-        """Initialize the finance advisor system with specialized agents"""
-        # Initialize session service
         self.session_service = InMemorySessionService()
         
-        # Budget Analysis Agent
         self.budget_analysis_agent = LlmAgent(
             name="BudgetAnalysisAgent",
             model="gemini-2.0-flash-exp",
@@ -142,7 +130,6 @@ IMPORTANT: Store your analysis in state['budget_analysis'] for use by subsequent
             output_key="budget_analysis"
         )
         
-        # Savings Strategy Agent
         self.savings_strategy_agent = LlmAgent(
             name="SavingsStrategyAgent",
             model="gemini-2.0-flash-exp",
@@ -169,7 +156,6 @@ IMPORTANT: Store your strategy in state['savings_strategy'] for use by the Debt 
             output_key="savings_strategy"
         )
         
-        # Debt Reduction Agent
         self.debt_reduction_agent = LlmAgent(
             name="DebtReductionAgent",
             model="gemini-2.0-flash-exp",
@@ -196,7 +182,6 @@ IMPORTANT: Store your final plan in state['debt_reduction'] and ensure it aligns
             output_key="debt_reduction"
         )
         
-        # Coordinator Agent - Orchestrates the specialized agents
         self.coordinator_agent = SequentialAgent(
             name="FinanceCoordinatorAgent",
             description="Coordinates specialized finance agents to provide comprehensive financial advice",
@@ -207,60 +192,16 @@ IMPORTANT: Store your final plan in state['debt_reduction'] and ensure it aligns
             ]
         )
         
-        # Add debug callbacks to monitor agent behavior and state flow
-        self._add_debug_callbacks()
-        
-        # Create a runner for the coordinator agent
         self.runner = Runner(
             agent=self.coordinator_agent,
             app_name=APP_NAME,
             session_service=self.session_service
         )
-    
-    def _add_debug_callbacks(self):
-        """Add debug callbacks to agents to track execution and state flow"""
-        logger.info("=== Registering Callbacks ===")
-        for agent in [self.budget_analysis_agent, self.savings_strategy_agent, self.debt_reduction_agent]:
-            logger.info(f"Adding callbacks to agent: {agent.name}")
-            agent.before_model_callback = self._simple_before_model_callback
-            agent.after_model_callback = self._simple_after_model_callback
-            # Verify callback registration
-            logger.info(f"Callbacks registered - Before: {agent.before_model_callback.__name__}, After: {agent.after_model_callback.__name__}")
-    
-    def _simple_before_model_callback(self, callback_context: CallbackContext, llm_request: LlmRequest) -> Optional[LlmResponse]:
-        """Simple debug callback before model call"""
-        agent_name = callback_context.agent_name
-        logger.info(f"=== Before Model Callback ({agent_name}) ===")
-        # Log arguments excluding 'self'
-        args_log = {k: v for k, v in locals().items() if k != 'self'}
-        logger.info(f"({agent_name}) Callback args: {args_log}")
-        logger.info(f"({agent_name}) Callback context type: {type(callback_context)}")
-        logger.info(f"({agent_name}) LLM request type: {type(llm_request)}")
-        if hasattr(callback_context, 'state'):
-            logger.info(f"({agent_name}) Current state available")
-        return None
-    
-    def _simple_after_model_callback(self, callback_context: CallbackContext, llm_response: LlmResponse) -> Optional[LlmResponse]:
-        """Simple debug callback after model call"""
-        agent_name = callback_context.agent_name
-        logger.info(f"=== After Model Callback ({agent_name}) ===")
-        # Log arguments excluding 'self'
-        args_log = {k: v for k, v in locals().items() if k != 'self'}
-        logger.info(f"({agent_name}) Callback args: {args_log}") 
-        logger.info(f"({agent_name}) Callback context type: {type(callback_context)}")
-        logger.info(f"({agent_name}) LLM response type: {type(llm_response)}")
-        # llm_request is not expected here based on the error
-        if hasattr(callback_context, 'state'):
-            logger.info(f"({agent_name}) Updated state available")
-        return None
-    
+
     async def analyze_finances(self, financial_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Process financial data through the agent system and return comprehensive analysis"""
         session_id = f"finance_session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        logger.info(f"Starting finance analysis with session_id: {session_id}")
         
         try:
-            # Create a new session with required parameters
             initial_state = {
                 "monthly_income": financial_data.get("monthly_income", 0),
                 "dependants": financial_data.get("dependants", 0),
@@ -276,100 +217,41 @@ IMPORTANT: Store your final plan in state['debt_reduction'] and ensure it aligns
                 state=initial_state
             )
             
-            # Log initial state
-            logger.info(f"Created session with initial state items: {list(initial_state.keys())}")
-            
-            # Preprocess transaction data if available
             transactions = session.state.get("transactions")
             if transactions:
                 self._preprocess_transactions(session)
             
-            # Initialize preprocessing for manual expenses if provided
             manual_expenses = session.state.get("manual_expenses")
             if manual_expenses:
                 self._preprocess_manual_expenses(session)
             
-            # Create default results
             default_results = self._create_default_results(financial_data)
             
-            # Create user message content
             user_content = types.Content(
                 role='user',
                 parts=[types.Part(text=json.dumps(financial_data))]
             )
             
-            logger.info("Running coordinator agent")
-            
-            # Run the analysis through the coordinator agent
-            event_count = 0
-            current_agent = None
             async for event in self.runner.run_async(
                 user_id=USER_ID,
                 session_id=session_id,
                 new_message=user_content
             ):
-                event_count += 1
-                # --- DETAILED EVENT LOGGING --- 
-                logger.info(f"-- RAW EVENT {event_count} START --")
-                logger.info(f"Event Author: {event.author}")
-                logger.info(f"Event ID: {event.id}")
-                logger.info(f"Invocation ID: {event.invocation_id}")
-                logger.info(f"Is Final Response Flag: {event.is_final_response()}")
-                if event.content:
-                     logger.info(f"Event Content: {str(event.content)[:500]}...") # Log content snippet
-                if hasattr(event, 'actions') and event.actions:
-                    logger.info(f"Event Actions: {event.actions}")
-                logger.info(f"-- RAW EVENT {event_count} END --")
-                # --- END DETAILED EVENT LOGGING ---
-                
-                # Original logging logic below
-                logger.info(f"Event {event_count}: author={event.author}")
-                
-                if event.author != current_agent:
-                    current_agent = event.author
-                    logger.info(f"Agent execution changed to: {current_agent}")
-                
-                if event.content and event.content.parts:
-                    part = event.content.parts[0]
-                    if hasattr(part, 'text') and part.text:
-                        logger.info(f"Text content: {part.text[:100]}...")
-                
-                if hasattr(event, 'actions') and event.actions:
-                    if hasattr(event.actions, 'state_delta') and event.actions.state_delta:
-                        state_delta = event.actions.state_delta
-                        logger.info(f"State delta received: {state_delta}")
-                
-                # Check for final response *only* from the coordinator agent
                 if event.is_final_response() and event.author == self.coordinator_agent.name:
-                    logger.warning(f"Event {event_count} from COORDINATOR ({event.author}) flagged as FINAL. Breaking loop.")
-                    if event.content and event.content.parts:
-                        part = event.content.parts[0]
-                        if hasattr(part, 'text') and part.text:
-                            logger.info(f"Final response text: {part.text[:100]}...")
                     break
-                elif event.is_final_response():
-                    # Log but don't break if a sub-agent marks as final
-                    logger.info(f"Event {event_count} from sub-agent {event.author} flagged as FINAL, but continuing sequence.")
             
-            # Get the updated session
-            logger.info("Retrieving updated session")
             updated_session = self.session_service.get_session(
                 app_name=APP_NAME,
                 user_id=USER_ID,
                 session_id=session_id
             )
             
-            # Process agent outputs from state
             results = {}
             
-            # Process each agent output
             for key in ["budget_analysis", "savings_strategy", "debt_reduction"]:
                 value = updated_session.state.get(key)
                 if value is not None:
-                    logger.info(f"Found {key} in state: type={type(value)}")
-                    
                     if value == "":
-                        logger.warning(f"{key} is empty in state, using default")
                         results[key] = default_results[key]
                         continue
                     
@@ -377,9 +259,7 @@ IMPORTANT: Store your final plan in state['debt_reduction'] and ensure it aligns
                         try:
                             parsed_value = json.loads(value)
                             results[key] = parsed_value
-                            logger.info(f"Successfully parsed {key} as JSON")
                         except json.JSONDecodeError:
-                            logger.warning(f"Could not parse {key} as JSON, using as is: {value[:100]}...")
                             if key in default_results:
                                 results[key] = default_results[key]
                             else:
@@ -387,7 +267,6 @@ IMPORTANT: Store your final plan in state['debt_reduction'] and ensure it aligns
                     else:
                         results[key] = value
                 else:
-                    logger.warning(f"{key} not found in session state, using default")
                     results[key] = default_results[key]
             
             return results
@@ -396,66 +275,46 @@ IMPORTANT: Store your final plan in state['debt_reduction'] and ensure it aligns
             logger.exception(f"Error during finance analysis: {str(e)}")
             raise
         finally:
-            # Clean up the session
-            try:
-                self.session_service.delete_session(
-                    app_name=APP_NAME,
-                    user_id=USER_ID,
-                    session_id=session_id
-                )
-                logger.info(f"Cleaned up session: {session_id}")
-            except Exception as e:
-                logger.warning(f"Failed to clean up session: {e}")
+            self.session_service.delete_session(
+                app_name=APP_NAME,
+                user_id=USER_ID,
+                session_id=session_id
+            )
     
     def _preprocess_transactions(self, session):
-        """Preprocess transaction data for easier analysis by the agents"""
         transactions = session.state.get("transactions", [])
-        
         if not transactions:
             return
         
-        # Convert list of transactions to DataFrame for analysis
         df = pd.DataFrame(transactions)
         
-        # Basic preprocessing
         if 'Date' in df.columns:
             df['Date'] = pd.to_datetime(df['Date'])
             df['Month'] = df['Date'].dt.month
             df['Year'] = df['Date'].dt.year
         
-        # Calculate spending by category
         if 'Category' in df.columns and 'Amount' in df.columns:
             category_spending = df.groupby('Category')['Amount'].sum().to_dict()
             session.state["category_spending"] = category_spending
-            
-            # Total spending
             total_spending = df['Amount'].sum()
             session.state["total_spending"] = total_spending
     
     def _preprocess_manual_expenses(self, session):
-        """Process manually entered expenses"""
         manual_expenses = session.state.get("manual_expenses", {})
-        
         if not manual_expenses:
             return
         
-        # Calculate total spending from manual entries
         total_manual_spending = sum(manual_expenses.values())
         session.state["total_manual_spending"] = total_manual_spending
-        
-        # Store categorized spending directly
         session.state["manual_category_spending"] = manual_expenses
 
     def _create_default_results(self, financial_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Create default results in case agent execution fails"""
         monthly_income = financial_data.get("monthly_income", 0)
         expenses = {}
         
-        # Extract expenses from manual entries or transactions
         if financial_data.get("manual_expenses"):
             expenses = financial_data.get("manual_expenses")
         elif financial_data.get("transactions"):
-            # Simplified aggregation of transactions
             for transaction in financial_data.get("transactions", []):
                 category = transaction.get("Category", "Uncategorized")
                 amount = transaction.get("Amount", 0)
@@ -466,7 +325,6 @@ IMPORTANT: Store your final plan in state['debt_reduction'] and ensure it aligns
         
         total_expenses = sum(expenses.values())
         
-        # Create default budget analysis
         default_budget = {
             "total_expenses": total_expenses,
             "monthly_income": monthly_income,
@@ -479,7 +337,6 @@ IMPORTANT: Store your final plan in state['debt_reduction'] and ensure it aligns
             ]
         }
         
-        # Create default savings strategy
         default_savings = {
             "emergency_fund": {
                 "recommended_amount": total_expenses * 6,
@@ -495,7 +352,6 @@ IMPORTANT: Store your final plan in state['debt_reduction'] and ensure it aligns
             ]
         }
         
-        # Create default debt reduction
         default_debts = financial_data.get("debts", [])
         total_debt = sum(debt.get("amount", 0) for debt in default_debts)
         
@@ -526,29 +382,17 @@ IMPORTANT: Store your final plan in state['debt_reduction'] and ensure it aligns
         }
 
 def display_budget_analysis(analysis: Dict[str, Any]):
-    """Display budget analysis results"""
-    logger.info(f"Displaying budget analysis, type: {type(analysis)}")
-    
-    # Ensure we have a dictionary
     if isinstance(analysis, str):
-        logger.info(f"Budget analysis is a string, attempting to parse as JSON")
         try:
             analysis = json.loads(analysis)
-            logger.info("Successfully parsed budget analysis from JSON string")
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse budget analysis results: {e}")
-            logger.error(f"First 200 chars of analysis: {analysis[:200]}")
+        except json.JSONDecodeError:
             st.error("Failed to parse budget analysis results")
             return
     
     if not isinstance(analysis, dict):
-        logger.error(f"Invalid budget analysis format: {type(analysis)}")
         st.error("Invalid budget analysis format")
         return
     
-    logger.info(f"Budget analysis keys: {list(analysis.keys())}")
-    
-    # Display spending breakdown
     if "spending_categories" in analysis:
         st.subheader("Spending by Category")
         fig = px.pie(
@@ -558,7 +402,6 @@ def display_budget_analysis(analysis: Dict[str, Any]):
         )
         st.plotly_chart(fig)
     
-    # Display income vs expenses
     if "total_expenses" in analysis:
         st.subheader("Income vs. Expenses")
         income = analysis.get("monthly_income", 0)
@@ -576,7 +419,6 @@ def display_budget_analysis(analysis: Dict[str, Any]):
                   f"${surplus_deficit:.2f}", 
                   delta=f"{surplus_deficit:.2f}")
     
-    # Display spending reduction recommendations
     if "recommendations" in analysis:
         st.subheader("Spending Reduction Recommendations")
         for rec in analysis["recommendations"]:
@@ -585,8 +427,6 @@ def display_budget_analysis(analysis: Dict[str, Any]):
                 st.metric(f"Potential Monthly Savings", f"${rec['potential_savings']:.2f}")
 
 def display_savings_strategy(strategy: Dict[str, Any]):
-    """Display savings strategy results"""
-    # Ensure we have a dictionary
     if isinstance(strategy, str):
         try:
             strategy = json.loads(strategy)
@@ -600,35 +440,29 @@ def display_savings_strategy(strategy: Dict[str, Any]):
     
     st.subheader("Savings Recommendations")
     
-    # Emergency Fund
     if "emergency_fund" in strategy:
         ef = strategy["emergency_fund"]
         st.markdown(f"### Emergency Fund")
         st.markdown(f"**Recommended Size**: ${ef['recommended_amount']:.2f}")
         st.markdown(f"**Current Status**: {ef['current_status']}")
         
-        # Progress bar
         if "current_amount" in ef and "recommended_amount" in ef:
             progress = ef["current_amount"] / ef["recommended_amount"]
             st.progress(min(progress, 1.0))
             st.markdown(f"${ef['current_amount']:.2f} of ${ef['recommended_amount']:.2f}")
     
-    # Savings Recommendations
     if "recommendations" in strategy:
         st.markdown("### Recommended Savings Allocations")
         for rec in strategy["recommendations"]:
             st.markdown(f"**{rec['category']}**: ${rec['amount']:.2f}/month")
             st.markdown(f"_{rec['rationale']}_")
     
-    # Automation Techniques
     if "automation_techniques" in strategy:
         st.markdown("### Automation Techniques")
         for technique in strategy["automation_techniques"]:
             st.markdown(f"**{technique['name']}**: {technique['description']}")
 
 def display_debt_reduction(plan: Dict[str, Any]):
-    """Display debt reduction plan results"""
-    # Ensure we have a dictionary
     if isinstance(plan, str):
         try:
             plan = json.loads(plan)
@@ -640,23 +474,19 @@ def display_debt_reduction(plan: Dict[str, Any]):
         st.error("Invalid debt reduction format")
         return
     
-    # Total Debt Overview
     if "total_debt" in plan:
         st.metric("Total Debt", f"${plan['total_debt']:.2f}")
     
-    # Debt Breakdown
     if "debts" in plan:
         st.subheader("Your Debts")
         debt_df = pd.DataFrame(plan["debts"])
         st.dataframe(debt_df)
         
-        # Debt visualization
         fig = px.bar(debt_df, x="name", y="amount", color="interest_rate",
                     labels={"name": "Debt", "amount": "Amount ($)", "interest_rate": "Interest Rate (%)"},
                     title="Debt Breakdown")
         st.plotly_chart(fig)
     
-    # Payoff Plans
     if "payoff_plans" in plan:
         st.subheader("Debt Payoff Plans")
         tabs = st.tabs(["Avalanche Method", "Snowball Method", "Comparison"])
@@ -670,11 +500,6 @@ def display_debt_reduction(plan: Dict[str, Any]):
                 
                 if "monthly_payment" in avalanche:
                     st.markdown(f"**Recommended Monthly Payment**: ${avalanche['monthly_payment']:.2f}")
-                
-                if "schedule" in avalanche:
-                    st.markdown("#### Payoff Schedule")
-                    schedule_df = pd.DataFrame(avalanche["schedule"])
-                    st.dataframe(schedule_df)
         
         with tabs[1]:
             st.markdown("### Snowball Method (Smallest Balance First)")
@@ -685,11 +510,6 @@ def display_debt_reduction(plan: Dict[str, Any]):
                 
                 if "monthly_payment" in snowball:
                     st.markdown(f"**Recommended Monthly Payment**: ${snowball['monthly_payment']:.2f}")
-                
-                if "schedule" in snowball:
-                    st.markdown("#### Payoff Schedule")
-                    schedule_df = pd.DataFrame(snowball["schedule"])
-                    st.dataframe(schedule_df)
         
         with tabs[2]:
             st.markdown("### Method Comparison")
@@ -713,7 +533,6 @@ def display_debt_reduction(plan: Dict[str, Any]):
                 fig.update_layout(barmode='group', title="Debt Payoff Method Comparison")
                 st.plotly_chart(fig)
     
-    # Recommendations
     if "recommendations" in plan:
         st.subheader("Debt Reduction Recommendations")
         for rec in plan["recommendations"]:
@@ -724,24 +543,22 @@ def display_debt_reduction(plan: Dict[str, Any]):
 def main():
     st.set_page_config(page_title="AI Personal Finance Coach", layout="wide")
     
-    # Check if we have the API key
-    if not os.getenv("GOOGLE_API_KEY"):
-        logger.error("GOOGLE_API_KEY environment variable not set")
-        st.error("""
-        GOOGLE_API_KEY not found in environment variables.
-        Please create a .env file with your Google API key:
-        ```
-        GOOGLE_API_KEY=your_api_key_here
-        ```
-        """)
+    # Sidebar with API key info
+    with st.sidebar:
+        st.info("📝 Please ensure you have your Gemini API key in the .env file:\n```\nGOOGLE_API_KEY=your_api_key_here\n```")
+        st.caption("This application uses Google's Gemini AI to provide personalized financial advice.")
+    
+    if not GEMINI_API_KEY:
+        st.error("GOOGLE_API_KEY not found in environment variables. Please add it to your .env file.")
         return
     
     st.title("📊 AI Personal Finance Coach")
     st.subheader("Get personalized financial advice from AI agents")
+    st.info("This tool analyzes your financial data and provides tailored recommendations for budgeting, savings, and debt management.")
     st.markdown("---")
     
-    # --- Input Section --- 
     st.header("Step 1: Enter Your Financial Information")
+    st.caption("All data is processed locally and not stored anywhere.")
     
     col1, col2 = st.columns(2)
     
@@ -770,22 +587,18 @@ def main():
                 try:
                     transactions_df = pd.read_csv(transaction_file)
                     st.success("Transaction file uploaded successfully!")
-                    # Optional: Display small preview
-                    # st.dataframe(transactions_df.head(3))
                 except Exception as e:
                     st.error(f"Error reading CSV: {e}")
-                    transactions_df = None # Ensure df is None if error
+                    transactions_df = None
         else:
             use_manual_expenses = True
             st.write("Enter monthly expenses by category:")
             categories = ["Housing", "Utilities", "Food", "Transportation", "Healthcare", 
                           "Entertainment", "Personal", "Savings", "Other"]
-            # Use columns for better manual entry layout
             exp_col1, exp_col2 = st.columns(2)
             for i, category in enumerate(categories):
                 col = exp_col1 if i < (len(categories) + 1) // 2 else exp_col2
                 manual_expenses[category] = col.number_input(f"{category} ($)", min_value=0.0, step=50.0, value=0.0, key=f"manual_{category}")
-            # Display manual entries for confirmation
             if any(manual_expenses.values()):
                 st.write("Entered Manual Expenses:")
                 manual_df_disp = pd.DataFrame({
@@ -794,8 +607,8 @@ def main():
                 })
                 st.dataframe(manual_df_disp[manual_df_disp['Amount'] > 0])
 
-
     st.subheader("Debt Information")
+    st.info("Enter your debts to get personalized payoff strategies.")
     num_debts = st.number_input("Number of Debts", min_value=0, max_value=10, step=1, value=0, key="num_debts")
     
     debts = []
@@ -815,24 +628,20 @@ def main():
                     "interest_rate": interest_rate,
                     "min_payment": min_payment
                 })
-        
+    
     st.markdown("---")
     analyze_button = st.button("Analyze My Finances", key="analyze_button")
     st.markdown("---")
     
-    # --- Results Section --- 
     if analyze_button:
-        # Validate inputs before proceeding
         if expense_option == "Upload CSV Transactions" and transactions_df is None:
             st.error("Please upload a valid transaction CSV file or choose manual entry.")
             return
         if use_manual_expenses and not any(manual_expenses.values()):
              st.warning("No manual expenses entered. Analysis might be limited.")
-             # Optionally proceed or return, depending on desired behavior
 
         st.header("Step 2: Financial Analysis Results")
         with st.spinner("AI agents are analyzing your financial data..."): 
-            # Prepare data for agent analysis
             financial_data = {
                 "monthly_income": monthly_income,
                 "dependants": dependants,
@@ -841,53 +650,35 @@ def main():
                 "debts": debts
             }
             
-            # Create finance advisor system
             finance_system = FinanceAdvisorSystem()
             
-            # Run analysis
-            logger.info("Starting financial analysis")
-            results = None
             try:
                 results = asyncio.run(finance_system.analyze_finances(financial_data))
-                logger.info(f"Analysis complete, results keys: {list(results.keys())}")
                 
-                # Log the types of each result
-                for key, value in results.items():
-                    logger.info(f"Result '{key}' is type: {type(value)}")
-                    # if value: # Avoid logging large outputs unless needed
-                    #     preview = str(value)[:100] + "..." if len(str(value)) > 100 else str(value)
-                    #     logger.info(f"Preview of {key}: {preview}")
+                tabs = st.tabs(["💰 Budget Analysis", "📈 Savings Strategy", "💳 Debt Reduction"])
+                
+                with tabs[0]:
+                    st.subheader("Budget Analysis")
+                    if "budget_analysis" in results and results["budget_analysis"]:
+                        display_budget_analysis(results["budget_analysis"])
+                    else:
+                        st.write("No budget analysis available.")
+                
+                with tabs[1]:
+                    st.subheader("Savings Strategy")
+                    if "savings_strategy" in results and results["savings_strategy"]:
+                        display_savings_strategy(results["savings_strategy"])
+                    else:
+                        st.write("No savings strategy available.")
+                
+                with tabs[2]:
+                    st.subheader("Debt Reduction Plan")
+                    if "debt_reduction" in results and results["debt_reduction"]:
+                        display_debt_reduction(results["debt_reduction"])
+                    else:
+                        st.write("No debt reduction plan available.")
             except Exception as e:
-                logger.exception(f"Error in financial analysis: {e}")
                 st.error(f"An error occurred during analysis: {str(e)}")
-                # results remains None
-        
-        # Display results if analysis was successful
-        if results:
-            tabs = st.tabs(["💰 Budget Analysis", "📈 Savings Strategy", "💳 Debt Reduction"])
-            
-            with tabs[0]:
-                st.subheader("Budget Analysis")
-                if "budget_analysis" in results and results["budget_analysis"]:
-                    display_budget_analysis(results["budget_analysis"])
-                else:
-                    st.write("No budget analysis available or analysis failed.")
-            
-            with tabs[1]:
-                st.subheader("Savings Strategy")
-                if "savings_strategy" in results and results["savings_strategy"]:
-                    display_savings_strategy(results["savings_strategy"])
-                else:
-                    st.write("No savings strategy available or analysis failed.")
-            
-            with tabs[2]:
-                st.subheader("Debt Reduction Plan")
-                if "debt_reduction" in results and results["debt_reduction"]:
-                    display_debt_reduction(results["debt_reduction"])
-                else:
-                    st.write("No debt reduction plan available or analysis failed.")
-        else:
-            st.error("Financial analysis could not be completed.")
 
 if __name__ == "__main__":
     main()
