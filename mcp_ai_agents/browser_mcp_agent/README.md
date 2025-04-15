@@ -1,5 +1,7 @@
 # 🌐 MCP Browser Agent
 
+![Area](https://github.com/user-attachments/assets/285a6a02-c1a9-4581-b32b-b244f665f648)
+
 A Streamlit application that allows you to browse and interact with websites using natural language commands through the Model Context Protocol (MCP) and [MCP-Agent](https://github.com/lastmile-ai/mcp-agent) with Puppeteer integration.
 
 ## Features
@@ -46,6 +48,7 @@ A Streamlit application that allows you to browse and interact with websites usi
      ```bash
      export OPENAI_API_KEY=your-openai-api-key
      ```
+
 
 ### Running the App
 
