@@ -88,6 +88,7 @@ We're launching a Global AI Agent Hackathon in collaboration with AI Agent ecosy
 
 ### MCP AI Agents
 - [🐙 MCP GitHub Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/mcp_ai_agents/github_mcp_agent)
+- [♾️ MCP Browser Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/mcp_ai_agents/mcp_browser_agent)
 
 ### LLM Apps with Memory
 - [💾 AI Arxiv Agent with Memory](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/llm_apps_with_memory_tutorials/ai_arxiv_agent_memory)
