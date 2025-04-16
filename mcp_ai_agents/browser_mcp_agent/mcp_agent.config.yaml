@@ -17,5 +17,4 @@ mcp:
 
 openai:
   # Secrets (API keys, etc.) are stored in an mcp_agent.secrets.yaml file which can be gitignored
-  #  default_model: "o3-mini"
-  default_model: "gpt-4o-mini"
+  default_model: "gpt-4.1-mini-2025-04-14"
