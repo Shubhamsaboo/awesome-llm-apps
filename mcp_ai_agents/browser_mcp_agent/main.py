@@ -6,6 +6,7 @@ from textwrap import dedent
 from mcp_agent.app import MCPApp
 from mcp_agent.agents.agent import Agent
 from mcp_agent.workflows.llm.augmented_llm_openai import OpenAIAugmentedLLM
+from mcp_agent.workflows.llm.augmented_llm import RequestParams
 
 # Page config
 st.set_page_config(page_title="Browser MCP Agent", page_icon="🌐", layout="wide")
@@ -19,15 +20,15 @@ with st.sidebar:
     st.markdown("### Example Commands")
     
     st.markdown("**Navigation**")
-    st.markdown("- Go to www.lastmileai.dev.")
+    st.markdown("- Go to wikipedia.org/wiki/computer_vision")
     
     st.markdown("**Interactions**")
-    st.markdown("- Click on the documentation button and take a screenshot")
+    st.markdown("- Click on the link to object detection and take a screenshot")
     st.markdown("- Scroll down to view more content")
     
     st.markdown("**Multi-step Tasks**")
-    st.markdown("- Navigate to LastMile AI, go the blog section, and report details")
-    st.markdown("- Open the blog and summarize the latest article")
+    st.markdown("- Navigate to wikipedia.org/wiki/computer_vision, scroll down, and report details")
+    st.markdown("- Scroll down and summarize the wikipedia page")
     
     st.markdown("---")
     st.caption("Note: The agent uses Puppeteer to control a real browser.")
@@ -96,7 +97,11 @@ async def run_mcp_agent(message):
             return error
         
         # Generate response without recreating agents
-        result = await st.session_state.llm.generate_str(message)
+        # Switch use_history to False to reduce the passed context
+        result = await st.session_state.llm.generate_str(
+            message=message, 
+            request_params=RequestParams(use_history=True)
+            )
         return result
     except Exception as e:
         return f"Error: {str(e)}"
