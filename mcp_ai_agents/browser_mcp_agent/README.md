@@ -86,5 +86,5 @@ The application uses:
 - Streamlit for the user interface
 - MCP (Model Context Protocol) to connect the LLM with tools
 - Puppeteer for browser automation
-- MCP-Agent for the Agentic Framework
+- [MCP-Agent](https://github.com/lastmile-ai/mcp-agent/) for the Agentic Framework
 - OpenAI's models to interpret commands and generate responses
