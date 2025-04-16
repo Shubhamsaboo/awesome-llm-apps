@@ -1,0 +1,4 @@
+streamlit>=1.28.0
+mcp-agent>=0.0.14
+openai>=1.0.0
+asyncio>=3.4.3
