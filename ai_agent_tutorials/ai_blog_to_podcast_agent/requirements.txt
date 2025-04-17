@@ -2,5 +2,5 @@ agno==1.2.8
 streamlit==1.44.1
 openai
 Requests
-firecrawl
+firecrawl-py
 elevenlabs
