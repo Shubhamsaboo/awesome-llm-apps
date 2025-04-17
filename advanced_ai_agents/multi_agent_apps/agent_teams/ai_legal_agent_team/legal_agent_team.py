@@ -173,7 +173,7 @@ def main():
                                 legal_researcher = Agent(
                                     name="Legal Researcher",
                                     role="Legal research specialist",
-                                    model=OpenAIChat(id="gpt-4o"),
+                                    model=OpenAIChat(id="gpt-4.1"),
                                     tools=[DuckDuckGoTools()],
                                     knowledge=st.session_state.knowledge_base,
                                     search_knowledge=True,
@@ -190,7 +190,7 @@ def main():
                                 contract_analyst = Agent(
                                     name="Contract Analyst",
                                     role="Contract analysis specialist",
-                                    model=OpenAIChat(id="gpt-4o"),
+                                    model=OpenAIChat(id="gpt-4.1"),
                                     knowledge=st.session_state.knowledge_base,
                                     search_knowledge=True,
                                     instructions=[
@@ -204,7 +204,7 @@ def main():
                                 legal_strategist = Agent(
                                     name="Legal Strategist", 
                                     role="Legal strategy specialist",
-                                    model=OpenAIChat(id="gpt-4o"),
+                                    model=OpenAIChat(id="gpt-4.1"),
                                     knowledge=st.session_state.knowledge_base,
                                     search_knowledge=True,
                                     instructions=[
@@ -219,7 +219,7 @@ def main():
                                 st.session_state.legal_team = Agent(
                                     name="Legal Team Lead",
                                     role="Legal team coordinator",
-                                    model=OpenAIChat(id="gpt-4o"),
+                                    model=OpenAIChat(id="gpt-4.1"),
                                     team=[legal_researcher, contract_analyst, legal_strategist],
                                     knowledge=st.session_state.knowledge_base,
                                     search_knowledge=True,
