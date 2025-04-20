@@ -1,83 +1,118 @@
-# 🌍 AI Travel Planner — MCP Agent Team (Airbnb, Google Maps, Weather)
+## 🌍 AI Travel Planner Agent
 
-This project is a *multi-agent travel planning assistant* built using [Agno](https://github.com/agnodice/agno), powered by multiple [Model Context Protocol (MCP)](https://modelcontextprotocol.org/) tools. It integrates:
+This is a Streamlit-based application that helps users plan their travel itineraries using AI. The app integrates with various mcp servers to provide a comprehensive travel planning experience, including weather forecasts, maps, and calendar integration.
 
-•⁠  ⁠🏠 *Airbnb Listings*  
-•⁠  ⁠🗺️ *Google Maps for routing and places*  
-•⁠  ⁠🌦️ *Weather information via AccuWeather*  
-•⁠  ⁠📅 (Optional) *Google Calendar integration via Gumloop MCP*
+## Features
+## MCP Servers Integration
 
-All handled through a simple terminal interface powered by Python + asyncio.
+This project utilizes several MCP (Model Context Protocol) servers to provide a comprehensive travel planning experience:
 
----
+### 1. Weather MCP Server
+- **Functionality**: Provides real-time weather data and forecasts
 
-## ⚙️ Requirements
+### 2. Maps MCP Server
+- **Functionality**: Handles location-based services and navigation
+- **Features**:
+  - Search for places and points of interest
+  - Get detailed place information
+  - Retrieve driving/walking directions
 
-•⁠  ⁠Python 3.10+
-•⁠  ⁠Node.js + ⁠ npx ⁠
-•⁠  ⁠[uvx](https://github.com/uvx/cli) for running MCP servers from Git
-•⁠  ⁠Internet access for MCP calls
+### 3. Calendar MCP Server
+- **Functionality**: Manages calendar events and scheduling
+- **Features**:
+  - Create and manage calendar events
+  - Handle time zone conversions
+  - Schedule reminders and notifications
+- **Integration**: Implemented in `calendar_mcp.py`
 
----
-
-## 📦 Installation
-
-1.⁠ ⁠*Clone the repo*
-
-⁠ bash
-git clone https://github.com/yourusername/ai-travel-planner.git
-cd ai-travel-planner
- ⁠
-
-2.⁠ ⁠*Create Virtual Env*
-
-conda create -n env_name python=3.10 -y
-conda activate env_name
-pip install -r requirements.txt
+### 4. Booking MCP Server
+- **Functionality**: Airbnb MCP server used
 
 
-3.⁠ ⁠*Create env file*
+## Setup
 
-GOOGLE_MAPS_API_KEY=your_google_maps_api_key
-ACCUWEATHER_API_KEY=your_accuweather_api_key
-OPENAI_API_KEY=your_openai_api_key
----
+### Requirements 
 
-## 🧠 Built With
--- Agno
+1. **API Keys and Credentials**:
+    - **Google Maps API Key**: Set up a Google Maps API Key from Google Cloud Console
+    - **Google Calendar API**: Enable and configure the Calendar API Key
+    - **Google OAuth Credentials**: Client ID and Client Secret and Refresh Token for authentication
+    - **AccuWeather API KEY**: Get AccuWeather API key https://developer.accuweather.com/
+    - **OpenAI API Key**: Sign up at OpenAI to obtain your API key.
 
--- FastMCP
+2. **Python 3.8+**: Ensure you have Python 3.8 or higher installed.
 
--- OpenAI
+### Installation
 
--- Google Maps Platform
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/yourusername/ai_travel_planner_mcp_agent_team
+   cd ai_travel_planner_mcp_agent_team
+   ```
 
--- Airbnb MCP
+2. Install the required Python packages:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
--- Accuweather
+3. Set up environment variables:
+   Create a `.env` file in the project root with the following variables:
+   ```
+   GOOGLE_CLIENT_ID=
+   GOOGLE_CLIENT_SECRET=
+   GOOGLE_REFRESH_TOKEN=
+   GOOGLE_MAPS_API_KEY=
+   OPENAI_API_KEY=
+   ACCUWEATHER_API_KEY=
+   ```
 
----
+### Running the App
 
-## 📅 Calendar MCP Server (`calendar_mcp.py`)
+1. Generate OAuth token for Google Calendar
 
-This script is a dedicated MCP (Modular Cognitive Process) server that integrates with **Google Calendar** to create events via API calls. It works seamlessly with the rest of the multi-agent system built with Agno and FastMCP.
+2. Start the Streamlit app:
+   ```bash
+   streamlit run app.py
+   ```
 
----
+3. In the app interface:
+   - Use the sidebar to configure your preferences
+   - Enter your travel details
 
-### 🛠 Features
+## Project Structure
 
-- Creates Google Calendar events using the `create_event` tool
-- Accepts event title, description, date/time, location, attendees, and reminders
-- Uses a refresh token for persistent access (no re-authentication needed)
+- `app.py`: Main Streamlit application
+- `calendar_mcp.py`: Calendar mcp integration functionality
+- `requirements.txt`: Project dependencies
+- `.env`: Environment variables
 
----
+## Calendar MCP Integration
 
-### 🌱 Setup
+The `calendar_mcp.py` module provides seamless integration with Google Calendar through the MCP (Model Context Protocol) framework. This integration allows the travel planner to:
 
-Add the following to your `.env` file in the root directory:
+- **Create Events**: Automatically create calendar events for travel activities, flights, and accommodations
+- **Schedule Management**: Handle time zone conversions and scheduling conflicts
+- **Event Details**: Include comprehensive event information such as:
+  - Location details with Google Maps links
+  - Weather forecasts for the event time
+  - Travel duration and transportation details
+  - Notes and reminders
 
-```env
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-GOOGLE_REFRESH_TOKEN=your_refresh_token
-```
+### Calendar Setup
+
+1. **OAuth Authentication**:
+   - The application uses OAuth 2.0 for secure authentication with Google Calendar
+   - First-time setup requires generating refresh token
+   - Refresh tokens are stored securely in the `.env` file
+
+2. **Event Creation**:
+   ```python
+   # Example of creating a calendar event
+   event = {
+       'summary': 'Flight to Paris',
+       'location': 'Charles de Gaulle Airport',
+       'description': 'Flight details and weather forecast',
+       'start': {'dateTime': '2024-04-20T10:00:00', 'timeZone': 'Europe/Paris'},
+       'end': {'dateTime': '2024-04-20T12:00:00', 'timeZone': 'Europe/Paris'}
+   }
+   ```
