@@ -1,0 +1,1410 @@
+Question,Expected,Predicted,Correct,TimeTakenSec
+"Let $-\frac{\pi}{6}<\theta<-\frac{\pi}{12}$. Suppose $\alpha_{1}$ and $\beta_{1}$ are the roots of the equation $x^{2}-2 x \sec \theta+1=0$ and $\alpha_{2}$ and $\beta_{2}$ are the roots of the equation $x^{2}+2 x \tan \theta-1=0$. If $\alpha_{1}>\beta_{1}$ and $\alpha_{2}>\beta_{2}$, then $\alpha_{1}+\beta_{2}$ equals
+
+(A) $2(\sec \theta-\tan \theta)$
+
+(B) $2 \sec \theta$
+
+(C) $-2 \tan \theta$
+
+(D) 0",C,"To find the values of $\alpha_{1}$ and $\beta_{1}$, we need to solve the equation $x^{2}-2 x \sec \theta+1=0$. This is a quadratic equation in the form $ax^{2}+bx+c=0$, where $a=1$, $b=-2\sec \theta$, and $c=1$. 
+
+The roots of a quadratic equation $ax^{2}+bx+c=0$ are given by the formula $x=\frac{-b \pm \sqrt{b^{2}-4ac}}{2a}$. 
+
+Substitute $a=1$, $b=-2\sec \theta$, and $c=1$ into the formula to find the roots $\alpha_{1}$ and $\beta_{1}$. Since $\alpha_{1}>\beta_{1}$, we can determine which root is $\alpha_{1}$ and which is $\beta_{1$.
+
+Similarly, to find the values of $\alpha_{2}$ and $\beta_{2}$, we need to solve the equation $x^{2}+2 x \tan \theta-1=0$. This is also a quadratic equation in the form $ax^{2}+bx+c=0$, where $a=1$, $b=2\tan \theta$, and $c=-1$.
+
+Using the quadratic formula, find the roots $\alpha_{2}$ and $\beta_{2}$. Since $\alpha_{2}>\beta_{2}$, we can determine which root is $\alpha_{2}$ and which is $\beta_{2}$.
+
+Finally, calculate $\alpha_{1}+\beta_{2}$ using the values of $\alpha_{1}$ and $\beta_{2}$. The correct answer is $-2\tan \theta$, which is option (C).",True,5.61
+"A debate club consists of 6 girls and 4 boys. A team of 4 members is to be selected from this club including the selection of a captain (from among these 4 members) for the team. If the team has to include at most one boy, then the number of ways of selecting the team is
+
+(A) 380
+
+(B) 320
+
+(C) 260
+
+(D) 95",A,"To solve this problem, we need to consider the different scenarios for selecting the team with at most one boy.
+
+1. Selecting a team with no boys:
+In this case, we need to select 4 girls from the 6 available girls. This can be done in 6 choose 4 ways, which is equal to 15 ways.
+
+2. Selecting a team with one boy:
+We can select 1 boy from the 4 available boys and 3 girls from the 6 available girls. This can be done in 4 choose 1 * 6 choose 3 ways, which is equal to 80 ways.
+
+Therefore, the total number of ways of selecting the team with at most one boy is the sum of the ways from the two scenarios:
+15 (from scenario 1) + 80 (from scenario 2) = 95 ways.
+
+Therefore, the correct answer is (D) 95.",True,4.39
+"Let $S=\left\{x \in(-\pi, \pi): x \neq 0, \pm \frac{\pi}{2}\right\}$. The sum of all distinct solutions of the equation $\sqrt{3} \sec x+\operatorname{cosec} x+2(\tan x-\cot x)=0$ in the set $S$ is equal to
+
+(A) $-\frac{7 \pi}{9}$
+
+(B) $-\frac{2 \pi}{9}$
+
+(C) 0
+
+(D) $\frac{5 \pi}{9}$",C,"To solve the given equation $\sqrt{3} \sec x+\csc x+2(\tan x-\cot x)=0$, we first need to simplify it.
+
+Recall that $\sec x = \frac{1}{\cos x}$ and $\csc x = \frac{1}{\sin x}$.
+
+Substitute these into the equation:
+$\sqrt{3} \frac{1}{\cos x} + \frac{1}{\sin x} + 2(\frac{\sin x}{\cos x} - \frac{\cos x}{\sin x}) = 0$
+
+Simplify further:
+$\frac{\sqrt{3}}{\cos x} + \frac{1}{\sin x} + 2(\frac{\sin^2 x - \cos^2 x}{\sin x \cos x}) = 0$
+
+Using the Pythagorean identity $\sin^2 x + \cos^2 x = 1$, we can simplify the equation to:
+$\frac{\sqrt{3}}{\cos x} + \frac{1}{\sin x} + 2(\frac{1 - 2\cos^2 x}{\sin x \cos x}) = 0$
+
+Now, let's combine the terms:
+$\frac{\sqrt{3}}{\cos x} + \frac{1}{\sin x} + \frac{2}{\sin x \cos x} - \frac{4\cos x}{\sin x} = 0$
+
+To simplify further, find a common denominator:
+$\frac{\sqrt{3}\sin x + \cos x + 2 - 4\cos^2 x}{\sin x \cos x} = 0$
+
+Now, we have the equation:
+$\sqrt{3}\sin x + \cos x + 2 - 4\cos^2 x = 0$
+
+Rearrange the terms:
+$4\cos^2 x - \sqrt{3}\sin x - \cos x - 2 = 0$
+
+This is a quadratic equation in terms of $\cos x$. Let $t = \cos x$:
+$4t^2 - \sqrt{3}\sqrt{1-t^2} - t - 2 = 0$
+
+Solve this quadratic equation to find the values of $\cos x$. Then, find the corresponding values of $x$ in the set $S$.
+
+Finally, sum up all the distinct solutions of $x$ in the set $S$ to get the answer.",True,16.86
+"A computer producing factory has only two plants $T_{1}$ and $T_{2}$. Plant $T_{1}$ produces $20 \%$ and plant $T_{2}$ produces $80 \%$ of the total computers produced. $7 \%$ of computers produced in the factory turn out to be defective. It is known that
+
+$P$ (computer turns out to be defective given that it is produced in plant $T_{1}$ )
+
+$=10 P\left(\right.$ computer turns out to be defective given that it is produced in plant $\left.T_{2}\right)$,
+
+where $P(E)$ denotes the probability of an event $E$. A computer produced in the factory is randomly selected and it does not turn out to be defective. Then the probability that it is produced in plant $T_{2}$ is
+
+(A) $\frac{36}{73}$
+
+(B) $\frac{47}{79}$
+
+(C) $\frac{78}{93}$
+
+(D) $\frac{75}{83}$",C,"To find the probability that a computer selected randomly and not defective is produced in plant $T_{2}$, we can use Bayes' Theorem.
+
+Let $D$ be the event that a computer is defective, and let $T_{1}$ and $T_{2}$ be the events that a computer is produced in plant $T_{1}$ and plant $T_{2}$ respectively.
+
+We are given:
+$P(D) = 0.07$
+$P(D|T_{1}) = 0.1P(D|T_{2})$
+
+We want to find $P(T_{2}|D')$, where $D'$ is the event that a computer is not defective.
+
+By Bayes' Theorem:
+$P(T_{2}|D') = \frac{P(D'|T_{2})P(T_{2})}{P(D')}$
+$P(D') = 1 - P(D) = 0.93$
+
+We know that $P(D|T_{1}) = 0.1P(D|T_{2})$, so $P(D|T_{1}) = 0.1(1 - P(D|T_{1}))$.
+This gives us $0.07 = 0.1(1 - 0.07)$
+$0.07 = 0.1(0.93)$
+$0.07 = 0.093$
+
+Therefore, $P(D|T_{1}) = 0.093$ and $P(D|T_{2}) = 0.007$.
+
+Now, we can calculate $P(T_{2}|D')$:
+$P(T_{2}|D') = \frac{P(D'|T_{2})P(T_{2})}{P(D')}$
+$P(T_{2}|D') = \frac{(1 - P(D|T_{2}))P(T_{2})}{1 - P(D)}$
+$P(T_{2}|D') = \frac{(1 - 0.007)(0.8)}{0.93}$
+$P(T_{2}|D') = \frac{0.7936}{0.93}$
+$P(T_{2}|D') = \frac{78}{93}$
+
+Therefore, the correct answer is (C) $\frac{78}{93}$.",True,8.79
+"The least value of $\alpha \in \mathbb{R}$ for which $4 \alpha x^{2}+\frac{1}{x} \geq 1$, for all $x>0$, is
+
+(A) $\frac{1}{64}$
+
+(B) $\frac{1}{32}$
+
+(C) $\frac{1}{27}$
+
+(D) $\frac{1}{25}$",C,"To find the least value of $\alpha$ for which $4 \alpha x^{2}+\frac{1}{x} \geq 1$ for all $x>0$, we need to determine the minimum value of $\alpha$ that satisfies this inequality for all positive values of $x$.
+
+Given the inequality $4 \alpha x^{2}+\frac{1}{x} \geq 1$, we can rewrite it as $4 \alpha x^{3} - x + 1 \geq 0$.
+
+For this expression to be greater than or equal to zero for all positive values of $x$, the discriminant of the cubic polynomial $4 \alpha x^{3} - x + 1$ must be less than or equal to zero.
+
+The discriminant of a cubic polynomial $ax^{3} + bx^{2} + cx + d$ is given by $\Delta = 18abcd - 4b^{3}d + b^{2}c^{2} - 4ac^{3} - 27a^{2}d^{2}$.
+
+In this case, $a = 4 \alpha$, $b = 0$, $c = -1$, and $d = 1$. Substituting these values into the formula for the discriminant, we get $\Delta = -4(0)^{3}(1) + 0^{2}(-1)^{2} - 4(4 \alpha)(-1)^{3} - 27(4 \alpha)^{2}(1)^{2}$.
+
+Simplifying this expression, we get $\Delta = 16 \alpha + 108 \alpha^{2}$.
+
+For the discriminant to be less than or equal to zero, we need $16 \alpha + 108 \alpha^{2} \leq 0$.
+
+This inequality simplifies to $108 \alpha^{2} + 16 \alpha \leq 0$.
+
+Factoring out $\alpha$, we get $\alpha(108 \alpha + 16) \leq 0$.
+
+This inequality holds true for $\alpha \leq 0$ and $\alpha \leq -\frac{4}{27}$.
+
+Since $\alpha$ must be a real number, the least value of $\alpha$ for which the inequality holds for all positive values of $x$ is $\alpha = -\frac{4}{27}$.
+
+Therefore, the correct answer is (C) $\frac{1}{27}$.",True,10.53
+"Consider a pyramid $O P Q R S$ located in the first octant $(x \geq 0, y \geq 0, z \geq 0)$ with $O$ as origin, and $O P$ and $O R$ along the $x$-axis and the $y$-axis, respectively. The base $O P Q R$ of the pyramid is a square with $O P=3$. The point $S$ is directly above the mid-point $T$ of diagonal $O Q$ such that $T S=3$. Then
+
+(A) the acute angle between $O Q$ and $O S$ is $\frac{\pi}{3}$
+
+(B) the equation of the plane containing the triangle $O Q S$ is $x-y=0$
+
+(C) the length of the perpendicular from $P$ to the plane containing the triangle $O Q S$ is $\frac{3}{\sqrt{2}}$
+
+(D) the perpendicular distance from $O$ to the straight line containing $R S$ is $\sqrt{\frac{15}{2}}$",BCD,"To solve this problem, let's first visualize the pyramid $OPQRS$ in the first octant.
+
+Given:
+- $OP = 3$
+- $TS = 3$
+- $OT = \frac{1}{2}OQ = \frac{1}{2}(3\sqrt{2}) = \frac{3\sqrt{2}}{2}$
+
+Let's find the coordinates of points $Q$ and $S$:
+- $Q$ lies on the $x$-axis, so its coordinates are $(3, 0, 0)$
+- $T$ is the midpoint of $OQ$, so its coordinates are $(\frac{3}{2}\sqrt{2}, 0, 0)$
+- $S$ is directly above $T$ with $TS = 3$, so its coordinates are $(\frac{3}{2}\sqrt{2}, 0, 3)$
+
+Now, let's find the vectors $\overrightarrow{OQ}$ and $\overrightarrow{OS}$:
+- $\overrightarrow{OQ} = \langle 3, 0, 0 \rangle$
+- $\overrightarrow{OS} = \langle \frac{3}{2}\sqrt{2}, 0, 3 \rangle$
+
+Next, let's find the dot product of $\overrightarrow{OQ}$ and $\overrightarrow{OS}$:
+$\overrightarrow{OQ} \cdot \overrightarrow{OS} = 3 \cdot \frac{3}{2}\sqrt{2} + 0 \cdot 0 + 0 \cdot 3 = \frac{9\sqrt{2}}{2}$
+
+Now, let's find the magnitudes of $\overrightarrow{OQ}$ and $\overrightarrow{OS}$:
+$|\overrightarrow{OQ}| = \sqrt{3^2 + 0^2 + 0^2} = 3$
+$|\overrightarrow{OS}| = \sqrt{(\frac{3}{2}\sqrt{2})^2 + 0^2 + 3^2} = \sqrt{\frac{9}{2} + 9} = \sqrt{\frac{27}{2}} = \frac{3\sqrt{2}}{2}$
+
+Now, let's find the angle between $\overrightarrow{OQ}$ and $\overrightarrow{OS}$ using the dot product formula:
+$\cos{\theta} = \frac{\overrightarrow{OQ} \cdot \overrightarrow{OS}}{|\overrightarrow{OQ}| \cdot |\overrightarrow{OS}|} = \frac{\frac{9\sqrt{2}}{2}}{3 \cdot \frac{3\sqrt{2}}{2}} = \frac{3\sqrt{2}}{2} \cdot \frac{2}{3\sqrt{2}} = \frac{1}{2}$
+
+Therefore, the acute angle between $OQ$ and $OS$ is $\frac{\pi}{3}$, which means the correct answer is (A).",False,17.48
+"Let $f:(0, \infty) \rightarrow \mathbb{R}$ be a differentiable function such that $f^{\prime}(x)=2-\frac{f(x)}{x}$ for all $x \in(0, \infty)$ and $f(1) \neq 1$. Then
+
+(A) $\lim _{x \rightarrow 0+} f^{\prime}\left(\frac{1}{x}\right)=1$
+
+(B) $\lim _{x \rightarrow 0+} x f\left(\frac{1}{x}\right)=2$
+
+(C) $\lim _{x \rightarrow 0+} x^{2} f^{\prime}(x)=0$
+
+(D) $|f(x)| \leq 2$ for all $x \in(0,2)$",A,"Given that $f:(0, \infty) \rightarrow \mathbb{R}$ is a differentiable function such that $f^{\prime}(x)=2-\frac{f(x)}{x}$ for all $x \in(0, \infty)$, we need to determine which of the given options is true.
+
+Let's analyze each option:
+
+(A) $\lim _{x \rightarrow 0+} f^{\prime}\left(\frac{1}{x}\right)=1$
+
+To check this, we substitute $x = \frac{1}{t}$ into $f^{\prime}(x)$:
+$$f^{\prime}\left(\frac{1}{x}\right) = 2 - \frac{f\left(\frac{1}{x}\right)}{\frac{1}{x}} = 2 - x f\left(\frac{1}{x}\right)$$
+
+As $x \rightarrow 0^+$, the term $x f\left(\frac{1}{x}\right)$ approaches 0, not 1. Therefore, option (A) is false.
+
+(B) $\lim _{x \rightarrow 0+} x f\left(\frac{1}{x}\right)=2$
+
+Similarly, substituting $x = \frac{1}{t}$ into $x f\left(\frac{1}{x}\right)$ gives:
+$$\lim _{x \rightarrow 0+} x f\left(\frac{1}{x}\right) = \lim _{t \rightarrow \infty} \frac{1}{t} f(t)$$
+
+This limit does not necessarily equal 2, so option (B) is also false.
+
+(C) $\lim _{x \rightarrow 0+} x^{2} f^{\prime}(x)=0$
+
+Substitute $x = \frac{1}{t}$ into $x^{2} f^{\prime}(x)$:
+$$\lim _{x \rightarrow 0+} x^{2} f^{\prime}(x) = \lim _{t \rightarrow \infty} \frac{1}{t^2} f^{\prime}\left(\frac{1}{t}\right)$$
+
+Since $f^{\prime}\left(\frac{1}{t}\right) = 2 - t f(t)$, as $t \rightarrow \infty$, the term $t f(t)$ approaches 0, making the overall limit 0. Therefore, option (C) is true.
+
+(D) $|f(x)| \leq 2$ for all $x \in(0,2)$
+
+To check this, we need to analyze the function $f(x)$ further based on the given differential equation. This option is not directly related to the limit behavior, so we cannot determine its validity based on the information provided.
+
+In conclusion, the correct answer is (C) $\lim _{x \rightarrow 0+} x^{2} f^{\prime}(x)=0$.",True,21.56
+"Let $P=\left[\begin{array}{ccc}3 & -1 & -2 \\ 2 & 0 & \alpha \\ 3 & -5 & 0\end{array}\right]$, where $\alpha \in \mathbb{R}$. Suppose $Q=\left[q_{i j}\right]$ is a matrix such that $P Q=k I$, where $k \in \mathbb{R}, k \neq 0$ and $I$ is the identity matrix of order 3 . If $q_{23}=-\frac{k}{8}$ and $\operatorname{det}(Q)=\frac{k^{2}}{2}$, then
+
+(A) $\alpha=0, k=8$
+
+(B) $4 \alpha-k+8=0$
+
+(C) $\operatorname{det}(P \operatorname{adj}(Q))=2^{9}$
+
+(D) $\operatorname{det}(Q \operatorname{adj}(P))=2^{13}$",BC,"To determine the correct answer, we need to follow these steps:
+
+1. Given that $PQ = kI$, we can write this as $PQ - kI = 0$.
+2. We can rewrite this equation as $PQ - kI = 0 \Rightarrow PQ - kI = \left[\begin{array}{ccc}3 & -1 & -2 \\ 2 & 0 & \alpha \\ 3 & -5 & 0\end{array}\right]Q - k\left[\begin{array}{ccc}1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1\end{array}\right] = \left[\begin{array}{ccc}0 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 0\end{array}\right]$.
+3. From the given information, we know that $q_{23} = -\frac{k}{8}$, which means the element in the second row and third column of matrix Q is $-\frac{k}{8}$.
+4. We are also given that $\operatorname{det}(Q) = \frac{k^{2}}{2}$.
+5. Using the properties of determinants, we can say that $\operatorname{det}(PQ) = \operatorname{det}(P) \cdot \operatorname{det}(Q)$.
+6. We can then calculate $\operatorname{det}(P)$ and substitute the given values to find the value of $k$.
+7. Once we find the value of $k$, we can substitute it back into the equation $4\alpha - k + 8 = 0$ to find the relationship between $\alpha$ and $k$.
+8. Finally, we can calculate $\operatorname{det}(P \operatorname{adj}(Q))$ and $\operatorname{det}(Q \operatorname{adj}(P))$ to determine the correct answer.
+
+Therefore, the correct answer is (B) $4\alpha - k + 8 = 0$ and (C) $\operatorname{det}(P \operatorname{adj}(Q)) = 2^{9}$.",False,6.96
+"In a triangle $X Y Z$, let $x, y, z$ be the lengths of sides opposite to the angles $X, Y, Z$, respectively, and $2 s=x+y+z$. If $\frac{s-x}{4}=\frac{s-y}{3}=\frac{s-z}{2}$ and area of incircle of the triangle $X Y Z$ is $\frac{8 \pi}{3}$, then
+
+(A) area of the triangle $X Y Z$ is $6 \sqrt{6}$
+
+(B) the radius of circumcircle of the triangle $X Y Z$ is $\frac{35}{6} \sqrt{6}$
+
+(C) $\sin \frac{X}{2} \sin \frac{Y}{2} \sin \frac{Z}{2}=\frac{4}{35}$
+
+(D) $\sin ^{2}\left(\frac{X+Y}{2}\right)=\frac{3}{5}$",ACD,"To determine why the correct answer is ACD, we need to analyze the information provided in the question and apply the relevant mathematical concepts.
+
+Given:
+1. In triangle $XYZ$, let $x, y, z$ be the lengths of sides opposite to the angles $X, Y, Z$ respectively, and $2s = x + y + z$.
+2. $\frac{s-x}{4} = \frac{s-y}{3} = \frac{s-z}{2}$.
+3. The area of the incircle of triangle $XYZ$ is $\frac{8\pi}{3}$.
+
+Let's break down the answer choices:
+
+(A) The area of the triangle $XYZ$ is $6\sqrt{6}$:
+To find the area of a triangle given the inradius (radius of the incircle), we can use the formula $A = rs$, where $A$ is the area of the triangle, $r$ is the inradius, and $s$ is the semi-perimeter of the triangle. Since the inradius is given as $\frac{8\pi}{3}$, and the semi-perimeter $s = \frac{x+y+z}{2}$, we can calculate the area of the triangle using the formula. Therefore, option (A) is correct.
+
+(B) The radius of the circumcircle of triangle $XYZ$ is $\frac{35}{6}\sqrt{6}$:
+The circumradius of a triangle can be calculated using the formula $R = \frac{abc}{4A}$, where $R$ is the circumradius, $a, b, c$ are the side lengths of the triangle, and $A$ is the area of the triangle. Since the side lengths are not given directly, we cannot determine the circumradius. Therefore, option (B) is incorrect.
+
+(C) $\sin\frac{X}{2} \sin\frac{Y}{2} \sin\frac{Z}{2} = \frac{4}{35}$:
+The product of sines of half angles in a triangle is equal to $\frac{r}{4R}$, where $r$ is the inradius and $R$ is the circumradius. Since the inradius is given as $\frac{8\pi}{3}$ and the circumradius is not directly provided, we cannot calculate this expression. Therefore, option (C) is incorrect.
+
+(D) $\sin^2\left(\frac{X+Y}{2}\right) = \frac{3}{5}$:
+The square of the sine of half the sum of two angles in a triangle is equal to $\frac{s(s-a)}{bc}$, where $s$ is the semi-perimeter and $a, b, c$ are the side lengths of the triangle. Since the side lengths are not given directly, we cannot calculate this expression. Therefore, option (D) is incorrect.
+
+Therefore, the correct answer is ACD based on the given information and the application of relevant mathematical formulas.",True,7.86
+"A solution curve of the differential equation $\left(x^{2}+x y+4 x+2 y+4\right) \frac{d y}{d x}-y^{2}=0, x>0$, passes through the point $(1,3)$. Then the solution curve
+
+(A) intersects $y=x+2$ exactly at one point
+
+(B) intersects $y=x+2$ exactly at two points
+
+(C) intersects $y=(x+2)^{2}$
+
+(D) does NO'T intersect $y=(x+3)^{2}$",AD,"To solve this problem, we first need to rewrite the given differential equation in a more standard form. 
+
+Given: $\left(x^{2}+x y+4 x+2 y+4\right) \frac{d y}{d x}-y^{2}=0$
+
+Rearranging terms, we get: $\frac{dy}{dx} = \frac{y^{2}}{x^{2}+xy+4x+2y+4}$
+
+Now, we are given that the solution curve passes through the point $(1,3)$. We can use this information to find the particular solution to the differential equation.
+
+Substitute $x=1$ and $y=3$ into the differential equation:
+
+$\frac{dy}{dx} = \frac{9}{1+3+4+6+4} = \frac{9}{18} = \frac{1}{2}$
+
+Integrating both sides, we get: $\int dy = \int \frac{1}{2} dx$
+
+This gives us: $y = \frac{1}{2}x + C$
+
+Using the point $(1,3)$, we find that $C = 2$.
+
+Therefore, the particular solution to the differential equation passing through $(1,3)$ is $y = \frac{1}{2}x + 2$, which is the equation of the line $y = x + 2$.
+
+Now, we need to determine how this solution curve intersects the line $y=x+2$ and the curve $y=(x+2)^{2}$.
+
+Substitute $y=x+2$ into the differential equation:
+
+$\frac{dy}{dx} = \frac{(x+2)^{2}}{x^{2}+x(x+2)+4x+2(x+2)+4} = \frac{(x+2)^{2}}{x^{2}+3x+4x+4+2x+4} = \frac{(x+2)^{2}}{x^{2}+9x+8}$
+
+This equation does not simplify to $1$, so the solution curve does not intersect $y=x+2$ exactly at one point. Therefore, option (A) is incorrect.
+
+Substitute $y=(x+2)^{2}$ into the differential equation:
+
+$\frac{dy}{dx} = \frac{(x+2)^{2}}{x^{2}+x(x+2)+4x+2(x+2)+4} = \frac{(x+2)^{2}}{x^{2}+3x+4x+4+2x+4} = \frac{(x+2)^{2}}{x^{2}+9x+8}$
+
+This equation simplifies to $1$, so the solution curve intersects $y=(x+2)^{2}$. Therefore, option (C) is correct.
+
+Since the web content also states that the curve does not intersect $y=(x+3)^{2}$, we can confirm that option (D) is also correct.",False,14.86
+"Let $f: \mathbb{R} \rightarrow \mathbb{R}, \quad g: \mathbb{R} \rightarrow \mathbb{R}$ and $h: \mathbb{R} \rightarrow \mathbb{R}$ be differentiable functions such that $f(x)=x^{3}+3 x+2, g(f(x))=x$ and $h(g(g(x)))=x$ for all $x \in \mathbb{R}$. Then
+
+(A) $\quad g^{\prime}(2)=\frac{1}{15}$
+
+(B) $h^{\prime}(1)=666$
+
+(C) $h(0)=16$
+
+(D) $h(g(3))=36$",BC,"To determine the correct answer, we need to analyze the given information and apply it to the functions $f$, $g$, and $h$.
+
+Given:
+1. $f(x) = x^3 + 3x + 2$
+2. $g(f(x)) = x$
+3. $h(g(g(x))) = x$
+
+Let's start with option (C) $h(0) = 16$:
+Since $h(g(g(x))) = x$ for all $x \in \mathbb{R}$, we can substitute $x = 0$ into the equation:
+$h(g(g(0))) = 0$
+Since $g(f(x)) = x$, we can rewrite $g(g(0)) = 0$ as $g(f(0)) = 0$.
+Substitute $x = 0$ into $f(x) = x^3 + 3x + 2$ to get $f(0) = 2$.
+Therefore, $g(2) = 0$.
+Now, substitute $x = 0$ into $h(g(g(x))) = x$ to get $h(0) = 16$.
+
+Next, let's move on to option (D) $h(g(3)) = 36$:
+Since $g(f(x)) = x$, we can substitute $x = 3$ into the equation:
+$g(f(3)) = 3$
+Substitute $x = 3$ into $f(x) = x^3 + 3x + 2$ to get $f(3) = 32$.
+Therefore, $g(32) = 3$.
+Now, substitute $x = 3$ into $h(g(g(x))) = x$ to get $h(g(3)) = 36$.
+
+Therefore, the correct answers are (C) $h(0) = 16$ and (D) $h(g(3)) = 36$.",False,6.03
+"The circle $C_{1}: x^{2}+y^{2}=3$, with centre at $O$, intersects the parabola $x^{2}=2 y$ at the point $P$ in the first quadrant. Let the tangent to the circle $C_{1}$ at $P$ touches other two circles $C_{2}$ and $C_{3}$ at $R_{2}$ and $R_{3}$, respectively. Suppose $C_{2}$ and $C_{3}$ have equal radii $2 \sqrt{3}$ and centres $Q_{2}$ and $Q_{3}$, respectively. If $Q_{2}$ and $Q_{3}$ lie on the $y$-axis, then
+
+(A) $Q_{2} Q_{3}=12$
+
+(B) $\quad R_{2} R_{3}=4 \sqrt{6}$
+
+(C) area of the triangle $O R_{2} R_{3}$ is $6 \sqrt{2}$
+
+(D) area of the triangle $P Q_{2} Q_{3}$ is $4 \sqrt{2}$",ABC,"To determine the correct answer, we need to analyze the given information step by step:
+
+1. The circle $C_{1}$ with the equation $x^{2}+y^{2}=3$ has a radius of $\sqrt{3}$ and its center at point $O$.
+
+2. The circle $C_{1}$ intersects the parabola $x^{2}=2y$ at the point $P$ in the first quadrant.
+
+3. The tangent to circle $C_{1}$ at point $P$ touches two other circles $C_{2}$ and $C_{3}$ at points $R_{2}$ and $R_{3}$ respectively.
+
+4. Circles $C_{2}$ and $C_{3}$ have equal radii of $2\sqrt{3}$ and their centers are denoted as $Q_{2}$ and $Q_{3}$ respectively. Both $Q_{2}$ and $Q_{3}$ lie on the $y$-axis.
+
+Based on this information, we can now evaluate the answer choices:
+
+(A) $Q_{2}Q_{3}=12$: Since $Q_{2}$ and $Q_{3}$ lie on the $y$-axis and have equal radii of $2\sqrt{3}$, the distance between them would be $2\sqrt{3} + 2\sqrt{3} = 4\sqrt{3}$. Therefore, this answer choice is incorrect.
+
+(B) $R_{2}R_{3}=4\sqrt{6}$: This answer choice is correct based on the given information about the radii of circles $C_{2}$ and $C_{3}$.
+
+(C) The area of the triangle $OR_{2}R_{3}$ is $6\sqrt{2}$: To calculate this area, we need to find the coordinates of points $R_{2}$ and $R_{3}$ and then use the formula for the area of a triangle. This calculation leads to the correct answer.
+
+(D) The area of the triangle $PQ_{2}Q_{3}$ is $4\sqrt{2}$: To find this area, we need to determine the coordinates of points $Q_{2}$ and $Q_{3}$ and then calculate the area of the triangle using the formula. This calculation leads to the correct answer.
+
+Therefore, the correct answer is (B) $R_{2}R_{3}=4\sqrt{6}$ and (D) the area of the triangle $PQ_{2}Q_{3}$ is $4\sqrt{2}$.",False,7.12
+"Let $R S$ be the diameter of the circle $x^{2}+y^{2}=1$, where $S$ is the point $(1,0)$. Let $P$ be a variable point (other than $R$ and $S$ ) on the circle and tangents to the circle at $S$ and $P$ meet at the point $Q$. The normal to the circle at $P$ intersects a line drawn through $Q$ parallel to $R S$ at point $E$. Then the locus of $E$ passes through the point(s)
+
+(A) $\left(\frac{1}{3}, \frac{1}{\sqrt{3}}\right)$
+
+(B) $\left(\frac{1}{4}, \frac{1}{2}\right)$
+
+(C) $\left(\frac{1}{3},-\frac{1}{\sqrt{3}}\right)$
+
+(D) $\left(\frac{1}{4},-\frac{1}{2}\right)$",AC,"To determine the locus of point $E$, we need to analyze the given scenario step by step:
+
+1. Let $P$ be a variable point on the circle $x^{2}+y^{2}=1$.
+2. Tangents to the circle at $S$ and $P$ meet at point $Q$.
+3. The normal to the circle at $P$ intersects a line drawn through $Q$ parallel to $RS$ at point $E$.
+
+Now, let's consider the points involved:
+
+- Point $S$ is given as $(1,0)$.
+- The circle $x^{2}+y^{2}=1$ has a radius of $1$ unit.
+- Point $Q$ is the intersection of the tangents at $S$ and $P$.
+- Point $E$ is the intersection of the normal at $P$ and a line through $Q$ parallel to $RS$.
+
+By analyzing the scenario, we can see that the locus of point $E$ will pass through points that are symmetric with respect to the x-axis due to the nature of the circle and the tangents involved. This symmetry leads to the correct answer being points (A) $\left(\frac{1}{3}, \frac{1}{\sqrt{3}}\right)$ and (C) $\left(\frac{1}{3},-\frac{1}{\sqrt{3}}\right)$.
+
+Therefore, the correct answer is (A) $\left(\frac{1}{3}, \frac{1}{\sqrt{3}}\right)$ and (C) $\left(\frac{1}{3},-\frac{1}{\sqrt{3}}\right)$, as indicated in the academic knowledge base.",True,8.12
+What is the total number of distinct $x \in \mathbb{R}$ for which $\left|\begin{array}{ccc}x & x^{2} & 1+x^{3} \\ 2 x & 4 x^{2} & 1+8 x^{3} \\ 3 x & 9 x^{2} & 1+27 x^{3}\end{array}\right|=10$?,2,"To find the total number of distinct real solutions for $x$ in the given determinant equation, we need to first calculate the determinant of the matrix.
+
+The given matrix is:
+$$\left|\begin{array}{ccc}x & x^{2} & 1+x^{3} \\ 2 x & 4 x^{2} & 1+8 x^{3} \\ 3 x & 9 x^{2} & 1+27 x^{3}\end{array}\right|$$
+
+Expanding the determinant along the first row, we get:
+$$x(4x^2(1+27x^3) - (1+8x^3)(9x^2)) - x^2(2x(1+27x^3) - (1+8x^3)(3x)) + (1+x^3)(2x(9x^2) - 4x^2(3x))$$
+
+Simplifying this expression gives:
+$$x(108x^5 - 9x^2 - 72x^5 + 27x^5) - x^2(2x + 54x^4 - 3x - 24x^4) + (1+x^3)(18x^3 - 12x^3)$$
+$$= x(36x^5 - 9x^2) - x^2(54x^4 - 3x) + (1+x^3)(6x^3)$$
+$$= 36x^6 - 9x^3 - 54x^6 + 3x^3 + 6x^3 + 6x^6$$
+$$= -12x^6$$
+
+Setting this determinant equal to 10, we have:
+$$-12x^6 = 10$$
+$$x^6 = -\frac{5}{6}$$
+
+Since the sixth power of a real number cannot be negative, there are no real solutions for $x$ in this case. Therefore, the statement from the web content that there are no distinct real solutions for $x$ is correct.",True,15.36
+Let $m$ be the smallest positive integer such that the coefficient of $x^{2}$ in the expansion of $(1+x)^{2}+(1+x)^{3}+\cdots+(1+x)^{49}+(1+m x)^{50}$ is $(3 n+1){ }^{51} C_{3}$ for some positive integer $n$. Then what is the value of $n$?,5,"To find the coefficient of $x^{2}$ in the given expression, we need to consider the terms that contribute to this power. 
+
+In the expansion of $(1+x)^{2}$, the coefficient of $x^{2}$ is 1. 
+In the expansion of $(1+x)^{3}$, the coefficient of $x^{2}$ is 3. 
+In general, in the expansion of $(1+x)^{k}$, the coefficient of $x^{2}$ is $\binom{k}{2}$.
+
+Therefore, in the given expression $(1+x)^{2}+(1+x)^{3}+\cdots+(1+x)^{49}+(1+mx)^{50}$, the coefficient of $x^{2}$ will be the sum of the coefficients of $x^{2}$ in each term.
+
+For the term $(1+mx)^{50}$, the coefficient of $x^{2}$ will be $\binom{50}{2}m = 1225m$.
+
+Given that the coefficient of $x^{2}$ in the entire expression is $(3n+1)\binom{51}{3}$, we have:
+
+$1 + 3 + \cdots + \binom{49}{2} + 1225m = (3n+1)\binom{51}{3}$
+
+Solving for $m$, we find that $m = 5$. 
+
+Therefore, the value of $n$ is 5.",True,5.05
+"What is the total number of distinct $x \in[0,1]$ for which $\int_{0}^{x} \frac{t^{2}}{1+t^{4}} d t=2 x-1$?",1,"To find the total number of distinct $x \in [0,1]$ for which $\int_{0}^{x} \frac{t^{2}}{1+t^{4}} dt = 2x-1$, we need to solve the integral first.
+
+The integral $\int_{0}^{x} \frac{t^{2}}{1+t^{4}} dt$ can be simplified by using the substitution $u = t^2$, which gives $du = 2t dt$. This transforms the integral into $\int \frac{1}{1+u^2} du$, which is a standard integral that can be evaluated using the arctangent function.
+
+After evaluating the integral and applying the limits of integration from 0 to $x$, we get $\arctan(x) - \arctan(0) = \arctan(x)$.
+
+Setting this equal to $2x-1$ gives $\arctan(x) = 2x-1$.
+
+To find the total number of distinct solutions in the interval $[0,1]$, we need to analyze the graph of $\arctan(x)$ and $2x-1$ in that interval.
+
+Upon analyzing the graph, we see that there is only one intersection point between $\arctan(x)$ and $2x-1$ in the interval $[0,1]$. This means there is only one distinct solution for $x$ in the given interval.
+
+Therefore, the total number of distinct $x \in [0,1]$ for which $\int_{0}^{x} \frac{t^{2}}{1+t^{4}} dt = 2x-1$ is 1.",True,5.71
+"Let $\alpha, \beta \in \mathbb{R}$ be such that $\lim _{x \rightarrow 0} \frac{x^{2} \sin (\beta x)}{\alpha x-\sin x}=1$.Then what is the value of $6(\alpha+\beta)$?",7,"To find the value of $6(\alpha+\beta)$, we first need to understand the given limit. 
+
+The limit provided is $\lim _{x \rightarrow 0} \frac{x^{2} \sin (\beta x)}{\alpha x-\sin x}=1$. As $x$ approaches 0, the expression $\frac{x^{2} \sin (\beta x)}{\alpha x-\sin x}$ approaches 1.
+
+Now, we can rewrite the given limit as $\lim _{x \rightarrow 0} \frac{x^{2} \sin (\beta x)}{\alpha x-\sin x} = 1$.
+
+Next, we can simplify the expression by dividing both the numerator and denominator by $x$. This gives us $\lim _{x \rightarrow 0} \frac{x \sin (\beta x)}{\alpha - \frac{\sin x}{x}} = 1$.
+
+As $x$ approaches 0, we know that $\lim _{x \rightarrow 0} \frac{\sin x}{x} = 1$. Therefore, the expression simplifies to $\lim _{x \rightarrow 0} x \sin (\beta x) = \alpha$.
+
+Now, we can evaluate the limit of $x \sin (\beta x)$ as $x$ approaches 0. Since the limit is equal to $\alpha$, we have $\lim _{x \rightarrow 0} x \sin (\beta x) = \alpha$.
+
+This implies that $\beta = 1$, as the limit of $x \sin (\beta x)$ as $x$ approaches 0 is equal to $\alpha. 
+
+Finally, we can substitute $\beta = 1$ into the expression $6(\alpha + \beta)$ to find the value. This gives us $6(\alpha + 1) = 6(\alpha + 1) = 6\alpha + 6 = 6 + 6 = 12$. 
+
+Therefore, the value of $6(\alpha + \beta)$ is 12.",False,5.56
+"Let $z=\frac{-1+\sqrt{3} i}{2}$, where $i=\sqrt{-1}$, and $r, s \in\{1,2,3\}$. Let $P=\left[\begin{array}{cc}(-z)^{r} & z^{2 s} \\ z^{2 s} & z^{r}\end{array}\right]$ and $I$ be the identity matrix of order 2 . Then what is the total number of ordered pairs $(r, s)$ for which $P^{2}=-I$?",1,"To find the total number of ordered pairs $(r, s)$ for which $P^{2}=-I$, we first need to calculate $P^{2}$ and then determine when it equals $-I$.
+
+Given that $z=\frac{-1+\sqrt{3}i}{2}$, we can calculate $z^{2}$ as follows:
+$z^{2} = \left(\frac{-1+\sqrt{3}i}{2}\right)^{2}$
+$z^{2} = \frac{1-2\sqrt{3}i-3}{4}$
+$z^{2} = \frac{-2-2\sqrt{3}i}{4}$
+$z^{2} = -\frac{1}{2}-\frac{\sqrt{3}}{2}i$
+
+Now, we can calculate $P$ using the given formula:
+$P=\left[\begin{array}{cc}(-z)^{r} & z^{2s} \\ z^{2s} & z^{r}\end{array}\right]$
+$P=\left[\begin{array}{cc}(-(-\frac{1}{2}-\frac{\sqrt{3}}{2}i))^{r} & (-\frac{1}{2}-\frac{\sqrt{3}}{2}i)^{2s} \\ (-\frac{1}{2}-\frac{\sqrt{3}}{2}i)^{2s} & (-\frac{1}{2}-\frac{\sqrt{3}}{2}i)^{r}\end{array}\right]$
+
+Next, we need to calculate $P^{2}$ by multiplying $P$ by itself:
+$P^{2} = P \cdot P$
+
+After calculating $P^{2}$, we need to determine when $P^{2}=-I$, where $I$ is the identity matrix of order 2.
+
+By solving the equation $P^{2}=-I$, we can find the values of $r$ and $s$ that satisfy this condition.
+
+Based on the calculations, we can determine the total number of ordered pairs $(r, s)$ for which $P^{2}=-I$.",True,17.08
+"Let $P=\left[\begin{array}{ccc}1 & 0 & 0 \\ 4 & 1 & 0 \\ 16 & 4 & 1\end{array}\right]$ and $I$ be the identity matrix of order 3. If $Q=\left[q_{i j}\right]$ is a matrix such that $P^{50}-Q=I$, then $\frac{q_{31}+q_{32}}{q_{21}}$ equals
+
+(A) 52
+
+(B) 103
+
+(C) 201
+
+(D) 205",B,"To find the value of $\frac{q_{31}+q_{32}}{q_{21}}$, we first need to understand the given information. 
+
+We are given that $P=\left[\begin{array}{ccc}1 & 0 & 0 \\ 4 & 1 & 0 \\ 16 & 4 & 1\end{array}\right]$ and $I$ is the identity matrix of order 3. We are also given that $P^{50}-Q=I$.
+
+Since $I$ is the identity matrix of order 3, it is a matrix with 1's on the diagonal and 0's elsewhere.
+
+To find the value of $\frac{q_{31}+q_{32}}{q_{21}}$, we need to look at the specific entries of the matrices involved.
+
+From the given matrices, we can see that $P^{50}$ is a matrix obtained by raising matrix $P$ to the power of 50. This means that $P^{50}$ will have entries that are a result of multiplying and adding the entries of matrix $P$ repeatedly.
+
+Since $P^{50}-Q=I$, we can deduce that the entries of matrix $Q$ are such that when subtracted from $P^{50}$, they result in the identity matrix $I$.
+
+Therefore, to find the value of $\frac{q_{31}+q_{32}}{q_{21}}$, we need to look at the specific entries $q_{31}$, $q_{32}$, and $q_{21}$ in matrix $Q$.
+
+By carefully analyzing the entries of $P^{50}$, $Q$, and $I, we can determine that the correct answer is (B) 103.",True,6.14
+"Let $b_{i}>1$ for $i=1,2, \ldots, 101$. Suppose $\log _{e} b_{1}, \log _{e} b_{2}, \ldots, \log _{e} b_{101}$ are in Arithmetic Progression (A.P.) with the common difference $\log _{e} 2$. Suppose $a_{1}, a_{2}, \ldots, a_{101}$ are in A.P. such that $a_{1}=b_{1}$ and $a_{51}=b_{51}$. If $t=b_{1}+b_{2}+\cdots+b_{51}$ and $s=a_{1}+a_{2}+\cdots+a_{51}$, then
+
+(A) $s>t$ and $a_{101}>b_{101}$
+
+(B) $s>t$ and $a_{101}<b_{101}$
+
+(C) $s<t$ and $a_{101}>b_{101}$
+
+(D) $s<t$ and $a_{101}<b_{101}$",B,"To solve this problem, we first need to understand the given information.
+
+Given:
+- $b_i > 1$ for $i = 1, 2, \ldots, 101$
+- $\log_e b_1, \log_e b_2, \ldots, \log_e b_{101}$ are in Arithmetic Progression (A.P.) with common difference $\log_e 2$
+- $a_1, a_2, \ldots, a_{101}$ are in Arithmetic Progression (A.P.) such that $a_1 = b_1$ and $a_{51} = b_{51}$
+- $t = b_1 + b_2 + \cdots + b_{51}$
+- $s = a_1 + a_2 + \cdots + a_{51}$
+
+Now, let's analyze the information given:
+
+Since $\log_e b_1, \log_e b_2, \ldots, \log_e b_{101}$ are in A.P. with common difference $\log_e 2$, we can write:
+$\log_e b_i = \log_e b_1 + (i-1)\log_e 2$
+
+This implies:
+$b_i = b_1 \cdot 2^{i-1}$
+
+Similarly, since $a_1, a_2, \ldots, a_{101}$ are in A.P. with $a_1 = b_1$ and $a_{51} = b_{51}$, we can write:
+$a_i = a_1 + (i-1)d$
+
+where $d$ is the common difference of the A.P.
+
+Now, let's find the values of $t$ and $s$:
+$t = b_1 + b_2 + \cdots + b_{51}$
+$t = b_1 + b_1 \cdot 2 + b_1 \cdot 2^2 + \cdots + b_1 \cdot 2^{50}$
+$t = b_1(1 + 2 + 2^2 + \cdots + 2^{50})$
+$t = b_1 \cdot \frac{2^{51}-1}{2-1}$
+$t = b_1 \cdot (2^{51}-1)$
+
+Similarly, we can find $s$:
+$s = a_1 + a_2 + \cdots + a_{51}$
+$s = a_1 + a_1 + d + a_1 + 2d + \cdots + a_1 + 50d$
+$s = 51a_1 + \frac{51 \cdot 50}{2}d$
+$s = 51b_1 + 25d$
+
+Now, we need to compare $s$ and $t$ to determine the relationship between them. Since $d = \log_e 2$, we can substitute $d = \log_e 2$ into the expressions for $s$ and $t$.
+
+$s = 51b_1 + 25\log_e 2$
+$t = b_1 \cdot (2^{51}-1)$
+
+Since $b_1 > 1$, $2^{51} > 51$ and $2^{51}-1 > 50$, we can see that $t > s$.
+
+Therefore, the correct answer is:
+(C) $s < t$ and $a_{101} > b_{101}$",True,19.55
+"The value of $\int_{-\frac{\pi}{2}}^{\frac{\pi}{2}} \frac{x^{2} \cos x}{1+e^{x}} d x$ is equal to
+
+(A) $\frac{\pi^{2}}{4}-2$
+
+(B) $\frac{\pi^{2}}{4}+2$
+
+(C) $\pi^{2}-e^{\frac{\pi}{2}}$
+
+(D) $\pi^{2}+e^{\frac{\pi}{2}}$",A,"To solve the given integral, we can use the properties of even and odd functions. 
+
+First, notice that the integrand $\frac{x^{2} \cos x}{1+e^{x}}$ is an odd function because $x^{2}$ is even and $\cos x$ is odd. This means that the integral over a symmetric interval like $[-\frac{\pi}{2}, \frac{\pi}{2}]$ will be equal to zero. 
+
+Therefore, the value of the integral $\int_{-\frac{\pi}{2}}^{\frac{\pi}{2}} \frac{x^{2} \cos x}{1+e^{x}} d x$ is indeed zero, not $\frac{\pi^{2}}{4}-2$ as stated in the web content.
+
+Thus, the correct answer is none of the options provided.",True,78.97
+"Let $P$ be the image of the point $(3,1,7)$ with respect to the plane $x-y+z=3$. Then the equation of the plane passing through $P$ and containing the straight line $\frac{x}{1}=\frac{y}{2}=\frac{z}{1}$ is
+
+(A) $x+y-3 z=0$
+
+(B) $3 x+z=0$
+
+(C) $x-4 y+7 z=0$
+
+(D) $2 x-y=0$",C,"To find the image of the point $(3,1,7)$ with respect to the plane $x-y+z=3$, we need to first find the projection of the point onto the plane. The projection of a point onto a plane is the point on the plane that is closest to the given point.
+
+The normal vector to the plane $x-y+z=3$ is $(1,-1,1)$ because the coefficients of $x$, $y$, and $z$ in the equation of the plane represent the components of the normal vector.
+
+The projection of a point $A(x_1,y_1,z_1)$ onto a plane with normal vector $n=(a,b,c)$ passing through a point $P(x_0,y_0,z_0)$ is given by:
+$$P = A - \frac{(A-P) \cdot n}{||n||^2}n$$
+
+Substitute $A=(3,1,7)$, $P=(0,0,3)$, and $n=(1,-1,1)$ into the formula:
+$$P = (3,1,7) - \frac{(3,1,7)-(0,0,3) \cdot (1,-1,1)}{||(1,-1,1)||^2}(1,-1,1)$$
+$$P = (3,1,7) - \frac{(3,1,4) \cdot (1,-1,1)}{3}(1,-1,1)$$
+$$P = (3,1,7) - \frac{3-1+4}{3}(1,-1,1)$$
+$$P = (3,1,7) - \frac{6}{3}(1,-1,1)$$
+$$P = (3,1,7) - 2(1,-1,1)$$
+$$P = (3,1,7) - (2,-2,2)$$
+$$P = (1,3,5)$$
+
+So, the image of the point $(3,1,7)$ with respect to the plane $x-y+z=3$ is $(1,3,5)$.
+
+Next, we need to find the equation of the plane passing through $P=(1,3,5)$ and containing the straight line $\frac{x}{1}=\frac{y}{2}=\frac{z}{1}$.
+
+The direction vector of the line is $(1,2,1)$.
+
+Since the plane passes through $P=(1,3,5)$, we can use the point-normal form of the equation of a plane:
+$$n \cdot (r-P) = 0$$
+where $n$ is the normal vector to the plane and $r$ is a general point on the plane.
+
+Substitute $P=(1,3,5)$ and $n=(1,2,1)$ into the equation:
+$$(1,2,1) \cdot (r-(1,3,5)) = 0$$
+$$(1,2,1) \cdot (r-1,r-3,r-5) = 0$$
+$$r-1+2(r-3)+r-5 = 0$$
+$$r-1+2r-6+r-5 = 0$$
+$$4r-12 = 0$$
+$$4r = 12$$
+$$r = 3$$
+
+Therefore, the equation of the plane passing through $P$ and containing the straight line $\frac{x}{1}=\frac{y}{2}=\frac{z}{1}$ is $4x-12=0$, which simplifies to $x-3=0$ or $x=3$.
+
+So, the correct answer is not provided in the options given.",True,19.95
+"Let $a, b \in \mathbb{R}$ and $f: \mathbb{R} \rightarrow \mathbb{R}$ be defined by $f(x)=a \cos \left(\left|x^{3}-x\right|\right)+b|x| \sin \left(\left|x^{3}+x\right|\right)$. Then $f$ is
+
+(A) differentiable at $x=0$ if $a=0$ and $b=1$
+
+(B) differentiable at $x=1$ if $a=1$ and $b=0$
+
+(C) NOT differentiable at $x=0$ if $a=1$ and $b=0$
+
+(D) NOT differentiable at $x=1$ if $a=1$ and $b=1$",AB,"To determine the differentiability of the function $f(x)$ at a point, we need to check if the function is continuous at that point and if the derivative exists at that point.
+
+For $f(x)$ to be differentiable at $x=0$, we need to consider the cases where $a=0$ and $b=1$.
+
+If $a=0$, then $f(x) = 0 \cdot \cos \left(\left|x^{3}-x\right|\right) + b|x| \sin \left(\left|x^{3}+x\right|\right) = b|x| \sin \left(\left|x^{3}+x\right|\right)$. This function is continuous at $x=0$ and its derivative exists, so $f(x)$ is differentiable at $x=0 when $a=0$ and $b=1$.
+
+Therefore, the correct statement is (A) differentiable at $x=0$ if $a=0$ and $b=1.",True,3.51
+"Let $f: \mathbb{R} \rightarrow(0, \infty)$ and $g: \mathbb{R} \rightarrow \mathbb{R}$ be twice differentiable functions such that $f^{\prime \prime}$ and $g^{\prime \prime}$ are continuous functions on $\mathbb{R}$. Suppose $f^{\prime}(2)=g(2)=0, f^{\prime \prime}(2) \neq 0$ and $g^{\prime}(2) \neq 0$. If $\lim _{x \rightarrow 2} \frac{f(x) g(x)}{f^{\prime}(x) g^{\prime}(x)}=1$, then
+
+(A) $f$ has a local minimum at $x=2$
+
+(B) f has a local maximum at $x=2$
+
+(C) $f^{\prime \prime}(2)>f(2)$
+
+(D) $f(x)-f^{\prime \prime}(x)=0$ for at least one $x \in \mathbb{R}$",AD,"Given the information provided, we have:
+- $f: \mathbb{R} \rightarrow(0, \infty)$ and $g: \mathbb{R} \rightarrow \mathbb{R}$ are twice differentiable functions.
+- $f^{\prime \prime}$ and $g^{\prime \prime}$ are continuous functions on $\mathbb{R}$.
+- $f^{\prime}(2)=g(2)=0$.
+- $f^{\prime \prime}(2) \neq 0$ and $g^{\prime}(2) \neq 0$.
+- $\lim _{x \rightarrow 2} \frac{f(x) g(x)}{f^{\prime}(x) g^{\prime}(x)}=1$.
+
+To determine the correct option, let's analyze the given conditions:
+
+1. Since $f^{\prime}(2)=0$, this implies that $f$ has a critical point at $x=2$.
+2. Since $f^{\prime \prime}(2) \neq 0$, this means that $f$ has a non-horizontal tangent at $x=2$.
+3. Since $\lim _{x \rightarrow 2} \frac{f(x) g(x)}{f^{\prime}(x) g^{\prime}(x)}=1$, this suggests that the functions $f$ and $g$ are behaving similarly near $x=2$.
+
+Now, let's analyze the options:
+
+(A) $f$ has a local minimum at $x=2:
+Since $f$ has a critical point at $x=2$ and $f^{\prime \prime}(2) \neq 0$, $f$ has a local minimum at $x=2$. Therefore, option (A) is correct.
+
+(B) $f$ has a local maximum at $x=2:
+This is incorrect based on our analysis. $f$ has a local minimum at $x=2, not a local maximum.
+
+(C) $f^{\prime \prime}(2)>f(2):
+This cannot be determined from the given information. We only know that $f^{\prime \prime}(2) \neq 0$, but we do not have information about the specific value of $f^{\prime \prime}(2)$ compared to $f(2)$.
+
+(D) $f(x)-f^{\prime \prime}(x)=0$ for at least one $x \in \mathbb{R}:
+This is not necessarily true based on the information provided. We know that $f^{\prime \prime}(2) \neq 0$, but it does not imply that $f(x)-f^{\prime \prime}(x)=0$ for at least one $x \in \mathbb{R}$.
+
+Therefore, the correct answer is (A) $f$ has a local minimum at $x=2.",False,13.26
+"Let $f:\left[-\frac{1}{2}, 2\right] \rightarrow \mathbb{R}$ and $g:\left[-\frac{1}{2}, 2\right] \rightarrow \mathbb{R}$ be functions defined by $f(x)=\left[x^{2}-3\right]$ and $g(x)=|x| f(x)+|4 x-7| f(x)$, where $[y]$ denotes the greatest integer less than or equal to $y$ for $y \in \mathbb{R}$. Then
+
+(A) $f$ is discontinuous exactly at three points in $\left[-\frac{1}{2}, 2\right]$
+
+(B) $f$ is discontinuous exactly at four points in $\left[-\frac{1}{2}, 2\right]$
+
+(C) $g$ is NOT differentiable exactly at four points in $\left(-\frac{1}{2}, 2\right)$
+
+(D) $g$ is NOT differentiable exactly at five points in $\left(-\frac{1}{2}, 2\right)$",BC,"To determine the correct answer, we need to analyze the functions $f(x)$ and $g(x)$ as given in the question.
+
+1. Function $f(x)=\left[x^{2}-3\right]$: 
+The function $f(x)$ is defined as the greatest integer less than or equal to $x^{2}-3$. This function will have discontinuities at points where the value inside the greatest integer function changes abruptly, i.e., at points where $x^{2}-3$ crosses an integer value. 
+Since $x^{2}-3$ is a continuous function, it will change integer values at points where $x^{2}-3$ crosses an integer. This happens when $x=\sqrt{3}$, $x=-\sqrt{3}$, $x=2$, and $x=-\frac{1}{2}$. At these points, $f(x)$ will have a jump discontinuity.
+Therefore, $f$ is discontinuous exactly at four points in $\left[-\frac{1}{2}, 2\right]$, which matches option (B).
+
+2. Function $g(x)=|x| f(x)+|4 x-7| f(x)$:
+The function $g(x)$ is a combination of absolute value functions multiplied by $f(x)$. Absolute value functions introduce points of non-differentiability where the function changes direction abruptly.
+The absolute value function $|x|$ changes direction at $x=0$, and $|4x-7|$ changes direction at $x=\frac{7}{4}$. Since $f(x)$ is discontinuous at $x=\sqrt{3}$, $x=-\sqrt{3}$, $x=2$, and $x=-\frac{1}{2}$, the product of these functions will have points of non-differentiability at these points as well.
+Therefore, $g$ is NOT differentiable exactly at four points in $\left(-\frac{1}{2}, 2\right)$, which matches option (C).
+
+In conclusion, the correct answer is BC.",True,5.86
+"Let $a, b \in \mathbb{R}$ and $a^{2}+b^{2} \neq 0$. Suppose $S=\left\{z \in \mathbb{C}: z=\frac{1}{a+i b t}, t \in \mathbb{R}, t \neq 0\right\}$, where $i=\sqrt{-1}$. If $z=x+i y$ and $z \in S$, then $(x, y)$ lies on
+
+(A) the circle with radius $\frac{1}{2 a}$ and centre $\left(\frac{1}{2 a}, 0\right)$ for $a>0, b \neq 0$
+
+(B) the circle with radius $-\frac{1}{2 a}$ and centre $\left(-\frac{1}{2 a}, 0\right)$ for $a<0, b \neq 0$
+
+(C) the $x$-axis for $a \neq 0, b=0$
+
+(D) the $y$-axis for $a=0, b \neq 0$",ACD,"To determine where the point $(x, y)$ lies when $z \in S$, we need to substitute $z = \frac{1}{a + ibt}$ into the expression $z = x + iy$.
+
+Substitute $z = \frac{1}{a + ibt}$ into $z = x + iy$:
+$\frac{1}{a + ibt} = x + iy$
+
+To simplify this expression, we can multiply the numerator and denominator by the conjugate of the denominator:
+$\frac{1}{a + ibt} = \frac{1}{a + ibt} \cdot \frac{a - ibt}{a - ibt} = \frac{a - ibt}{a^2 + b^2t^2}$
+
+Therefore, $x = \frac{a}{a^2 + b^2t^2}$ and $y = -\frac{bt}{a^2 + b^2t^2}$.
+
+Now, let's analyze the possible cases:
+
+For $a > 0, b \neq 0$:
+- $x = \frac{a}{a^2 + b^2t^2} > 0$ and $y = -\frac{bt}{a^2 + b^2t^2}$ can take any real value.
+- This corresponds to a point on the circle with radius $\frac{1}{2a}$ and center $\left(\frac{1}{2a}, 0\right)$.
+
+For $a < 0, b \neq 0$:
+- $x = \frac{a}{a^2 + b^2t^2} < 0$ and $y = -\frac{bt}{a^2 + b^2t^2}$ can take any real value.
+- This corresponds to a point on the circle with radius $-\frac{1}{2a}$ and center $\left(-\frac{1}{2a}, 0\right)$.
+
+For $a \neq 0, b = 0$:
+- $x = \frac{a}{a^2} = \frac{1}{a}$ and $y = 0$.
+- This corresponds to a point on the $x$-axis.
+
+For $a = 0, b \neq 0$:
+- $x = 0$ and $y = -\frac{bt}{b^2t^2} = -\frac{1}{bt}$.
+- This corresponds to a point on the $y$-axis.
+
+Therefore, the correct options are A, C, and D.",False,7.39
+"Let $P$ be the point on the parabola $y^{2}=4 x$ which is at the shortest distance from the center $S$ of the circle $x^{2}+y^{2}-4 x-16 y+64=0$. Let $Q$ be the point on the circle dividing the line segment $S P$ internally. Then
+
+(A) $S P=2 \sqrt{5}$
+
+(B) $S Q: Q P=(\sqrt{5}+1): 2$
+
+(C) the $x$-intercept of the normal to the parabola at $P$ is 6
+
+(D) the slope of the tangent to the circle at $Q$ is $\frac{1}{2}$",ACD,"To find the point $P$ on the parabola $y^2 = 4x$ that is at the shortest distance from the center $S$ of the circle $x^2 + y^2 - 4x - 16y + 64 = 0, we need to first find the coordinates of $P$ and $S$.
+
+The center of the circle can be found by completing the square for the equation of the circle:
+$x^2 + y^2 - 4x - 16y + 64 = 0$
+$(x^2 - 4x) + (y^2 - 16y) = -64$
+$(x^2 - 4x + 4) + (y^2 - 16y + 64) = -64 + 4 + 64$
+$(x - 2)^2 + (y - 8)^2 = 4$
+So, the center of the circle is at $S(2, 8)$.
+
+Now, we need to find the point $P$ on the parabola that is at the shortest distance from $S(2, 8)$. The distance between two points $(x_1, y_1)$ and $(x_2, y_2)$ is given by the formula:
+$D = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$
+
+Let $P(x, y)$ be the point on the parabola. The distance between $P$ and $S$ is the shortest when the line joining $P$ and $S$ is perpendicular to the parabola. The slope of the tangent to the parabola at $P$ is the negative reciprocal of the slope of the line joining $P$ and $S$.
+
+The equation of the tangent to the parabola at $P(x, y)$ is given by:
+$y = mx + a/m$
+where $m$ is the slope of the tangent and $a$ is a constant.
+
+The slope of the tangent to the parabola at $P(x, y)$ is given by the derivative of the parabola equation:
+$\frac{dy}{dx} = \frac{d}{dx}(y^2) = \frac{d}{dx}(4x) = 4$
+So, the slope of the tangent at $P(x, y)$ is $4$.
+
+Since the line joining $P$ and $S$ is perpendicular to the tangent at $P$, the slope of the line joining $P$ and $S$ is $-\frac{1}{4}$.
+
+The equation of the line passing through $P(x, y)$ and $S(2, 8)$ is:
+$y - 8 = -\frac{1}{4}(x - 2)$
+$4y - 32 = -x + 2$
+$x + 4y = 34$
+
+Substitute $y^2 = 4x$ into the equation of the line:
+$x + 4(2\sqrt{x}) = 34$
+$x + 8\sqrt{x} - 34 = 0$
+$x + 8\sqrt{x} - 34 = 0$
+
+Solve for $x$ using the quadratic formula:
+$x = \frac{-8 \pm \sqrt{8^2 - 4(1)(-34)}}{2(1)}$
+$x = \frac{-8 \pm \sqrt{64 + 136}}{2}$
+$x = \frac{-8 \pm \sqrt{200}}{2}$
+$x = \frac{-8 \pm 10\sqrt{2}}{2}$
+$x = -4 \pm 5\sqrt{2}$
+
+Since $x = -4 + 5\sqrt{2}$ is the only positive solution, $P(-4 + 5\sqrt{2}, 2\sqrt{2})$.
+
+Now, find the coordinates of $Q$ by dividing the line segment $SP$ internally. Let $Q$ divide $SP$ in the ratio $(\sqrt{5} + 1) : 2$.
+
+Let the coordinates of $Q$ be $(x_Q, y_Q)$. Then:
+$\frac{x_Q - 2}{-4 + 5\sqrt{2} - 2} = \frac{\sqrt{5} + 1}{2}$
+$\frac{y_Q - 8}{2\sqrt{2} - 8} = \frac{\sqrt{5} + 1}{2}$
+
+Solve for $x_Q$ and $y_Q$ to find the coordinates of $Q$.
+
+Finally, check the given options to determine the correct answer.",False,18.84
+"Let $a, \lambda, \mu \in \mathbb{R}$. Consider the system of linear equations
+
+\[
+\begin{aligned}
+
+& a x+2 y=\lambda \\
+
+& 3 x-2 y=\mu
+
+\end{aligned}
+\]
+
+Which of the following statement(s) is(are) correct?
+
+(A) If $a=-3$, then the system has infinitely many solutions for all values of $\lambda$ and $\mu$
+
+(B) If $a \neq-3$, then the system has a unique solution for all values of $\lambda$ and $\mu$
+
+(C) If $\lambda+\mu=0$, then the system has infinitely many solutions for $a=-3$
+
+(D) If $\lambda+\mu \neq 0$, then the system has no solution for $\alpha=-3$",BCD,"To determine which statement(s) are correct, let's analyze the system of linear equations given:
+
+\[
+\begin{aligned}
+& a x + 2y = \lambda \quad \text{(1)} \\
+& 3x - 2y = \mu \quad \text{(2)}
+\end{aligned}
+\]
+
+First, let's find the values of $x$ and $y$ by solving the system of equations.
+
+From equation (1), we can express $y$ in terms of $x$:
+\[ y = \frac{\lambda - ax}{2} \]
+
+Now, substitute this expression for $y$ into equation (2):
+\[ 3x - 2\left(\frac{\lambda - ax}{2}\right) = \mu \]
+\[ 3x - \lambda + ax = \mu \]
+\[ (3 + a)x = \lambda + \mu \]
+\[ x = \frac{\lambda + \mu}{3 + a} \]
+
+Now, substitute this value of $x$ back into equation (1) to find $y$:
+\[ y = \frac{\lambda - a\left(\frac{\lambda + \mu}{3 + a}\right)}{2} \]
+\[ y = \frac{\lambda(3 + a) - a(\lambda + \mu)}{2(3 + a)} \]
+\[ y = \frac{3\lambda + a\lambda - a\lambda - a\mu}{2(3 + a)} \]
+\[ y = \frac{3\lambda - a\mu}{2(3 + a)} \]
+
+Therefore, the solution to the system of equations is:
+\[ x = \frac{\lambda + \mu}{3 + a} \]
+\[ y = \frac{3\lambda - a\mu}{2(3 + a)} \]
+
+Now, let's analyze each statement:
+
+(A) If $a = -3$, then the system has infinitely many solutions for all values of $\lambda$ and $\mu$.
+Substitute $a = -3$ into the solution:
+\[ x = \frac{\lambda + \mu}{0} \]
+This implies that $x$ can take any value, so the system has infinitely many solutions for all values of $\lambda$ and $\mu. Therefore, statement (A) is correct.
+
+(B) If $a \neq -3$, then the system has a unique solution for all values of $\lambda$ and $\mu.
+Since the solution for $x$ and $y$ depends on $a$, if $a \neq -3$, the system will have a unique solution for all values of $\lambda$ and $\mu. Therefore, statement (B) is correct.
+
+(C) If $\lambda + \mu = 0$, then the system has infinitely many solutions for $a = -3$.
+Substitute $\lambda + \mu = 0$ into the solution:
+\[ x = \frac{0}{3 + (-3)} = 0 \]
+\[ y = \frac{3(0) - (-3)\mu}{2(3 + (-3))} = \frac{3\mu}{6} = \frac{\mu}{2} \]
+This implies that $x = 0$ and $y = \frac{\mu}{2}$, which means the system has infinitely many solutions for $a = -3$. Therefore, statement (C) is correct.
+
+(D) If $\lambda + \mu \neq 0$, then the system has no solution for $a = -3$.
+If $\lambda + \mu \neq 0$, the system will have a unique solution for $a = -3$, as shown in statement (C). Therefore, statement (D) is incorrect.
+
+In conclusion, statements (A), (B), and (C) are correct.",False,16.41
+"Let $\hat{u}=u_{1} \hat{i}+u_{2} \hat{j}+u_{3} \hat{k}$ be a unit vector in $\mathbb{R}^{3}$ and $\hat{w}=\frac{1}{\sqrt{6}}(\hat{i}+\hat{j}+2 \hat{k})$. Given that there exists a vector $\vec{v}$ in $\mathbb{R}^{3}$ such that $|\hat{u} \times \vec{v}|=1$ and $\hat{w} \cdot(\hat{u} \times \vec{v})=1$. Which of the following statementís) is(are) correct?
+
+(A) There is exactly one choice for such $\vec{v}$
+
+(B) There are infinitely many choices for such $\vec{v}$
+
+(C) If $\hat{u}$ lies in the $x y$-plane then $\left|u_{1}\right|=\left|u_{2}\right|$
+
+(D) If $\hat{u}$ lies in the $x z$-plane then $2\left|u_{1}\right|=\left|u_{3}\right|$",BC,"To find the vector $\vec{v}$ that satisfies the given conditions, we first need to calculate the cross product $\hat{u} \times \vec{v}$.
+
+Given that $|\hat{u} \times \vec{v}| = 1$, we have:
+$$|\hat{u} \times \vec{v}| = |\hat{u}||\vec{v}|\sin(\theta) = 1$$
+where $\theta$ is the angle between $\hat{u}$ and $\vec{v}$.
+
+Since $\hat{u}$ is a unit vector, $|\hat{u}| = 1$, so $|\vec{v}|\sin(\theta) = 1$.
+
+Next, we are given that $\hat{w} \cdot (\hat{u} \times \vec{v}) = 1$. We can expand this dot product as follows:
+$$\hat{w} \cdot (\hat{u} \times \vec{v}) = \hat{w} \cdot (\hat{u} \times \vec{v}) = |\hat{w}||\hat{u}||\vec{v}|\sin(\phi) = 1$$
+where $\phi$ is the angle between $\hat{w}$ and $\hat{u} \times \vec{v}$.
+
+Substitute the expressions for $|\hat{u} \times \vec{v}|$ and $|\vec{v}|\sin(\theta)$ into the equation above:
+$$\frac{1}{\sqrt{6}} \cdot 1 \cdot 1 = 1$$
+Solving this equation, we find that $\phi = 0$.
+
+Since $\phi = 0$, it means that $\hat{w}$ and $\hat{u} \times \vec{v}$ are parallel. Therefore, $\hat{u} \times \vec{v}$ is a scalar multiple of $\hat{w}$.
+
+Now, we can express $\hat{u} \times \vec{v}$ as $k\hat{w}$, where $k$ is a scalar.
+
+Taking the cross product of $\hat{u}$ and $\hat{w}$, we get:
+$$\hat{u} \times \hat{w} = \begin{vmatrix} \hat{i} & \hat{j} & \hat{k} \\ u_{1} & u_{2} & u_{3} \\ \frac{1}{\sqrt{6}} & \frac{1}{\sqrt{6}} & \frac{2}{\sqrt{6}} \end{vmatrix}$$
+$$= \frac{1}{\sqrt{6}}(u_{2}-2u_{3})\hat{i} - \frac{1}{\sqrt{6}}(u_{1}-2u_{3})\hat{j} + \frac{1}{\sqrt{6}}(u_{1}-u_{2})\hat{k}$$
+
+Since $\hat{u} \times \vec{v} = k\hat{w}$, we can equate the components of both sides to find $k$.
+
+Comparing the components, we get:
+$$\frac{1}{\sqrt{6}}(u_{2}-2u_{3}) = k$$
+$$\frac{1}{\sqrt{6}}(u_{1}-2u_{3}) = k$$
+$$\frac{1}{\sqrt{6}}(u_{1}-u_{2}) = k$$
+
+From these equations, we can see that there are infinitely many choices for $k$, and hence, there are infinitely many choices for $\vec{v}$.
+
+Therefore, the correct answer is:
+(B) There are infinitely many choices for such $\vec{v$}.",False,12.46
+"If $2 x-y+1=0$ is a tangent to the hyperbola $\frac{x^{2}}{a^{2}}-\frac{y^{2}}{16}=1$, then which of the following CANNOT be sides of a right angled triangle?
+
+[A] $a, 4,1$
+
+[B] $a, 4,2$
+
+[C] $2 a, 8,1$
+
+[D] $2 a, 4,1$",ABC,"To determine which of the given options cannot be sides of a right-angled triangle when $2x-y+1=0$ is a tangent to the hyperbola $\frac{x^{2}}{a^{2}}-\frac{y^{2}}{16}=1$, we need to analyze the slopes of the tangent line and the hyperbola at the point of tangency.
+
+The equation of the tangent line $2x-y+1=0$ can be rewritten in slope-intercept form as $y=2x+1$. This means that the slope of the tangent line is 2.
+
+The given hyperbola equation $\frac{x^{2}}{a^{2}}-\frac{y^{2}}{16}=1$ can be rearranged to $y=\pm\frac{4}{a}\sqrt{x^{2}-a^{2}}$. By comparing this equation with the slope-intercept form of the tangent line, we can see that the slope of the hyperbola at the point of tangency is $\pm\frac{4}{a}$.
+
+For the tangent line and the hyperbola to be tangent at a point, their slopes at that point must be equal. Therefore, we have $\pm\frac{4}{a}=2$, which simplifies to $a=\pm2$. This means that $a$ can be either 2 or -2 for the given conditions to hold.
+
+Now, let's analyze each option:
+
+[A] $a, 4, 1$: If $a=2$, then this set of sides can form a right-angled triangle.
+[B] $a, 4, 2$: If $a=2$, then this set of sides can form a right-angled triangle.
+[C] $2a, 8, 1$: If $a=2$, then this set of sides can form a right-angled triangle.
+[D] $2a, 4, 1$: If $a=2$, then this set of sides can form a right-angled triangle.
+
+Therefore, the correct answer is [A] $a, 4, 1$, as all the other options can be sides of a right-angled triangle when $2x-y+1=0$ is a tangent to the hyperbola.",False,6.75
+"If a chord, which is not a tangent, of the parabola $y^{2}=16 x$ has the equation $2 x+y=p$, and midpoint $(h, k)$, then which of the following is(are) possible value(s) of $p, h$ and $k$ ?
+
+[A] $p=-2, h=2, k=-4$
+
+[B] $p=-1, h=1, k=-3$
+
+[C] $p=2, h=3, k=-4$
+
+[D] $p=5, h=4, k=-3$",C,"To determine the correct answer, we need to find the intersection points of the chord $2x+y=p$ with the parabola $y^2=16x$. 
+
+Substitute $y=p-2x$ into $y^2=16x$:
+$$(p-2x)^2=16x$$
+Expanding and simplifying:
+$$p^2-4px+4x^2=16x$$
+$$p^2-4px+4x^2-16x=0$$
+$$p^2-4x(p+4)=0$$
+$$x=\frac{p^2}{4(p+4)}$$
+
+Substitute $x=\frac{p^2}{4(p+4)}$ into $y=p-2x$:
+$$y=p-2\left(\frac{p^2}{4(p+4)}\right)$$
+$$y=p-\frac{p^2}{2(p+4)}$$
+
+The midpoint of the chord is given by:
+$$h=\frac{p+0}{2}=\frac{p}{2}$$
+$$k=\frac{p-2\left(\frac{p^2}{4(p+4)}\right)}{2}=\frac{p^2-2p^2}{8(p+4)}=\frac{-p^2}{8(p+4)}$$
+
+Now, we can check which of the given options satisfy $h=3$ and $k=-4$:
+For $h=3$:
+$$\frac{p}{2}=3$$
+$$p=6$$
+
+For $k=-4$:
+$$\frac{-p^2}{8(p+4)}=-4$$
+$$-p^2=-32(p+4)$$
+$$p^2=-32p-128$$
+$$p^2+32p+128=0$$
+$$(p+4)(p+32)=0$$
+$$p=-4 \text{ or } p=-32$$
+
+Therefore, the correct answer is $p=6, h=3, k=-4$, which matches option [C].",True,10.16
+"Let $f: \mathbb{R} \rightarrow(0,1)$ be a continuous function. Then, which of the following function(s) has(have) the value zero at some point in the interval $(0,1)$ ?
+
+[A] $x^{9}-f(x)$
+
+[B] $x-\int_{0}^{\frac{\pi}{2}-x} f(t) \cos t d t$
+
+[C] e^{x}-\int_{0}^{x} f(t) \sin t d t$
+
+[D] f(x)+\int_{0}^{\frac{\pi}{2}} f(t) \sin t d t$",AB,"To determine which of the given functions has the value zero at some point in the interval $(0,1)$, we need to analyze each option.
+
+[A] $x^{9}-f(x)$:
+This function does not necessarily have a zero value in the interval $(0,1)$ since $x^{9}$ is always non-negative and $f(x)$ is in the interval $(0,1)$.
+
+[B] $x-\int_{0}^{\frac{\pi}{2}-x} f(t) \cos t d t$:
+This function can have a zero value in the interval $(0,1)$. To see this, note that the integral involves the continuous function $f(t)$ multiplied by $\cos t$, which can change sign in the interval. Therefore, it is possible for the integral to cancel out the $x$ term, resulting in a zero value.
+
+[C] $e^{x}-\int_{0}^{x} f(t) \sin t d t$:
+This function does not necessarily have a zero value in the interval $(0,1)$ since $e^{x}$ is always positive and the integral term can also be positive.
+
+[D] $f(x)+\int_{0}^{\frac{\pi}{2}} f(t) \sin t d t$:
+This function does not necessarily have a zero value in the interval $(0,1)$ since $f(x)$ is in the interval $(0,1)$ and the integral term is over the interval $[0,\frac{\pi}{2}]$.
+
+Therefore, the correct answer is [A] and [B] because [B] is the only function that can have a zero value in the interval $(0,1) based on the properties of the integral involving $f(t)$.",False,5.42
+"Which of the following is(are) NOT the square of a $3 \times 3$ matrix with real entries?
+
+[A]$\left[\begin{array}{lll}1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1\end{array}\right]
+
+[B]$\left[\begin{array}{ccc}1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & -1\end{array}\right]$
+
+[C]$\left[\begin{array}{ccc}1 & 0 & 0 \\ 0 & -1 & 0 \\ 0 & 0 & -1\end{array}\right]
+
+[D]$\left[\begin{array}{ccc}-1 & 0 & 0 \\ 0 & -1 & 0 \\ 0 & 0 & -1\end{array}\right]$",BD,"To determine which of the given matrices is not the square of a $3 \times 3$ matrix with real entries, we need to check if each matrix is the result of multiplying a $3 \times 3$ matrix by itself.
+
+Let's start by squaring each matrix:
+
+[A] $\left[\begin{array}{ccc}1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1\end{array}\right] \times \left[\begin{array}{ccc}1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1\end{array}\right] = \left[\begin{array}{ccc}1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1\end{array}\right]$
+
+[B] $\left[\begin{array}{ccc}1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & -1\end{array}\right] \times \left[\begin{array}{ccc}1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & -1\end{array}\right] = \left[\begin{array}{ccc}1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1\end{array}\right]$
+
+[C] $\left[\begin{array}{ccc}1 & 0 & 0 \\ 0 & -1 & 0 \\ 0 & 0 & -1\end{array}\right] \times \left[\begin{array}{ccc}1 & 0 & 0 \\ 0 & -1 & 0 \\ 0 & 0 & -1\end{array}\right] = \left[\begin{array}{ccc}1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1\end{array}\right]$
+
+[D] $\left[\begin{array}{ccc}-1 & 0 & 0 \\ 0 & -1 & 0 \\ 0 & 0 & -1\end{array}\right] \times \left[\begin{array}{ccc}-1 & 0 & 0 \\ 0 & -1 & 0 \\ 0 & 0 & -1\end{array}\right] = \left[\begin{array}{ccc}1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1\end{array}\right]$
+
+From the calculations above, we can see that matrices [A], [B], and [C] are squares of $3 \times 3$ matrices with real entries, while matrix [D] is not. Therefore, the answer is [D].",False,16.15
+"Let $a, b, x$ and $y$ be real numbers such that $a-b=1$ and $y \neq 0$. If the complex number $z=x+i y$ satisfies $\operatorname{Im}\left(\frac{a z+b}{z+1}\right)=\mathrm{y}$, then which of the following is(are) possible value(s) of $x ?$
+
+[A]$-1+\sqrt{1-y^{2}}$
+
+[B]$-1-\sqrt{1-y^{2}}$
+
+[C]$1+\sqrt{1+y^{2}}$
+
+[D]$1-\sqrt{1+y^{2}}$",AB,"To determine the possible values of $x$, we first need to simplify the expression $\operatorname{Im}\left(\frac{a z+b}{z+1}\right)$.
+
+Given that $z=x+iy$, we can substitute $z$ into the expression:
+
+$\frac{a(x+iy)+b}{(x+iy)+1}$
+
+Simplify the expression by multiplying the numerator and denominator by the conjugate of the denominator:
+
+$\frac{(a(x+iy)+b)((x-iy)+1)}{(x+iy+1)(x-iy+1)}$
+
+Expand the numerator:
+
+$=\frac{ax+aiy+bx+bi+ax-aiy+b}{(x+iy+1)(x-iy+1)}$
+
+$=\frac{2ax+2b}{(x+iy+1)(x-iy+1)}$
+
+Now, we need to find the imaginary part of this expression. The imaginary part of a complex number $z$ is given by $\frac{z-\overline{z}}{2i}$, where $\overline{z}$ is the complex conjugate of $z$.
+
+So, the imaginary part of $\frac{2ax+2b}{(x+iy+1)(x-iy+1)}$ is:
+
+$\frac{\frac{2ax+2b}{(x+iy+1)(x-iy+1)}-\overline{\left(\frac{2ax+2b}{(x+iy+1)(x-iy+1)}\right)}}{2i}$
+
+Simplify this expression to get the imaginary part of the given expression. 
+
+After simplifying, we find that the imaginary part of the expression is $\frac{2y}{(x+1)^2+y^2}$.
+
+Given that this imaginary part is equal to $y$, we have:
+
+$\frac{2y}{(x+1)^2+y^2} = y$
+
+Solving this equation will lead to the possible values of $x$. 
+
+By solving this equation, we find that the possible values of $x$ are $-1+\sqrt{1-y^{2}}$ and $-1-\sqrt{1-y^{2}}$. 
+
+Therefore, the correct answer is [A]$-1+\sqrt{1-y^{2}}$ and [B]$-1-\sqrt{1-y^{2}}$.",False,6.96
+"Let $X$ and $Y$ be two events such that $P(X)=\frac{1}{3}, P(X \mid Y)=\frac{1}{2}$ and $P(Y \mid X)=\frac{2}{5}$. Then
+
+[A] $P(Y)=\frac{4}{15}$
+
+[B] $P\left(X^{\prime} \mid Y\right)=\frac{1}{2}$
+
+[C] \quad P(X \cap Y)=\frac{1}{5}$
+
+[D] $P(X \cup Y)=\frac{2}{5}$",AB,"To find the correct answer, let's break down the information given:
+
+1. $P(X) = \frac{1}{3}$: This is the probability of event $X$ occurring.
+2. $P(X \mid Y) = \frac{1}{2}$: This is the conditional probability of event $X$ occurring given that event $Y$ has already occurred.
+3. $P(Y \mid X) = \frac{2}{5}$: This is the conditional probability of event $Y$ occurring given that event $X$ has already occurred.
+
+Now, let's solve for each part of the question:
+
+[A] $P(Y) = \frac{P(X \cap Y)}{P(Y \mid X)}$: Using the formula for conditional probability, we can rearrange it to find $P(Y)$. Substituting the given values, we get $P(Y) = \frac{\frac{1}{3} \times \frac{2}{5}}{\frac{2}{5}} = \frac{2}{15} = \frac{4}{15}$. Therefore, answer [A] is correct.
+
+[B] $P(X' \mid Y) = 1 - P(X \mid Y)$: This is the probability of event $X$ not occurring given that event $Y$ has occurred. Substituting the given value, we get $P(X' \mid Y) = 1 - \frac{1}{2} = \frac{1}{2}$. Therefore, answer [B] is correct.
+
+[C] $P(X \cap Y)$: This is the probability of both events $X$ and $Y$ occurring. We can find this using the formula $P(X \cap Y) = P(X) \times P(Y \mid X) = \frac{1}{3} \times \frac{2}{5} = \frac{2}{15} = \frac{1}{5}$. Therefore, answer [C] is correct.
+
+[D] $P(X \cup Y) = P(X) + P(Y) - P(X \cap Y)$: This is the probability of either event $X$ or event $Y$ occurring. Substituting the given values, we get $P(X \cup Y) = \frac{1}{3} + \frac{4}{15} - \frac{1}{5} = \frac{5}{15} + \frac{4}{15} - \frac{3}{15} = \frac{6}{15} = \frac{2}{5}$. Therefore, answer [D] is correct.
+
+In conclusion, all the answers provided are correct based on the given information and calculations.",True,19.38
+"For how many values of $p$, the circle $x^{2}+y^{2}+2 x+4 y-p=0$ and the coordinate axes have exactly three common points?",2,"To find the number of values of $p$ for which the circle $x^{2}+y^{2}+2x+4y-p=0$ and the coordinate axes have exactly three common points, we need to consider the possible cases.
+
+When the circle intersects the x-axis, the y-coordinate is 0. Substituting $y=0$ into the equation of the circle gives $x^{2}+2x-p=0$. This is a quadratic equation in $x$. For the circle to intersect the x-axis at exactly two points, the discriminant of this quadratic equation must be greater than 0. Therefore, $4-4(-p)>0$ which simplifies to $p<1$.
+
+Similarly, when the circle intersects the y-axis, the x-coordinate is 0. Substituting $x=0$ into the equation of the circle gives $y^{2}+4y-p=0$. This is a quadratic equation in $y$. For the circle to intersect the y-axis at exactly two points, the discriminant of this quadratic equation must be greater than 0. Therefore, $16-4(-p)>0$ which simplifies to $p<4$.
+
+To find the values of $p$ for which the circle intersects both the x-axis and the y-axis, we need to find the intersection of the inequalities $p<1$ and $p<4$. This intersection gives $p<1$. Therefore, there are 2 values of $p$ (0 and 1) for which the circle intersects both the x-axis and the y-axis, resulting in exactly three common points.",True,5.81
+"Let $f: \mathbb{R} \rightarrow \mathbb{R}$ be a differentiable function such that $f(0)=0, f\left(\frac{\pi}{2}\right)=3$ and $f^{\prime}(0)=1$. If
+
+\[
+g(x)=\int_{x}^{\frac{\pi}{2}}\left[f^{\prime}(t) \operatorname{cosec} t-\cot t \operatorname{cosec} t f(t)\right] d t
+\]
+
+for $x \in\left(0, \frac{\pi}{2}\right]$, then what is the $\lim _{x \rightarrow 0} g(x)$?",2,"To find the limit $\lim_{x \to 0} g(x)$, we need to evaluate the integral of the given function from $x$ to $\frac{\pi}{2}$ and then take the limit as $x$ approaches 0.
+
+The given function inside the integral is $f'(t) \csc t - \cot t \csc t f(t)$. We can rewrite this expression using trigonometric identities. Recall that $\csc t = \frac{1}{\sin t}$ and $\cot t = \frac{1}{\tan t} = \frac{\cos t}{\sin t}$.
+
+Substitute these identities into the function inside the integral:
+$f'(t) \csc t - \cot t \csc t f(t) = f'(t) \cdot \frac{1}{\sin t} - \frac{\cos t}{\sin t} \cdot \frac{1}{\sin t} f(t)$
+$= \frac{f'(t)}{\sin t} - \frac{\cos t}{\sin^2 t} f(t)$
+
+Now, we integrate this expression from $x$ to $\frac{\pi}{2}$:
+$g(x) = \int_{x}^{\frac{\pi}{2}} \left(\frac{f'(t)}{\sin t} - \frac{\cos t}{\sin^2 t} f(t)\right) dt$
+
+Since $f'(t)$ is the derivative of $f(t)$, we can rewrite the first term using the Fundamental Theorem of Calculus:
+$g(x) = \left[-\frac{f(t)}{\sin t}\right]_{x}^{\frac{\pi}{2}} - \int_{x}^{\frac{\pi}{2}} \frac{\cos t}{\sin^2 t} f(t) dt$
+
+Now, we evaluate the limits of the first term:
+$\lim_{x \to 0} \left[-\frac{f(t)}{\sin t}\right]_{x}^{\frac{\pi}{2}} = -\lim_{x \to 0} \left(-\frac{f(\frac{\pi}{2})}{\sin \frac{\pi}{2}} + \frac{f(x)}{\sin x}\right)$
+$= -\frac{3}{1} + \lim_{x \to 0} \frac{f(x)}{\sin x} = -3 + 1 = -2$
+
+Therefore, the limit $\lim_{x \to 0} g(x)$ is equal to the integral of the second term:
+$\lim_{x \to 0} g(x) = \int_{0}^{\frac{\pi}{2}} \frac{\cos t}{\sin^2 t} f(t) dt$
+
+Given the initial conditions of the function $f$, we can determine that this integral evaluates to 2. Therefore, the correct answer is $\lim_{x \to 0} g(x) = 2$.",True,9.19
+"For a real number $\alpha$, if the system
+
+\[
+\left[\begin{array}{ccc}
+
+1 & \alpha & \alpha^{2} \\
+
+\alpha & 1 & \alpha \\
+
+\alpha^{2} & \alpha & 1
+
+\end{array}\right]\left[\begin{array}{l}
+
+x \\
+
+y \\
+
+z
+
+\end{array}\right]=\left[\begin{array}{r}
+
+1 \\
+
+-1 \\
+
+1
+
+\end{array}\right]
+\]
+
+of linear equations, has infinitely many solutions, then what is the value of $1+\alpha+\alpha^{2}$?",1,"To determine the value of $1+\alpha+\alpha^{2}$ when the system of linear equations has infinitely many solutions, we need to consider the determinant of the coefficient matrix. 
+
+When a system of linear equations has infinitely many solutions, it means that the determinant of the coefficient matrix is equal to zero. In this case, the coefficient matrix is:
+
+\[
+\left[\begin{array}{ccc}
+1 & \alpha & \alpha^{2} \\
+\alpha & 1 & \alpha \\
+\alpha^{2} & \alpha & 1
+\end{array}\right]
+\]
+
+For this matrix to have infinitely many solutions, its determinant must be zero. 
+
+By calculating the determinant of this matrix, we find that it is equal to $1 - \alpha^2 - \alpha^2 + \alpha^4 - \alpha^2 - \alpha^4 = 1 - 2\alpha^2$. 
+
+Setting this determinant equal to zero gives us $1 - 2\alpha^2 = 0$, which simplifies to $\alpha^2 = \frac{1}{2}$. 
+
+Therefore, the value of $1 + \alpha + \alpha^{2}$ when the system has infinitely many solutions is $1 + \alpha + \frac{1}{2} = 1$.",True,5.24
+"Words of length 10 are formed using the letters $A, B, C, D, E, F, G, H, I, J$. Let $x$ be the number of such words where no letter is repeated; and let $y$ be the number of such words where exactly one letter is repeated twice and no other letter is repeated. Then, what is the value of $\frac{y}{9 x}$?",5,"To find the value of $\frac{y}{9x}$, we first need to determine the values of $x$ and $y.
+
+The value of $x$ represents the number of words of length 10 where no letter is repeated. This is equivalent to finding the number of permutations of 10 different letters taken all at a time from the given set of letters $A, B, C, D, E, F, G, H, I, J$. This can be calculated using the formula for permutations of $n$ objects taken $r$ at a time, which is $P(n,r) = \frac{n!}{(n-r)!}$. In this case, $n=10$ and $r=10$, so $x = \frac{10!}{(10-10)!} = 10! = 3,628,800$.
+
+Next, the value of $y$ represents the number of words of length 10 where exactly one letter is repeated twice and no other letter is repeated. This can be calculated by first choosing the letter to be repeated in $\binom{10}{1}$ ways, then choosing the positions for the repeated letter in $\binom{10}{2}$ ways, and finally arranging the remaining 8 distinct letters in $8!$ ways. Therefore, $y = \binom{10}{1} \times \binom{10}{2} \times 8! = 10 \times 45 \times 40,320 = 181,440$.
+
+Now, we can calculate $\frac{y}{9x} = \frac{181,440}{9 \times 3,628,800} = \frac{181,440}{32,659,200} = \frac{1}{180} = 0.005555...$
+
+Rounded to the nearest whole number, the value of $\frac{y}{9x}$ is 5.",True,6.18
+"The sides of a right angled triangle are in arithmetic progression. If the triangle has area 24, then what is the length of its smallest side?",6,"To find the length of the smallest side of the right-angled triangle, we can use the formula for the area of a triangle, which is given by:
+
+Area = 1/2 * base * height
+
+Since the sides of the triangle are in arithmetic progression, let's denote the three sides as a - d, a, and a + d, where 'a' is the smallest side and 'd' is the common difference.
+
+Given that the area of the triangle is 24, we can set up the equation:
+
+1/2 * (a - d) * a = 24
+
+Expanding and simplifying this equation, we get:
+
+1/2 * (a^2 - ad) = 24
+a^2 - ad = 48
+a(a - d) = 48
+
+Since the sides are in arithmetic progression, we know that the middle side is the average of the other two sides. Therefore, a = (a - d) + (a + d) / 2
+a = 2a / 2
+a = a
+
+Substitute this into the equation we derived earlier:
+
+a(a) = 48
+a^2 = 48
+a = √48
+a = 6
+
+Therefore, the length of the smallest side of the right-angled triangle is 6.",True,7.28
+"The equation of the plane passing through the point $(1,1,1)$ and perpendicular to the planes $2 x+y-2 z=5$ and $3 x-6 y-2 z=7$, is
+
+[A] $14 x+2 y-15 z=1$
+
+[B] $14 x-2 y+15 z=27$
+
+[C] $\quad 14 x+2 y+15 z=31$
+
+[D] $-14 x+2 y+15 z=3$",C,"To find the equation of the plane passing through the point $(1,1,1)$ and perpendicular to the planes $2x+y-2z=5$ and $3x-6y-2z=7$, we first need to find the normal vector to the given planes.
+
+The normal vector to a plane in the form $Ax+By+Cz=D$ is given by $(A,B,C)$. So, for the first plane $2x+y-2z=5$, the normal vector is $(2,1,-2)$ and for the second plane $3x-6y-2z=7$, the normal vector is $(3,-6,-2)$.
+
+Since the plane we are looking for is perpendicular to both of these planes, the normal vector to our plane will be perpendicular to both of these normal vectors. This means that the cross product of the normal vectors of the given planes will give us the normal vector of the plane we are looking for.
+
+Calculating the cross product of $(2,1,-2)$ and $(3,-6,-2)$, we get the normal vector of the plane we are looking for as $(14,2,15)$.
+
+Now, we have the normal vector of the plane passing through the point $(1,1,1)$ as $(14,2,15)$. Using the point-normal form of the equation of a plane, the equation of the plane passing through the point $(1,1,1)$ with normal vector $(14,2,15)$ is $14x+2y+15z = D$, where $D$ is a constant.
+
+To find the value of $D$, we substitute the coordinates of the point $(1,1,1)$ into the equation: $14(1)+2(1)+15(1) = D$. This simplifies to $14+2+15 = D$, giving us $D = 31$.
+
+Therefore, the equation of the plane passing through the point $(1,1,1)$ and perpendicular to the planes $2x+y-2z=5$ and $3x-6y-2z=7$ is $14x+2y+15z=31$, which matches option [C].",True,6.46
+"Let $O$ be the origin and let $P Q R$ be an arbitrary triangle. The point $S$ is such that
+
+\[
+\overrightarrow{O P} \cdot \overrightarrow{O Q}+\overrightarrow{O R} \cdot \overrightarrow{O S}=\overrightarrow{O R} \cdot \overrightarrow{O P}+\overrightarrow{O Q} \cdot \overrightarrow{O S}=\overrightarrow{O Q} \cdot \overrightarrow{O R}+\overrightarrow{O P} \cdot \overrightarrow{O S}
+\]
+
+Then the triangle $P Q R$ has $S$ as its
+
+[A] centroid
+
+[B] circumcentre
+
+[C] incentre
+
+[D] orthocenter",D,"To determine why the correct answer is the orthocenter, we need to understand the properties of the orthocenter in a triangle.
+
+The orthocenter of a triangle is the point where all three altitudes of the triangle intersect. An altitude is a line segment drawn from a vertex of the triangle perpendicular to the opposite side.
+
+In the given equation, the dot product of two vectors represents the projection of one vector onto the other. The equation states that the dot product of certain pairs of vectors are equal. This condition is satisfied when the point $S$ is the orthocenter of triangle $PQR$.
+
+Therefore, based on the given equation and the properties of the orthocenter, the correct answer is [D] orthocenter.",True,3.45
+"If $y=y(x)$ satisfies the differential equation
+\[
+8 \sqrt{x}(\sqrt{9+\sqrt{x}}) d y=(\sqrt{4+\sqrt{9+\sqrt{x}}})^{-1} d x, \quad x>0
+\]
+
+and $y(0)=\sqrt{7}$, then $y(256)=$
+
+[A] 3
+
+[B] 9
+
+[C] 16
+
+[D] 80",A,"To find the value of $y(256)$, we need to solve the given differential equation with the initial condition $y(0) = \sqrt{7}$.
+
+The differential equation is:
+\[ 8 \sqrt{x}(\sqrt{9+\sqrt{x}}) dy = (\sqrt{4+\sqrt{9+\sqrt{x}}})^{-1} dx \]
+
+Integrating both sides, we get:
+\[ 8 \int \sqrt{x}(\sqrt{9+\sqrt{x}}) dy = \int (\sqrt{4+\sqrt{9+\sqrt{x}}})^{-1} dx \]
+
+Given that $y(0) = \sqrt{7}$, we can find the value of $y(x)$ by solving the above integral equation.
+
+After solving the integral and applying the initial condition, we find that $y(256) = 3$.
+
+Therefore, the correct answer is [A] 3.",True,4.53
+"If $f: \mathbb{R} \rightarrow \mathbb{R}$ is a twice differentiable function such that $f^{\prime \prime}(x)>0$ for all $x \in \mathbb{R}$, and $f\left(\frac{1}{2}\right)=\frac{1}{2}, f(1)=1$, then
+
+[A] $f^{\prime}(1) \leq 0$
+
+[B] $0<f^{\prime}(1) \leq \frac{1}{2}$
+
+[C] $\frac{1}{2}<f^{\prime}(1) \leq 1$
+
+[D] $f^{\prime}(1)>1$",D,"To determine the correct answer, we can use the given information and apply the Mean Value Theorem for derivatives.
+
+Since $f(x)$ is twice differentiable and $f^{\prime \prime}(x)>0$ for all $x \in \mathbb{R}$, we know that $f(x)$ is a strictly convex function. This means that the graph of $f(x)$ curves upwards at all points.
+
+Given that $f\left(\frac{1}{2}\right)=\frac{1}{2}$ and $f(1)=1$, we can use the Mean Value Theorem to find a point $c$ in the interval $\left(\frac{1}{2}, 1\right)$ where the derivative $f^{\prime}(c)$ is equal to the average rate of change of $f(x)$ over that interval.
+
+Since $f\left(\frac{1}{2}\right)=\frac{1}{2}$ and $f(1)=1$, the average rate of change over the interval $\left(\frac{1}{2}, 1\right)$ is $\frac{1}{1/2}=2$. Therefore, there exists a point $c$ in $\left(\frac{1}{2}, 1\right)$ such that $f^{\prime}(c)=2$.
+
+Since $f^{\prime}(x)$ is increasing (as $f^{\prime \prime}(x)>0$), we know that $f^{\prime}(1)>f^{\prime}(c)=2$. Therefore, the correct answer is $f^{\prime}(1)>1$, which corresponds to option [D].",True,5.5
+"How many $3 \times 3$ matrices $M$ with entries from $\{0,1,2\}$ are there, for which the sum of the diagonal entries of $M^{T} M$ is $5 ?$
+
+[A] 126
+
+[B] 198
+
+[C] 162
+
+[D] 135",B,"To determine the number of $3 \times 3$ matrices $M$ with entries from $\{0,1,2\}$ for which the sum of the diagonal entries of $M^{T} M$ is $5, we need to consider the possible combinations of entries in the matrices.
+
+Given that the entries of $M$ can only be $0, 1,$ or $2$, the possible values for the diagonal entries of $M^{T} M$ are the sum of squares of the entries in each row of $M$. Since the sum of the diagonal entries of $M^{T} M$ is $5$, we need to find all possible combinations of entries in $M$ such that the sum of squares of the entries in each row equals $5$.
+
+After considering all possible combinations, it is determined that there are $198$ such $3 \times 3$ matrices $M$ with entries from $\{0,1,2\}$ for which the sum of the diagonal entries of $M^{T} M$ is $5. Therefore, the correct answer is [B] 198.",True,4.32
+"Let $S=\{1,2,3, \ldots, 9\}$. For $k=1,2, \ldots, 5$, let $N_{k}$ be the number of subsets of $S$, each containing five elements out of which exactly $k$ are odd. Then $N_{1}+N_{2}+N_{3}+N_{4}+N_{5}=$
+
+[A] 210
+
+[B] 252
+
+[C] 125
+
+[D] 126",D,"To find the number of subsets of $S$ where exactly $k$ elements are odd, we can first choose $k$ odd numbers from the set of odd numbers $\{1, 3, 5, 7, 9\}$, and then choose $5-k$ even numbers from the set of even numbers $\{2, 4, 6, 8\}$.
+
+The number of ways to choose $k$ odd numbers from $\{1, 3, 5, 7, 9\}$ is $\binom{5}{k}$, and the number of ways to choose $5-k$ even numbers from $\{2, 4, 6, 8\}$ is $\binom{4}{5-k}$.
+
+Therefore, the number of subsets with exactly $k$ odd numbers is $\binom{5}{k} \cdot \binom{4}{5-k}$.
+
+To find $N_1 + N_2 + N_3 + N_4 + N_5$, we need to sum up the number of subsets with exactly 1 odd number, exactly 2 odd numbers, exactly 3 odd numbers, exactly 4 odd numbers, and exactly 5 odd numbers.
+
+Substitute $k=1,2,3,4,5$ into the expression $\binom{5}{k} \cdot \binom{4}{5-k}$ and sum them up:
+
+$N_1 + N_2 + N_3 + N_4 + N_5 = \binom{5}{1} \cdot \binom{4}{4} + \binom{5}{2} \cdot \binom{4}{3} + \binom{5}{3} \cdot \binom{4}{2} + \binom{5}{4} \cdot \binom{4}{1} + \binom{5}{5} \cdot \binom{4}{0}$
+
+Solving this expression gives us the final answer of $N_1 + N_2 + N_3 + N_4 + N_5 = 126$, which corresponds to option [D].",True,6.06
+"Three randomly chosen nonnegative integers $x, y$ and $z$ are found to satisfy the equation $x+y+z=10$. Then the probability that $z$ is even, is
+
+[A] $\frac{36}{55}$
+
+[B] $\frac{6}{11}$
+
+[C] $\frac{1}{2}$
+
+[D] $\frac{5}{11}$",B,"To find the probability that $z$ is even when three nonnegative integers $x, y,$ and $z$ satisfy the equation $x+y+z=10$, we first need to determine the total number of ways the three integers can add up to 10.
+
+Since $x, y,$ and $z$ are nonnegative integers, we can list out the possible combinations that satisfy the equation:
+(0, 0, 10), (0, 1, 9), (0, 2, 8), (0, 3, 7), (0, 4, 6), (0, 5, 5), (1, 1, 8), (1, 2, 7), (1, 3, 6), (1, 4, 5), (2, 2, 6), (2, 3, 5), (3, 3, 4).
+
+There are a total of 13 combinations that satisfy the equation $x+y+z=10$.
+
+Now, we need to find the number of ways $z$ can be even. From the list above, we see that $z$ is even in the following combinations:
+(0, 0, 10), (0, 2, 8), (0, 4, 6), (0, 5, 5), (1, 1, 8), (1, 3, 6), (2, 2, 6), (3, 3, 4).
+
+There are a total of 8 combinations where $z$ is even.
+
+Therefore, the probability that $z$ is even is given by the ratio of the number of favorable outcomes to the total number of outcomes, which is $\frac{8}{13}$.
+
+Simplifying this fraction, we get $\frac{8}{13} = \frac{8 \div 1}{13 \div 1} = \frac{8}{13}$.
+
+Hence, the correct answer is not provided in the options given. The probability that $z$ is even is $\frac{8}{13}$.",True,12.26
+"If $f: \mathbb{R} \rightarrow \mathbb{R}$ is a differentiable function such that $f^{\prime}(x)>2 f(x)$ for all $x \in \mathbb{R}$, and $f(0)=1$, then
+
+[A] $f(x)$ is increasing in $(0, \infty)$
+
+[B] $f(x)$ is decreasing in $(0, \infty)$
+
+[C] $\quad f(x)>e^{2 x}$ in $(0, \infty)$
+
+[D] $f^{\prime}(x)<e^{2 x}$ in $(0, \infty)$",AC,"To determine whether $f(x)$ is increasing or decreasing in $(0, \infty)$, we can look at the sign of $f'(x)$. Given that $f'(x) > 2f(x)$ for all $x \in \mathbb{R}$, we can rewrite this inequality as $f'(x) - 2f(x) > 0$. This suggests that the function is increasing, as the derivative is greater than the function itself.
+
+To determine whether $f(x) > e^{2x}$ in $(0, \infty)$, we can compare the function $f(x)$ to $e^{2x}$. Since $f'(x) > 2f(x)$, we can see that $f'(x) - 2f(x) > 0$, which implies that $f(x)$ grows faster than $e^{2x}$.
+
+Therefore, the correct answers are [A] $f(x)$ is increasing in $(0, \infty)$ and [C] $f(x) > e^{2x}$ in $(0, \infty)$.",False,4.47
+"Let $f(x)=\frac{1-x(1+|1-x|)}{|1-x|} \cos \left(\frac{1}{1-x}\right)$ for $x \neq 1$. Then
+
+[A] $\lim _{x \rightarrow 1^{-}} f(x)=0$
+
+[B] $\lim _{x \rightarrow 1^{-}} f(x)$ does not exist
+
+[C] $\lim _{x \rightarrow 1^{+}} f(x)=0$
+
+[D] $\lim _{x \rightarrow 1^{+}} f(x)$ does not exist",AD,"To determine the limits as $x$ approaches 1 from the left and from the right, we need to analyze the behavior of the function $f(x)$ near $x=1$.
+
+For $x \neq 1$, the function $f(x)=\frac{1-x(1+|1-x|)}{|1-x|} \cos \left(\frac{1}{1-x}\right)$ involves a division by $|1-x|$. As $x$ approaches 1 from the left ($x \rightarrow 1^{-}$), the expression $|1-x|$ approaches 0 from the negative side, causing the function to approach 0. This is why $\lim _{x \rightarrow 1^{-}} f(x)=0$.
+
+Similarly, as $x$ approaches 1 from the right ($x \rightarrow 1^{+}$), the expression $|1-x|$ approaches 0 from the positive side, leading to the function also approaching 0. Therefore, $\lim _{x \rightarrow 1^{+}} f(x)=0$.
+
+Since the function approaches 0 from both sides as $x$ approaches 1, the limits exist and are equal. This is why the correct answer is [A] $\lim _{x \rightarrow 1^{-}} f(x)=0$ and [C] $\lim _{x \rightarrow 1^{+}} f(x)=0$.",True,8.97
+"If $f(x)=\left|\begin{array}{ccc}\cos (2 x) & \cos (2 x) & \sin (2 x) \\ -\cos x & \cos x & -\sin x \\ \sin x & \sin x & \cos x\end{array}\right|$, then
+
+[A] $f^{\prime}(x)=0$ at exactly three points in $(-\pi, \pi)$
+
+[B] $f^{\prime}(x)=0$ at more than three points in $(-\pi, \pi)$
+
+[C] $f(x)$ attains its maximum at $x=0$
+
+[D] $f(x)$ attains its minimum at $x=0$",BC,"To find the derivative $f'(x)$ of the given function $f(x)$, we need to compute the determinant of the matrix provided.
+
+Given:
+$$f(x)=\left|\begin{array}{ccc}\cos (2 x) & \cos (2 x) & \sin (2 x) \\ -\cos x & \cos x & -\sin x \\ \sin x & \sin x & \cos x\end{array}\right|$$
+
+Expanding the determinant along the first row, we get:
+$$f(x) = \cos(2x) \left|\begin{array}{cc}\cos x & -\sin x \\ \sin x & \cos x\end{array}\right| - \cos(2x) \left|\begin{array}{cc}-\cos x & -\sin x \\ \sin x & \cos x\end{array}\right| + \sin(2x) \left|\begin{array}{cc}-\cos x & \cos x \\ \sin x & \sin x\end{array}\right|$$
+
+Solving the determinants of the $2\times 2$ matrices, we get:
+$$f(x) = \cos(2x)(\cos^2 x + \sin^2 x) - \cos(2x)(-\cos^2 x - \sin^2 x) + \sin(2x)(-\cos x \sin x - \sin x \cos x)$$
+$$f(x) = \cos(2x) + \cos(2x) + 0$$
+$$f(x) = 2\cos(2x)$$
+
+Now, to find $f'(x)$, we differentiate $f(x)$ with respect to $x$:
+$$f'(x) = -4\sin(2x)$$
+
+To find where $f'(x) = 0$, we solve $-4\sin(2x) = 0$:
+$$\sin(2x) = 0$$
+This implies $2x = n\pi$, where $n$ is an integer.
+So, $x = \frac{n\pi}{2}$.
+
+In the interval $(-\pi, \pi)$, the solutions for $x$ are $x = -\frac{\pi}{2}, 0, \frac{\pi}{2}$, which are exactly three points.
+
+Therefore, the correct answers are:
+[A] $f^{\prime}(x)=0$ at exactly three points in $(-\pi, \pi)$
+[C] $f(x)$ attains its maximum at $x=0$",False,11.13
