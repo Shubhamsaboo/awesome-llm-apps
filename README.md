@@ -123,6 +123,7 @@ We're launching a Global AI Agent Hackathon in collaboration with AI Agent ecosy
 *   [✨ RAG Agent with Cohere](rag_tutorials/rag_agent_cohere/)
 *   [⛓️ Basic RAG Chain](rag_tutorials/rag_chain/)
 *   [📠 RAG with Database Routing](rag_tutorials/rag_database_routing/)
+*   [🖼️ Vision RAG](rag_tutorials/vision_rag/)
 
 ### MCP AI Agents
 - [🐙 MCP GitHub Agent](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/mcp_ai_agents/github_mcp_agent)
