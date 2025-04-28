@@ -5,3 +5,4 @@ Pillow>=10.0.0
 requests>=2.31.0
 numpy>=1.24.0
 tqdm>=4.66.0
+PyMuPDF>=1.23.0
