@@ -183,4 +183,13 @@ Contributions are welcome! If you have any ideas, improvements, or new apps to a
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Shubhamsaboo/awesome-llm-apps&type=Date)](https://star-history.com/#Shubhamsaboo/awesome-llm-apps&Date)
 
-🌟 **Don’t miss out on future updates! Star the repo now and be the first to know about new and exciting LLM apps with RAG and AI Agents.**
+🌟 **Don't miss out on future updates! Star the repo now and be the first to know about new and exciting LLM apps with RAG and AI Agents.**
+
+### AI Agents Tools/Frameworks
+
+- [AutoGen](https://microsoft.github.io/autogen/) - Microsoft AutoGen. A framework for simplification of orchestration, optimization, and automation of LLM workflows. `python` `agent-framework` `multi-agent`
+- [Baby AGI](https://github.com/yoheinakajima/babyagi) - An AI-powered task management system that uses OpenAI and Pinecone APIs to create, prioritize, and execute tasks. `python` `task-management` `autonomous-agent`
+- [Camel](https://github.com/camel-ai/camel) - A framework for large language model societies for cooperative intelligence. `python` `multi-agent` `cooperative-ai`
+- [CleverBee](https://github.com/SureScaleAI/cleverbee) - AI-Powered Online Data Information Synthesis Assistant with web browsing and interactive UI. `python` `agent` `research` `playwright` `chainlit` `mcp`
+- [Crew AI](https://github.com/joaomdmoura/crewAI) - Cutting-edge framework for orchestrating role-playing, autonomous AI agents. `python` `agent-framework` `multi-agent`
+- [Godmode](https://godmode.space/) - AI chat browser. Fully customizable. Deploy agents in seconds. `web` `no-code` `agent-platform`
