@@ -1,0 +1,9 @@
+agno==1.2.13
+mcp==1.6.0
+streamlit==1.44.1
+google-api-python-client==2.118.0
+google-auth==2.28.1
+google-auth-oauthlib==1.2.0
+python-dotenv==1.0.1
+requests==2.31.0
+openai==1.12.0
