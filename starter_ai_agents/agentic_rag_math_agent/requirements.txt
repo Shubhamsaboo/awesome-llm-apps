@@ -1,0 +1,14 @@
+
+# Optional: For running in async contexts
+nest-asyncio
+openai==1.61.0
+llama-index==0.12.33
+llama-index-vector-stores-qdrant==0.6.0
+qdrant-client==1.14.1
+dspy==2.6.18
+faiss-cpu==1.10.0
+tavily-python==0.5.4
+python-dotenv==1.1.0
+streamlit==1.44.1
+pandas==2.2.3
+requests==2.32.3

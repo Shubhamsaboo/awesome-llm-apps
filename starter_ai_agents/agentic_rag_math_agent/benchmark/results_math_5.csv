@@ -1,0 +1,152 @@
+Question,Expected,Predicted,Correct,TimeTakenSec
+"Let $-\frac{\pi}{6}<\theta<-\frac{\pi}{12}$. Suppose $\alpha_{1}$ and $\beta_{1}$ are the roots of the equation $x^{2}-2 x \sec \theta+1=0$ and $\alpha_{2}$ and $\beta_{2}$ are the roots of the equation $x^{2}+2 x \tan \theta-1=0$. If $\alpha_{1}>\beta_{1}$ and $\alpha_{2}>\beta_{2}$, then $\alpha_{1}+\beta_{2}$ equals
+
+(A) $2(\sec \theta-\tan \theta)$
+
+(B) $2 \sec \theta$
+
+(C) $-2 \tan \theta$
+
+(D) 0",C,"To find the values of $\alpha_{1}$ and $\beta_{1}$, we need to solve the equation $x^{2}-2 x \sec \theta+1=0$. This is a quadratic equation in the form $ax^{2}+bx+c=0$, where $a=1$, $b=-2\sec\theta$, and $c=1$. 
+
+The roots of a quadratic equation $ax^{2}+bx+c=0$ are given by the formula $x=\frac{-b\pm\sqrt{b^{2}-4ac}}{2a}$. 
+
+For the equation $x^{2}-2 x \sec \theta+1=0$, we have $a=1$, $b=-2\sec\theta$, and $c=1$. Plugging these values into the formula, we get:
+
+$\alpha_{1}=\frac{2\sec\theta+\sqrt{4\sec^{2}\theta-4}}{2}=\sec\theta+\sqrt{\sec^{2}\theta-1}$
+
+$\beta_{1}=\frac{2\sec\theta-\sqrt{4\sec^{2}\theta-4}}{2}=\sec\theta-\sqrt{\sec^{2}\theta-1}$
+
+Since $\alpha_{1}>\beta_{1}$, we have $\sec\theta+\sqrt{\sec^{2}\theta-1}>\sec\theta-\sqrt{\sec^{2}\theta-1}$. 
+
+Now, to find the values of $\alpha_{2}$ and $\beta_{2}$, we need to solve the equation $x^{2}+2 x \tan \theta-1=0$. This is a quadratic equation in the form $ax^{2}+bx+c=0$, where $a=1$, $b=2\tan\theta$, and $c=-1$. 
+
+Using the quadratic formula, we find:
+
+$\alpha_{2}=\frac{-2\tan\theta+\sqrt{4\tan^{2}\theta+4}}{2}=-\tan\theta+\sqrt{\tan^{2}\theta+1}$
+
+$\beta_{2}=\frac{-2\tan\theta-\sqrt{4\tan^{2}\theta+4}}{2}=-\tan\theta-\sqrt{\tan^{2}\theta+1}$
+
+Since $\alpha_{2}>\beta_{2}$, we have $-\tan\theta+\sqrt{\tan^{2}\theta+1}>-\tan\theta-\sqrt{\tan^{2}\theta+1}$. 
+
+Finally, we need to find $\alpha_{1}+\beta_{2}$. Substituting the values we found earlier, we get:
+
+$\alpha_{1}+\beta_{2}=(\sec\theta+\sqrt{\sec^{2}\theta-1})+(-\tan\theta-\sqrt{\tan^{2}\theta+1})$
+
+Simplifying this expression, we get:
+
+$\alpha_{1}+\beta_{2}=\sec\theta-\tan\theta$
+
+Therefore, the correct answer is $\boxed{C) -2\tan\theta}$.",True,9.85
+"A debate club consists of 6 girls and 4 boys. A team of 4 members is to be selected from this club including the selection of a captain (from among these 4 members) for the team. If the team has to include at most one boy, then the number of ways of selecting the team is
+
+(A) 380
+
+(B) 320
+
+(C) 260
+
+(D) 95",A,"To solve this problem, we need to consider the different scenarios for selecting the team with at most one boy.
+
+1. Selecting a team with no boys:
+In this case, we need to select 4 girls from the 6 available girls. This can be done in 6 choose 4 ways, which is equal to 15 ways.
+
+2. Selecting a team with one boy:
+We can select 1 boy from the 4 available boys and 3 girls from the 6 available girls. This can be done in 4 choose 1 * 6 choose 3 ways, which is equal to 80 ways.
+
+Therefore, the total number of ways of selecting the team with at most one boy is the sum of the ways from the two scenarios:
+15 (from scenario 1) + 80 (from scenario 2) = 95 ways.
+
+So, the correct answer is (D) 95.",True,4.15
+"Let $S=\left\{x \in(-\pi, \pi): x \neq 0, \pm \frac{\pi}{2}\right\}$. The sum of all distinct solutions of the equation $\sqrt{3} \sec x+\operatorname{cosec} x+2(\tan x-\cot x)=0$ in the set $S$ is equal to
+
+(A) $-\frac{7 \pi}{9}$
+
+(B) $-\frac{2 \pi}{9}$
+
+(C) 0
+
+(D) $\frac{5 \pi}{9}$",C,"To find the sum of all distinct solutions of the given equation in the set $S$, we first need to simplify the equation.
+
+Given equation: $\sqrt{3} \sec x+\csc x+2(\tan x-\cot x)=0$
+
+Recall that $\sec x = \frac{1}{\cos x}$ and $\csc x = \frac{1}{\sin x}$.
+
+Substitute these values into the equation:
+$\sqrt{3} \frac{1}{\cos x} + \frac{1}{\sin x} + 2(\frac{\sin x}{\cos x} - \frac{\cos x}{\sin x}) = 0$
+
+Simplify the equation:
+$\frac{\sqrt{3}}{\cos x} + \frac{1}{\sin x} + 2(\frac{\sin^2 x - \cos^2 x}{\sin x \cos x}) = 0$
+
+$\frac{\sqrt{3}\sin x + \cos x}{\sin x \cos x} + 2(\frac{\sin^2 x - \cos^2 x}{\sin x \cos x}) = 0$
+
+$\frac{\sqrt{3}\sin x + \cos x + 2\sin^2 x - 2\cos^2 x}{\sin x \cos x} = 0$
+
+$\frac{2\sin^2 x + \sqrt{3}\sin x - 2\cos^2 x + \cos x}{\sin x \cos x} = 0$
+
+Now, we need to find the solutions of this equation in the set $S$, which is $(-\pi, \pi)$ excluding $0, \pm \frac{\pi}{2}$.
+
+By solving the equation and considering the restrictions, we find that the distinct solutions in the set $S$ are $x = \frac{5\pi}{6}$ and $x = -\frac{\pi}{6}$.
+
+Therefore, the sum of all distinct solutions in the set $S$ is $\frac{5\pi}{6} + (-\frac{\pi}{6}) = \frac{4\pi}{6} = \frac{2\pi}{3}$.
+
+The correct answer is not provided in the options given.",True,20.71
+"A computer producing factory has only two plants $T_{1}$ and $T_{2}$. Plant $T_{1}$ produces $20 \%$ and plant $T_{2}$ produces $80 \%$ of the total computers produced. $7 \%$ of computers produced in the factory turn out to be defective. It is known that
+
+$P$ (computer turns out to be defective given that it is produced in plant $T_{1}$ )
+
+$=10 P\left(\right.$ computer turns out to be defective given that it is produced in plant $\left.T_{2}\right)$,
+
+where $P(E)$ denotes the probability of an event $E$. A computer produced in the factory is randomly selected and it does not turn out to be defective. Then the probability that it is produced in plant $T_{2}$ is
+
+(A) $\frac{36}{73}$
+
+(B) $\frac{47}{79}$
+
+(C) $\frac{78}{93}$
+
+(D) $\frac{75}{83}$",C,"To find the probability that a computer selected randomly and not defective is produced in plant $T_{2}$, we can use Bayes' Theorem.
+
+Let $D$ be the event that a computer is defective, and $T_{1}$ and $T_{2}$ be the events that a computer is produced in plant $T_{1}$ and plant $T_{2}$ respectively.
+
+We are given:
+$P(D) = 0.07$
+$P(D|T_{1}) = 0.1P(D|T_{2})$
+
+We want to find $P(T_{2}|D')$, where $D'$ is the event that a computer is not defective.
+
+By Bayes' Theorem:
+$P(T_{2}|D') = \frac{P(D'|T_{2})P(T_{2})}{P(D')}$
+$P(D') = 1 - P(D) = 0.93$
+
+We know that $P(D|T_{1}) = 0.1P(D|T_{2})$, so $P(D|T_{1}) = 0.1(1 - P(D|T_{1}))$.
+This gives us $0.1 = 0.1 - 0.1P(D|T_{1})$, which simplifies to $P(D|T_{1}) = 0$.
+
+Therefore, $P(D'|T_{1}) = 1 - P(D|T_{1}) = 1$.
+
+Now we can calculate $P(T_{2}|D')$:
+$P(T_{2}|D') = \frac{P(D'|T_{2})P(T_{2})}{P(D')}$
+$P(T_{2}|D') = \frac{(1)(0.8)}{0.93} = \frac{0.8}{0.93} = \frac{80}{93}$
+
+Therefore, the correct answer is (C) $\frac{78}{93}$.",True,6.32
+"The least value of $\alpha \in \mathbb{R}$ for which $4 \alpha x^{2}+\frac{1}{x} \geq 1$, for all $x>0$, is
+
+(A) $\frac{1}{64}$
+
+(B) $\frac{1}{32}$
+
+(C) $\frac{1}{27}$
+
+(D) $\frac{1}{25}$",C,"To find the least value of $\alpha$ for which $4\alpha x^{2} + \frac{1}{x} \geq 1$ for all $x > 0$, we need to analyze the inequality.
+
+First, let's rewrite the inequality as $4\alpha x^{3} + 1 \geq x$.
+
+Since this inequality must hold for all $x > 0$, we can consider the limit as $x$ approaches $0$ to find the least value of $\alpha$.
+
+Taking the limit as $x$ approaches $0$ on both sides of the inequality, we get:
+$\lim_{x \to 0} (4\alpha x^{3} + 1) \geq \lim_{x \to 0} x$
+$1 \geq 0$
+
+This shows that the inequality holds for all $x > 0$ when $\alpha = \frac{1}{27}$.
+
+Therefore, the correct answer is (C) $\frac{1}{27}$.",True,11.42
