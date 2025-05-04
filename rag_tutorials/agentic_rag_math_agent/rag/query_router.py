@@ -6,7 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import os
 import requests
-import openai  # ✅ now using the real OpenAI SDK
+import openai  
 import json
 import inspect
 from llama_index.core import StorageContext,load_index_from_storage
@@ -78,7 +78,7 @@ Web Content:
 Now write a clear, accurate, and step-by-step explanation of the student's question.
 Only include valid math steps — do not guess or make up answers.
 """
-    llm = OpenAI(api_key=OPENAI_API_KEY, model="gpt-3.5-turbo")
+    llm = OpenAI(api_key=OPENAI_API_KEY, model="gpt-4o")
     response = llm.complete(prompt)
     return response.text
 
@@ -118,7 +118,7 @@ Do not change the final answer. You are only allowed to explain what is already 
 Use the KB content as your only source. Do not guess or recalculate.
 """
 
-            llm = OpenAI(api_key=OPENAI_API_KEY, model="gpt-3.5-turbo")
+            llm = OpenAI(api_key=OPENAI_API_KEY, model="gpt-4o")
             answer = llm.complete(prompt).text
             from_kb = True
         else:
