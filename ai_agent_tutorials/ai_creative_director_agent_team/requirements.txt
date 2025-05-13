@@ -1,0 +1,7 @@
+openai
+openai-agents
+numpy
+python-dotenv
+streamlit
+requests
+Pillow
