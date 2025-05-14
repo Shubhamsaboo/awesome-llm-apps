@@ -58,13 +58,22 @@ pip install -r requirements.txt
 
 ```bash
 ollama pull qwen3:1.7b # Or any other model you want to use
-ollama run snowflake-arctic-embed # Or any other model you want to use
+ollama pull snowflake-arctic-embed # Or any other model you want to use
 ```
+4. Run Qdrant locally through docker
+```bash
+docker pull qdrant/qdrant
+
+docker run -p 6333:6333 -p 6334:6334 \
+    -v "$(pwd)/qdrant_storage:/qdrant/storage:z" \
+    qdrant/qdrant
+```
+
 
 4. Get your API keys:
 
-   - Qdrant API key and URL (for vector database)
    - Exa API key (optional, for web search)
+   
 5. Run the application:
 
 ```bash
