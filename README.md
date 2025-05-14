@@ -70,7 +70,6 @@ We're launching a Global AI Agent Hackathon in collaboration with AI Agent ecosy
 *   [🎯 AI Lead Generation Agent](advanced_ai_agents/single_agent_apps/ai_lead_generation_agent/)
 *   [💰 AI Financial Coach Agent](advanced_ai_agents/multi_agent_apps/ai_financial_coach_agent/)
 *   [🎬 AI Movie Production Agent](advanced_ai_agents/single_agent_apps/ai_movie_production_agent/)
-*   [🏠 AI Real Estate Agent](advanced_ai_agents/single_agent_apps/ai_real_estate_agent/)
 *   [📈 AI Investment Agent](advanced_ai_agents/single_agent_apps/ai_investment_agent/)
 *   [🏋️‍♂️ AI Health & Fitness Agent](advanced_ai_agents/single_agent_apps/ai_health_fitness_agent/)
 *   [🗞️ AI Journalist Agent](advanced_ai_agents/single_agent_apps/ai_journalist_agent/)
