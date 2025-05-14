@@ -46,12 +46,6 @@ st.info("**Gemma 3:** These models are multimodal—processing text and images�
 # -------------------------
 
 # Session State Initialization
-if 'google_api_key' not in st.session_state:
-    st.session_state.google_api_key = ""
-if 'qdrant_api_key' not in st.session_state:
-    st.session_state.qdrant_api_key = ""
-if 'qdrant_url' not in st.session_state:
-    st.session_state.qdrant_url = ""
 if 'model_version' not in st.session_state:
     st.session_state.model_version = "qwen3:1.7b"  # Default to lighter model
 if 'vector_store' not in st.session_state:
@@ -105,17 +99,6 @@ if st.sidebar.button("✨ Clear Chat"):
 
 # Show API Configuration only if RAG is enabled
 if st.session_state.rag_enabled:
-    st.sidebar.header("🗝️ API Keys")
-    qdrant_api_key = st.sidebar.text_input("Qdrant API Key", type="password", value=st.session_state.qdrant_api_key)
-    qdrant_url = st.sidebar.text_input("Qdrant URL", 
-                                     placeholder="https://your-cluster.cloud.qdrant.io:6333",
-                                     value=st.session_state.qdrant_url)
-
-    # Update session state
-    st.session_state.qdrant_api_key = qdrant_api_key
-    st.session_state.qdrant_url = qdrant_url
-    
-    # Search Configuration (only shown in RAG mode)
     st.sidebar.header("🔬 Search Tuning")
     st.session_state.similarity_threshold = st.sidebar.slider(
         "Similarity Threshold",
@@ -150,20 +133,14 @@ if st.session_state.use_web_search:
 
 # Utility Functions
 def init_qdrant() -> QdrantClient | None:
-    """Initialize Qdrant client with configured settings.
+    """Initialize Qdrant client with local Docker setup.
 
     Returns:
         QdrantClient: The initialized Qdrant client if successful.
         None: If the initialization fails.
     """
-    if not all([st.session_state.qdrant_api_key, st.session_state.qdrant_url]):
-        return None
     try:
-        return QdrantClient(
-            url=st.session_state.qdrant_url,
-            api_key=st.session_state.qdrant_api_key,
-            timeout=60
-        )
+        return QdrantClient(url="http://localhost:6333")
     except Exception as e:
         st.error(f"🔴 Qdrant connection failed: {str(e)}")
         return None
