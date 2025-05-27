@@ -18,7 +18,7 @@ The AI Reasoning Agent leverages advanced AI models to provide insightful reason
 2. **Install the required packages**:
     #### For Local AI Reasoning Agent
     ```bash
-    pip install -r requirements_local_ai_reasoning_agent.txt
+    pip install -r requirements.txt
     ```
 
 3. **Run the application**:
