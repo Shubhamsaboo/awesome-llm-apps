@@ -13,7 +13,7 @@ This Streamlit app is an AI-powered investment agent built with Agno's AI Agent 
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-cd awesome-llm-apps/ai_agent_tutorials/ai_investment_agent
+cd advanced_ai_agents/single_agent_apps/ai_investment_agent
 ```
 2. Install the required dependencies:
 

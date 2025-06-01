@@ -12,7 +12,7 @@ This Streamlit app is an AI-powered movie production assistant that helps bring 
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-cd awesome-llm-apps/ai_agent_tutorials/ai_movie_production_agent
+cd advanced_ai_agents/single_agent_apps/ai_movie_production_agent
 ```
 2. Install the required dependencies:
 

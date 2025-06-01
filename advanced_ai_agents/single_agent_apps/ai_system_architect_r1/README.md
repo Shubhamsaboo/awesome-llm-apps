@@ -31,7 +31,7 @@ An Agno agentic system that provides expert software architecture analysis and r
    ```bash
    # Clone the repository
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-   cd awesome-llm-apps/ai_agent_tutorials/ai_system_architect_r1
+   cd advanced_ai_agents/single_agent_apps/ai_system_architect_r1
    
    # Install dependencies
    pip install -r requirements.txt
