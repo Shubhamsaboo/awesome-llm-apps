@@ -14,7 +14,7 @@ This Streamlit application leverages multiple AI agents to create comprehensive 
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-cd awesome-llm-apps/ai_agent_tutorials/ai_meeting_agent
+cd advanced_ai_agents/single_agent_apps/ai_meeting_agent
 ```
 2. Install the required dependencies:
 
