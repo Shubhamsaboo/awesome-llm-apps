@@ -67,18 +67,3 @@ pip install -r requirements.txt
 5. Review the two-part analysis:
    - Initial bullet points for quick insights
    - Expanded report with detailed analysis
-
-
-## 📦 Output Structure
-
-The analysis is structured in two parts:
-
-1. **Quick Bullet Points** (max 10 bullets)
-   - Concise key findings
-   - Easy to scan and share
-
-2. **Expanded Analysis** (~1200 words)
-   - Executive Summary (<120 words)
-   - Deep Dive Analysis (with sub-headings)
-   - Actionable Recommendations
-   - Key Risks / Watch-outs
