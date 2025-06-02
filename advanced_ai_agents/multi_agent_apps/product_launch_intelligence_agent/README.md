@@ -1,69 +1,73 @@
 # 🚀 Product Launch Intelligence Agent
 
 A **streamlined intelligence hub** for Go-To-Market (GTM) & Product-Marketing teams.  
-Built with **Agno + Firecrawl + Streamlit**, the app turns scattered public-web data into concise, actionable launch insights.
+Built with **Streamlit + Agno (GPT-4o) + Firecrawl**, the app turns scattered public-web data into concise, actionable launch insights.
 
-
-## 🎯 Core Use-Cases
+## 3 Specialized Agents
 
 | Tab | What You Get |
 |-----|--------------|
-| **Competitor Analysis** | GTM-focused breakdown of a rival's latest launches – key messaging, differentiators, pricing cues & launch channels |
-| **Market Sentiment** | Consolidated review themes & social chatter split by 🚀 *positive* / ⚠️ *negative* drivers |
-| **Launch Metrics** | Publicly available KPIs – press coverage, engagement numbers, qualitative "buzz" signals |
+| **Competitor Analysis Agent** | Evidence-backed breakdown of a rival's latest launches – positioning, differentiators, pricing cues & channel mix |
+| **Market Sentiment Agent** | Consolidated social chatter & review themes split by 🚀 *positive* / ⚠️ *negative* drivers |
+| **Launch Metrics Agent** | Publicly available KPIs – adoption numbers, press coverage, qualitative "buzz" signals |
 
+Additional goodies:
 
-Responses are neatly rendered in markdown with a two-step process:
-1. First, a concise bullet list of key findings
-2. Then, an expanded 1200-word analysis with executive summary, deep dive, and recommendations
-
+* 🔑 **Sidebar key input** – enter OpenAI & Firecrawl keys securely (type="password")
+* 🧠 **Specialised multi-agent core** – three expert agents collaborate for richer insight
+  * 🔍 Product Launch Analyst (GTM strategist)
+  * 💬 Market Sentiment Specialist (consumer-perception guru)
+  * 📈 Launch Metrics Specialist (performance analyst)
+* ⚡ **Quick actions** – press **J/K/L** to trigger the three analyses without touching the UI
+* 📑 **Auto-formatted Markdown reports** – bullet summary first, then expanded deep-dive
+* 🛠️ **Sources section** – every report ends with the URLs that were crawled or searched
 
 ## 🛠️ Tech Stack
 
 | Layer | Details |
 |-------|---------|
-| Data | **Firecrawl** search + crawl (async, poll-based) |
-| Agent | **Agno** single-agent with FirecrawlTools & markdown output |
-| UI | **Streamlit** wide layout, custom CSS, tabbed workflow |
-| LLM | **OpenAI GPT-4o** for analysis and insights |
+| Data | **Firecrawl** async search + crawl API |
+| Agents | **Agno** (GPT-4o) with FirecrawlTools |
+| UI | **Streamlit** wide-layout, tabbed workflow |
+| LLM | **OpenAI GPT-4o** |
 
+## 🚀 Quick Start
 
-### How to get Started?
-
-1. Clone the GitHub repository
+1. **Clone** the repository
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd advanced_ai_agents/multi_agent_apps/product_launch_intelligence_agent
 ```
-2. Install the required dependencies:
+
+2. **Install** dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
-3. **Set up API Keys**
-   You can provide your API keys in two ways:
-   - **Environment Variables**: Add to `.env` file
-     ```ini
-     OPENAI_API_KEY=sk-************************
-     FIRECRAWL_API_KEY=fc-************************
-     ```
-   - **UI Input**: Enter keys directly in the app's sidebar
 
-3. **Run**
-   ```bash
-   streamlit run product_launch_intelligence_agent.py
+3. **Provide API keys** (choose either option)
+
+   • **Environment variables** – create a `.env` file:
+   ```ini
+   OPENAI_API_KEY=sk-************************
+   FIRECRAWL_API_KEY=fc-************************
    ```
+   • **In-app sidebar** – paste the keys into the secure text inputs
 
-4. **Navigate** to <http://localhost:8501> and start exploring.
+4. **Run the app**
 
+```bash
+streamlit run product_launch_intelligence_agent.py
+```
+
+5. **Browse** to <http://localhost:8501> – you should see three analysis tabs.
 
 ## 🕹️ Using the Application
 
-1. **Enter API Keys** in the sidebar if not set in environment variables
-2. Pick a tab (Competitor ▸ Sentiment ▸ Metrics)
-3. Enter the **company / product / hashtag** requested
-4. Hit **Analyze** – a spinner indicates data gathering
-5. Review the two-part analysis:
-   - Initial bullet points for quick insights
-   - Expanded report with detailed analysis
+1. Enter **API keys** in the sidebar (or ensure they are in your environment).
+2. Type a **company / product / hashtag** in the main input box.
+3. Pick a tab and hit the corresponding **Analyze** button – a spinner will appear while the agent works.
+4. Review the two-part analysis:
+   * Bullet list of key findings
+   * Expanded, richly-formatted report (tables, call-outs, recommendations)
