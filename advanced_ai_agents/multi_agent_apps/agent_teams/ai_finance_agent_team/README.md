@@ -15,7 +15,7 @@ This script demonstrates how to build a team of AI agents that work together as 
 1. Clone the GitHub repository
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-cd awesome-llm-apps/ai_agent_tutorials/ai_finance_agent_team
+cd advanced_ai_agents/multi_agent_apps/agent_teams/ai_finance_agent_team
 ```
 
 2. Install the required dependencies:
