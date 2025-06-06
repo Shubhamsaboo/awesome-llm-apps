@@ -60,7 +60,7 @@ You'll need the following API keys:
 
 3. **Run the Application:**
     ```bash
-    streamlit run agentic_rag.py
+    streamlit run rag_reasoning_agent.py
     ```
 
 4. **Configure API Keys:**
