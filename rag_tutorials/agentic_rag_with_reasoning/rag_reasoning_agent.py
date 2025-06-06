@@ -1,21 +1,25 @@
 import streamlit as st
 from agno.agent import Agent, RunEvent
-from agno.embedder.cohere import CohereEmbedder
+from agno.embedder.openai import OpenAIEmbedder
 from agno.knowledge.url import UrlKnowledge
 from agno.models.anthropic import Claude
-from agno.reranker.cohere import CohereReranker
 from agno.tools.reasoning import ReasoningTools
 from agno.vectordb.lancedb import LanceDb, SearchType
+from dotenv import load_dotenv
+import os
+
+# Load environment variables
+load_dotenv()
 
 # Page configuration
 st.set_page_config(
     page_title="Agentic RAG with Reasoning", 
-    page_icon="🧠", 
+    page_icon="🧐", 
     layout="wide"
 )
 
 # Main title and description
-st.title("🧠 Agentic RAG with Reasoning")
+st.title("🧐 Agentic RAG with Reasoning")
 st.markdown("""
 This app demonstrates an AI agent that:
 1. **Retrieves** relevant information from knowledge sources
@@ -32,17 +36,19 @@ with col1:
     anthropic_key = st.text_input(
         "Anthropic API Key", 
         type="password",
+        value=os.getenv("ANTHROPIC_API_KEY", ""),
         help="Get your key from https://console.anthropic.com/"
     )
 with col2:
-    cohere_key = st.text_input(
-        "Cohere API Key", 
+    openai_key = st.text_input(
+        "OpenAI API Key", 
         type="password",
-        help="Get your key from https://dashboard.cohere.ai/"
+        value=os.getenv("OPENAI_API_KEY", ""),
+        help="Get your key from https://platform.openai.com/"
     )
 
-# Check if both API keys are provided
-if anthropic_key and cohere_key:
+# Check if API keys are provided
+if anthropic_key and openai_key:
     
     # Initialize knowledge base (cached to avoid reloading)
     @st.cache_resource(show_spinner="📚 Loading knowledge base...")
@@ -53,18 +59,13 @@ if anthropic_key and cohere_key:
             vector_db=LanceDb(
                 uri="tmp/lancedb",
                 table_name="agno_docs",
-                search_type=SearchType.hybrid,  # Uses both keyword and semantic search
-                embedder=CohereEmbedder(
-                    id="embed-v4.0", 
-                    api_key=cohere_key
-                ),
-                reranker=CohereReranker(
-                    model="rerank-v3.5", 
-                    api_key=cohere_key
+                search_type=SearchType.vector,  # Use vector search
+                embedder=OpenAIEmbedder(
+                    api_key=openai_key
                 ),
             ),
         )
-        kb.load(recreate=False)  # Load documents into vector DB
+        kb.load(recreate=True)  # Load documents into vector DB
         return kb
 
     # Initialize agent (cached to avoid reloading)
@@ -202,8 +203,8 @@ else:
     1. **Anthropic API Key** - For Claude AI model
        - Sign up at [console.anthropic.com](https://console.anthropic.com/)
     
-    2. **Cohere API Key** - For embeddings and reranking
-       - Sign up at [dashboard.cohere.ai](https://dashboard.cohere.ai/)
+    2. **OpenAI API Key** - For embeddings
+       - Sign up at [platform.openai.com](https://platform.openai.com/)
     
     Once you have both keys, enter them above to start!
     """)
@@ -215,16 +216,14 @@ with st.expander("📖 How This Works"):
     **This app uses the Agno framework to create an intelligent Q&A system:**
     
     1. **Knowledge Loading**: URLs are processed and stored in a vector database (LanceDB)
-    2. **Hybrid Search**: Combines keyword and semantic search to find relevant information
+    2. **Vector Search**: Uses OpenAI's embeddings for semantic search to find relevant information
     3. **Reasoning Tools**: The agent uses special tools to think through problems step-by-step
     4. **Claude AI**: Anthropic's Claude model processes the information and generates answers
-    5. **Reranking**: Cohere's reranker ensures the most relevant information is used
     
     **Key Components:**
     - `UrlKnowledge`: Manages document loading from URLs
     - `LanceDb`: Vector database for efficient similarity search
-    - `CohereEmbedder`: Converts text to embeddings for semantic search
-    - `CohereReranker`: Improves search result relevance
+    - `OpenAIEmbedder`: Converts text to embeddings using OpenAI's embedding model
     - `ReasoningTools`: Enables step-by-step reasoning
     - `Agent`: Orchestrates everything to answer questions
     """)
