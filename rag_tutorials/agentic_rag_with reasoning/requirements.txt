@@ -1,0 +1,8 @@
+streamlit
+agno
+anthropic
+cohere
+lancedb
+pandas
+numpy
+pyarrow
