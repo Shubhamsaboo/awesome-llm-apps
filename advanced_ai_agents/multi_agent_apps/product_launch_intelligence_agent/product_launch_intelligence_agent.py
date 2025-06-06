@@ -9,7 +9,7 @@ import os
 
 # ---------------- Page Config ----------------
 st.set_page_config(
-    page_title="Product Intelligence Agent", 
+    page_title="AI Product Intelligence Agent", 
     page_icon="🚀", 
     layout="wide",
     initial_sidebar_state="expanded"
@@ -213,7 +213,7 @@ def expand_metrics_report(bullet_text: str, launch: str) -> str:
     return resp.content if hasattr(resp, "content") else str(resp)
 
 # ---------------- UI ----------------
-st.title("🚀 Product Launch Intelligence Agent")
+st.title("🚀 AI Product Launch Intelligence Agent")
 st.markdown("*AI-powered insights for GTM, Product Marketing & Growth Teams*")
 
 st.divider()

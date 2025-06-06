@@ -1,4 +1,4 @@
-# 🚀 Product Launch Intelligence Agent
+# 🚀 AI Product Launch Intelligence Agent
 
 A **streamlined intelligence hub** for Go-To-Market (GTM) & Product-Marketing teams.  
 Built with **Streamlit + Agno (GPT-4o) + Firecrawl**, the app turns scattered public-web data into concise, actionable launch insights.
