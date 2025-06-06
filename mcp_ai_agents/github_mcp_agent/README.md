@@ -1,4 +1,4 @@
-# 🐙 MCP GitHub Agent
+# 🐙 GitHub MCP Agent
 
 A Streamlit application that allows you to explore and analyze GitHub repositories using natural language queries through the Model Context Protocol (MCP).
 
