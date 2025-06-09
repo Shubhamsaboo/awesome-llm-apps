@@ -2,76 +2,76 @@ import random
 from langchain_ollama import ChatOllama
 
 
-# --- Funzione per generare un'estrazione casuale di carte ---
-def genera_estrazione_casuale(numero_carte, nomi_carte_dataset):
+# --- Function to generate a random draw of cards ---
+def generate_random_draw(num_cards, card_names_dataset):
     """
-    Genera una lista di dizionari rappresentanti un'estrazione casuale di carte.
+    Generates a list of dictionaries representing a random draw of cards.
 
     Args:
-        numero_carte (int): Il numero di carte da includere nell'estrazione (3, 5 o 7).
-        nomi_carte_dataset (list): Una lista di stringhe contenenti i nomi delle carte disponibili nel dataset.
+        num_cards (int): The number of cards to include in the draw (3, 5, or 7).
+        card_names_dataset (list): A list of strings containing the names of the available cards in the dataset.
 
     Returns:
-        list: Una lista di dizionari, dove ogni dizionario ha la chiave "nome" (il nome della carta estratta)
-              e una chiave opzionale "rovesciata" (True se la carta è rovesciata, altrimenti assente).
+        list: A list of dictionaries, where each dictionary has the key "name" (the name of the drawn card)
+              and an optional "is_reversed" key (True if the card is reversed, otherwise absent).
     """
-    if numero_carte not in [3, 5, 7]:
-        raise ValueError("Il numero di carte deve essere 3, 5 o 7.")
+    if num_cards not in [3, 5, 7]:
+        raise ValueError("The number of cards must be 3, 5, or 7.")
 
-    estrazione = []
-    carte_estratte = random.sample(nomi_carte_dataset, numero_carte)
+    drawn_cards = []
+    drawn_cards_sample = random.sample(card_names_dataset, num_cards)
 
-    for nome_carta in carte_estratte:
-        carta = {"nome": nome_carta}
+    for card_name in drawn_cards_sample:
+        card = {"name": card_name}
         if random.choice([True, False]):
-            carta["rovesciata"] = True
-        estrazione.append(carta)
+            card["is_reversed"] = True
+        drawn_cards.append(card)
 
-    return estrazione
+    return drawn_cards
 
-# --- Funzioni Helper per la catena LangChain ---
-def format_card_details_for_prompt(cards_data, card_meanings_dict):
-    """Formatta i dettagli delle carte (nome + significato dritto/rovescio) per il prompt."""
+# --- Helper Functions for LangChain Chain ---
+def format_card_details_for_prompt(card_data, card_meanings):
+    """Formats card details (name + upright/reversed meaning) for the prompt."""
     details = []
-    for card_info in cards_data:
-        card_name = card_info['nome']
-        is_reversed = card_info.get('rovesciata', False)
-        if card_name in card_meanings_dict:
-            meanings = card_meanings_dict[card_name]
-            if is_reversed and 'rovescio' in meanings:
-                meaning = meanings['rovescio']
-                orientation = "(rovesciata)"
+    for card_info in card_data:
+        card_name = card_info['name']
+        is_reversed = card_info.get('is_reversed', False)
+        if card_name in card_meanings:
+            meanings = card_meanings[card_name]
+            if is_reversed and 'reversed' in meanings:
+                meaning = meanings['reversed']
+                orientation = "(reversed)"
             else:
-                meaning = meanings['dritto']
-                orientation = "(dritta)"
-            details.append(f"Carta: {card_name} {orientation} - Significato: {meaning}")
+                meaning = meanings['upright']
+                orientation = "(upright)"
+            details.append(f"Card: {card_name} {orientation} - Meaning: {meaning}")
         else:
-            details.append(f"Significato di '{card_name}' non trovato nel dataset.")
+            details.append(f"Meaning of '{card_name}' not found in the dataset.")
     return "\n".join(details)
 
 def prepare_prompt_input(input_dict, meanings_dict):
-    """Prepara l'input per il prompt recuperando i dettagli delle carte."""
-    cards_list = input_dict['carte']
-    contesto = input_dict['contesto']
-    formatted_details = format_card_details_for_prompt(cards_list, meanings_dict)
-    # Estrai e concatena il simbolismo di ogni carta
-    simbolismi = []
-    for card_info in cards_list:
-        card_name = card_info['nome']
+    """Prepares the input for the prompt by retrieving card details."""
+    card_list = input_dict['cards']
+    context = input_dict['context']
+    formatted_details = format_card_details_for_prompt(card_list, meanings_dict)
+    # Extract and concatenate the symbolism of each card
+    symbolisms = []
+    for card_info in card_list:
+        card_name = card_info['name']
         if card_name in meanings_dict:
-            simbolismo = meanings_dict[card_name].get('simbolismo', '')
-            if simbolismo:
-                simbolismi.append(f"{card_name}: {simbolismo}")
-    simbolismo_str = "\n".join(simbolismi)
-    return {"card_details": formatted_details, "contesto": contesto, "simbolismo": simbolismo_str}
+            symbolism = meanings_dict[card_name].get('symbolism', '')
+            if symbolism:
+                symbolisms.append(f"{card_name}: {symbolism}")
+    symbolism_str = "\n".join(symbolisms)
+    return {"card_details": formatted_details, "context": context, "symbolism": symbolism_str}
 
-# --- Configura il modello LLM ---
+# --- Configure the LLM model ---
 llm = ChatOllama(
     base_url ="http://localhost:11434",
     model = "phi4",
     temperature = 0.8,
 )
-print(f"\nModello LLM '{llm.model}' configurato.")
+print(f"\nLLM model '{llm.model}' configured.")
 
 
-print("\nCatena 'analizzatore' definita.")
+print("\nChain 'analyzer' defined.")

@@ -1,34 +1,32 @@
-# ✨ The Magician IA Reader: AI-Powered Italian NLP & Tarot Insights ✨
+# ✨ The Magician IA Reader: AI-Powered NLP & Tarot Insights ✨
 
-Welcome to **The Magician IA Reader**! This project presents a unique application combining the power of Artificial Intelligence with the mystique of tarot reading, specifically tailored for **Italian natural language**.
+Welcome to **The Magician IA Reader**! This project presents a unique application combining the power of Artificial Intelligence with the mystique of tarot reading.
 
 **What it Does:**
 
-This application functions as an AI-driven tarot reader. It takes natural language input (primarily Italian) and, using an AI model guided by traditional tarot card meanings, provides interpretative insights.
+This application functions as an AI-driven tarot reader. It takes natural language input and, using an AI model guided by traditional tarot card meanings, provides interpretative insights.
 
 
 **Key Features:**
 
-* **Italian Natural Language Support:** Understands and interacts in fluent Italian.
+* **Natural Language Support:** Understands and interacts in natural language (currently configured for English).
 * **Local AI Model ('phi4'):** Runs on the efficient 'phi4' model, ideal for local processing and privacy.
-* **CSV-driven Knowledge Base:** Utilizes structured CSV files to store and reference detailed tarot card meanings and symbolism.
+* **CSV-driven Knowledge Base:** Utilizes structured CSV files to store and reference detailed tarot card meanings and symbolism (currently using `data/tarots.csv` with English content).
 * **Deep Insights:** Transforms raw text queries into meaningful, context-aware interpretations based on tarot symbolism.
 
 **How it Works:**
 
-The core of The Magician IA Reader lies in its use of the 'phi4' local AI model. This model is fine-tuned or prompted using comprehensive data from CSV files, which contain the interpretations for each tarot card. When a user provides text input in Italian, the application processes it through the AI, which then generates a response informed by the tarot meanings.
+The core of The Magician IA Reader lies in its use of the 'phi4' local AI model. This model is fine-tuned or prompted using comprehensive data from CSV files, which contain the interpretations for each tarot card. When a user provides text input, the application processes it through the AI, which then generates a response informed by the tarot meanings.
 
 **Why Use It?**
 
-* **Researchers & Developers:** Explore the capabilities of local AI models for natural language understanding and generation in Italian.
+* **Researchers & Developers:** Explore the capabilities of local AI models for natural language understanding and generation.
 * **AI Enthusiasts:** Experiment with a practical application of AI in a unique domain.
 * **Curious Minds:** Experience an innovative way to interact with AI for personal insights.
 
 Step into the world where AI meets intuition with The Magician IA Reader!
 
-![screen1](https://github.com/user-attachments/assets/d7a95c15-e277-4d4c-a763-5de9aaed80e1)
-
-![screen2](https://github.com/user-attachments/assets/facc7632-ae96-46db-996b-083195a7d246)
+<video src="https://github.com/maurizioorani/TheMagician-IA-Reader/blob/main/data/readme/TheMagicianAI.mov"/>
 
 ---
 
