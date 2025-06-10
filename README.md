@@ -15,7 +15,7 @@
 
 <hr/>
 
-# 🌟 Increíbles Aplicaciones LLM
+# 🌟 Increíbles Coleeción de Agentes IA
 
 Una colección curada de **Increíbles aplicaciones LLM construidas con RAG, Agentes de IA, Equipos Multiagente, MCP, Agentes de Voz y más.** Este repositorio presenta aplicaciones LLM que utilizan modelos de OpenAI, Anthropic, Google y modelos de código abierto como DeepSeek, Qwen o Llama que puedes ejecutar localmente en tu computadora.
 
