@@ -1,74 +1,74 @@
-# 🤖 AI System Architect Advisor with R1
+# 🤖 Asesor de Arquitectura de Sistemas de IA con R1
 
-An Agno agentic system that provides expert software architecture analysis and recommendations using a dual-model approach combining DeepSeek R1's Reasoning and Claude. The system provides detailed technical analysis, implementation roadmaps, and architectural decisions for complex software systems.
+Un sistema agéntico de Agno que proporciona análisis y recomendaciones de arquitectura de software experta utilizando un enfoque de modelo dual que combina el Razonamiento de DeepSeek R1 y Claude. El sistema proporciona análisis técnicos detallados, hojas de ruta de implementación y decisiones arquitectónicas para sistemas de software complejos.
 
-## Features
+## Características
 
-- **Dual AI Model Architecture**
-  - **DeepSeek Reasoner**: Provides initial technical analysis and structured reasoning about architecture patterns, tools, and implementation strategies
-  - **Claude-3.5**: Generates detailed explanations, implementation roadmaps, and technical specifications based on DeepSeek's analysis
+- **Arquitectura de Modelo de IA Dual**
+  - **DeepSeek Reasoner**: Proporciona análisis técnico inicial y razonamiento estructurado sobre patrones de arquitectura, herramientas y estrategias de implementación.
+  - **Claude-3.5**: Genera explicaciones detalladas, hojas de ruta de implementación y especificaciones técnicas basadas en el análisis de DeepSeek.
 
-- **Comprehensive Analysis Components**
-  - Architecture Pattern Selection
-  - Infrastructure Resource Planning
-  - Security Measures and Compliance
-  - Database Architecture
-  - Performance Requirements
-  - Cost Estimation
-  - Risk Assessment
+- **Componentes de Análisis Exhaustivo**
+  - Selección de Patrones de Arquitectura
+  - Planificación de Recursos de Infraestructura
+  - Medidas de Seguridad y Cumplimiento
+  - Arquitectura de Base de Datos
+  - Requisitos de Rendimiento
+  - Estimación de Costos
+  - Evaluación de Riesgos
 
-- **Analysis Types**
-  - Real-time Event Processing Systems
-  - Healthcare Data Platforms
-  - Financial Trading Platforms
-  - Multi-tenant SaaS Solutions
-  - Digital Content Delivery Networks
-  - Supply Chain Management Systems
+- **Tipos de Análisis**
+  - Sistemas de Procesamiento de Eventos en Tiempo Real
+  - Plataformas de Datos de Atención Médica
+  - Plataformas de Negociación Financiera
+  - Soluciones SaaS Multiusuario
+  - Redes de Entrega de Contenido Digital
+  - Sistemas de Gestión de la Cadena de Suministro
 
-## How to Run
+## Cómo Ejecutar
 
-1. **Setup Environment**
+1. **Configurar el Entorno**
    ```bash
-   # Clone the repository
+   # Clona el repositorio
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd advanced_ai_agents/single_agent_apps/ai_system_architect_r1
    
-   # Install dependencies
+   # Instala las dependencias
    pip install -r requirements.txt
    ```
 
-2. **Configure API Keys**
-   - Get DeepSeek API key from DeepSeek platform
-   - Get Anthropic API key from [Anthropic Platform](https://www.anthropic.com)
+2. **Configurar Claves API**
+   - Obtén la clave API de DeepSeek desde la plataforma DeepSeek
+   - Obtén la clave API de Anthropic desde [Anthropic Platform](https://www.anthropic.com)
 
-3. **Run the Application**
+3. **Ejecutar la Aplicación**
    ```bash
    streamlit run ai_system_architect_r1.py
    ```
 
-4. **Use the Interface**
-   - Enter API credentials in sidebar
-   - Structure your prompt with:
-     - Project Context
-     - Requirements
-     - Constraints
-     - Scale
-     - Security/Compliance needs
-   - View detailed analysis results
+4. **Usar la Interfaz**
+   - Ingresa las credenciales de API en la barra lateral
+   - Estructura tu prompt con:
+     - Contexto del Proyecto
+     - Requisitos
+     - Restricciones
+     - Escala
+     - Necesidades de Seguridad/Cumplimiento
+   - Visualiza los resultados detallados del análisis
 
-## Example Test Prompts:
+## Prompts de Prueba de Ejemplo:
 
-### 1. Financial Trading Platform
-"We need to build a high-frequency trading platform that processes market data streams, executes trades with sub-millisecond latency, maintains audit trails, and handles complex risk calculations. The system needs to be globally distributed, handle 100,000 transactions per second, and have robust disaster recovery capabilities."
-### 2. Multi-tenant SaaS Platform
-"Design a multi-tenant SaaS platform for enterprise resource planning that needs to support customization per tenant, handle different data residency requirements, support offline capabilities, and maintain performance isolation between tenants. The system should scale to 10,000 concurrent users and support custom integrations."
+### 1. Plataforma de Negociación Financiera
+"Necesitamos construir una plataforma de negociación de alta frecuencia que procese flujos de datos de mercado, ejecute operaciones con latencia inferior al milisegundo, mantenga registros de auditoría y maneje cálculos de riesgo complejos. El sistema debe estar distribuido globalmente, manejar 100,000 transacciones por segundo y tener capacidades robustas de recuperación ante desastres."
+### 2. Plataforma SaaS Multiusuario
+"Diseña una plataforma SaaS multiusuario para la planificación de recursos empresariales que necesite admitir la personalización por inquilino, manejar diferentes requisitos de residencia de datos, admitir capacidades sin conexión y mantener el aislamiento del rendimiento entre inquilinos. El sistema debe escalar a 10,000 usuarios concurrentes y admitir integraciones personalizadas."
 
-## Notes
+## Notas
 
-- Requires both DeepSeek and Anthropic API keys
-- Provides real-time analysis with detailed explanations
-- Supports chat-based interaction
-- Includes clear reasoning for all architectural decisions
-- API usage costs apply
+- Requiere claves API de DeepSeek y Anthropic
+- Proporciona análisis en tiempo real con explicaciones detalladas
+- Admite interacción basada en chat
+- Incluye un razonamiento claro para todas las decisiones arquitectónicas
+- Se aplican costos de uso de API
 
 

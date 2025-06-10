@@ -1,39 +1,39 @@
-## 🧬 Multimodal AI Agent
+## 🧬 Agente de IA Multimodal
 
-A Streamlit application that combines video analysis and web search capabilities using Google's Gemini 2.0 model. This agent can analyze uploaded videos and answer questions by combining visual understanding with web-search.
+Una aplicación de Streamlit que combina capacidades de análisis de video y búsqueda web utilizando el modelo Gemini 2.0 de Google. Este agente puede analizar videos subidos y responder preguntas combinando la comprensión visual con la búsqueda web.
 
-### Features
+### Características
 
-- Video analysis using Gemini 2.0 Flash
-- Web research integration via DuckDuckGo
-- Support for multiple video formats (MP4, MOV, AVI)
-- Real-time video processing
-- Combined visual and textual analysis
+- Análisis de video utilizando Gemini 2.0 Flash
+- Integración de investigación web a través de DuckDuckGo
+- Soporte para múltiples formatos de video (MP4, MOV, AVI)
+- Procesamiento de video en tiempo real
+- Análisis visual y textual combinado
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd ai_agent_tutorials/multimodal_ai_agent
 ```
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 pip install -r requirements.txt
 ```
-3. Get your Google Gemini API Key
+3. Obtén tu Clave API de Google Gemini
 
-- Sign up for an [Google AI Studio account](https://aistudio.google.com/apikey) and obtain your API key.
+- Regístrate para obtener una [cuenta de Google AI Studio](https://aistudio.google.com/apikey) y obtén tu clave API.
 
-4. Set up your Gemini API Key as the environment variable
+4. Configura tu Clave API de Gemini como variable de entorno
 
 ```bash
 GOOGLE_API_KEY=your_api_key_here
 ```
 
-5. Run the Streamlit App
+5. Ejecuta la Aplicación Streamlit
 ```bash
 streamlit run multimodal_agent.py
 ```

@@ -1,87 +1,87 @@
-# 🔍 AI Domain Deep Research Agent
+# 🔍 Agente de Investigación Profunda de Dominios de IA
 
-An advanced AI research agent built using the Agno Agent framework, Together AI's Qwen model, and Composio tools. This agent helps users conduct comprehensive research on any topic by generating research questions, finding answers through multiple search engines, and compiling professional reports with Google Docs integration.
+Un agente de investigación de IA avanzado construido utilizando el framework Agno Agent, el modelo Qwen de Together AI y herramientas de Composio. Este agente ayuda a los usuarios a realizar investigaciones exhaustivas sobre cualquier tema generando preguntas de investigación, encontrando respuestas a través de múltiples motores de búsqueda y compilando informes profesionales con integración de Google Docs.
 
-## Features
+## Características
 
-- 🧠 **Intelligent Question Generation**:
+- 🧠 **Generación Inteligente de Preguntas**:
 
-  - Automatically generates 5 specific research questions about your topic
-  - Tailors questions to your specified domain
-  - Focuses on creating yes/no questions for clear research outcomes
-- 🔎 **Multi-Source Research**:
+  - Genera automáticamente 5 preguntas de investigación específicas sobre tu tema
+  - Adapta las preguntas a tu dominio especificado
+  - Se enfoca en crear preguntas de sí/no para resultados de investigación claros
+- 🔎 **Investigación Multifacética**:
 
-  - Uses Tavily Search for comprehensive web results
-  - Leverages Perplexity AI for deeper analysis
-  - Combines multiple sources for thorough research
-- 📊 **Professional Report Generation**:
+  - Utiliza Tavily Search para resultados web completos
+  - Aprovecha Perplexity AI para un análisis más profundo
+  - Combina múltiples fuentes para una investigación exhaustiva
+- 📊 **Generación de Informes Profesionales**:
 
-  - Compiles research findings into a McKinsey-style report
-  - Structures content with executive summary, analysis, and conclusion
-  - Creates a Google Doc with the complete report
-- 🖥️ **User-Friendly Interface**:
+  - Compila los hallazgos de la investigación en un informe estilo McKinsey
+  - Estructura el contenido con resumen ejecutivo, análisis y conclusión
+  - Crea un Google Doc con el informe completo
+- 🖥️ **Interfaz Fácil de Usar**:
 
-  - Clean Streamlit UI with intuitive workflow
-  - Real-time progress tracking
-  - Expandable sections to view detailed results
+  - Interfaz de usuario de Streamlit limpia con flujo de trabajo intuitivo
+  - Seguimiento del progreso en tiempo real
+  - Secciones expandibles para ver resultados detallados
 
-## How to Run
+## Cómo Ejecutar
 
-1. **Setup Environment**
+1. **Configurar el Entorno**
 
    ```bash
-   # Clone the repository
+   # Clona el repositorio
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd advanced_ai_agents/single_agent_apps/ai_domain_deep_research_agent
 
-   # Install dependencies
+   # Instala las dependencias
    pip install -r requirements.txt
 
    composio add googledocs
    composio add perplexityai
    ```
-2. **Configure API Keys**
+2. **Configurar Claves API**
 
-   - Get Together AI API key from [Together AI](https://together.ai)
-   - Get Composio API key from [Composio](https://composio.ai)
-   - Add these to a `.env` file or enter them in the app sidebar
-3. **Run the Application**
+   - Obtén la clave API de Together AI desde [Together AI](https://together.ai)
+   - Obtén la clave API de Composio desde [Composio](https://composio.ai)
+   - Agrégalas a un archivo `.env` o ingrésalas en la barra lateral de la aplicación
+3. **Ejecutar la Aplicación**
 
    ```bash
    streamlit run ai_domain_deep_research_agent.py
    ```
 
-## Usage
+## Uso
 
-1. Launch the application using the command above
-2. Enter your Together AI and Composio API keys in the sidebar
-3. Input your research topic and domain in the main interface
-4. Click "Generate Research Questions" to create specific questions
-5. Review the questions and click "Start Research" to begin the research process
-6. Once research is complete, click "Compile Final Report" to generate a professional report
-7. View the report in the app and access it in Google Docs
+1. Lanza la aplicación utilizando el comando anterior
+2. Ingresa tus claves API de Together AI y Composio en la barra lateral
+3. Ingresa tu tema de investigación y dominio en la interfaz principal
+4. Haz clic en "Generar Preguntas de Investigación" para crear preguntas específicas
+5. Revisa las preguntas y haz clic en "Iniciar Investigación" para comenzar el proceso de investigación
+6. Una vez completada la investigación, haz clic en "Compilar Informe Final" para generar un informe profesional
+7. Visualiza el informe en la aplicación y accede a él en Google Docs
 
-## Technical Details
+## Detalles Técnicos
 
-- **Agno Framework**: Used for creating and orchestrating AI agents
-- **Together AI**: Provides the Qwen 3 235B model for advanced language processing
-- **Composio Tools**: Integrates search engines and Google Docs functionality
-- **Streamlit**: Powers the user interface with interactive elements
+- **Framework Agno**: Utilizado para crear y orquestar agentes de IA
+- **Together AI**: Proporciona el modelo Qwen 3 235B para procesamiento avanzado del lenguaje
+- **Herramientas Composio**: Integra motores de búsqueda y funcionalidad de Google Docs
+- **Streamlit**: Impulsa la interfaz de usuario con elementos interactivos
 
-## Example Use Cases
+## Casos de Uso de Ejemplo
 
-- **Academic Research**: Quickly gather information on academic topics across various disciplines
-- **Market Analysis**: Research market trends, competitors, and industry developments
-- **Policy Research**: Analyze policy implications and historical context
-- **Technology Evaluation**: Research emerging technologies and their potential impact
+- **Investigación Académica**: Reúne rápidamente información sobre temas académicos en diversas disciplinas
+- **Análisis de Mercado**: Investiga tendencias de mercado, competidores y desarrollos de la industria
+- **Investigación de Políticas**: Analiza implicaciones de políticas y contexto histórico
+- **Evaluación de Tecnología**: Investiga tecnologías emergentes y su impacto potencial
 
-## Dependencies
+## Dependencias
 
 - agno
 - composio_agno
 - streamlit
 - python-dotenv
 
-## License
+## Licencia
 
-This project is part of the awesome-llm-apps collection and is available under the MIT License.
+Este proyecto es parte de la colección awesome-llm-apps y está disponible bajo la Licencia MIT.

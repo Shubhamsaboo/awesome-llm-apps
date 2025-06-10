@@ -1,106 +1,106 @@
-# 🎮 Agent X vs Agent O: Tic-Tac-Toe Game
+# 🎮 Agente X vs Agente O: Juego de Tres en Raya
 
-An interactive Tic-Tac-Toe game where two AI agents powered by different language models compete against each other built on Agno Agent Framework and Streamlit as UI.
+Un juego interactivo de Tres en Raya donde dos agentes de IA impulsados por diferentes modelos de lenguaje compiten entre sí, construido sobre Agno Agent Framework y Streamlit como interfaz de usuario.
 
-This example shows how to build an interactive Tic Tac Toe game where AI agents compete against each other. The application showcases how to:
-- Coordinate multiple AI agents in a turn-based game
-- Use different language models for different players
-- Create an interactive web interface with Streamlit
-- Handle game state and move validation
-- Display real-time game progress and move history
+Este ejemplo muestra cómo construir un juego interactivo de Tres en Raya donde los agentes de IA compiten entre sí. La aplicación muestra cómo:
+- Coordinar múltiples agentes de IA en un juego por turnos
+- Usar diferentes modelos de lenguaje para diferentes jugadores
+- Crear una interfaz web interactiva con Streamlit
+- Manejar el estado del juego y la validación de movimientos
+- Mostrar el progreso del juego en tiempo real y el historial de movimientos
 
-## Features
-- Multiple AI models support (GPT-4, Claude, Gemini, etc.)
-- Real-time game visualization
-- Move history tracking with board states
-- Interactive player selection
-- Game state management
-- Move validation and coordination
+## Características
+- Soporte para múltiples modelos de IA (GPT-4, Claude, Gemini, etc.)
+- Visualización del juego en tiempo real
+- Seguimiento del historial de movimientos con estados del tablero
+- Selección interactiva de jugadores
+- Gestión del estado del juego
+- Validación y coordinación de movimientos
 
-## How to Run? 
+## ¿Cómo Ejecutar?
 
-1. **Setup Environment**
+1. **Configurar el Entorno**
    ```bash
-   # Clone the repository
+   # Clona el repositorio
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd ai_agent_tutorials/ai_tic_tac_toe_agent
 
-   # Install dependencies
+   # Instala las dependencias
    pip install -r requirements.txt
    ```
 
-### 2. Install dependencies
+### 2. Instalar dependencias
 
 ```shell
 pip install -r requirements.txt
 ```
 
-### 3. Export API Keys
+### 3. Exportar Claves API
 
-The game supports multiple AI models. Export the API keys for the models you want to use:
+El juego admite múltiples modelos de IA. Exporta las claves API para los modelos que deseas utilizar:
 
 ```shell
-# Required for OpenAI models
+# Requerido para modelos OpenAI
 export OPENAI_API_KEY=***
 
-# Optional - for additional models
-export ANTHROPIC_API_KEY=***  # For Claude models
-export GOOGLE_API_KEY=***     # For Gemini models
-export GROQ_API_KEY=***       # For Groq models
+# Opcional - para modelos adicionales
+export ANTHROPIC_API_KEY=***  # Para modelos Claude
+export GOOGLE_API_KEY=***     # Para modelos Gemini
+export GROQ_API_KEY=***       # Para modelos Groq
 ```
 
-### 4. Run the Game
+### 4. Ejecutar el Juego
 
 ```shell
 streamlit run app.py
 ```
 
-- Open [localhost:8501](http://localhost:8501) to view the game interface
+- Abre [localhost:8501](http://localhost:8501) para ver la interfaz del juego
 
-## How It Works
+## Cómo Funciona
 
-The game consists of three agents:
+El juego consta de tres agentes:
 
-1. **Master Agent (Referee)**
-   - Coordinates the game
-   - Validates moves
-   - Maintains game state
-   - Determines game outcome
+1. **Agente Maestro (Árbitro)**
+   - Coordina el juego
+   - Valida los movimientos
+   - Mantiene el estado del juego
+   - Determina el resultado del juego
 
-2. **Two Player Agents**
-   - Make strategic moves
-   - Analyze board state
-   - Follow game rules
-   - Respond to opponent moves
+2. **Dos Agentes Jugadores**
+   - Realizan movimientos estratégicos
+   - Analizan el estado del tablero
+   - Siguen las reglas del juego
+   - Responden a los movimientos del oponente
 
-## Available Models
+## Modelos Disponibles
 
-The game supports various AI models:
+El juego admite varios modelos de IA:
 - GPT-4o (OpenAI)
 - GPT-o3-mini (OpenAI)
 - Gemini (Google)
 - Llama 3 (Groq)
 - Claude (Anthropic)
 
-## Game Features
+## Características del Juego
 
-1. **Interactive Board**
-   - Real-time updates
-   - Visual move tracking
-   - Clear game status display
+1. **Tablero Interactivo**
+   - Actualizaciones en tiempo real
+   - Seguimiento visual de movimientos
+   - Visualización clara del estado del juego
 
-2. **Move History**
-   - Detailed move tracking
-   - Board state visualization
-   - Player action timeline
+2. **Historial de Movimientos**
+   - Seguimiento detallado de movimientos
+   - Visualización del estado del tablero
+   - Cronología de acciones del jugador
 
-3. **Game Controls**
-   - Start/Pause game
-   - Reset board
-   - Select AI models
-   - View game history
+3. **Controles del Juego**
+   - Iniciar/Pausar juego
+   - Reiniciar tablero
+   - Seleccionar modelos de IA
+   - Ver historial del juego
 
-4. **Performance Analysis**
-   - Move timing
-   - Strategy tracking
-   - Game statistics
+4. **Análisis de Rendimiento**
+   - Tiempos de movimiento
+   - Seguimiento de estrategias
+   - Estadísticas del juego

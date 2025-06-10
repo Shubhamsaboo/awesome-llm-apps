@@ -1,41 +1,41 @@
-## 🧠 Local ChatGPT using Llama 3.1 with Personal Memory
-This Streamlit application implements a fully local ChatGPT-like experience using Llama 3.1, featuring personalized memory storage for each user. All components, including the language model, embeddings, and vector store, run locally without requiring external API keys.
+## 🧠 ChatGPT Local usando Llama 3.1 con Memoria Personal
+Esta aplicación Streamlit implementa una experiencia similar a ChatGPT completamente local utilizando Llama 3.1, con almacenamiento de memoria personalizado para cada usuario. Todos los componentes, incluido el modelo de lenguaje, los embeddings y el almacén de vectores, se ejecutan localmente sin necesidad de claves API externas.
 
-### Features
-- Fully local implementation with no external API dependencies
-- Powered by Llama 3.1 via Ollama
-- Personal memory space for each user
-- Local embedding generation using Nomic Embed
-- Vector storage with Qdrant
+### Características
+- Implementación completamente local sin dependencias de API externas
+- Impulsado por Llama 3.1 a través de Ollama
+- Espacio de memoria personal para cada usuario
+- Generación local de embeddings utilizando Nomic Embed
+- Almacenamiento de vectores con Qdrant
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd awesome-llm-apps/llm_apps_with_memory_tutorials/local_chatgpt_with_memory
 ```
 
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 cd awesome-llm-apps/rag_tutorials/local_rag_agent
 pip install -r requirements.txt
 ```
 
-3. Install and start [Qdrant](https://qdrant.tech/documentation/guides/installation/) vector database locally
+3. Instala e inicia la base de datos vectorial [Qdrant](https://qdrant.tech/documentation/guides/installation/) localmente
 
 ```bash
 docker pull qdrant/qdrant
 docker run -p 6333:6333 qdrant/qdrant
 ```
 
-4. Install [Ollama](https://ollama.com/download) and pull Llama 3.1
+4. Instala [Ollama](https://ollama.com/download) y descarga Llama 3.1
 ```bash
 ollama pull llama3.1
 ```
 
-5. Run the Streamlit App
+5. Ejecuta la Aplicación Streamlit
 ```bash
 streamlit run local_chatgpt_memory.py
 ```

@@ -1,73 +1,73 @@
-# AI Mental Wellbeing Agent Team 🧠
+# Equipo de Agentes de Bienestar Mental de IA 🧠
 
-The AI Mental Wellbeing Agent Team is a supportive mental health assessment and guidance system powered by [AG2](https://github.com/ag2ai/ag2?tab=readme-ov-file)(formerly AutoGen)'s AI Agent framework. This app provides personalized mental health support through the coordination of specialized AI agents, each focusing on different aspects of mental health care based on user inputs such as emotional state, stress levels, sleep patterns, and current symptoms. This is built on AG2's new swarm feature run through initiate_swarm_chat() method.
+El Equipo de Agentes de Bienestar Mental de IA es un sistema de evaluación y orientación de salud mental de apoyo impulsado por el framework de Agentes de IA de [AG2](https://github.com/ag2ai/ag2?tab=readme-ov-file) (anteriormente AutoGen). Esta aplicación proporciona apoyo personalizado de salud mental a través de la coordinación de agentes de IA especializados, cada uno centrado en diferentes aspectos del cuidado de la salud mental basados en las entradas del usuario, como el estado emocional, los niveles de estrés, los patrones de sueño y los síntomas actuales. Esto se basa en la nueva función de enjambre de AG2 ejecutada a través del método `initiate_swarm_chat()`.
 
-## Features
+## Características
 
-- **Specialized Mental Wellbeing Support Team**
-    - 🧠 **Assessment Agent**: Analyzes emotional state and psychological needs with clinical precision and empathy
-    - 🎯 **Action Agent**: Creates immediate action plans and connects users with appropriate resources
-    - 🔄 **Follow-up Agent**: Designs long-term support strategies and prevention plans
+- **Equipo Especializado de Apoyo al Bienestar Mental**
+    - 🧠 **Agente de Evaluación**: Analiza el estado emocional y las necesidades psicológicas con precisión clínica y empatía
+    - 🎯 **Agente de Acción**: Crea planes de acción inmediatos y conecta a los usuarios con los recursos apropiados
+    - 🔄 **Agente de Seguimiento**: Diseña estrategias de apoyo a largo plazo y planes de prevención
 
-- **Comprehensive Mental Wellbeing Support**:
-  - Detailed psychological assessment
-  - Immediate coping strategies
-  - Resource recommendations
-  - Long-term support planning
-  - Crisis prevention strategies
-  - Progress monitoring systems
+- **Apoyo Integral al Bienestar Mental**:
+  - Evaluación psicológica detallada
+  - Estrategias de afrontamiento inmediatas
+  - Recomendaciones de recursos
+  - Planificación de apoyo a largo plazo
+  - Estrategias de prevención de crisis
+  - Sistemas de seguimiento del progreso
 
-- **Customizable Input Parameters**:
-  - Current emotional state
-  - Sleep patterns
-  - Stress levels
-  - Support system information
-  - Recent life changes
-  - Current symptoms
+- **Parámetros de Entrada Personalizables**:
+  - Estado emocional actual
+  - Patrones de sueño
+  - Niveles de estrés
+  - Información del sistema de apoyo
+  - Cambios recientes en la vida
+  - Síntomas actuales
 
-- **Interactive Results**: 
-   - Real-time assessment summaries
-   - Detailed recommendations in expandable sections
-   - Clear action steps and resources
-   - Long-term support strategies
+- **Resultados Interactivos**:
+   - Resúmenes de evaluación en tiempo real
+   - Recomendaciones detalladas en secciones expandibles
+   - Pasos de acción y recursos claros
+   - Estrategias de apoyo a largo plazo
 
-## How to Run
+## Cómo Ejecutar
 
-Follow these steps to set up and run the application:
+Sigue estos pasos para configurar y ejecutar la aplicación:
 
-1. **Clone the Repository**:
+1. **Clona el Repositorio**:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd advanced_ai_agents/multi_agent_apps/ai_mental_wellbeing_agent
    ```
 
-2. **Install Dependencies**:
+2. **Instala las Dependencias**:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Create Environment File**:
-   Create a `.env` file in the project directory:
+3. **Crea un Archivo de Entorno**:
+   Crea un archivo `.env` en el directorio del proyecto:
    ```bash
    echo "AUTOGEN_USE_DOCKER=0" > .env
    ```
-   This disables Docker requirement for code execution in AutoGen.
+   Esto deshabilita el requisito de Docker para la ejecución de código en AutoGen.
 
-4. **Set Up OpenAI API Key**:
-   - Obtain an OpenAI API key from [OpenAI's platform](https://platform.openai.com)
-   - You'll input this key in the app's sidebar when running
+4. **Configura la Clave API de OpenAI**:
+   - Obtén una clave API de OpenAI desde la [plataforma de OpenAI](https://platform.openai.com)
+   - Ingresarás esta clave en la barra lateral de la aplicación al ejecutarla
 
-5. **Run the Streamlit App**:
+5. **Ejecuta la Aplicación Streamlit**:
    ```bash
    streamlit run ai_mental_wellbeing_agent.py
    ```
 
 
-## ⚠️ Important Notice
+## ⚠️ Aviso Importante
 
-This application is a supportive tool and does not replace professional mental health care. If you're experiencing thoughts of self-harm or severe crisis:
+Esta aplicación es una herramienta de apoyo y no reemplaza la atención profesional de salud mental. Si estás experimentando pensamientos de autolesión o una crisis grave:
 
-- Call National Crisis Hotline: 988
-- Call Emergency Services: 911
-- Seek immediate professional help
+- Llama a la Línea Nacional de Crisis: 988
+- Llama a los Servicios de Emergencia: 911
+- Busca ayuda profesional inmediata
 

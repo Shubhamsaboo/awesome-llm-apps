@@ -1,83 +1,83 @@
-# 🐋 Deepseek Local RAG Reasoning Agent 
+# 🐋 Agente de Razonamiento RAG Local Deepseek
 
-A powerful reasoning agent that combines local Deepseek models with RAG capabilities. Built using Deepseek (via Ollama), Snowflake for embeddings, Qdrant for vector storage, and Agno for agent orchestration, this application offers both simple local chat and advanced RAG-enhanced interactions with comprehensive document processing and web search capabilities.
+Un potente agente de razonamiento que combina modelos locales Deepseek con capacidades RAG. Construido utilizando Deepseek (a través de Ollama), Snowflake para embeddings, Qdrant para almacenamiento de vectores y Agno para la orquestación de agentes, esta aplicación ofrece tanto chat local simple como interacciones avanzadas mejoradas con RAG con procesamiento integral de documentos y capacidades de búsqueda web.
 
-## Features
+## Características
 
-- **Dual Operation Modes**
-  - Local Chat Mode: Direct interaction with Deepseek locally
-  - RAG Mode: Enhanced reasoning with document context and web search integration - llama3.2
+- **Modos de Operación Dual**
+  - Modo Chat Local: Interacción directa con Deepseek localmente
+  - Modo RAG: Razonamiento mejorado con contexto de documentos e integración de búsqueda web - llama3.2
 
-- **Document Processing** (RAG Mode)
-  - PDF document upload and processing
-  - Web page content extraction
-  - Automatic text chunking and embedding
-  - Vector storage in Qdrant cloud
+- **Procesamiento de Documentos** (Modo RAG)
+  - Carga y procesamiento de documentos PDF
+  - Extracción de contenido de páginas web
+  - Fragmentación y embedding automático de texto
+  - Almacenamiento de vectores en la nube Qdrant
 
-- **Intelligent Querying** (RAG Mode)
-  - RAG-based document retrieval
-  - Similarity search with threshold filtering
-  - Automatic fallback to web search
-  - Source attribution for answers
+- **Consultas Inteligentes** (Modo RAG)
+  - Recuperación de documentos basada en RAG
+  - Búsqueda de similitud con filtrado de umbral
+  - Respaldo automático a búsqueda web
+  - Atribución de fuentes para las respuestas
 
-- **Advanced Capabilities**
-  - Exa AI web search integration
-  - Custom domain filtering for web search
-  - Context-aware response generation
-  - Chat history management
-  - Thinking process visualization
+- **Capacidades Avanzadas**
+  - Integración de búsqueda web Exa AI
+  - Filtrado de dominio personalizado para búsqueda web
+  - Generación de respuestas conscientes del contexto
+  - Gestión del historial de chat
+  - Visualización del proceso de pensamiento
 
-- **Model Specific Features**
-  - Flexible model selection:
-    - Deepseek r1 1.5b (lighter, suitable for most laptops)
-    - Deepseek r1 7b (more capable, requires better hardware)
-  - Snowflake Arctic Embedding model (SOTA) for vector embeddings
-  - Agno Agent framework for orchestration
-  - Streamlit-based interactive interface
+- **Características Específicas del Modelo**
+  - Selección flexible de modelos:
+    - Deepseek r1 1.5b (más ligero, adecuado para la mayoría de las laptops)
+    - Deepseek r1 7b (más capaz, requiere mejor hardware)
+  - Modelo de Embedding Snowflake Arctic (SOTA) para embeddings vectoriales
+  - Framework Agno Agent para orquestación
+  - Interfaz interactiva basada en Streamlit
 
-## Prerequisites
+## Requisitos Previos
 
-### 1. Ollama Setup
-1. Install [Ollama](https://ollama.ai)
-2. Pull the Deepseek r1 model(s):
+### 1. Configuración de Ollama
+1. Instala [Ollama](https://ollama.ai)
+2. Descarga los modelos Deepseek r1:
 ```bash
-# For the lighter model
+# Para el modelo más ligero
 ollama pull deepseek-r1:1.5b
 
-# For the more capable model (if your hardware supports it)
+# Para el modelo más capaz (si tu hardware lo soporta)
 ollama pull deepseek-r1:7b
 
 ollama pull snowflake-arctic-embed
 ollama pull llama3.2
 ```
 
-### 2. Qdrant Cloud Setup (for RAG Mode)
-1. Visit [Qdrant Cloud](https://cloud.qdrant.io/)
-2. Create an account or sign in
-3. Create a new cluster
-4. Get your credentials:
-   - Qdrant API Key: Found in API Keys section
-   - Qdrant URL: Your cluster URL (format: `https://xxx-xxx.cloud.qdrant.io`)
+### 2. Configuración de Qdrant Cloud (para Modo RAG)
+1. Visita [Qdrant Cloud](https://cloud.qdrant.io/)
+2. Crea una cuenta o inicia sesión
+3. Crea un nuevo clúster
+4. Obtén tus credenciales:
+   - Clave API de Qdrant: Se encuentra en la sección de Claves API
+   - URL de Qdrant: La URL de tu clúster (formato: `https://xxx-xxx.cloud.qdrant.io`)
 
-### 3. Exa AI API Key (Optional)
-1. Visit [Exa AI](https://exa.ai)
-2. Sign up for an account
-3. Generate an API key for web search capabilities
+### 3. Clave API de Exa AI (Opcional)
+1. Visita [Exa AI](https://exa.ai)
+2. Regístrate para obtener una cuenta
+3. Genera una clave API para capacidades de búsqueda web
 
-## How to Run
+## Cómo Ejecutar
 
-1. Clone the repository:
+1. Clona el repositorio:
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd rag_tutorials/deepseek_local_rag_agent
 ```
 
-2. Install dependencies:
+2. Instala las dependencias:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Run the application:
+3. Ejecuta la aplicación:
 ```bash
 streamlit run deepseek_rag_agent.py
 ```

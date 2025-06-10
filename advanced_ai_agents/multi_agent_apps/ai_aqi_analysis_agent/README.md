@@ -1,81 +1,81 @@
-# 🌍 AQI Analysis Agent
+# 🌍 Agente de Análisis de AQI
 
-The AQI Analysis Agent is a powerful air quality monitoring and health recommendation tool powered by Firecrawl and Agno's AI Agent framework. This app helps users make informed decisions about outdoor activities by analyzing real-time air quality data and providing personalized health recommendations.
+El Agente de Análisis de AQI es una potente herramienta de monitorización de la calidad del aire y recomendación de salud impulsada por Firecrawl y el framework de Agentes de IA de Agno. Esta aplicación ayuda a los usuarios a tomar decisiones informadas sobre actividades al aire libre analizando datos de calidad del aire en tiempo real y proporcionando recomendaciones de salud personalizadas.
 
-## Features
+## Características
 
-- **Multi-Agent System**
-    - **AQI Analyzer**: Fetches and processes real-time air quality data
-    - **Health Recommendation Agent**: Generates personalized health advice
+- **Sistema Multiagente**
+    - **Analizador de AQI**: Obtiene y procesa datos de calidad del aire en tiempo real
+    - **Agente de Recomendación de Salud**: Genera consejos de salud personalizados
 
-- **Air Quality Metrics**:
-  - Overall Air Quality Index (AQI)
-  - Particulate Matter (PM2.5 and PM10)
-  - Carbon Monoxide (CO) levels
-  - Temperature
-  - Humidity
-  - Wind Speed
+- **Métricas de Calidad del Aire**:
+  - Índice General de Calidad del Aire (AQI)
+  - Material Particulado (PM2.5 y PM10)
+  - Niveles de Monóxido de Carbono (CO)
+  - Temperatura
+  - Humedad
+  - Velocidad del Viento
 
-- **Comprehensive Analysis**:
-  - Real-time data visualization
-  - Health impact assessment
-  - Activity safety recommendations
-  - Best time suggestions for outdoor activities
-  - Weather condition correlations
+- **Análisis Exhaustivo**:
+  - Visualización de datos en tiempo real
+  - Evaluación del impacto en la salud
+  - Recomendaciones de seguridad para actividades
+  - Sugerencias de mejores horarios para actividades al aire libre
+  - Correlaciones con las condiciones climáticas
 
-- **Interactive Features**:
-  - Location-based analysis
-  - Medical condition considerations
-  - Activity-specific recommendations
-  - Downloadable reports
-  - Example queries for quick testing
+- **Características Interactivas**:
+  - Análisis basado en la ubicación
+  - Consideraciones sobre condiciones médicas
+  - Recomendaciones específicas para actividades
+  - Informes descargables
+  - Consultas de ejemplo para pruebas rápidas
 
-## How to Run
+## Cómo Ejecutar
 
-Follow these steps to set up and run the application:
+Sigue estos pasos para configurar y ejecutar la aplicación:
 
-1. **Clone the Repository**:
+1. **Clona el Repositorio**:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd ai_agent_tutorials/ai_aqi_analysis_agent
    ```
 
-2. **Install the dependencies**:
+2. **Instala las dependencias**:
     ```bash
     pip install -r requirements.txt
     ```
 
-3. **Set up your API keys**:
-    - Get an OpenAI API key from: https://platform.openai.com/api-keys
-    - Get a Firecrawl API key from: [Firecrawl website](https://www.firecrawl.dev/app/api-keys)
+3. **Configura tus claves API**:
+    - Obtén una clave API de OpenAI desde: https://platform.openai.com/api-keys
+    - Obtén una clave API de Firecrawl desde: [Sitio web de Firecrawl](https://www.firecrawl.dev/app/api-keys)
 
-4. **Run the Gradio app**:
+4. **Ejecuta la aplicación Gradio**:
     ```bash
     python ai_aqi_analysis_agent.py
     ```
 
-5. **Access the Web Interface**:
-    - The terminal will display two URLs:
-      - Local URL: `http://127.0.0.1:7860` (for local access)
-      - Public URL: `https://xxx-xxx-xxx.gradio.live` (for temporary public access)
-    - Click on either URL to open the web interface in your browser
+5. **Accede a la Interfaz Web**:
+    - La terminal mostrará dos URLs:
+      - URL Local: `http://127.0.0.1:7860` (para acceso local)
+      - URL Pública: `https://xxx-xxx-xxx.gradio.live` (para acceso público temporal)
+    - Haz clic en cualquiera de las URL para abrir la interfaz web en tu navegador
 
-## Usage
+## Uso
 
-1. Enter your API keys in the API Configuration section
-2. Input location details:
-   - City name
-   - State (optional for Union Territories/US cities)
-   - Country
-3. Provide personal information:
-   - Medical conditions (optional)
-   - Planned outdoor activity
-4. Click "Analyze & Get Recommendations" to receive:
-   - Current air quality data
-   - Health impact analysis
-   - Activity safety recommendations
-5. Try the example queries for quick testing
+1. Ingresa tus claves API en la sección de Configuración de API
+2. Ingresa los detalles de la ubicación:
+   - Nombre de la ciudad
+   - Estado (opcional para Territorios de la Unión/ciudades de EE. UU.)
+   - País
+3. Proporciona información personal:
+   - Condiciones médicas (opcional)
+   - Actividad al aire libre planificada
+4. Haz clic en "Analizar y Obtener Recomendaciones" para recibir:
+   - Datos actuales de calidad del aire
+   - Análisis del impacto en la salud
+   - Recomendaciones de seguridad para actividades
+5. Prueba las consultas de ejemplo para pruebas rápidas
 
-## Note
+## Nota
 
-The air quality data is fetched using Firecrawl's web scraping capabilities. Due to caching and rate limiting, the data might not always match real-time values on the website. For the most accurate real-time data, consider checking the source website directly.
+Los datos de calidad del aire se obtienen utilizando las capacidades de web scraping de Firecrawl. Debido al almacenamiento en caché y la limitación de velocidad, es posible que los datos no siempre coincidan con los valores en tiempo real del sitio web. Para obtener los datos en tiempo real más precisos, considera consultar directamente el sitio web de origen.

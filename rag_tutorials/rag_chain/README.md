@@ -1,44 +1,44 @@
 # PharmaQuery
 
-## Overview
-PharmaQuery is an advanced Pharmaceutical Insight Retrieval System designed to help users gain meaningful insights from research papers and documents in the pharmaceutical domain.
+## Descripción General
+PharmaQuery es un Sistema Avanzado de Recuperación de Información Farmacéutica diseñado para ayudar a los usuarios a obtener información significativa de artículos de investigación y documentos en el dominio farmacéutico.
 
-## Demo
+## Demostración
 https://github.com/user-attachments/assets/c12ee305-86fe-4f71-9219-57c7f438f291
 
-## Features
-- **Natural Language Querying**: Ask complex questions about the pharmaceutical industry and get concise, accurate answers.
-- **Custom Database**: Upload your own research documents to enhance the retrieval system's knowledge base.
-- **Similarity Search**: Retrieves the most relevant documents for your query using AI embeddings.
-- **Streamlit Interface**: User-friendly interface for queries and document uploads.
+## Características
+- **Consultas en Lenguaje Natural**: Realiza preguntas complejas sobre la industria farmacéutica y obtén respuestas concisas y precisas.
+- **Base de Datos Personalizada**: Sube tus propios documentos de investigación para mejorar la base de conocimientos del sistema de recuperación.
+- **Búsqueda por Similitud**: Recupera los documentos más relevantes para tu consulta utilizando embeddings de IA.
+- **Interfaz Streamlit**: Interfaz fácil de usar para consultas y carga de documentos.
 
-## Technologies Used
-- **Programming Language**: [Python 3.10+](https://www.python.org/downloads/release/python-31011/)
+## Tecnologías Utilizadas
+- **Lenguaje de Programación**: [Python 3.10+](https://www.python.org/downloads/release/python-31011/)
 - **Framework**: [LangChain](https://www.langchain.com/)
-- **Database**: [ChromaDB](https://www.trychroma.com/)
-- **Models**:
+- **Base de Datos**: [ChromaDB](https://www.trychroma.com/)
+- **Modelos**:
   - Embeddings: [Google Gemini API (embedding-001)](https://ai.google.dev/gemini-api/docs/embeddings)
   - Chat: [Google Gemini API (gemini-1.5-pro)](https://ai.google.dev/gemini-api/docs/models/gemini#gemini-1.5-pro)
-- **PDF Processing**: [PyPDFLoader](https://python.langchain.com/docs/integrations/document_loaders/pypdfloader/)
-- **Document Splitter**: [SentenceTransformersTokenTextSplitter](https://python.langchain.com/api_reference/text_splitters/sentence_transformers/langchain_text_splitters.sentence_transformers.SentenceTransformersTokenTextSplitter.html)
+- **Procesamiento de PDF**: [PyPDFLoader](https://python.langchain.com/docs/integrations/document_loaders/pypdfloader/)
+- **Divisor de Documentos**: [SentenceTransformersTokenTextSplitter](https://python.langchain.com/api_reference/text_splitters/sentence_transformers/langchain_text_splitters.sentence_transformers.SentenceTransformersTokenTextSplitter.html)
 
-## Requirements
-1. **Install Dependencies**:
+## Requisitos
+1. **Instalar Dependencias**:
    ```bash
    pip install -r requirements.txt
    ```
 
-2. **Run the Application**:
+2. **Ejecutar la Aplicación**:
    ```bash
    streamlit run app.py
    ```
 
-3. **Use the Application**:
-   - Paste your Google API Key in the sidebar.
-   - Enter your query in the main interface.
-   - Optionally, upload research papers in the sidebar to enhance the database.
+3. **Usar la Aplicación**:
+   - Pega tu Clave API de Google en la barra lateral.
+   - Ingresa tu consulta en la interfaz principal.
+   - Opcionalmente, sube artículos de investigación en la barra lateral para mejorar la base de datos.
 
-## :mailbox: Connect With Me
+## :mailbox: Conéctate Conmigo
 <img align="right" src="https://media.giphy.com/media/2HtWpp60NQ9CU/giphy.gif" alt="handshake gif" width="150">
 
 <p align="left">

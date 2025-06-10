@@ -1,49 +1,49 @@
-## 💬 Chat with GitHub Repo
+## 💬 Chatea con Repositorio de GitHub
 
-LLM app with RAG to chat with GitHub Repo in just 30 lines of Python Code. The app uses Retrieval Augmented Generation (RAG) to provide accurate answers to questions based on the content of the specified GitHub repository.
+Aplicación LLM con RAG para chatear con un Repositorio de GitHub en solo 30 líneas de código Python. La aplicación utiliza Generación Aumentada por Recuperación (RAG) para proporcionar respuestas precisas a preguntas basadas en el contenido del repositorio de GitHub especificado.
 
-### Features
+### Características
 
-- Provide the name of GitHub Repository as input
-- Ask questions about the content of the GitHub repository
-- Get accurate answers using OpenAI's API and Embedchain
+- Proporciona el nombre del Repositorio de GitHub como entrada
+- Haz preguntas sobre el contenido del repositorio de GitHub
+- Obtén respuestas precisas utilizando la API de OpenAI y Embedchain
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd advanced_llm_apps/chat_with_X_tutorials/chat_with_github
 ```
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 pip install -r requirements.txt
 ```
-3. Get your OpenAI API Key
+3. Obtén tu Clave API de OpenAI
 
-- Sign up for an [OpenAI account](https://platform.openai.com/) (or the LLM provider of your choice) and obtain your API key.
+- Regístrate para obtener una [cuenta de OpenAI](https://platform.openai.com/) (o el proveedor de LLM de tu elección) y obtén tu clave API.
 
-4. Get your GitHub Access Token
+4. Obtén tu Token de Acceso de GitHub
 
-- Create a [personal access token](https://docs.github.com/en/enterprise-server@3.6/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token) with the necessary permissions to access the desired GitHub repository.
+- Crea un [token de acceso personal](https://docs.github.com/en/enterprise-server@3.6/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token) con los permisos necesarios para acceder al repositorio de GitHub deseado.
 
-4. Run the Streamlit App
+4. Ejecuta la Aplicación Streamlit
 ```bash
 streamlit run chat_github.py
 ```
 
-### How it Works?
+### ¿Cómo Funciona?
 
-- The app prompts the user to enter their OpenAI API key, which is used to authenticate requests to the OpenAI API.
+- La aplicación solicita al usuario que ingrese su clave API de OpenAI, que se utiliza para autenticar las solicitudes a la API de OpenAI.
 
-- It initializes an instance of the Embedchain App class and a GithubLoader with the provided GitHub Access Token.
+- Inicializa una instancia de la clase Embedchain App y un GithubLoader con el Token de Acceso de GitHub proporcionado.
 
-- The user is prompted to enter a GitHub repository URL, which is then added to the Embedchain app's knowledge base using the GithubLoader.
+- Se solicita al usuario que ingrese la URL de un repositorio de GitHub, que luego se agrega a la base de conocimientos de la aplicación Embedchain utilizando GithubLoader.
 
-- The user can ask questions about the GitHub repository using the text input.
+- El usuario puede hacer preguntas sobre el repositorio de GitHub utilizando la entrada de texto.
 
-- When a question is asked, the app uses the chat method of the Embedchain app to generate an answer based on the content of the GitHub repository.
+- Cuando se hace una pregunta, la aplicación utiliza el método de chat de la aplicación Embedchain para generar una respuesta basada en el contenido del repositorio de GitHub.
 
-- The app displays the generated answer to the user.
+- La aplicación muestra la respuesta generada al usuario.

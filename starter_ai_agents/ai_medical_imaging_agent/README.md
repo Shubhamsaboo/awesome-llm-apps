@@ -1,66 +1,66 @@
-# 🩻 Medical Imaging Diagnosis Agent
+# 🩻 Agente de Diagnóstico de Imágenes Médicas
 
-A Medical Imaging Diagnosis Agent build on agno powered by Gemini 2.0 Flash that provides AI-assisted analysis of medical images of various scans. The agent acts as a medical imaging diagnosis expert to analyze various types of medical images and videos, providing detailed diagnostic insights and explanations.
+Un Agente de Diagnóstico de Imágenes Médicas construido sobre agno e impulsado por Gemini 2.0 Flash que proporciona análisis asistido por IA de imágenes médicas de diversos escaneos. El agente actúa como un experto en diagnóstico de imágenes médicas para analizar varios tipos de imágenes y videos médicos, proporcionando información y explicaciones diagnósticas detalladas.
 
-## Features
+## Características
 
-- **Comprehensive Image Analysis**
-  - Image Type Identification (X-ray, MRI, CT scan, ultrasound)
-  - Anatomical Region Detection
-  - Key Findings and Observations
-  - Potential Abnormalities Detection
-  - Image Quality Assessment
-  - Research and Reference
+- **Análisis Integral de Imágenes**
+  - Identificación del Tipo de Imagen (rayos X, resonancia magnética, tomografía computarizada, ultrasonido)
+  - Detección de la Región Anatómica
+  - Hallazgos y Observaciones Clave
+  - Detección de Posibles Anormalidades
+  - Evaluación de la Calidad de la Imagen
+  - Investigación y Referencia
 
-## How to Run
+## Cómo Ejecutar
 
-1. **Setup Environment**
+1. **Configurar el Entorno**
    ```bash
-   # Clone the repository
+   # Clona el repositorio
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd ai_agent_tutorials/ai_medical_imaging_agent
 
-   # Install dependencies
+   # Instala las dependencias
    pip install -r requirements.txt
    ```
 
-2. **Configure API Keys**
-   - Get Google API key from [Google AI Studio](https://aistudio.google.com)
+2. **Configurar Claves API**
+   - Obtén la clave API de Google desde [Google AI Studio](https://aistudio.google.com)
 
-3. **Run the Application**
+3. **Ejecutar la Aplicación**
    ```bash
    streamlit run ai_medical_imaging.py
    ```
 
-## Analysis Components
+## Componentes del Análisis
 
-- **Image Type and Region**
-  - Identifies imaging modality
-  - Specifies anatomical region
+- **Tipo y Región de la Imagen**
+  - Identifica la modalidad de imagen
+  - Especifica la región anatómica
 
-- **Key Findings**
-  - Systematic listing of observations
-  - Detailed appearance descriptions
-  - Abnormality highlighting
+- **Hallazgos Clave**
+  - Listado sistemático de observaciones
+  - Descripciones detalladas de la apariencia
+  - Resaltado de anormalidades
 
-- **Diagnostic Assessment**
-  - Potential diagnoses ranking
-  - Differential diagnoses
-  - Severity assessment
+- **Evaluación Diagnóstica**
+  - Clasificación de posibles diagnósticos
+  - Diagnósticos diferenciales
+  - Evaluación de la gravedad
 
-- **Patient-Friendly Explanations**
-  - Simplified terminology
-  - Detailed first-principles explanations
-  - Visual reference points
+- **Explicaciones Amigables para el Paciente**
+  - Terminología simplificada
+  - Explicaciones detalladas de los primeros principios
+  - Puntos de referencia visuales
 
-## Notes
+## Notas
 
-- Uses Gemini 2.0 Flash for analysis
-- Requires stable internet connection
-- Free API usage costs -  1,500 free requests per day by google!
-- For educational and development purposes only
-- Not a replacement for professional medical diagnosis
+- Utiliza Gemini 2.0 Flash para el análisis
+- Requiere conexión a internet estable
+- Costos de uso de API gratuitos: ¡1,500 solicitudes gratuitas por día por Google!
+- Solo para fines educativos y de desarrollo
+- No reemplaza el diagnóstico médico profesional
 
-## Disclaimer
+## Descargo de Responsabilidad
 
-This tool is for educational and informational purposes only. All analyses should be reviewed by qualified healthcare professionals. Do not make medical decisions based solely on this analysis.
+Esta herramienta es solo para fines educativos e informativos. Todos los análisis deben ser revisados por profesionales de la salud calificados. No tomes decisiones médicas basándote únicamente en este análisis.

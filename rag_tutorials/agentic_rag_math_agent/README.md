@@ -1,55 +1,55 @@
-# 🧠 Math Tutor Agent – Agentic RAG with Feedback Loop
+# 🧠 Agente Tutor de Matemáticas – RAG Agéntico con Bucle de Retroalimentación
 
-This project implements an **Agentic-RAG architecture** to simulate a math professor that solves **JEE-level math questions** with step-by-step explanations. The system smartly routes queries between a vector database and web search, applies input/output guardrails, and incorporates human feedback for continuous learning.
+Este proyecto implementa una **arquitectura RAG Agéntica** para simular un profesor de matemáticas que resuelve **preguntas de matemáticas de nivel JEE** con explicaciones paso a paso. El sistema enruta inteligentemente las consultas entre una base de datos vectorial y la búsqueda web, aplica barreras de protección de entrada/salida e incorpora la retroalimentación humana para el aprendizaje continuo.
 
-## 📌 Features
+## 📌 Características
 
-- ✅ **Input Guardrails** (DSPy): Accepts only academic math questions.
-- 📚 **Knowledge Base Search**: Uses **Qdrant Vector DB** with OpenAI Embeddings to match known questions.
-- 🌐 **Web Fallback**: Integrates **Tavily API** when no good match is found.
-- ✍️ **GPT-4.1 Explanations**: Generates step-by-step math solutions.
-- 🛡️ **Output Guardrails**: Filters for correctness and safety.
-- 👍 **Human-in-the-Loop Feedback**: Users rate answers (Yes/No), logged for future learning.
-- 📊 **Benchmarking**: Evaluated on **JEEBench** dataset with adjustable question limits.
-- 💻 **Streamlit UI**: Interactive dashboard with multiple tabs.
+- ✅ **Barreras de Protección de Entrada** (DSPy): Acepta solo preguntas académicas de matemáticas.
+- 📚 **Búsqueda en Base de Conocimientos**: Utiliza **Qdrant Vector DB** con Embeddings de OpenAI para encontrar preguntas conocidas.
+- 🌐 **Respaldo Web**: Integra la **API de Tavily** cuando no se encuentra una buena coincidencia.
+- ✍️ **Explicaciones GPT-4.1**: Genera soluciones matemáticas paso a paso.
+- 🛡️ **Barreras de Protección de Salida**: Filtra para corrección y seguridad.
+- 👍 **Retroalimentación Humana en el Bucle**: Los usuarios califican las respuestas (Sí/No), registradas para aprendizaje futuro.
+- 📊 **Benchmarking**: Evaluado en el conjunto de datos **JEEBench** con límites de preguntas ajustables.
+- 💻 **Interfaz de Usuario Streamlit**: Panel interactivo con múltiples pestañas.
 
-## 🚀 Architecture Flow
+## 🚀 Flujo de la Arquitectura
 <img width="465" alt="Screenshot 2025-05-04 at 3 45 58 PM" src="https://github.com/user-attachments/assets/c0a9e612-2ef0-413c-b779-c99fe9f48619" />
 
 
-## 📚 Knowledge Base
+## 📚 Base de Conocimientos
 
-- **Dataset:** [JEEBench (HuggingFace)](https://huggingface.co/datasets/daman1209arora/jeebench)
-- **Vector DB:** Qdrant (with OpenAI Embeddings)
-- **Storage:** Built with `llama-index` to persist embeddings and perform top-1 similarity search
+- **Conjunto de Datos:** [JEEBench (HuggingFace)](https://huggingface.co/datasets/daman1209arora/jeebench)
+- **BD Vectorial:** Qdrant (con Embeddings de OpenAI)
+- **Almacenamiento:** Construido con `llama-index` para persistir embeddings y realizar búsquedas de similitud top-1
 
-## 🌐 Web Search
+## 🌐 Búsqueda Web
 
-- Uses **Tavily API** for fallback search when the KB doesn't contain a good match
-- Fetched content is piped into **GPT-4o** for clean explanation
-
-
-## 🔐 Guardrails
-
-- **Input Guardrail (DSPy):** Accepts only math-related academic questions
-- **Output Guardrail (DSPy):** Blocks hallucinated or off-topic content
+- Utiliza la **API de Tavily** para búsqueda de respaldo cuando la BC no contiene una buena coincidencia
+- El contenido obtenido se envía a **GPT-4o** para una explicación clara
 
 
-## 👨‍🏫 Human-in-the-Loop Feedback
+## 🔐 Barreras de Protección
 
-- Streamlit UI allows students to give 👍 / 👎 after seeing the answer
-- Feedback is logged to a local JSON file for future improvement
+- **Barrera de Protección de Entrada (DSPy):** Acepta solo preguntas académicas relacionadas con matemáticas
+- **Barrera de Protección de Salida (DSPy):** Bloquea contenido alucinado o fuera de tema
+
+
+## 👨‍🏫 Retroalimentación Humana en el Bucle
+
+- La interfaz de usuario de Streamlit permite a los estudiantes dar 👍 / 👎 después de ver la respuesta
+- La retroalimentación se registra en un archivo JSON local para mejoras futuras
 
 ## 📊 Benchmarking
 
-- Evaluated on **50 random JEEBench Math Questions**
-- **Current Accuracy:** 66%
-- Benchmark results saved to: `benchmark/results.csv`
+- Evaluado en **50 Preguntas de Matemáticas Aleatorias de JEEBench**
+- **Precisión Actual:** 66%
+- Resultados del benchmark guardados en: `benchmark/results.csv`
 
 
-## 🚀 Demo 
+## 🚀 Demostración
 
-To run the app with Streamlit:
+Para ejecutar la aplicación con Streamlit:
 
 ```bash
 streamlit run app/streamlit.py

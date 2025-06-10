@@ -1,73 +1,73 @@
-# 📠 RAG Agent with Database Routing
+# 📠 Agente RAG con Enrutamiento de Base de Datos
 
-A Streamlit application that demonstrates an advanced implementation of RAG Agent with intelligent query routing. The system combines multiple specialized databases with smart fallback mechanisms to ensure reliable and accurate responses to user queries.
+Una aplicación de Streamlit que demuestra una implementación avanzada de Agente RAG con enrutamiento inteligente de consultas. El sistema combina múltiples bases de datos especializadas con mecanismos de respaldo inteligentes para garantizar respuestas confiables y precisas a las consultas de los usuarios.
 
-## Features
+## Características
 
-- **Document Upload**: Users can upload multiple PDF documents related to a particular company. These documents are processed and stored in one of the three databases: Product Information, Customer Support & FAQ, or Financial Information.
+- **Carga de Documentos**: Los usuarios pueden cargar múltiples documentos PDF relacionados con una empresa en particular. Estos documentos se procesan y almacenan en una de las tres bases de datos: Información del Producto, Soporte al Cliente y Preguntas Frecuentes, o Información Financiera.
   
-- **Natural Language Querying**: Users can ask questions in natural language. The system automatically routes the query to the most relevant database using a phidata agent as the router.
+- **Consultas en Lenguaje Natural**: Los usuarios pueden hacer preguntas en lenguaje natural. El sistema enruta automáticamente la consulta a la base de datos más relevante utilizando un agente phidata como enrutador.
 
-- **RAG Orchestration**: Utilizes Langchain for orchestrating the retrieval augmented generation process, ensuring that the most relevant information is retrieved and presented to the user.
+- **Orquestación RAG**: Utiliza Langchain para orquestar el proceso de generación aumentada por recuperación, asegurando que se recupere y presente al usuario la información más relevante.
 
-- **Fallback Mechanism**: If no relevant documents are found in the databases, a LangGraph agent with a DuckDuckGo search tool is used to perform web research and provide an answer.
+- **Mecanismo de Respaldo**: Si no se encuentran documentos relevantes en las bases de datos, se utiliza un agente LangGraph con una herramienta de búsqueda DuckDuckGo para realizar investigaciones web y proporcionar una respuesta.
 
-## How to Run?
+## ¿Cómo Ejecutar?
 
-1. **Clone the Repository**:
+1. **Clona el Repositorio**:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd rag_tutorials/rag_database_routing
    ```
 
-2. **Install Dependencies**:
+2. **Instala las Dependencias**:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Run the Application**:
+3. **Ejecuta la Aplicación**:
    ```bash
    streamlit run rag_database_routing.py
    ```
 
-4. **Get OpenAI API Key**: Obtain an OpenAI API key and set it in the application. This is required for initializing the language models used in the application.
+4. **Obtén la Clave API de OpenAI**: Obtén una clave API de OpenAI y configúrala en la aplicación. Esto es necesario para inicializar los modelos de lenguaje utilizados en la aplicación.
 
-5. **Setup Qdrant Cloud** 
-- Visit [Qdrant Cloud](https://cloud.qdrant.io/)
-- Create an account or sign in
-- Create a new cluster
-- Get your credentials:
-   - Qdrant API Key: Found in API Keys section
-   - Qdrant URL: Your cluster URL (format: https://xxx-xxx.aws.cloud.qdrant.io)
+5. **Configura Qdrant Cloud**
+- Visita [Qdrant Cloud](https://cloud.qdrant.io/)
+- Crea una cuenta o inicia sesión
+- Crea un nuevo clúster
+- Obtén tus credenciales:
+   - Clave API de Qdrant: Se encuentra en la sección de Claves API
+   - URL de Qdrant: La URL de tu clúster (formato: https://xxx-xxx.aws.cloud.qdrant.io)
 
-5. **Upload Documents**: Use the document upload section to add PDF documents to the desired database.
+5. **Sube Documentos**: Utiliza la sección de carga de documentos para agregar documentos PDF a la base de datos deseada.
 
-6. **Ask Questions**: Enter your questions in the query section. The application will route your question to the appropriate database and provide an answer.
+6. **Haz Preguntas**: Ingresa tus preguntas en la sección de consultas. La aplicación enrutará tu pregunta a la base de datos apropiada y proporcionará una respuesta.
 
-## Technologies Used
+## Tecnologías Utilizadas
 
-- **Langchain**: For RAG orchestration, ensuring efficient retrieval and generation of information.
-- **Phidata Agent**: Used as the router agent to determine the most relevant database for a given query.
-- **LangGraph Agent**: Acts as a fallback mechanism, utilizing DuckDuckGo for web research when necessary.
-- **Streamlit**: Provides a user-friendly interface for document upload and querying.
-- **Qdrant**: Used for managing the databases, storing and retrieving document embeddings efficiently.
+- **Langchain**: Para la orquestación RAG, asegurando una recuperación y generación eficiente de información.
+- **Agente Phidata**: Utilizado como agente enrutador para determinar la base de datos más relevante para una consulta dada.
+- **Agente LangGraph**: Actúa como un mecanismo de respaldo, utilizando DuckDuckGo para la investigación web cuando sea necesario.
+- **Streamlit**: Proporciona una interfaz fácil de usar para la carga de documentos y la realización de consultas.
+- **Qdrant**: Utilizado para gestionar las bases de datos, almacenando y recuperando eficientemente los embeddings de los documentos.
 
-## How It Works?
+## ¿Cómo Funciona?
 
-**1. Query Routing**
-The system uses a three-stage routing approach:
-- Vector similarity search across all databases
-- LLM-based routing for ambiguous queries
-- Web search fallback for unknown topics
+**1. Enrutamiento de Consultas**
+El sistema utiliza un enfoque de enrutamiento de tres etapas:
+- Búsqueda de similitud vectorial en todas las bases de datos
+- Enrutamiento basado en LLM para consultas ambiguas
+- Respaldo de búsqueda web para temas desconocidos
 
-**2. Document Processing**
-- Automatic text extraction from PDFs
-- Smart text chunking with overlap
-- Vector embedding generation
-- Efficient database storage
+**2. Procesamiento de Documentos**
+- Extracción automática de texto de PDF
+- Fragmentación inteligente de texto con superposición
+- Generación de embeddings vectoriales
+- Almacenamiento eficiente en base de datos
 
-**3. Answer Generation**
-- Context-aware retrieval
-- Smart document combination
-- Confidence-based responses
-- Web research integration
+**3. Generación de Respuestas**
+- Recuperación consciente del contexto
+- Combinación inteligente de documentos
+- Respuestas basadas en la confianza
+- Integración de investigación web

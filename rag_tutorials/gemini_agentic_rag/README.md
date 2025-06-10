@@ -1,90 +1,90 @@
-# 🤔 Agentic RAG with Gemini Flash Thinking
+# 🤔 RAG Agéntico con Gemini Flash Thinking
 
-A RAG Agentic system built with the new Gemini 2.0 Flash Thinking model and gemini-exp-1206, Qdrant for vector storage, and Agno (phidata prev) for agent orchestration. This application features intelligent query rewriting, document processing, and web search fallback capabilities to provide comprehensive AI-powered responses.
+Un sistema RAG Agéntico construido con el nuevo modelo Gemini 2.0 Flash Thinking y gemini-exp-1206, Qdrant para almacenamiento de vectores y Agno (anteriormente phidata) para la orquestación de agentes. Esta aplicación cuenta con reescritura inteligente de consultas, procesamiento de documentos y capacidades de respaldo de búsqueda web para proporcionar respuestas completas impulsadas por IA.
 
-## Features
+## Características
 
-- **Document Processing**
-  - PDF document upload and processing
-  - Web page content extraction
-  - Automatic text chunking and embedding
-  - Vector storage in Qdrant cloud
+- **Procesamiento de Documentos**
+  - Carga y procesamiento de documentos PDF
+  - Extracción de contenido de páginas web
+  - Fragmentación y embedding automático de texto
+  - Almacenamiento de vectores en la nube Qdrant
 
-- **Intelligent Querying**
-  - Query rewriting for better retrieval
-  - RAG-based document retrieval
-  - Similarity search with threshold filtering
-  - Automatic fallback to web search
-  - Source attribution for answers
+- **Consultas Inteligentes**
+  - Reescritura de consultas para una mejor recuperación
+  - Recuperación de documentos basada en RAG
+  - Búsqueda de similitud con filtrado de umbral
+  - Respaldo automático a búsqueda web
+  - Atribución de fuentes para las respuestas
 
-- **Advanced Capabilities**
-  - Exa AI web search integration
-  - Custom domain filtering for web search
-  - Context-aware response generation
-  - Chat history management
-  - Query reformulation agent
+- **Capacidades Avanzadas**
+  - Integración de búsqueda web Exa AI
+  - Filtrado de dominio personalizado para búsqueda web
+  - Generación de respuestas conscientes del contexto
+  - Gestión del historial de chat
+  - Agente de reformulación de consultas
 
-- **Model Specific Features**
-  - Gemini Thinking 2.0 Flash for chat and reasoning
-  - Gemini Embedding model for vector embeddings
-  - Agno Agent framework for orchestration
-  - Streamlit-based interactive interface
+- **Características Específicas del Modelo**
+  - Gemini Thinking 2.0 Flash para chat y razonamiento
+  - Modelo Gemini Embedding para embeddings vectoriales
+  - Framework Agno Agent para orquestación
+  - Interfaz interactiva basada en Streamlit
 
-## Prerequisites
+## Requisitos Previos
 
-### 1. Google API Key
-1. Go to [Google AI Studio](https://aistudio.google.com/apikey)
-2. Sign up or log in to your account
-3. Create a new API key
+### 1. Clave API de Google
+1. Ve a [Google AI Studio](https://aistudio.google.com/apikey)
+2. Regístrate o inicia sesión en tu cuenta
+3. Crea una nueva clave API
 
-### 2. Qdrant Cloud Setup
-1. Visit [Qdrant Cloud](https://cloud.qdrant.io/)
-2. Create an account or sign in
-3. Create a new cluster
-4. Get your credentials:
-   - Qdrant API Key: Found in API Keys section
-   - Qdrant URL: Your cluster URL (format: `https://xxx-xxx.cloud.qdrant.io`)
+### 2. Configuración de Qdrant Cloud
+1. Visita [Qdrant Cloud](https://cloud.qdrant.io/)
+2. Crea una cuenta o inicia sesión
+3. Crea un nuevo clúster
+4. Obtén tus credenciales:
+   - Clave API de Qdrant: Se encuentra en la sección de Claves API
+   - URL de Qdrant: La URL de tu clúster (formato: `https://xxx-xxx.cloud.qdrant.io`)
 
-### 3. Exa AI API Key (Optional)
-1. Visit [Exa AI](https://exa.ai)
-2. Sign up for an account
-3. Generate an API key for web search capabilities
+### 3. Clave API de Exa AI (Opcional)
+1. Visita [Exa AI](https://exa.ai)
+2. Regístrate para obtener una cuenta
+3. Genera una clave API para capacidades de búsqueda web
 
-## How to Run
+## Cómo Ejecutar
 
-1. Clone the repository:
+1. Clona el repositorio:
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd rag_tutorials/gemini_agentic_rag
 ```
 
-2. Install dependencies:
+2. Instala las dependencias:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Run the application:
+3. Ejecuta la aplicación:
 ```bash
 streamlit run agentic_rag_gemini.py
 ```
 
-## Usage
+## Uso
 
-1. Configure API keys in the sidebar:
-   - Enter your Google API key
-   - Add Qdrant credentials
-   - (Optional) Add Exa AI key for web search
+1. Configura las claves API en la barra lateral:
+   - Ingresa tu clave API de Google
+   - Agrega las credenciales de Qdrant
+   - (Opcional) Agrega la clave de Exa AI para búsqueda web
 
-2. Upload documents:
-   - Use the file uploader for PDFs
-   - Enter URLs for web content
+2. Sube documentos:
+   - Usa el cargador de archivos para PDF
+   - Ingresa URL para contenido web
 
-3. Ask questions:
-   - Type your query in the chat interface
-   - View rewritten queries and sources
-   - See web search results when relevant
+3. Haz preguntas:
+   - Escribe tu consulta en la interfaz de chat
+   - Visualiza consultas reescritas y fuentes
+   - Consulta los resultados de búsqueda web cuando sea relevante
 
-4. Manage your session:
-   - Clear chat history as needed
-   - Configure web search domains
-   - Monitor processed documents
+4. Gestiona tu sesión:
+   - Borra el historial de chat según sea necesario
+   - Configura dominios de búsqueda web
+   - Supervisa los documentos procesados

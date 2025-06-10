@@ -1,39 +1,39 @@
-## 💻 Web Scrapping AI Agent
-This Streamlit app allows you to scrape a website using OpenAI API and the scrapegraphai library. Simply provide your OpenAI API key, enter the URL of the website you want to scrape, and specify what you want the AI agent to extract from the website.
+## 💻 Agente de IA para Web Scraping
+Esta aplicación de Streamlit te permite extraer datos de un sitio web utilizando la API de OpenAI y la biblioteca scrapegraphai. Simplemente proporciona tu clave API de OpenAI, ingresa la URL del sitio web que deseas extraer y especifica qué deseas que el agente de IA extraiga del sitio web.
 
-### Features
-- Scrape any website by providing the URL
-- Utilize OpenAI's LLMs (GPT-3.5-turbo or GPT-4) for intelligent scraping
-- Customize the scraping task by specifying what you want the AI agent to extract
+### Características
+- Extrae datos de cualquier sitio web proporcionando la URL
+- Utiliza los LLM de OpenAI (GPT-3.5-turbo o GPT-4) para una extracción inteligente
+- Personaliza la tarea de extracción especificando qué deseas que el agente de IA extraiga
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd awesome-llm-apps/advanced_tools_frameworks/web_scrapping_ai_agent
 ```
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 pip install -r requirements.txt
 ```
-3. Get your OpenAI API Key
+3. Obtén tu Clave API de OpenAI
 
-- Sign up for an [OpenAI account](https://platform.openai.com/) (or the LLM provider of your choice) and obtain your API key.
+- Regístrate para obtener una [cuenta de OpenAI](https://platform.openai.com/) (o el proveedor de LLM de tu elección) y obtén tu clave API.
 
-4. Run the Streamlit App
+4. Ejecuta la Aplicación Streamlit
 ```bash
 streamlit run ai_scrapper.py
 ```
 
-### How it Works?
+### ¿Cómo Funciona?
 
-- The app prompts you to enter your OpenAI API key, which is used to authenticate and access the OpenAI language models.
-- You can select the desired language model (GPT-3.5-turbo or GPT-4) for the scraping task.
-- Enter the URL of the website you want to scrape in the provided text input field.
-- Specify what you want the AI agent to extract from the website by entering a user prompt.
-- The app creates a SmartScraperGraph object using the provided URL, user prompt, and OpenAI configuration.
-- The SmartScraperGraph object scrapes the website and extracts the requested information using the specified language model.
-- The scraped results are displayed in the app for you to view
+- La aplicación te solicita que ingreses tu clave API de OpenAI, que se utiliza para autenticar y acceder a los modelos de lenguaje de OpenAI.
+- Puedes seleccionar el modelo de lenguaje deseado (GPT-3.5-turbo o GPT-4) para la tarea de extracción.
+- Ingresa la URL del sitio web que deseas extraer en el campo de entrada de texto proporcionado.
+- Especifica qué deseas que el agente de IA extraiga del sitio web ingresando una indicación de usuario.
+- La aplicación crea un objeto SmartScraperGraph utilizando la URL proporcionada, la indicación del usuario y la configuración de OpenAI.
+- El objeto SmartScraperGraph extrae datos del sitio web y la información solicitada utilizando el modelo de lenguaje especificado.
+- Los resultados extraídos se muestran en la aplicación para que los veas

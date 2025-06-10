@@ -1,30 +1,30 @@
-## 📚 AI Research Agent with Memory
-This Streamlit app implements an AI-powered research assistant that helps users search for academic papers on arXiv while maintaining a memory of user interests and past interactions. It utilizes OpenAI's GPT-4o-mini model for processing search results, MultiOn for web browsing, and Mem0 with Qdrant for maintaining user context.
+## 📚 Agente de Investigación de IA con Memoria
+Esta aplicación de Streamlit implementa un asistente de investigación impulsado por IA que ayuda a los usuarios a buscar artículos académicos en arXiv mientras mantiene una memoria de los intereses del usuario y las interacciones pasadas. Utiliza el modelo GPT-4o-mini de OpenAI para procesar los resultados de búsqueda, MultiOn para la navegación web y Mem0 con Qdrant para mantener el contexto del usuario.
 
-### Features
+### Características
 
-- Search interface for querying arXiv papers
-- AI-powered processing of search results for improved readability
-- Persistent memory of user interests and past searches
-- Utilizes OpenAI's GPT-4o-mini model for intelligent processing
-- Implements memory storage and retrieval using Mem0 and Qdrant
+- Interfaz de búsqueda para consultar artículos de arXiv
+- Procesamiento impulsado por IA de los resultados de búsqueda para mejorar la legibilidad
+- Memoria persistente de los intereses del usuario y búsquedas pasadas
+- Utiliza el modelo GPT-4o-mini de OpenAI para un procesamiento inteligente
+- Implementa el almacenamiento y recuperación de memoria utilizando Mem0 y Qdrant
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd awesome-llm-apps/llm_apps_with_memory_tutorials/ai_arxiv_agent_memory
 ```
 
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Ensure Qdrant is running:
-The app expects Qdrant to be running on localhost:6333. Adjust the configuration in the code if your setup is different.
+3. Asegúrate de que Qdrant esté en ejecución:
+La aplicación espera que Qdrant esté en ejecución en localhost:6333. Ajusta la configuración en el código si tu configuración es diferente.
 
 ```bash
 docker pull qdrant/qdrant
@@ -34,7 +34,7 @@ docker run -p 6333:6333 -p 6334:6334 \
     qdrant/qdrant
 ```
 
-4. Run the Streamlit App
+4. Ejecuta la Aplicación Streamlit
 ```bash
 streamlit run ai_arxiv_agent_memory.py
 ```

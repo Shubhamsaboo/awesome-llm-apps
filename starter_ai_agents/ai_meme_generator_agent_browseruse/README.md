@@ -1,51 +1,51 @@
-# 🥸 AI Meme Generator Agent - Browser Use
+# 🥸 Agente Generador de Memes con IA - Uso en Navegador
 
-The AI Meme Generator Agent is a powerful browser automation tool that creates memes using AI agents. This app combines multi-LLM capabilities with automated browser interactions to generate memes based on text prompts through direct website manipulation.
+El Agente Generador de Memes con IA es una potente herramienta de automatización de navegadores que crea memes utilizando agentes de IA. Esta aplicación combina capacidades multi-LLM con interacciones automatizadas del navegador para generar memes basados en indicaciones de texto mediante la manipulación directa de sitios web.
 
-## Features
+## Características
 
-- **Multi-LLM Support**
+- **Soporte Multi-LLM**
   - Claude 3.5 Sonnet (Anthropic)
   - GPT-4o (OpenAI)
   - Deepseek v3 (Deepseek)
-  - Automatic model switching with API key validation
+  - Cambio automático de modelo con validación de clave API
 
-- **Browser Automation**:
-  - Direct interaction with imgflip.com meme templates
-  - Automated search for relevant meme formats
-  - Dynamic text insertion for top/bottom captions
-  - Image link extraction from generated memes
+- **Automatización del Navegador**:
+  - Interacción directa con plantillas de memes de imgflip.com
+  - Búsqueda automatizada de formatos de memes relevantes
+  - Inserción dinámica de texto para leyendas superiores/inferiores
+  - Extracción de enlaces de imágenes de memes generados
 
-- **Smart Generation Workflow**:
-  - Action verb extraction from prompts
-  - Metaphorical template matching
-  - Multi-step quality validation
-  - Automatic retry mechanism for failed generations
+- **Flujo de Trabajo de Generación Inteligente**:
+  - Extracción de verbos de acción de las indicaciones
+  - Coincidencia de plantillas metafóricas
+  - Validación de calidad en varios pasos
+  - Mecanismo de reintento automático para generaciones fallidas
 
-- **User-Friendly Interface**:
-  - Model configuration sidebar
-  - API key management
-  - Direct meme preview with clickable links
-  - Responsive error handling
+- **Interfaz Fácil de Usar**:
+  - Barra lateral de configuración del modelo
+  - Gestión de claves API
+  - Vista previa directa de memes con enlaces clicables
+  - Manejo receptivo de errores
 
 
-API keys required:
-- **Anthropic** (for Claude)
+Claves API requeridas:
+- **Anthropic** (para Claude)
 - **Deepseek** 
-- **OpenAI** (for GPT-4o)
+- **OpenAI** (para GPT-4o)
 
-## How to Run
+## Cómo Ejecutar
 
-1. **Clone the Repository**:
+1. **Clona el Repositorio**:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd ai_agent_tutorials/ai_meme_generator_browseruse
    ```
-2. **Install the dependencies**:
+2. **Instala las dependencias**:
     ```bash
     pip install -r requirements.txt
     ```
-3. **Run the Streamlit app**:
+3. **Ejecuta la aplicación Streamlit**:
     ```bash
     streamlit run ai_meme_generator.py
     ```

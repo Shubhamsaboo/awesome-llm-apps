@@ -1,41 +1,41 @@
-# 📊 AI Data Visualization Agent
-A Streamlit application that acts as your personal data visualization expert, powered by LLMs. Simply upload your dataset and ask questions in natural language - the AI agent will analyze your data, generate appropriate visualizations, and provide insights through a combination of charts, statistics, and explanations.
+# 📊 Agente de Visualización de Datos de IA
+Una aplicación de Streamlit que actúa como tu experto personal en visualización de datos, impulsada por LLMs. Simplemente carga tu conjunto de datos y haz preguntas en lenguaje natural: el agente de IA analizará tus datos, generará las visualizaciones adecuadas y proporcionará información a través de una combinación de gráficos, estadísticas y explicaciones.
 
-## Features
-#### Natural Language Data Analysis
-- Ask questions about your data in plain English
-- Get instant visualizations and statistical analysis
-- Receive explanations of findings and insights
-- Interactive follow-up questioning
+## Características
+#### Análisis de Datos en Lenguaje Natural
+- Haz preguntas sobre tus datos en español sencillo
+- Obtén visualizaciones instantáneas y análisis estadísticos
+- Recibe explicaciones de los hallazgos y perspectivas
+- Interrogatorio interactivo de seguimiento
 
-#### Intelligent Visualization Selection
-- Automatic choice of appropriate chart types
-- Dynamic visualization generation
-- Statistical visualization support
-- Custom plot formatting and styling
+#### Selección Inteligente de Visualización
+- Elección automática de los tipos de gráficos apropiados
+- Generación dinámica de visualizaciones
+- Soporte para visualización estadística
+- Formato y estilo de gráficos personalizados
 
-#### Multi-Model AI Support
-- Meta-Llama 3.1 405B for complex analysis
-- DeepSeek V3 for detailed insights
-- Qwen 2.5 7B for quick analysis
-- Meta-Llama 3.3 70B for advanced queries
+#### Soporte de IA Multi-Modelo
+- Meta-Llama 3.1 405B para análisis complejos
+- DeepSeek V3 para perspectivas detalladas
+- Qwen 2.5 7B para análisis rápidos
+- Meta-Llama 3.3 70B para consultas avanzadas
 
-## How to Run
+## Cómo Ejecutar
 
-Follow the steps below to set up and run the application:
-- Before anything else, Please get a free Together AI API Key here: https://api.together.ai/signin
-- Get a free E2B API Key here: https://e2b.dev/ ; https://e2b.dev/docs/legacy/getting-started/api-key
+Sigue los pasos a continuación para configurar y ejecutar la aplicación:
+- Antes que nada, obtén una clave API gratuita de Together AI aquí: https://api.together.ai/signin
+- Obtén una clave API gratuita de E2B aquí: https://e2b.dev/ ; https://e2b.dev/docs/legacy/getting-started/api-key
 
-1. **Clone the Repository**
+1. **Clona el Repositorio**
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd ai_agent_tutorials/ai_data_visualisation_agent
    ```
-2. **Install the dependencies**
+2. **Instala las dependencias**
     ```bash
     pip install -r requirements.txt
     ```
-3. **Run the Streamlit app**
+3. **Ejecuta la aplicación Streamlit**
     ```bash
     streamlit run ai_data_visualisation_agent.py
     ```

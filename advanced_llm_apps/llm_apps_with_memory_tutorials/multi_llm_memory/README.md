@@ -1,40 +1,40 @@
-## 🧠 Multi-LLM App with Shared Memory
-This Streamlit application demonstrates a multi-LLM system with a shared memory layer, allowing users to interact with different language models while maintaining conversation history and context across sessions.
+## 🧠 Aplicación Multi-LLM con Memoria Compartida
+Esta aplicación Streamlit demuestra un sistema multi-LLM con una capa de memoria compartida, permitiendo a los usuarios interactuar con diferentes modelos de lenguaje mientras se mantiene el historial de conversaciones y el contexto a través de las sesiones.
 
-### Features
+### Características
 
-- Support for multiple LLMs:
-    - OpenAI's GPT-4o
-    - Anthropic's Claude 3.5 Sonnet
+- Soporte para múltiples LLMs:
+    - GPT-4o de OpenAI
+    - Claude 3.5 Sonnet de Anthropic
 
-- Persistent memory using Qdrant vector store
-- User-specific conversation history
-- Memory retrieval for contextual responses
-- User-friendly interface with LLM selection
+- Memoria persistente utilizando el almacén de vectores Qdrant
+- Historial de conversaciones específico del usuario
+- Recuperación de memoria para respuestas contextuales
+- Interfaz fácil de usar con selección de LLM
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd awesome-llm-apps/llm_apps_with_memory_tutorials/multi_llm_memory
 ```
 
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Ensure Qdrant is running:
-The app expects Qdrant to be running on localhost:6333. Adjust the configuration in the code if your setup is different.
+3. Asegúrate de que Qdrant esté en ejecución:
+La aplicación espera que Qdrant esté en ejecución en localhost:6333. Ajusta la configuración en el código si tu configuración es diferente.
 
 ```bash
 docker pull qdrant/qdrant
 docker run -p 6333:6333 qdrant/qdrant
 ```
 
-4. Run the Streamlit App
+4. Ejecuta la Aplicación Streamlit
 ```bash
 streamlit run multi_llm_memory.py
 ```

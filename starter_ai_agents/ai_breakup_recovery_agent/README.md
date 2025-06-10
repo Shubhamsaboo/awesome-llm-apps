@@ -1,107 +1,107 @@
 
-# 💔 Breakup Recovery Agent Team
+# 💔 Equipo de Agentes para la Recuperación de Rupturas
 
-This is an AI-powered application designed to help users emotionally recover from breakups by providing support, guidance, and emotional outlet messages from a team of specialized AI agents. The app is built using **Streamlit** and **Agno**, leveraging **Gemini 2.0 Flash (Google Vision Model)   **.
+Esta es una aplicación impulsada por IA diseñada para ayudar a los usuarios a recuperarse emocionalmente de las rupturas proporcionando apoyo, orientación y mensajes de desahogo emocional de un equipo de agentes de IA especializados. La aplicación está construida usando **Streamlit** y **Agno**, aprovechando **Gemini 2.0 Flash (Google Vision Model)   **.
 
-## 🚀 Features
+## 🚀 Características
 
-- 🧠 **Multi-Agent Team:** 
-    - **Therapist Agent:** Offers empathetic support and coping strategies.
-    - **Closure Agent:** Writes emotional messages users shouldn't send for catharsis.
-    - **Routine Planner Agent:** Suggests daily routines for emotional recovery.
-    - **Brutal Honesty Agent:** Provides direct, no-nonsense feedback on the breakup.
-- 📷 **Chat Screenshot Analysis:**
-    - Upload screenshots for chat analysis.
-- 🔑 **API Key Management:**
-    - Store and manage your Gemini API keys securely via Streamlit's sidebar.
-- ⚡ **Parallel Execution:** 
-    - Agents process inputs in coordination mode for comprehensive results.
-- ✅ **User-Friendly Interface:** 
-    - Simple, intuitive UI with easy interaction and display of agent responses.
+- 🧠 **Equipo Multi-Agente:**
+    - **Agente Terapeuta:** Ofrece apoyo empático y estrategias de afrontamiento.
+    - **Agente de Cierre:** Escribe mensajes emocionales que los usuarios no deberían enviar para la catarsis.
+    - **Agente Planificador de Rutinas:** Sugiere rutinas diarias para la recuperación emocional.
+    - **Agente de Honestidad Brutal:** Proporciona retroalimentación directa y sin rodeos sobre la ruptura.
+- 📷 **Análisis de Capturas de Pantalla de Chat:**
+    - Sube capturas de pantalla para el análisis del chat.
+- 🔑 **Gestión de Claves API:**
+    - Almacena y gestiona tus claves API de Gemini de forma segura a través de la barra lateral de Streamlit.
+- ⚡ **Ejecución Paralela:**
+    - Los agentes procesan las entradas en modo de coordinación para obtener resultados completos.
+- ✅ **Interfaz Fácil de Usar:**
+    - Interfaz de usuario simple e intuitiva con fácil interacción y visualización de las respuestas de los agentes.
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Tecnologías Utilizadas
 
 - **Frontend:** Streamlit (Python)
-- **AI Models:** Gemini 2.0 Flash (Google Vision Model)
-- **Image Processing:** PIL (for displaying screenshots)
-- **Text Extraction:** Google's Gemini Vision model to analyze chat screenshots
-- **Environment Variables:** API keys managed with `st.session_state` in Streamlit
+- **Modelos de IA:** Gemini 2.0 Flash (Google Vision Model)
+- **Procesamiento de Imágenes:** PIL (para mostrar capturas de pantalla)
+- **Extracción de Texto:** Modelo Gemini Vision de Google para analizar capturas de pantalla de chat
+- **Variables de Entorno:** Claves API gestionadas con `st.session_state` en Streamlit
 
 ---
 
-## 📦 Installation
+## 📦 Instalación
 
-1. **Clone the Repository:**
+1. **Clona el Repositorio:**
    ```bash
    git clone <repository_url>
    cd breakup-recovery-agent-team
    ```
 
-2. **Create a Virtual Environment (Optional but Recommended):**
+2. **Crea un Entorno Virtual (Opcional pero Recomendado):**
    ```bash
    conda create --name <env_name> python=<version>
    conda activate <env_name>
    ```
 
-3. **Install Dependencies:**
+3. **Instala las Dependencias:**
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Run the Streamlit App:**
+4. **Ejecuta la Aplicación Streamlit:**
    ```bash
    streamlit run app.py
    ```
 
 ---
 
-## 🔑 Environment Variables
+## 🔑 Variables de Entorno
 
-Make sure to provide your **Gemini API key** in the Streamlit sidebar:
+Asegúrate de proporcionar tu **clave API de Gemini** en la barra lateral de Streamlit:
 
 - GEMINI_API_KEY=your_google_gemini_api_key
 
 ---
 
-## 🛠️ Usage
+## 🛠️ Uso
 
-1. **Enter Your Feelings:** 
-    - Describe how you're feeling in the text area.
-2. **Upload Screenshot (Optional):**
-    - Upload a chat screenshot (PNG, JPG, JPEG) for analysis.
-3. **Execute Agents:**
-    - Click **"Get Recovery Support"** to run the multi-agent team.
-4. **View Results:**
-    - Individual agent responses are displayed.
-    - A final summary is provided by the Team Leader.
+1. **Ingresa Tus Sentimientos:**
+    - Describe cómo te sientes en el área de texto.
+2. **Sube una Captura de Pantalla (Opcional):**
+    - Sube una captura de pantalla del chat (PNG, JPG, JPEG) para su análisis.
+3. **Ejecuta los Agentes:**
+    - Haz clic en **"Obtener Apoyo para la Recuperación"** para ejecutar el equipo multi-agente.
+4. **Visualiza los Resultados:**
+    - Se muestran las respuestas individuales de los agentes.
+    - El Líder del Equipo proporciona un resumen final.
 
 ---
 
-## 🧑‍💻 Agents Overview
+## 🧑‍💻 Resumen de los Agentes
 
-- **Therapist Agent**
-    - Provides empathetic support and coping strategies.
-    - Uses **Gemini 2.0 Flash (Google Vision Model)** and DuckDuckGo tools for insights.
+- **Agente Terapeuta**
+    - Proporciona apoyo empático y estrategias de afrontamiento.
+    - Utiliza herramientas **Gemini 2.0 Flash (Google Vision Model)** y DuckDuckGo para obtener información.
   
-- **Closure Agent**
-    - Generates unsent emotional messages for emotional release.
-    - Ensures heartfelt and authentic messages.
+- **Agente de Cierre**
+    - Genera mensajes emocionales no enviados para la liberación emocional.
+    - Asegura mensajes sinceros y auténticos.
 
-- **Routine Planner Agent**
-    - Creates a daily recovery routine with balanced activities.
-    - Includes self-reflection, social interaction, and healthy distractions.
+- **Agente Planificador de Rutinas**
+    - Crea una rutina diaria de recuperación con actividades equilibradas.
+    - Incluye autorreflexión, interacción social y distracciones saludables.
 
-- **Brutal Honesty Agent**
-    - Offers direct, objective feedback on the breakup.
-    - Uses factual language with no sugar-coating.
+- **Agente de Honestidad Brutal**
+    - Ofrece retroalimentación directa y objetiva sobre la ruptura.
+    - Utiliza un lenguaje factual sin endulzar la realidad.
 
 ---
 
 
-## 📄 License
+## 📄 Licencia
 
-This project is licensed under the **MIT License**.
+Este proyecto está licenciado bajo la **Licencia MIT**.
 
 ---

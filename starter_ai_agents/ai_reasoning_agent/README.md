@@ -1,51 +1,51 @@
-## AI Reasoning Agent
+## Agente de Razonamiento de IA
 
-The AI Reasoning Agent leverages advanced AI models to provide insightful reasoning and decision-making capabilities. This agent is designed to assist users in various analytical tasks by processing information and generating structured outputs.
+El Agente de Razonamiento de IA aprovecha modelos avanzados de IA para proporcionar capacidades perspicaces de razonamiento y toma de decisiones. Este agente está diseñado para ayudar a los usuarios en diversas tareas analíticas procesando información y generando resultados estructurados.
 
-### Features
-- **Advanced Reasoning**: Utilizes the Ollama model to perform complex reasoning tasks
-- **Interactive Playground**: Provides a user-friendly interface for interacting with the reasoning agent
-- **Markdown Support**: Outputs results in markdown format for easy readability and sharing
-- **Customizable Agent**: Easily configurable to suit different reasoning scenarios
+### Características
+- **Razonamiento Avanzado**: Utiliza el modelo Ollama para realizar tareas complejas de razonamiento
+- **Patio de Recreo Interactivo**: Proporciona una interfaz fácil de usar para interactuar con el agente de razonamiento
+- **Soporte Markdown**: Emite resultados en formato markdown para facilitar la lectura y el intercambio
+- **Agente Personalizable**: Fácilmente configurable para adaptarse a diferentes escenarios de razonamiento
 
-### How to Get Started
-1. **Clone the repository**:
+### Cómo Empezar
+1. **Clona el repositorio**:
     ```bash
     git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
     cd ai_agent_tutorials/ai_reasoning_agent
     ```
 
-2. **Install the required packages**:
-    #### For Local AI Reasoning Agent
+2. **Instala los paquetes requeridos**:
+    #### Para el Agente de Razonamiento de IA Local
     ```bash
     pip install -r requirements.txt
     ```
 
-3. **Run the application**:
+3. **Ejecuta la aplicación**:
     ```bash
     python local_ai_reasoning_agent.py
     ```
 
-### Using the Agent
-1. **Access the Playground**:
-    - Open the provided URL to access the interactive playground
-    - The playground allows you to input queries and receive structured reasoning outputs
+### Usando el Agente
+1. **Accede al Patio de Recreo**:
+    - Abre la URL proporcionada para acceder al patio de recreo interactivo
+    - El patio de recreo te permite ingresar consultas y recibir resultados de razonamiento estructurados
 
-2. **Input Queries**:
-    - Enter your queries in the provided input field
-    - The agent processes the input and provides detailed reasoning and analysis
+2. **Ingresa Consultas**:
+    - Ingresa tus consultas en el campo de entrada proporcionado
+    - El agente procesa la entrada y proporciona razonamiento y análisis detallados
 
-3. **View Results**:
-    - Results are displayed in markdown format
-    - Easily copy and share the outputs for further use
+3. **Visualiza Resultados**:
+    - Los resultados se muestran en formato markdown
+    - Copia y comparte fácilmente los resultados para su uso posterior
 
-### Features in Detail
-- **Reasoning Capabilities**:
-  - Handles a wide range of analytical tasks
-  - Provides clear and structured outputs
-  - Supports markdown for easy sharing and readability
+### Características en Detalle
+- **Capacidades de Razonamiento**:
+  - Maneja una amplia gama de tareas analíticas
+  - Proporciona resultados claros y estructurados
+  - Admite markdown para facilitar el intercambio y la legibilidad
 
-- **Interactive Interface**:
-  - User-friendly playground for seamless interaction
-  - Real-time processing and output generation
-  - Configurable settings to tailor the agent's behavior
+- **Interfaz Interactiva**:
+  - Patio de recreo fácil de usar para una interacción fluida
+  - Procesamiento y generación de resultados en tiempo real
+  - Configuraciones personalizables para adaptar el comportamiento del agente

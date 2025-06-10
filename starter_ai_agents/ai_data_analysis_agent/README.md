@@ -1,55 +1,55 @@
-# 📊 AI Data Analysis Agent
+# 📊 Agente de Análisis de Datos de IA
 
-An AI data analysis Agent built using the Agno Agent framework and Openai's gpt-4o model. This agent helps users analyze their data - csv, excel files through natural language queries, powered by OpenAI's language models and DuckDB for efficient data processing - making data analysis accessible to users regardless of their SQL expertise.
+Un Agente de análisis de datos de IA construido utilizando el framework Agno Agent y el modelo gpt-4o de OpenAI. Este agente ayuda a los usuarios a analizar sus datos (archivos csv, excel) a través de consultas en lenguaje natural, impulsado por los modelos de lenguaje de OpenAI y DuckDB para un procesamiento de datos eficiente, haciendo que el análisis de datos sea accesible para los usuarios independientemente de su experiencia en SQL.
 
-## Features
+## Características
 
-- 📤 **File Upload Support**: 
-  - Upload CSV and Excel files
-  - Automatic data type detection and schema inference
-  - Support for multiple file formats
+- 📤 **Soporte para Carga de Archivos**:
+  - Carga archivos CSV y Excel
+  - Detección automática de tipos de datos e inferencia de esquemas
+  - Soporte para múltiples formatos de archivo
 
-- 💬 **Natural Language Queries**: 
-  - Convert natural language questions into SQL queries
-  - Get instant answers about your data
-  - No SQL knowledge required
+- 💬 **Consultas en Lenguaje Natural**:
+  - Convierte preguntas en lenguaje natural en consultas SQL
+  - Obtén respuestas instantáneas sobre tus datos
+  - No se requieren conocimientos de SQL
 
-- 🔍 **Advanced Analysis**:
-  - Perform complex data aggregations
-  - Filter and sort data
-  - Generate statistical summaries
-  - Create data visualizations
+- 🔍 **Análisis Avanzado**:
+  - Realiza agregaciones de datos complejas
+  - Filtra y ordena datos
+  - Genera resúmenes estadísticos
+  - Crea visualizaciones de datos
 
-- 🎯 **Interactive UI**:
-  - User-friendly Streamlit interface
-  - Real-time query processing
-  - Clear result presentation
+- 🎯 **Interfaz de Usuario Interactiva**:
+  - Interfaz de Streamlit fácil de usar
+  - Procesamiento de consultas en tiempo real
+  - Presentación clara de resultados
 
-## How to Run
+## Cómo Ejecutar
 
-1. **Setup Environment**
+1. **Configurar el Entorno**
    ```bash
-   # Clone the repository
+   # Clona el repositorio
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd ai_agent_tutorials/ai_data_analysis_agent
 
-   # Install dependencies
+   # Instala las dependencias
    pip install -r requirements.txt
    ```
 
-2. **Configure API Keys**
-   - Get OpenAI API key from [OpenAI Platform](https://platform.openai.com)
+2. **Configurar Claves API**
+   - Obtén la clave API de OpenAI desde [OpenAI Platform](https://platform.openai.com)
 
-3. **Run the Application**
+3. **Ejecutar la Aplicación**
    ```bash
    streamlit run ai_data_analyst.py
    ```
 
-## Usage
+## Uso
 
-1. Launch the application using the command above
-2. Provide your OpenAI API key in the sidebar of Streamlit
-3. Upload your CSV or Excel file through the Streamlit interface
-4. Ask questions about your data in natural language
-5. View the results and generated visualizations
+1. Lanza la aplicación utilizando el comando anterior
+2. Proporciona tu clave API de OpenAI en la barra lateral de Streamlit
+3. Sube tu archivo CSV o Excel a través de la interfaz de Streamlit
+4. Haz preguntas sobre tus datos en lenguaje natural
+5. Visualiza los resultados y las visualizaciones generadas
 

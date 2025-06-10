@@ -1,30 +1,29 @@
-# 🤖 AutoRAG: Autonomous RAG with GPT-4o and Vector Database
-This Streamlit application implements an Autonomous Retrieval-Augmented Generation (RAG) system using OpenAI's GPT-4o model and PgVector database. It allows users to upload PDF documents, add them to a knowledge base, and query the AI assistant with context from both the knowledge base and web searches.
-Features
+# 🤖 AutoRAG: RAG Autónomo con GPT-4o y Base de Datos Vectorial
+Esta aplicación de Streamlit implementa un sistema de Generación Aumentada por Recuperación (RAG) Autónomo utilizando el modelo GPT-4o de OpenAI y la base de datos PgVector. Permite a los usuarios cargar documentos PDF, agregarlos a una base de conocimientos y consultar al asistente de IA con contexto tanto de la base de conocimientos como de búsquedas web.
 
-### Freatures 
-- Chat interface for interacting with the AI assistant
-- PDF document upload and processing
-- Knowledge base integration using PostgreSQL and Pgvector
-- Web search capability using DuckDuckGo
-- Persistent storage of assistant data and conversations
+### Características
+- Interfaz de chat para interactuar con el asistente de IA
+- Carga y procesamiento de documentos PDF
+- Integración de base de conocimientos utilizando PostgreSQL y Pgvector
+- Capacidad de búsqueda web utilizando DuckDuckGo
+- Almacenamiento persistente de datos y conversaciones del asistente
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd awesome-llm-apps/rag_tutorials/autonomous_rag
 ```
 
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Ensure PgVector Database is running:
-The app expects PgVector to be running on [localhost:5532](http://localhost:5532/). Adjust the configuration in the code if your setup is different.
+3. Asegúrate de que la Base de Datos PgVector esté en ejecución:
+La aplicación espera que PgVector esté en ejecución en [localhost:5532](http://localhost:5532/). Ajusta la configuración en el código si tu configuración es diferente.
 
 ```bash
 docker run -d \
@@ -38,7 +37,7 @@ docker run -d \
   phidata/pgvector:16
 ```
 
-4. Run the Streamlit App
+4. Ejecuta la Aplicación Streamlit
 ```bash
 streamlit run autorag.py
 ```

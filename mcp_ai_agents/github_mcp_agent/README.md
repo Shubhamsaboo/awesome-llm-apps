@@ -1,85 +1,85 @@
-# 🐙 GitHub MCP Agent
+# 🐙 Agente MCP para GitHub
 
-A Streamlit application that allows you to explore and analyze GitHub repositories using natural language queries through the Model Context Protocol (MCP).
+Una aplicación de Streamlit que te permite explorar y analizar repositorios de GitHub utilizando consultas en lenguaje natural a través del Model Context Protocol (MCP).
 
-## Features
+## Características
 
-- **Natural Language Interface**: Ask questions about repositories in plain English
-- **Comprehensive Analysis**: Explore issues, pull requests, repository activity, and code statistics
-- **Interactive UI**: User-friendly interface with example queries and custom input
-- **MCP Integration**: Leverages the Model Context Protocol to interact with GitHub's API
-- **Real-time Results**: Get immediate insights on repository activity and health
+- **Interfaz de Lenguaje Natural**: Haz preguntas sobre repositorios en español sencillo
+- **Análisis Exhaustivo**: Explora issues, pull requests, actividad del repositorio y estadísticas de código
+- **Interfaz de Usuario Interactiva**: Interfaz fácil de usar con consultas de ejemplo y entrada personalizada
+- **Integración MCP**: Aprovecha el Model Context Protocol para interactuar con la API de GitHub
+- **Resultados en Tiempo Real**: Obtén información inmediata sobre la actividad y salud del repositorio
 
-## Setup
+## Configuración
 
-### Requirements
+### Requisitos
 
 - Python 3.8+
-- Node.js and npm (for MCP GitHub server)
-  - This is a critical requirement! The app uses `npx` to run the MCP GitHub server
-  - Download and install from [nodejs.org](https://nodejs.org/)
-- GitHub Personal Access Token with appropriate permissions
-- OpenAI API Key
+- Node.js y npm (para el servidor MCP de GitHub)
+  - ¡Este es un requisito crítico! La aplicación utiliza `npx` para ejecutar el servidor MCP de GitHub
+  - Descarga e instala desde [nodejs.org](https://nodejs.org/)
+- Token de Acceso Personal de GitHub con los permisos apropiados
+- Clave API de OpenAI
 
-### Installation
+### Instalación
 
-1. Clone this repository:
+1. Clona este repositorio:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd mcp-github-agent
    ```
 
-2. Install the required Python packages:
+2. Instala los paquetes de Python requeridos:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. Verify Node.js and npm are installed:
+3. Verifica que Node.js y npm estén instalados:
    ```bash
    node --version
    npm --version
    npx --version
    ```
-   All of these commands should return version numbers. If they don't, please install Node.js.
+   Todos estos comandos deberían devolver números de versión. Si no es así, instala Node.js.
 
-4. Set up your API keys:
-   - Set OpenAI API Key as an environment variable:
+4. Configura tus claves API:
+   - Establece la Clave API de OpenAI como una variable de entorno:
      ```bash
      export OPENAI_API_KEY=your-openai-api-key
      ```
-   - GitHub token will be entered directly in the app interface
+   - El token de GitHub se ingresará directamente en la interfaz de la aplicación
 
-5. Create a GitHub Personal Access Token:
-   - Visit https://github.com/settings/tokens
-   - Create a new token with `repo` and `user` scopes
-   - Save the token somewhere secure
+5. Crea un Token de Acceso Personal de GitHub:
+   - Visita https://github.com/settings/tokens
+   - Crea un nuevo token con los ámbitos `repo` y `user`
+   - Guarda el token en un lugar seguro
 
-### Running the App
+### Ejecutando la Aplicación
 
-1. Start the Streamlit app:
+1. Inicia la aplicación Streamlit:
    ```bash
    streamlit run app.py
    ```
 
-2. In the app interface:
-   - Enter your GitHub token in the sidebar
-   - Specify a repository to analyze
-   - Select a query type or write your own
-   - Click "Run Query"
+2. En la interfaz de la aplicación:
+   - Ingresa tu token de GitHub en la barra lateral
+   - Especifica un repositorio para analizar
+   - Selecciona un tipo de consulta o escribe la tuya propia
+   - Haz clic en "Ejecutar Consulta"
 
-### Example Queries
+### Consultas de Ejemplo
 
 #### Issues
-- "Show me issues by label"
-- "What issues are being actively discussed?"
-- "Find issues labeled as bugs"
+- "Muéstrame issues por etiqueta"
+- "¿Qué issues se están discutiendo activamente?"
+- "Encuentra issues etiquetados como bugs"
 
 #### Pull Requests
-- "What PRs need review?"
-- "Show me recent merged PRs"
-- "Find PRs with conflicts"
+- "¿Qué PRs necesitan revisión?"
+- "Muéstrame PRs fusionados recientemente"
+- "Encuentra PRs con conflictos"
 
-#### Repository
-- "Show repository health metrics"
-- "Show repository activity patterns"
-- "Analyze code quality trends"
+#### Repositorio
+- "Mostrar métricas de salud del repositorio"
+- "Mostrar patrones de actividad del repositorio"
+- "Analizar tendencias de calidad del código"

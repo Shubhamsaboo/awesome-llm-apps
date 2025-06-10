@@ -1,68 +1,68 @@
-# 🎧 Self-Guided AI Audio Tour Agent
+# 🎧 Agente de Tour de Audio Autoguiado con IA
 
-A conversational voice agent system that generates immersive, self-guided audio tours based on the user’s **location**, **areas of interest**, and **tour duration**. Built on a multi-agent architecture using OpenAI Agents SDK, real-time information retrieval, and expressive TTS for natural speech output.
-
----
-
-## 🚀 Features
-
-### 🎙️ Multi-Agent Architecture
-
-- **Orchestrator Agent**  
-  Coordinates the overall tour flow, manages transitions, and assembles content from all expert agents.
-
-- **History Agent**  
-  Delivers insightful historical narratives with an authoritative voice.
-
-- **Architecture Agent**  
-  Highlights architectural details, styles, and design elements using a descriptive and technical tone.
-
-- **Culture Agent**  
-  Explores local customs, traditions, and artistic heritage with an enthusiastic voice.
-
-- **Culinary Agent**  
-  Describes iconic dishes and food culture in a passionate and engaging tone.
+Un sistema de agente de voz conversacional que genera tours de audio autoguiados inmersivos basados en la **ubicación**, **áreas de interés** y **duración del tour** del usuario. Construido sobre una arquitectura multiagente utilizando el SDK de Agentes de OpenAI, recuperación de información en tiempo real y TTS expresivo para una salida de voz natural.
 
 ---
 
-### 📍 Location-Aware Content Generation
+## 🚀 Características
 
-- Dynamic content generation based on user-input **location**
-- Real-time **web search integration** to fetch relevant, up-to-date details
-- Personalized content delivery filtered by user **interest categories**
+### 🎙️ Arquitectura Multiagente
+
+- **Agente Orquestador**
+  Coordina el flujo general del tour, gestiona las transiciones y ensambla el contenido de todos los agentes expertos.
+
+- **Agente de Historia**
+  Entrega narrativas históricas perspicaces con una voz autorizada.
+
+- **Agente de Arquitectura**
+  Destaca detalles arquitectónicos, estilos y elementos de diseño utilizando un tono descriptivo y técnico.
+
+- **Agente de Cultura**
+  Explora costumbres locales, tradiciones y patrimonio artístico con una voz entusiasta.
+
+- **Agente Culinario**
+  Describe platos icónicos y cultura gastronómica en un tono apasionado y atractivo.
 
 ---
 
-### ⏱️ Customizable Tour Duration
+### 📍 Generación de Contenido Consciente de la Ubicación
 
-- Selectable tour length: **15, 30, or 60 minutes**
-- Time allocations adapt to user interest weights and location relevance
-- Ensures well-paced and proportioned narratives across sections
+- Generación dinámica de contenido basada en la **ubicación** ingresada por el usuario
+- **Integración de búsqueda web** en tiempo real para obtener detalles relevantes y actualizados
+- Entrega de contenido personalizado filtrado por las **categorías de interés** del usuario
 
 ---
 
-### 🔊 Expressive Speech Output
+### ⏱️ Duración del Tour Personalizable
 
-- High-quality audio generated using **Gpt-4o Mini Audio**
+- Duración del tour seleccionable: **15, 30 o 60 minutos**
+- Las asignaciones de tiempo se adaptan a los pesos de interés del usuario y la relevancia de la ubicación
+- Asegura narrativas bien espaciadas y proporcionadas en todas las secciones
 
-### How to get Started?
+---
 
-1. Clone the GitHub repository
+### 🔊 Salida de Voz Expresiva
+
+- Audio de alta calidad generado usando **Gpt-4o Mini Audio**
+
+### ¿Cómo Empezar?
+
+1. Clona el repositorio de GitHub
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd ai_agent_tutorials/ai_audio_tour_agent
 ```
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 pip install -r requirements.txt
 ```
-3. Get your OpenAI API Key
+3. Obtén tu Clave API de OpenAI
 
-- Sign up for an [OpenAI account](https://platform.openai.com/) (or the LLM provider of your choice) and obtain your API key.
+- Regístrate para obtener una [cuenta de OpenAI](https://platform.openai.com/) (o el proveedor de LLM de tu elección) y obtén tu clave API.
 
-4. Run the Streamlit App
+4. Ejecuta la Aplicación Streamlit
 ```bash
 streamlit run ai_audio_tour_agent.py
 ```

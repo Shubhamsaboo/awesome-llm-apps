@@ -1,46 +1,46 @@
-## 🦙 Local RAG Agent with Llama 3.2
-This application implements a Retrieval-Augmented Generation (RAG) system using Llama 3.2 via Ollama, with Qdrant as the vector database.
+## 🦙 Agente RAG Local con Llama 3.2
+Esta aplicación implementa un sistema de Generación Aumentada por Recuperación (RAG) utilizando Llama 3.2 a través de Ollama, con Qdrant como base de datos vectorial.
 
 
-### Features
-- Fully local RAG implementation
-- Powered by Llama 3.2 through Ollama
-- Vector search using Qdrant
-- Interactive playground interface
-- No external API dependencies
+### Características
+- Implementación RAG completamente local
+- Impulsado por Llama 3.2 a través de Ollama
+- Búsqueda vectorial utilizando Qdrant
+- Interfaz de playground interactiva
+- Sin dependencias de API externas
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 ```
 
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 cd awesome-llm-apps/rag_tutorials/local_rag_agent
 pip install -r requirements.txt
 ```
 
-3. Install and start [Qdrant](https://qdrant.tech/) vector database locally
+3. Instala e inicia la base de datos vectorial [Qdrant](https://qdrant.tech/) localmente
 
 ```bash
 docker pull qdrant/qdrant
 docker run -p 6333:6333 qdrant/qdrant
 ```
 
-4. Install [Ollama](https://ollama.com/download) and pull Llama 3.2 for LLM and OpenHermes as the embedder for OllamaEmbedder
+4. Instala [Ollama](https://ollama.com/download) y descarga Llama 3.2 para LLM y OpenHermes como el embedder para OllamaEmbedder
 ```bash
 ollama pull llama3.2
 ollama pull openhermes
 ```
 
-4. Run the AI RAG Agent 
+4. Ejecuta el Agente RAG de IA
 ```bash
 python local_rag_agent.py
 ```
 
-5. Open your web browser and navigate to the URL provided in the console output to interact with the RAG agent through the playground interface.
+5. Abre tu navegador web y navega a la URL proporcionada en la salida de la consola para interactuar con el agente RAG a través de la interfaz del playground.
 
 

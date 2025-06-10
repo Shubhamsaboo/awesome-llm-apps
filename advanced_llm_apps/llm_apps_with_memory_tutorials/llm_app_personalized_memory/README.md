@@ -1,30 +1,30 @@
-## 🧠 LLM App with Memory
-This Streamlit app is an AI-powered chatbot that uses OpenAI's GPT-4o model with a persistent memory feature. It allows users to have conversations with the AI while maintaining context across multiple interactions.
+## 🧠 Aplicación LLM con Memoria
+Esta aplicación de Streamlit es un chatbot impulsado por IA que utiliza el modelo GPT-4o de OpenAI con una función de memoria persistente. Permite a los usuarios tener conversaciones con la IA mientras se mantiene el contexto a través de múltiples interacciones.
 
-### Features
+### Características
 
-- Utilizes OpenAI's GPT-4o model for generating responses
-- Implements persistent memory using Mem0 and Qdrant vector store
-- Allows users to view their conversation history
-- Provides a user-friendly interface with Streamlit
+- Utiliza el modelo GPT-4o de OpenAI para generar respuestas
+- Implementa memoria persistente utilizando Mem0 y el almacén de vectores Qdrant
+- Permite a los usuarios ver su historial de conversaciones
+- Proporciona una interfaz fácil de usar con Streamlit
 
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd awesome-llm-apps/llm_apps_with_memory_tutorials/llm_app_personalized_memory
 ```
 
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Ensure Qdrant is running:
-The app expects Qdrant to be running on localhost:6333. Adjust the configuration in the code if your setup is different.
+3. Asegúrate de que Qdrant esté en ejecución:
+La aplicación espera que Qdrant esté en ejecución en localhost:6333. Ajusta la configuración en el código si tu configuración es diferente.
 
 ```bash
 docker pull qdrant/qdrant
@@ -34,7 +34,7 @@ docker run -p 6333:6333 -p 6334:6334 \
     qdrant/qdrant
 ```
 
-4. Run the Streamlit App
+4. Ejecuta la Aplicación Streamlit
 ```bash
 streamlit run llm_app_memory.py
 ```

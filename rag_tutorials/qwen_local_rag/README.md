@@ -1,66 +1,66 @@
-# 🐋 Qwen 3 Local RAG Reasoning Agent
+# 🐋 Agente de Razonamiento RAG Local Qwen 3
 
-This RAG Application demonstrates how to build a powerful Retrieval-Augmented Generation (RAG) system using locally running Qwen 3 and Gemma 3 models via Ollama. It combines document processing, vector search, and web search capabilities to provide accurate, context-aware responses to user queries.
+Esta Aplicación RAG demuestra cómo construir un potente sistema de Generación Aumentada por Recuperación (RAG) utilizando modelos Qwen 3 y Gemma 3 ejecutándose localmente a través de Ollama. Combina procesamiento de documentos, búsqueda vectorial y capacidades de búsqueda web para proporcionar respuestas precisas y conscientes del contexto a las consultas de los usuarios.
 
-## Features
+## Características
 
-- **🧠 Multiple Local LLM Options**:
+- **🧠 Múltiples Opciones de LLM Locales**:
 
-  - Qwen3 (1.7b, 8b) - Alibaba's latest language models
-  - Gemma3 (1b, 4b) - Google's efficient language models with multimodal capabilities
-  - DeepSeek (1.5b) - Alternative model option
-- **📚 Comprehensive RAG System**:
+  - Qwen3 (1.7b, 8b) - Últimos modelos de lenguaje de Alibaba
+  - Gemma3 (1b, 4b) - Modelos de lenguaje eficientes de Google con capacidades multimodales
+  - DeepSeek (1.5b) - Opción de modelo alternativa
+- **📚 Sistema RAG Completo**:
 
-  - Upload and process PDF documents
-  - Extract content from web URLs
-  - Intelligent chunking and embedding
-  - Similarity search with adjustable threshold
-- **🌐 Web Search Integration**:
+  - Carga y procesa documentos PDF
+  - Extrae contenido de URL web
+  - Fragmentación y embedding inteligentes
+  - Búsqueda de similitud con umbral ajustable
+- **🌐 Integración de Búsqueda Web**:
 
-  - Fallback to web search when document knowledge is insufficient
-  - Configurable domain filtering
-  - Source attribution in responses
-- **🔄 Flexible Operation Modes**:
+  - Respaldo a búsqueda web cuando el conocimiento del documento es insuficiente
+  - Filtrado de dominio configurable
+  - Atribución de fuentes en las respuestas
+- **🔄 Modos de Operación Flexibles**:
 
-  - Toggle between RAG and direct LLM interaction
-  - Force web search when needed
-  - Adjust similarity thresholds for document retrieval
-- **💾 Vector Database Integration**:
+  - Alterna entre RAG e interacción directa con LLM
+  - Fuerza la búsqueda web cuando sea necesario
+  - Ajusta los umbrales de similitud para la recuperación de documentos
+- **💾 Integración de Base de Datos Vectorial**:
 
-  - Qdrant vector database for efficient similarity search
-  - Persistent storage of document embeddings
+  - Base de datos vectorial Qdrant para búsqueda eficiente por similitud
+  - Almacenamiento persistente de embeddings de documentos
 
-## How to Get Started
+## Cómo Empezar
 
-### Prerequisites
+### Requisitos Previos
 
-- [Ollama](https://ollama.ai/) installed locally
+- [Ollama](https://ollama.ai/) instalado localmente
 - Python 3.8+
-- Qdrant account (free tier available) for vector storage
-- Exa API key (optional, for web search capability)
+- Cuenta Qdrant (nivel gratuito disponible) para almacenamiento de vectores
+- Clave API de Exa (opcional, para capacidad de búsqueda web)
 
-### Installation
+### Instalación
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd rag_tutorials/qwen_local_rag
 ```
 
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Pull the required models using Ollama:
+3. Descarga los modelos requeridos usando Ollama:
 
 ```bash
-ollama pull qwen3:1.7b # Or any other model you want to use
-ollama pull snowflake-arctic-embed # Or any other model you want to use
+ollama pull qwen3:1.7b # O cualquier otro modelo que quieras usar
+ollama pull snowflake-arctic-embed # O cualquier otro modelo que quieras usar
 ```
-4. Run Qdrant locally through docker
+4. Ejecuta Qdrant localmente a través de docker
 ```bash
 docker pull qdrant/qdrant
 
@@ -70,53 +70,53 @@ docker run -p 6333:6333 -p 6334:6334 \
 ```
 
 
-4. Get your API keys:
+4. Obtén tus claves API:
 
-   - Exa API key (optional, for web search)
+   - Clave API de Exa (opcional, para búsqueda web)
    
-5. Run the application:
+5. Ejecuta la aplicación:
 
 ```bash
 streamlit run qwen_local_rag_agent.py
 ```
 
-## How It Works
+## Cómo Funciona
 
-1. **Document Processing**:
+1. **Procesamiento de Documentos**:
 
-   - PDF files are processed using PyPDFLoader
-   - Web content is extracted using WebBaseLoader
-   - Documents are split into chunks with RecursiveCharacterTextSplitter
-2. **Vector Database**:
+   - Los archivos PDF se procesan usando PyPDFLoader
+   - El contenido web se extrae usando WebBaseLoader
+   - Los documentos se dividen en fragmentos con RecursiveCharacterTextSplitter
+2. **Base de Datos Vectorial**:
 
-   - Document chunks are embedded using Ollama's embedding models
-   - Embeddings are stored in Qdrant vector database
-   - Similarity search retrieves relevant documents based on query
-3. **Query Processing**:
+   - Los fragmentos de documentos se incrustan usando los modelos de embedding de Ollama
+   - Los embeddings se almacenan en la base de datos vectorial Qdrant
+   - La búsqueda por similitud recupera documentos relevantes basados en la consulta
+3. **Procesamiento de Consultas**:
 
-   - User queries are analyzed to determine the best information source
-   - System checks document relevance using similarity threshold
-   - Falls back to web search if no relevant documents are found
-4. **Response Generation**:
+   - Las consultas de los usuarios se analizan para determinar la mejor fuente de información
+   - El sistema verifica la relevancia del documento usando el umbral de similitud
+   - Recurre a la búsqueda web si no se encuentran documentos relevantes
+4. **Generación de Respuestas**:
 
-   - Local LLM (Qwen/Gemma) generates responses based on retrieved context
-   - Sources are cited and displayed to the user
-   - Web search results are clearly indicated when used
+   - El LLM local (Qwen/Gemma) genera respuestas basadas en el contexto recuperado
+   - Las fuentes se citan y se muestran al usuario
+   - Los resultados de la búsqueda web se indican claramente cuando se utilizan
 
-## Configuration Options
+## Opciones de Configuración
 
-- **Model Selection**: Choose between different Qwen, Gemma, and DeepSeek models
-- **RAG Mode**: Toggle between RAG-enabled and direct LLM interaction
-- **Search Tuning**: Adjust similarity threshold for document retrieval
-- **Web Search**: Enable/disable web search fallback and configure domain filtering
+- **Selección de Modelo**: Elige entre diferentes modelos Qwen, Gemma y DeepSeek
+- **Modo RAG**: Alterna entre RAG habilitado e interacción directa con LLM
+- **Ajuste de Búsqueda**: Ajusta el umbral de similitud para la recuperación de documentos
+- **Búsqueda Web**: Habilita/deshabilita el respaldo de búsqueda web y configura el filtrado de dominios
 
-## Use Cases
+## Casos de Uso
 
-- **Document Q&A**: Ask questions about your uploaded documents
-- **Research Assistant**: Combine document knowledge with web search
-- **Local Privacy**: Process sensitive documents without sending data to external APIs
-- **Offline Operation**: Run advanced AI capabilities with limited or no internet access
+- **Preguntas y Respuestas sobre Documentos**: Haz preguntas sobre tus documentos cargados
+- **Asistente de Investigación**: Combina el conocimiento de los documentos con la búsqueda web
+- **Privacidad Local**: Procesa documentos sensibles sin enviar datos a API externas
+- **Operación sin Conexión**: Ejecuta capacidades avanzadas de IA con acceso limitado o nulo a internet
 
-## Requirements
+## Requisitos
 
-See `requirements.txt` for the complete list of dependencies.
+Consulta `requirements.txt` para la lista completa de dependencias.

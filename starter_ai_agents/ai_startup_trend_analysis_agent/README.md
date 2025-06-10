@@ -1,42 +1,42 @@
-## 📈 AI Startup Trend Analysis Agent 
-The AI Startup Trend Analysis Agent is tool for budding entrepreneurs that generates actionable insights by identifying nascent trends, potential market gaps, and growth opportunities in specific sectors. Entrepreneurs can use these data-driven insights to validate ideas, spot market opportunities, and make informed decisions about their startup ventures. It combines Newspaper4k and DuckDuckGo to scan and analyze startup-focused articles and market data. Using Claude 3.5 Sonnet, it processes this information to extract emerging patterns and enable entrepreneurs to identify promising startup opportunities.
+## 📈 Agente de Análisis de Tendencias de Startups de IA
+El Agente de Análisis de Tendencias de Startups de IA es una herramienta para emprendedores en ciernes que genera información procesable identificando tendencias incipientes, posibles brechas de mercado y oportunidades de crecimiento en sectores específicos. Los emprendedores pueden utilizar esta información basada en datos para validar ideas, detectar oportunidades de mercado y tomar decisiones informadas sobre sus empresas emergentes. Combina Newspaper4k y DuckDuckGo para escanear y analizar artículos centrados en startups y datos de mercado. Usando Claude 3.5 Sonnet, procesa esta información para extraer patrones emergentes y permitir a los emprendedores identificar oportunidades prometedoras para startups.
 
 
-### Features
-- **User Prompt**: Entrepreneurs can input specific startup sectors or technologies of interest for research.
-- **News Collection**: This agent gathers recent startup news, funding rounds, and market analyses using DuckDuckGo.
-- **Summary Generation**: Concise summaries of verified information are generated using Newspaper4k.
-- **Trend Analysis**: The system identifies emerging patterns in startup funding, technology adoption, and market opportunities across analyzed stories.
-- **Streamlit UI**: The application features a user-friendly interface built with Streamlit for easy interaction.
+### Características
+- **Indicación del Usuario**: Los emprendedores pueden ingresar sectores de startups específicos o tecnologías de interés para la investigación.
+- **Recopilación de Noticias**: Este agente recopila noticias recientes sobre startups, rondas de financiación y análisis de mercado utilizando DuckDuckGo.
+- **Generación de Resúmenes**: Se generan resúmenes concisos de información verificada utilizando Newspaper4k.
+- **Análisis de Tendencias**: El sistema identifica patrones emergentes en la financiación de startups, la adopción de tecnología y las oportunidades de mercado en las historias analizadas.
+- **Interfaz de Usuario Streamlit**: La aplicación cuenta con una interfaz fácil de usar construida con Streamlit para una fácil interacción.
 
-### How to Get Started
-1. **Clone the repository**:
+### Cómo Empezar
+1. **Clona el repositorio**:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git 
    cd awesome-llm-apps/ai_agent_tutorials/ai_startup_trend_analysis_agent
    ```
 
-2. **Create and activate a virtual environment**:
+2. **Crea y activa un entorno virtual**:
    ```bash
-   # For macOS/Linux
+   # Para macOS/Linux
    python -m venv venv
    source venv/bin/activate
 
-   # For Windows
+   # Para Windows
    python -m venv venv
    .\venv\Scripts\activate
    ```
 
-3. **Install the required packages**:
+3. **Instala los paquetes requeridos**:
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Run the application**:
+4. **Ejecuta la aplicación**:
    ```bash
    streamlit run startup_trends_agent.py
    ```
-### Important Note
-- The system specifically uses Claude's API for advanced language processing. You can obtain your Anthropic API key from [Anthropic's website](https://www.anthropic.com/api).
+### Nota Importante
+- El sistema utiliza específicamente la API de Claude para el procesamiento avanzado del lenguaje. Puedes obtener tu clave API de Anthropic en el [sitio web de Anthropic](https://www.anthropic.com/api).
 
 

@@ -1,61 +1,61 @@
-# 💻 Multimodal AI Coding Agent Team with o3-mini and Gemini
-An AI Powered Streamlit application that serves as your personal coding assistant, powered by multiple Agents built on the new o3-mini model. You can also upload an image of a coding problem or describe it in text, and the AI agent will analyze, generate an optimal solution, and execute it in a sandbox environment.
+# 💻 Equipo de Agentes de Codificación de IA Multimodal con o3-mini y Gemini
+Una aplicación de Streamlit impulsada por IA que sirve como tu asistente personal de codificación, impulsada por múltiples Agentes construidos sobre el nuevo modelo o3-mini. También puedes subir una imagen de un problema de codificación o describirlo en texto, y el agente de IA lo analizará, generará una solución óptima y la ejecutará en un entorno sandbox.
 
-## Features
-#### Multi-Modal Problem Input
-- Upload images of coding problems (supports PNG, JPG, JPEG)
-- Type problems in natural language
-- Automatic problem extraction from images
-- Interactive problem processing
+## Características
+#### Entrada de Problemas Multimodal
+- Sube imágenes de problemas de codificación (admite PNG, JPG, JPEG)
+- Escribe problemas en lenguaje natural
+- Extracción automática de problemas de imágenes
+- Procesamiento interactivo de problemas
 
-#### Intelligent Code Generation
-- Optimal solution generation with best time/space complexity
-- Clean, documented Python code output
-- Type hints and proper documentation
-- Edge case handling
+#### Generación Inteligente de Código
+- Generación de soluciones óptimas con la mejor complejidad de tiempo/espacio
+- Salida de código Python limpio y documentado
+- Sugerencias de tipo y documentación adecuada
+- Manejo de casos extremos
 
-#### Secure Code Execution
-- Sandboxed code execution environment
-- Real-time execution results
-- Error handling and explanations
-- 30-second execution timeout protection
+#### Ejecución Segura de Código
+- Entorno de ejecución de código en sandbox
+- Resultados de ejecución en tiempo real
+- Manejo de errores y explicaciones
+- Protección de tiempo de espera de ejecución de 30 segundos
 
-#### Multi-Agent Architecture
-- Vision Agent (Gemini-2.0-flash) for image processing
-- Coding Agent (OpenAI- o3-mini) for solution generation
-- Execution Agent (OpenAI) for code running and result analysis
-- E2B Sandbox for secure code execution
+#### Arquitectura Multiagente
+- Agente de Visión (Gemini-2.0-flash) para procesamiento de imágenes
+- Agente de Codificación (OpenAI- o3-mini) para generación de soluciones
+- Agente de Ejecución (OpenAI) para ejecución de código y análisis de resultados
+- Sandbox E2B para ejecución segura de código
 
-## How to Run
+## Cómo Ejecutar
 
-Follow the steps below to set up and run the application:
-- Get an OpenAI API key from: https://platform.openai.com/
-- Get a Google (Gemini) API key from: https://makersuite.google.com/app/apikey
-- Get an E2B API key from: https://e2b.dev/docs/getting-started/api-key
+Sigue los pasos a continuación para configurar y ejecutar la aplicación:
+- Obtén una clave API de OpenAI desde: https://platform.openai.com/
+- Obtén una clave API de Google (Gemini) desde: https://makersuite.google.com/app/apikey
+- Obtén una clave API de E2B desde: https://e2b.dev/docs/getting-started/api-key
 
-1. **Clone the Repository**
+1. **Clona el Repositorio**
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_coding_agent_team
    ```
 
-2. **Install the dependencies**
+2. **Instala las dependencias**
     ```bash
     pip install -r requirements.txt
     ```
 
-3. **Run the Streamlit app**
+3. **Ejecuta la aplicación Streamlit**
     ```bash
     streamlit run ai_coding_agent_o3.py
     ```
 
-4. **Configure API Keys**
-   - Enter your API keys in the sidebar
-   - All three keys (OpenAI, Gemini, E2B) are required for full functionality
+4. **Configura las Claves API**
+   - Ingresa tus claves API en la barra lateral
+   - Se requieren las tres claves (OpenAI, Gemini, E2B) para una funcionalidad completa
 
-## Usage
-1. Upload an image of a coding problem OR type your problem description
-2. Click "Generate & Execute Solution"
-3. View the generated solution with full documentation
-4. See execution results and any generated files
-5. Review any error messages or execution timeouts
+## Uso
+1. Sube una imagen de un problema de codificación O escribe la descripción de tu problema
+2. Haz clic en "Generar y Ejecutar Solución"
+3. Visualiza la solución generada con documentación completa
+4. Consulta los resultados de la ejecución y cualquier archivo generado
+5. Revisa cualquier mensaje de error o tiempos de espera de ejecución

@@ -1,50 +1,50 @@
-# Agentic RAG with LangGraph: AI Blog Search
+# RAG Agéntico con LangGraph: Búsqueda de Blogs de IA
 
-## Overview
-AI Blog Search is an Agentic RAG application designed to enhance information retrieval from AI-related blog posts. This system leverages LangChain, LangGraph, and Google's Gemini model to fetch, process, and analyze blog content, providing users with accurate and contextually relevant answers.
+## Descripción General
+AI Blog Search es una aplicación RAG Agéntica diseñada para mejorar la recuperación de información de publicaciones de blogs relacionadas con la IA. Este sistema aprovecha LangChain, LangGraph y el modelo Gemini de Google para obtener, procesar y analizar contenido de blogs, proporcionando a los usuarios respuestas precisas y contextualmente relevantes.
 
-## LangGraph Workflow
+## Flujo de Trabajo de LangGraph
 ![LangGraph-Workflow](https://github.com/user-attachments/assets/07d8a6b5-f1ef-4b7e-b47a-4f14a192bd8a)
 
-## Demo
+## Demostración
 https://github.com/user-attachments/assets/cee07380-d3dc-45f4-ad26-7d944ba9c32b
 
-## Features
-- **Document Retrieval:** Uses Qdrant as a vector database to store and retrieve blog content based on embeddings.
-- **Agentic Query Processing:** Uses an AI-powered agent to determine whether a query should be rewritten, answered, or require more retrieval.
-- **Relevance Assessment:** Implements an automated relevance grading system using Google's Gemini model.
-- **Query Refinement:** Enhances poorly structured queries for better retrieval results.
-- **Streamlit UI:** Provides a user-friendly interface for entering blog URLs, queries and retrieving insightful responses.
-- **Graph-Based Workflow:** Implements a structured state graph using LangGraph for efficient decision-making.
+## Características
+- **Recuperación de Documentos:** Utiliza Qdrant como base de datos vectorial para almacenar y recuperar contenido de blogs basado en embeddings.
+- **Procesamiento Agéntico de Consultas:** Utiliza un agente impulsado por IA para determinar si una consulta debe ser reescrita, respondida o requiere más recuperación.
+- **Evaluación de Relevancia:** Implementa un sistema automatizado de calificación de relevancia utilizando el modelo Gemini de Google.
+- **Refinamiento de Consultas:** Mejora las consultas mal estructuradas para obtener mejores resultados de recuperación.
+- **Interfaz de Usuario Streamlit:** Proporciona una interfaz fácil de usar para ingresar URL de blogs, consultas y recuperar respuestas perspicaces.
+- **Flujo de Trabajo Basado en Grafos:** Implementa un grafo de estado estructurado utilizando LangGraph para una toma de decisiones eficiente.
 
-## Technologies Used
-- **Programming Language**: [Python 3.10+](https://www.python.org/downloads/release/python-31011/)
-- **Framework**: [LangChain](https://www.langchain.com/) and [LangGraph](https://langchain-ai.github.io/langgraph/tutorials/introduction/)
-- **Database**: [Qdrant](https://qdrant.tech/)
-- **Models**:
+## Tecnologías Utilizadas
+- **Lenguaje de Programación**: [Python 3.10+](https://www.python.org/downloads/release/python-31011/)
+- **Framework**: [LangChain](https://www.langchain.com/) y [LangGraph](https://langchain-ai.github.io/langgraph/tutorials/introduction/)
+- **Base de Datos**: [Qdrant](https://qdrant.tech/)
+- **Modelos**:
   - Embeddings: [Google Gemini API (embedding-001)](https://ai.google.dev/gemini-api/docs/embeddings)
   - Chat: [Google Gemini API (gemini-2.0-flash)](https://ai.google.dev/gemini-api/docs/models/gemini#gemini-2.0-flash)
-- **Blogs Loader**: [Langchain WebBaseLoader](https://python.langchain.com/docs/integrations/document_loaders/web_base/)
-- **Document Splitter**: [RecursiveCharacterTextSplitter](https://python.langchain.com/v0.1/docs/modules/data_connection/document_transformers/recursive_text_splitter/)
-- **User Interface (UI)**: [Streamlit](https://docs.streamlit.io/)
+- **Cargador de Blogs**: [Langchain WebBaseLoader](https://python.langchain.com/docs/integrations/document_loaders/web_base/)
+- **Divisor de Documentos**: [RecursiveCharacterTextSplitter](https://python.langchain.com/v0.1/docs/modules/data_connection/document_transformers/recursive_text_splitter/)
+- **Interfaz de Usuario (UI)**: [Streamlit](https://docs.streamlit.io/)
 
-## Requirements
-1. **Install Dependencies**:
+## Requisitos
+1. **Instalar Dependencias**:
    ```bash
    pip install -r requirements.txt
    ```
 
-2. **Run the Application**:
+2. **Ejecutar la Aplicación**:
    ```bash
    streamlit run app.py
    ```
 
-3. **Use the Application**:
-   - Paste your Google API Key in the sidebar.
-   - Paste the blog link.
-   - Enter your query about the blog post.
+3. **Usar la Aplicación**:
+   - Pega tu Clave API de Google en la barra lateral.
+   - Pega el enlace del blog.
+   - Ingresa tu consulta sobre la publicación del blog.
 
-## :mailbox: Connect With Me
+## :mailbox: Conéctate Conmigo
 <img align="right" src="https://media.giphy.com/media/2HtWpp60NQ9CU/giphy.gif" alt="handshake gif" width="150">
 
 <p align="left">

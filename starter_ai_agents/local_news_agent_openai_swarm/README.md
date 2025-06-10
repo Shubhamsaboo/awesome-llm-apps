@@ -1,51 +1,51 @@
-## 📰 Multi-agent AI news assistant
-This Streamlit application implements a sophisticated news processing pipeline using multiple specialized AI agents to search, synthesize, and summarize news articles. It leverages the Llama 3.2 model via Ollama and DuckDuckGo search to provide comprehensive news analysis.
+## 📰 Asistente de noticias de IA multiagente
+Esta aplicación de Streamlit implementa una sofisticada canalización de procesamiento de noticias utilizando múltiples agentes de IA especializados para buscar, sintetizar y resumir artículos de noticias. Aprovecha el modelo Llama 3.2 a través de Ollama y la búsqueda DuckDuckGo para proporcionar un análisis de noticias completo.
 
 
-### Features
-- Multi-agent architecture with specialized roles:
-    - News Searcher: Finds recent news articles
-    - News Synthesizer: Analyzes and combines information
-    - News Summarizer: Creates concise, professional summaries
+### Características
+- Arquitectura multiagente con roles especializados:
+    - Buscador de Noticias: Encuentra artículos de noticias recientes
+    - Sintetizador de Noticias: Analiza y combina información
+    - Resumidor de Noticias: Crea resúmenes concisos y profesionales
 
-- Real-time news search using DuckDuckGo
-- AP/Reuters-style summary generation
-- User-friendly Streamlit interface
+- Búsqueda de noticias en tiempo real utilizando DuckDuckGo
+- Generación de resúmenes al estilo AP/Reuters
+- Interfaz de Streamlit fácil de usar
 
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 ```bash
 git clone https://github.com/your-username/ai-news-processor.git
 cd awesome-llm-apps/ai_agent_tutorials/local_news_agent_openai_swarm
 ```
 
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Pull and Run Llama 3.2 using Ollama:
+3. Descarga y ejecuta Llama 3.2 usando Ollama:
 
 ```bash
-# Pull the model
+# Descarga el modelo
 ollama pull llama3.2
 
-# Verify installation
+# Verifica la instalación
 ollama list
 
-# Run the model (optional test)
+# Ejecuta el modelo (prueba opcional)
 ollama run llama3.2
 ```
 
-4. Create a .env file with your configurations:
+4. Crea un archivo .env con tus configuraciones:
 ```bash
 OPENAI_BASE_URL=http://localhost:11434/v1
 OPENAI_API_KEY=fake-key 
 ```
-5. Run the Streamlit app
+5. Ejecuta la aplicación Streamlit
 ```bash
 streamlit run news_agent.py
 ```

@@ -1,43 +1,43 @@
-## ModelsLab Music Generator
+## Generador de Música ModelsLab
 
-This is a Streamlit-based application that allows users to generate music using the ModelsLab API and OpenAI's GPT-4 model. Users can input a prompt describing the type of music they want to generate, and the application will generate a music track in MP3 format based on the given prompt.
+Esta es una aplicación basada en Streamlit que permite a los usuarios generar música utilizando la API de ModelsLab y el modelo GPT-4 de OpenAI. Los usuarios pueden ingresar una indicación que describa el tipo de música que desean generar, y la aplicación generará una pista de música en formato MP3 basada en la indicación proporcionada.
 
-## Features
+## Características
 
-- **Generate Music**: Enter a detailed prompt for music generation (genre, instruments, mood, etc.), and the app will generate a music track.
-- **MP3 Output**: The generated music will be in MP3 format, available for listening or download.
-- **User-Friendly Interface**: Simple and clean Streamlit UI for ease of use.
-- **API Key Integration**: Requires both OpenAI and ModelsLab API keys to function. API keys are entered in the sidebar for authentication.
+- **Generar Música**: Ingresa una indicación detallada para la generación de música (género, instrumentos, estado de ánimo, etc.), y la aplicación generará una pista de música.
+- **Salida MP3**: La música generada estará en formato MP3, disponible para escuchar o descargar.
+- **Interfaz Fácil de Usar**: Interfaz de usuario de Streamlit simple y limpia para facilitar su uso.
+- **Integración de Claves API**: Requiere claves API de OpenAI y ModelsLab para funcionar. Las claves API se ingresan en la barra lateral para la autenticación.
 
-## Setup
+## Configuración
 
-### Requirements 
+### Requisitos
 
-1. **API Keys**:
-   - **OpenAI API Key**: Sign up at [OpenAI](https://platform.openai.com/api-keys) to obtain your API key.
-   - **ModelsLab API Key**: Sign up at [ModelsLab](https://modelslab.com/dashboard/api-keys) to get your API key.
+1. **Claves API**:
+   - **Clave API de OpenAI**: Regístrate en [OpenAI](https://platform.openai.com/api-keys) para obtener tu clave API.
+   - **Clave API de ModelsLab**: Regístrate en [ModelsLab](https://modelslab.com/dashboard/api-keys) para obtener tu clave API.
 
-2. **Python 3.8+**: Ensure you have Python 3.8 or higher installed.
+2. **Python 3.8+**: Asegúrate de tener instalado Python 3.8 o superior.
 
-### Installation
-1. Clone this repository:
+### Instalación
+1. Clona este repositorio:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps
    cd ai_agent_tutorials/ai_models_lab_music_generator_agent
    ```
 
-2. Install the required Python packages:
+2. Instala los paquetes de Python requeridos:
    ```bash
    pip install -r requirements.txt
    ```
-### Running the App
+### Ejecutando la Aplicación
 
-1. Start the Streamlit app:
+1. Inicia la aplicación Streamlit:
    ```bash
    streamlit run models_lab_music_generator_agent.py
    ```
 
-2. In the app interface:
-   - Enter a music generation prompt
-   - Click "Generate Music"
-   - Play the music & Download it.
+2. En la interfaz de la aplicación:
+   - Ingresa una indicación para la generación de música
+   - Haz clic en "Generar Música"
+   - Reproduce la música y descárgala.

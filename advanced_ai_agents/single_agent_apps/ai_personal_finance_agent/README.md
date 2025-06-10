@@ -1,33 +1,33 @@
-## 💰 AI Personal Finance Planner
-This Streamlit app is an AI-powered personal finance planner that generates personalized financial plans using OpenAI GPT-4o. It automates the process of researching, planning, and creating tailored budgets, investment strategies, and savings goals, empowering you to take control of your financial future with ease.
+## 💰 Planificador de Finanzas Personales con IA
+Esta aplicación de Streamlit es un planificador de finanzas personales impulsado por IA que genera planes financieros personalizados utilizando OpenAI GPT-4o. Automatiza el proceso de investigación, planificación y creación de presupuestos, estrategias de inversión y objetivos de ahorro personalizados, permitiéndote tomar el control de tu futuro financiero con facilidad.
 
-### Features
-- Set your financial goals and provide details about your current financial situation
-- Use GPT-4o to generate intelligent and personalized financial advice
-- Receive customized budgets, investment plans, and savings strategies
+### Características
+- Establece tus objetivos financieros y proporciona detalles sobre tu situación financiera actual
+- Utiliza GPT-4o para generar asesoramiento financiero inteligente y personalizado
+- Recibe presupuestos, planes de inversión y estrategias de ahorro personalizados
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd advanced_ai_agents/single_agent_apps/ai_personal_finance_agent
 ```
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 pip install -r requirements.txt
 ```
-3. Get your OpenAI API Key
+3. Obtén tu Clave API de OpenAI
 
-- Sign up for an [OpenAI account](https://platform.openai.com/) (or the LLM provider of your choice) and obtain your API key.
+- Regístrate para obtener una [cuenta de OpenAI](https://platform.openai.com/) (o el proveedor de LLM de tu elección) y obtén tu clave API.
 
-4. Get your SerpAPI Key
+4. Obtén tu Clave API de SerpAPI
 
-- Sign up for an [SerpAPI account](https://serpapi.com/) and obtain your API key.
+- Regístrate para obtener una [cuenta de SerpAPI](https://serpapi.com/) y obtén tu clave API.
 
-5. Run the Streamlit App
+5. Ejecuta la Aplicación Streamlit
 ```bash
 streamlit run finance_agent.py
 ```

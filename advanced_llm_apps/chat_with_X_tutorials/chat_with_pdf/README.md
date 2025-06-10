@@ -1,34 +1,34 @@
-## 📄 Chat with PDF 
+## 📄 Chatea con PDF
 
-LLM app with RAG to chat with PDF in just 30 lines of Python Code. The app uses Retrieval Augmented Generation (RAG) to provide accurate answers to questions based on the content of the uploaded PDF.
+Aplicación LLM con RAG para chatear con PDF en solo 30 líneas de código Python. La aplicación utiliza Generación Aumentada por Recuperación (RAG) para proporcionar respuestas precisas a preguntas basadas en el contenido del PDF cargado.
 
-### Features
+### Características
 
-- Upload a PDF document
-- Ask questions about the content of the PDF
-- Get accurate answers using RAG and the selected LLM
+- Sube un documento PDF
+- Haz preguntas sobre el contenido del PDF
+- Obtén respuestas precisas utilizando RAG y el LLM seleccionado
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd awesome-llm-apps/chat_with_X_tutorials/chat_with_pdf
 ```
-2. Install the required dependencies
+2. Instala las dependencias requeridas
 
 ```bash
 pip install -r requirements.txt
 ```
-3. Get your OpenAI API Key
+3. Obtén tu Clave API de OpenAI
 
-- Sign up for an [OpenAI account](https://platform.openai.com/) (or the LLM provider of your choice) and obtain your API key.
+- Regístrate para obtener una [cuenta de OpenAI](https://platform.openai.com/) (o el proveedor de LLM de tu elección) y obtén tu clave API.
 
-4. Run the Streamlit App
+4. Ejecuta la Aplicación Streamlit
 ```bash
 streamlit run chat_pdf.py
 ```
-### Interactive Application Demo
+### Demostración Interactiva de la Aplicación
 https://github.com/Shubhamsaboo/awesome-llm-apps/assets/31396011/12bdfc11-c877-4fc7-9e70-63f21d2eb977
 

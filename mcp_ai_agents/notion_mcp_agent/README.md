@@ -1,112 +1,112 @@
-# 📑 Notion MCP Agent
+# 📑 Agente MCP para Notion
 
-A terminal-based Notion Agent for interacting with your Notion pages using natural language through the Notion MCP (Model Context Protocol) server.
+Un Agente de Notion basado en terminal para interactuar con tus páginas de Notion usando lenguaje natural a través del servidor MCP (Model Context Protocol) de Notion.
 
-## Features
+## Características
 
-- Interact with Notion pages via a command-line interface
-- Perform update, insert, retrieve operations on your Notion pages
-- Create and edit blocks, lists, tables, and other Notion structures
-- Add comments to blocks
-- Search for specific information
-- Remembers conversation context for multi-turn interactions
-- Session management for persistent conversations
+- Interactúa con las páginas de Notion a través de una interfaz de línea de comandos
+- Realiza operaciones de actualización, inserción y recuperación en tus páginas de Notion
+- Crea y edita bloques, listas, tablas y otras estructuras de Notion
+- Agrega comentarios a los bloques
+- Busca información específica
+- Recuerda el contexto de la conversación para interacciones de varios turnos
+- Gestión de sesiones para conversaciones persistentes
 
-## Prerequisites
+## Requisitos Previos
 
 - Python 3.9+
-- A Notion account with admin permissions
-- A Notion Integration token
-- An OpenAI API key
+- Una cuenta de Notion con permisos de administrador
+- Un token de Integración de Notion
+- Una clave API de OpenAI
 
-## Installation
+## Instalación
 
-1. Clone the repository
-2. Install the required Python packages:
+1. Clona el repositorio
+2. Instala los paquetes de Python requeridos:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Install the Notion MCP server (will be done automatically when you run the app)
+3. Instala el servidor MCP de Notion (se hará automáticamente cuando ejecutes la aplicación)
 
-## Setting Up Notion Integration
+## Configurando la Integración de Notion
 
-### Creating a Notion Integration
+### Creando una Integración de Notion
 
-1. Go to [Notion Integrations](https://www.notion.so/my-integrations)
-2. Click "New integration"
-3. Name your integration (e.g., "Notion Assistant")
-4. Select the capabilities needed (Read & Write content)
-5. Submit and copy your "Internal Integration Token"
+1. Ve a [Integraciones de Notion](https://www.notion.so/my-integrations)
+2. Haz clic en "Nueva integración"
+3. Nombra tu integración (p. ej., "Asistente de Notion")
+4. Selecciona las capacidades necesarias (Leer y Escribir contenido)
+5. Envía y copia tu "Token de Integración Interno"
 
-### Sharing Your Notion Page with the Integration
+### Compartiendo tu Página de Notion con la Integración
 
-1. Open your Notion page
-2. Click the three dots (⋮) in the top-right corner of the page
-3. Select "Add connections" from the dropdown menu
-4. Search for your integration name in the search box
-5. Click on your integration to add it to the page
-6. Confirm by clicking "Confirm" in the dialog that appears
+1. Abre tu página de Notion
+2. Haz clic en los tres puntos (⋮) en la esquina superior derecha de la página
+3. Selecciona "Agregar conexiones" del menú desplegable
+4. Busca el nombre de tu integración en el cuadro de búsqueda
+5. Haz clic en tu integración para agregarla a la página
+6. Confirma haciendo clic en "Confirmar" en el diálogo que aparece
 
-Alternatively, you can also share via the "Share" button:
-1. Click "Share" in the top right
-2. In the sharing dialog, search for your integration name (preceded by "@")
-3. Click on your integration to add it
-4. Click "Invite" to grant it access to your page
+Alternativamente, también puedes compartir a través del botón "Compartir":
+1. Haz clic en "Compartir" en la esquina superior derecha
+2. En el diálogo de compartir, busca el nombre de tu integración (precedido por "@")
+3. Haz clic en tu integración para agregarla
+4. Haz clic en "Invitar" para otorgarle acceso a tu página
 
-Both methods will grant your integration full access to the page and its content.
+Ambos métodos otorgarán a tu integración acceso completo a la página y su contenido.
 
-### Finding Your Notion Page ID
+### Encontrando el ID de tu Página de Notion
 
-1. Open your Notion page in a browser
-2. Copy the URL, which looks like:
-   `https://www.notion.so/workspace/Your-Page-1f5b8a8ba283...`
-3. The ID is the part after the last dash and before any query parameters
-   Example: `1f5b8a8bad058a7e39a6`
+1. Abre tu página de Notion en un navegador
+2. Copia la URL, que se parece a:
+   `https://www.notion.so/workspace/Tu-Pagina-1f5b8a8ba283...`
+3. El ID es la parte después del último guion y antes de cualquier parámetro de consulta
+   Ejemplo: `1f5b8a8bad058a7e39a6`
 
-## Configuration
+## Configuración
 
-You can configure the agent using environment variables:
+Puedes configurar el agente usando variables de entorno:
 
-- `NOTION_API_KEY`: Your Notion Integration token
-- `OPENAI_API_KEY`: Your OpenAI API key
-- `NOTION_PAGE_ID`: The ID of your Notion page
+- `NOTION_API_KEY`: Tu token de Integración de Notion
+- `OPENAI_API_KEY`: Tu clave API de OpenAI
+- `NOTION_PAGE_ID`: El ID de tu página de Notion
 
-Alternatively, you can set these values directly in the script.
+Alternativamente, puedes establecer estos valores directamente en el script.
 
-## Usage
+## Uso
 
-Run the agent from the command line:
+Ejecuta el agente desde la línea de comandos:
 
 ```bash
 python notion_mcp_agent.py
 ```
 
-When you start the agent, it will prompt you to enter your Notion page ID. You can:
-1. Enter your page ID at the prompt
-2. Press Enter without typing anything to use the default page ID (if set)
-3. Provide the page ID directly as a command-line argument (bypassing the prompt):
+Cuando inicies el agente, te pedirá que ingreses el ID de tu página de Notion. Puedes:
+1. Ingresar el ID de tu página en el prompt
+2. Presionar Enter sin escribir nada para usar el ID de página predeterminado (si está configurado)
+3. Proporcionar el ID de la página directamente como un argumento de línea de comandos (omitiendo el prompt):
 
 ```bash
-python notion_mcp_agent.py your-page-id-here
+python notion_mcp_agent.py tu-id-de-pagina-aqui
 ```
 
-### Conversation Flow
+### Flujo de Conversación
 
-Each time you start the agent, it creates a unique user ID and session ID to maintain conversation context. This allows the agent to remember previous interactions and continue coherent conversations even after you close and restart the application.
+Cada vez que inicias el agente, crea un ID de usuario y un ID de sesión únicos para mantener el contexto de la conversación. Esto permite que el agente recuerde interacciones previas y continúe conversaciones coherentes incluso después de cerrar y reiniciar la aplicación.
 
-You can exit the conversation at any time by typing `exit`, `quit`, `bye`, or `goodbye`.
+Puedes salir de la conversación en cualquier momento escribiendo `exit`, `quit`, `bye` o `goodbye`.
 
-## Example Queries
+## Consultas de Ejemplo
 
-- "What's on my Notion page?"
-- "Add a new paragraph saying 'Meeting notes for today'"
-- "Create a bullet list with three items: Apple, Banana, Orange"
-- "Add a comment to the first paragraph saying 'This looks good!'"
-- "Search for any mentions of meetings"
-- "Summarize our conversation so far"
+- "¿Qué hay en mi página de Notion?"
+- "Agregar un nuevo párrafo que diga 'Notas de la reunión de hoy'"
+- "Crear una lista con viñetas con tres elementos: Manzana, Plátano, Naranja"
+- "Agregar un comentario al primer párrafo que diga '¡Esto se ve bien!'"
+- "Buscar cualquier mención de reuniones"
+- "Resumir nuestra conversación hasta ahora"
 
-## License
+## Licencia
 
 MIT

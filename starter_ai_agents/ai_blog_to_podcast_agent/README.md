@@ -1,52 +1,52 @@
-## 📰 ➡️ 🎙️ Blog to Podcast Agent
-This is a Streamlit-based application that allows users to convert any blog post into a podcast. The app uses OpenAI's GPT-4 model for summarization, Firecrawl for scraping blog content, and ElevenLabs API for generating audio. Users simply input a blog URL, and the app will generate a podcast episode based on the blog.
+## 📰 ➡️ 🎙️ Agente de Blog a Podcast
+Esta es una aplicación basada en Streamlit que permite a los usuarios convertir cualquier entrada de blog en un podcast. La aplicación utiliza el modelo GPT-4 de OpenAI para la sumarización, Firecrawl para extraer el contenido del blog y la API de ElevenLabs para generar audio. Los usuarios simplemente ingresan la URL de un blog y la aplicación generará un episodio de podcast basado en el blog.
 
-## Features
+## Características
 
-- **Blog Scraping**: Scrapes the full content of any public blog URL using Firecrawl API.
+- **Extracción de Blogs**: Extrae el contenido completo de cualquier URL de blog pública utilizando la API de Firecrawl.
 
-- **Summary Generation**: Creates an engaging and concise summary of the blog (within 2000 characters) using OpenAI GPT-4.
+- **Generación de Resúmenes**: Crea un resumen atractivo y conciso del blog (dentro de 2000 caracteres) utilizando OpenAI GPT-4.
 
-- **Podcast Generation**: Converts the summary into an audio podcast using the ElevenLabs voice API.
+- **Generación de Podcasts**: Convierte el resumen en un podcast de audio utilizando la API de voz de ElevenLabs.
 
-- **API Key Integration**: Requires OpenAI, Firecrawl, and ElevenLabs API keys to function, entered securely via the sidebar.
+- **Integración de Claves API**: Requiere claves API de OpenAI, Firecrawl y ElevenLabs para funcionar, ingresadas de forma segura a través de la barra lateral.
 
-## Setup
+## Configuración
 
-### Requirements 
+### Requisitos
 
-1. **API Keys**:
-    - **OpenAI API Key**: Sign up at OpenAI to obtain your API key.
+1. **Claves API**:
+    - **Clave API de OpenAI**: Regístrate en OpenAI para obtener tu clave API.
 
-    - **ElevenLabs API Key**: Get your ElevenLabs API key from ElevenLabs.
+    - **Clave API de ElevenLabs**: Obtén tu clave API de ElevenLabs en ElevenLabs.
 
-    - **Firecrawl API Key**: Get your Firecrawl API key from Firecrawl.
+    - **Clave API de Firecrawl**: Obtén tu clave API de Firecrawl en Firecrawl.
 
-2. **Python 3.8+**: Ensure you have Python 3.8 or higher installed.
+2. **Python 3.8+**: Asegúrate de tener instalado Python 3.8 o superior.
 
-### Installation
-1. Clone this repository:
+### Instalación
+1. Clona este repositorio:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps
    cd ai_agent_tutorials/ai_blog_to_podcast_agent
    ```
 
-2. Install the required Python packages:
+2. Instala los paquetes de Python requeridos:
    ```bash
    pip install -r requirements.txt
    ```
-### Running the App
+### Ejecutando la Aplicación
 
-1. Start the Streamlit app:
+1. Inicia la aplicación Streamlit:
    ```bash
    streamlit run blog_to_podcast_agent.py
    ```
 
-2. In the app interface:
-    - Enter your OpenAI, ElevenLabs, and Firecrawl API keys in the sidebar.
+2. En la interfaz de la aplicación:
+    - Ingresa tus claves API de OpenAI, ElevenLabs y Firecrawl en la barra lateral.
 
-    - Input the blog URL you want to convert.
+    - Ingresa la URL del blog que deseas convertir.
 
-    - Click "🎙️ Generate Podcast".
+    - Haz clic en "🎙️ Generar Podcast".
 
-    - Listen to the generated podcast or download it.
+    - Escucha el podcast generado o descárgalo.

@@ -1,80 +1,80 @@
-# AI Services Agency 👨‍💼
+# Agencia de Servicios de IA 👨‍💼
 
-An AI application that simulates a full-service digital agency using multiple AI agents to analyze and plan software projects. Each agent represents a different role in the project lifecycle, from strategic planning to technical implementation.
+Una aplicación de IA que simula una agencia digital de servicio completo utilizando múltiples agentes de IA para analizar y planificar proyectos de software. Cada agente representa un rol diferente en el ciclo de vida del proyecto, desde la planificación estratégica hasta la implementación técnica.
 
-## Demo: 
+## Demostración:
 
 https://github.com/user-attachments/assets/a0befa3a-f4c3-400d-9790-4b9e37254405
 
-## Features
+## Características
 
-### Five specialized AI agents 
+### Cinco agentes de IA especializados
 
-- **CEO Agent**: Strategic leader and final decision maker
-  - Analyzes startup ideas using structured evaluation
-  - Makes strategic decisions across product, technical, marketing, and financial domains
-  - Uses AnalyzeStartupTool and MakeStrategicDecision tools
+- **Agente CEO**: Líder estratégico y tomador de decisiones final
+  - Analiza ideas de startups utilizando una evaluación estructurada
+  - Toma decisiones estratégicas en los dominios de producto, técnico, marketing y financiero
+  - Utiliza las herramientas AnalyzeStartupTool y MakeStrategicDecision
 
-- **CTO Agent**: Technical architecture and feasibility expert
-  - Evaluates technical requirements and feasibility
-  - Provides architecture decisions
-  - Uses QueryTechnicalRequirements and EvaluateTechnicalFeasibility tools
+- **Agente CTO**: Experto en arquitectura técnica y viabilidad
+  - Evalúa los requisitos técnicos y la viabilidad
+  - Proporciona decisiones de arquitectura
+  - Utiliza las herramientas QueryTechnicalRequirements y EvaluateTechnicalFeasibility
 
-- **Product Manager Agent**: Product strategy specialist
-  - Defines product strategy and roadmap
-  - Coordinates between technical and marketing teams
-  - Focuses on product-market fit
+- **Agente Product Manager**: Especialista en estrategia de producto
+  - Define la estrategia y la hoja de ruta del producto
+  - Coordina entre los equipos técnicos y de marketing
+  - Se centra en el ajuste producto-mercado
 
-- **Developer Agent**: Technical implementation expert
-  - Provides detailed technical implementation guidance
-  - Suggests optimal tech stack and cloud solutions
-  - Estimates development costs and timelines
+- **Agente Desarrollador**: Experto en implementación técnica
+  - Proporciona orientación detallada sobre la implementación técnica
+  - Sugiere el stack tecnológico óptimo y soluciones en la nube
+  - Estima los costos y plazos de desarrollo
 
-- **Client Success Agent**: Marketing strategy leader
-  - Develops go-to-market strategies
-  - Plans customer acquisition approaches
-  - Coordinates with product team
+- **Agente de Éxito del Cliente**: Líder de estrategia de marketing
+  - Desarrolla estrategias de lanzamiento al mercado
+  - Planifica enfoques de adquisición de clientes
+  - Coordina con el equipo de producto
 
-### Custom Tools
+### Herramientas Personalizadas
 
-The agency uses specialized tools built with OpenAI Schema for structured analysis:
-- **Analysis Tools**: AnalyzeProjectRequirements for market evaluation and analysis of startup idea
-- **Technical Tools**: CreateTechnicalSpecification for technical assessment
+La agencia utiliza herramientas especializadas construidas con OpenAI Schema para un análisis estructurado:
+- **Herramientas de Análisis**: AnalyzeProjectRequirements para la evaluación de mercado y el análisis de la idea de startup
+- **Herramientas Técnicas**: CreateTechnicalSpecification para la evaluación técnica
 
-### 🔄 Asynchronous Communication
+### 🔄 Comunicación Asíncrona
 
-The agency operates in async mode, enabling:
-- Parallel processing of analyses from different agents
-- Efficient multi-agent collaboration
-- Real-time communication between agents
-- Non-blocking operations for better performance
+La agencia opera en modo asíncrono, permitiendo:
+- Procesamiento paralelo de análisis de diferentes agentes
+- Colaboración eficiente multiagente
+- Comunicación en tiempo real entre agentes
+- Operaciones no bloqueantes para un mejor rendimiento
 
-### 🔗 Agent Communication Flows
-- CEO ↔️ All Agents (Strategic Oversight)
-- CTO ↔️ Developer (Technical Implementation)
-- Product Manager ↔️ Marketing Manager (Go-to-Market Strategy)
-- Product Manager ↔️ Developer (Feature Implementation)
-- (and more!)
+### 🔗 Flujos de Comunicación de Agentes
+- CEO ↔️ Todos los Agentes (Supervisión Estratégica)
+- CTO ↔️ Desarrollador (Implementación Técnica)
+- Product Manager ↔️ Gerente de Marketing (Estrategia de Lanzamiento al Mercado)
+- Product Manager ↔️ Desarrollador (Implementación de Funciones)
+- (¡y más!)
 
-## How to Run
+## Cómo Ejecutar
 
-Follow the steps below to set up and run the application:
-Before anything else, Please get your OpenAI API Key here: https://platform.openai.com/api-keys
+Sigue los pasos a continuación para configurar y ejecutar la aplicación:
+Antes que nada, obtén tu Clave API de OpenAI aquí: https://platform.openai.com/api-keys
 
-1. **Clone the Repository**:
+1. **Clona el Repositorio**:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd advanced_ai_agents/multi_agent_apps/agent_teams/ai_services_agency
    ```
 
-2. **Install the dependencies**:
+2. **Instala las dependencias**:
     ```bash
     pip install -r requirements.txt
     ```
 
-3. **Run the Streamlit app**:
+3. **Ejecuta la aplicación Streamlit**:
     ```bash
     streamlit run ai_services_agency/agency.py
     ```
 
-4. **Enter your OpenAI API Key** in the sidebar when prompted and start analyzing your startup idea!
+4. **Ingresa tu Clave API de OpenAI** en la barra lateral cuando se te solicite ¡y comienza a analizar tu idea de startup!

@@ -1,33 +1,33 @@
-# 🧲 AI Competitor Intelligence Agent Team
+# 🧲 Equipo de Agentes de Inteligencia Competitiva de IA
 
-The AI Competitor Intelligence Agent Team is a powerful competitor analysis tool powered by Firecrawl and Agno's AI Agent framework. This app helps businesses analyze their competitors by extracting structured data from competitor websites and generating actionable insights using AI.
+El Equipo de Agentes de Inteligencia Competitiva de IA es una potente herramienta de análisis de la competencia impulsada por Firecrawl y el framework de Agentes de IA de Agno. Esta aplicación ayuda a las empresas a analizar a sus competidores extrayendo datos estructurados de los sitios web de la competencia y generando información procesable mediante IA.
 
-## Features
+## Características
 
-- **Multi-Agent System**
-    - **Firecrawl Agent**: Specializes in crawling and summarizing competitor websites
-    - **Analysis Agent**: Generates detailed competitive analysis reports
-    - **Comparison Agent**: Creates structured comparisons between competitors
+- **Sistema Multiagente**
+    - **Agente Firecrawl**: Se especializa en rastrear y resumir los sitios web de la competencia
+    - **Agente de Análisis**: Genera informes detallados de análisis competitivo
+    - **Agente de Comparación**: Crea comparaciones estructuradas entre competidores
 
-- **Competitor Discovery**:
-  - Finds similar companies using URL matching with Exa AI 
-  - Discovers competitors based on business descriptions
-  - Automatically extracts relevant competitor URLs
+- **Descubrimiento de Competidores**:
+  - Encuentra empresas similares utilizando la coincidencia de URL con Exa AI
+  - Descubre competidores basándose en descripciones de negocios
+  - Extrae automáticamente URL de competidores relevantes
 
-- **Comprehensive Analysis**:
-  - Provides structured analysis reports with:
-    - Market gaps and opportunities
-    - Competitor weaknesses
-    - Recommended features
-    - Pricing strategies
-    - Growth opportunities
-    - Actionable recommendations
+- **Análisis Exhaustivo**:
+  - Proporciona informes de análisis estructurados con:
+    - Brechas y oportunidades de mercado
+    - Debilidades de la competencia
+    - Características recomendadas
+    - Estrategias de precios
+    - Oportunidades de crecimiento
+    - Recomendaciones procesables
 
-- **Interactive Analysis**: Users can input either their company URL or description for analysis
+- **Análisis Interactivo**: Los usuarios pueden ingresar la URL o la descripción de su empresa para el análisis
 
-## Requirements
+## Requisitos
 
-The application requires the following Python libraries:
+La aplicación requiere las siguientes bibliotecas de Python:
 
 - `agno`
 - `exa-py`
@@ -35,43 +35,43 @@ The application requires the following Python libraries:
 - `pandas`
 - `firecrawl-py`
 
-You'll also need API keys for:
+También necesitarás claves API para:
 - OpenAI
 - Firecrawl
 - Exa
 
-## How to Run
+## Cómo Ejecutar
 
-Follow these steps to set up and run the application:
+Sigue estos pasos para configurar y ejecutar la aplicación:
 
-1. **Clone the Repository**:
+1. **Clona el Repositorio**:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd advanced_ai_agents/multi_agent_apps/agent_teams/ai_competitor_intelligence_agent_team
    ```
 
-2. **Install the dependencies**:
+2. **Instala las dependencias**:
     ```bash
     pip install -r requirements.txt
     ```
 
-3. **Set up your API keys**:
-    - Get an OpenAI API key from: https://platform.openai.com/api-keys
-    - Get a Firecrawl API key from: [Firecrawl website](https://www.firecrawl.dev/app/api-keys)
-    - Get an Exa API key from: [Exa website](https://dashboard.exa.ai/api-keys)
+3. **Configura tus claves API**:
+    - Obtén una clave API de OpenAI desde: https://platform.openai.com/api-keys
+    - Obtén una clave API de Firecrawl desde: [Sitio web de Firecrawl](https://www.firecrawl.dev/app/api-keys)
+    - Obtén una clave API de Exa desde: [Sitio web de Exa](https://dashboard.exa.ai/api-keys)
 
-4. **Run the Streamlit app**:
+4. **Ejecuta la aplicación Streamlit**:
     ```bash
     streamlit run ai_competitor_analyser.py
     ```
 
-## Usage
+## Uso
 
-1. Enter your API keys in the sidebar
-2. Input either:
-   - Your company's website URL
-   - A description of your company
-3. Click "Analyze Competitors" to generate:
-   - Competitor comparison table
-   - Detailed analysis report
-   - Strategic recommendations
+1. Ingresa tus claves API en la barra lateral
+2. Ingresa ya sea:
+   - La URL del sitio web de tu empresa
+   - Una descripción de tu empresa
+3. Haz clic en "Analizar Competidores" para generar:
+   - Tabla de comparación de competidores
+   - Informe de análisis detallado
+   - Recomendaciones estratégicas

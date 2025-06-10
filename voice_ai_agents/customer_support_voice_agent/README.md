@@ -1,68 +1,68 @@
-# 🎙️ Customer Support Voice Agent
+# 🎙️ Agente de Voz para Soporte al Cliente
 
-An OpenAI SDK powered customer support agent application that delivers voice-powered responses to questions about your knowledge base using OpenAI's GPT-4o and TTS capabilities. The system crawls through documentation websites with Firecrawl, processes the content into a searchable knowledge base with Qdrant, and provides both text and voice responses to user queries.
+Una aplicación de agente de soporte al cliente impulsada por el SDK de OpenAI que ofrece respuestas por voz a preguntas sobre tu base de conocimientos utilizando las capacidades de GPT-4o y TTS de OpenAI. El sistema rastrea sitios web de documentación con Firecrawl, procesa el contenido en una base de conocimientos consultable con Qdrant y proporciona respuestas tanto de texto como de voz a las consultas de los usuarios.
 
-## Features
+## Características
 
-- Knowledge Base Creation
+- Creación de Base de Conocimientos
 
-  - Crawls documentation websites using Firecrawl
-  - Stores and indexes content using Qdrant vector database
-  - Generates embeddings for semantic search capabilities using FastEmbed
-- **AI Agent Team**
-  - **Documentation Processor**: Analyzes documentation content and generates clear, concise responses to user queries
-  - **TTS Agent**: Converts text responses into natural-sounding speech with appropriate pacing and emphasis
-  - **Voice Customization**: Supports multiple OpenAI TTS voices:
+  - Rastrea sitios web de documentación utilizando Firecrawl
+  - Almacena e indexa contenido utilizando la base de datos vectorial Qdrant
+  - Genera incrustaciones para capacidades de búsqueda semántica utilizando FastEmbed
+- **Equipo de Agentes de IA**
+  - **Procesador de Documentación**: Analiza el contenido de la documentación y genera respuestas claras y concisas a las consultas de los usuarios
+  - **Agente TTS**: Convierte las respuestas de texto en voz con sonido natural con ritmo y énfasis apropiados
+  - **Personalización de Voz**: Admite múltiples voces TTS de OpenAI:
     - alloy, ash, ballad, coral, echo, fable, onyx, nova, sage, shimmer, verse
 
-- **Interactive Interface**
-  - Clean Streamlit UI with sidebar configuration
-  - Real-time documentation search and response generation
-  - Built-in audio player with download capability
-  - Progress indicators for system initialization and query processing
+- **Interfaz Interactiva**
+  - Interfaz de usuario de Streamlit limpia con configuración en la barra lateral
+  - Búsqueda de documentación y generación de respuestas en tiempo real
+  - Reproductor de audio incorporado con capacidad de descarga
+  - Indicadores de progreso para la inicialización del sistema y el procesamiento de consultas
 
-## How to Run
+## Cómo Ejecutar
 
-1. **Setup Environment**
+1. **Configurar el Entorno**
    ```bash
-   # Clone the repository
+   # Clona el repositorio
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd awesome-llm-apps/ai_agent_tutorials/ai_voice_agent_openaisdk
    
-   # Install dependencies
+   # Instala las dependencias
    pip install -r requirements.txt
    ```
 
-2. **Configure API Keys**
-   - Get OpenAI API key from [OpenAI Platform](https://platform.openai.com)
-   - Get Qdrant API key and URL from [Qdrant Cloud](https://cloud.qdrant.io)
-   - Get Firecrawl API key for documentation crawling
+2. **Configurar Claves API**
+   - Obtén la clave API de OpenAI desde [OpenAI Platform](https://platform.openai.com)
+   - Obtén la clave API y la URL de Qdrant desde [Qdrant Cloud](https://cloud.qdrant.io)
+   - Obtén la clave API de Firecrawl para el rastreo de documentación
 
-3. **Run the Application**
+3. **Ejecutar la Aplicación**
    ```bash
    streamlit run ai_voice_agent_docs.py
    ```
 
-4. **Use the Interface**
-   - Enter API credentials in the sidebar
-   - Input the documentation URL you want to learn about
-   - Select your preferred voice from the dropdown
-   - Click "Initialize System" to process the documentation
-   - Ask questions and receive both text and voice responses
+4. **Usar la Interfaz**
+   - Ingresa las credenciales de API en la barra lateral
+   - Ingresa la URL de la documentación sobre la que deseas aprender
+   - Selecciona tu voz preferida del menú desplegable
+   - Haz clic en "Inicializar Sistema" para procesar la documentación
+   - Haz preguntas y recibe respuestas tanto de texto como de voz
 
-## Features in Detail
+## Características en Detalle
 
-- **Knowledge Base Creation**
-  - Builds a searchable knowledge base from your documentation
-  - Preserves document structure and metadata
-  - Supports multiple page crawling (limited to 5 pages per default configuration)
+- **Creación de Base de Conocimientos**
+  - Construye una base de conocimientos consultable a partir de tu documentación
+  - Conserva la estructura y los metadatos del documento
+  - Admite el rastreo de múltiples páginas (limitado a 5 páginas por configuración predeterminada)
 
-- **Vector Search**
-  - Uses FastEmbed for generating embeddings
-  - Semantic search capabilities for finding relevant content
-  - Efficient document retrieval using Qdrant
+- **Búsqueda Vectorial**
+  - Utiliza FastEmbed para generar incrustaciones
+  - Capacidades de búsqueda semántica para encontrar contenido relevante
+  - Recuperación eficiente de documentos utilizando Qdrant
 
-- **Voice Generation**
-  - High-quality text-to-speech using OpenAI's TTS models
-  - Multiple voice options for customization
-  - Natural speech patterns with proper pacing and emphasis
+- **Generación de Voz**
+  - Conversión de texto a voz de alta calidad utilizando los modelos TTS de OpenAI
+  - Múltiples opciones de voz para personalización
+  - Patrones de habla natural con ritmo y énfasis adecuados

@@ -1,29 +1,29 @@
-## 🦙💬 ChatGPT Clone using Llama-3
-This project demonstrates how to build a ChatGPT clone using the Llama-3 model running locally on your computer. The application is built using Python and Streamlit, providing a user-friendly interface for interacting with the language model. Best of all, it's 100% free and doesn't require an internet connection!
+## 🦙💬 Clon de ChatGPT usando Llama-3
+Este proyecto demuestra cómo construir un clon de ChatGPT utilizando el modelo Llama-3 ejecutándose localmente en tu computadora. La aplicación está construida con Python y Streamlit, proporcionando una interfaz fácil de usar para interactuar con el modelo de lenguaje. ¡Lo mejor de todo es que es 100% gratis y no requiere conexión a internet!
 
-### Features
-- Runs locally on your computer without the need for an internet connection and completely free to use.
-- Utilizes the Llama-3 instruct model for generating responses
-- Provides a chat-like interface for seamless interaction
+### Características
+- Se ejecuta localmente en tu computadora sin necesidad de conexión a internet y es completamente gratis.
+- Utiliza el modelo Llama-3 instruct para generar respuestas
+- Proporciona una interfaz similar a un chat para una interacción fluida
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd awesome-llm-apps/advanced_tools_frameworks/local_chatgpt_clone
 ```
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 pip install -r requirements.txt
 ```
-3. Download and install the [LM Studio desktop app](https://lmstudio.ai/). Download the Llama-3 instruct model.
+3. Descarga e instala la [aplicación de escritorio LM Studio](https://lmstudio.ai/). Descarga el modelo Llama-3 instruct.
 
-4. Expose the Llama-3 model as an OpenAI API by starting the server in LM Studio. Watch this [video walkthrough](https://x.com/Saboo_Shubham_/status/1783715814790549683).
+4. Expón el modelo Llama-3 como una API de OpenAI iniciando el servidor en LM Studio. Mira este [video tutorial](https://x.com/Saboo_Shubham_/status/1783715814790549683).
 
-5. Run the Streamlit App
+5. Ejecuta la Aplicación Streamlit
 ```bash
 streamlit run chatgpt_clone_llama3.py
 ```

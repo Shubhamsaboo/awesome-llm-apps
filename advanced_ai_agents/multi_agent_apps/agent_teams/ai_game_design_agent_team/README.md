@@ -1,67 +1,67 @@
-# AI Game Design Agent Team 🎮
+# Equipo de Agentes de Diseño de Juegos de IA 🎮
 
-The AI Game Design Agent Team is a collaborative game design system powered by [AG2](https://github.com/ag2ai/ag2?tab=readme-ov-file)(formerly AutoGen)'s AI Agent framework. This app generates comprehensive game concepts through the coordination of multiple specialized AI agents, each focusing on different aspects of game design based on user inputs such as game type, target audience, art style, and technical requirements. This is built on AG2's new swarm feature run through initiate_chat() method.
+El Equipo de Agentes de Diseño de Juegos de IA es un sistema colaborativo de diseño de juegos impulsado por el framework de Agentes de IA de [AG2](https://github.com/ag2ai/ag2?tab=readme-ov-file) (anteriormente AutoGen). Esta aplicación genera conceptos de juego completos mediante la coordinación de múltiples agentes de IA especializados, cada uno centrado en diferentes aspectos del diseño del juego basados en las entradas del usuario, como el tipo de juego, el público objetivo, el estilo artístico y los requisitos técnicos. Esto se basa en la nueva función de enjambre de AG2 ejecutada a través del método `initiate_chat()`.
 
-## Features
+## Características
 
-- **Specialized Game Design Agent Team**
-    - 🎭 **Story Agent**: Specializes in narrative design and world-building, including character development, plot arcs, dialogue writing, and lore creation
-    - 🎮 **Gameplay Agent**: Focuses on game mechanics and systems design, including player progression, combat systems, resource management, and balancing
-    - 🎨 **Visuals Agent**: Handles art direction and audio design, covering UI/UX, character/environment art style, sound effects, and music composition
-    - ⚙️ **Tech Agent**: Provides technical architecture and implementation guidance, including engine selection, optimization strategies, networking requirements, and development roadmap
-    - 🎯 **Task Agent**: Coordinates between all specialized agents and ensures cohesive integration of different game aspects
+- **Equipo Especializado de Agentes de Diseño de Juegos**
+    - 🎭 **Agente de Historia**: Se especializa en el diseño narrativo y la construcción de mundos, incluido el desarrollo de personajes, los arcos argumentales, la escritura de diálogos y la creación de lore.
+    - 🎮 **Agente de Jugabilidad**: Se centra en la mecánica del juego y el diseño de sistemas, incluida la progresión del jugador, los sistemas de combate, la gestión de recursos y el equilibrio.
+    - 🎨 **Agente Visual**: Maneja la dirección de arte y el diseño de audio, cubriendo UI/UX, estilo de arte de personajes/entornos, efectos de sonido y composición musical.
+    - ⚙️ **Agente Tecnológico**: Proporciona arquitectura técnica y orientación de implementación, incluida la selección del motor, estrategias de optimización, requisitos de red y hoja de ruta de desarrollo.
+    - 🎯 **Agente de Tareas**: Coordina entre todos los agentes especializados y garantiza la integración cohesiva de los diferentes aspectos del juego.
 
-- **Comprehensive Game Design Outputs**:
-  - Detailed narrative and world-building elements
-  - Core gameplay mechanics and systems
-  - Visual and audio direction
-  - Technical specifications and requirements
-  - Development timeline and budget considerations
-  - Coherent game design from the team.
+- **Resultados Completos de Diseño de Juegos**:
+  - Elementos detallados de narrativa y construcción de mundos
+  - Mecánicas y sistemas centrales de juego
+  - Dirección visual y de audio
+  - Especificaciones y requisitos técnicos
+  - Cronograma de desarrollo y consideraciones presupuestarias
+  - Diseño de juego coherente del equipo.
 
-- **Customizable Input Parameters**:
-  - Game type and target audience
-  - Art style and visual preferences
-  - Platform requirements
-  - Development constraints (time, budget)
-  - Core mechanics and gameplay features
+- **Parámetros de Entrada Personalizables**:
+  - Tipo de juego y público objetivo
+  - Estilo artístico y preferencias visuales
+  - Requisitos de la plataforma
+  - Restricciones de desarrollo (tiempo, presupuesto)
+  - Mecánicas centrales y características de juego
 
-- **Interactive Results**: 
-   - Quick show of game design ideas from each agent 
-   - Detailed results are presented in expandable sections for easy navigation and reference
+- **Resultados Interactivos**:
+   - Muestra rápida de ideas de diseño de juegos de cada agente
+   - Los resultados detallados se presentan en secciones expandibles para facilitar la navegación y referencia
 
-## How to Run
+## Cómo Ejecutar
 
-Follow these steps to set up and run the application:
+Sigue estos pasos para configurar y ejecutar la aplicación:
 
-1. **Clone the Repository**:
+1. **Clona el Repositorio**:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd advanced_ai_agents/multi_agent_apps/agent_teams/ai_game_design_agent_team
    ```
 
-2. **Install Dependencies**:
+2. **Instala las Dependencias**:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Set Up OpenAI API Key**:
-   - Obtain an OpenAI API key from [OpenAI's platform](https://platform.openai.com)
-   - You'll input this key in the app's sidebar when running
+3. **Configura la Clave API de OpenAI**:
+   - Obtén una clave API de OpenAI desde la [plataforma de OpenAI](https://platform.openai.com)
+   - Ingresarás esta clave en la barra lateral de la aplicación al ejecutarla
 
-4. **Run the Streamlit App**:
+4. **Ejecuta la Aplicación Streamlit**:
    ```bash
    streamlit run ai_game_design_agent_team/game_design_agent_team.py
    ```
 
-## Usage
+## Uso
 
-1. Enter your OpenAI API key in the sidebar
-2. Fill in the game details:
-   - Background vibe and setting
-   - Game type and target audience
-   - Visual style preferences
-   - Technical requirements
-   - Development constraints
-3. Click "Generate Game Concept" to receive comprehensive design documentation from all agents
-4. Review the outputs in the expandable sections for each aspect of game design
+1. Ingresa tu clave API de OpenAI en la barra lateral
+2. Completa los detalles del juego:
+   - Ambiente y entorno de fondo
+   - Tipo de juego y público objetivo
+   - Preferencias de estilo visual
+   - Requisitos técnicos
+   - Restricciones de desarrollo
+3. Haz clic en "Generar Concepto de Juego" para recibir documentación de diseño completa de todos los agentes
+4. Revisa los resultados en las secciones expandibles para cada aspecto del diseño del juego

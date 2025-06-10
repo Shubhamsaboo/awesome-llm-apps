@@ -1,68 +1,68 @@
-## 🎙️ Voice RAG with OpenAI SDK
+## 🎙️ RAG por Voz con SDK de OpenAI
 
-This script demonstrates how to build a voice-enabled Retrieval-Augmented Generation (RAG) system using OpenAI's SDK and Streamlit. The application allows users to upload PDF documents, ask questions, and receive both text and voice responses using OpenAI's text-to-speech capabilities.
+Este script demuestra cómo construir un sistema de Generación Aumentada por Recuperación (RAG) habilitado para voz utilizando el SDK de OpenAI y Streamlit. La aplicación permite a los usuarios cargar documentos PDF, hacer preguntas y recibir respuestas tanto de texto como de voz utilizando las capacidades de conversión de texto a voz de OpenAI.
 
-### Features
+### Características
 
-- Creates a voice-enabled RAG system using OpenAI's SDK
-- Supports PDF document processing and chunking
-- Uses Qdrant as the vector database for efficient similarity search
-- Implements real-time text-to-speech with multiple voice options
-- Provides a user-friendly Streamlit interface
-- Allows downloading of generated audio responses
-- Supports multiple document uploads and tracking
+- Crea un sistema RAG habilitado para voz utilizando el SDK de OpenAI
+- Admite el procesamiento y la fragmentación de documentos PDF
+- Utiliza Qdrant como base de datos vectorial para una búsqueda eficiente por similitud
+- Implementa la conversión de texto a voz en tiempo real con múltiples opciones de voz
+- Proporciona una interfaz de Streamlit fácil de usar
+- Permite descargar las respuestas de audio generadas
+- Admite la carga y el seguimiento de múltiples documentos
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd awesome-llm-apps/rag_tutorials/voice_rag_openaisdk
 ```
 
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Set up your API keys:
-- Get your [OpenAI API key](https://platform.openai.com/)
-- Set up a [Qdrant Cloud](https://cloud.qdrant.io/) account and get your API key and URL
-- Create a `.env` file with your credentials:
+3. Configura tus claves API:
+- Obtén tu [clave API de OpenAI](https://platform.openai.com/)
+- Configura una cuenta en [Qdrant Cloud](https://cloud.qdrant.io/) y obtén tu clave API y URL
+- Crea un archivo `.env` con tus credenciales:
 ```bash
 OPENAI_API_KEY='your-openai-api-key'
 QDRANT_URL='your-qdrant-url'
 QDRANT_API_KEY='your-qdrant-api-key'
 ```
 
-4. Run the Voice RAG application:
+4. Ejecuta la aplicación RAG por Voz:
 ```bash
 streamlit run rag_voice.py
 ```
 
-5. Open your web browser and navigate to the URL provided in the console output to interact with the Voice RAG system.
+5. Abre tu navegador web y navega a la URL proporcionada en la salida de la consola para interactuar con el sistema RAG por Voz.
 
-### How it works?
+### ¿Cómo Funciona?
 
-1. **Document Processing:** 
-   - Upload PDF documents through the Streamlit interface
-   - Documents are split into chunks using LangChain's RecursiveCharacterTextSplitter
-   - Each chunk is embedded using FastEmbed and stored in Qdrant
+1. **Procesamiento de Documentos:**
+   - Sube documentos PDF a través de la interfaz de Streamlit
+   - Los documentos se dividen en fragmentos utilizando RecursiveCharacterTextSplitter de LangChain
+   - Cada fragmento se incrusta utilizando FastEmbed y se almacena en Qdrant
 
-2. **Query Processing:**
-   - User questions are converted to embeddings
-   - Similar documents are retrieved from Qdrant
-   - A processing agent generates a clear, spoken-word friendly response
-   - A TTS agent optimizes the response for speech synthesis
+2. **Procesamiento de Consultas:**
+   - Las preguntas de los usuarios se convierten en incrustaciones
+   - Se recuperan documentos similares de Qdrant
+   - Un agente de procesamiento genera una respuesta clara y amigable para la voz
+   - Un agente TTS optimiza la respuesta para la síntesis de voz
 
-3. **Voice Generation:**
-   - Text responses are converted to speech using OpenAI's TTS
-   - Users can choose from multiple voice options
-   - Audio can be played directly or downloaded as MP3
+3. **Generación de Voz:**
+   - Las respuestas de texto se convierten en voz utilizando TTS de OpenAI
+   - Los usuarios pueden elegir entre múltiples opciones de voz
+   - El audio se puede reproducir directamente o descargar como MP3
 
-4. **Features:**
-   - Real-time audio streaming
-   - Multiple voice personality options
-   - Document source tracking
-   - Download capability for audio responses
-   - Progress tracking for document processing
+4. **Características:**
+   - Transmisión de audio en tiempo real
+   - Múltiples opciones de personalidad de voz
+   - Seguimiento de la fuente del documento
+   - Capacidad de descarga para respuestas de audio
+   - Seguimiento del progreso para el procesamiento de documentos

@@ -1,75 +1,75 @@
-# 👨‍🏫 AI Teaching Agent Team
+# 👨‍🏫 Equipo de Agentes de Enseñanza de IA
 
-A Streamlit application that brings together a team of specialized AI teaching agents who collaborate like a professional teaching faculty. Each agent acts as a specialized educator: a curriculum designer, learning path expert, resource librarian, and practice instructor - working together to create a complete educational experience through Google Docs.
+Una aplicación de Streamlit que reúne a un equipo de agentes de enseñanza de IA especializados que colaboran como un cuerpo docente profesional. Cada agente actúa como un educador especializado: un diseñador de currículos, un experto en rutas de aprendizaje, un bibliotecario de recursos y un instructor de práctica, trabajando juntos para crear una experiencia educativa completa a través de Google Docs.
 
-## 🪄 Meet your AI Teaching Agent Team 
+## 🪄 Conoce a tu Equipo de Agentes de Enseñanza de IA
 
-#### 🧠 Professor Agent
-- Creates fundamental knowledge base in Google Docs
-- Organizes content with proper headings and sections
-- Includes detailed explanations and examples
-- Output: Comprehensive knowledge base document with table of contents
+#### 🧠 Agente Profesor
+- Crea una base de conocimientos fundamental en Google Docs
+- Organiza el contenido con encabezados y secciones adecuados
+- Incluye explicaciones detalladas y ejemplos
+- Resultado: Documento completo de base de conocimientos con tabla de contenido
 
-#### 🗺️ Academic Advisor Agent
-- Designs learning path in a structured Google Doc
-- Creates progressive milestone markers
-- Includes time estimates and prerequisites
-- Output: Visual roadmap document with clear progression paths
+#### 🗺️ Agente Asesor Académico
+- Diseña la ruta de aprendizaje en un documento estructurado de Google Doc
+- Crea marcadores de hitos progresivos
+- Incluye estimaciones de tiempo y requisitos previos
+- Resultado: Documento de hoja de ruta visual con rutas de progresión claras
 
-#### 📚 Research Librarian Agent
-- Compiles resources in an organized Google Doc
-- Includes links to academic papers and tutorials
-- Adds descriptions and difficulty levels
-- Output: Categorized resource list with quality ratings
+#### 📚 Agente Bibliotecario de Investigación
+- Compila recursos en un documento organizado de Google Doc
+- Incluye enlaces a artículos académicos y tutoriales
+- Agrega descripciones y niveles de dificultad
+- Resultado: Lista de recursos categorizada con calificaciones de calidad
 
-#### ✍️ Teaching Assistant Agent
-- Develops exercises in an interactive Google Doc
-- Creates structured practice sections
-- Includes solution guides
-- Output: Complete practice workbook with answers
+#### ✍️ Agente Asistente de Enseñanza
+- Desarrolla ejercicios en un documento interactivo de Google Doc
+- Crea secciones de práctica estructuradas
+- Incluye guías de soluciones
+- Resultado: Cuaderno de trabajo de práctica completo con respuestas
 
 
-## How to Run
+## Cómo Ejecutar
 
-1. Clone the repository
+1. Clona el repositorio
   ```bash
-   # Clone the repository
+   # Clona el repositorio
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd ai_agent_tutorials/ai_personal_learning_agent
 
-   # Install dependencies
+   # Instala las dependencias
    pip install -r requirements.txt
    ```
 
-## Configuration - IMPORTANT STEP
+## Configuración - PASO IMPORTANTE
 
-1. Get your OpenAI API Key
-- Create an account on [OpenAI Platform](https://platform.openai.com/)
-- Navigate to API Keys section
-- Create a new API key
+1. Obtén tu Clave API de OpenAI
+- Crea una cuenta en [OpenAI Platform](https://platform.openai.com/)
+- Navega a la sección de Claves API
+- Crea una nueva clave API
 
-2. Get your Composio API Key
-- Create an account on [Composio Platform](https://composio.ai/)
-- **IMPORTANT** - For you to use the app, you need to make new connection ID with google docs and composio.Follow the below two steps to do so:  
-  - composio add googledocs (IN THE TERMINAL)
-  - Create a new connection 
-  - Select OAUTH2 
-  - Select Google Account and Done.
-  - On the composio account website, go to apps, select google docs tool, and [click create integration](https://app.composio.dev/app/googledocs) (violet button) and click Try connecting default’s googldocs button and we are done. 
+2. Obtén tu Clave API de Composio
+- Crea una cuenta en [Composio Platform](https://composio.ai/)
+- **IMPORTANTE** - Para que puedas usar la aplicación, necesitas crear una nueva ID de conexión con Google Docs y Composio. Sigue los dos pasos a continuación para hacerlo:
+  - `composio add googledocs` (EN LA TERMINAL)
+  - Crea una nueva conexión
+  - Selecciona OAUTH2
+  - Selecciona Cuenta de Google y Listo.
+  - En el sitio web de la cuenta de Composio, ve a aplicaciones, selecciona la herramienta Google Docs y [haz clic en crear integración](https://app.composio.dev/app/googledocs) (botón violeta) y haz clic en el botón "Try connecting default’s googldocs" y listo.
 
-3. Sign up and get the [SerpAPI Key](https://serpapi.com/)
+3. Regístrate y obtén la [Clave API de SerpAPI](https://serpapi.com/)
 
-## How to Use? 
+## ¿Cómo Usar?
 
-1. Start the Streamlit app
+1. Inicia la aplicación Streamlit
 ```bash
 streamlit run teaching_agent_team.py
 ```
 
-2. Use the application
-- Enter your OpenAI API key in the sidebar (if not set in environment)
-- Enter your Composio API key in the sidebar 
-- Type a topic you want to learn about (e.g., "Python Programming", "Machine Learning")
-- Click "Generate Learning Plan"
-- Wait for the agents to generate your personalized learning plan
-- View the results and terminal output in the interface
+2. Usa la aplicación
+- Ingresa tu clave API de OpenAI en la barra lateral (si no está configurada en el entorno)
+- Ingresa tu clave API de Composio en la barra lateral
+- Escribe un tema sobre el que quieras aprender (p. ej., "Programación en Python", "Aprendizaje Automático")
+- Haz clic en "Generar Plan de Aprendizaje"
+- Espera a que los agentes generen tu plan de aprendizaje personalizado
+- Visualiza los resultados y la salida de la terminal en la interfaz

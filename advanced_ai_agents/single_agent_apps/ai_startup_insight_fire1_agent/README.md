@@ -1,87 +1,87 @@
-# 🔥 AI Startup Insight with Firecrawl FIRE-1 Agent
+# 🔥 Información de Startups con IA y Agente Firecrawl FIRE-1
 
-An advanced web extraction and analysis tool built using Firecrawl's FIRE-1 agent + extract v1 endpoint and the Agno Agent framework to get details of a new startup instantly! This application automatically extracts structured data from startup websites and provides AI-powered business analysis, making it easy to gather insights about companies without manual research.
+Una herramienta avanzada de extracción y análisis web construida utilizando el agente FIRE-1 de Firecrawl + el endpoint extract v1 y el framework Agno Agent para obtener detalles de una nueva startup ¡al instante! Esta aplicación extrae automáticamente datos estructurados de los sitios web de startups y proporciona análisis de negocios impulsados por IA, facilitando la recopilación de información sobre empresas sin investigación manual.
 
-## Features
+## Características
 
-- 🌐 **Intelligent Web Extraction**:
+- 🌐 **Extracción Web Inteligente**:
 
-  - Extract structured data from any company website
-  - Automatically identify company information, mission, and product features
-  - Process multiple websites in sequence
-- 🔍 **Advanced Web Navigation**:
+  - Extrae datos estructurados de cualquier sitio web de empresa
+  - Identifica automáticamente la información de la empresa, la misión y las características del producto
+  - Procesa múltiples sitios web en secuencia
+- 🔍 **Navegación Web Avanzada**:
 
-  - Interact with buttons, links, and dynamic elements
-  - Handle pagination and multi-step processes
-  - Access information across multiple pages
-- 🧠 **AI Business Analysis**:
+  - Interactúa con botones, enlaces y elementos dinámicos
+  - Maneja la paginación y los procesos de varios pasos
+  - Accede a información a través de múltiples páginas
+- 🧠 **Análisis de Negocios con IA**:
 
-  - Generate insightful summaries of extracted company data
-  - Identify unique value propositions and market opportunities
-  - Provide actionable business intelligence
-- 📊 **Structured Data Output**:
+  - Genera resúmenes perspicaces de los datos de la empresa extraídos
+  - Identifica propuestas de valor únicas y oportunidades de mercado
+  - Proporciona inteligencia de negocios procesable
+- 📊 **Salida de Datos Estructurados**:
 
-  - Organize information in a consistent JSON schema
-  - Extract company name, description, mission, and product features
-  - Standardize output for further processing
-- 🎯 **Interactive UI**:
+  - Organiza la información en un esquema JSON consistente
+  - Extrae el nombre de la empresa, descripción, misión y características del producto
+  - Estandariza la salida para su posterior procesamiento
+- 🎯 **Interfaz de Usuario Interactiva**:
 
-  - User-friendly Streamlit interface
-  - Process multiple URLs in parallel
-  - Clear presentation of extracted data and analysis
+  - Interfaz de Streamlit fácil de usar
+  - Procesa múltiples URL en paralelo
+  - Presentación clara de los datos extraídos y el análisis
 
-## How to Run
+## Cómo Ejecutar
 
-1. **Setup Environment**
+1. **Configurar el Entorno**
 
    ```bash
-   # Clone the repository
+   # Clona el repositorio
 
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd advanced_ai_agents/single_agent_apps/ai_startup_insight_fire1_agent
    ```
 
-   # Install dependencies
+   # Instala las dependencias
 
 
    ```
    pip install -r requirements.txt
 
    ```
-2. **Configure API Keys**
+2. **Configurar Claves API**
 
-   - Get Firecrawl API key from [Firecrawl](https://firecrawl.dev)
-   - Get OpenAI API key from [OpenAI Platform](https://platform.openai.com)
-3. **Run the Application**
+   - Obtén la clave API de Firecrawl desde [Firecrawl](https://firecrawl.dev)
+   - Obtén la clave API de OpenAI desde [OpenAI Platform](https://platform.openai.com)
+3. **Ejecutar la Aplicación**
 
    ```bash
    streamlit run ai_startup_insight_fire1_agent.py
    ```
 
-## Usage
+## Uso
 
-1. Launch the application using the command above
-2. Provide your Firecrawl and OpenAI API keys in the sidebar
-3. Enter one or more company website URLs in the text area (one per line)
-4. Click "🚀 Start Analysis" to begin the extraction and analysis process
-5. View the structured data and AI analysis for each website in the tabbed interface
+1. Lanza la aplicación utilizando el comando anterior
+2. Proporciona tus claves API de Firecrawl y OpenAI en la barra lateral
+3. Ingresa una o más URL de sitios web de empresas en el área de texto (una por línea)
+4. Haz clic en "🚀 Iniciar Análisis" para comenzar el proceso de extracción y análisis
+5. Visualiza los datos estructurados y el análisis de IA para cada sitio web en la interfaz con pestañas
 
-## Example Websites to Try
+## Sitios Web de Ejemplo para Probar
 
 - https://www.spurtest.com
 - https://cluely.com
 - https://www.harvey.ai
 
-## Technologies Used
+## Tecnologías Utilizadas
 
-- **Firecrawl FIRE-1**: Advanced web extraction agent
-- **Agno Agent Framework**: For AI analysis capabilities
-- **OpenAI GPT Models**: For business insight generation
-- **Streamlit**: For the interactive web interface
+- **Firecrawl FIRE-1**: Agente avanzado de extracción web
+- **Framework Agno Agent**: Para capacidades de análisis de IA
+- **Modelos OpenAI GPT**: Para la generación de información de negocios
+- **Streamlit**: Para la interfaz web interactiva
 
-## Requirements
+## Requisitos
 
 - Python 3.8+
-- Firecrawl API key
-- OpenAI API key
-- Internet connection for web extraction
+- Clave API de Firecrawl
+- Clave API de OpenAI
+- Conexión a internet para la extracción web

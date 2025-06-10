@@ -1,90 +1,90 @@
-# 🌐 Browser MCP Agent
+# 🌐 Agente MCP para Navegador
 
 ![Area](https://github.com/user-attachments/assets/285a6a02-c1a9-4581-b32b-b244f665f648)
 
-A Streamlit application that allows you to browse and interact with websites using natural language commands through the Model Context Protocol (MCP) and [MCP-Agent](https://github.com/lastmile-ai/mcp-agent) with Puppeteer integration.
+Una aplicación de Streamlit que te permite navegar e interactuar con sitios web utilizando comandos de lenguaje natural a través del Model Context Protocol (MCP) y [MCP-Agent](https://github.com/lastmile-ai/mcp-agent) con integración de Puppeteer.
 
-## Features
+## Características
 
-- **Natural Language Interface**: Control a browser with simple English commands
-- **Full Browser Navigation**: Visit websites and navigate through pages
-- **Interactive Elements**: Click buttons, fill forms, and scroll through content
-- **Visual Feedback**: Take screenshots of webpage elements
-- **Information Extraction**: Extract and summarize content from webpages
-- **Multi-step Tasks**: Complete complex browsing sequences through conversation
+- **Interfaz de Lenguaje Natural**: Controla un navegador con comandos simples en español
+- **Navegación Completa del Navegador**: Visita sitios web y navega por las páginas
+- **Elementos Interactivos**: Haz clic en botones, rellena formularios y desplázate por el contenido
+- **Retroalimentación Visual**: Toma capturas de pantalla de elementos de la página web
+- **Extracción de Información**: Extrae y resume contenido de páginas web
+- **Tareas de Múltiples Pasos**: Completa secuencias de navegación complejas a través de la conversación
 
-## Setup
+## Configuración
 
-### Requirements
+### Requisitos
 
 - Python 3.8+
-- Node.js and npm (for Puppeteer)
-  - This is a critical requirement! The app uses Puppeteer to control a headless browser
-  - Download and install from [nodejs.org](https://nodejs.org/)
-- OpenAI or Anthropic API Key
+- Node.js y npm (para Puppeteer)
+  - ¡Este es un requisito crítico! La aplicación utiliza Puppeteer para controlar un navegador sin cabeza (headless)
+  - Descarga e instala desde [nodejs.org](https://nodejs.org/)
+- Clave API de OpenAI o Anthropic
 
-### Installation
+### Instalación
 
-1. Clone this repository:
+1. Clona este repositorio:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd mcp_ai_agents/browser_mcp_agent
    ```
 
-2. Install the required Python packages:
+2. Instala los paquetes de Python requeridos:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. Verify Node.js and npm are installed:
+3. Verifica que Node.js y npm estén instalados:
    ```bash
    node --version
    npm --version
    ```
-   Both commands should return version numbers. If they don't, please install Node.js.
+   Ambos comandos deberían devolver números de versión. Si no es así, instala Node.js.
 
-4. Set up your API keys:
-   - Set OpenAI API Key as an environment variable:
+4. Configura tus claves API:
+   - Establece la Clave API de OpenAI como una variable de entorno:
      ```bash
      export OPENAI_API_KEY=your-openai-api-key
      ```
 
 
-### Running the App
+### Ejecutando la Aplicación
 
-1. Start the Streamlit app:
+1. Inicia la aplicación Streamlit:
    ```bash
    streamlit run main.py
    ```
 
-2. In the app interface:
-   - Enter your browsing command
-   - Click "Run Command"
-   - View the results and screenshots
+2. En la interfaz de la aplicación:
+   - Ingresa tu comando de navegación
+   - Haz clic en "Ejecutar Comando"
+   - Visualiza los resultados y las capturas de pantalla
 
-### Example Commands
+### Comandos de Ejemplo
 
-#### Basic Navigation
-- "Go to www.lastmileai.dev"
-- "Go back to the previous page"
+#### Navegación Básica
+- "Ir a www.lastmileai.dev"
+- "Volver a la página anterior"
 
-#### Interaction
-- "Click on the login button"
-- "Scroll down to see more content"
+#### Interacción
+- "Hacer clic en el botón de inicio de sesión"
+- "Desplazarse hacia abajo para ver más contenido"
 
-#### Content Extraction
-- "Summarize the main content of this page"
-- "Extract the navigation menu items"
-- "Take a screenshot of the hero section"
+#### Extracción de Contenido
+- "Resumir el contenido principal de esta página"
+- "Extraer los elementos del menú de navegación"
+- "Tomar una captura de pantalla de la sección principal"
 
-#### Multi-step Tasks
-- "Go to the blog, find the most recent article, and summarize its key points"
+#### Tareas de Múltiples Pasos
+- "Ir al blog, encontrar el artículo más reciente y resumir sus puntos clave"
 
-## Architecture
+## Arquitectura
 
-The application uses:
-- Streamlit for the user interface
-- MCP (Model Context Protocol) to connect the LLM with tools
-- Puppeteer for browser automation
-- [MCP-Agent](https://github.com/lastmile-ai/mcp-agent/) for the Agentic Framework
-- OpenAI's models to interpret commands and generate responses
+La aplicación utiliza:
+- Streamlit para la interfaz de usuario
+- MCP (Model Context Protocol) para conectar el LLM con herramientas
+- Puppeteer para la automatización del navegador
+- [MCP-Agent](https://github.com/lastmile-ai/mcp-agent/) para el Framework Agéntico
+- Modelos de OpenAI para interpretar comandos y generar respuestas

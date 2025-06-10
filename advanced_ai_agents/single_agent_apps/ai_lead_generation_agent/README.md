@@ -1,34 +1,34 @@
-## 🎯 AI Lead Generation Agent - Powered by Firecrawl's Extract Endpoint
+## 🎯 Agente de Generación de Leads de IA - Impulsado por el Endpoint de Extracción de Firecrawl
 
-The AI Lead Generation Agent automates the process of finding and qualifying potential leads from Quora. It uses Firecrawl's search and the new Extract endpoint to identify relevant user profiles, extract valuable information, and organize it into a structured format in Google Sheets. This agent helps sales and marketing teams efficiently build targeted lead lists while saving hours of manual research.
+El Agente de Generación de Leads de IA automatiza el proceso de encontrar y calificar leads potenciales de Quora. Utiliza la búsqueda de Firecrawl y el nuevo endpoint de Extracción para identificar perfiles de usuario relevantes, extraer información valiosa y organizarla en un formato estructurado en Google Sheets. Este agente ayuda a los equipos de ventas y marketing a construir eficientemente listas de leads específicos mientras ahorra horas de investigación manual.
 
-### Features
-- **Targeted Search**: Uses Firecrawl's search endpoint to find relevant Quora URLs based on your search criteria
-- **Intelligent Extraction**: Leverages Firecrawl's new Extract endpoint to pull user information from Quora profiles
-- **Automated Processing**: Formats extracted user information into a clean, structured format
-- **Google Sheets Integration**: Automatically creates and populates Google Sheets with lead information
-- **Customizable Criteria**: Allows you to define specific search parameters to find your ideal leads for your niche
+### Características
+- **Búsqueda Específica**: Utiliza el endpoint de búsqueda de Firecrawl para encontrar URL de Quora relevantes basadas en tus criterios de búsqueda
+- **Extracción Inteligente**: Aprovecha el nuevo endpoint de Extracción de Firecrawl para obtener información de usuario de los perfiles de Quora
+- **Procesamiento Automatizado**: Formatea la información de usuario extraída en un formato limpio y estructurado
+- **Integración con Google Sheets**: Crea y rellena automáticamente Google Sheets con información de leads
+- **Criterios Personalizables**: Te permite definir parámetros de búsqueda específicos para encontrar tus leads ideales para tu nicho
 
-### How to Get Started
-1. **Clone the repository**:
+### Cómo Empezar
+1. **Clona el repositorio**:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd advanced_ai_agents/single_agent_apps/ai_lead_generation_agent
    ```
-3. **Install the required packages**:
+3. **Instala los paquetes requeridos**:
    ```bash
    pip install -r requirements.txt
    ```
-4. **Important thing to do in composio**:
-    - in the terminal, run this command: `composio add googlesheets`
-    - In your compposio dashboard, create a new google sheet intergation and make sure it is active in the active integrations/connections tab
+4. **Cosa importante que hacer en composio**:
+    - en la terminal, ejecuta este comando: `composio add googlesheets`
+    - En tu panel de control de composio, crea una nueva integración de Google Sheets y asegúrate de que esté activa en la pestaña de integraciones/conexiones activas
 
-5. **Set up your API keys**:
-   - Get your Firecrawl API key from [Firecrawl's website](https://www.firecrawl.dev/app/api-keys)
-   - Get your Composio API key from [Composio's website](https://composio.ai)
-   - Get your OpenAI API key from [OpenAI's website](https://platform.openai.com/api-keys)
+5. **Configura tus claves API**:
+   - Obtén tu clave API de Firecrawl desde [el sitio web de Firecrawl](https://www.firecrawl.dev/app/api-keys)
+   - Obtén tu clave API de Composio desde [el sitio web de Composio](https://composio.ai)
+   - Obtén tu clave API de OpenAI desde [el sitio web de OpenAI](https://platform.openai.com/api-keys)
 
-6. **Run the application**:
+6. **Ejecuta la aplicación**:
    ```bash
    streamlit run ai_lead_generation_agent.py
    ```

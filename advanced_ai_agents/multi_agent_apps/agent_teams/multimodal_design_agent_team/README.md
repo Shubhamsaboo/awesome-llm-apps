@@ -1,69 +1,69 @@
-# Multimodal AI Design Agent Team
+# Equipo de Agentes de Diseño de IA Multimodal
 
-A Streamlit application that provides comprehensive design analysis using a team of specialized AI agents powered by Google's Gemini model. 
+Una aplicación de Streamlit que proporciona un análisis de diseño completo utilizando un equipo de agentes de IA especializados impulsados por el modelo Gemini de Google.
 
-This application leverages multiple specialized AI agents to provide comprehensive analysis of UI/UX designs of your product and your competitors, combining visual understanding, user experience evaluation, and market research insights.
+Esta aplicación aprovecha múltiples agentes de IA especializados para proporcionar un análisis completo de los diseños UI/UX de tu producto y tus competidores, combinando la comprensión visual, la evaluación de la experiencia del usuario y los conocimientos de investigación de mercado.
 
-## Features
+## Características
 
-- **Specialized Legal AI Agent Team**
+- **Equipo Especializado de Agentes Legales de IA**
 
-   - 🎨 **Visual Design Agent**: Evaluates design elements, patterns, color schemes, typography, and visual hierarchy
-   - 🔄 **UX Analysis Agent**: Assesses user flows, interaction patterns, usability, and accessibility
-   - 📊 **Market Analysis Agent**: Provides market insights, competitor analysis, and positioning recommendations
+   - 🎨 **Agente de Diseño Visual**: Evalúa elementos de diseño, patrones, esquemas de color, tipografía y jerarquía visual
+   - 🔄 **Agente de Análisis UX**: Evalúa flujos de usuario, patrones de interacción, usabilidad y accesibilidad
+   - 📊 **Agente de Análisis de Mercado**: Proporciona información de mercado, análisis de la competencia y recomendaciones de posicionamiento
    
-- **Multiple Analysis Types**: Choose from Visual Design, UX, and Market Analysis
-- **Comparative Analysis**: Upload competitor designs for comparative insights
-- **Customizable Focus Areas**: Select specific aspects for detailed analysis
-- **Context-Aware**: Provide additional context for more relevant insights
-- **Real-time Processing**: Get instant analysis with progress indicators
-- **Structured Output**: Receive well-organized, actionable insights
+- **Múltiples Tipos de Análisis**: Elige entre Diseño Visual, UX y Análisis de Mercado
+- **Análisis Comparativo**: Sube diseños de la competencia para obtener información comparativa
+- **Áreas de Enfoque Personalizables**: Selecciona aspectos específicos para un análisis detallado
+- **Consciente del Contexto**: Proporciona contexto adicional para obtener información más relevante
+- **Procesamiento en Tiempo Real**: Obtén análisis instantáneos con indicadores de progreso
+- **Resultados Estructurados**: Recibe información bien organizada y procesable
 
-## How to Run
+## Cómo Ejecutar
 
-1. **Setup Environment**
+1. **Configurar el Entorno**
    ```bash
-   # Clone the repository
+   # Clona el repositorio
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_design_agent_team
 
-   # Create and activate virtual environment (optional)
+   # Crea y activa el entorno virtual (opcional)
    python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   source venv/bin/activate  # En Windows: venv\Scripts\activate
 
-   # Install dependencies
+   # Instala las dependencias
    pip install -r requirements.txt
    ```
 
-2. **Get API Key**
-   - Visit [Google AI Studio](https://aistudio.google.com/apikey)
-   - Generate an API key
+2. **Obtener Clave API**
+   - Visita [Google AI Studio](https://aistudio.google.com/apikey)
+   - Genera una clave API
 
-3. **Run the Application**
+3. **Ejecutar la Aplicación**
    ```bash
    streamlit run design_agent_team.py
    ```
 
-4. **Use the Application**
-   - Enter your Gemini API key in the sidebar
-   - Upload design files (supported formats: JPG, JPEG, PNG)
-   - Select analysis types and focus areas
-   - Add context if needed
-   - Click "Run Analysis" to get insights
+4. **Usar la Aplicación**
+   - Ingresa tu clave API de Gemini en la barra lateral
+   - Sube archivos de diseño (formatos admitidos: JPG, JPEG, PNG)
+   - Selecciona tipos de análisis y áreas de enfoque
+   - Agrega contexto si es necesario
+   - Haz clic en "Ejecutar Análisis" para obtener información
 
 
-## Technical Stack
+## Stack Tecnológico
 
 - **Frontend**: Streamlit
-- **AI Model**: Google Gemini 2.0
-- **Image Processing**: Pillow
-- **Market Research**: DuckDuckGo Search API
-- **Framework**: Phidata for agent orchestration
+- **Modelo de IA**: Google Gemini 2.0
+- **Procesamiento de Imágenes**: Pillow
+- **Investigación de Mercado**: DuckDuckGo Search API
+- **Framework**: Phidata para la orquestación de agentes
 
-## Tips for Best Results
+## Consejos para Mejores Resultados
 
-- Upload clear, high-resolution images
-- Include multiple views/screens for better context
-- Add competitor designs for comparative analysis
-- Provide specific context about your target audience
+- Sube imágenes claras y de alta resolución
+- Incluye múltiples vistas/pantallas para un mejor contexto
+- Agrega diseños de la competencia para un análisis comparativo
+- Proporciona contexto específico sobre tu público objetivo
 

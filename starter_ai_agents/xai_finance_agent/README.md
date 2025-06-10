@@ -1,40 +1,40 @@
-## 📊 AI Finance Agent with xAI Grok
-This application creates a financial analysis agent powered by xAI's Grok model, combining real-time stock data with web search capabilities. It provides structured financial insights through an interactive playground interface.
+## 📊 Agente de Finanzas de IA con xAI Grok
+Esta aplicación crea un agente de análisis financiero impulsado por el modelo Grok de xAI, que combina datos bursátiles en tiempo real con capacidades de búsqueda web. Proporciona información financiera estructurada a través de una interfaz de patio de recreo interactiva.
 
-### Features
+### Características
 
-- Powered by xAI's Grok-beta model
-- Real-time stock data analysis via YFinance
-- Web search capabilities through DuckDuckGo
-- Formatted output with tables for financial data
-- Interactive playground interface
+- Impulsado por el modelo Grok-beta de xAI
+- Análisis de datos bursátiles en tiempo real a través de YFinance
+- Capacidades de búsqueda web a través de DuckDuckGo
+- Salida formateada con tablas para datos financieros
+- Interfaz de patio de recreo interactiva
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd awesome-llm-apps/ai_agent_tutorials/xai_finance_agent
 ```
 
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 cd awesome-llm-apps/ai_agent_tutorials/xai_finance_agent
 pip install -r requirements.txt
 ```
 
-3. Get your OpenAI API Key
+3. Obtén tu Clave API de OpenAI
 
-- Sign up for an [xAI API account](https://console.x.ai/)
-- Set your XAI_API_KEY environment variable.
+- Regístrate para obtener una [cuenta de API de xAI](https://console.x.ai/)
+- Establece tu variable de entorno XAI_API_KEY.
 ```bash
 export XAI_API_KEY='your-api-key-here'
 ```
 
-4. Run the team of AI Agents
+4. Ejecuta el equipo de Agentes de IA
 ```bash
 python xai_finance_agent.py
 ```
 
-5. Open your web browser and navigate to the URL provided in the console output to interact with the AI financial agent through the playground interface.
+5. Abre tu navegador web y navega a la URL proporcionada en la salida de la consola para interactuar con el agente financiero de IA a través de la interfaz del patio de recreo.

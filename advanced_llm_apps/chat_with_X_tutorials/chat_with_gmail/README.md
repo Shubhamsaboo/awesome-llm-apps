@@ -1,40 +1,40 @@
-## 📨 Chat with Gmail Inbox 
+## 📨 Chatea con tu Bandeja de Entrada de Gmail
 
-LLM app with RAG to chat with Gmail in just 30 lines of Python Code. The app uses Retrieval Augmented Generation (RAG) to provide accurate answers to questions based on the content of your Gmail Inbox.
+Aplicación LLM con RAG para chatear con Gmail en solo 30 líneas de código Python. La aplicación utiliza Generación Aumentada por Recuperación (RAG) para proporcionar respuestas precisas a preguntas basadas en el contenido de tu Bandeja de Entrada de Gmail.
 
-### Features
+### Características
 
-- Connect to your Gmail Inbox
-- Ask questions about the content of your emails
-- Get accurate answers using RAG and the selected LLM
+- Conéctate a tu Bandeja de Entrada de Gmail
+- Haz preguntas sobre el contenido de tus correos electrónicos
+- Obtén respuestas precisas utilizando RAG y el LLM seleccionado
 
-### Installation
+### Instalación
 
-1. Clone the repository
+1. Clona el repositorio
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd advanced_llm_apps/chat_with_X_tutorials/chat_with_gmail
 ```
-2. Install the required dependencies
+2. Instala las dependencias requeridas
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Set up your Google Cloud project and enable the Gmail API:
+3. Configura tu proyecto de Google Cloud y habilita la API de Gmail:
 
-- Go to the [Google Cloud Console](https://console.cloud.google.com/) and create a new project.
-- Navigate to "APIs & Services > OAuth consent screen" and configure the OAuth consent screen.
-- Publish the OAuth consent screen by providing the necessary app information.
-- Enable the Gmail API and create OAuth client ID credentials.
-- Download the credentials in JSON format and save them as `credentials.json` in your working directory.
+- Ve a la [Google Cloud Console](https://console.cloud.google.com/) y crea un nuevo proyecto.
+- Navega a "APIs y servicios > Pantalla de consentimiento de OAuth" y configura la pantalla de consentimiento de OAuth.
+- Publica la pantalla de consentimiento de OAuth proporcionando la información necesaria de la aplicación.
+- Habilita la API de Gmail y crea credenciales de ID de cliente OAuth.
+- Descarga las credenciales en formato JSON y guárdalas como `credentials.json` en tu directorio de trabajo.
 
-4. Get your OpenAI API Key
+4. Obtén tu Clave API de OpenAI
 
-- Sign up for an [OpenAI account](https://platform.openai.com/) (or the LLM provider of your choice) and obtain your API key.
+- Regístrate para obtener una [cuenta de OpenAI](https://platform.openai.com/) (o el proveedor de LLM de tu elección) y obtén tu clave API.
 
-4. Run the Streamlit App
+4. Ejecuta la Aplicación Streamlit
 
 ```bash
 streamlit run chat_gmail.py

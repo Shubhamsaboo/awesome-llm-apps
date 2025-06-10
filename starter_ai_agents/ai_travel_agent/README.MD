@@ -1,39 +1,39 @@
-## 🛫 AI Travel Agent
-This Streamlit app is an AI-powered travel Agent that generates personalized travel itineraries using OpenAI GPT-4o. It automates the process of researching, planning, and organizing your dream vacation, allowing you to explore exciting destinations with ease.
+## 🛫 Agente de Viajes de IA
+Esta aplicación de Streamlit es un Agente de viajes impulsado por IA que genera itinerarios de viaje personalizados utilizando OpenAI GPT-4o. Automatiza el proceso de investigación, planificación y organización de las vacaciones de tus sueños, permitiéndote explorar destinos emocionantes con facilidad.
 
-### Features
-- Research and discover exciting travel destinations, activities, and accommodations
-- Customize your itinerary based on the number of days you want to travel
-- Utilize the power of GPT-4o to generate intelligent and personalized travel plans
+### Características
+- Investiga y descubre emocionantes destinos de viaje, actividades y alojamientos
+- Personaliza tu itinerario según la cantidad de días que deseas viajar
+- Utiliza el poder de GPT-4o para generar planes de viaje inteligentes y personalizados
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd awesome-llm-apps/ai_agent_tutorials/ai_travel_agent
 ```
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 pip install -r requirements.txt
 ```
-3. Get your OpenAI API Key
+3. Obtén tu Clave API de OpenAI
 
-- Sign up for an [OpenAI account](https://platform.openai.com/) (or the LLM provider of your choice) and obtain your API key.
+- Regístrate para obtener una [cuenta de OpenAI](https://platform.openai.com/) (o el proveedor de LLM de tu elección) y obtén tu clave API.
 
-4. Get your SerpAPI Key
+4. Obtén tu Clave API de SerpAPI
 
-- Sign up for an [SerpAPI account](https://serpapi.com/) and obtain your API key.
+- Regístrate para obtener una [cuenta de SerpAPI](https://serpapi.com/) y obtén tu clave API.
 
-5. Run the Streamlit App
+5. Ejecuta la Aplicación Streamlit
 ```bash
 streamlit run travel_agent.py
 ```
 
-### How it Works?
+### ¿Cómo Funciona?
 
-The AI Travel Agent has two main components:
-- Researcher: Responsible for generating search terms based on the user's destination and travel duration, and searching the web for relevant activities and accommodations using SerpAPI.
-- Planner: Takes the research results and user preferences to generate a personalized draft itinerary that includes suggested activiti
+El Agente de Viajes de IA tiene dos componentes principales:
+- Investigador: Responsable de generar términos de búsqueda basados en el destino y la duración del viaje del usuario, y buscar en la web actividades y alojamientos relevantes utilizando SerpAPI.
+- Planificador: Toma los resultados de la investigación y las preferencias del usuario para generar un borrador de itinerario personalizado que incluye actividades sugeridas

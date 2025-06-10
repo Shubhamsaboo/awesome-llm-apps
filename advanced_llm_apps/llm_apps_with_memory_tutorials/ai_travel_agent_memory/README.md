@@ -1,29 +1,29 @@
-## 🧳 AI Travel Agent with Memory
-This Streamlit app implements an AI-powered travel assistant that remembers user preferences and past interactions. It utilizes OpenAI's GPT-4o for generating responses and Mem0 with Qdrant for maintaining conversation history.
+## 🧳 Agente de Viajes de IA con Memoria
+Esta aplicación de Streamlit implementa un asistente de viajes impulsado por IA que recuerda las preferencias del usuario y las interacciones pasadas. Utiliza GPT-4o de OpenAI para generar respuestas y Mem0 con Qdrant para mantener el historial de conversaciones.
 
-### Features
-- Chat-based interface for interacting with an AI travel assistant
-- Persistent memory of user preferences and past conversations
-- Utilizes OpenAI's GPT-4o model for intelligent responses
-- Implements memory storage and retrieval using Mem0 and Qdrant
-- User-specific conversation history and memory viewing
+### Características
+- Interfaz basada en chat para interactuar con un asistente de viajes de IA
+- Memoria persistente de las preferencias del usuario y conversaciones pasadas
+- Utiliza el modelo GPT-4o de OpenAI para respuestas inteligentes
+- Implementa el almacenamiento y recuperación de memoria utilizando Mem0 y Qdrant
+- Historial de conversaciones específico del usuario y visualización de la memoria
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd awesome-llm-apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory
 ```
 
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Ensure Qdrant is running:
-The app expects Qdrant to be running on localhost:6333. Adjust the configuration in the code if your setup is different.
+3. Asegúrate de que Qdrant esté en ejecución:
+La aplicación espera que Qdrant esté en ejecución en localhost:6333. Ajusta la configuración en el código si tu configuración es diferente.
 
 ```bash
 docker pull qdrant/qdrant
@@ -33,7 +33,7 @@ docker run -p 6333:6333 -p 6334:6334 \
     qdrant/qdrant
 ```
 
-4. Run the Streamlit App
+4. Ejecuta la Aplicación Streamlit
 ```bash
 streamlit run travel_agent_memory.py
 ```

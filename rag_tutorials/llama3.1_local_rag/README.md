@@ -1,35 +1,35 @@
-## 💻 Local Lllama-3.1 with RAG
-Streamlit app that allows you to chat with any webpage using local Llama-3.1 and Retrieval Augmented Generation (RAG). This app runs entirely on your computer, making it 100% free and without the need for an internet connection.
+## 💻 Llama-3.1 Local con RAG
+Aplicación Streamlit que te permite chatear con cualquier página web utilizando Llama-3.1 local y Generación Aumentada por Recuperación (RAG). Esta aplicación se ejecuta completamente en tu computadora, lo que la hace 100% gratuita y sin necesidad de conexión a internet.
 
 
-### Features
-- Input a webpage URL
-- Ask questions about the content of the webpage
-- Get accurate answers using RAG and the Llama-3.1 model running locally on your computer
+### Características
+- Ingresa la URL de una página web
+- Haz preguntas sobre el contenido de la página web
+- Obtén respuestas precisas utilizando RAG y el modelo Llama-3.1 ejecutándose localmente en tu computadora
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd awesome-llm-apps/rag_tutorials/llama3.1_local_rag
 ```
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 pip install -r requirements.txt
 ```
-3. Run the Streamlit App
+3. Ejecuta la Aplicación Streamlit
 ```bash
 streamlit run llama3.1_local_rag.py
 ```
 
-### How it Works?
+### ¿Cómo Funciona?
 
-- The app loads the webpage data using WebBaseLoader and splits it into chunks using RecursiveCharacterTextSplitter.
-- It creates Ollama embeddings and a vector store using Chroma.
-- The app sets up a RAG (Retrieval-Augmented Generation) chain, which retrieves relevant documents based on the user's question.
-- The Llama-3.1 model is called to generate an answer using the retrieved context.
-- The app displays the answer to the user's question.
+- La aplicación carga los datos de la página web utilizando WebBaseLoader y los divide en fragmentos utilizando RecursiveCharacterTextSplitter.
+- Crea embeddings de Ollama y un almacén de vectores utilizando Chroma.
+- La aplicación configura una cadena RAG (Generación Aumentada por Recuperación), que recupera documentos relevantes basados en la pregunta del usuario.
+- Se llama al modelo Llama-3.1 para generar una respuesta utilizando el contexto recuperado.
+- La aplicación muestra la respuesta a la pregunta del usuario.
 

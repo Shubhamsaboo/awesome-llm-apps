@@ -1,63 +1,63 @@
-## 🌍 AI Travel Planner MCP Agent
+## 🌍 Agente MCP Planificador de Viajes de IA
 
-This is a Streamlit-based application that helps users plan their travel itineraries using AI. The app integrates with various mcp servers to provide a comprehensive travel planning experience, including weather forecasts, maps, and calendar integration.
+Esta es una aplicación basada en Streamlit que ayuda a los usuarios a planificar sus itinerarios de viaje utilizando IA. La aplicación se integra con varios servidores mcp para proporcionar una experiencia integral de planificación de viajes, incluyendo pronósticos del tiempo, mapas e integración de calendario.
 
-## Features
+## Características
 
-### MCP Servers Integration
+### Integración de Servidores MCP
 
-This project utilizes several MCP (Model Context Protocol) servers to provide a comprehensive travel planning experience:
+Este proyecto utiliza varios servidores MCP (Model Context Protocol) para proporcionar una experiencia integral de planificación de viajes:
 
-### 1. Weather MCP Server
-- **Functionality**: Provides real-time weather data and forecasts
+### 1. Servidor MCP del Clima
+- **Funcionalidad**: Proporciona datos meteorológicos y pronósticos en tiempo real
 
-### 2. Maps MCP Server
-- **Functionality**: Handles location-based services and navigation
-- **Features**:
-  - Search for places and points of interest
-  - Get detailed place information
-  - Retrieve driving/walking directions
+### 2. Servidor MCP de Mapas
+- **Funcionalidad**: Maneja servicios basados en la ubicación y navegación
+- **Características**:
+  - Buscar lugares y puntos de interés
+  - Obtener información detallada del lugar
+  - Recuperar direcciones de conducción/peatonales
 
-### 3. Calendar MCP Server
-- **Functionality**: Manages calendar events and scheduling
-- **Features**:
-  - Create and manage calendar events
-  - Handle time zone conversions
-  - Schedule reminders and notifications
-- **Integration**: Implemented in `calendar_mcp.py`
+### 3. Servidor MCP de Calendario
+- **Funcionalidad**: Gestiona eventos de calendario y programación
+- **Características**:
+  - Crear y gestionar eventos de calendario
+  - Manejar conversiones de zona horaria
+  - Programar recordatorios y notificaciones
+- **Integración**: Implementado en `calendar_mcp.py`
 
-### 4. Booking MCP Server
-- **Functionality**: Airbnb MCP server used
+### 4. Servidor MCP de Reservas
+- **Funcionalidad**: Servidor MCP de Airbnb utilizado
 
 
-## Setup
+## Configuración
 
-### Requirements 
+### Requisitos
 
-1. **API Keys and Credentials**:
-    - **Google Maps API Key**: Set up a Google Maps API Key from Google Cloud Console
-    - **Google Calendar API**: Enable and configure the Calendar API Key
-    - **Google OAuth Credentials**: Client ID and Client Secret and Refresh Token for authentication
-    - **AccuWeather API KEY**: Get AccuWeather API key https://developer.accuweather.com/
-    - **OpenAI API Key**: Sign up at OpenAI to obtain your API key.
+1. **Claves API y Credenciales**:
+    - **Clave API de Google Maps**: Configura una Clave API de Google Maps desde Google Cloud Console
+    - **API de Google Calendar**: Habilita y configura la Clave API de Calendar
+    - **Credenciales OAuth de Google**: ID de Cliente y Secreto de Cliente y Token de Actualización para autenticación
+    - **Clave API de AccuWeather**: Obtén la clave API de AccuWeather en https://developer.accuweather.com/
+    - **Clave API de OpenAI**: Regístrate en OpenAI para obtener tu clave API.
 
-2. **Python 3.8+**: Ensure you have Python 3.8 or higher installed.
+2. **Python 3.8+**: Asegúrate de tener instalado Python 3.8 o superior.
 
-### Installation
+### Instalación
 
-1. Clone this repository:
+1. Clona este repositorio:
    ```bash
    git clone https://github.com/yourusername/ai_travel_planner_mcp_agent_team
    cd ai_travel_planner_mcp_agent_team
    ```
 
-2. Install the required Python packages:
+2. Instala los paquetes de Python requeridos:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. Set up environment variables:
-   Create a `.env` file in the project root with the following variables:
+3. Configura las variables de entorno:
+   Crea un archivo `.env` en la raíz del proyecto con las siguientes variables:
    ```
    GOOGLE_CLIENT_ID=
    GOOGLE_CLIENT_SECRET=
@@ -67,52 +67,52 @@ This project utilizes several MCP (Model Context Protocol) servers to provide a 
    ACCUWEATHER_API_KEY=
    ```
 
-### Running the App
+### Ejecutando la Aplicación
 
-1. Generate OAuth token for Google Calendar
+1. Genera el token OAuth para Google Calendar
 
-2. Start the Streamlit app:
+2. Inicia la aplicación Streamlit:
    ```bash
    streamlit run app.py
    ```
 
-3. In the app interface:
-   - Use the sidebar to configure your preferences
-   - Enter your travel details
+3. En la interfaz de la aplicación:
+   - Usa la barra lateral para configurar tus preferencias
+   - Ingresa los detalles de tu viaje
 
-## Project Structure
+## Estructura del Proyecto
 
-- `app.py`: Main Streamlit application
-- `calendar_mcp.py`: Calendar mcp integration functionality
-- `requirements.txt`: Project dependencies
-- `.env`: Environment variables
+- `app.py`: Aplicación principal de Streamlit
+- `calendar_mcp.py`: Funcionalidad de integración mcp de calendario
+- `requirements.txt`: Dependencias del proyecto
+- `.env`: Variables de entorno
 
-## Calendar MCP Integration
+## Integración MCP de Calendario
 
-The `calendar_mcp.py` module provides seamless integration with Google Calendar through the MCP (Model Context Protocol) framework. This integration allows the travel planner to:
+El módulo `calendar_mcp.py` proporciona una integración perfecta con Google Calendar a través del framework MCP (Model Context Protocol). Esta integración permite al planificador de viajes:
 
-- **Create Events**: Automatically create calendar events for travel activities, flights, and accommodations
-- **Schedule Management**: Handle time zone conversions and scheduling conflicts
-- **Event Details**: Include comprehensive event information such as:
-  - Location details with Google Maps links
-  - Weather forecasts for the event time
-  - Travel duration and transportation details
-  - Notes and reminders
+- **Crear Eventos**: Crear automáticamente eventos de calendario para actividades de viaje, vuelos y alojamientos
+- **Gestión de Horarios**: Manejar conversiones de zona horaria y conflictos de programación
+- **Detalles del Evento**: Incluir información completa del evento como:
+  - Detalles de ubicación con enlaces de Google Maps
+  - Pronósticos del tiempo para la hora del evento
+  - Duración del viaje y detalles de transporte
+  - Notas y recordatorios
 
-### Calendar Setup
+### Configuración del Calendario
 
-1. **OAuth Authentication**:
-   - The application uses OAuth 2.0 for secure authentication with Google Calendar
-   - First-time setup requires generating refresh token
-   - Refresh tokens are stored securely in the `.env` file
+1. **Autenticación OAuth**:
+   - La aplicación utiliza OAuth 2.0 para una autenticación segura con Google Calendar
+   - La configuración por primera vez requiere la generación de un token de actualización
+   - Los tokens de actualización se almacenan de forma segura en el archivo `.env`
 
-2. **Event Creation**:
+2. **Creación de Eventos**:
    ```python
-   # Example of creating a calendar event
+   # Ejemplo de creación de un evento de calendario
    event = {
-       'summary': 'Flight to Paris',
-       'location': 'Charles de Gaulle Airport',
-       'description': 'Flight details and weather forecast',
+       'summary': 'Vuelo a París',
+       'location': 'Aeropuerto Charles de Gaulle',
+       'description': 'Detalles del vuelo y pronóstico del tiempo',
        'start': {'dateTime': '2024-04-20T10:00:00', 'timeZone': 'Europe/Paris'},
        'end': {'dateTime': '2024-04-20T12:00:00', 'timeZone': 'Europe/Paris'}
    }

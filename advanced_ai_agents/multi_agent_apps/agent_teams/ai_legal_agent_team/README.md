@@ -1,56 +1,56 @@
-# 👨‍⚖️ AI Legal Agent Team
+# 👨‍⚖️ Equipo de Agentes Legales de IA
 
-A Streamlit application that simulates a full-service legal team using multiple AI agents to analyze legal documents and provide comprehensive legal insights. Each agent represents a different legal specialist role, from research and contract analysis to strategic planning, working together to provide thorough legal analysis and recommendations.
+Una aplicación de Streamlit que simula un equipo legal de servicio completo utilizando múltiples agentes de IA para analizar documentos legales y proporcionar información legal completa. Cada agente representa un rol de especialista legal diferente, desde la investigación y el análisis de contratos hasta la planificación estratégica, trabajando juntos para proporcionar un análisis y recomendaciones legales exhaustivos.
 
-## Features
+## Características
 
-- **Specialized Legal AI Agent Team**
-  - **Legal Researcher**: Equipped with DuckDuckGo search tool to find and cite relevant legal cases and precedents. Provides detailed research summaries with sources and references specific sections from uploaded documents.
+- **Equipo Especializado de Agentes Legales de IA**
+  - **Investigador Legal**: Equipado con la herramienta de búsqueda DuckDuckGo para encontrar y citar casos legales y precedentes relevantes. Proporciona resúmenes de investigación detallados con fuentes y referencias a secciones específicas de los documentos cargados.
   
-  - **Contract Analyst**: Specializes in thorough contract review, identifying key terms, obligations, and potential issues. References specific clauses from documents for detailed analysis.
+  - **Analista de Contratos**: Se especializa en la revisión exhaustiva de contratos, identificando términos clave, obligaciones y posibles problemas. Hace referencia a cláusulas específicas de los documentos para un análisis detallado.
   
-  - **Legal Strategist**: Focuses on developing comprehensive legal strategies, providing actionable recommendations while considering both risks and opportunities.
+  - **Estratega Legal**: Se centra en el desarrollo de estrategias legales integrales, proporcionando recomendaciones procesables mientras considera tanto los riesgos como las oportunidades.
   
-  - **Team Lead**: Coordinates analysis between team members, ensures comprehensive responses, properly sourced recommendations, and references to specific document parts. Acts as an Agent Team coordinator for all three agents.
+  - **Líder de Equipo**: Coordina el análisis entre los miembros del equipo, asegura respuestas completas, recomendaciones debidamente fundamentadas y referencias a partes específicas del documento. Actúa como coordinador del Equipo de Agentes para los tres agentes.
 
-- **Document Analysis Types**
-  - Contract Review - Done by Contract Analyst
-  - Legal Research - Done by Legal Researcher
-  - Risk Assessment - Done by Legal Strategist, Contract Analyst
-  - Compliance Check - Done by Legal Strategist, Legal Researcher, Contract Analyst
-  - Custom Queries - Done by Agent Team - Legal Researcher, Legal Strategist, Contract Analyst
+- **Tipos de Análisis de Documentos**
+  - Revisión de Contratos - Realizado por el Analista de Contratos
+  - Investigación Legal - Realizado por el Investigador Legal
+  - Evaluación de Riesgos - Realizado por el Estratega Legal, Analista de Contratos
+  - Verificación de Cumplimiento - Realizado por el Estratega Legal, Investigador Legal, Analista de Contratos
+  - Consultas Personalizadas - Realizado por el Equipo de Agentes - Investigador Legal, Estratega Legal, Analista de Contratos
 
-## How to Run
+## Cómo Ejecutar
 
-1. **Setup Environment**
+1. **Configurar el Entorno**
    ```bash
-   # Clone the repository
+   # Clona el repositorio
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd advanced_ai_agents/multi_agent_apps/agent_teams/ai_legal_agent_team
    
-   # Install dependencies
+   # Instala las dependencias
    pip install -r requirements.txt
    ```
 
-2. **Configure API Keys**
-   - Get OpenAI API key from [OpenAI Platform](https://platform.openai.com)
-   - Get Qdrant API key and URL from [Qdrant Cloud](https://cloud.qdrant.io)
+2. **Configurar Claves API**
+   - Obtén la clave API de OpenAI desde [OpenAI Platform](https://platform.openai.com)
+   - Obtén la clave API y la URL de Qdrant desde [Qdrant Cloud](https://cloud.qdrant.io)
 
-3. **Run the Application**
+3. **Ejecutar la Aplicación**
    ```bash
    streamlit run legal_agent_team.py
    ```
-4. **Use the Interface**
-   - Enter API credentials
-   - Upload a legal document (PDF)
-   - Select analysis type
-   - Add custom queries if needed
-   - View analysis results
+4. **Usar la Interfaz**
+   - Ingresa las credenciales de la API
+   - Sube un documento legal (PDF)
+   - Selecciona el tipo de análisis
+   - Agrega consultas personalizadas si es necesario
+   - Visualiza los resultados del análisis
 
-## Notes
+## Notas
 
-- Supports PDF documents only
-- Uses GPT-4o for analysis
-- Uses text-embedding-3-small for embeddings
-- Requires stable internet connection
-- API usage costs apply
+- Solo admite documentos PDF
+- Utiliza GPT-4o para el análisis
+- Utiliza text-embedding-3-small para las incrustaciones
+- Requiere conexión a internet estable
+- Se aplican costos de uso de API

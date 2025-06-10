@@ -1,93 +1,93 @@
-# 👀 RAG App with Hybrid Search 
+# 👀 Aplicación RAG con Búsqueda Híbrida
 
-A powerful document Q&A application that leverages Hybrid Search (RAG) and Claude's advanced language capabilities to provide comprehensive answers. Built with RAGLite for robust document processing and retrieval, and Streamlit for an intuitive chat interface, this system seamlessly combines document-specific knowledge with Claude's general intelligence to deliver accurate and contextual responses.
+Una potente aplicación de preguntas y respuestas sobre documentos que aprovecha la Búsqueda Híbrida (RAG) y las capacidades avanzadas de lenguaje de Claude para proporcionar respuestas completas. Construido con RAGLite para un procesamiento y recuperación robustos de documentos, y Streamlit para una interfaz de chat intuitiva, este sistema combina a la perfección el conocimiento específico de los documentos con la inteligencia general de Claude para ofrecer respuestas precisas y contextuales.
 
-## Features
+## Características
 
-- **Hybrid Search Question Answering**
-    - RAG-based answers for document-specific queries
-    - Fallback to Claude for general knowledge questions
+- **Preguntas y Respuestas con Búsqueda Híbrida**
+    - Respuestas basadas en RAG para consultas específicas de documentos
+    - Respaldo a Claude para preguntas de conocimiento general
 
-- **Document Processing**:
-  - PDF document upload and processing
-  - Automatic text chunking and embedding
-  - Hybrid search combining semantic and keyword matching
-  - Reranking for better context selection
+- **Procesamiento de Documentos**:
+  - Carga y procesamiento de documentos PDF
+  - Fragmentación y embedding automático de texto
+  - Búsqueda híbrida que combina coincidencia semántica y de palabras clave
+  - Reclasificación para una mejor selección de contexto
 
-- **Multi-Model Integration**:
-  - Claude for text generation - tested with Claude 3 Opus 
-  - OpenAI for embeddings - tested with text-embedding-3-large
-  - Cohere for reranking - tested with Cohere 3.5 reranker
+- **Integración Multimodelo**:
+  - Claude para generación de texto - probado con Claude 3 Opus
+  - OpenAI para embeddings - probado con text-embedding-3-large
+  - Cohere para reclasificación - probado con Cohere 3.5 reranker
 
-## Prerequisites
+## Requisitos Previos
 
-You'll need the following API keys and database setup:
+Necesitarás las siguientes claves API y configuración de base de datos:
 
-1. **Database**: Create a free PostgreSQL database at [Neon](https://neon.tech):
-   - Sign up/Login at Neon
-   - Create a new project
-   - Copy the connection string (looks like: `postgresql://user:pass@ep-xyz.region.aws.neon.tech/dbname`)
+1. **Base de Datos**: Crea una base de datos PostgreSQL gratuita en [Neon](https://neon.tech):
+   - Regístrate/Inicia sesión en Neon
+   - Crea un nuevo proyecto
+   - Copia la cadena de conexión (se parece a: `postgresql://user:pass@ep-xyz.region.aws.neon.tech/dbname`)
 
-2. **API Keys**:
-   - [OpenAI API key](https://platform.openai.com/api-keys) for embeddings
-   - [Anthropic API key](https://console.anthropic.com/settings/keys) for Claude
-   - [Cohere API key](https://dashboard.cohere.com/api-keys) for reranking
+2. **Claves API**:
+   - [Clave API de OpenAI](https://platform.openai.com/api-keys) para embeddings
+   - [Clave API de Anthropic](https://console.anthropic.com/settings/keys) para Claude
+   - [Clave API de Cohere](https://dashboard.cohere.com/api-keys) para reclasificación
 
-## How to get Started?
+## ¿Cómo Empezar?
 
-1. **Clone the Repository**:
+1. **Clona el Repositorio**:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd awesome-llm-apps/rag_tutorials/hybrid_search_rag
    ```
 
-2. **Install Dependencies**:
+2. **Instala las Dependencias**:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Install spaCy Model**:
+3. **Instala el Modelo spaCy**:
    ```bash
    pip install https://github.com/explosion/spacy-models/releases/download/xx_sent_ud_sm-3.7.0/xx_sent_ud_sm-3.7.0-py3-none-any.whl
    ```
 
-4. **Run the Application**:
+4. **Ejecuta la Aplicación**:
    ```bash
    streamlit run main.py
    ```
 
-## Usage
+## Uso
 
-1. Start the application
-2. Enter your API keys in the sidebar:
-   - OpenAI API key
-   - Anthropic API key
-   - Cohere API key
-   - Database URL (optional, defaults to SQLite)
-3. Click "Save Configuration"
-4. Upload PDF documents
-5. Start asking questions!
-   - Document-specific questions will use RAG
-   - General questions will use Claude directly
+1. Inicia la aplicación
+2. Ingresa tus claves API en la barra lateral:
+   - Clave API de OpenAI
+   - Clave API de Anthropic
+   - Clave API de Cohere
+   - URL de la base de datos (opcional, por defecto SQLite)
+3. Haz clic en "Guardar Configuración"
+4. Sube documentos PDF
+5. ¡Comienza a hacer preguntas!
+   - Las preguntas específicas de documentos utilizarán RAG
+   - Las preguntas generales utilizarán Claude directamente
 
-## Database Options
+## Opciones de Base de Datos
 
-The application supports multiple database backends:
+La aplicación admite múltiples backends de base de datos:
 
-- **PostgreSQL** (Recommended):
-  - Create a free serverless PostgreSQL database at [Neon](https://neon.tech)
-  - Get instant provisioning and scale-to-zero capability
-  - Connection string format: `postgresql://user:pass@ep-xyz.region.aws.neon.tech/dbname`
+- **PostgreSQL** (Recomendado):
+  - Crea una base de datos PostgreSQL sin servidor gratuita en [Neon](https://neon.tech)
+  - Obtén aprovisionamiento instantáneo y capacidad de escalado a cero
+  - Formato de la cadena de conexión: `postgresql://user:pass@ep-xyz.region.aws.neon.tech/dbname`
 
 - **MySQL**:
   ```
   mysql://user:pass@host:port/db
   ```
-- **SQLite** (Local development):
+- **SQLite** (Desarrollo local):
   ```
   sqlite:///path/to/db.sqlite
   ```
 
-## Contributing
+## Contribuciones
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+¡Las contribuciones son bienvenidas! Por favor, siéntete libre de enviar un Pull Request.

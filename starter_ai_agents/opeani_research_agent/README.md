@@ -1,50 +1,50 @@
-# OpenAI Researcher Agent
-A multi-agent research application built with OpenAI's Agents SDK and Streamlit. This application enables users to conduct comprehensive research on any topic by leveraging multiple specialized AI agents.
+# Agente Investigador de OpenAI
+Una aplicación de investigación multiagente construida con el SDK de Agentes de OpenAI y Streamlit. Esta aplicación permite a los usuarios realizar investigaciones exhaustivas sobre cualquier tema aprovechando múltiples agentes de IA especializados.
 
-### Features
+### Características
 
-- Multi-Agent Architecture:
-    - Triage Agent: Plans the research approach and coordinates the workflow
-    - Research Agent: Searches the web and gathers relevant information
-    - Editor Agent: Compiles collected facts into a comprehensive report
+- Arquitectura Multiagente:
+    - Agente de Triaje: Planifica el enfoque de la investigación y coordina el flujo de trabajo
+    - Agente de Investigación: Busca en la web y recopila información relevante
+    - Agente Editor: Compila los hechos recopilados en un informe completo
 
-- Automatic Fact Collection: Captures important facts from research with source attribution
-- Structured Report Generation: Creates well-organized reports with titles, outlines, and source citations
-- Interactive UI: Built with Streamlit for easy research topic input and results viewing
-- Tracing and Monitoring: Integrated tracing for the entire research workflow
+- Recopilación Automática de Hechos: Captura hechos importantes de la investigación con atribución de fuente
+- Generación de Informes Estructurados: Crea informes bien organizados con títulos, esquemas y citas de fuentes
+- Interfaz de Usuario Interactiva: Construida con Streamlit para facilitar la entrada de temas de investigación y la visualización de resultados
+- Rastreo y Monitoreo: Rastreo integrado para todo el flujo de trabajo de investigación
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd awesome-llm-apps/ai_agent_tutorials/openai_researcher_agent
 ```
 
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 cd awesome-llm-apps/ai_agent_tutorials/openai_researcher_agent
 pip install -r requirements.txt
 ```
 
-3. Get your OpenAI API Key
+3. Obtén tu Clave API de OpenAI
 
-- - Sign up for an [OpenAI account](https://platform.openai.com/) and obtain your API key.
-- Set your OPENAI_API_KEY environment variable.
+- - Regístrate para obtener una [cuenta de OpenAI](https://platform.openai.com/) y obtén tu clave API.
+- Establece tu variable de entorno OPENAI_API_KEY.
 ```bash
 export OPENAI_API_KEY='your-api-key-here'
 ```
 
-4. Run the team of AI Agents
+4. Ejecuta el equipo de Agentes de IA
 ```bash
 streamlit run openai_researcher_agent.py
 ```
 
-Then open your browser and navigate to the URL shown in the terminal (typically http://localhost:8501).
+Luego abre tu navegador y navega a la URL que se muestra en la terminal (generalmente http://localhost:8501).
 
-### Research Process:
-- Enter a research topic in the sidebar or select one of the provided examples
-- Click "Start Research" to begin the process
-- View the research process in real-time on the "Research Process" tab
-- Once complete, switch to the "Report" tab to view and download the generated report
+### Proceso de Investigación:
+- Ingresa un tema de investigación en la barra lateral o selecciona uno de los ejemplos proporcionados
+- Haz clic en "Iniciar Investigación" para comenzar el proceso
+- Visualiza el proceso de investigación en tiempo real en la pestaña "Proceso de Investigación"
+- Una vez completado, cambia a la pestaña "Informe" para ver y descargar el informe generado

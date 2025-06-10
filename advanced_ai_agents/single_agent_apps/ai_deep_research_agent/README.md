@@ -1,74 +1,74 @@
-# Deep Research Agent with OpenAI Agents SDK and Firecrawl
+# Agente de Investigación Profunda con OpenAI Agents SDK y Firecrawl
 
-A powerful research assistant that leverages OpenAI's Agents SDK and Firecrawl's deep research capabilities to perform comprehensive web research on any topic and any question.
+Un potente asistente de investigación que aprovecha el SDK de Agentes de OpenAI y las capacidades de investigación profunda de Firecrawl para realizar investigaciones web exhaustivas sobre cualquier tema y cualquier pregunta.
 
-## Features
+## Características
 
-- **Deep Web Research**: Automatically searches the web, extracts content, and synthesizes findings
-- **Enhanced Analysis**: Uses OpenAI's Agents SDK to elaborate on research findings with additional context and insights
-- **Interactive UI**: Clean Streamlit interface for easy interaction
-- **Downloadable Reports**: Export research findings as markdown files
+- **Investigación Web Profunda**: Busca automáticamente en la web, extrae contenido y sintetiza los hallazgos.
+- **Análisis Mejorado**: Utiliza el SDK de Agentes de OpenAI para desarrollar los hallazgos de la investigación con contexto e información adicionales.
+- **Interfaz de Usuario Interactiva**: Interfaz de Streamlit limpia para una fácil interacción.
+- **Informes Descargables**: Exporta los hallazgos de la investigación como archivos markdown.
 
-## How It Works
+## Cómo Funciona
 
-1. **Input Phase**: User provides a research topic and API credentials
-2. **Research Phase**: The tool uses Firecrawl to search the web and extract relevant information
-3. **Analysis Phase**: An initial research report is generated based on the findings
-4. **Enhancement Phase**: A second agent elaborates on the initial report, adding depth and context
-5. **Output Phase**: The enhanced report is presented to the user and available for download
+1. **Fase de Entrada**: El usuario proporciona un tema de investigación y credenciales de API.
+2. **Fase de Investigación**: La herramienta utiliza Firecrawl para buscar en la web y extraer información relevante.
+3. **Fase de Análisis**: Se genera un informe de investigación inicial basado en los hallazgos.
+4. **Fase de Mejora**: Un segundo agente desarrolla el informe inicial, agregando profundidad y contexto.
+5. **Fase de Salida**: El informe mejorado se presenta al usuario y está disponible para descargar.
 
-## Requirements
+## Requisitos
 
 - Python 3.8+
-- OpenAI API key
-- Firecrawl API key
-- Required Python packages (see `requirements.txt`)
+- Clave API de OpenAI
+- Clave API de Firecrawl
+- Paquetes de Python requeridos (ver `requirements.txt`)
 
-## Installation
+## Instalación
 
-1. Clone this repository:
+1. Clona este repositorio:
    ```bash
    git clone  https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd advanced_ai_agents/single_agent_apps/ai_deep_research_agent
    ```
 
-2. Install the required packages:
+2. Instala los paquetes requeridos:
    ```bash
    pip install -r requirements.txt
    ```
 
-## Usage
+## Uso
 
-1. Run the Streamlit app:
+1. Ejecuta la aplicación Streamlit:
    ```bash
    streamlit run deep_research_openai.py
    ```
 
-2. Enter your API keys in the sidebar:
-   - OpenAI API key
-   - Firecrawl API key
+2. Ingresa tus claves API en la barra lateral:
+   - Clave API de OpenAI
+   - Clave API de Firecrawl
 
-3. Enter your research topic in the main input field
+3. Ingresa tu tema de investigación en el campo de entrada principal.
 
-4. Click "Start Research" and wait for the process to complete
+4. Haz clic en "Iniciar Investigación" y espera a que se complete el proceso.
 
-5. View and download your enhanced research report
+5. Visualiza y descarga tu informe de investigación mejorado.
 
-## Example Research Topics
+## Temas de Investigación de Ejemplo
 
-- "Latest developments in quantum computing"
-- "Impact of climate change on marine ecosystems"
-- "Advancements in renewable energy storage"
-- "Ethical considerations in artificial intelligence"
-- "Emerging trends in remote work technologies"
+- "Últimos desarrollos en computación cuántica"
+- "Impacto del cambio climático en los ecosistemas marinos"
+- "Avances en el almacenamiento de energía renovable"
+- "Consideraciones éticas en la inteligencia artificial"
+- "Tendencias emergentes en tecnologías de trabajo remoto"
 
-## Technical Details
+## Detalles Técnicos
 
-The application uses two specialized agents:
+La aplicación utiliza dos agentes especializados:
 
-1. **Research Agent**: Utilizes Firecrawl's deep research endpoint to gather comprehensive information from multiple web sources.
+1. **Agente de Investigación**: Utiliza el punto final de investigación profunda de Firecrawl para recopilar información completa de múltiples fuentes web.
 
-2. **Elaboration Agent**: Enhances the initial research by adding detailed explanations, examples, case studies, and practical implications.
+2. **Agente de Elaboración**: Mejora la investigación inicial agregando explicaciones detalladas, ejemplos, estudios de caso e implicaciones prácticas.
 
-The Firecrawl deep research tool performs multiple iterations of web searches, content extraction, and analysis to provide thorough coverage of the topic.
+La herramienta de investigación profunda de Firecrawl realiza múltiples iteraciones de búsquedas web, extracción de contenido y análisis para proporcionar una cobertura exhaustiva del tema.
 

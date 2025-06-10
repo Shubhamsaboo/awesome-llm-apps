@@ -1,98 +1,98 @@
-# 🧐 Agentic RAG with Reasoning
-A sophisticated RAG system that demonstrates an AI agent's step-by-step reasoning process using Agno, Claude and OpenAI. This implementation allows users to upload documents, add web sources, ask questions, and observe the agent's thought process in real-time.
+# 🧐 RAG Agéntico con Razonamiento
+Un sistema RAG sofisticado que demuestra el proceso de razonamiento paso a paso de un agente de IA utilizando Agno, Claude y OpenAI. Esta implementación permite a los usuarios cargar documentos, agregar fuentes web, hacer preguntas y observar el proceso de pensamiento del agente en tiempo real.
 
 
-## Features
+## Características
 
-1. Interactive Knowledge Base Management
-- Upload documents to expand the knowledge base
-- Add URLs dynamically for web content
-- Persistent vector database storage using LanceDB
-
-
-2. Transparent Reasoning Process
-- Real-time display of the agent's thinking steps
-- Side-by-side view of reasoning and final answer
-- Clear visibility into the RAG process
+1. Gestión Interactiva de la Base de Conocimientos
+- Carga documentos para expandir la base de conocimientos
+- Agrega URL dinámicamente para contenido web
+- Almacenamiento persistente en base de datos vectorial usando LanceDB
 
 
-3. Advanced RAG Capabilities
-- Vector search using OpenAI embeddings for semantic matching
-- Source attribution with citations
+2. Proceso de Razonamiento Transparente
+- Visualización en tiempo real de los pasos de pensamiento del agente
+- Vista lado a lado del razonamiento y la respuesta final
+- Visibilidad clara del proceso RAG
 
 
-## Agent Configuration
+3. Capacidades RAG Avanzadas
+- Búsqueda vectorial utilizando embeddings de OpenAI para coincidencia semántica
+- Atribución de fuentes con citas
 
-- Claude 3.5 Sonnet for language processing
-- OpenAI embedding model for vector search
-- ReasoningTools for step-by-step analysis
-- Customizable agent instructions
 
-## Prerequisites
+## Configuración del Agente
 
-You'll need the following API keys:
+- Claude 3.5 Sonnet para procesamiento de lenguaje
+- Modelo de embedding de OpenAI para búsqueda vectorial
+- ReasoningTools para análisis paso a paso
+- Instrucciones de agente personalizables
 
-1. Anthropic API Key
+## Requisitos Previos
 
-- Sign up at console.anthropic.com
-- Navigate to API Keys section
-- Create a new API key
+Necesitarás las siguientes claves API:
 
-2. OpenAI API Key
+1. Clave API de Anthropic
 
-- Sign up at platform.openai.com
-- Navigate to API Keys section
-- Generate a new API key
+- Regístrate en console.anthropic.com
+- Navega a la sección de Claves API
+- Crea una nueva clave API
 
-## How to Run
+2. Clave API de OpenAI
 
-1. **Clone the Repository**:
+- Regístrate en platform.openai.com
+- Navega a la sección de Claves API
+- Genera una nueva clave API
+
+## Cómo Ejecutar
+
+1. **Clona el Repositorio**:
     ```bash
     git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
     cd rag_tutorials/agentic_rag_with_reasoning
     ```
 
-2. **Install the dependencies**:
+2. **Instala las dependencias**:
     ```bash
     pip install -r requirements.txt
     ```
 
-3. **Run the Application:**
+3. **Ejecuta la Aplicación:**
     ```bash
     streamlit run rag_reasoning_agent.py
     ```
 
-4. **Configure API Keys:**
+4. **Configura las Claves API:**
 
-- Enter your Anthropic API key in the first field
-- Enter your OpenAI API key in the second field
-- Both keys are required for the app to function
+- Ingresa tu clave API de Anthropic en el primer campo
+- Ingresa tu clave API de OpenAI en el segundo campo
+- Ambas claves son necesarias para que la aplicación funcione
 
 
-5. **Use the Application:**
+5. **Usa la Aplicación:**
 
-- Add Knowledge Sources: Use the sidebar to add URLs to your knowledge base
-- Ask Questions: Enter queries in the main input field
-- View Reasoning: Watch the agent's thought process unfold in real-time
-- Get Answers: Receive comprehensive responses with source citations
+- Agrega Fuentes de Conocimiento: Usa la barra lateral para agregar URL a tu base de conocimientos
+- Haz Preguntas: Ingresa consultas en el campo de entrada principal
+- Visualiza el Razonamiento: Observa cómo se desarrolla el proceso de pensamiento del agente en tiempo real
+- Obtén Respuestas: Recibe respuestas completas con citas de fuentes
 
-## How It Works
+## Cómo Funciona
 
-The application uses a sophisticated RAG pipeline:
+La aplicación utiliza una sofisticada canalización RAG:
 
-### Knowledge Base Setup
-- Documents are loaded from URLs using WebBaseLoader
-- Text is chunked and embedded using OpenAI's embedding model 
-- Vectors are stored in LanceDB for efficient retrieval
-- Vector search enables semantic matching for relevant information
+### Configuración de la Base de Conocimientos
+- Los documentos se cargan desde URL utilizando WebBaseLoader
+- El texto se divide en fragmentos y se incrusta utilizando el modelo de embedding de OpenAI
+- Los vectores se almacenan en LanceDB para una recuperación eficiente
+- La búsqueda vectorial permite la coincidencia semántica para información relevante
 
-### Agent Processing
-- User queries trigger the agent's reasoning process
-- ReasoningTools help the agent think step-by-step
-- The agent searches the knowledge base for relevant information
-- Claude 4 Sonnet generates comprehensive answers with citations
+### Procesamiento del Agente
+- Las consultas del usuario activan el proceso de razonamiento del agente
+- ReasoningTools ayuda al agente a pensar paso a paso
+- El agente busca en la base de conocimientos información relevante
+- Claude 4 Sonnet genera respuestas completas con citas
 
-### UI Flow
-- Enter API keys → Add knowledge sources → Ask questions
-- Reasoning process and answer generation displayed side-by-side
-- Sources cited for transparency and verification
+### Flujo de la Interfaz de Usuario
+- Ingresa claves API → Agrega fuentes de conocimiento → Haz preguntas
+- El proceso de razonamiento y la generación de respuestas se muestran lado a lado
+- Fuentes citadas para transparencia y verificación

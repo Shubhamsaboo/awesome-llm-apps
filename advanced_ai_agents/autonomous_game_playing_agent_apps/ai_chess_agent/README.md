@@ -1,45 +1,45 @@
-# ♜ Agent White vs Agent Black: Chess Game
+# ♜ Agente Blanco vs Agente Negro: Partida de Ajedrez
 
-An advanced Chess game system where two AI agents play chess against each other using Autogen in a streamlit app. It is built with robust move validation and game state management.
+Un sistema avanzado de juego de Ajedrez donde dos agentes de IA juegan ajedrez entre sí usando Autogen en una aplicación de Streamlit. Está construido con una robusta validación de movimientos y gestión del estado del juego.
 
-## Features
+## Características
 
-### Multi-Agent Architecture
-- Player White: OpenAI-powered strategic decision maker
-- Player Black: OpenAI-powered tactical opponent
-- Board Proxy: Validation agent for move legality and game state
+### Arquitectura Multi-Agente
+- Jugador Blanco: Tomador de decisiones estratégicas impulsado por OpenAI
+- Jugador Negro: Oponente táctico impulsado por OpenAI
+- Proxy del Tablero: Agente de validación para la legalidad de los movimientos y el estado del juego
 
-### Safety & Validation
-- Robust move verification system
-- Illegal move prevention
-- Real-time board state monitoring
-- Secure game progression control
+### Seguridad y Validación
+- Sistema robusto de verificación de movimientos
+- Prevención de movimientos ilegales
+- Monitoreo del estado del tablero en tiempo real
+- Control seguro de la progresión del juego
 
-### Strategic Gameplay
-- AI-powered position evaluation
-- Deep tactical analysis
-- Dynamic strategy adaptation
-- Complete chess ruleset implementation
+### Jugabilidad Estratégica
+- Evaluación de posiciones impulsada por IA
+- Análisis táctico profundo
+- Adaptación dinámica de la estrategia
+- Implementación completa del reglamento de ajedrez
 
 
-### How to get Started?
+### ¿Cómo Empezar?
 
-1. Clone the GitHub repository
+1. Clona el repositorio de GitHub
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd ai_agent_tutorials/ai_chess_game
 ```
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 pip install -r requirements.txt
 ```
-3. Get your OpenAI API Key
+3. Obtén tu Clave API de OpenAI
 
-- Sign up for an [OpenAI account](https://platform.openai.com/) (or the LLM provider of your choice) and obtain your API key.
+- Regístrate para obtener una [cuenta de OpenAI](https://platform.openai.com/) (o el proveedor de LLM de tu elección) y obtén tu clave API.
 
-4. Run the Streamlit App
+4. Ejecuta la Aplicación Streamlit
 ```bash
 streamlit run ai_chess_agent.py
 ```
