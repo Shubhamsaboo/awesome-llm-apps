@@ -10,41 +10,41 @@ from agno.utils.log import logger
 import streamlit as st
 
 # Streamlit Page Setup
-st.set_page_config(page_title="📰 ➡️ 🎙️ Blog to Podcast Agent", page_icon="🎙️")
-st.title("📰 ➡️ 🎙️ Blog to Podcast Agent")
+st.set_page_config(page_title="📰 ➡️ 🎙️ Agente de Blog a Podcast", page_icon="🎙️")
+st.title("📰 ➡️ 🎙️ Agente de Blog a Podcast")
 
 # Sidebar: API Keys
-st.sidebar.header("🔑 API Keys")
+st.sidebar.header("🔑 Claves API")
 
-openai_api_key = st.sidebar.text_input("OpenAI API Key", type="password")
-elevenlabs_api_key = st.sidebar.text_input("ElevenLabs API Key", type="password")
-firecrawl_api_key = st.sidebar.text_input("Firecrawl API Key", type="password")
+openai_api_key = st.sidebar.text_input("Clave API de OpenAI", type="password")
+elevenlabs_api_key = st.sidebar.text_input("Clave API de ElevenLabs", type="password")
+firecrawl_api_key = st.sidebar.text_input("Clave API de Firecrawl", type="password")
 
 # Check if all keys are provided
 keys_provided = all([openai_api_key, elevenlabs_api_key, firecrawl_api_key])
 
 # Input: Blog URL
-url = st.text_input("Enter the Blog URL:", "")
+url = st.text_input("Ingresa la URL del Blog:", "")
 
 # Button: Generate Podcast
-generate_button = st.button("🎙️ Generate Podcast", disabled=not keys_provided)
+generate_button = st.button("🎙️ Generar Podcast", disabled=not keys_provided)
 
 if not keys_provided:
-    st.warning("Please enter all required API keys to enable podcast generation.")
+    st.warning("Por favor, ingresa todas las claves API requeridas para habilitar la generación de podcasts.")
 
 if generate_button:
     if url.strip() == "":
-        st.warning("Please enter a blog URL first.")
+        st.warning("Por favor, ingresa primero la URL de un blog.")
     else:
         # Set API keys as environment variables for Agno and Tools
         os.environ["OPENAI_API_KEY"] = openai_api_key
         os.environ["ELEVENLABS_API_KEY"] = elevenlabs_api_key
         os.environ["FIRECRAWL_API_KEY"] = firecrawl_api_key
 
-        with st.spinner("Processing... Scraping blog, summarizing and generating podcast 🎶"):
+        with st.spinner("Procesando... Extrayendo blog, resumiendo y generando podcast 🎶"):
             try:
                 blog_to_podcast_agent = Agent(
-                    name="Blog to Podcast Agent",
+                    name="Agente de Blog a Podcast",
                     agent_id="blog_to_podcast_agent",
                     model=OpenAIChat(id="gpt-4o"),
                     tools=[
@@ -55,21 +55,21 @@ if generate_button:
                         ),
                         FirecrawlTools(),
                     ],
-                    description="You are an AI agent that can generate audio using the ElevenLabs API.",
+                    description="Eres un agente de IA que puede generar audio utilizando la API de ElevenLabs.",
                     instructions=[
-                        "When the user provides a blog URL:",
-                        "1. Use FirecrawlTools to scrape the blog content",
-                        "2. Create a concise summary of the blog content that is NO MORE than 2000 characters long",
-                        "3. The summary should capture the main points while being engaging and conversational",
-                        "4. Use the ElevenLabsTools to convert the summary to audio",
-                        "Ensure the summary is within the 2000 character limit to avoid ElevenLabs API limits",
+                        "Cuando el usuario proporcione una URL de blog:",
+                        "1. Usa FirecrawlTools para extraer el contenido del blog",
+                        "2. Crea un resumen conciso del contenido del blog que NO TENGA MÁS de 2000 caracteres",
+                        "3. El resumen debe capturar los puntos principales mientras es atractivo y conversacional",
+                        "4. Usa ElevenLabsTools para convertir el resumen en audio",
+                        "Asegúrate de que el resumen esté dentro del límite de 2000 caracteres para evitar los límites de la API de ElevenLabs",
                     ],
                     markdown=True,
                     debug_mode=True,
                 )
 
                 podcast: RunResponse = blog_to_podcast_agent.run(
-                    f"Convert the blog content to a podcast: {url}"
+                    f"Convertir el contenido del blog a un podcast: {url}"
                 )
 
                 save_dir = "audio_generations"
@@ -82,19 +82,19 @@ if generate_button:
                         filename=filename
                     )
 
-                    st.success("Podcast generated successfully! 🎧")
+                    st.success("¡Podcast generado exitosamente! 🎧")
                     audio_bytes = open(filename, "rb").read()
                     st.audio(audio_bytes, format="audio/wav")
 
                     st.download_button(
-                        label="Download Podcast",
+                        label="Descargar Podcast",
                         data=audio_bytes,
                         file_name="generated_podcast.wav",
                         mime="audio/wav"
                     )
                 else:
-                    st.error("No audio was generated. Please try again.")
+                    st.error("No se generó audio. Por favor, inténtalo de nuevo.")
 
             except Exception as e:
-                st.error(f"An error occurred: {e}")
-                logger.error(f"Streamlit app error: {e}")
+                st.error(f"Ocurrió un error: {e}")
+                logger.error(f"Error en la aplicación Streamlit: {e}")

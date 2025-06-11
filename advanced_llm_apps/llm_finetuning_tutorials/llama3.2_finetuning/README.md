@@ -1,85 +1,85 @@
-## 🦙 Finetune Llama 3.2 in 30 Lines of Python
+## 🦙 Ajuste Fino de Llama 3.2 en 30 Líneas de Python
 
-This script demonstrates how to finetune the Llama 3.2 model using the [Unsloth](https://unsloth.ai/) library, which makes the process easy and fast. You can run this example to finetune Llama 3.1 1B and 3B models for free in Google Colab.
+Este script demuestra cómo realizar el ajuste fino (finetune) del modelo Llama 3.2 utilizando la biblioteca [Unsloth](https://unsloth.ai/), que hace el proceso fácil y rápido. Puedes ejecutar este ejemplo para realizar el ajuste fino de los modelos Llama 3.1 1B y 3B de forma gratuita en Google Colab.
 
-### Features
+### Características
 
-- Finetunes Llama 3.2 model using the Unsloth library
-- Implements Low-Rank Adaptation (LoRA) for efficient finetuning
-- Uses the FineTome-100k dataset for training
-- Configurable for different model sizes (1B and 3B)
+- Realiza el ajuste fino del modelo Llama 3.2 utilizando la biblioteca Unsloth
+- Implementa Adaptación de Bajo Rango (LoRA) para un ajuste fino eficiente
+- Utiliza el conjunto de datos FineTome-100k para el entrenamiento
+- Configurable para diferentes tamaños de modelo (1B y 3B)
 
-### Installation
+### Instalación
 
-1. Clone the repository:
+1. Clona el repositorio:
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd awesome-llm-apps/llm_finetuning_tutorials/llama3.2_finetuning
 ```
 
-2. Install the required dependencies:
+2. Instala las dependencias requeridas:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Usage
+## Uso
 
-1. Open the script in Google Colab or your preferred Python environment.
+1. Abre el script en Google Colab o en tu entorno Python preferido.
 
-2. Run the script to start the finetuning process:
+2. Ejecuta el script para iniciar el proceso de ajuste fino:
 
 ```bash
-# Run the entire script
+# Ejecuta el script completo
 python finetune_llama3.2.py
 ```
 
-3. The finetuned model will be saved in the "finetuned_model" directory.
+3. El modelo ajustado se guardará en el directorio "finetuned_model".
 
-## How it Works
+## Cómo Funciona
 
-1. **Model Loading**: The script loads the Llama 3.2 3B Instruct model using Unsloth's FastLanguageModel.
+1. **Carga del Modelo**: El script carga el modelo Llama 3.2 3B Instruct utilizando FastLanguageModel de Unsloth.
 
-2. **LoRA Setup**: Low-Rank Adaptation is applied to specific layers of the model for efficient finetuning.
+2. **Configuración de LoRA**: Se aplica Adaptación de Bajo Rango a capas específicas del modelo para un ajuste fino eficiente.
 
-3. **Data Preparation**: The FineTome-100k dataset is loaded and preprocessed using a chat template.
+3. **Preparación de Datos**: Se carga el conjunto de datos FineTome-100k y se preprocesa utilizando una plantilla de chat.
 
-4. **Training Configuration**: The script sets up the SFTTrainer with specific training arguments.
+4. **Configuración del Entrenamiento**: El script configura el SFTTrainer con argumentos de entrenamiento específicos.
 
-5. **Finetuning**: The model is finetuned on the prepared dataset.
+5. **Ajuste Fino**: El modelo se ajusta con el conjunto de datos preparado.
 
-6. **Model Saving**: The finetuned model is saved to disk.
+6. **Guardado del Modelo**: El modelo ajustado se guarda en el disco.
 
-## Configuration
+## Configuración
 
-You can modify the following parameters in the script:
+Puedes modificar los siguientes parámetros en el script:
 
-- `model_name`: Change to "unsloth/Llama-3.1-1B-Instruct" for the 1B model
-- `max_seq_length`: Adjust the maximum sequence length
-- `r`: LoRA rank
-- Training hyperparameters in `TrainingArguments`
+- `model_name`: Cambia a "unsloth/Llama-3.1-1B-Instruct" para el modelo 1B
+- `max_seq_length`: Ajusta la longitud máxima de la secuencia
+- `r`: Rango de LoRA
+- Hiperparámetros de entrenamiento en `TrainingArguments`
 
-## Customization
+## Personalización
 
-- To use a different dataset, replace the `load_dataset` function call with your desired dataset.
-- Adjust the `target_modules` in the LoRA setup to finetune different layers of the model.
-- Modify the chat template in `get_chat_template` if you're using a different conversational format.
+- Para utilizar un conjunto de datos diferente, reemplaza la llamada a la función `load_dataset` con tu conjunto de datos deseado.
+- Ajusta los `target_modules` en la configuración de LoRA para ajustar diferentes capas del modelo.
+- Modifica la plantilla de chat en `get_chat_template` si estás utilizando un formato conversacional diferente.
 
-## Running on Google Colab
+## Ejecución en Google Colab
 
-1. Open a new Google Colab notebook.
-2. Copy the entire script into a code cell.
-3. Add a cell at the beginning to install the required libraries:
+1. Abre un nuevo cuaderno de Google Colab.
+2. Copia el script completo en una celda de código.
+3. Agrega una celda al principio para instalar las bibliotecas requeridas:
 
 ```
 !pip install torch transformers datasets trl unsloth
 ```
 
-4. Run the cells to start the finetuning process.
+4. Ejecuta las celdas para iniciar el proceso de ajuste fino.
 
-## Notes
+## Notas
 
-- This script is optimized for running on Google Colab's free tier, which provides access to GPUs.
-- The finetuning process may take some time, depending on the model size and the available computational resources.
-- Make sure you have enough storage space in your Colab instance to save the finetuned model.
+- Este script está optimizado para ejecutarse en el nivel gratuito de Google Colab, que proporciona acceso a GPU.
+- El proceso de ajuste fino puede llevar algún tiempo, dependiendo del tamaño del modelo y los recursos computacionales disponibles.
+- Asegúrate de tener suficiente espacio de almacenamiento en tu instancia de Colab para guardar el modelo ajustado.

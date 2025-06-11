@@ -4,6 +4,12 @@ from agno.media import Image as AgnoImage
 from agno.tools.duckduckgo import DuckDuckGoTools
 import streamlit as st
 from typing import List, Optional
+from agno.agent import Agent
+from agno.models.google import Gemini
+from agno.media import Image as AgnoImage
+from agno.tools.duckduckgo import DuckDuckGoTools
+import streamlit as st
+from typing import List, Optional
 import logging
 from pathlib import Path
 import tempfile
@@ -19,70 +25,70 @@ def initialize_agents(api_key: str) -> tuple[Agent, Agent, Agent, Agent]:
         
         therapist_agent = Agent(
             model=model,
-            name="Therapist Agent",
+            name="Agente Terapeuta",
             instructions=[
-                "You are an empathetic therapist that:",
-                "1. Listens with empathy and validates feelings",
-                "2. Uses gentle humor to lighten the mood",
-                "3. Shares relatable breakup experiences",
-                "4. Offers comforting words and encouragement",
-                "5. Analyzes both text and image inputs for emotional context",
-                "Be supportive and understanding in your responses"
+                "Eres un terapeuta empático que:",
+                "1. Escucha con empatía y valida los sentimientos",
+                "2. Usa humor gentil para aligerar el ambiente",
+                "3. Comparte experiencias de ruptura con las que se pueda identificar",
+                "4. Ofrece palabras de consuelo y aliento",
+                "5. Analiza tanto las entradas de texto como de imagen para el contexto emocional",
+                "Sé solidario y comprensivo en tus respuestas"
             ],
             markdown=True
         )
 
         closure_agent = Agent(
             model=model,
-            name="Closure Agent",
+            name="Agente de Cierre",
             instructions=[
-                "You are a closure specialist that:",
-                "1. Creates emotional messages for unsent feelings",
-                "2. Helps express raw, honest emotions",
-                "3. Formats messages clearly with headers",
-                "4. Ensures tone is heartfelt and authentic",
-                "Focus on emotional release and closure"
+                "Eres un especialista en cierre que:",
+                "1. Crea mensajes emocionales para sentimientos no enviados",
+                "2. Ayuda a expresar emociones crudas y honestas",
+                "3. Formatea los mensajes claramente con encabezados",
+                "4. Asegura que el tono sea sincero y auténtico",
+                "Concéntrate en la liberación emocional y el cierre"
             ],
             markdown=True
         )
 
         routine_planner_agent = Agent(
             model=model,
-            name="Routine Planner Agent",
+            name="Agente Planificador de Rutinas",
             instructions=[
-                "You are a recovery routine planner that:",
-                "1. Designs 7-day recovery challenges",
-                "2. Includes fun activities and self-care tasks",
-                "3. Suggests social media detox strategies",
-                "4. Creates empowering playlists",
-                "Focus on practical recovery steps"
+                "Eres un planificador de rutinas de recuperación que:",
+                "1. Diseña desafíos de recuperación de 7 días",
+                "2. Incluye actividades divertidas y tareas de autocuidado",
+                "3. Sugiere estrategias de desintoxicación de redes sociales",
+                "4. Crea listas de reproducción empoderadoras",
+                "Concéntrate en pasos prácticos de recuperación"
             ],
             markdown=True
         )
 
         brutal_honesty_agent = Agent(
             model=model,
-            name="Brutal Honesty Agent",
+            name="Agente de Honestidad Brutal",
             tools=[DuckDuckGoTools()],
             instructions=[
-                "You are a direct feedback specialist that:",
-                "1. Gives raw, objective feedback about breakups",
-                "2. Explains relationship failures clearly",
-                "3. Uses blunt, factual language",
-                "4. Provides reasons to move forward",
-                "Focus on honest insights without sugar-coating"
+                "Eres un especialista en retroalimentación directa que:",
+                "1. Da retroalimentación cruda y objetiva sobre las rupturas",
+                "2. Explica claramente los fracasos en las relaciones",
+                "3. Usa un lenguaje directo y factual",
+                "4. Proporciona razones para seguir adelante",
+                "Concéntrate en perspectivas honestas sin endulzar la realidad"
             ],
             markdown=True
         )
         
         return therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent
     except Exception as e:
-        st.error(f"Error initializing agents: {str(e)}")
+        st.error(f"Error al inicializar los agentes: {str(e)}")
         return None, None, None, None
 
 # Set page config and UI elements
 st.set_page_config(
-    page_title="💔 Breakup Recovery Squad",
+    page_title="💔 Escuadrón de Recuperación de Rupturas",
     page_icon="💔",
     layout="wide"
 )
@@ -91,16 +97,16 @@ st.set_page_config(
 
 # Sidebar for API key input
 with st.sidebar:
-    st.header("🔑 API Configuration")
+    st.header("🔑 Configuración de API")
 
     if "api_key_input" not in st.session_state:
         st.session_state.api_key_input = ""
         
     api_key = st.text_input(
-        "Enter your Gemini API Key",
+        "Ingresa tu Clave API de Gemini",
         value=st.session_state.api_key_input,
         type="password",
-        help="Get your API key from Google AI Studio",
+        help="Obtén tu clave API de Google AI Studio",
         key="api_key_widget"  
     )
 
@@ -108,37 +114,37 @@ with st.sidebar:
         st.session_state.api_key_input = api_key
     
     if api_key:
-        st.success("API Key provided! ✅")
+        st.success("¡Clave API proporcionada! ✅")
     else:
-        st.warning("Please enter your API key to proceed")
+        st.warning("Por favor, ingresa tu clave API para continuar")
         st.markdown("""
-        To get your API key:
-        1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
-        2. Enable the Generative Language API in your [Google Cloud Console](https://console.developers.google.com/apis/api/generativelanguage.googleapis.com)
+        Para obtener tu clave API:
+        1. Ve a [Google AI Studio](https://makersuite.google.com/app/apikey)
+        2. Habilita la API de Lenguaje Generativo en tu [Google Cloud Console](https://console.developers.google.com/apis/api/generativelanguage.googleapis.com)
         """)
 
 # Main content
-st.title("💔 Breakup Recovery Squad")
+st.title("💔 Escuadrón de Recuperación de Rupturas")
 st.markdown("""
-    ### Your AI-powered breakup recovery team is here to help!
-    Share your feelings and chat screenshots, and we'll help you navigate through this tough time.
+    ### ¡Tu equipo de recuperación de rupturas impulsado por IA está aquí para ayudarte!
+    Comparte tus sentimientos y capturas de pantalla de chat, y te ayudaremos a superar este momento difícil.
 """)
 
 # Input section
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("Share Your Feelings")
+    st.subheader("Comparte Tus Sentimientos")
     user_input = st.text_area(
-        "How are you feeling? What happened?",
+        "¿Cómo te sientes? ¿Qué pasó?",
         height=150,
-        placeholder="Tell us your story..."
+        placeholder="Cuéntanos tu historia..."
     )
     
 with col2:
-    st.subheader("Upload Chat Screenshots")
+    st.subheader("Sube Capturas de Pantalla del Chat")
     uploaded_files = st.file_uploader(
-        "Upload screenshots of your chats (optional)",
+        "Sube capturas de pantalla de tus chats (opcional)",
         type=["jpg", "jpeg", "png"],
         accept_multiple_files=True,
         key="screenshots"
@@ -149,16 +155,16 @@ with col2:
             st.image(file, caption=file.name, use_container_width=True)
 
 # Process button and API key check
-if st.button("Get Recovery Plan 💝", type="primary"):
+if st.button("Obtener Plan de Recuperación 💝", type="primary"):
     if not st.session_state.api_key_input:
-        st.warning("Please enter your API key in the sidebar first!")
+        st.warning("¡Por favor, ingresa primero tu clave API en la barra lateral!")
     else:
         therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent = initialize_agents(st.session_state.api_key_input)
         
         if all([therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent]):
             if user_input or uploaded_files:
                 try:
-                    st.header("Your Personalized Recovery Plan")
+                    st.header("Tu Plan de Recuperación Personalizado")
                     
                     def process_images(files):
                         processed_images = []
@@ -174,23 +180,23 @@ if st.button("Get Recovery Plan 💝", type="primary"):
                                 processed_images.append(agno_image)
                                 
                             except Exception as e:
-                                logger.error(f"Error processing image {file.name}: {str(e)}")
+                                logger.error(f"Error al procesar la imagen {file.name}: {str(e)}")
                                 continue
                         return processed_images
                     
                     all_images = process_images(uploaded_files) if uploaded_files else []
                     
                     # Therapist Analysis
-                    with st.spinner("🤗 Getting empathetic support..."):
+                    with st.spinner("🤗 Obteniendo apoyo empático..."):
                         therapist_prompt = f"""
-                        Analyze the emotional state and provide empathetic support based on:
-                        User's message: {user_input}
+                        Analiza el estado emocional y proporciona apoyo empático basado en:
+                        Mensaje del usuario: {user_input}
                         
-                        Please provide a compassionate response with:
-                        1. Validation of feelings
-                        2. Gentle words of comfort
-                        3. Relatable experiences
-                        4. Words of encouragement
+                        Por favor, proporciona una respuesta compasiva con:
+                        1. Validación de los sentimientos
+                        2. Palabras gentiles de consuelo
+                        3. Experiencias con las que se pueda identificar
+                        4. Palabras de aliento
                         """
                         
                         response = therapist_agent.run(
@@ -198,20 +204,20 @@ if st.button("Get Recovery Plan 💝", type="primary"):
                             images=all_images
                         )
                         
-                        st.subheader("🤗 Emotional Support")
+                        st.subheader("🤗 Apoyo Emocional")
                         st.markdown(response.content)
                     
                     # Closure Messages
-                    with st.spinner("✍️ Crafting closure messages..."):
+                    with st.spinner("✍️ Creando mensajes de cierre..."):
                         closure_prompt = f"""
-                        Help create emotional closure based on:
-                        User's feelings: {user_input}
+                        Ayuda a crear un cierre emocional basado en:
+                        Sentimientos del usuario: {user_input}
                         
-                        Please provide:
-                        1. Template for unsent messages
-                        2. Emotional release exercises
-                        3. Closure rituals
-                        4. Moving forward strategies
+                        Por favor, proporciona:
+                        1. Plantilla para mensajes no enviados
+                        2. Ejercicios de liberación emocional
+                        3. Rituales de cierre
+                        4. Estrategias para seguir adelante
                         """
                         
                         response = closure_agent.run(
@@ -219,20 +225,20 @@ if st.button("Get Recovery Plan 💝", type="primary"):
                             images=all_images
                         )
                         
-                        st.subheader("✍️ Finding Closure")
+                        st.subheader("✍️ Encontrando el Cierre")
                         st.markdown(response.content)
                     
                     # Recovery Plan
-                    with st.spinner("📅 Creating your recovery plan..."):
+                    with st.spinner("📅 Creando tu plan de recuperación..."):
                         routine_prompt = f"""
-                        Design a 7-day recovery plan based on:
-                        Current state: {user_input}
+                        Diseña un plan de recuperación de 7 días basado en:
+                        Estado actual: {user_input}
                         
-                        Include:
-                        1. Daily activities and challenges
-                        2. Self-care routines
-                        3. Social media guidelines
-                        4. Mood-lifting music suggestions
+                        Incluye:
+                        1. Actividades y desafíos diarios
+                        2. Rutinas de autocuidado
+                        3. Pautas para redes sociales
+                        4. Sugerencias de música para levantar el ánimo
                         """
                         
                         response = routine_planner_agent.run(
@@ -240,20 +246,20 @@ if st.button("Get Recovery Plan 💝", type="primary"):
                             images=all_images
                         )
                         
-                        st.subheader("📅 Your Recovery Plan")
+                        st.subheader("📅 Tu Plan de Recuperación")
                         st.markdown(response.content)
                     
                     # Honest Feedback
-                    with st.spinner("💪 Getting honest perspective..."):
+                    with st.spinner("💪 Obteniendo una perspectiva honesta..."):
                         honesty_prompt = f"""
-                        Provide honest, constructive feedback about:
-                        Situation: {user_input}
+                        Proporciona retroalimentación honesta y constructiva sobre:
+                        Situación: {user_input}
                         
-                        Include:
-                        1. Objective analysis
-                        2. Growth opportunities
-                        3. Future outlook
-                        4. Actionable steps
+                        Incluye:
+                        1. Análisis objetivo
+                        2. Oportunidades de crecimiento
+                        3. Perspectiva futura
+                        4. Pasos procesables
                         """
                         
                         response = brutal_honesty_agent.run(
@@ -261,22 +267,22 @@ if st.button("Get Recovery Plan 💝", type="primary"):
                             images=all_images
                         )
                         
-                        st.subheader("💪 Honest Perspective")
+                        st.subheader("💪 Perspectiva Honesta")
                         st.markdown(response.content)
                             
                 except Exception as e:
-                    logger.error(f"Error during analysis: {str(e)}")
-                    st.error("An error occurred during analysis. Please check the logs for details.")
+                    logger.error(f"Error durante el análisis: {str(e)}")
+                    st.error("Ocurrió un error durante el análisis. Por favor, revisa los registros para más detalles.")
             else:
-                st.warning("Please share your feelings or upload screenshots to get help.")
+                st.warning("Por favor, comparte tus sentimientos o sube capturas de pantalla para obtener ayuda.")
         else:
-            st.error("Failed to initialize agents. Please check your API key.")
+            st.error("Falló la inicialización de los agentes. Por favor, verifica tu clave API.")
 
 # Footer
 st.markdown("---")
 st.markdown("""
     <div style='text-align: center'>
-        <p>Made with ❤️ by the Breakup Recovery Squad</p>
-        <p>Share your recovery journey with #BreakupRecoverySquad</p>
+        <p>Hecho con ❤️ por el Escuadrón de Recuperación de Rupturas</p>
+        <p>Comparte tu viaje de recuperación con #EscuadronRecuperacionRupturas</p>
     </div>
 """, unsafe_allow_html=True)

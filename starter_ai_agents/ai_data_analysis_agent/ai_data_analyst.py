@@ -17,7 +17,7 @@ def preprocess_and_save(file):
         elif file.name.endswith('.xlsx'):
             df = pd.read_excel(file, na_values=['NA', 'N/A', 'missing'])
         else:
-            st.error("Unsupported file format. Please upload a CSV or Excel file.")
+            st.error("Formato de archivo no compatible. Por favor, sube un archivo CSV o Excel.")
             return None, None, None
         
         # Ensure string columns are properly quoted
@@ -43,24 +43,24 @@ def preprocess_and_save(file):
         
         return temp_path, df.columns.tolist(), df  # Return the DataFrame as well
     except Exception as e:
-        st.error(f"Error processing file: {e}")
+        st.error(f"Error al procesar el archivo: {e}")
         return None, None, None
 
 # Streamlit app
-st.title("📊 Data Analyst Agent")
+st.title("📊 Agente Analista de Datos")
 
 # Sidebar for API keys
 with st.sidebar:
-    st.header("API Keys")
-    openai_key = st.text_input("Enter your OpenAI API key:", type="password")
+    st.header("Claves API")
+    openai_key = st.text_input("Ingresa tu clave API de OpenAI:", type="password")
     if openai_key:
         st.session_state.openai_key = openai_key
-        st.success("API key saved!")
+        st.success("¡Clave API guardada!")
     else:
-        st.warning("Please enter your OpenAI API key to proceed.")
+        st.warning("Por favor, ingresa tu clave API de OpenAI para continuar.")
 
 # File upload widget
-uploaded_file = st.file_uploader("Upload a CSV or Excel file", type=["csv", "xlsx"])
+uploaded_file = st.file_uploader("Sube un archivo CSV o Excel", type=["csv", "xlsx"])
 
 if uploaded_file is not None and "openai_key" in st.session_state:
     # Preprocess and save the uploaded file
@@ -68,18 +68,18 @@ if uploaded_file is not None and "openai_key" in st.session_state:
     
     if temp_path and columns and df is not None:
         # Display the uploaded data as a table
-        st.write("Uploaded Data:")
+        st.write("Datos Cargados:")
         st.dataframe(df)  # Use st.dataframe for an interactive table
         
         # Display the columns of the uploaded data
-        st.write("Uploaded columns:", columns)
+        st.write("Columnas cargadas:", columns)
         
         # Configure the semantic model with the temporary file path
         semantic_model = {
             "tables": [
                 {
                     "name": "uploaded_data",
-                    "description": "Contains the uploaded dataset.",
+                    "description": "Contiene el conjunto de datos cargado.",
                     "path": temp_path,
                 }
             ]
@@ -94,7 +94,7 @@ if uploaded_file is not None and "openai_key" in st.session_state:
             add_history_to_messages=False,  # Disable chat history
             followups=False,  # Disable follow-up queries
             read_tool_call_history=False,  # Disable reading tool call history
-            system_prompt="You are an expert data analyst. Generate SQL queries to solve the user's query. Return only the SQL query, enclosed in ```sql ``` and give the final answer.",
+            system_prompt="Eres un analista de datos experto. Genera consultas SQL para resolver la consulta del usuario. Devuelve solo la consulta SQL, encerrada en ```sql ``` y da la respuesta final.",
         )
         
         # Initialize code storage in session state
@@ -102,18 +102,18 @@ if uploaded_file is not None and "openai_key" in st.session_state:
             st.session_state.generated_code = None
         
         # Main query input widget
-        user_query = st.text_area("Ask a query about the data:")
+        user_query = st.text_area("Haz una consulta sobre los datos:")
         
         # Add info message about terminal output
-        st.info("💡 Check your terminal for a clearer output of the agent's response")
+        st.info("💡 Revisa tu terminal para una salida más clara de la respuesta del agente")
         
-        if st.button("Submit Query"):
+        if st.button("Enviar Consulta"):
             if user_query.strip() == "":
-                st.warning("Please enter a query.")
+                st.warning("Por favor, ingresa una consulta.")
             else:
                 try:
                     # Show loading spinner while processing
-                    with st.spinner('Processing your query...'):
+                    with st.spinner('Procesando tu consulta...'):
                         # Get the response from DuckDbAgent
                
                         response1 = duckdb_agent.run(user_query)
@@ -133,5 +133,5 @@ if uploaded_file is not None and "openai_key" in st.session_state:
                 
                     
                 except Exception as e:
-                    st.error(f"Error generating response from the DuckDbAgent: {e}")
-                    st.error("Please try rephrasing your query or check if the data format is correct.")
+                    st.error(f"Error al generar la respuesta del DuckDbAgent: {e}")
+                    st.error("Por favor, intenta reformular tu consulta o verifica si el formato de los datos es correcto.")
