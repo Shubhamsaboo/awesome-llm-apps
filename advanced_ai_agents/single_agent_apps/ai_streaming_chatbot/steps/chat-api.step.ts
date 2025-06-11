@@ -1,5 +1,6 @@
 import { ApiRouteConfig, Handlers } from 'motia'
 import { z } from 'zod'
+import { conversationSchema } from './conversation.stream'
 
 const inputSchema = z.object({
   message: z.string().min(1, 'Message is required'),
@@ -15,11 +16,7 @@ export const config: ApiRouteConfig = {
   emits: ['chat-message'],
   bodySchema: inputSchema,
   responseSchema: {
-    200: z.object({
-      conversationId: z.string(),
-      message: z.string(),
-      status: z.enum(['created', 'streaming', 'completed']).optional(),
-    })
+    200: conversationSchema
   },
   flows: ['chat'],
 }
@@ -41,7 +38,7 @@ export const handler: Handlers['ChatApi'] = async (req, { logger, emit, streams 
     timestamp: new Date().toISOString(),
   })
 
-  await streams.conversation.set(conversationId, assistantMessageId, {
+  const aiResponse = await streams.conversation.set(conversationId, assistantMessageId, {
     message: '',
     from: 'assistant',
     status: 'created',
@@ -57,46 +54,13 @@ export const handler: Handlers['ChatApi'] = async (req, { logger, emit, streams 
     },
   })
 
-  const maxWaitTime = 3000 // 3 seconds
-  const startTime = Date.now()
-  let aiResponse = null
-
-  // Initial delay to allow AI to start processing
-  await new Promise(resolve => setTimeout(resolve, 100))
-
-  while (Date.now() - startTime < maxWaitTime) {
-    const response = await streams.conversation.get(conversationId, assistantMessageId)
-    if (response) {
-      aiResponse = response
-      // Break only if we have a completed status
-      if (response.status === 'completed') {
-        break
-      }
-    }
-    await new Promise(resolve => setTimeout(resolve, 100))
-  }
-
-  // Get final response state
-  if (!aiResponse?.status || aiResponse.status !== 'completed') {
-    const finalResponse = await streams.conversation.get(conversationId, assistantMessageId)
-    if (finalResponse?.status === 'completed') {
-      aiResponse = finalResponse
-    }
-  }
-
   logger.info('Returning chat response', { 
     conversationId,
     messageId: assistantMessageId,
-    status: aiResponse?.status,
-    hasMessage: !!aiResponse?.message
   })
 
   return {
     status: 200,
-    body: {
-      conversationId,
-      message: aiResponse?.status === 'completed' ? aiResponse.message : 'Message received, AI is responding...',
-      status: aiResponse?.status || 'streaming',
-    },
+    body: aiResponse,
   }
 }
