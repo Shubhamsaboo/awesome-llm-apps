@@ -1,0 +1,29 @@
+{
+  "name": "streaming-ai-chatbot",
+  "description": "Minimal streaming AI chatbot demonstrating real-time responses and state management",
+  "scripts": {
+    "dev": "motia dev --verbose",
+    "dev:debug": "motia dev --debug",
+    "generate-types": "motia generate-types",
+    "build": "motia build",
+    "clean": "rm -rf dist node_modules python_modules .motia .mermaid"
+  },
+  "keywords": [
+    "motia",
+    "streaming",
+    "ai",
+    "chatbot",
+    "openai"
+  ],
+  "dependencies": {
+    "motia": "^0.2.1-beta.73",
+    "openai": "^4.102.0",
+    "zod": "^3.25.20"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^19.0.12",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
+}
