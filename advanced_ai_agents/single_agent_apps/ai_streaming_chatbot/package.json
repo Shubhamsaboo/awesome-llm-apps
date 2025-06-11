@@ -16,7 +16,7 @@
     "openai"
   ],
   "dependencies": {
-    "motia": "^0.2.1-beta.73",
+    "motia": "0.2.2",
     "openai": "^4.102.0",
     "zod": "^3.25.20"
   },

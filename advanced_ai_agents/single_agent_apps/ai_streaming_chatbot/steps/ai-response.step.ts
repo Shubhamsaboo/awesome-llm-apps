@@ -1,6 +1,7 @@
 import { EventConfig, Handlers } from 'motia'
 import { OpenAI } from 'openai'
 import { z } from 'zod'
+// import { AzureOpenAI } from 'openai'
 
 export const config: EventConfig = {
   type: 'event',
@@ -21,6 +22,14 @@ export const handler: Handlers['AiResponse'] = async (input, context) => {
   const { message, conversationId, assistantMessageId } = input
 
   logger.info('Generating AI response', { conversationId })
+
+  // For Azure OpenAI
+  // const openai = new AzureOpenAI({
+  //   endpoint: process.env.AZURE_OPENAI_ENDPOINT || 'demo-key',
+  //   apiKey: process.env.AZURE_OPENAI_API_KEY || 'demo-key',
+  //   deployment: 'gpt-4o-mini',
+  //   apiVersion: '2024-12-01-preview'
+  // })
 
   const openai = new OpenAI({ 
     apiKey: process.env.OPENAI_API_KEY,
