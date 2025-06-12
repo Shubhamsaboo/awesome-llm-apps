@@ -30,7 +30,7 @@ streaming-ai-chatbot/
 ```bash
 # Clone the repository
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-cd advanced_ai_agents/single_agent_apps/ai_streaming_chatbot
+cd advanced_llm_apps/chat_with_X_tutorials/chat_with_llms
 
 # Install dependencies
 npm install
