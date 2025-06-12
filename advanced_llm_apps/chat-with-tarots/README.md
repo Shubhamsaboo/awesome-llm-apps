@@ -2,6 +2,8 @@
 
 Welcome to **The Magician IA Reader**! This project presents a unique application combining the power of Artificial Intelligence with the mystique of tarot reading.
 
+![TheMagicianDemo](https://github.com/maurizioorani/TheMagician-IA-Reader/blob/main/data/readme/TheMagicianAI.gif)
+
 **What it Does:**
 
 This application functions as an AI-driven tarot reader. It takes natural language input and, using an AI model guided by traditional tarot card meanings, provides interpretative insights.
@@ -25,8 +27,6 @@ The core of The Magician IA Reader lies in its use of the 'phi4' local AI model.
 * **Curious Minds:** Experience an innovative way to interact with AI for personal insights.
 
 Step into the world where AI meets intuition with The Magician IA Reader!
-
-<video src="https://github.com/maurizioorani/TheMagician-IA-Reader/blob/main/data/readme/TheMagicianAI.mov"/>
 
 ---
 
