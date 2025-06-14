@@ -1,7 +1,7 @@
 from typing import List, Dict, Optional
 from pathlib import Path
 import os
-from firecrawl import FirecrawlApp
+from firecrawl import FirecrawlApp, ScrapeOptions
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
 from qdrant_client.http.models import Distance, VectorParams
@@ -153,45 +153,59 @@ def crawl_documentation(firecrawl_api_key: str, url: str, output_dir: Optional[s
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
     
-    response = firecrawl.crawl_url(
+    # Use the synchronous crawl method which handles the response automatically
+    crawl_result = firecrawl.crawl_url(
         url,
-        params={
-            'limit': 5,
-            'scrapeOptions': {
-                'formats': ['markdown', 'html']
-            }
-        }
+        limit=5,
+        scrape_options=ScrapeOptions(formats=['markdown', 'html'])
     )
     
-    while True:
-        for page in response.get('data', []):
+    # Check if crawl_result has the expected structure
+    if hasattr(crawl_result, 'data'):
+        data = crawl_result.data
+    elif isinstance(crawl_result, dict) and 'data' in crawl_result:
+        data = crawl_result['data']
+    else:
+        # If it's a list directly, use it as data
+        data = crawl_result if isinstance(crawl_result, list) else []
+    
+    for page in data:
+        # Handle both dict and object attributes
+        if hasattr(page, 'markdown'):
+            content = page.markdown or getattr(page, 'html', '')
+            metadata = page.metadata if hasattr(page, 'metadata') else {}
+        else:
             content = page.get('markdown') or page.get('html', '')
             metadata = page.get('metadata', {})
-            source_url = metadata.get('sourceURL', '')
-            
-            if output_dir and content:
-                filename = f"{uuid.uuid4()}.md"
-                filepath = os.path.join(output_dir, filename)
-                with open(filepath, 'w', encoding='utf-8') as f:
-                    f.write(content)
-            
-            pages.append({
-                "content": content,
-                "url": source_url,
-                "metadata": {
-                    "title": metadata.get('title', ''),
-                    "description": metadata.get('description', ''),
-                    "language": metadata.get('language', 'en'),
-                    "crawl_date": datetime.now().isoformat()
-                }
-            })
         
-        next_url = response.get('next')
-        if not next_url:
-            break
-            
-        response = firecrawl.get(next_url)
-        time.sleep(1)
+        # Extract source URL from metadata
+        if hasattr(metadata, 'get'):
+            source_url = metadata.get('sourceURL', '')
+            title = metadata.get('title', '')
+            description = metadata.get('description', '')
+            language = metadata.get('language', 'en')
+        else:
+            source_url = getattr(metadata, 'sourceURL', '') if hasattr(metadata, 'sourceURL') else ''
+            title = getattr(metadata, 'title', '') if hasattr(metadata, 'title') else ''
+            description = getattr(metadata, 'description', '') if hasattr(metadata, 'description') else ''
+            language = getattr(metadata, 'language', 'en') if hasattr(metadata, 'language') else 'en'
+        
+        if output_dir and content:
+            filename = f"{uuid.uuid4()}.md"
+            filepath = os.path.join(output_dir, filename)
+            with open(filepath, 'w', encoding='utf-8') as f:
+                f.write(content)
+        
+        pages.append({
+            "content": content,
+            "url": source_url,
+            "metadata": {
+                "title": title,
+                "description": description,
+                "language": language,
+                "crawl_date": datetime.now().isoformat()
+            }
+        })
     
     return pages
 
@@ -237,7 +251,7 @@ def setup_agents(openai_api_key: str):
         4. Keep the tone professional but friendly
         5. Use appropriate pauses for better comprehension
         6. Ensure the speech is clear and well-articulated""",
-        model="gpt-4o-mini-tts"
+        model="gpt-4o-mini"
     )
     
     return processor_agent, tts_agent
@@ -272,6 +286,9 @@ async def process_query(
                 continue
             url = payload.get('url', 'Unknown URL')
             content = payload.get('content', '')
+            max_chars_per_doc = 2000
+            if len(content) > max_chars_per_doc:
+                content = content[:max_chars_per_doc] + "... [truncated]"
             context += f"From {url}:\n{content}\n\n"
         
         context += f"\nUser Question: {query}\n\n"
@@ -285,7 +302,7 @@ async def process_query(
         
         async_openai = AsyncOpenAI(api_key=openai_api_key)
         audio_response = await async_openai.audio.speech.create(
-            model="gpt-4o-mini-tts",
+            model="tts-1",
             voice=st.session_state.selected_voice,
             input=processor_response,
             instructions=tts_response,
