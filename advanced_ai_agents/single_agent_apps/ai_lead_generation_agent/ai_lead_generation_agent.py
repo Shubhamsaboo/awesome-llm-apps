@@ -97,7 +97,7 @@ def create_google_sheets_agent(composio_api_key: str, openai_api_key: str) -> Ag
         model=OpenAIChat(id="gpt-4o-mini", api_key=openai_api_key),
         tools=[google_sheets_tool],
         show_tool_calls=True,
-        system_prompt="You are an expert at creating and updating Google Sheets. You will be given user information in JSON format, and you need to write it into a new Google Sheet.",
+        instructions="You are an expert at creating and updating Google Sheets. You will be given user information in JSON format, and you need to write it into a new Google Sheet.",
         markdown=True
     )
     return google_sheets_agent
@@ -125,7 +125,7 @@ def write_to_google_sheets(flattened_data: List[dict], composio_api_key: str, op
 def create_prompt_transformation_agent(openai_api_key: str) -> Agent:
     return Agent(
         model=OpenAIChat(id="gpt-4o-mini", api_key=openai_api_key),
-        system_prompt="""You are an expert at transforming detailed user queries into concise company descriptions.
+        instructions="""You are an expert at transforming detailed user queries into concise company descriptions.
 Your task is to extract the core business/product focus in 3-4 words.
 
 Examples:
