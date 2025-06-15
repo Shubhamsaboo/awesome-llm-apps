@@ -38,7 +38,7 @@ if generate_button:
     else:
         # Set API keys as environment variables for Agno and Tools
         os.environ["OPENAI_API_KEY"] = openai_api_key
-        os.environ["ELEVENLABS_API_KEY"] = elevenlabs_api_key
+        os.environ["ELEVEN_LABS_API_KEY"] = elevenlabs_api_key
         os.environ["FIRECRAWL_API_KEY"] = firecrawl_api_key
 
         with st.spinner("Processing... Scraping blog, summarizing and generating podcast 🎶"):
