@@ -1,0 +1,4 @@
+agno
+openai
+mcp
+python-dotenv
