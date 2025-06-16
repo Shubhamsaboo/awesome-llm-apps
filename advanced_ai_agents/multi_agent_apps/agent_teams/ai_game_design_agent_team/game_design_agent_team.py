@@ -1,21 +1,32 @@
 import asyncio
+import sys
 import streamlit as st
-from autogen import (
+from autogen.agentchat.contrib.swarm_agent import (
     SwarmAgent,
     SwarmResult,
     initiate_swarm_chat,
     OpenAIWrapper,
     AFTER_WORK,
-    UPDATE_SYSTEM_MESSAGE
+    register_hand_off,
+)
+from autogen import(
+    UpdateSystemMessage
 )
 
 # Initialize session state
 if 'output' not in st.session_state:
     st.session_state.output = {'story': '', 'gameplay': '', 'visuals': '', 'tech': ''}
 
+# Try to get api_key from command line argument, then fallback to sidebar input
+api_key = None
+if len(sys.argv) > 1:
+    api_key = sys.argv[1]
+
 # Sidebar for API key input
-st.sidebar.title("API Key")
-api_key = st.sidebar.text_input("Enter your OpenAI API Key", type="password")
+if not api_key:
+    st.sidebar.title("API Key")
+    api_key = st.sidebar.text_input("Enter your OpenAI API Key", type="password")
+
 
 # Add guidance in sidebar
 st.sidebar.success("""
@@ -125,28 +136,36 @@ if st.button("Generate Game Concept"):
             }
 
             # define functions to be called by the agents
-            def update_story_overview(story_summary:str, context_variables:dict) -> SwarmResult:
+            def update_story_overview(story_summary: str, context_variables: dict) -> SwarmResult:
                 """Keep the summary as short as possible."""
                 context_variables["story"] = story_summary
                 st.sidebar.success('Story overview: ' + story_summary)
+                if not isinstance(context_variables, dict):
+                    context_variables = dict(context_variables)
                 return SwarmResult(agent="gameplay_agent", context_variables=context_variables)
                 
             def update_gameplay_overview(gameplay_summary:str, context_variables:dict) -> SwarmResult:
                 """Keep the summary as short as possible."""
                 context_variables["gameplay"] = gameplay_summary
                 st.sidebar.success('Gameplay overview: ' + gameplay_summary)
+                if not isinstance(context_variables, dict):
+                    context_variables = dict(context_variables)
                 return SwarmResult(agent="visuals_agent", context_variables=context_variables)
 
             def update_visuals_overview(visuals_summary:str, context_variables:dict) -> SwarmResult:
                 """Keep the summary as short as possible."""
                 context_variables["visuals"] = visuals_summary
                 st.sidebar.success('Visuals overview: ' + visuals_summary)
+                if not isinstance(context_variables, dict):
+                    context_variables = dict(context_variables)
                 return SwarmResult(agent="tech_agent", context_variables=context_variables)
 
             def update_tech_overview(tech_summary:str, context_variables:dict) -> SwarmResult:
                 """Keep the summary as short as possible."""
                 context_variables["tech"] = tech_summary
                 st.sidebar.success('Tech overview: ' + tech_summary)
+                if not isinstance(context_variables, dict):
+                    context_variables = dict(context_variables)
                 return SwarmResult(agent="story_agent", context_variables=context_variables)
 
             system_messages = {
@@ -196,14 +215,14 @@ if st.button("Generate Game Concept"):
                 system_prompt = system_messages[agent.name]
 
                 current_gen = agent.name.split("_")[0]
-                if agent._context_variables.get(current_gen) is None:
+                if agent.context_variables.get(current_gen) is None:
                     system_prompt += f"Call the update function provided to first provide a 2-3 sentence summary of your ideas on {current_gen.upper()} based on the context provided."
-                    agent.llm_config['tool_choice'] = {"type": "function", "function": {"name": f"update_{current_gen}_overview"}}
+                    #agent.llm_config['tool_choice'] = {"type": "function", "function": {"name": f"update_{current_gen}_overview"}}
                     agent.client = OpenAIWrapper(**agent.llm_config)
                 else:
                     # remove the tools to avoid the agent from using it and reduce cost
-                    agent.llm_config["tools"] = None
-                    agent.llm_config['tool_choice'] = None
+                    #agent.llm_config["tools"] = None
+                    #agent.llm_config['tool_choice'] = None
                     agent.client = OpenAIWrapper(**agent.llm_config)
                     # the agent has given a summary, now it should generate a detailed response
                     system_prompt += f"\n\nYour task\nYou task is write the {current_gen} part of the report. Do not include any other parts. Do not use XML tags.\nStart your response with: '## {current_gen.capitalize()} Design'."    
@@ -214,13 +233,13 @@ if st.button("Generate Game Concept"):
 
                 system_prompt += f"\n\n\nBelow are some context for you to refer to:"
                 # Add context variables to the prompt
-                for k, v in agent._context_variables.items():
+                for k, v in agent.context_variables.items():
                     if v is not None:
                         system_prompt += f"\n{k.capitalize()} Summary:\n{v}"
 
                 return system_prompt
             
-            state_update = UPDATE_SYSTEM_MESSAGE(update_system_message_func)
+            state_update = UpdateSystemMessage(update_system_message_func)
 
             # Define agents
             story_agent = SwarmAgent(
@@ -251,17 +270,17 @@ if st.button("Generate Game Concept"):
                 update_agent_state_before_reply=[state_update]
             )
 
-            story_agent.register_hand_off(AFTER_WORK(gameplay_agent))
-            gameplay_agent.register_hand_off(AFTER_WORK(visuals_agent))
-            visuals_agent.register_hand_off(AFTER_WORK(tech_agent))
-            tech_agent.register_hand_off(AFTER_WORK(story_agent))
+            register_hand_off(story_agent, AFTER_WORK(gameplay_agent))
+            register_hand_off(gameplay_agent, AFTER_WORK(visuals_agent))
+            register_hand_off(visuals_agent, AFTER_WORK(tech_agent))
+            register_hand_off(tech_agent, AFTER_WORK(story_agent))
 
             result, _, _ = initiate_swarm_chat(
                 initial_agent=story_agent,
                 agents=[story_agent, gameplay_agent, visuals_agent, tech_agent],
                 user_agent=None,
                 messages=task,
-                max_rounds=13,
+                max_rounds=30,
             )
 
             # Update session state with the individual responses
