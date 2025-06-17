@@ -1,0 +1,28 @@
+[browser]
+gatherUsageStats = false
+
+[theme]
+primaryColor = "#4169E1"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F0F2F6"
+textColor = "#262730"
+font = "sans serif"
+
+[server]
+runOnSave = true
+
+[client]
+# This section helps customize page display names
+showSidebarNavigation = false
+
+[deprecation]
+showPyplotGlobalUse = false
+
+[runner]
+magicEnabled = true
+fastReruns = true
+
+# Custom page title configuration
+[pages]
+# Force Streamlit to show custom titles in links
+hideTitleSection = true
