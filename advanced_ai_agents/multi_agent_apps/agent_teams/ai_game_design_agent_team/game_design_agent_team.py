@@ -15,7 +15,8 @@ from autogen.agentchat.group.context_variables import (
 )
 
 from autogen import(
-    UpdateSystemMessage
+    UpdateSystemMessage,
+    ConversableAgent
 )
 
 # Initialize session state
@@ -217,7 +218,7 @@ if st.button("Generate Game Concept"):
                 """
             }
 
-            def update_system_message_func(agent: SwarmAgent, messages) -> str:
+            def update_system_message_func(agent: ConversableAgent, messages) -> str:
                 """"""
                 system_prompt = system_messages[agent.name]
 
@@ -256,28 +257,28 @@ if st.button("Generate Game Concept"):
             state_update = UpdateSystemMessage(update_system_message_func)
 
             # Define agents
-            story_agent = SwarmAgent(
+            story_agent = ConversableAgent(
                 "story_agent", 
                 llm_config=llm_config,
                 functions=update_story_overview,
                 update_agent_state_before_reply=[state_update]
             )
 
-            gameplay_agent = SwarmAgent(
+            gameplay_agent = ConversableAgent(
                 "gameplay_agent",
                 llm_config= llm_config,
                 functions=update_gameplay_overview,
                 update_agent_state_before_reply=[state_update]
             )
 
-            visuals_agent = SwarmAgent(
+            visuals_agent = ConversableAgent(
                 "visuals_agent",
                 llm_config=llm_config,
                 functions=update_visuals_overview,
                 update_agent_state_before_reply=[state_update]
             )
 
-            tech_agent = SwarmAgent(
+            tech_agent = ConversableAgent(
                 name="tech_agent",
                 llm_config=llm_config,
                 functions=update_tech_overview,
