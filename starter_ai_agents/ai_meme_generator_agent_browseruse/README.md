@@ -47,5 +47,5 @@ API keys required:
     ```
 3. **Run the Streamlit app**:
     ```bash
-    streamlit run ai_meme_generator.py
+    streamlit run ai_meme_generator_agent.py
     ```
