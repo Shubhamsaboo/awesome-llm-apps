@@ -1,0 +1,35 @@
+.main > div:first-child {
+    padding-top: 0.9rem !important;
+}
+
+.custom-header {
+    text-align: center;
+}
+
+.custom-header > span:first-child {
+    font-size: 2.5rem;
+    font-weight: 600; 
+    color: #4B8BBE;
+}
+
+.custom-header > span:nth-child(2) {
+    font-size: 1.2rem;
+    color: gray;
+}
+
+video {
+    width: 640px !important;
+    height: 360px !important;
+    max-width: none !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+}
+
+.custom-hr {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.stFileUploaderFile {
+    display: none;
+}
