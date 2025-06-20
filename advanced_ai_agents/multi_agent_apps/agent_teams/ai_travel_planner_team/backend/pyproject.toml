@@ -1,0 +1,23 @@
+[project]
+name = "agno-hackathon"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "agno>=1.5.6",
+    "asyncpg>=0.30.0",
+    "boto3>=1.38.27",
+    "cuid2>=2.0.1",
+    "exa-py>=1.13.1",
+    "fast-flights>=2.2",
+    "fastapi>=0.115.12",
+    "firecrawl-py>=2.7.1",
+    "google-genai>=1.18.0",
+    "loguru>=0.7.3",
+    "mem0ai>=0.1.102",
+    "pydantic>=2.11.5",
+    "python-dotenv>=1.1.0",
+    "sqlalchemy>=2.0.41",
+    "uvicorn>=0.34.2",
+]

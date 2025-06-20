@@ -1,0 +1,162 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String     @id
+  name          String
+  email         String     @unique
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime
+  updatedAt     DateTime
+  accounts      Account[]
+  sessions      Session[]
+  tripPlans     TripPlan[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
+
+model Jwks {
+  id         String   @id
+  publicKey  String
+  privateKey String
+  createdAt  DateTime
+
+  @@map("jwks")
+}
+
+model TripPlanStatus {
+  id          String    @id @default(cuid())
+  tripPlanId  String    @unique
+  status      String    @default("pending") // pending, processing, completed, failed
+  currentStep String?
+  error       String?
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  tripPlan TripPlan @relation(fields: [tripPlanId], references: [id], onDelete: Cascade)
+
+  @@map("trip_plan_status")
+}
+
+model TripPlanOutput {
+  id         String   @id @default(cuid())
+  tripPlanId String   @unique
+  tripPlan   TripPlan @relation(fields: [tripPlanId], references: [id], onDelete: Cascade)
+  itinerary  String
+  summary    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("trip_plan_output")
+}
+
+model TripPlan {
+  id               String          @id @default(cuid())
+  name             String
+  destination      String
+  startingLocation String
+  travelDatesStart String
+  travelDatesEnd   String?
+  dateInputType    String          @default("picker")
+  duration         Int?
+  travelingWith    String
+  adults           Int             @default(1)
+  children         Int             @default(0)
+  ageGroups        String[]
+  budget           Float
+  budgetCurrency   String          @default("USD")
+  travelStyle      String
+  budgetFlexible   Boolean         @default(false)
+  vibes            String[]
+  priorities       String[]
+  interests        String?
+  rooms            Int             @default(1)
+  pace             Int[]
+  beenThereBefore  String?
+  lovedPlaces      String?
+  additionalInfo   String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  userId           String?
+  user             User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status           TripPlanStatus?
+  output           TripPlanOutput?
+
+  @@map("trip_plan")
+}
+
+model plan_tasks {
+  id            Int              @id @default(autoincrement())
+  trip_plan_id  String
+  task_type     String
+  status        plan_task_status
+  input_data    Json
+  output_data   Json?
+  error_message String?
+  created_at    DateTime?        @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime?        @default(now()) @db.Timestamptz(6)
+
+  @@index([status], map: "idx_plan_tasks_status")
+  @@index([trip_plan_id], map: "idx_plan_tasks_trip_plan_id")
+}
+
+enum plan_task_status {
+  queued
+  in_progress
+  success
+  error
+}
