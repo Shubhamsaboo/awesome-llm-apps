@@ -165,7 +165,7 @@ if anthropic_key and openai_key:
                     stream_intermediate_steps=True,  # Stream intermediate updates
                 ):
                     # Update reasoning display
-                    if chunk.reasoning_content:
+if hasattr(chunk, "reasoning_content") and chunk.reasoning_content:
                         reasoning_text = chunk.reasoning_content
                         reasoning_placeholder.markdown(
                             reasoning_text, 
