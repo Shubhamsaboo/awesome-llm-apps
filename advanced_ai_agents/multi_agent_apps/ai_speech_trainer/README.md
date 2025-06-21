@@ -141,9 +141,6 @@ README.md
 requirements.txt
 ```
 
-## License
-MIT License
-
 ## Additional Notes
 - This project has been designed to utilize the capabilities of **Agno** as an AI agent development platform. It depicts the potential of Agno as a team of collaborative agents working together seamlessly in order to address a real-world challenge - analyzing speech presentations by users and providing them with comprehensive evaluation and feedback to improve their public speaking skills. Each individual agent has a clear cut goal to follow and together they coordinate as a team to solve a complex multimodal problem.
 
