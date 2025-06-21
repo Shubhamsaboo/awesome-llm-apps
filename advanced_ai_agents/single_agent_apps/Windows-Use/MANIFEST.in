@@ -1,0 +1,3 @@
+include README.md
+include LICENSE
+recursive-include windows_use *
