@@ -1,6 +1,6 @@
 <div align="center">
 
-  <h1>🪟 Windows-Use</h1>
+  <h1>🪟 Windows Use Autonomous Agent</h1>
 
   <a href="https://github.com/CursorTouch/windows-use/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="License">

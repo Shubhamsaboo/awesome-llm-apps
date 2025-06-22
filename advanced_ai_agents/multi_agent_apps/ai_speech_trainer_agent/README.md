@@ -1,6 +1,6 @@
-# AI Speech Trainer: Your Multimodal Public Speaking Coach
+# AI Speech Trainer Agent
 
-## Overview of the Idea
+## Overview
 AI Speech Trainer is an AI-powered multi-agent, multimodal public speaking coach that listens to how you speak, watches how you express, and evaluates what you say - helping you become a confident public speaker.
 
 Whether you're preparing for a TED talk, interview, or school presentation, AI Speech Trainer provides you with personalized feedback, helping you improve your public speaking skills - highlighting your strengths and weaknesses and giving you valuable suggestions to speak better, clearer, and more confidently.
