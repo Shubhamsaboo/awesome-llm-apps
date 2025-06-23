@@ -74,7 +74,7 @@ Before anything else, Please get your OpenAI API Key here: https://platform.open
 
 3. **Run the Streamlit app**:
     ```bash
-    streamlit run ai_services_agency/agency.py
+    streamlit run agency.py
     ```
 
 4. **Enter your OpenAI API Key** in the sidebar when prompted and start analyzing your startup idea!
