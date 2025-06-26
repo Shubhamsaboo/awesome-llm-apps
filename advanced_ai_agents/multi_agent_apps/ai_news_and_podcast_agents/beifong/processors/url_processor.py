@@ -29,7 +29,9 @@ def crawl_pending_entries(tracking_db_path=None, batch_size=20, delay_range=(1, 
                 update_entry_status(tracking_db_path, entry_id, "failed")
                 stats["failed_count"] += 1
                 continue
-            success = store_crawled_article(tracking_db_path, entry, web_data["raw_html"], web_data["metadata"])
+            success = store_crawled_article(
+                tracking_db_path, entry, web_data["raw_html"], web_data["metadata"]
+            )
             if success:
                 update_entry_status(tracking_db_path, entry_id, "success")
                 stats["success_count"] += 1
@@ -53,7 +55,9 @@ def print_stats(stats):
     print(f"Skipped (no URL): {stats['skipped_count']}")
 
 
-def crawl_in_batches(tracking_db_path=None, batch_size=20, total_batches=5, delay_between_batches=10):
+def crawl_in_batches(
+    tracking_db_path=None, batch_size=20, total_batches=5, delay_between_batches=10
+):
     if tracking_db_path is None:
         tracking_db_path = get_tracking_db_path()
     total_stats = {
@@ -64,7 +68,9 @@ def crawl_in_batches(tracking_db_path=None, batch_size=20, total_batches=5, dela
     }
     for i in range(total_batches):
         print(f"\nProcessing batch {i + 1}/{total_batches}")
-        batch_stats = crawl_pending_entries(tracking_db_path=tracking_db_path, batch_size=batch_size)
+        batch_stats = crawl_pending_entries(
+            tracking_db_path=tracking_db_path, batch_size=batch_size
+        )
         total_stats["total_entries"] += batch_stats["total_entries"]
         total_stats["success_count"] += batch_stats["success_count"]
         total_stats["failed_count"] += batch_stats["failed_count"]

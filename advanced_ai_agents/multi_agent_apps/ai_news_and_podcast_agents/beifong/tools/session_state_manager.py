@@ -20,7 +20,9 @@ def _save_podcast_to_database_sync(session_state: dict) -> tuple[bool, str, int]
         banner_url = session_state.get("banner_url")
         banner_images = json.dumps(session_state.get("banner_images", []))
         audio_url = session_state.get("audio_url")
-        selected_language = session_state.get("selected_language", {"code": "en", "name": "English"})
+        selected_language = session_state.get(
+            "selected_language", {"code": "en", "name": "English"}
+        )
         language_code = selected_language.get("code", "en")
         if not generated_script or not isinstance(generated_script, dict):
             return (
@@ -56,14 +58,14 @@ def _save_podcast_to_database_sync(session_state: dict) -> tuple[bool, str, int]
         current_time = datetime.now().isoformat()
         query = """
             INSERT INTO podcasts (
-                title, 
-                date, 
-                content_json, 
-                audio_generated, 
+                title,
+                date,
+                content_json,
+                audio_generated,
                 audio_path,
-                banner_img_path, 
-                tts_engine, 
-                language_code, 
+                banner_img_path,
+                tts_engine,
+                language_code,
                 sources_json,
                 created_at,
                 banner_images
@@ -170,7 +172,9 @@ def toggle_podcast_generated(session_state: dict, status: bool = False) -> str:
                     return f"Podcast generated, but there was an issue with saving: {message}"
             except Exception as e:
                 print(f"Error saving podcast to database: {e}")
-                return f"Podcast generated, but there was an error saving it to the database: {str(e)}"
+                return (
+                    f"Podcast generated, but there was an error saving it to the database: {str(e)}"
+                )
     else:
         session_state["podcast_generated"] = status
         session_state["stage"] = "complete" if status else session_state.get("stage")

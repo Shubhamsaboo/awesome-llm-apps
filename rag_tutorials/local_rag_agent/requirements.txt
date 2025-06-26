@@ -1,7 +1,7 @@
 agno
 qdrant-client
 ollama
-pypdf 
+pypdf
 openai
 fastapi
 uvicorn

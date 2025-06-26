@@ -50,6 +50,7 @@ pip install -r requirements.txt
 6. Confirm by clicking "Confirm" in the dialog that appears
 
 Alternatively, you can also share via the "Share" button:
+
 1. Click "Share" in the top right
 2. In the sharing dialog, search for your integration name (preceded by "@")
 3. Click on your integration to add it
@@ -84,6 +85,7 @@ python notion_mcp_agent.py
 ```
 
 When you start the agent, it will prompt you to enter your Notion page ID. You can:
+
 1. Enter your page ID at the prompt
 2. Press Enter without typing anything to use the default page ID (if set)
 3. Provide the page ID directly as a command-line argument (bypassing the prompt):

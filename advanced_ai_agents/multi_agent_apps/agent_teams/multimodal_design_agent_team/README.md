@@ -1,6 +1,6 @@
 # Multimodal AI Design Agent Team
 
-A Streamlit application that provides comprehensive design analysis using a team of specialized AI agents powered by Google's Gemini model. 
+A Streamlit application that provides comprehensive design analysis using a team of specialized AI agents powered by Google's Gemini model.
 
 This application leverages multiple specialized AI agents to provide comprehensive analysis of UI/UX designs of your product and your competitors, combining visual understanding, user experience evaluation, and market research insights.
 
@@ -8,10 +8,10 @@ This application leverages multiple specialized AI agents to provide comprehensi
 
 - **Specialized Legal AI Agent Team**
 
-   - 🎨 **Visual Design Agent**: Evaluates design elements, patterns, color schemes, typography, and visual hierarchy
-   - 🔄 **UX Analysis Agent**: Assesses user flows, interaction patterns, usability, and accessibility
-   - 📊 **Market Analysis Agent**: Provides market insights, competitor analysis, and positioning recommendations
-   
+  - 🎨 **Visual Design Agent**: Evaluates design elements, patterns, color schemes, typography, and visual hierarchy
+  - 🔄 **UX Analysis Agent**: Assesses user flows, interaction patterns, usability, and accessibility
+  - 📊 **Market Analysis Agent**: Provides market insights, competitor analysis, and positioning recommendations
+
 - **Multiple Analysis Types**: Choose from Visual Design, UX, and Market Analysis
 - **Comparative Analysis**: Upload competitor designs for comparative insights
 - **Customizable Focus Areas**: Select specific aspects for detailed analysis
@@ -22,6 +22,7 @@ This application leverages multiple specialized AI agents to provide comprehensi
 ## How to Run
 
 1. **Setup Environment**
+
    ```bash
    # Clone the repository
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
@@ -36,10 +37,12 @@ This application leverages multiple specialized AI agents to provide comprehensi
    ```
 
 2. **Get API Key**
+
    - Visit [Google AI Studio](https://aistudio.google.com/apikey)
    - Generate an API key
 
 3. **Run the Application**
+
    ```bash
    streamlit run design_agent_team.py
    ```
@@ -50,7 +53,6 @@ This application leverages multiple specialized AI agents to provide comprehensi
    - Select analysis types and focus areas
    - Add context if needed
    - Click "Run Analysis" to get insights
-
 
 ## Technical Stack
 
@@ -66,4 +68,3 @@ This application leverages multiple specialized AI agents to provide comprehensi
 - Include multiple views/screens for better context
 - Add competitor designs for comparative analysis
 - Provide specific context about your target audience
-

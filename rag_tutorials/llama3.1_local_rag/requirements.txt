@@ -1,5 +1,5 @@
-streamlit 
-ollama 
-langchain 
+streamlit
+ollama
+langchain
 langchain_community
 langchain_ollama

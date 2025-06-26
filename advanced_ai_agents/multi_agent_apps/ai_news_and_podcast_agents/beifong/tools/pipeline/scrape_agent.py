@@ -24,26 +24,28 @@ class ScrapedContent(BaseModel):
 
 
 SCRAPE_AGENT_DESCRIPTION = "You are a helpful assistant that can scrape the URL for full content."
-SCRAPE_AGENT_INSTRUCTIONS = dedent("""
+SCRAPE_AGENT_INSTRUCTIONS = dedent(
+    """
     You are a content verification and formatting assistant.
-    
+
     You will receive a batch of pre-scraped content from various URLs along with a search query.
     Your job is to:
-    
+
     1. VERIFY RELEVANCE: Ensure each piece of content is relevant to the given query
     2. QUALITY CONTROL: Filter out low-quality, duplicate, or irrelevant content
     3. FORMAT CONSISTENCY: Ensure all content follows a consistent format
     4. LENGTH OPTIMIZATION: Keep content at reasonable length - not too long, not too short
     5. CLEAN TEXT: Remove any formatting artifacts, ads, or navigation elements from scraped content
-    
+
     For each piece of content, return:
     - full_text: The cleaned, relevant text content (or empty if not relevant/low quality)
     - published_date: The publication date in ISO format (or empty if not available)
-    
+
     Note: Some content may be fallback descriptions (when scraping failed) - treat these appropriately and don't penalize them for being shorter.
-    
+
     IMPORTANT: Focus on quality over quantity. It's better to return fewer high-quality, relevant pieces than many low-quality ones.
-    """)
+    """
+)
 
 
 def crawl_urls_batch(search_results):
@@ -54,8 +56,8 @@ def crawl_urls_batch(search_results):
             continue
         if not search_result.get("is_scrapping_required", True):
             continue
-        if not search_result.get('original_url'):
-            search_result['original_url'] = search_result['url']
+        if not search_result.get("original_url"):
+            search_result["original_url"] = search_result["url"]
         url = search_result["url"]
         if url not in url_to_search_results:
             url_to_search_results[url] = []
@@ -116,7 +118,9 @@ def verify_content_with_agent(query, search_results, use_agent=True):
             )
             verified_item = response.to_dict()["content"]
             search_result["full_text"] = verified_item.get("full_text", search_result["full_text"])
-            search_result["published_date"] = verified_item.get("published_date", search_result["published_date"])
+            search_result["published_date"] = verified_item.get(
+                "published_date", search_result["published_date"]
+            )
             search_result["agent_verified"] = True
         except Exception as _:
             pass

@@ -17,7 +17,11 @@ STALE_LOCK_THRESHOLD_SEC = 60 * 15
 
 redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB + 1)
 
-app = Celery("beifong_tasks", broker=f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}", backend=f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}")
+app = Celery(
+    "beifong_tasks",
+    broker=f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}",
+    backend=f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}",
+)
 
 app.conf.update(
     result_expires=60 * 2,
@@ -49,8 +53,13 @@ class SessionLockedTask(Task):
 
         acquired = redis_client.set(lock_key, "1", nx=True, ex=REDIS_LOCK_EXP_TIME_SEC)
         if acquired:
-            lock_data = {"timestamp": time.time(), "task_id": self.request.id if hasattr(self, "request") else None}
-            redis_client.set(f"lock_info:{session_id}", json.dumps(lock_data), ex=REDIS_LOCK_INFO_EXP_TIME_SEC)
+            lock_data = {
+                "timestamp": time.time(),
+                "task_id": self.request.id if hasattr(self, "request") else None,
+            }
+            redis_client.set(
+                f"lock_info:{session_id}", json.dumps(lock_data), ex=REDIS_LOCK_INFO_EXP_TIME_SEC
+            )
 
         if not acquired:
             return {

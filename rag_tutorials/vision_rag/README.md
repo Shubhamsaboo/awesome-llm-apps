@@ -6,10 +6,10 @@ A powerful visual Retrieval-Augmented Generation (RAG) system that utilizes Cohe
 
 - **Multimodal Search**: Leverages Cohere Embed-4 to find the most semantically relevant image (or PDF page image) for a given text question.
 - **Visual Question Answering**: Employs Google Gemini 2.5 Flash to analyze the content of the retrieved image/page and generate accurate, context-aware answers.
-- **Flexible Content Sources**: 
-    - Use pre-loaded sample financial charts and infographics.
-    - Upload your own custom images (PNG, JPG, JPEG).
-    - **Upload PDF documents**: Automatically extracts pages as images for analysis.
+- **Flexible Content Sources**:
+  - Use pre-loaded sample financial charts and infographics.
+  - Upload your own custom images (PNG, JPG, JPEG).
+  - **Upload PDF documents**: Automatically extracts pages as images for analysis.
 - **No OCR Required**: Directly processes complex images and visual elements within PDF pages without needing separate text extraction steps.
 - **Interactive UI**: Built with Streamlit for easy interaction, including content loading, question input, and result display.
 - **Session Management**: Remembers loaded/uploaded content (images and processed PDF pages) within a session.
@@ -25,22 +25,27 @@ A powerful visual Retrieval-Augmented Generation (RAG) system that utilizes Cohe
 Follow these steps to set up and run the application:
 
 1.  **Clone and Navigate to Directory** :
+
     ```bash
     git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
     cd awesome-llm-apps/rag_tutorials/vision_rag
     ```
 
 2.  **Install Dependencies**:
+
     ```bash
     pip install -r requirements.txt
     ```
-    *(Ensure you have the latest `PyMuPDF` installed along with other requirements)*
+
+    _(Ensure you have the latest `PyMuPDF` installed along with other requirements)_
 
 3.  **Set up your API keys**:
+
     - Get a Cohere API key from: [https://dashboard.cohere.com/api-keys](https://dashboard.cohere.com/api-keys)
     - Get a Google API key from: [https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
 
 4.  **Run the Streamlit app**:
+
     ```bash
     streamlit run vision_rag.py
     ```
@@ -53,10 +58,11 @@ Follow these steps to set up and run the application:
 
 The application follows a two-stage RAG process:
 
-1.  **Retrieval**: 
+1.  **Retrieval**:
+
     - When you load sample images or upload your own images/PDFs:
-        - Regular images are converted to base64 strings.
-        - **PDFs are processed page by page**: Each page is rendered as an image, saved temporarily, and converted to a base64 string.
+      - Regular images are converted to base64 strings.
+      - **PDFs are processed page by page**: Each page is rendered as an image, saved temporarily, and converted to a base64 string.
     - Cohere's `embed-v4.0` model (with `input_type="search_document"`) is used to generate a dense vector embedding for each image or PDF page image.
     - When you ask a question, the text query is embedded using the same `embed-v4.0` model (with `input_type="search_query"`).
     - Cosine similarity is calculated between the question embedding and all image embeddings.
@@ -71,7 +77,7 @@ The application follows a two-stage RAG process:
 1.  Enter your Cohere and Google API keys in the sidebar.
 2.  Load content:
     - Click **"Load Sample Images"** to download and process the built-in examples.
-    - *OR/AND* Use the **"Upload Your Images or PDFs"** section to upload your own image or PDF files.
+    - _OR/AND_ Use the **"Upload Your Images or PDFs"** section to upload your own image or PDF files.
 3.  Once content is loaded and processed (embeddings generated), the **"Ask a Question"** section will be enabled.
 4.  Optionally, expand **"View Loaded Images"** to see thumbnails of all images and processed PDF pages currently in the session.
 5.  Type your question about the loaded content into the text input field.

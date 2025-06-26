@@ -136,9 +136,7 @@ async def generate_travel_plan(request: TravelPlanAgentRequest) -> str:
     # Get or create status entry using repository functions
     status_entry = await get_trip_plan_status(trip_plan_id)
     if not status_entry:
-        status_entry = await create_trip_plan_status(
-            trip_plan_id=trip_plan_id, status="pending"
-        )
+        status_entry = await create_trip_plan_status(trip_plan_id=trip_plan_id, status="pending")
 
     # Update status to processing
     status_entry = await update_trip_plan_status(
@@ -230,9 +228,7 @@ async def generate_travel_plan(request: TravelPlanAgentRequest) -> str:
             """
         )
 
-        logger.info(
-            f"Flight search response: {flight_search_response.messages[-1].content}"
-        )
+        logger.info(f"Flight search response: {flight_search_response.messages[-1].content}")
 
         last_response_content += f"""
         ## Flight recommendations:
@@ -268,9 +264,7 @@ async def generate_travel_plan(request: TravelPlanAgentRequest) -> str:
         ---
         """
 
-        logger.info(
-            f"Hotel search response: {hotel_search_response.messages[-1].content}"
-        )
+        logger.info(f"Hotel search response: {hotel_search_response.messages[-1].content}")
 
         # Update status for AI team generation
         await update_trip_plan_status(
@@ -358,9 +352,7 @@ async def generate_travel_plan(request: TravelPlanAgentRequest) -> str:
             current_step="Adding finishing touches",
         )
 
-        json_response_output = await convert_to_model(
-            last_response_content, TravelPlanTeamResponse
-        )
+        json_response_output = await convert_to_model(last_response_content, TravelPlanTeamResponse)
         logger.info(f"Converted Structured Response: {json_response_output[:500]}...")
 
         # Delete any existing output entries for this trip plan
@@ -370,14 +362,10 @@ async def generate_travel_plan(request: TravelPlanAgentRequest) -> str:
             {
                 "itinerary": json_response_output,
                 "budget_agent_response": budget_response.messages[-1].content,
-                "destination_agent_response": destionation_research_response.messages[
-                    -1
-                ].content,
+                "destination_agent_response": destionation_research_response.messages[-1].content,
                 "flight_agent_response": flight_search_response.messages[-1].content,
                 "hotel_agent_response": hotel_search_response.messages[-1].content,
-                "restaurant_agent_response": restaurant_search_response.messages[
-                    -1
-                ].content,
+                "restaurant_agent_response": restaurant_search_response.messages[-1].content,
                 "itinerary_agent_response": itinerary_response.messages[-1].content,
             },
             indent=2,
@@ -400,9 +388,7 @@ async def generate_travel_plan(request: TravelPlanAgentRequest) -> str:
 
         return final_response
     except Exception as e:
-        logger.error(
-            f"Error generating travel plan for {trip_plan_id}: {str(e)}", exc_info=True
-        )
+        logger.error(f"Error generating travel plan for {trip_plan_id}: {str(e)}", exc_info=True)
         # Update status to failed
         await update_trip_plan_status(
             trip_plan_id=trip_plan_id,

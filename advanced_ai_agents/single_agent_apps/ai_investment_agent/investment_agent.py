@@ -4,7 +4,9 @@ from agno.models.openai import OpenAIChat
 from agno.tools.yfinance import YFinanceTools
 
 st.title("AI Investment Agent 📈🤖")
-st.caption("This app allows you to compare the performance of two stocks and generate detailed reports.")
+st.caption(
+    "This app allows you to compare the performance of two stocks and generate detailed reports."
+)
 
 openai_api_key = st.text_input("OpenAI API Key", type="password")
 

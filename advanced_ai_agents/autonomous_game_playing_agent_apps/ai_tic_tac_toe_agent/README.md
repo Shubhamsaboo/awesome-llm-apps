@@ -3,6 +3,7 @@
 An interactive Tic-Tac-Toe game where two AI agents powered by different language models compete against each other built on Agno Agent Framework and Streamlit as UI.
 
 This example shows how to build an interactive Tic Tac Toe game where AI agents compete against each other. The application showcases how to:
+
 - Coordinate multiple AI agents in a turn-based game
 - Use different language models for different players
 - Create an interactive web interface with Streamlit
@@ -10,6 +11,7 @@ This example shows how to build an interactive Tic Tac Toe game where AI agents 
 - Display real-time game progress and move history
 
 ## Features
+
 - Multiple AI models support (GPT-4, Claude, Gemini, etc.)
 - Real-time game visualization
 - Move history tracking with board states
@@ -17,9 +19,10 @@ This example shows how to build an interactive Tic Tac Toe game where AI agents 
 - Game state management
 - Move validation and coordination
 
-## How to Run? 
+## How to Run?
 
 1. **Setup Environment**
+
    ```bash
    # Clone the repository
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
@@ -62,6 +65,7 @@ streamlit run app.py
 The game consists of three agents:
 
 1. **Master Agent (Referee)**
+
    - Coordinates the game
    - Validates moves
    - Maintains game state
@@ -76,6 +80,7 @@ The game consists of three agents:
 ## Available Models
 
 The game supports various AI models:
+
 - GPT-4o (OpenAI)
 - GPT-o3-mini (OpenAI)
 - Gemini (Google)
@@ -85,16 +90,19 @@ The game supports various AI models:
 ## Game Features
 
 1. **Interactive Board**
+
    - Real-time updates
    - Visual move tracking
    - Clear game status display
 
 2. **Move History**
+
    - Detailed move tracking
    - Board state visualization
    - Player action timeline
 
 3. **Game Controls**
+
    - Start/Pause game
    - Reset board
    - Select AI models

@@ -1,15 +1,19 @@
 # Agentic RAG with LangGraph: AI Blog Search
 
 ## Overview
+
 AI Blog Search is an Agentic RAG application designed to enhance information retrieval from AI-related blog posts. This system leverages LangChain, LangGraph, and Google's Gemini model to fetch, process, and analyze blog content, providing users with accurate and contextually relevant answers.
 
 ## LangGraph Workflow
+
 ![LangGraph-Workflow](https://github.com/user-attachments/assets/07d8a6b5-f1ef-4b7e-b47a-4f14a192bd8a)
 
 ## Demo
+
 https://github.com/user-attachments/assets/cee07380-d3dc-45f4-ad26-7d944ba9c32b
 
 ## Features
+
 - **Document Retrieval:** Uses Qdrant as a vector database to store and retrieve blog content based on embeddings.
 - **Agentic Query Processing:** Uses an AI-powered agent to determine whether a query should be rewritten, answered, or require more retrieval.
 - **Relevance Assessment:** Implements an automated relevance grading system using Google's Gemini model.
@@ -18,6 +22,7 @@ https://github.com/user-attachments/assets/cee07380-d3dc-45f4-ad26-7d944ba9c32b
 - **Graph-Based Workflow:** Implements a structured state graph using LangGraph for efficient decision-making.
 
 ## Technologies Used
+
 - **Programming Language**: [Python 3.10+](https://www.python.org/downloads/release/python-31011/)
 - **Framework**: [LangChain](https://www.langchain.com/) and [LangGraph](https://langchain-ai.github.io/langgraph/tutorials/introduction/)
 - **Database**: [Qdrant](https://qdrant.tech/)
@@ -29,12 +34,15 @@ https://github.com/user-attachments/assets/cee07380-d3dc-45f4-ad26-7d944ba9c32b
 - **User Interface (UI)**: [Streamlit](https://docs.streamlit.io/)
 
 ## Requirements
+
 1. **Install Dependencies**:
+
    ```bash
    pip install -r requirements.txt
    ```
 
 2. **Run the Application**:
+
    ```bash
    streamlit run app.py
    ```
@@ -45,6 +53,7 @@ https://github.com/user-attachments/assets/cee07380-d3dc-45f4-ad26-7d944ba9c32b
    - Enter your query about the blog post.
 
 ## :mailbox: Connect With Me
+
 <img align="right" src="https://media.giphy.com/media/2HtWpp60NQ9CU/giphy.gif" alt="handshake gif" width="150">
 
 <p align="left">

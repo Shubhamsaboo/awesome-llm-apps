@@ -21,7 +21,7 @@ if openai_api_key:
                 "collection_name": "llm_app_memory",
                 "host": "localhost",
                 "port": 6333,
-            }
+            },
         },
     }
 
@@ -31,15 +31,15 @@ if openai_api_key:
 
     prompt = st.text_input("Ask ChatGPT")
 
-    if st.button('Chat with LLM'):
-        with st.spinner('Searching...'):
+    if st.button("Chat with LLM"):
+        with st.spinner("Searching..."):
             relevant_memories = memory.search(query=prompt, user_id=user_id)
             # Prepare context with relevant memories
             context = "Relevant past information:\n"
 
             for mem in relevant_memories:
                 context += f"- {mem['text']}\n"
-                
+
             # Prepare the full prompt
             full_prompt = f"{context}\nHuman: {prompt}\nAI:"
 
@@ -47,11 +47,14 @@ if openai_api_key:
             response = client.chat.completions.create(
                 model="gpt-4o",
                 messages=[
-                    {"role": "system", "content": "You are a helpful assistant with access to past conversations."},
-                    {"role": "user", "content": full_prompt}
-                ]
+                    {
+                        "role": "system",
+                        "content": "You are a helpful assistant with access to past conversations.",
+                    },
+                    {"role": "user", "content": full_prompt},
+                ],
             )
-            
+
             answer = response.choices[0].message.content
 
             st.write("Answer: ", answer)
@@ -59,15 +62,14 @@ if openai_api_key:
             # Add AI response to memory
             memory.add(answer, user_id=user_id)
 
-
     # Sidebar option to show memory
     st.sidebar.title("Memory Info")
     if st.button("View My Memory"):
-            memories = memory.get_all(user_id=user_id)
-            if memories and "results" in memories:
-                st.write(f"Memory history for **{user_id}**:")
-                for mem in memories["results"]:
-                    if "memory" in mem:
-                        st.write(f"- {mem['memory']}")
-            else:
-                st.sidebar.info("No learning history found for this user ID.")
+        memories = memory.get_all(user_id=user_id)
+        if memories and "results" in memories:
+            st.write(f"Memory history for **{user_id}**:")
+            for mem in memories["results"]:
+                if "memory" in mem:
+                    st.write(f"- {mem['memory']}")
+        else:
+            st.sidebar.info("No learning history found for this user ID.")

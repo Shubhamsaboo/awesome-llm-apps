@@ -76,12 +76,10 @@ def main():
         with col1:
             if not st.session_state.game_started:
                 if st.button("▶️ Start Game"):
-                    st.session_state.player_x, st.session_state.player_o = (
-                        get_tic_tac_toe_players(
-                            model_x=model_options[selected_p_x],
-                            model_o=model_options[selected_p_o],
-                            debug_mode=True,
-                        )
+                    st.session_state.player_x, st.session_state.player_o = get_tic_tac_toe_players(
+                        model_x=model_options[selected_p_x],
+                        model_o=model_options[selected_p_o],
+                        debug_mode=True,
                     )
                     st.session_state.game_board = TicTacToeBoard()
                     st.session_state.game_started = True
@@ -91,20 +89,16 @@ def main():
             else:
                 game_over, _ = st.session_state.game_board.get_game_state()
                 if not game_over:
-                    if st.button(
-                        "⏸️ Pause" if not st.session_state.game_paused else "▶️ Resume"
-                    ):
+                    if st.button("⏸️ Pause" if not st.session_state.game_paused else "▶️ Resume"):
                         st.session_state.game_paused = not st.session_state.game_paused
                         st.rerun()
         with col2:
             if st.session_state.game_started:
                 if st.button("🔄 New Game"):
-                    st.session_state.player_x, st.session_state.player_o = (
-                        get_tic_tac_toe_players(
-                            model_x=model_options[selected_p_x],
-                            model_o=model_options[selected_p_o],
-                            debug_mode=True,
-                        )
+                    st.session_state.player_x, st.session_state.player_o = get_tic_tac_toe_players(
+                        model_x=model_options[selected_p_x],
+                        model_o=model_options[selected_p_o],
+                        debug_mode=True,
                     )
                     st.session_state.game_board = TicTacToeBoard()
                     st.session_state.game_paused = False
@@ -130,9 +124,7 @@ def main():
 
         # Show game status (winner/draw/current player)
         if game_over:
-            winner_player = (
-                "X" if "X wins" in status else "O" if "O wins" in status else None
-            )
+            winner_player = "X" if "X wins" in status else "O" if "O wins" in status else None
             if winner_player:
                 winner_num = "1" if winner_player == "X" else "2"
                 winner_model = selected_p_x if winner_player == "X" else selected_p_o
@@ -167,9 +159,7 @@ def main():
             valid_moves = st.session_state.game_board.get_valid_moves()
 
             current_agent = (
-                st.session_state.player_x
-                if current_player == "X"
-                else st.session_state.player_o
+                st.session_state.player_x if current_player == "X" else st.session_state.player_o
             )
             response = current_agent.run(
                 f"""\
@@ -200,9 +190,7 @@ Respond with ONLY two numbers for row and column, e.g. "1 2".""",
                     logger.info(
                         f"Move {move_number}: Player {player_num} ({current_model_name}) placed at position ({row}, {col})"
                     )
-                    logger.info(
-                        f"Board state:\n{st.session_state.game_board.get_board_state()}"
-                    )
+                    logger.info(f"Board state:\n{st.session_state.game_board.get_board_state()}")
 
                     # Check game state after move
                     game_over, status = st.session_state.game_board.get_game_state()
@@ -238,7 +226,8 @@ Respond with ONLY two numbers for row and column, e.g. "1 2".""",
     ####################################################################
     # About section
     ####################################################################
-    st.sidebar.markdown(f"""
+    st.sidebar.markdown(
+        f"""
     ### 🎮 Agent Tic Tac Toe Battle
     Watch two agents compete in real-time!
 
@@ -254,7 +243,8 @@ Respond with ONLY two numbers for row and column, e.g. "1 2".""",
     * 🤔 Plan multiple moves ahead
 
     Built with Streamlit and Agno
-    """)
+    """
+    )
 
 
 if __name__ == "__main__":

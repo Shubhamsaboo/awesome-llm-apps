@@ -19,50 +19,52 @@ if anthropic_api_key and serper_api_key:
     os.environ["ANTHROPIC_API_KEY"] = anthropic_api_key
     os.environ["SERPER_API_KEY"] = serper_api_key
 
-    claude = LLM(model="claude-3-5-sonnet-20240620", temperature= 0.7, api_key=anthropic_api_key)
+    claude = LLM(model="claude-3-5-sonnet-20240620", temperature=0.7, api_key=anthropic_api_key)
     search_tool = SerperDevTool()
 
     # Input fields
     company_name = st.text_input("Enter the company name:")
     meeting_objective = st.text_input("Enter the meeting objective:")
     attendees = st.text_area("Enter the attendees and their roles (one per line):")
-    meeting_duration = st.number_input("Enter the meeting duration (in minutes):", min_value=15, max_value=180, value=60, step=15)
+    meeting_duration = st.number_input(
+        "Enter the meeting duration (in minutes):", min_value=15, max_value=180, value=60, step=15
+    )
     focus_areas = st.text_input("Enter any specific areas of focus or concerns:")
 
     # Define the agents
     context_analyzer = Agent(
-        role='Meeting Context Specialist',
-        goal='Analyze and summarize key background information for the meeting',
-        backstory='You are an expert at quickly understanding complex business contexts and identifying critical information.',
+        role="Meeting Context Specialist",
+        goal="Analyze and summarize key background information for the meeting",
+        backstory="You are an expert at quickly understanding complex business contexts and identifying critical information.",
         verbose=True,
         allow_delegation=False,
         llm=claude,
-        tools=[search_tool]
+        tools=[search_tool],
     )
 
     industry_insights_generator = Agent(
-        role='Industry Expert',
-        goal='Provide in-depth industry analysis and identify key trends',
-        backstory='You are a seasoned industry analyst with a knack for spotting emerging trends and opportunities.',
+        role="Industry Expert",
+        goal="Provide in-depth industry analysis and identify key trends",
+        backstory="You are a seasoned industry analyst with a knack for spotting emerging trends and opportunities.",
         verbose=True,
         allow_delegation=False,
         llm=claude,
-        tools=[search_tool]
+        tools=[search_tool],
     )
 
     strategy_formulator = Agent(
-        role='Meeting Strategist',
-        goal='Develop a tailored meeting strategy and detailed agenda',
-        backstory='You are a master meeting planner, known for creating highly effective strategies and agendas.',
+        role="Meeting Strategist",
+        goal="Develop a tailored meeting strategy and detailed agenda",
+        backstory="You are a master meeting planner, known for creating highly effective strategies and agendas.",
         verbose=True,
         allow_delegation=False,
         llm=claude,
     )
 
     executive_briefing_creator = Agent(
-        role='Communication Specialist',
-        goal='Synthesize information into concise and impactful briefings',
-        backstory='You are an expert communicator, skilled at distilling complex information into clear, actionable insights.',
+        role="Communication Specialist",
+        goal="Synthesize information into concise and impactful briefings",
+        backstory="You are an expert communicator, skilled at distilling complex information into clear, actionable insights.",
         verbose=True,
         allow_delegation=False,
         llm=claude,
@@ -86,7 +88,7 @@ if anthropic_api_key and serper_api_key:
         Format your output using markdown with appropriate headings and subheadings.
         """,
         agent=context_analyzer,
-        expected_output="A detailed analysis of the meeting context and company background, including recent developments, financial performance, and relevance to the meeting objective, formatted in markdown with headings and subheadings."
+        expected_output="A detailed analysis of the meeting context and company background, including recent developments, financial performance, and relevance to the meeting objective, formatted in markdown with headings and subheadings.",
     )
 
     industry_analysis_task = Task(
@@ -101,7 +103,7 @@ if anthropic_api_key and serper_api_key:
         Format your output using markdown with appropriate headings and subheadings.
         """,
         agent=industry_insights_generator,
-        expected_output="A comprehensive industry analysis report, including trends, competitive landscape, opportunities, threats, and relevant insights for the meeting objective, formatted in markdown with headings and subheadings."
+        expected_output="A comprehensive industry analysis report, including trends, competitive landscape, opportunities, threats, and relevant insights for the meeting objective, formatted in markdown with headings and subheadings.",
     )
 
     strategy_development_task = Task(
@@ -117,7 +119,7 @@ if anthropic_api_key and serper_api_key:
         Format your output using markdown with appropriate headings and subheadings.
         """,
         agent=strategy_formulator,
-        expected_output="A detailed meeting strategy and time-boxed agenda, including objectives, key talking points, and strategies to address specific focus areas, formatted in markdown with headings and subheadings."
+        expected_output="A detailed meeting strategy and time-boxed agenda, including objectives, key talking points, and strategies to address specific focus areas, formatted in markdown with headings and subheadings.",
     )
 
     executive_brief_task = Task(
@@ -151,24 +153,35 @@ if anthropic_api_key and serper_api_key:
         Format your output using markdown with appropriate headings and subheadings.
         """,
         agent=executive_briefing_creator,
-        expected_output="A comprehensive executive brief including summary, key talking points, Q&A preparation, and strategic recommendations, formatted in markdown with main headings (H1), section headings (H2), and subsection headings (H3) where appropriate. Use bullet points, numbered lists, and emphasis (bold/italic) for key information."
+        expected_output="A comprehensive executive brief including summary, key talking points, Q&A preparation, and strategic recommendations, formatted in markdown with main headings (H1), section headings (H2), and subsection headings (H3) where appropriate. Use bullet points, numbered lists, and emphasis (bold/italic) for key information.",
     )
 
     # Create the crew
     meeting_prep_crew = Crew(
-        agents=[context_analyzer, industry_insights_generator, strategy_formulator, executive_briefing_creator],
-        tasks=[context_analysis_task, industry_analysis_task, strategy_development_task, executive_brief_task],
+        agents=[
+            context_analyzer,
+            industry_insights_generator,
+            strategy_formulator,
+            executive_briefing_creator,
+        ],
+        tasks=[
+            context_analysis_task,
+            industry_analysis_task,
+            strategy_development_task,
+            executive_brief_task,
+        ],
         verbose=True,
-        process=Process.sequential
+        process=Process.sequential,
     )
 
     # Run the crew when the user clicks the button
     if st.button("Prepare Meeting"):
         with st.spinner("AI agents are preparing your meeting..."):
-            result = meeting_prep_crew.kickoff()        
+            result = meeting_prep_crew.kickoff()
         st.markdown(result)
 
-    st.sidebar.markdown("""
+    st.sidebar.markdown(
+        """
     ## How to use this app:
     1. Enter your API keys in the sidebar.
     2. Provide the requested information about the meeting.
@@ -181,6 +194,7 @@ if anthropic_api_key and serper_api_key:
     - Create an executive brief with key talking points
 
     This process may take a few minutes. Please be patient!
-    """)
+    """
+    )
 else:
     st.warning("Please enter all API keys in the sidebar before proceeding.")

@@ -13,7 +13,7 @@ class TaskService:
         try:
             if include_disabled:
                 query = """
-                SELECT id, name, description, command, task_type, frequency, frequency_unit, 
+                SELECT id, name, description, command, task_type, frequency, frequency_unit,
                        enabled, last_run, created_at
                 FROM tasks
                 ORDER BY name
@@ -21,7 +21,7 @@ class TaskService:
                 params = ()
             else:
                 query = """
-                SELECT id, name, description, command, task_type, frequency, frequency_unit, 
+                SELECT id, name, description, command, task_type, frequency, frequency_unit,
                        enabled, last_run, created_at
                 FROM tasks
                 WHERE enabled = 1
@@ -41,7 +41,7 @@ class TaskService:
         """Get a specific task by ID."""
         try:
             query = """
-            SELECT id, name, description, command, task_type, frequency, frequency_unit, 
+            SELECT id, name, description, command, task_type, frequency, frequency_unit,
                    enabled, last_run, created_at
             FROM tasks
             WHERE id = ?
@@ -91,12 +91,13 @@ class TaskService:
                 )
             if task_type not in TASK_TYPES:
                 raise HTTPException(
-                    status_code=400, detail=f"Invalid task type: '{task_type}'. Please select a valid task type from the available options."
+                    status_code=400,
+                    detail=f"Invalid task type: '{task_type}'. Please select a valid task type from the available options.",
                 )
             command = TASK_TYPES[task_type]["command"]
             current_time = datetime.now().isoformat()
             query = """
-            INSERT INTO tasks 
+            INSERT INTO tasks
             (name, description, command, task_type, frequency, frequency_unit, enabled, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """
@@ -192,7 +193,9 @@ class TaskService:
                 raise e
             raise HTTPException(status_code=500, detail=f"Error updating task: {str(e)}")
 
-    async def get_task_executions(self, task_id: Optional[int] = None, page: int = 1, per_page: int = 10) -> Dict[str, Any]:
+    async def get_task_executions(
+        self, task_id: Optional[int] = None, page: int = 1, per_page: int = 10
+    ) -> Dict[str, Any]:
         """Get paginated task executions."""
         try:
             offset = (page - 1) * per_page
@@ -224,7 +227,9 @@ class TaskService:
                 LIMIT ? OFFSET ?
                 """
                 params = (per_page, offset)
-            count_result = await tasks_db.execute_query(count_query, count_params, fetch=True, fetch_one=True)
+            count_result = await tasks_db.execute_query(
+                count_query, count_params, fetch=True, fetch_one=True
+            )
             total_items = count_result.get("count", 0) if count_result else 0
             executions = await tasks_db.execute_query(query, params, fetch=True)
             for execution in executions:
@@ -259,8 +264,8 @@ class TaskService:
             FROM tasks
             WHERE enabled = 1
             AND (
-                last_run IS NULL 
-                OR 
+                last_run IS NULL
+                OR
                 CASE frequency_unit
                     WHEN 'minutes' THEN datetime(last_run, '+' || frequency || ' minutes') <= datetime('now', 'localtime')
                     WHEN 'hours' THEN datetime(last_run, '+' || frequency || ' hours') <= datetime('now', 'localtime')
@@ -283,7 +288,7 @@ class TaskService:
         """Get task statistics."""
         try:
             task_query = """
-            SELECT 
+            SELECT
                 COUNT(*) as total_tasks,
                 SUM(CASE WHEN enabled = 1 THEN 1 ELSE 0 END) as active_tasks,
                 SUM(CASE WHEN enabled = 0 THEN 1 ELSE 0 END) as disabled_tasks,
@@ -293,18 +298,20 @@ class TaskService:
             task_stats = await tasks_db.execute_query(task_query, fetch=True, fetch_one=True)
             cutoff_date = (datetime.now() - timedelta(days=7)).isoformat()
             exec_query = """
-            SELECT 
+            SELECT
                 COUNT(*) as total_executions,
                 COALESCE(SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END), 0) as successful_executions,
                 COALESCE(SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END), 0) as failed_executions,
                 COALESCE(SUM(CASE WHEN status = 'running' THEN 1 ELSE 0 END), 0) as running_executions,
-                COALESCE(AVG(CASE WHEN end_time IS NOT NULL 
-                    THEN (julianday(end_time) - julianday(start_time)) * 86400.0 
+                COALESCE(AVG(CASE WHEN end_time IS NOT NULL
+                    THEN (julianday(end_time) - julianday(start_time)) * 86400.0
                     ELSE NULL END), 0) as avg_execution_time_seconds
             FROM task_executions
             WHERE start_time >= ?
             """
-            exec_stats = await tasks_db.execute_query(exec_query, (cutoff_date,), fetch=True, fetch_one=True)
+            exec_stats = await tasks_db.execute_query(
+                exec_query, (cutoff_date,), fetch=True, fetch_one=True
+            )
             return {"tasks": task_stats or {}, "executions": exec_stats or {}}
         except Exception as e:
             if isinstance(e, HTTPException):

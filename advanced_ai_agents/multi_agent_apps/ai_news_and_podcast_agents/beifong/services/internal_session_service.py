@@ -62,7 +62,11 @@ class SessionService:
                 current_time = datetime.now().isoformat()
                 cursor.execute(insert_query, (session_id, state_json, current_time))
                 conn.commit()
-                return {"session_id": session_id, "state": INITIAL_SESSION_STATE, "created_at": current_time}
+                return {
+                    "session_id": session_id,
+                    "state": INITIAL_SESSION_STATE,
+                    "created_at": current_time,
+                }
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error initializing session: {str(e)}")
 
@@ -80,7 +84,9 @@ class SessionService:
                     update_query = "UPDATE session_state SET state = ? WHERE session_id = ?"
                     cursor.execute(update_query, (state_json, session_id))
                 else:
-                    insert_query = "INSERT INTO session_state (session_id, state, created_at) VALUES (?, ?, ?)"
+                    insert_query = (
+                        "INSERT INTO session_state (session_id, state, created_at) VALUES (?, ?, ?)"
+                    )
                     current_time = datetime.now().isoformat()
                     cursor.execute(insert_query, (session_id, state_json, current_time))
                 conn.commit()
@@ -110,7 +116,9 @@ class SessionService:
             raise HTTPException(status_code=500, detail=f"Error deleting session: {str(e)}")
 
     @staticmethod
-    def list_sessions(page: int = 1, per_page: int = 10, search: Optional[str] = None) -> Dict[str, Any]:
+    def list_sessions(
+        page: int = 1, per_page: int = 10, search: Optional[str] = None
+    ) -> Dict[str, Any]:
         try:
             with get_db_connection("internal_sessions_db") as conn:
                 cursor = conn.cursor()
@@ -141,7 +149,7 @@ class SessionService:
                 has_next = page < total_pages
                 has_prev = page > 1
                 return {
-                    "items": sessions,  
+                    "items": sessions,
                     "total": total_count,
                     "page": page,
                     "per_page": per_page,

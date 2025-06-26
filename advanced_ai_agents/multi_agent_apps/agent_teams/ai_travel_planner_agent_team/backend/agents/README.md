@@ -9,6 +9,7 @@ The system is orchestrated by the "TripCraft AI Team", which coordinates multipl
 ### Core Team Members
 
 1. **Destination Explorer**
+
    - Primary role: Researches and recommends tourist attractions and experiences
    - Tools: ExaTools for deep web research
    - Focus areas:
@@ -20,6 +21,7 @@ The system is orchestrated by the "TripCraft AI Team", which coordinates multipl
    - Provides structured information about attractions including opening hours, fees, and visit duration
 
 2. **Hotel Search Agent**
+
    - Primary role: Accommodation research and recommendations
    - Focuses on finding the perfect stay based on:
      - Location preferences
@@ -29,6 +31,7 @@ The system is orchestrated by the "TripCraft AI Team", which coordinates multipl
      - Property features
 
 3. **Dining Agent**
+
    - Primary role: Restaurant and culinary experience recommendations
    - Considers:
      - Cuisine types
@@ -39,6 +42,7 @@ The system is orchestrated by the "TripCraft AI Team", which coordinates multipl
      - Special dining experiences
 
 4. **Budget Agent**
+
    - Primary role: Financial planning and cost optimization
    - Responsibilities:
      - Trip cost breakdown
@@ -48,6 +52,7 @@ The system is orchestrated by the "TripCraft AI Team", which coordinates multipl
      - Emergency fund planning
 
 5. **Flight Search Agent**
+
    - Primary role: Air travel planning and optimization
    - Handles:
      - Flight route research
@@ -70,6 +75,7 @@ The system is orchestrated by the "TripCraft AI Team", which coordinates multipl
 ## Team Coordination
 
 The team works together through a sophisticated coordination system that:
+
 1. Analyzes user preferences and requirements
 2. Delegates tasks to specialized agents
 3. Combines individual agent outputs into a cohesive travel plan
@@ -79,6 +85,7 @@ The team works together through a sophisticated coordination system that:
 ## Tools and Technologies
 
 The agents utilize various tools including:
+
 - **ReasoningTools**: For logical decision-making and plan optimization
 - **ExaTools**: For deep web research and information gathering
 - **FirecrawlTools**: For real-time data and current information
@@ -86,6 +93,7 @@ The agents utilize various tools including:
 ## Output Format
 
 The team produces detailed travel itineraries that include:
+
 - Executive summary of the trip
 - Comprehensive travel logistics
 - Day-by-day itineraries
@@ -96,6 +104,7 @@ The team produces detailed travel itineraries that include:
 ## Best Practices
 
 The agent system follows these key principles:
+
 1. Thorough analysis of user preferences
 2. Detailed research using multiple data sources
 3. Practical and implementable recommendations

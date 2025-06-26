@@ -29,22 +29,28 @@ class ArticleService:
             query_params = []
             if source:
                 source_id_query = "SELECT id FROM sources WHERE name = ?"
-                source_id_result = await sources_db.execute_query(source_id_query, (source,), fetch=True, fetch_one=True)
+                source_id_result = await sources_db.execute_query(
+                    source_id_query, (source,), fetch=True, fetch_one=True
+                )
                 if source_id_result and source_id_result.get("id"):
                     feed_ids_query = "SELECT id FROM source_feeds WHERE source_id = ?"
-                    feed_ids_result = await sources_db.execute_query(feed_ids_query, (source_id_result["id"],), fetch=True)
+                    feed_ids_result = await sources_db.execute_query(
+                        feed_ids_query, (source_id_result["id"],), fetch=True
+                    )
                     if feed_ids_result:
                         feed_ids = [item["id"] for item in feed_ids_result]
                         placeholders = ",".join(["?" for _ in feed_ids])
                         query_parts.append(f"AND ca.feed_id IN ({placeholders})")
                         query_params.extend(feed_ids)
             if category:
-                query_parts.append("""
+                query_parts.append(
+                    """
                     AND EXISTS (
-                        SELECT 1 FROM article_categories ac 
+                        SELECT 1 FROM article_categories ac
                         WHERE ac.article_id = ca.id AND ac.category_name = ?
                     )
-                """)
+                """
+                )
                 query_params.append(category.lower())
             if date_from:
                 query_parts.append("AND datetime(ca.published_date) >= datetime(?)")
@@ -60,13 +66,17 @@ class ArticleService:
                 "SELECT ca.id, ca.title, ca.url, ca.published_date, ca.summary, ca.feed_id",
                 "SELECT COUNT(*)",
             )
-            total_articles = await tracking_db.execute_query(count_query, tuple(query_params), fetch=True, fetch_one=True)
+            total_articles = await tracking_db.execute_query(
+                count_query, tuple(query_params), fetch=True, fetch_one=True
+            )
             total_count = total_articles.get("COUNT(*)", 0) if total_articles else 0
             query_parts.append("ORDER BY datetime(ca.published_date) DESC, ca.id DESC")
             query_parts.append("LIMIT ? OFFSET ?")
             query_params.extend([per_page, offset])
             articles_query = " ".join(query_parts)
-            articles = await tracking_db.execute_query(articles_query, tuple(query_params), fetch=True)
+            articles = await tracking_db.execute_query(
+                articles_query, tuple(query_params), fetch=True
+            )
             feed_ids = [article["feed_id"] for article in articles if article.get("feed_id")]
             source_names = {}
             if feed_ids:
@@ -77,7 +87,9 @@ class ArticleService:
                 JOIN sources s ON sf.source_id = s.id
                 WHERE sf.id IN ({feed_ids_str})
                 """
-                sources_result = await sources_db.execute_query(source_query, tuple(feed_ids), fetch=True)
+                sources_result = await sources_db.execute_query(
+                    source_query, tuple(feed_ids), fetch=True
+                )
                 source_names = {item["feed_id"]: item["source_name"] for item in sources_result}
             for article in articles:
                 feed_id = article.get("feed_id")
@@ -110,7 +122,9 @@ class ArticleService:
             FROM crawled_articles
             WHERE id = ? AND processed = 1
             """
-            article = await tracking_db.execute_query(article_query, (article_id,), fetch=True, fetch_one=True)
+            article = await tracking_db.execute_query(
+                article_query, (article_id,), fetch=True, fetch_one=True
+            )
             if not article:
                 raise HTTPException(status_code=404, detail="Article not found")
             if article.get("feed_id"):
@@ -120,7 +134,9 @@ class ArticleService:
                 JOIN sources s ON sf.source_id = s.id
                 WHERE sf.id = ?
                 """
-                source_result = await sources_db.execute_query(source_query, (article["feed_id"],), fetch=True, fetch_one=True)
+                source_result = await sources_db.execute_query(
+                    source_query, (article["feed_id"],), fetch=True, fetch_one=True
+                )
                 if source_result:
                     article["source_name"] = source_result["source_name"]
                 else:
@@ -153,7 +169,7 @@ class ArticleService:
     async def get_sources(self) -> List[str]:
         """Get all available active sources."""
         query = """
-        SELECT DISTINCT name FROM sources 
+        SELECT DISTINCT name FROM sources
         WHERE is_active = 1
         ORDER BY name
         """

@@ -409,7 +409,7 @@ const PodcastSession = () => {
                   updateSessionState(statusResponse.data.session_state);
                }
 
-               
+
             }
             // If it's still processing but there's a status update
             else if (

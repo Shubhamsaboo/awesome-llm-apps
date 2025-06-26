@@ -4,34 +4,34 @@ import {
 } from 'lucide-react';
 
 const SENTIMENT_CONFIG = {
-   positive: { 
-      icon: Smile, 
-      color: '#10b981', 
-      bgClass: 'bg-emerald-500/10', 
+   positive: {
+      icon: Smile,
+      color: '#10b981',
+      bgClass: 'bg-emerald-500/10',
       borderClass: 'border-emerald-500/30',
       textClass: 'text-emerald-400',
       barClass: 'bg-gradient-to-r from-emerald-500 to-emerald-400'
    },
-   negative: { 
-      icon: Frown, 
-      color: '#ef4444', 
-      bgClass: 'bg-red-500/10', 
+   negative: {
+      icon: Frown,
+      color: '#ef4444',
+      bgClass: 'bg-red-500/10',
       borderClass: 'border-red-500/30',
       textClass: 'text-red-400',
       barClass: 'bg-gradient-to-r from-red-500 to-red-400'
    },
-   critical: { 
-      icon: AlertCircle, 
-      color: '#f97316', 
-      bgClass: 'bg-orange-500/10', 
+   critical: {
+      icon: AlertCircle,
+      color: '#f97316',
+      bgClass: 'bg-orange-500/10',
       borderClass: 'border-orange-500/30',
       textClass: 'text-orange-400',
       barClass: 'bg-gradient-to-r from-orange-500 to-orange-400'
    },
-   neutral: { 
-      icon: Minus, 
-      color: '#6b7280', 
-      bgClass: 'bg-gray-500/10', 
+   neutral: {
+      icon: Minus,
+      color: '#6b7280',
+      bgClass: 'bg-gray-500/10',
       borderClass: 'border-gray-500/30',
       textClass: 'text-gray-400',
       barClass: 'bg-gradient-to-r from-gray-500 to-gray-400'
@@ -57,7 +57,7 @@ const getDominantSentiment = (item) => {
 const CompactSentimentBadge = ({ sentiment, percentage }) => {
    const config = SENTIMENT_CONFIG[sentiment];
    const Icon = config.icon;
-   
+
    return (
       <div className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full border ${config.bgClass} ${config.borderClass}`}>
          <Icon size={10} className={config.textClass} />
@@ -71,7 +71,7 @@ const CompactSentimentBadge = ({ sentiment, percentage }) => {
 const MiniSentimentBar = ({ sentiment, percentage, count }) => {
    const config = SENTIMENT_CONFIG[sentiment];
    const Icon = config.icon;
-   
+
    return (
       <div className="flex items-center gap-2">
          <div className="flex items-center gap-1 min-w-0">
@@ -81,7 +81,7 @@ const MiniSentimentBar = ({ sentiment, percentage, count }) => {
             </span>
          </div>
          <div className="flex-1 h-1 bg-gray-800 rounded-full overflow-hidden">
-            <div 
+            <div
                className={`h-full ${config.barClass} rounded-full transition-all duration-300`}
                style={{ width: `${Math.max(percentage, 2)}%` }}
             />
@@ -96,7 +96,7 @@ const MiniSentimentBar = ({ sentiment, percentage, count }) => {
 const CompactAvatar = ({ user }) => {
    const displayName = user.user_display_name || user.user_handle?.replace('@', '') || 'U';
    const initials = displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-   
+
    return (
       <div className="w-7 h-7 bg-gradient-to-br from-gray-700 to-gray-800 rounded-full flex items-center justify-center border border-gray-600/50">
          <span className="text-xs font-medium text-white">{initials}</span>
@@ -119,8 +119,8 @@ const LoadingSkeleton = () => (
 );
 
 const UserSentimentCard = ({ userSentiment = [], loading = false }) => {
-   const sortedUsers = useMemo(() => 
-      userSentiment.slice(0, 8).sort((a, b) => b.total_posts - a.total_posts), 
+   const sortedUsers = useMemo(() =>
+      userSentiment.slice(0, 8).sort((a, b) => b.total_posts - a.total_posts),
       [userSentiment]
    );
 
@@ -164,10 +164,10 @@ const UserSentimentCard = ({ userSentiment = [], loading = false }) => {
                         .filter(s => s.percentage > 0)
                         .sort((a, b) => b.percentage - a.percentage)
                         .slice(0, 2);
-                     
+
                      return (
-                        <div 
-                           key={user.user_handle || index} 
+                        <div
+                           key={user.user_handle || index}
                            className="group p-2.5 bg-gray-800/30 hover:bg-gray-800/50 rounded-md border border-gray-700/40 hover:border-gray-600/50 transition-all duration-200"
                         >
                            <div className="flex items-center gap-2.5 mb-2">
@@ -177,9 +177,9 @@ const UserSentimentCard = ({ userSentiment = [], loading = false }) => {
                                     <h4 className="text-sm font-medium text-white truncate max-w-24">
                                        {user.user_display_name || user.user_handle?.replace('@', '') || 'Unknown'}
                                     </h4>
-                                    <CompactSentimentBadge 
-                                       sentiment={dominantSentiment} 
-                                       percentage={user[`${dominantSentiment}_percent`]} 
+                                    <CompactSentimentBadge
+                                       sentiment={dominantSentiment}
+                                       percentage={user[`${dominantSentiment}_percent`]}
                                     />
                                  </div>
                                  <div className="flex items-center gap-1 text-xs text-gray-400">
@@ -189,7 +189,7 @@ const UserSentimentCard = ({ userSentiment = [], loading = false }) => {
                                  </div>
                               </div>
                            </div>
-                           
+
                            <div className="space-y-1">
                               {topSentiments.map(({ sentiment, percentage, count }) => (
                                  <MiniSentimentBar
@@ -211,8 +211,8 @@ const UserSentimentCard = ({ userSentiment = [], loading = false }) => {
 };
 
 const TrendingTopicsCard = ({ trendingTopics = [], loading = false }) => {
-   const sortedTopics = useMemo(() => 
-      trendingTopics.slice(0, 8).sort((a, b) => b.total_count - a.total_count), 
+   const sortedTopics = useMemo(() =>
+      trendingTopics.slice(0, 8).sort((a, b) => b.total_count - a.total_count),
       [trendingTopics]
    );
 
@@ -256,10 +256,10 @@ const TrendingTopicsCard = ({ trendingTopics = [], loading = false }) => {
                         .filter(s => s.percentage > 0)
                         .sort((a, b) => b.percentage - a.percentage)
                         .slice(0, 2);
-                     
+
                      return (
-                        <div 
-                           key={topic.topic || index} 
+                        <div
+                           key={topic.topic || index}
                            className="group p-2.5 bg-gray-800/30 hover:bg-gray-800/50 rounded-md border border-gray-700/40 hover:border-gray-600/50 transition-all duration-200"
                         >
                            <div className="flex items-center gap-2.5 mb-2">
@@ -271,9 +271,9 @@ const TrendingTopicsCard = ({ trendingTopics = [], loading = false }) => {
                                     <h4 className="text-sm font-medium text-white truncate max-w-24">
                                        {topic.topic}
                                     </h4>
-                                    <CompactSentimentBadge 
-                                       sentiment={dominantSentiment} 
-                                       percentage={topic[`${dominantSentiment}_percent`]} 
+                                    <CompactSentimentBadge
+                                       sentiment={dominantSentiment}
+                                       percentage={topic[`${dominantSentiment}_percent`]}
                                     />
                                  </div>
                                  <div className="flex items-center gap-1 text-xs text-gray-400">
@@ -283,7 +283,7 @@ const TrendingTopicsCard = ({ trendingTopics = [], loading = false }) => {
                                  </div>
                               </div>
                            </div>
-                           
+
                            <div className="space-y-1">
                               {topSentiments.map(({ sentiment, percentage, count }) => (
                                  <MiniSentimentBar

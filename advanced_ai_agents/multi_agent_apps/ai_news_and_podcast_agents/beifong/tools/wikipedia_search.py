@@ -17,7 +17,7 @@ def wikipedia_search(agent: Agent, query: str, srlimit: int = 5) -> str:
     import requests
     import html
     import json
-    
+
     print("Wikipedia Search Input:", query)
     try:
         search_url = "https://en.wikipedia.org/w/api.php"
@@ -42,9 +42,7 @@ def wikipedia_search(agent: Agent, query: str, srlimit: int = 5) -> str:
         for item in search_data["query"]["search"]:
             title = item["title"]
             snippet = html.unescape(
-                item["snippet"]
-                .replace('<span class="searchmatch">', "")
-                .replace("</span>", "")
+                item["snippet"].replace('<span class="searchmatch">', "").replace("</span>", "")
             )
             url = f"https://en.wikipedia.org/wiki/{title.replace(' ', '_')}"
             result = {

@@ -1,15 +1,16 @@
 # rag/query_router.py
 import sys
 import os
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 
 import os
 import requests
-import openai  
+import openai
 import json
 import inspect
-from llama_index.core import StorageContext,load_index_from_storage
+from llama_index.core import StorageContext, load_index_from_storage
 from dotenv import load_dotenv
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
@@ -26,12 +27,14 @@ TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 output_validator = OutputValidator()
 input_validator = InputValidator()
 
+
 def load_kb_index():
     qdrant_client = QdrantClient(host="localhost", port=6333)
     vector_store = QdrantVectorStore(client=qdrant_client, collection_name="math_agent")
-    storage_context = StorageContext.from_defaults(persist_dir="storage",vector_store=vector_store)
+    storage_context = StorageContext.from_defaults(persist_dir="storage", vector_store=vector_store)
     index = load_index_from_storage(storage_context)
     return index
+
 
 def query_kb(question: str):
     index = load_kb_index()
@@ -48,6 +51,7 @@ def query_kb(question: str):
 
     return matched_text, similarity
 
+
 def query_web(question: str):
     url = "https://api.tavily.com/search"
     headers = {"Content-Type": "application/json"}
@@ -56,11 +60,12 @@ def query_web(question: str):
         "query": question,
         "search_depth": "basic",
         "include_answer": True,
-        "include_raw_content": False
+        "include_raw_content": False,
     }
     response = requests.post(url, json=payload, headers=headers)
     data = response.json()
     return data.get("answer", "No answer found.")
+
 
 def explain_with_openai(question: str, web_content: str):
     prompt = f"""
@@ -96,7 +101,7 @@ def answer_math_question(question: str):
         kb_answer, similarity = query_kb(question)
         print("🧪 KB raw answer:", kb_answer)
 
-        if similarity > 0.:
+        if similarity > 0.0:
             print("✅ High similarity KB match, using GPT for step-by-step explanation...")
 
             prompt = f"""
@@ -142,6 +147,7 @@ Use the KB content as your only source. Do not guess or recalculate.
 
     return answer
 
+
 if __name__ == "__main__":
     question = """
 In a historical experiment to determine Planck's constant, a metal surface was irradiated with light of different wavelengths.
@@ -149,14 +155,14 @@ The emitted photoelectron energies were measured by applying a stopping potentia
 The relevant data for the wavelength (λ) of incident light and the corresponding stopping potential (V₀) are given below:
 
 λ (μm) | V₀ (V)
-0.3     | 2.0  
-0.4     | 1.0  
-0.5     | 0.4  
+0.3     | 2.0
+0.4     | 1.0
+0.5     | 0.4
 
 Given that c = 3×10⁸ m/s and e = 1.6×10⁻¹⁹ C, Planck's constant (in Js) found from such an experiment is:
-(A) 6.0×10⁻³⁴  
-(B) 6.4×10⁻³⁴  
-(C) 6.6×10⁻³⁴  
+(A) 6.0×10⁻³⁴
+(B) 6.4×10⁻³⁴
+(C) 6.6×10⁻³⁴
 (D) 6.8×10⁻³⁴
 """
     answer = answer_math_question(question)

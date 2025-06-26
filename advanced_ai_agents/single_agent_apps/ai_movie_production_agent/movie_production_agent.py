@@ -10,7 +10,9 @@ st.title("AI Movie Production Agent 🎬")
 st.caption("Bring your movie ideas to life with the teams of script writing and casting AI agents")
 
 # Get Anthropic API key from user
-anthropic_api_key = st.text_input("Enter Anthropic API Key to access Claude Sonnet 3.5", type="password")
+anthropic_api_key = st.text_input(
+    "Enter Anthropic API Key to access Claude Sonnet 3.5", type="password"
+)
 # Get SerpAPI key from the user
 serp_api_key = st.text_input("Enter Serp API Key for Search functionality", type="password")
 
@@ -20,7 +22,7 @@ if anthropic_api_key and serp_api_key:
         model=Claude(id="claude-3-5-sonnet-20240620", api_key=anthropic_api_key),
         description=dedent(
             """\
-        You are an expert screenplay writer. Given a movie idea and genre, 
+        You are an expert screenplay writer. Given a movie idea and genre,
         develop a compelling script outline with character descriptions and key plot points.
         """
         ),
@@ -65,10 +67,13 @@ if anthropic_api_key and serp_api_key:
 
     # Input field for the report query
     movie_idea = st.text_area("Describe your movie idea in a few sentences:")
-    genre = st.selectbox("Select the movie genre:", 
-                         ["Action", "Comedy", "Drama", "Sci-Fi", "Horror", "Romance", "Thriller"])
-    target_audience = st.selectbox("Select the target audience:", 
-                                   ["General", "Children", "Teenagers", "Adults", "Mature"])
+    genre = st.selectbox(
+        "Select the movie genre:",
+        ["Action", "Comedy", "Drama", "Sci-Fi", "Horror", "Romance", "Thriller"],
+    )
+    target_audience = st.selectbox(
+        "Select the target audience:", ["General", "Children", "Teenagers", "Adults", "Mature"]
+    )
     estimated_runtime = st.slider("Estimated runtime (in minutes):", 60, 180, 120)
 
     # Process the movie concept

@@ -6,7 +6,15 @@ import uvicorn
 import os
 import aiofiles
 from contextlib import asynccontextmanager
-from routers import article_router, podcast_router, source_router, task_router, podcast_config_router, async_podcast_agent_router, social_media_router
+from routers import (
+    article_router,
+    podcast_router,
+    source_router,
+    task_router,
+    podcast_config_router,
+    async_podcast_agent_router,
+    social_media_router,
+)
 from services.db_init import init_databases
 from dotenv import load_dotenv
 
@@ -51,8 +59,12 @@ app.include_router(article_router.router, prefix="/api/articles", tags=["article
 app.include_router(source_router.router, prefix="/api/sources", tags=["sources"])
 app.include_router(podcast_router.router, prefix="/api/podcasts", tags=["podcasts"])
 app.include_router(task_router.router, prefix="/api/tasks", tags=["tasks"])
-app.include_router(podcast_config_router.router, prefix="/api/podcast-configs", tags=["podcast-configs"])
-app.include_router(async_podcast_agent_router.router, prefix="/api/podcast-agent", tags=["podcast-agent"])
+app.include_router(
+    podcast_config_router.router, prefix="/api/podcast-configs", tags=["podcast-configs"]
+)
+app.include_router(
+    async_podcast_agent_router.router, prefix="/api/podcast-agent", tags=["podcast-agent"]
+)
 app.include_router(social_media_router.router, prefix="/api/social-media", tags=["social-media"])
 
 
@@ -144,7 +156,11 @@ app.mount("/audio", StaticFiles(directory="podcasts/audio"), name="audio")
 app.mount("/server_static", StaticFiles(directory="static"), name="server_static")
 app.mount("/podcast_img", StaticFiles(directory="podcasts/images"), name="podcast_img")
 if os.path.exists(os.path.join(CLIENT_BUILD_PATH, "static")):
-    app.mount("/static", StaticFiles(directory=os.path.join(CLIENT_BUILD_PATH, "static")), name="react_static")
+    app.mount(
+        "/static",
+        StaticFiles(directory=os.path.join(CLIENT_BUILD_PATH, "static")),
+        name="react_static",
+    )
 
 
 @app.get("/favicon.ico")
@@ -179,9 +195,18 @@ async def serve_react(full_path: str, request: Request):
     if os.path.exists(index_path):
         return FileResponse(index_path)
     else:
-        return {"detail": "React client not found. Build the client or set the correct CLIENT_BUILD_PATH."}
+        return {
+            "detail": "React client not found. Build the client or set the correct CLIENT_BUILD_PATH."
+        }
 
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 7000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False, timeout_keep_alive=120, timeout_graceful_shutdown=120)
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=port,
+        reload=False,
+        timeout_keep_alive=120,
+        timeout_graceful_shutdown=120,
+    )

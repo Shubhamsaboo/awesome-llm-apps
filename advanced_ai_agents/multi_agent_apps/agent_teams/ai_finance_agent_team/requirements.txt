@@ -2,5 +2,5 @@ openai
 agno
 duckduckgo-search
 yfinance
-fastapi[standard] 
+fastapi[standard]
 sqlalchemy

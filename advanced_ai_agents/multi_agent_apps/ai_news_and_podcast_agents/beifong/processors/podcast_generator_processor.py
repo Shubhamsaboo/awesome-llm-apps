@@ -85,7 +85,9 @@ def generate_podcast_from_prompt_v2(
         return {"error": f"Scrape agent failed: {str(e)}"}
     try:
         language_name = get_language_name(language_code)
-        podcast_data = script_agent_run(query=prompt, search_results=confirmed_results, language_name=language_name)
+        podcast_data = script_agent_run(
+            query=prompt, search_results=confirmed_results, language_name=language_name
+        )
         if not podcast_data or not isinstance(podcast_data, dict):
             print("ERROR: Failed to generate podcast script")
             return {"error": "Failed to generate podcast script"}
@@ -260,7 +262,9 @@ def process_all_active_configs_v2(
     for i, config in enumerate(configs, 1):
         config_id = config["id"]
         config_name = config["name"]
-        print(f"\n[{i}/{total_configs}] Processing podcast configuration {config_id}: {config_name}")
+        print(
+            f"\n[{i}/{total_configs}] Processing podcast configuration {config_id}: {config_name}"
+        )
         try:
             result = generate_podcast_from_config_v2(
                 config_id=config_id,

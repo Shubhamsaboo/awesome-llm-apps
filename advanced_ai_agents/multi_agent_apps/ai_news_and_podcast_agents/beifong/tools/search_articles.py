@@ -23,7 +23,9 @@ def search_articles(agent: Agent, terms: Union[str, List[str]]) -> str:
     db_path = get_tracking_db_path()
     try:
         with sqlite3.connect(f"file:{db_path}?mode=ro", uri=True) as conn:
-            conn.row_factory = lambda cursor, row: {col[0]: row[idx] for idx, col in enumerate(cursor.description)}
+            conn.row_factory = lambda cursor, row: {
+                col[0]: row[idx] for idx, col in enumerate(cursor.description)
+            }
             results = execute_simple_search(conn, search_terms, limit)
             if not results:
                 return "No relevant articles found in our database. Would you like to try a different topic or provide specific URLs?"
@@ -38,11 +40,11 @@ def search_articles(agent: Agent, terms: Union[str, List[str]]) -> str:
 
 def execute_simple_search(conn, terms, limit):
     base_query = """
-        SELECT DISTINCT ca.id, ca.title, ca.url, ca.published_date, 
+        SELECT DISTINCT ca.id, ca.title, ca.url, ca.published_date,
                COALESCE(ca.summary, ca.content) as content,
                ca.source_id, ca.feed_id
         FROM crawled_articles ca
-        WHERE ca.processed = 1 
+        WHERE ca.processed = 1
           AND (
     """
     clauses = []
@@ -60,7 +62,9 @@ def execute_simple_search(conn, terms, limit):
 
 def get_article_categories(conn, article_id):
     try:
-        cursor = conn.execute("SELECT category_name FROM article_categories WHERE article_id = ?", (article_id,))
+        cursor = conn.execute(
+            "SELECT category_name FROM article_categories WHERE article_id = ?", (article_id,)
+        )
         return [row["category_name"] for row in cursor.fetchall()]
     except Exception as e:
         print(f"Error fetching article categories: {e}")

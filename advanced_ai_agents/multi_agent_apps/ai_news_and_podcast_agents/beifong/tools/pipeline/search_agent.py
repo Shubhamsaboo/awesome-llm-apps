@@ -19,7 +19,9 @@ load_dotenv()
 class ReturnItem(BaseModel):
     url: str = Field(..., description="The URL of the search result")
     title: str = Field(..., description="The title of the search result")
-    description: str = Field(..., description="A brief description or summary of the search result content")
+    description: str = Field(
+        ..., description="A brief description or summary of the search result content"
+    )
     source_name: str = Field(
         ...,
         description="The name/type of the source (e.g., 'wikipedia', 'general', or any reputable source tag)",
@@ -43,7 +45,8 @@ class SearchResults(BaseModel):
 
 
 SEARCH_AGENT_DESCRIPTION = "You are a helpful assistant that can search the web for information."
-SEARCH_AGENT_INSTRUCTIONS = dedent("""
+SEARCH_AGENT_INSTRUCTIONS = dedent(
+    """
     You are a helpful assistant that can search the web or any other sources for information.
     You should create topic for the search from the given query instead of blindly apply the query to the search tools.
     For a given topic, your job is to search the web or any other sources and return the top 5 to 10 sources about the topic.
@@ -57,7 +60,8 @@ SEARCH_AGENT_INSTRUCTIONS = dedent("""
     IMPORTANT: If returned sources are not of high quality or not relevant to the asked topic, don't include them in the returned sources.
     IMPORTANT: Never include dates to the search query unless user explicitly asks for it.
     IMPORTANT: You are allowed to use appropriate tools to get the best results even the single tool return enough results diverse check is better.
-    """)
+    """
+)
 
 
 def search_agent_run(query: str) -> str:

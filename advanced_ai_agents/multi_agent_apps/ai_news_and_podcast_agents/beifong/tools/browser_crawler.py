@@ -124,7 +124,9 @@ class PlaywrightScraper:
                 "final_url": final_url,
                 "title": article.title or "",
                 "authors": article.authors or [],
-                "published_date": article.publish_date.isoformat() if article.publish_date else None,
+                "published_date": article.publish_date.isoformat()
+                if article.publish_date
+                else None,
                 "full_text": article.text or "",
                 "success": True,
             }
@@ -140,7 +142,5 @@ class PlaywrightScraper:
 def create_browser_crawler(headless=True, timeout=20000, fresh_context_per_url=False):
     """Factory function to create a new PlaywrightScraper instance."""
     return PlaywrightScraper(
-        headless=headless,
-        timeout=timeout,
-        fresh_context_per_url=fresh_context_per_url
+        headless=headless, timeout=timeout, fresh_context_per_url=fresh_context_per_url
     )

@@ -1,6 +1,6 @@
-streamlit 
+streamlit
 agno
 openai
-google-search-results 
-newspaper4k 
+google-search-results
+newspaper4k
 lxml_html_clean

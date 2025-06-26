@@ -1,0 +1,17 @@
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+select = ["E", "F", "W", "B", "C", "I", "M", "R", "T", "U"]
+ignore = ["E501"]
+
+[tool.ruff.isort]
+known-first-party = ["advanced_ai_agents", "advanced_llm_apps", "mcp_ai_agents", "rag_tutorials", "starter_ai_agents", "voice_ai_agents"]
+
+[tool.ruff.flake8]
+max-line-length = 100
+
+[tool.ruff.black]
+line-length = 100
+
+[tool.ruff.pydocstyle]
+convention = "numpy"

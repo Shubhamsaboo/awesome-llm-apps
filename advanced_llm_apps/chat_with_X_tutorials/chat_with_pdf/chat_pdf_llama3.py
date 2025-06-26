@@ -4,15 +4,29 @@ import tempfile
 import streamlit as st
 from embedchain import App
 
+
 # Define the embedchain_bot function
 def embedchain_bot(db_path):
     return App.from_config(
         config={
-            "llm": {"provider": "ollama", "config": {"model": "llama3:instruct", "max_tokens": 250, "temperature": 0.5, "stream": True, "base_url": 'http://localhost:11434'}},
+            "llm": {
+                "provider": "ollama",
+                "config": {
+                    "model": "llama3:instruct",
+                    "max_tokens": 250,
+                    "temperature": 0.5,
+                    "stream": True,
+                    "base_url": "http://localhost:11434",
+                },
+            },
             "vectordb": {"provider": "chroma", "config": {"dir": db_path}},
-            "embedder": {"provider": "ollama", "config": {"model": "llama3:instruct", "base_url": 'http://localhost:11434'}},
+            "embedder": {
+                "provider": "ollama",
+                "config": {"model": "llama3:instruct", "base_url": "http://localhost:11434"},
+            },
         }
     )
+
 
 st.title("Chat with PDF")
 st.caption("This app allows you to chat with a PDF using Llama3 running locally wiht Ollama!")

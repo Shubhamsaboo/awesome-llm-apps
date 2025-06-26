@@ -45,9 +45,7 @@ async def convert_to_model(input_text: str, target_model: Type[T]) -> str:
         str: A JSON string that matches the model schema
     """
 
-    logger.info(
-        f"Converting input text to model: {target_model.__name__} : {input_text}"
-    )
+    logger.info(f"Converting input text to model: {target_model.__name__} : {input_text}")
 
     structured_output_agent = Agent(
         model=model,
@@ -122,6 +120,4 @@ async def convert_to_model(input_text: str, target_model: Type[T]) -> str:
 
     except Exception as e:
         logger.error(f"Failed to parse response into {target_model.__name__}: {str(e)}")
-        raise ValueError(
-            f"Failed to parse response into {target_model.__name__}: {str(e)}"
-        )
+        raise ValueError(f"Failed to parse response into {target_model.__name__}: {str(e)}")

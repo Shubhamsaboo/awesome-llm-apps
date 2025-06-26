@@ -68,7 +68,9 @@ class PodcastService:
             query += " ORDER BY date DESC, created_at DESC"
             query += " LIMIT ? OFFSET ?"
             params.extend([per_page, offset])
-            total_result = await podcasts_db.execute_query(count_query, tuple(params[:-2] if params else ()), fetch=True, fetch_one=True)
+            total_result = await podcasts_db.execute_query(
+                count_query, tuple(params[:-2] if params else ()), fetch=True, fetch_one=True
+            )
             total_items = total_result.get("count", 0) if total_result else 0
             total_pages = math.ceil(total_items / per_page) if total_items > 0 else 0
             podcasts = await podcasts_db.execute_query(query, tuple(params), fetch=True)
@@ -103,7 +105,9 @@ class PodcastService:
             FROM podcasts
             WHERE id = ?
             """
-            podcast = await podcasts_db.execute_query(query, (podcast_id,), fetch=True, fetch_one=True)
+            podcast = await podcasts_db.execute_query(
+                query, (podcast_id,), fetch=True, fetch_one=True
+            )
             if not podcast:
                 raise HTTPException(status_code=404, detail="Podcast not found")
             podcast["audio_generated"] = bool(podcast.get("audio_generated", 0))
@@ -114,7 +118,9 @@ class PodcastService:
             podcast.pop("banner_img_path", None)
             podcast["identifier"] = str(podcast.get("id", ""))
             sources_query = "SELECT sources_json FROM podcasts WHERE id = ?"
-            sources_result = await podcasts_db.execute_query(sources_query, (podcast_id,), fetch=True, fetch_one=True)
+            sources_result = await podcasts_db.execute_query(
+                sources_query, (podcast_id,), fetch=True, fetch_one=True
+            )
             sources = []
             if sources_result and sources_result.get("sources_json"):
                 try:
@@ -126,13 +132,13 @@ class PodcastService:
                 except json.JSONDecodeError:
                     sources = []
             podcast["sources"] = sources
-            
+
             try:
                 banner_images = json.loads(podcast.get("banner_images", "[]"))
             except json.JSONDecodeError:
                 banner_images = []
             podcast["banner_images"] = banner_images
-            
+
             return podcast
         except Exception as e:
             if isinstance(e, HTTPException):
@@ -158,7 +164,9 @@ class PodcastService:
             query = """
             SELECT content_json FROM podcasts WHERE id = ?
             """
-            result = await podcasts_db.execute_query(query, (podcast_id,), fetch=True, fetch_one=True)
+            result = await podcasts_db.execute_query(
+                query, (podcast_id,), fetch=True, fetch_one=True
+            )
             if not result or not result.get("content_json"):
                 raise HTTPException(status_code=404, detail="Podcast content not found")
             try:
@@ -189,7 +197,9 @@ class PodcastService:
             SELECT DISTINCT language_code FROM podcasts WHERE language_code IS NOT NULL
             """
             results = await podcasts_db.execute_query(query, (), fetch=True)
-            language_codes = [result["language_code"] for result in results if result["language_code"]]
+            language_codes = [
+                result["language_code"] for result in results if result["language_code"]
+            ]
             if "en" not in language_codes:
                 language_codes.append("en")
             return sorted(language_codes)
@@ -213,7 +223,13 @@ class PodcastService:
             return ["elevenlabs", "openai", "kokoro"]
 
     async def create_podcast(
-        self, title: str, date: str, content: Dict[str, Any], sources: List[str] = None, language_code: str = "en", tts_engine: str = "kokoro"
+        self,
+        title: str,
+        date: str,
+        content: Dict[str, Any],
+        sources: List[str] = None,
+        language_code: str = "en",
+        tts_engine: str = "kokoro",
     ) -> Dict[str, Any]:
         """Create a new podcast in the database."""
         try:
@@ -221,11 +237,19 @@ class PodcastService:
             sources_json = json.dumps(sources) if sources else None
             current_time = datetime.now().isoformat()
             query = """
-            INSERT INTO podcasts 
+            INSERT INTO podcasts
             (title, date, content_json, audio_generated, sources_json, language_code, tts_engine, created_at)
             VALUES (?, ?, ?, 0, ?, ?, ?, ?)
             """
-            params = (title, date, content_json, sources_json, language_code, tts_engine, current_time)
+            params = (
+                title,
+                date,
+                content_json,
+                sources_json,
+                language_code,
+                tts_engine,
+                current_time,
+            )
             podcast_id = await podcasts_db.execute_query(query, params)
             return await self.get_podcast(podcast_id)
         except Exception as e:

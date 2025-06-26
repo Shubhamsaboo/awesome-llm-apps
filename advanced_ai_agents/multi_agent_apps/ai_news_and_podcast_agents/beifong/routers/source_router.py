@@ -1,6 +1,14 @@
 from fastapi import APIRouter, Body, Path, status
 from typing import List, Optional, Dict, Any
-from models.source_schemas import Source, SourceWithFeeds, Category, PaginatedSources, SourceCreate, SourceUpdate, SourceFeedCreate
+from models.source_schemas import (
+    Source,
+    SourceWithFeeds,
+    Category,
+    PaginatedSources,
+    SourceCreate,
+    SourceUpdate,
+    SourceFeedCreate,
+)
 from services.source_service import source_service
 
 router = APIRouter()
@@ -8,7 +16,11 @@ router = APIRouter()
 
 @router.get("/", response_model=PaginatedSources)
 async def read_sources(
-    page: int = 1, per_page: int = 10, category: Optional[str] = None, search: Optional[str] = None, include_inactive: bool = False
+    page: int = 1,
+    per_page: int = 10,
+    category: Optional[str] = None,
+    search: Optional[str] = None,
+    include_inactive: bool = False,
 ):
     """
     Get sources with pagination and filtering.
@@ -19,7 +31,13 @@ async def read_sources(
     - **search**: Search in name and description
     - **include_inactive**: Include inactive sources
     """
-    return await source_service.get_sources(page=page, per_page=per_page, category=category, search=search, include_inactive=include_inactive)
+    return await source_service.get_sources(
+        page=page,
+        per_page=per_page,
+        category=category,
+        search=search,
+        include_inactive=include_inactive,
+    )
 
 
 @router.get("/categories", response_model=List[Category])

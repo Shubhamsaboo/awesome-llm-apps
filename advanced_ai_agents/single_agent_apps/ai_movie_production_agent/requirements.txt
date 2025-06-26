@@ -1,5 +1,5 @@
-streamlit 
+streamlit
 agno
 anthropic
-google-search-results  
+google-search-results
 lxml_html_clean

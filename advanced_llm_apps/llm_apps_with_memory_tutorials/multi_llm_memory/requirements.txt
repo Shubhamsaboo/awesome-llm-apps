@@ -1,4 +1,4 @@
-streamlit 
+streamlit
 openai
 mem0ai==0.1.29
 litellm

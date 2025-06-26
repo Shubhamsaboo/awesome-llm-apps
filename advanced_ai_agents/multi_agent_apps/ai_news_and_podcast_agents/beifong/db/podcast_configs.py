@@ -10,8 +10,8 @@ def get_podcast_config(db_path: str, config_id: int) -> Optional[Dict[str, Any]]
         cursor = conn.cursor()
         cursor.execute(
             """
-            SELECT id, name, description, prompt, time_range_hours, limit_articles, 
-                   is_active, tts_engine, language_code, podcast_script_prompt, 
+            SELECT id, name, description, prompt, time_range_hours, limit_articles,
+                   is_active, tts_engine, language_code, podcast_script_prompt,
                    image_prompt, created_at, updated_at
             FROM podcast_configs
             WHERE id = ?
@@ -38,8 +38,8 @@ def get_all_podcast_configs(db_path: str, active_only: bool = False) -> List[Dic
         cursor = conn.cursor()
         if active_only:
             query = """
-            SELECT id, name, description, prompt, time_range_hours, limit_articles, 
-                   is_active, tts_engine, language_code, podcast_script_prompt, 
+            SELECT id, name, description, prompt, time_range_hours, limit_articles,
+                   is_active, tts_engine, language_code, podcast_script_prompt,
                    image_prompt, created_at, updated_at
             FROM podcast_configs
             WHERE is_active = 1
@@ -48,8 +48,8 @@ def get_all_podcast_configs(db_path: str, active_only: bool = False) -> List[Dic
             cursor.execute(query)
         else:
             query = """
-            SELECT id, name, description, prompt, time_range_hours, limit_articles, 
-                   is_active, tts_engine, language_code, podcast_script_prompt, 
+            SELECT id, name, description, prompt, time_range_hours, limit_articles,
+                   is_active, tts_engine, language_code, podcast_script_prompt,
                    image_prompt, created_at, updated_at
             FROM podcast_configs
             ORDER BY name
@@ -88,8 +88,8 @@ def create_podcast_config(
         cursor.execute(
             """
             INSERT INTO podcast_configs
-            (name, description, prompt, time_range_hours, limit_articles, 
-             is_active, tts_engine, language_code, podcast_script_prompt, 
+            (name, description, prompt, time_range_hours, limit_articles,
+             is_active, tts_engine, language_code, podcast_script_prompt,
              image_prompt, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,

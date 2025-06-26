@@ -16,7 +16,7 @@ A minimal example demonstrating **real-time AI streaming** and **conversation st
 streaming-ai-chatbot/
 ├── steps/
 │   ├── conversation.stream.ts    # Real-time conversation state
-│   ├── chat-api.step.ts         # Simple chat API endpoint  
+│   ├── chat-api.step.ts         # Simple chat API endpoint
 │   └── ai-response.step.ts      # Streaming AI response handler
 ├── package.json                 # Dependencies
 ├── .env.example                 # Configuration template
@@ -40,13 +40,14 @@ npm run dev
 ```
 
 ### Configure OpenAI API
-   ```bash
-   cp .env.example .env
-   # Edit .env and add your OpenAI API key
-   ```
+
+```bash
+cp .env.example .env
+# Edit .env and add your OpenAI API key
+```
 
 **Open Motia Workbench**:
-   Navigate to `http://localhost:3000` to interact with the chatbot
+Navigate to `http://localhost:3000` to interact with the chatbot
 
 ## 🔧 Usage
 
@@ -57,11 +58,12 @@ npm run dev
 ```json
 {
   "message": "Hello, how are you?",
-  "conversationId": "optional-conversation-id"  // Optional: If not provided, a new conversation will be created
+  "conversationId": "optional-conversation-id" // Optional: If not provided, a new conversation will be created
 }
 ```
 
 **Response:**
+
 ```json
 {
   "conversationId": "uuid-v4",
@@ -71,6 +73,7 @@ npm run dev
 ```
 
 The response will update as the AI processes the message, with possible status values:
+
 - `created`: Initial message state
 - `streaming`: AI is generating the response
 - `completed`: Response is complete with full message
@@ -87,6 +90,7 @@ The conversation state stream provides live updates as the AI generates response
 ## 🎯 Key Concepts Demonstrated
 
 ### 1. **Streaming API Integration**
+
 ```typescript
 const stream = await openai.chat.completions.create({
   model: 'gpt-4o-mini',
@@ -105,32 +109,34 @@ for await (const chunk of stream) {
 ```
 
 ### 2. **Real-time State Management**
+
 ```typescript
 export const config: StateStreamConfig = {
-  name: 'conversation',
+  name: "conversation",
   schema: z.object({
     message: z.string(),
-    from: z.enum(['user', 'assistant']),
-    status: z.enum(['created', 'streaming', 'completed']),
+    from: z.enum(["user", "assistant"]),
+    status: z.enum(["created", "streaming", "completed"]),
     timestamp: z.string(),
   }),
-  baseConfig: { storageType: 'state' },
-}
+  baseConfig: { storageType: "state" },
+};
 ```
 
 ### 3. **Event-driven Flow**
+
 ```typescript
 // API emits event
 await emit({
-  topic: 'chat-message',
+  topic: "chat-message",
   data: { message, conversationId, assistantMessageId },
-})
+});
 
 // Event handler subscribes and processes
 export const config: EventConfig = {
-  subscribes: ['chat-message'],
+  subscribes: ["chat-message"],
   // ...
-}
+};
 ```
 
 ## 🌟 Why This Example Matters

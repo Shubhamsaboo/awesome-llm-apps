@@ -1,10 +1,10 @@
 import React from 'react';
 
-const Pagination = ({ 
-   pagination, 
-   handlePrevPage, 
-   handleNextPage, 
-   setPagination 
+const Pagination = ({
+   pagination,
+   handlePrevPage,
+   handleNextPage,
+   setPagination
 }) => {
    return (
       <div className="mt-6 flex items-center justify-between bg-gradient-to-r from-gray-800 to-gray-900 p-3 rounded-sm border-t border-gray-700 shadow-lg">

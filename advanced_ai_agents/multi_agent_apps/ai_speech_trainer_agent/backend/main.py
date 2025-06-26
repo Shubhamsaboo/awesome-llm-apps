@@ -22,14 +22,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # Define the request body model
 class AnalysisRequest(BaseModel):
     video_url: str
+
 
 # Define the entry point
 @app.get("/")
 async def root():
     return {"message": "Welcome to the video analysis API!"}
+
 
 # Define the analysis endpoint
 @app.post("/analyze")

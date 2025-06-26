@@ -6,9 +6,9 @@ import os
 
 loader = GithubLoader(
     config={
-        "token":"Your GitHub Token",
-        }
-    )
+        "token": "Your GitHub Token",
+    }
+)
 
 # Create Streamlit app
 st.title("Chat with GitHub Repository 💬")

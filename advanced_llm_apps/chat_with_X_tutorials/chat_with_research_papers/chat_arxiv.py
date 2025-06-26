@@ -15,16 +15,15 @@ openai_access_token = st.text_input("OpenAI API Key", type="password")
 if openai_access_token:
     # Create an instance of the Assistant
     assistant = Agent(
-    model=OpenAIChat(
-        id="gpt-4o",
-        max_tokens=1024,
-        temperature=0.9,
-        api_key=openai_access_token) , tools=[ArxivTools()]
+        model=OpenAIChat(
+            id="gpt-4o", max_tokens=1024, temperature=0.9, api_key=openai_access_token
+        ),
+        tools=[ArxivTools()],
     )
 
     # Get the search query from the user
-    query= st.text_input("Enter the Search Query", type="default")
-    
+    query = st.text_input("Enter the Search Query", type="default")
+
     if query:
         # Search the web using the AI Assistant
         response = assistant.run(query, stream=False)

@@ -8,13 +8,12 @@ Welcome to **The Magician IA Reader**! This project presents a unique applicatio
 
 This application functions as an AI-driven tarot reader. It takes natural language input and, using an AI model guided by traditional tarot card meanings, provides interpretative insights.
 
-
 **Key Features:**
 
-* **Natural Language Support:** Understands and interacts in natural language (currently configured for English).
-* **Local AI Model ('phi4'):** Runs on the efficient 'phi4' model, ideal for local processing and privacy.
-* **CSV-driven Knowledge Base:** Utilizes structured CSV files to store and reference detailed tarot card meanings and symbolism (currently using `data/tarots.csv` with English content).
-* **Deep Insights:** Transforms raw text queries into meaningful, context-aware interpretations based on tarot symbolism.
+- **Natural Language Support:** Understands and interacts in natural language (currently configured for English).
+- **Local AI Model ('phi4'):** Runs on the efficient 'phi4' model, ideal for local processing and privacy.
+- **CSV-driven Knowledge Base:** Utilizes structured CSV files to store and reference detailed tarot card meanings and symbolism (currently using `data/tarots.csv` with English content).
+- **Deep Insights:** Transforms raw text queries into meaningful, context-aware interpretations based on tarot symbolism.
 
 **How it Works:**
 
@@ -22,9 +21,9 @@ The core of The Magician IA Reader lies in its use of the 'phi4' local AI model.
 
 **Why Use It?**
 
-* **Researchers & Developers:** Explore the capabilities of local AI models for natural language understanding and generation.
-* **AI Enthusiasts:** Experiment with a practical application of AI in a unique domain.
-* **Curious Minds:** Experience an innovative way to interact with AI for personal insights.
+- **Researchers & Developers:** Explore the capabilities of local AI models for natural language understanding and generation.
+- **AI Enthusiasts:** Experiment with a practical application of AI in a unique domain.
+- **Curious Minds:** Experience an innovative way to interact with AI for personal insights.
 
 Step into the world where AI meets intuition with The Magician IA Reader!
 
@@ -42,7 +41,7 @@ Step into the world where AI meets intuition with The Magician IA Reader!
   ollama pull phi4
   ollama serve
   ```
-  
+
 ### Steps
 
 1. **Clone the Repository**
@@ -66,7 +65,9 @@ venv\Scripts\activate
 ```
 
 # Frontend (Streamlit):
+
 First, install all the dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -76,9 +77,11 @@ Run the Application
 ```bash
 streamlit run app.py
 ```
+
 The Streamlit interface will typically be available at http://localhost:8501.
 
 ## 📖 How to Use
+
 Access the App: Open your browser and navigate to the URL provided by Streamlit (commonly http://localhost:8501).
 
 Input Your Text Data: Use the intuitive interface to paste, type, or upload the questions you need to be answered.
@@ -87,8 +90,8 @@ Choose if you need 3, 5 or 7 cards for the reading.
 
 Read the Insights: View detailed analytics and visualizations that reveal the meaning of the extracted cards.
 
-
 ## 🤝 Contributing
+
 Contributions are welcome! If you have improvements or new features to add, please:
 
 Fork the repository.

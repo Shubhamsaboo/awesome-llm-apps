@@ -18,7 +18,7 @@ def store_podcast(
     sources_json = json.dumps(podcast_data.get("sources", []))
     query = """
     INSERT INTO podcasts
-    (title, date, content_json, audio_generated, audio_path, banner_img_path, 
+    (title, date, content_json, audio_generated, audio_path, banner_img_path,
      tts_engine, language_code, sources_json, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """
@@ -39,7 +39,7 @@ def store_podcast(
 
 def get_podcast(podcasts_db_path: str, podcast_id: int) -> Optional[Dict[str, Any]]:
     query = """
-    SELECT id, title, date, content_json, audio_generated, audio_path, banner_img_path, 
+    SELECT id, title, date, content_json, audio_generated, audio_path, banner_img_path,
            tts_engine, language_code, sources_json, created_at
     FROM podcasts
     WHERE id = ?
@@ -62,7 +62,7 @@ def get_podcast(podcasts_db_path: str, podcast_id: int) -> Optional[Dict[str, An
 
 def get_recent_podcasts(podcasts_db_path: str, limit: int = 10) -> list:
     query = """
-    SELECT id, title, date, audio_generated, audio_path, banner_img_path, 
+    SELECT id, title, date, audio_generated, audio_path, banner_img_path,
            tts_engine, language_code, sources_json, created_at
     FROM podcasts
     ORDER BY date DESC, created_at DESC
@@ -99,7 +99,11 @@ def update_podcast_banner(podcasts_db_path: str, podcast_id: int, banner_path: s
 
 
 def update_podcast_metadata(
-    podcasts_db_path: str, podcast_id: int, tts_engine: Optional[str] = None, language_code: Optional[str] = None, sources_json: Optional[str] = None
+    podcasts_db_path: str,
+    podcast_id: int,
+    tts_engine: Optional[str] = None,
+    language_code: Optional[str] = None,
+    sources_json: Optional[str] = None,
 ) -> bool:
     update_parts = []
     params = []

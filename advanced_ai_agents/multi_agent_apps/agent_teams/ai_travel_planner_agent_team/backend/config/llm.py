@@ -7,6 +7,4 @@ from agno.models.openrouter import OpenRouter
 
 model = OpenRouter(id="google/gemini-2.0-flash-001", temperature=0.3, max_tokens=8096)
 model2 = OpenRouter(id="openai/gpt-4o", temperature=0.1)
-model_zero = OpenRouter(
-    id="google/gemini-2.0-flash-001", temperature=0.1, max_tokens=8096
-)
+model_zero = OpenRouter(id="google/gemini-2.0-flash-001", temperature=0.1, max_tokens=8096)

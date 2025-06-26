@@ -20,30 +20,37 @@ class Dialog(BaseModel):
 
 class Section(BaseModel):
     type: str = Field(..., description="The section type (intro, headlines, article, outro)")
-    title: Optional[str] = Field(None, description="Optional title for the section (required for article type)")
+    title: Optional[str] = Field(
+        None, description="Optional title for the section (required for article type)"
+    )
     dialog: List[Dialog] = Field(..., description="List of dialog exchanges between speakers")
 
 
 class PodcastScript(BaseModel):
     title: str = Field(..., description="The podcast episode title with date")
-    sections: List[Section] = Field(..., description="List of podcast sections (intro, headlines, articles, outro)")
+    sections: List[Section] = Field(
+        ..., description="List of podcast sections (intro, headlines, articles, outro)"
+    )
 
 
-PODCAST_AGENT_DESCRIPTION = "You are a helpful assistant that can generate engaging podcast scripts for the given sources."
-PODCAST_AGENT_INSTRUCTIONS = dedent("""
+PODCAST_AGENT_DESCRIPTION = (
+    "You are a helpful assistant that can generate engaging podcast scripts for the given sources."
+)
+PODCAST_AGENT_INSTRUCTIONS = dedent(
+    """
     You are a helpful assistant that can generate engaging podcast scripts for the given source content and query.
     For given content, create an engaging podcast script that should be at least 15 minutes worth of content and your allowed enhance the script beyond given sources if you know something additional info will be interesting to the discussion or not enough conents available.
     You use the provided sources to ground your podcast script generation process. Keep it engaging and interesting.
-    
+
     IMPORTANT: Generate the entire script in the provided language. basically only text field needs to be in requested language,
-    
+
     CONTENT GUIDELINES [THIS IS EXAMPLE YOU CAN CHANGE THE GUIDELINES ANYWAY BASED ON THE QUERY OR TOPIC DISCUSSED]:
     - Provide insightful analysis that helps the audience understand the significance
     - Include discussions on potential implications and broader context of each story
     - Explain complex concepts in an accessible but thorough manner
     - Make connections between current and relevant historical developments when applicable
     - Provide comparisons and contrasts with similar stories or trends when relevant
-    
+
     PERSONALITY NOTES [THIS IS EXAMPLE YOU CAN CHANGE THE PERSONALITY OF ALEX AND MORGAN ANYWAY BASED ON THE QUERY OR TOPIC DISCUSSED]:
     - Alex is more analytical and fact-focused
     * Should reference specific details and data points
@@ -55,10 +62,11 @@ PODCAST_AGENT_INSTRUCTIONS = dedent("""
     - Include natural, conversational banter and smooth transitions between topics
     - Each article discussion should go beyond the basic summary to provide valuable insights
     - Maintain a conversational but informed tone that would appeal to a general audience
-    
+
     IMPORTNAT:
         - MAKE SURE PODCAST SCRIPS ARE AT LEAST 15 MINUTES LONG WHICH MEANS YOU NEED TO HAVE DETAILED DISCUSSIONS OFFCOURSE KEEP IT INTERESTING AND ENGAGING.
-    """)
+    """
+)
 
 
 def format_search_results_for_podcast(

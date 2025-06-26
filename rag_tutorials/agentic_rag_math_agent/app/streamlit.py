@@ -58,7 +58,7 @@ with tab1:
                 log_entry = {
                     "question": st.session_state["last_question"],
                     "answer": st.session_state["last_answer"],
-                    "feedback": feedback
+                    "feedback": feedback,
                 }
 
                 try:
@@ -102,7 +102,9 @@ with tab3:
 
     st.caption(f"📘 Benchmarking from {total_math} math questions")
 
-    num_questions = st.slider("Select number of math questions to benchmark", min_value=3, max_value=total_math, value=10)
+    num_questions = st.slider(
+        "Select number of math questions to benchmark", min_value=3, max_value=total_math, value=10
+    )
 
     if st.button("▶️ Run Benchmark Now"):
         with st.spinner(f"Benchmarking {num_questions} math questions..."):
@@ -117,4 +119,9 @@ with tab3:
             st.success(f"✅ Done! Accuracy: {accuracy:.2f}%")
             st.metric("Accuracy", f"{accuracy:.2f}%")
             st.dataframe(df_result)
-            st.download_button("Download Results", data=df_result.to_csv(index=False), file_name=result_path, mime="text/csv")
+            st.download_button(
+                "Download Results",
+                data=df_result.to_csv(index=False),
+                file_name=result_path,
+                mime="text/csv",
+            )

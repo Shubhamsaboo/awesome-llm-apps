@@ -63,7 +63,7 @@ def get_source_names(source_ids):
     try:
         sources_db_path = get_sources_db_path()
         check_query = """
-        SELECT name FROM sqlite_master 
+        SELECT name FROM sqlite_master
         WHERE type='table' AND name='sources'
         """
         table_exists = execute_query(sources_db_path, check_query, fetch=True)
@@ -130,7 +130,9 @@ def embedding_search(agent: Agent, prompt: str) -> str:
         formatted_results = []
         for i, result in enumerate(results):
             article_id = result.get("id")
-            similarity = next((item[2] for item in results_with_metrics if item[3] == article_id), 0)
+            similarity = next(
+                (item[2] for item in results_with_metrics if item[3] == article_id), 0
+            )
             similarity_percent = int(similarity * 100)
             source_id = str(result.get("source_id", "unknown"))
             source_name = source_names.get(source_id, source_id)

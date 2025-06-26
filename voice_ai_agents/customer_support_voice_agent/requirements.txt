@@ -3,5 +3,5 @@ qdrant-client
 streamlit
 fastembed
 openai>=1.0.0
-python-dotenv 
+python-dotenv
 openai-agents

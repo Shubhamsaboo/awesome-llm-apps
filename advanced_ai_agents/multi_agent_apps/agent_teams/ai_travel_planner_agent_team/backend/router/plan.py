@@ -58,17 +58,13 @@ async def trigger_trip_craft_agent(
             except Exception as e:
                 logger.error(f"Error generating travel plan: {str(e)}")
                 # Update task with error status
-                await update_task_status(
-                    task.id, TaskStatus.error, error_message=str(e)
-                )
+                await update_task_status(task.id, TaskStatus.error, error_message=str(e))
                 logger.info(f"Task updated to error: {task.id}")
                 raise
 
         asyncio.create_task(generate_plan_with_tracking())
 
-        logger.info(
-            f"Travel plan agent triggered successfully for trip ID: {request.trip_plan_id}"
-        )
+        logger.info(f"Travel plan agent triggered successfully for trip ID: {request.trip_plan_id}")
 
         return TravelPlanResponse(
             success=True,

@@ -9,7 +9,9 @@ An OpenAI SDK powered customer support agent application that delivers voice-pow
   - Crawls documentation websites using Firecrawl
   - Stores and indexes content using Qdrant vector database
   - Generates embeddings for semantic search capabilities using FastEmbed
+
 - **AI Agent Team**
+
   - **Documentation Processor**: Analyzes documentation content and generates clear, concise responses to user queries
   - **TTS Agent**: Converts text responses into natural-sounding speech with appropriate pacing and emphasis
   - **Voice Customization**: Supports multiple OpenAI TTS voices:
@@ -24,21 +26,24 @@ An OpenAI SDK powered customer support agent application that delivers voice-pow
 ## How to Run
 
 1. **Setup Environment**
+
    ```bash
    # Clone the repository
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd awesome-llm-apps/ai_agent_tutorials/ai_voice_agent_openaisdk
-   
+
    # Install dependencies
    pip install -r requirements.txt
    ```
 
 2. **Configure API Keys**
+
    - Get OpenAI API key from [OpenAI Platform](https://platform.openai.com)
    - Get Qdrant API key and URL from [Qdrant Cloud](https://cloud.qdrant.io)
    - Get Firecrawl API key for documentation crawling
 
 3. **Run the Application**
+
    ```bash
    streamlit run ai_voice_agent_docs.py
    ```
@@ -53,11 +58,13 @@ An OpenAI SDK powered customer support agent application that delivers voice-pow
 ## Features in Detail
 
 - **Knowledge Base Creation**
+
   - Builds a searchable knowledge base from your documentation
   - Preserves document structure and metadata
   - Supports multiple page crawling (limited to 5 pages per default configuration)
 
 - **Vector Search**
+
   - Uses FastEmbed for generating embeddings
   - Semantic search capabilities for finding relevant content
   - Efficient document retrieval using Qdrant

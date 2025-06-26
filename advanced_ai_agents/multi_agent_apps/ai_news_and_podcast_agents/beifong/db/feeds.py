@@ -6,7 +6,7 @@ from .connection import db_connection, execute_query
 def get_active_feeds(sources_db_path, limit=None, offset=0):
     if limit:
         query = """
-        SELECT sf.id, sf.source_id, sf.feed_url, sf.feed_type, sf.last_crawled, 
+        SELECT sf.id, sf.source_id, sf.feed_url, sf.feed_type, sf.last_crawled,
                s.name as source_name
         FROM source_feeds sf
         JOIN sources s ON sf.source_id = s.id
@@ -16,7 +16,7 @@ def get_active_feeds(sources_db_path, limit=None, offset=0):
         return execute_query(sources_db_path, query, (limit, offset), fetch=True)
     else:
         query = """
-        SELECT sf.id, sf.source_id, sf.feed_url, sf.feed_type, sf.last_crawled, 
+        SELECT sf.id, sf.source_id, sf.feed_url, sf.feed_type, sf.last_crawled,
                s.name as source_name
         FROM source_feeds sf
         JOIN sources s ON sf.source_id = s.id
@@ -43,7 +43,7 @@ def get_feed_tracking_info(tracking_db_path, feed_id):
 
 def update_feed_tracking(tracking_db_path, feed_id, etag, modified, entry_hash):
     query = """
-    UPDATE feed_tracking 
+    UPDATE feed_tracking
     SET last_processed = ?, last_etag = ?, last_modified = ?, entry_hash = ?
     WHERE feed_id = ?
     """
@@ -59,7 +59,7 @@ def store_feed_entries(tracking_db_path, feed_id, source_id, entries):
             try:
                 cursor.execute(
                     """
-                INSERT INTO feed_entries 
+                INSERT INTO feed_entries
                 (feed_id, source_id, entry_id, title, link, published_date, content, summary)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """,
@@ -87,7 +87,7 @@ def update_tracking_info(tracking_db_path, feeds):
         for feed in feeds:
             cursor.execute(
                 """
-            INSERT OR IGNORE INTO feed_tracking 
+            INSERT OR IGNORE INTO feed_tracking
             (feed_id, source_id, feed_url, last_processed)
             VALUES (?, ?, ?, NULL)
             """,
@@ -102,7 +102,7 @@ def get_uncrawled_entries(tracking_db_path, limit=20, max_attempts=3):
     SELECT e.id, e.feed_id, e.source_id, e.title, e.link, e.published_date,
            e.crawl_attempts, e.entry_id as original_entry_id
     FROM feed_entries e
-    WHERE (e.crawl_status = 'pending' OR e.crawl_status = 'failed') 
+    WHERE (e.crawl_status = 'pending' OR e.crawl_status = 'failed')
           AND e.crawl_attempts < ?
           AND e.link IS NOT NULL
           AND e.link != ''
@@ -121,8 +121,8 @@ def get_uncrawled_entries(tracking_db_path, limit=20, max_attempts=3):
 
 def reset_stuck_entries(tracking_db_path):
     query = """
-    UPDATE feed_entries 
-    SET crawl_status = 'pending' 
+    UPDATE feed_entries
+    SET crawl_status = 'pending'
     WHERE crawl_status = 'processing'
     """
     return execute_query(tracking_db_path, query)
@@ -135,8 +135,8 @@ def mark_entries_as_processing(tracking_db_path, entry_ids):
         cursor = conn.cursor()
         placeholders = ",".join(["?"] * len(entry_ids))
         query = f"""
-        UPDATE feed_entries 
-        SET crawl_status = 'processing' 
+        UPDATE feed_entries
+        SET crawl_status = 'processing'
         WHERE id IN ({placeholders})
         """
         cursor.execute(query, entry_ids)
@@ -146,7 +146,7 @@ def mark_entries_as_processing(tracking_db_path, entry_ids):
 
 def ensure_feed_tracking_exists(tracking_db_path, feed_id, source_id, feed_url):
     query = """
-    INSERT OR IGNORE INTO feed_tracking 
+    INSERT OR IGNORE INTO feed_tracking
     (feed_id, source_id, feed_url, last_processed)
     VALUES (?, ?, ?, NULL)
     """
@@ -155,7 +155,7 @@ def ensure_feed_tracking_exists(tracking_db_path, feed_id, source_id, feed_url):
 
 def get_feed_sources_with_categories(sources_db_path):
     query = """
-    SELECT sf.id, sf.source_id, sf.feed_url, sf.feed_type, sf.last_crawled, 
+    SELECT sf.id, sf.source_id, sf.feed_url, sf.feed_type, sf.last_crawled,
            s.name as source_name, c.name as category_name
     FROM source_feeds sf
     JOIN sources s ON sf.source_id = s.id
@@ -168,7 +168,7 @@ def get_feed_sources_with_categories(sources_db_path):
 
 def get_feed_stats(tracking_db_path):
     query = """
-    SELECT 
+    SELECT
         COUNT(*) as total_entries,
         SUM(CASE WHEN crawl_status = 'pending' THEN 1 ELSE 0 END) as pending_entries,
         SUM(CASE WHEN crawl_status = 'processing' THEN 1 ELSE 0 END) as processing_entries,

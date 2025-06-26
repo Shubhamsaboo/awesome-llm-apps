@@ -2,7 +2,12 @@ import time
 from tools.social.browser import create_browser_context
 from tools.social.x_post_extractor import x_post_extractor
 from tools.social.x_agent import analyze_posts_sentiment
-from tools.social.db import create_connection, setup_database, check_and_store_post, update_posts_with_analysis
+from tools.social.db import (
+    create_connection,
+    setup_database,
+    check_and_store_post,
+    update_posts_with_analysis,
+)
 
 
 def crawl_x_profile(profile_url, db_file="x_posts.db"):
@@ -30,7 +35,9 @@ def crawl_x_profile(profile_url, db_file="x_posts.db"):
                     if article_id in seen_post_ids:
                         continue
 
-                    show_more = article.query_selector('button[data-testid="tweet-text-show-more-link"]')
+                    show_more = article.query_selector(
+                        'button[data-testid="tweet-text-show-more-link"]'
+                    )
                     if show_more:
                         try:
                             show_more.click()

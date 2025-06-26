@@ -12,13 +12,17 @@ router = APIRouter()
 async def read_posts(
     page: int = Query(1, ge=1, description="Page number"),
     per_page: int = Query(10, ge=1, le=100, description="Items per page"),
-    platform: Optional[str] = Query(None, description="Filter by platform (e.g., x.com, instagram)"),
+    platform: Optional[str] = Query(
+        None, description="Filter by platform (e.g., x.com, instagram)"
+    ),
     user_handle: Optional[str] = Query(None, description="Filter by user handle"),
     sentiment: Optional[str] = Query(None, description="Filter by sentiment"),
     category: Optional[str] = Query(None, description="Filter by category"),
     date_from: Optional[str] = Query(None, description="Filter by start date (format: YYYY-MM-DD)"),
     date_to: Optional[str] = Query(None, description="Filter by end date (format: YYYY-MM-DD)"),
-    search: Optional[str] = Query(None, description="Search in post text, user display name, or handle"),
+    search: Optional[str] = Query(
+        None, description="Search in post text, user display name, or handle"
+    ),
 ):
     """
     Get all social media posts with pagination and filtering.
@@ -67,7 +71,9 @@ async def read_top_users(
     date_to: Optional[str] = Query(None, description="Filter by end date (format: YYYY-MM-DD)"),
 ):
     """Get top users by post count."""
-    return await social_media_service.get_top_users(platform=platform, limit=limit, date_from=date_from, date_to=date_to)
+    return await social_media_service.get_top_users(
+        platform=platform, limit=limit, date_from=date_from, date_to=date_to
+    )
 
 
 @router.get("/categories/list", response_model=List[Dict[str, Any]])
@@ -87,7 +93,9 @@ async def read_user_sentiment(
     date_to: Optional[str] = Query(None, description="Filter by end date (format: YYYY-MM-DD)"),
 ):
     """Get users with their sentiment breakdown."""
-    return await social_media_service.get_user_sentiment(limit=limit, platform=platform, date_from=date_from, date_to=date_to)
+    return await social_media_service.get_user_sentiment(
+        limit=limit, platform=platform, date_from=date_from, date_to=date_to
+    )
 
 
 @router.get("/categories/sentiment", response_model=List[Dict[str, Any]])
@@ -106,7 +114,9 @@ async def read_trending_topics(
     date_to: Optional[str] = Query(None, description="Filter by end date (format: YYYY-MM-DD)"),
 ):
     """Get trending topics with sentiment breakdown."""
-    return await social_media_service.get_trending_topics(date_from=date_from, date_to=date_to, limit=limit)
+    return await social_media_service.get_trending_topics(
+        date_from=date_from, date_to=date_to, limit=limit
+    )
 
 
 @router.get("/trends/time", response_model=List[Dict[str, Any]])
@@ -116,7 +126,9 @@ async def read_sentiment_over_time(
     date_to: Optional[str] = Query(None, description="Filter by end date (format: YYYY-MM-DD)"),
 ):
     """Get sentiment trends over time."""
-    return await social_media_service.get_sentiment_over_time(date_from=date_from, date_to=date_to, platform=platform)
+    return await social_media_service.get_sentiment_over_time(
+        date_from=date_from, date_to=date_to, platform=platform
+    )
 
 
 @router.get("/posts/influential", response_model=List[Dict[str, Any]])
@@ -127,7 +139,9 @@ async def read_influential_posts(
     date_to: Optional[str] = Query(None, description="Filter by end date (format: YYYY-MM-DD)"),
 ):
     """Get most influential posts by engagement, optionally filtered by sentiment."""
-    return await social_media_service.get_influential_posts(sentiment=sentiment, limit=limit, date_from=date_from, date_to=date_to)
+    return await social_media_service.get_influential_posts(
+        sentiment=sentiment, limit=limit, date_from=date_from, date_to=date_to
+    )
 
 
 @router.get("/engagement/stats", response_model=Dict[str, Any])
@@ -154,7 +168,9 @@ def _run_browser_setup_background(sites: Optional[List[str]] = None):
 
 
 @router.post("/session/setup")
-async def setup_browser_session(sites: Optional[List[str]] = Query(None, description="List of sites to setup sessions for")):
+async def setup_browser_session(
+    sites: Optional[List[str]] = Query(None, description="List of sites to setup sessions for")
+):
     """
     Trigger browser session setup in a completely separate thread.
     This will open a browser window for manual login to social media platforms.

@@ -3,6 +3,7 @@ import tempfile
 import streamlit as st
 from embedchain import App
 
+
 def embedchain_bot(db_path, api_key):
     return App.from_config(
         config={
@@ -11,6 +12,7 @@ def embedchain_bot(db_path, api_key):
             "embedder": {"provider": "openai", "config": {"api_key": api_key}},
         }
     )
+
 
 st.title("Chat with PDF")
 
@@ -34,5 +36,3 @@ if openai_access_token:
     if prompt:
         answer = app.chat(prompt)
         st.write(answer)
-
-        

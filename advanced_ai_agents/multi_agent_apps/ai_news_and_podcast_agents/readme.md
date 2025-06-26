@@ -270,10 +270,11 @@ Beifong's search agent has full browser automation capabilities through the [bro
 ### Search Commands
 
 You can give the agent specific search instructions like:
-- *"Go to my X.com and collect top positive and informative feeds"*
-- *"Browse Reddit for discussions about AI developments this week"*
-- *"Search LinkedIn for recent posts about data science trends"*
-- *"Visit news sites and gather articles about renewable energy"*
+
+- _"Go to my X.com and collect top positive and informative feeds"_
+- _"Browse Reddit for discussions about AI developments this week"_
+- _"Search LinkedIn for recent posts about data science trends"_
+- _"Visit news sites and gather articles about renewable energy"_
 
 The agent will navigate websites, interact with page elements, and extract the requested information automatically.
 
@@ -296,16 +297,19 @@ For websites requiring authentication (X.com, Facebook, LinkedIn, etc.), you nee
 For persistent logged in sessions and advanced browser management:
 
 **Persistent Session Path Configuration:**
+
 - Default browser sessions are stored in `browsers/playwright_persistent_profile_web` folder
 - For persistent session paths, modify `tools/web_search` to use `get_browser_session_path()` from `db/config.py`
 
 **Important Persistent Session Management Notes:**
+
 - **Avoid Concurrent Usage** - Ensure no other processes use the same browser session simultaneously
 - **Social Monitor Processors** typically use the path from `get_browser_session_path()` function
 - **Disable Conflicting Processes** - Switch off social monitoring in the Voyager section if using persistent session paths
 - **Future Separation** - Session management will be separated into individual sessions in upcoming updates
 
 **Persistent Session Troubleshooting:**
+
 - If login sessions expire, repeat the Social Tab setup process
 - Clear browser data if experiencing authentication issues
 - Ensure only one process accesses browser sessions at a time
@@ -345,12 +349,14 @@ Once your social media feeds are collected:
 You can easily customize which feeds to monitor:
 
 **Modifying Feed Sources:**
+
 - Navigate to `/tools/social/` directory
 - Update the URLs in the social media processors
 - **Monitor Specific Profiles** - Configure to track particular X.com profiles or Facebook pages
 - **Custom Feed Types** - Adapt URLs for different types of content feeds
 
 **URL Configuration Examples:**
+
 - Track specific X.com user: Modify URLs to target particular profiles
 - Monitor Facebook pages: Configure URLs for specific Facebook feeds
 - Custom hashtag monitoring: Set URLs to track specific hashtags or topics
@@ -360,15 +366,18 @@ You can easily customize which feeds to monitor:
 Beifong supports easy expansion to additional platforms:
 
 **Currently Supported:**
+
 - X.com (Twitter)
 - Facebook.com
 
 **Easy Integration Options:**
+
 - **LinkedIn**
-- **Reddit** 
+- **Reddit**
 - **Other Platforms** - Most social media platforms can be integrated using the same framework, but you must write a custom scraper or use an API for it.
 
 **Future Updates:**
+
 - Next version will include more built-in connectors for popular social media platforms
 - Support for multiple account management per platform
 
@@ -379,15 +388,18 @@ Beifong supports easy expansion to additional platforms:
 ⚠️ **Avoid Concurrent Execution** - When scheduling multiple social media feed collection tasks, ensure they don't run simultaneously. All social media processors share the same persistent browser session.
 
 **Recommended Scheduling Approach:**
+
 - **Stagger Collection Times** - Schedule X.com and Facebook.com collection at different times
 - **Allow Processing Gaps** - Leave sufficient time between different social media tasks
 - **Monitor Execution Times** - Track how long each collection takes to avoid overlaps
 
 **Example Safe Scheduling:**
+
 - X.com feed collection: Every 2 hours at :00 minutes
 - Facebook.com feed collection: Every 2 hours at :30 minutes
 
 **Future Improvements:**
+
 - Next version will provide separate persistent browser sessions for each social media account
 - This will eliminate the need for careful scheduling and allow concurrent collection from multiple platforms
 
@@ -398,10 +410,12 @@ Beifong supports easy expansion to additional platforms:
 Beifong supports multiple text to speech options:
 
 **Commercial Options:**
-- **OpenAI TTS** 
-- **ElevenLabs** 
+
+- **OpenAI TTS**
+- **ElevenLabs**
 
 **Open Source Options:**
+
 - **Kokoro**
 
 ### Adding New Voice Engines
@@ -409,9 +423,10 @@ Beifong supports multiple text to speech options:
 The TTS system supports integration of additional engines:
 
 **Potential Next Open Source Integration Options:**
-- **[Dia TTS](https://yummy-fir-7a4.notion.site/dia)** 
-- **[CSM](https://github.com/SesameAILabs/csm)** 
-- **[Orpheus-TTS](https://github.com/canopyai/Orpheus-TTS)** 
+
+- **[Dia TTS](https://yummy-fir-7a4.notion.site/dia)**
+- **[CSM](https://github.com/SesameAILabs/csm)**
+- **[Orpheus-TTS](https://github.com/canopyai/Orpheus-TTS)**
 
 Add custom TTS engines through the tts_selector engine interface in the **utils** directory.
 
@@ -424,6 +439,7 @@ Beifong can be integrated with other platforms.
 Beifong's Slack integration enables you to interact with the AI agent directly from your Slack workspace. Each conversation with Beifong creates a dedicated Slack thread for the session.
 
 **Key Feature:**
+
 - Direct messaging with BeifongAI in Slack channels
 
 ### Setting Up Slack App
@@ -478,9 +494,9 @@ Add the following scopes under "OAuth & Permissions" → "Bot Token Scopes":
 Under "Event Subscriptions" → "Subscribe to bot events", add:
 
 - **`app_mention`** - Subscribe to only the message events that mention your app or bot
-  - *Required Scope: `app_mentions:read`*
+  - _Required Scope: `app_mentions:read`_
 - **`message.channels`** - A message was posted to a channel
-  - *Required Scope: `channels:history`*
+  - _Required Scope: `channels:history`_
 
 ### Environment Configuration
 
@@ -527,11 +543,13 @@ python -m integrations.slack.chat
 #### Step 3: Interact with BeifongAI
 
 **In Slack Channels:**
+
 - Mention @BeifongAI to start a conversation
 - Each mention creates a new thread for context continuity
 - Example: `@BeifongAI Can you help me analyze the latest news about AI developments?`
 
 **Reference Documentation:**
+
 - [Slack Socket Mode API](https://api.slack.com/apis/socket-mode)
 
 ## Data Storage and File Management
@@ -549,15 +567,18 @@ Generated podcasts, audio files, and visual assets are stored in the **podcasts*
 If asset storage grows, consider these storage optimization strategies:
 
 **Cloud Storage Integration:**
+
 - Use s3fs to mount an S3 bucket as a local folder for media assets
 - Configure custom storage paths in `.env` to use larger drives
 
 **Automated Cleanup:**
+
 - Set up periodic archiving of older podcast episodes
 - Implement automated cleanup for temporary recordings and unused assets
 - Configure retention policies for different types of content
 
 **Storage Monitoring:**
+
 - Monitor disk usage as your content library grows
 - Set up alerts for storage capacity thresholds
 
@@ -580,16 +601,19 @@ This makes the application accessible via your machine's IP address on your loca
 For accessing Beifong from outside your local network (workaround):
 
 #### SSH Port Forwarding
+
 ```bash
 # Forward local port to remote machine
 ssh -L 7000:localhost:7000 username@your-server-ip
 ```
 
 #### Ngrok Tunneling
+
 ```bash
 # Create temporary public tunnel
 ngrok http 7000
 ```
+
 Provides a temporary public URL that forwards to your local instance.
 
 ### Security
@@ -599,6 +623,7 @@ Beifong doesn't include an authentication layer yet. Authentication will be adde
 ## Cloud Options
 
 ### Beifong Cloud Features
+
 Coming Soon!
 
 ✅ Cloud version of Beifong

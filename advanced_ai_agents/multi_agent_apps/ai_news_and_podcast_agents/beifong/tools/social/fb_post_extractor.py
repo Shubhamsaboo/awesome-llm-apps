@@ -25,17 +25,33 @@ def parse_facebook_post(story_node: Dict[str, Any]) -> Dict[str, Any]:
         }
         creation_time_sources = [
             story_node.get("creation_time"),
-            (story_node.get("comet_sections") or {}).get("context_layout", {}).get("story", {}).get("creation_time"),
-            (story_node.get("comet_sections") or {}).get("timestamp", {}).get("story", {}).get("creation_time"),
+            (story_node.get("comet_sections") or {})
+            .get("context_layout", {})
+            .get("story", {})
+            .get("creation_time"),
+            (story_node.get("comet_sections") or {})
+            .get("timestamp", {})
+            .get("story", {})
+            .get("creation_time"),
         ]
         for source in creation_time_sources:
             if source:
                 post_info["creation_time"] = source
-                post_info["creation_time_formatted"] = datetime.fromtimestamp(source).strftime("%Y-%m-%d %H:%M:%S")
+                post_info["creation_time_formatted"] = datetime.fromtimestamp(source).strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
                 break
         url_sources = [
-            (story_node.get("comet_sections") or {}).get("content", {}).get("story", {}).get("wwwURL"),
-            (story_node.get("comet_sections") or {}).get("feedback", {}).get("story", {}).get("story_ufi_container", {}).get("story", {}).get("url"),
+            (story_node.get("comet_sections") or {})
+            .get("content", {})
+            .get("story", {})
+            .get("wwwURL"),
+            (story_node.get("comet_sections") or {})
+            .get("feedback", {})
+            .get("story", {})
+            .get("story_ufi_container", {})
+            .get("story", {})
+            .get("url"),
             (story_node.get("comet_sections") or {})
             .get("feedback", {})
             .get("story", {})
@@ -71,7 +87,13 @@ def extract_message_content(story_node: Dict[str, Any]) -> Dict[str, Any]:
     try:
         message_sources = [
             (story_node.get("message") or {}).get("text", ""),
-            ((((story_node.get("comet_sections") or {}).get("content") or {}).get("story") or {}).get("message") or {}).get("text", ""),
+            (
+                (
+                    ((story_node.get("comet_sections") or {}).get("content") or {}).get("story")
+                    or {}
+                ).get("message")
+                or {}
+            ).get("text", ""),
         ]
         for source in message_sources:
             if source:
@@ -84,7 +106,9 @@ def extract_message_content(story_node: Dict[str, Any]) -> Dict[str, Any]:
                 entity_type = entity.get("__typename")
 
                 if entity_type == "Hashtag":
-                    hashtag_text = message_info["message_text"][range_item["offset"] : range_item["offset"] + range_item["length"]]
+                    hashtag_text = message_info["message_text"][
+                        range_item["offset"] : range_item["offset"] + range_item["length"]
+                    ]
                     message_info["hashtags"].append(
                         {
                             "text": hashtag_text,
@@ -93,7 +117,9 @@ def extract_message_content(story_node: Dict[str, Any]) -> Dict[str, Any]:
                         }
                     )
                 elif entity_type == "User":
-                    mention_text = message_info["message_text"][range_item["offset"] : range_item["offset"] + range_item["length"]]
+                    mention_text = message_info["message_text"][
+                        range_item["offset"] : range_item["offset"] + range_item["length"]
+                    ]
                     message_info["mentions"].append(
                         {
                             "text": mention_text,
@@ -128,7 +154,11 @@ def extract_actors_info(story_node: Dict[str, Any]) -> Dict[str, Any]:
             )
         context_sections = (story_node.get("comet_sections") or {}).get("context_layout", {})
         if context_sections:
-            actor_photo = (context_sections.get("story") or {}).get("comet_sections", {}).get("actor_photo", {})
+            actor_photo = (
+                (context_sections.get("story") or {})
+                .get("comet_sections", {})
+                .get("actor_photo", {})
+            )
             if actor_photo:
                 story_actors = (actor_photo.get("story") or {}).get("actors", [])
                 if story_actors:
@@ -162,7 +192,9 @@ def extract_attachments(story_node: Dict[str, Any]) -> Dict[str, Any]:
                             "image_uri": "",
                             "accessibility_caption": media.get("accessibility_caption", ""),
                         }
-                        resolution_renderer = media.get("comet_photo_attachment_resolution_renderer", {})
+                        resolution_renderer = media.get(
+                            "comet_photo_attachment_resolution_renderer", {}
+                        )
                         if resolution_renderer:
                             image = resolution_renderer.get("image", {})
                             photo_info["image_uri"] = image.get("uri", "")
@@ -184,7 +216,9 @@ def extract_engagement_data(story_node: Dict[str, Any]) -> Dict[str, Any]:
         "top_reactions": [],
     }
     try:
-        feedback_story = (story_node.get("comet_sections") or {}).get("feedback", {}).get("story", {})
+        feedback_story = (
+            (story_node.get("comet_sections") or {}).get("feedback", {}).get("story", {})
+        )
         if feedback_story:
             ufi_container = (feedback_story.get("story_ufi_container") or {}).get("story", {})
             if ufi_container:
@@ -192,17 +226,29 @@ def extract_engagement_data(story_node: Dict[str, Any]) -> Dict[str, Any]:
                 feedback_target = feedback_context.get("feedback_target_with_context", {})
 
                 if feedback_target:
-                    summary_renderer = feedback_target.get("comet_ufi_summary_and_actions_renderer", {})
+                    summary_renderer = feedback_target.get(
+                        "comet_ufi_summary_and_actions_renderer", {}
+                    )
                     if summary_renderer:
                         feedback_data = summary_renderer.get("feedback", {})
                         if "i18n_reaction_count" in feedback_data:
-                            engagement_info["reaction_count"] = int(feedback_data["i18n_reaction_count"])
-                        elif "reaction_count" in feedback_data and isinstance(feedback_data["reaction_count"], dict):
-                            engagement_info["reaction_count"] = feedback_data["reaction_count"].get("count", 0)
+                            engagement_info["reaction_count"] = int(
+                                feedback_data["i18n_reaction_count"]
+                            )
+                        elif "reaction_count" in feedback_data and isinstance(
+                            feedback_data["reaction_count"], dict
+                        ):
+                            engagement_info["reaction_count"] = feedback_data["reaction_count"].get(
+                                "count", 0
+                            )
                         if "i18n_share_count" in feedback_data:
                             engagement_info["share_count"] = int(feedback_data["i18n_share_count"])
-                        elif "share_count" in feedback_data and isinstance(feedback_data["share_count"], dict):
-                            engagement_info["share_count"] = feedback_data["share_count"].get("count", 0)
+                        elif "share_count" in feedback_data and isinstance(
+                            feedback_data["share_count"], dict
+                        ):
+                            engagement_info["share_count"] = feedback_data["share_count"].get(
+                                "count", 0
+                            )
                         top_reactions = feedback_data.get("top_reactions", {})
                         if "edges" in top_reactions:
                             for edge in top_reactions["edges"]:
@@ -228,7 +274,10 @@ def extract_privacy_info(story_node: Dict[str, Any]) -> Dict[str, Any]:
     privacy_info = {"privacy_scope": "", "audience": ""}
     try:
         privacy_sources = [
-            (story_node.get("comet_sections") or {}).get("context_layout", {}).get("story", {}).get("privacy_scope", {}),
+            (story_node.get("comet_sections") or {})
+            .get("context_layout", {})
+            .get("story", {})
+            .get("privacy_scope", {}),
             story_node.get("privacy_scope", {}),
             next(
                 (
@@ -238,7 +287,8 @@ def extract_privacy_info(story_node: Dict[str, Any]) -> Dict[str, Any]:
                     .get("story", {})
                     .get("comet_sections", {})
                     .get("metadata", [])
-                    if isinstance(meta, dict) and meta.get("__typename") == "CometFeedStoryAudienceStrategy"
+                    if isinstance(meta, dict)
+                    and meta.get("__typename") == "CometFeedStoryAudienceStrategy"
                 ),
                 {},
             ),
@@ -254,7 +304,10 @@ def extract_privacy_info(story_node: Dict[str, Any]) -> Dict[str, Any]:
                 comet_sections = story.get("comet_sections", {})
                 metadata = comet_sections.get("metadata", [])
                 for meta_item in metadata:
-                    if isinstance(meta_item, dict) and meta_item.get("__typename") == "CometFeedStoryAudienceStrategy":
+                    if (
+                        isinstance(meta_item, dict)
+                        and meta_item.get("__typename") == "CometFeedStoryAudienceStrategy"
+                    ):
                         story_data = meta_item.get("story", {})
                         privacy_scope = story_data.get("privacy_scope", {})
                         if privacy_scope:

@@ -1,7 +1,9 @@
 ## 🖇️ RAG-as-a-Service with Claude 3.5 Sonnet
+
 Build and deploy a production-ready Retrieval-Augmented Generation (RAG) service using Claude 3.5 Sonnet and Ragie.ai. This implementation allows you to create a document querying system with a user-friendly Streamlit interface in less than 50 lines of Python code.
 
 ### Features
+
 - Production-ready RAG pipeline
 - Integration with Claude 3.5 Sonnet for response generation
 - Document upload from URLs
@@ -11,6 +13,7 @@ Build and deploy a production-ready Retrieval-Augmented Generation (RAG) service
 ### How to get Started?
 
 1. Clone the GitHub repository
+
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd awesome-llm-apps/rag_tutorials/rag-as-a-service
@@ -28,6 +31,7 @@ pip install -r requirements.txt
 - Sign up for an [Ragie account](https://www.ragie.ai/) and get your API key
 
 4. Run the Streamlit app
+
 ```bash
 streamlit run rag_app.py
 ```

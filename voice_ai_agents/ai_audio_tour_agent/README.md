@@ -8,19 +8,19 @@ A conversational voice agent system that generates immersive, self-guided audio 
 
 ### 🎙️ Multi-Agent Architecture
 
-- **Orchestrator Agent**  
+- **Orchestrator Agent**
   Coordinates the overall tour flow, manages transitions, and assembles content from all expert agents.
 
-- **History Agent**  
+- **History Agent**
   Delivers insightful historical narratives with an authoritative voice.
 
-- **Architecture Agent**  
+- **Architecture Agent**
   Highlights architectural details, styles, and design elements using a descriptive and technical tone.
 
-- **Culture Agent**  
+- **Culture Agent**
   Explores local customs, traditions, and artistic heritage with an enthusiastic voice.
 
-- **Culinary Agent**  
+- **Culinary Agent**
   Describes iconic dishes and food culture in a passionate and engaging tone.
 
 ---
@@ -53,17 +53,19 @@ A conversational voice agent system that generates immersive, self-guided audio 
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd ai_agent_tutorials/ai_audio_tour_agent
 ```
+
 2. Install the required dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
+
 3. Get your OpenAI API Key
 
 - Sign up for an [OpenAI account](https://platform.openai.com/) (or the LLM provider of your choice) and obtain your API key.
 
 4. Run the Streamlit App
+
 ```bash
 streamlit run ai_audio_tour_agent.py
 ```
-

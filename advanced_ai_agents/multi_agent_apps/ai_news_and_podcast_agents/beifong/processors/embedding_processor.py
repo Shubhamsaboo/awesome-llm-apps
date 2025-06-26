@@ -9,16 +9,20 @@ from utils.load_api_keys import load_api_key
 
 EMBEDDING_MODEL = "text-embedding-3-small"
 
+
 def create_embedding_table(tracking_db_path):
     with db_connection(tracking_db_path) as conn:
         cursor = conn.cursor()
-        cursor.execute("""
-        SELECT name FROM sqlite_master 
+        cursor.execute(
+            """
+        SELECT name FROM sqlite_master
         WHERE type='table' AND name='article_embeddings'
-        """)
+        """
+        )
         table_exists = cursor.fetchone() is not None
         if not table_exists:
-            cursor.execute("""
+            cursor.execute(
+                """
             CREATE TABLE IF NOT EXISTS article_embeddings (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 article_id INTEGER NOT NULL,
@@ -28,15 +32,20 @@ def create_embedding_table(tracking_db_path):
                 in_faiss_index INTEGER DEFAULT 0,
                 FOREIGN KEY (article_id) REFERENCES crawled_articles(id)
             )
-            """)
-            cursor.execute("""
-            CREATE INDEX IF NOT EXISTS idx_article_embeddings_article_id 
+            """
+            )
+            cursor.execute(
+                """
+            CREATE INDEX IF NOT EXISTS idx_article_embeddings_article_id
             ON article_embeddings(article_id)
-            """)
-            cursor.execute("""
-            CREATE INDEX IF NOT EXISTS idx_article_embeddings_in_faiss 
+            """
+            )
+            cursor.execute(
+                """
+            CREATE INDEX IF NOT EXISTS idx_article_embeddings_in_faiss
             ON article_embeddings(in_faiss_index)
-            """)
+            """
+            )
             conn.commit()
             print("Article embeddings table created successfully.")
         else:
@@ -47,10 +56,10 @@ def get_articles_without_embeddings(tracking_db_path, limit=20):
     query = """
     SELECT ca.id, ca.title, ca.summary, ca.content
     FROM crawled_articles ca
-    WHERE ca.processed = 1 
+    WHERE ca.processed = 1
     AND ca.ai_status = 'success'
     AND NOT EXISTS (
-        SELECT 1 FROM article_embeddings ae 
+        SELECT 1 FROM article_embeddings ae
         WHERE ae.article_id = ca.id
     )
     ORDER BY ca.published_date DESC
@@ -70,8 +79,8 @@ def mark_articles_as_processing(tracking_db_path, article_ids):
             if "embedding_status" in columns:
                 placeholders = ",".join(["?"] * len(article_ids))
                 query = f"""
-                UPDATE crawled_articles 
-                SET embedding_status = 'processing' 
+                UPDATE crawled_articles
+                SET embedding_status = 'processing'
                 WHERE id IN ({placeholders})
                 """
                 cursor.execute(query, article_ids)
@@ -107,9 +116,10 @@ def prepare_article_text(article):
 def store_embedding(tracking_db_path, article_id, embedding, model):
     from datetime import datetime
     import sqlite3
+
     embedding_blob = np.array(embedding, dtype=np.float32).tobytes()
     query = """
-    INSERT INTO article_embeddings 
+    INSERT INTO article_embeddings
     (article_id, embedding, embedding_model, created_at, in_faiss_index)
     VALUES (?, ?, ?, ?, 0)
     """
@@ -125,7 +135,9 @@ def store_embedding(tracking_db_path, article_id, embedding, model):
         return False
 
 
-def process_articles_for_embedding(tracking_db_path=None, openai_api_key=None, batch_size=20, delay_range=(1, 3)):
+def process_articles_for_embedding(
+    tracking_db_path=None, openai_api_key=None, batch_size=20, delay_range=(1, 3)
+):
     if tracking_db_path is None:
         tracking_db_path = get_tracking_db_path()
     if openai_api_key is None:
@@ -142,7 +154,9 @@ def process_articles_for_embedding(tracking_db_path=None, openai_api_key=None, b
     for i, article in enumerate(articles):
         article_id = article["id"]
         try:
-            print(f"[{i + 1}/{len(articles)}] Generating embedding for article {article_id}: {article['title']}")
+            print(
+                f"[{i + 1}/{len(articles)}] Generating embedding for article {article_id}: {article['title']}"
+            )
             text = prepare_article_text(article)
             embedding, model = generate_embedding(client, text)
             if embedding:
@@ -219,7 +233,9 @@ if __name__ == "__main__":
     args = parse_arguments()
     api_key = args.api_key or load_api_key()
     if not api_key:
-        print("Error: No OpenAI API key provided. Please provide via --api_key or set OPENAI_API_KEY in .env file")
+        print(
+            "Error: No OpenAI API key provided. Please provide via --api_key or set OPENAI_API_KEY in .env file"
+        )
         exit(1)
     stats = process_in_batches(
         openai_api_key=api_key,

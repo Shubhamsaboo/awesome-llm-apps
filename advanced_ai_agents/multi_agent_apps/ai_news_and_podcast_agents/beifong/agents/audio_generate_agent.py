@@ -12,7 +12,7 @@ from scipy import signal
 
 PODCASTS_FOLDER = "podcasts"
 PODCAST_AUDIO_FOLDER = os.path.join(PODCASTS_FOLDER, "audio")
-PODCAST_MUSIC_FOLDER = os.path.join('static', "musics")
+PODCAST_MUSIC_FOLDER = os.path.join("static", "musics")
 OPENAI_VOICES = {1: "alloy", 2: "echo", 3: "fable", 4: "onyx", 5: "nova", 6: "shimmer"}
 DEFAULT_VOICE_MAP = {1: "alloy", 2: "nova"}
 TTS_MODEL = "gpt-4o-mini-tts"
@@ -36,7 +36,9 @@ def create_silence_audio(silence_duration: float, sampling_rate: int) -> np.ndar
     return np.zeros(int(sampling_rate * silence_duration), dtype=np.float32)
 
 
-def combine_audio_segments(audio_segments: List[np.ndarray], silence_duration: float, sampling_rate: int) -> np.ndarray:
+def combine_audio_segments(
+    audio_segments: List[np.ndarray], silence_duration: float, sampling_rate: int
+) -> np.ndarray:
     if not audio_segments:
         return np.zeros(0, dtype=np.float32)
     silence = create_silence_audio(silence_duration, sampling_rate)
@@ -161,7 +163,9 @@ def create_podcast(
     model: str = TTS_MODEL,
 ) -> Optional[str]:
     if tts_engine.lower() != "openai":
-        print(f"Only OpenAI TTS engine is available in this standalone version. Requested: {tts_engine}")
+        print(
+            f"Only OpenAI TTS engine is available in this standalone version. Requested: {tts_engine}"
+        )
         return None
     try:
         api_key = load_api_key("OPENAI_API_KEY")
@@ -213,7 +217,9 @@ def create_podcast(
             elif sampling_rate_detected != segment_rate:
                 print(f"Sample rate mismatch: {sampling_rate_detected} vs {segment_rate}")
                 try:
-                    segment_audio = resample_audio(segment_audio, segment_rate, sampling_rate_detected)
+                    segment_audio = resample_audio(
+                        segment_audio, segment_rate, sampling_rate_detected
+                    )
                     print(f"Resampled to {sampling_rate_detected} Hz")
                 except Exception as e:
                     sampling_rate_detected = segment_rate
@@ -228,7 +234,9 @@ def create_podcast(
         print("Could not determine sample rate")
         return None
     print(f"Combining {len(generated_segments)} audio segments")
-    full_audio = combine_audio_segments(generated_segments, silence_duration, sampling_rate_detected)
+    full_audio = combine_audio_segments(
+        generated_segments, silence_duration, sampling_rate_detected
+    )
     if full_audio.size == 0:
         print("Combined audio is empty")
         return None
@@ -296,7 +304,9 @@ def audio_generate_agent_run(agent: Agent) -> str:
     session_state = session["state"]
     script_data = session_state.get("generated_script", {})
     if not script_data or (isinstance(script_data, dict) and not script_data.get("sections")):
-        error_msg = "Cannot generate audio: No podcast script data found. Please generate a script first."
+        error_msg = (
+            "Cannot generate audio: No podcast script data found. Please generate a script first."
+        )
         print(error_msg)
         return error_msg
     if isinstance(script_data, dict):
@@ -323,7 +333,9 @@ def audio_generate_agent_run(agent: Agent) -> str:
                 print(error_msg)
                 return error_msg
 
-            selected_language = session_state.get("selected_language", {"code": "en", "name": "English"})
+            selected_language = session_state.get(
+                "selected_language", {"code": "en", "name": "English"}
+            )
             language_code = selected_language.get("code", "en")
             language_name = selected_language.get("name", "English")
             tts_engine = "openai"
@@ -331,7 +343,9 @@ def audio_generate_agent_run(agent: Agent) -> str:
                 error_msg = "Cannot generate audio: OpenAI API key not found."
                 print(error_msg)
                 return error_msg
-            print(f"Generating podcast audio using {tts_engine} TTS engine in {language_name} language")
+            print(
+                f"Generating podcast audio using {tts_engine} TTS engine in {language_name} language"
+            )
             full_audio_path = create_podcast(
                 script=script_entries,
                 output_path=audio_path,

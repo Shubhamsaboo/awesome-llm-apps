@@ -22,7 +22,9 @@ USER_DATA_DIR = "browsers/playwright_persistent_profile_web"
 class WebSearchResult(BaseModel):
     title: str = Field(..., description="The title of the search result")
     url: str = Field(..., description="The URL of the search result")
-    content: str = Field(..., description="Full content of the source, be elaborate at the same time be concise")
+    content: str = Field(
+        ..., description="Full content of the source, be elaborate at the same time be concise"
+    )
 
 
 class WebSearchResults(BaseModel):
@@ -47,7 +49,10 @@ def run_browser_search(agent: Agent, instruction: str) -> str:
 
         headless = True
         browser_profile = BrowserProfile(
-            user_data_dir=USER_DATA_DIR, headless=headless, viewport={"width": 1280, "height": 800}, record_video_dir=recordings_dir,
+            user_data_dir=USER_DATA_DIR,
+            headless=headless,
+            viewport={"width": 1280, "height": 800},
+            record_video_dir=recordings_dir,
             downloads_path="podcasts/browseruse_downloads",
         )
 
@@ -80,7 +85,13 @@ def run_browser_search(agent: Agent, instruction: str) -> str:
         if result:
             parsed: WebSearchResults = WebSearchResults.model_validate_json(result)
             results_list = [
-                {"title": post.title, "url": post.url, "description": post.content, "is_scrapping_required": False} for post in parsed.results
+                {
+                    "title": post.title,
+                    "url": post.url,
+                    "description": post.content,
+                    "is_scrapping_required": False,
+                }
+                for post in parsed.results
             ]
             return f"is_scrapping_required: False, results: {json.dumps(results_list)}"
         else:

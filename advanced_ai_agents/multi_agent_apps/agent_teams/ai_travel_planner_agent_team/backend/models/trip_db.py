@@ -15,12 +15,8 @@ class Base(DeclarativeBase):
 
 
 class TripPlan(Base):
-    __tablename__ = (
-        "trip_plan"  # Assuming this table exists as per foreign key constraints
-    )
-    id = Column(
-        String, primary_key=True, default=lambda: str(CUID_GENERATOR.generate())
-    )
+    __tablename__ = "trip_plan"  # Assuming this table exists as per foreign key constraints
+    id = Column(String, primary_key=True, default=lambda: str(CUID_GENERATOR.generate()))
     # Add other fields for TripPlan if needed for standalone model definition
     # For this task, we only need it to satisfy relationship constraints if defined from this end.
 
@@ -37,12 +33,8 @@ class TripPlanStatus(Base):
     status: Mapped[str] = mapped_column(Text, default="pending")
     currentStep: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     error: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    startedAt: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=False), nullable=True
-    )
-    completedAt: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=False), nullable=True
-    )
+    startedAt: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
+    completedAt: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
     createdAt: Mapped[datetime] = mapped_column(
         DateTime(timezone=False),
         default=lambda: datetime.now(timezone.utc).replace(tzinfo=None),

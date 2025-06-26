@@ -6,7 +6,7 @@ from .connection import db_connection, execute_query
 def store_crawled_article(tracking_db_path, entry, raw_content, metadata):
     metadata_json = json.dumps(metadata)
     query = """
-    INSERT INTO crawled_articles 
+    INSERT INTO crawled_articles
     (entry_id, source_id, feed_id, title, url, published_date, raw_content, metadata)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """
@@ -62,8 +62,8 @@ def get_unprocessed_articles(tracking_db_path, limit=5, max_attempts=1):
 
 def reset_stuck_articles(tracking_db_path):
     query = """
-    UPDATE crawled_articles 
-    SET ai_status = 'pending' 
+    UPDATE crawled_articles
+    SET ai_status = 'pending'
     WHERE ai_status = 'processing'
     """
     return execute_query(tracking_db_path, query)
@@ -76,8 +76,8 @@ def mark_articles_as_processing(tracking_db_path, article_ids):
         cursor = conn.cursor()
         placeholders = ",".join(["?"] * len(article_ids))
         query = f"""
-        UPDATE crawled_articles 
-        SET ai_status = 'processing' 
+        UPDATE crawled_articles
+        SET ai_status = 'processing'
         WHERE id IN ({placeholders})
         """
         cursor.execute(query, article_ids)
@@ -124,7 +124,9 @@ def get_article_categories(tracking_db_path, article_id):
     return [row["category_name"] for row in results]
 
 
-def update_article_status(tracking_db_path, article_id, results=None, success=False, error_message=None):
+def update_article_status(
+    tracking_db_path, article_id, results=None, success=False, error_message=None
+):
     with db_connection(tracking_db_path) as conn:
         cursor = conn.cursor()
         cursor.execute(
@@ -142,7 +144,9 @@ def update_article_status(tracking_db_path, article_id, results=None, success=Fa
                     try:
                         categories = json.loads(results["categories"])
                     except json.JSONDecodeError:
-                        categories = [c.strip() for c in results["categories"].split(",") if c.strip()]
+                        categories = [
+                            c.strip() for c in results["categories"].split(",") if c.strip()
+                        ]
                 elif isinstance(results["categories"], list):
                     categories = results["categories"]
             cursor.execute(
@@ -177,7 +181,9 @@ def update_article_status(tracking_db_path, article_id, results=None, success=Fa
         return cursor.rowcount
 
 
-def get_articles_by_date_range(tracking_db_path, start_date=None, end_date=None, limit=None, offset=0):
+def get_articles_by_date_range(
+    tracking_db_path, start_date=None, end_date=None, limit=None, offset=0
+):
     query_parts = [
         "SELECT ca.id, ca.feed_id, ca.source_id, ca.title, ca.url, ca.published_date,",
         "ca.summary, ca.content",
@@ -203,8 +209,8 @@ def get_articles_by_date_range(tracking_db_path, start_date=None, end_date=None,
 
 def get_article_by_id(tracking_db_path, article_id):
     query = """
-    SELECT id, entry_id, source_id, feed_id, title, url, published_date, 
-           raw_content, content, summary, metadata, ai_status, ai_error, 
+    SELECT id, entry_id, source_id, feed_id, title, url, published_date,
+           raw_content, content, summary, metadata, ai_status, ai_error,
            ai_attempts, crawled_date, processed
     FROM crawled_articles
     WHERE id = ?
@@ -236,7 +242,7 @@ def get_articles_by_category(tracking_db_path, category, limit=20, offset=0):
 
 def get_article_stats(tracking_db_path):
     query = """
-    SELECT 
+    SELECT
         COUNT(*) as total_articles,
         SUM(CASE WHEN processed = 1 THEN 1 ELSE 0 END) as processed_articles,
         SUM(CASE WHEN ai_status = 'pending' THEN 1 ELSE 0 END) as pending_articles,
@@ -262,13 +268,13 @@ def get_categories_with_counts(tracking_db_path, limit=20):
 
 def get_articles_with_source_info(tracking_db_path, limit=20, offset=0):
     query = """
-    SELECT ca.id, ca.title, ca.url, ca.published_date, ca.summary, 
+    SELECT ca.id, ca.title, ca.url, ca.published_date, ca.summary,
            ft.feed_url, s.name as source_name
     FROM crawled_articles ca
     LEFT JOIN feed_tracking ft ON ca.feed_id = ft.feed_id
     LEFT JOIN source_feeds sf ON ca.feed_id = sf.id
     LEFT JOIN sources s ON sf.source_id = s.id
-    WHERE ca.processed = 1 
+    WHERE ca.processed = 1
     AND ca.ai_status = 'success'
     ORDER BY ca.published_date DESC
     LIMIT ? OFFSET ?

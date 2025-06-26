@@ -16,12 +16,12 @@ if st.session_state.feedback_response:
         "Delivery & Vocal Quality": feedback_scores.get("delivery_vocal_quality"),
         "Body Language & Eye Contact": feedback_scores.get("body_language_eye_contact"),
         "Audience Engagement": feedback_scores.get("audience_engagement"),
-        "Language & Clarity": feedback_scores.get("language_clarity")
+        "Language & Clarity": feedback_scores.get("language_clarity"),
     }
 
     total_score = feedback_response.get("total_score")
-    interpretation = feedback_response.get("interpretation") 
-    feedback_summary = feedback_response.get("feedback_summary")  
+    interpretation = feedback_response.get("interpretation")
+    feedback_summary = feedback_response.get("feedback_summary")
 else:
     st.warning("No feedback available! Please upload a video and analyze it first.")
     scores = {
@@ -29,7 +29,7 @@ else:
         "Delivery & Vocal Quality": 0,
         "Body Language & Eye Contact": 0,
         "Audience Engagement": 0,
-        "Language & Clarity": 0
+        "Language & Clarity": 0,
     }
 
     total_score = 0
@@ -64,11 +64,11 @@ with col1:
             st.markdown(f"**{criterion}**")
         with progress_col:
             st.progress(score / 5)
-        with score_col:    
+        with score_col:
             st.markdown(f"<span><b>{score}/5</b></span>", unsafe_allow_html=True)
-    
+
     st.markdown("<br>", unsafe_allow_html=True)
-    
+
     # Display total score
     st.markdown(f"#### 🏆 Total Score: {total_score} / 25")
     # Display average score
@@ -87,17 +87,17 @@ with col1:
 with col2:
     # Display strengths
     st.markdown("##### 🦾 Strengths:")
-    strengths_text = '\n'.join(f"- {item}" for item in strengths)
+    strengths_text = "\n".join(f"- {item}" for item in strengths)
     st.success(strengths_text)
 
     # Display weaknesses
     st.markdown("##### ⚠️ Weaknesses:")
-    weaknesses_text = '\n'.join(f"- {item}" for item in weaknesses)
+    weaknesses_text = "\n".join(f"- {item}" for item in weaknesses)
     st.error(weaknesses_text)
 
     # Display suggestions
     st.markdown("##### 💡 Suggestions for Improvement:")
-    suggestions_text = '\n'.join(f"- {item}" for item in suggestions)
+    suggestions_text = "\n".join(f"- {item}" for item in suggestions)
     st.warning(suggestions_text)
 
 
@@ -107,20 +107,17 @@ with col3:
 
     # Radar Chart
     radar_fig = go.Figure()
-    radar_fig.add_trace(go.Scatterpolar(
-        r=list(scores.values()),
-        theta=list(scores.keys()),
-        fill='toself',
-        name='Scores'
-    ))
+    radar_fig.add_trace(
+        go.Scatterpolar(
+            r=list(scores.values()), theta=list(scores.keys()), fill="toself", name="Scores"
+        )
+    )
     radar_fig.update_layout(
-        polar=dict(
-            radialaxis=dict(visible=True, range=[0, 5])
-        ),
+        polar=dict(radialaxis=dict(visible=True, range=[0, 5])),
         showlegend=False,
         margin=dict(t=50, b=50, l=50, r=50),  # Reduced margins
         width=350,
-        height=350
+        height=350,
     )
     st.plotly_chart(radar_fig, use_container_width=True)
 

@@ -6,27 +6,29 @@ from agno.models.ollama import Ollama
 
 # Set up the Streamlit app
 st.title("Multi-Agent AI Researcher using Llama-3 🔍🤖")
-st.caption("This app allows you to research top stories and users on HackerNews and write blogs, reports and social posts.")
+st.caption(
+    "This app allows you to research top stories and users on HackerNews and write blogs, reports and social posts."
+)
 
 # Create instances of the Assistant
 story_researcher = Agent(
     name="HackerNews Story Researcher",
     role="Researches hackernews stories and users.",
     tools=[HackerNews()],
-    model=Ollama(id="llama3.2", max_tokens=1024)
+    model=Ollama(id="llama3.2", max_tokens=1024),
 )
 
 user_researcher = Agent(
     name="HackerNews User Researcher",
     role="Reads articles from URLs.",
     tools=[HackerNews()],
-    model=Ollama(id="llama3.2", max_tokens=1024)
+    model=Ollama(id="llama3.2", max_tokens=1024),
 )
 
 hn_assistant = Agent(
     name="Hackernews Team",
     team=[story_researcher, user_researcher],
-    model=Ollama(id="llama3.2", max_tokens=1024)
+    model=Ollama(id="llama3.2", max_tokens=1024),
 )
 
 # Input field for the report query

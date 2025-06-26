@@ -4,14 +4,19 @@ from embedchain import App
 from youtube_transcript_api import YouTubeTranscriptApi
 from typing import Tuple
 
+
 def embedchain_bot(db_path: str, api_key: str) -> App:
     return App.from_config(
         config={
-            "llm": {"provider": "openai", "config": {"model": "gpt-4", "temperature": 0.5, "api_key": api_key}},
+            "llm": {
+                "provider": "openai",
+                "config": {"model": "gpt-4", "temperature": 0.5, "api_key": api_key},
+            },
             "vectordb": {"provider": "chroma", "config": {"dir": db_path}},
             "embedder": {"provider": "openai", "config": {"api_key": api_key}},
         }
     )
+
 
 def extract_video_id(video_url: str) -> str:
     if "youtube.com/watch?v=" in video_url:
@@ -20,6 +25,7 @@ def extract_video_id(video_url: str) -> str:
         return video_url.split("/shorts/")[-1].split("?")[0]
     else:
         raise ValueError("Invalid YouTube URL")
+
 
 def fetch_video_data(video_url: str) -> Tuple[str, str]:
     try:
@@ -30,6 +36,7 @@ def fetch_video_data(video_url: str) -> Tuple[str, str]:
     except Exception as e:
         st.error(f"Error fetching transcript: {e}")
         return "Unknown", "No transcript available for this video."
+
 
 # Create Streamlit app
 st.title("Chat with YouTube Video 📺")
@@ -54,7 +61,9 @@ if openai_access_token:
                 app.add(transcript, data_type="text", metadata={"title": title, "url": video_url})
                 st.success(f"Added video '{title}' to knowledge base!")
             else:
-                st.warning(f"No transcript available for video '{title}'. Cannot add to knowledge base.")
+                st.warning(
+                    f"No transcript available for video '{title}'. Cannot add to knowledge base."
+                )
         except Exception as e:
             st.error(f"Error adding video: {e}")
         # Ask a question about the video

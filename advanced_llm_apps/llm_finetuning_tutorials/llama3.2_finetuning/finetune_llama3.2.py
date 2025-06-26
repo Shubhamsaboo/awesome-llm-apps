@@ -8,16 +8,15 @@ from unsloth.chat_templates import get_chat_template, standardize_sharegpt
 # Load model and tokenizer
 model, tokenizer = FastLanguageModel.from_pretrained(
     model_name="unsloth/Llama-3.2-3B-Instruct",
-    max_seq_length=2048, load_in_4bit=True,
+    max_seq_length=2048,
+    load_in_4bit=True,
 )
 
 # Add LoRA adapters
 model = FastLanguageModel.get_peft_model(
-    model, r=16,
-    target_modules=[
-        "q_proj", "k_proj", "v_proj", "o_proj",
-        "gate_proj", "up_proj", "down_proj"
-    ],
+    model,
+    r=16,
+    target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
 )
 
 # Set up chat template and prepare dataset
@@ -31,7 +30,7 @@ dataset = dataset.map(
             for convo in examples["conversations"]
         ]
     },
-    batched=True
+    batched=True,
 )
 
 # Set up trainer

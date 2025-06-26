@@ -12,7 +12,9 @@ from db.feeds import (
 )
 
 
-def fetch_and_process_feeds(sources_db_path=None, tracking_db_path=None, delay_between_feeds=2, batch_size=100):
+def fetch_and_process_feeds(
+    sources_db_path=None, tracking_db_path=None, delay_between_feeds=2, batch_size=100
+):
     if sources_db_path is None:
         sources_db_path = get_sources_db_path()
     if tracking_db_path is None:
@@ -56,7 +58,9 @@ def fetch_and_process_feeds(sources_db_path=None, tracking_db_path=None, delay_b
                     continue
                 parsed_entries = feed_data["parsed_entries"]
                 if parsed_entries:
-                    new_entries = store_feed_entries(tracking_db_path, feed_id, source_id, parsed_entries)
+                    new_entries = store_feed_entries(
+                        tracking_db_path, feed_id, source_id, parsed_entries
+                    )
                     stats["new_entries"] += new_entries
                     print(f"Stored {new_entries} new entries from {feed_url}")
                 update_feed_tracking(

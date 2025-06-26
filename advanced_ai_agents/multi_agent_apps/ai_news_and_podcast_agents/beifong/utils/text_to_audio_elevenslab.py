@@ -15,11 +15,15 @@ def create_silence_audio(silence_duration: float, sampling_rate: int) -> np.ndar
     return np.zeros(int(sampling_rate * silence_duration), dtype=np.float32)
 
 
-def combine_audio_segments(audio_segments: List[np.ndarray], silence_duration: float, sampling_rate: int) -> np.ndarray:
+def combine_audio_segments(
+    audio_segments: List[np.ndarray], silence_duration: float, sampling_rate: int
+) -> np.ndarray:
     if not audio_segments:
         return np.zeros(0, dtype=np.float32)
     if sampling_rate <= 0:
-        combined = np.concatenate(audio_segments) if audio_segments else np.zeros(0, dtype=np.float32)
+        combined = (
+            np.concatenate(audio_segments) if audio_segments else np.zeros(0, dtype=np.float32)
+        )
     else:
         silence = create_silence_audio(silence_duration, sampling_rate)
         combined_with_silence = []
@@ -186,7 +190,9 @@ def create_podcast(
             generated_segments.append(segment_audio)
     if not generated_segments or determined_sampling_rate <= 0:
         return None
-    full_audio = combine_audio_segments(generated_segments, silence_duration, determined_sampling_rate)
+    full_audio = combine_audio_segments(
+        generated_segments, silence_duration, determined_sampling_rate
+    )
     if full_audio.size == 0:
         return None
     write_to_disk(output_path, full_audio, determined_sampling_rate)

@@ -5,24 +5,27 @@ from deepface import DeepFace
 from agno.tools import tool
 import json
 
+
 def log_before_call(fc):
     """Pre-hook function that runs before the tool execution"""
     print(f"About to call function with arguments: {fc.arguments}")
+
 
 def log_after_call(fc):
     """Post-hook function that runs after the tool execution"""
     print(f"Function call completed with result: {fc.result}")
 
+
 @tool(
-    name="analyze_facial_expressions",              # Custom name for the tool (otherwise the function name is used)
+    name="analyze_facial_expressions",  # Custom name for the tool (otherwise the function name is used)
     description="Analyzes facial expressions to detect emotions and engagement.",  # Custom description (otherwise the function docstring is used)
-    show_result=True,                               # Show result after function call
-    stop_after_tool_call=True,                      # Return the result immediately after the tool call and stop the agent
-    pre_hook=log_before_call,                       # Hook to run before execution
-    post_hook=log_after_call,                       # Hook to run after execution
-    cache_results=False,                            # Enable caching of results
-    cache_dir="/tmp/agno_cache",                    # Custom cache directory
-    cache_ttl=3600                                  # Cache TTL in seconds (1 hour)
+    show_result=True,  # Show result after function call
+    stop_after_tool_call=True,  # Return the result immediately after the tool call and stop the agent
+    pre_hook=log_before_call,  # Hook to run before execution
+    post_hook=log_after_call,  # Hook to run after execution
+    cache_results=False,  # Enable caching of results
+    cache_dir="/tmp/agno_cache",  # Custom cache directory
+    cache_ttl=3600,  # Cache TTL in seconds (1 hour)
 )
 def analyze_facial_expressions(video_path: str) -> dict:
     """
@@ -72,8 +75,8 @@ def analyze_facial_expressions(video_path: str) -> dict:
 
                 # Emotion Detection using DeepFace & Smile Detection
                 try:
-                    analysis = DeepFace.analyze(frame, actions=['emotion'], enforce_detection=False)
-                    emotion = analysis[0]['dominant_emotion']
+                    analysis = DeepFace.analyze(frame, actions=["emotion"], enforce_detection=False)
+                    emotion = analysis[0]["dominant_emotion"]
                     if emotion == "happy":
                         smile_count += 1
 
@@ -92,8 +95,12 @@ def analyze_facial_expressions(video_path: str) -> dict:
                 right_eye_upper_lid = landmark_coords[386]
                 right_eye_lower_lid = landmark_coords[374]
 
-                left_eye_opening = np.linalg.norm(np.array(left_eye_upper_lid) - np.array(left_eye_lower_lid))
-                right_eye_opening = np.linalg.norm(np.array(right_eye_upper_lid) - np.array(right_eye_lower_lid))
+                left_eye_opening = np.linalg.norm(
+                    np.array(left_eye_upper_lid) - np.array(left_eye_lower_lid)
+                )
+                right_eye_opening = np.linalg.norm(
+                    np.array(right_eye_upper_lid) - np.array(right_eye_lower_lid)
+                )
 
                 eye_opening_avg = (left_eye_opening + right_eye_opening) / 2
 
@@ -108,10 +115,12 @@ def analyze_facial_expressions(video_path: str) -> dict:
     if total_processed_frames == 0:
         total_processed_frames = 1  # Avoid division by zero
 
-    return json.dumps({
-        "emotion_timeline": emotion_timeline,
-        "engagement_metrics": {
-            "eye_contact_frequency": eye_contact_count / total_processed_frames,
-            "smile_frequency": smile_count / total_processed_frames
+    return json.dumps(
+        {
+            "emotion_timeline": emotion_timeline,
+            "engagement_metrics": {
+                "eye_contact_frequency": eye_contact_count / total_processed_frames,
+                "smile_frequency": smile_count / total_processed_frames,
+            },
         }
-    })
+    )

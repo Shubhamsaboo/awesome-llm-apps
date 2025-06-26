@@ -1,4 +1,4 @@
-streamlit 
+streamlit
 openai
 mem0ai
 multion

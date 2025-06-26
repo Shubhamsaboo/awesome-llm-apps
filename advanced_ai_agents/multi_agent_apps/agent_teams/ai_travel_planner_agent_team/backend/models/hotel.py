@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List
 
+
 class HotelResult(BaseModel):
     hotel_name: str = Field(description="The name of the hotel")
     price: str = Field(description="The price of the hotel")
@@ -10,8 +11,10 @@ class HotelResult(BaseModel):
     description: str = Field(description="The description of the hotel")
     url: str = Field(description="The url of the hotel")
 
+
 class HotelResults(BaseModel):
     hotels: List[HotelResult] = Field(description="The list of hotels")
+
 
 class HotelSearchRequest(BaseModel):
     destination: str = Field(description="The destination city or area")

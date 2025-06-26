@@ -23,12 +23,12 @@ litellm>=1.55.6
 pydantic>=2.9.0,<=2.10.6
 pydantic-settings==2.8.1
 pydantic_core>=2.23.2,<=2.27.2
-loguru>=0.7.3 
+loguru>=0.7.3
 pandas>=2.2.3
 matplotlib>=3.10.0
 # --extra-index-url https://download.pytorch.org/whl/cu118
-# torch==2.2.1 
-# torchvision==0.17.1 
+# torch==2.2.1
+# torchvision==0.17.1
 # torchaudio==2.2.1
 transformers>=4.47.1
 datasets>=3.4.0

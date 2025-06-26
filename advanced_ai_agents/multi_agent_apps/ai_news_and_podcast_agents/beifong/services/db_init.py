@@ -27,7 +27,8 @@ def init_sources_db():
     with db_connection(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute("BEGIN TRANSACTION")
-        cursor.execute("""
+        cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS sources (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
@@ -36,15 +37,19 @@ def init_sources_db():
             is_active BOOLEAN DEFAULT 1,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
-        """)
-        cursor.execute("""
+        """
+        )
+        cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS categories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT UNIQUE NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
-        """)
-        cursor.execute("""
+        """
+        )
+        cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS source_categories (
             source_id INTEGER,
             category_id INTEGER,
@@ -52,8 +57,10 @@ def init_sources_db():
             FOREIGN KEY (source_id) REFERENCES sources(id),
             FOREIGN KEY (category_id) REFERENCES categories(id)
         )
-        """)
-        cursor.execute("""
+        """
+        )
+        cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS source_feeds (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             source_id INTEGER,
@@ -64,12 +71,21 @@ def init_sources_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (source_id) REFERENCES sources(id)
         )
-        """)
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_source_feeds_source_id ON source_feeds(source_id)")
+        """
+        )
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_source_feeds_source_id ON source_feeds(source_id)"
+        )
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_sources_is_active ON sources(is_active)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_source_feeds_is_active ON source_feeds(is_active)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_source_categories_source_id ON source_categories(source_id)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_source_categories_category_id ON source_categories(category_id)")
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_source_feeds_is_active ON source_feeds(is_active)"
+        )
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_source_categories_source_id ON source_categories(source_id)"
+        )
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_source_categories_category_id ON source_categories(category_id)"
+        )
         conn.commit()
 
     elapsed = time.time() - start_time
@@ -82,7 +98,8 @@ def init_tracking_db():
     with db_connection(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute("BEGIN TRANSACTION")
-        cursor.execute("""
+        cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS feed_tracking (
             feed_id INTEGER PRIMARY KEY,
             source_id INTEGER,
@@ -92,8 +109,10 @@ def init_tracking_db():
             last_modified TEXT,
             entry_hash TEXT
         )
-        """)
-        cursor.execute("""
+        """
+        )
+        cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS feed_entries (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             feed_id INTEGER,
@@ -109,8 +128,10 @@ def init_tracking_db():
             processed_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             UNIQUE(feed_id, entry_id)
         )
-        """)
-        cursor.execute("""
+        """
+        )
+        cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS crawled_articles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             entry_id INTEGER,
@@ -131,16 +152,20 @@ def init_tracking_db():
             embedding_status TEXT DEFAULT NULL,
             FOREIGN KEY (entry_id) REFERENCES feed_entries(id)
         )
-        """)
-        cursor.execute("""
+        """
+        )
+        cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS article_categories (
             article_id INTEGER,
             category_name TEXT NOT NULL,
             PRIMARY KEY (article_id, category_name),
             FOREIGN KEY (article_id) REFERENCES crawled_articles(id)
         )
-        """)
-        cursor.execute("""
+        """
+        )
+        cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS article_embeddings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             article_id INTEGER NOT NULL,
@@ -150,7 +175,8 @@ def init_tracking_db():
             in_faiss_index INTEGER DEFAULT 0,
             FOREIGN KEY (article_id) REFERENCES crawled_articles(id)
         )
-        """)
+        """
+        )
         indexes = [
             "CREATE INDEX IF NOT EXISTS idx_feed_entries_feed_id ON feed_entries(feed_id)",
             "CREATE INDEX IF NOT EXISTS idx_feed_entries_link ON feed_entries(link)",
@@ -178,7 +204,8 @@ def init_podcasts_db():
     with db_connection(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute("BEGIN TRANSACTION")
-        cursor.execute("""
+        cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS podcasts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,
@@ -193,7 +220,8 @@ def init_podcasts_db():
             banner_images TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
-        """)
+        """
+        )
         indexes = [
             "CREATE INDEX IF NOT EXISTS idx_podcasts_date ON podcasts(date)",
             "CREATE INDEX IF NOT EXISTS idx_podcasts_audio_generated ON podcasts(audio_generated)",
@@ -213,7 +241,8 @@ def init_tasks_db():
     with db_connection(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute("BEGIN TRANSACTION")
-        cursor.execute("""
+        cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS tasks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
@@ -226,8 +255,10 @@ def init_tasks_db():
             last_run TIMESTAMP,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
-        """)
-        cursor.execute("""
+        """
+        )
+        cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS task_executions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             task_id INTEGER NOT NULL,
@@ -238,8 +269,10 @@ def init_tasks_db():
             output TEXT,
             FOREIGN KEY (task_id) REFERENCES tasks(id)
         )
-        """)
-        cursor.execute("""
+        """
+        )
+        cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS podcast_configs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
@@ -255,7 +288,8 @@ def init_tasks_db():
             podcast_script_prompt TEXT,
             image_prompt TEXT
         )
-        """)
+        """
+        )
         indexes = [
             "CREATE INDEX IF NOT EXISTS idx_tasks_enabled ON tasks(enabled)",
             "CREATE INDEX IF NOT EXISTS idx_tasks_frequency ON tasks(frequency, frequency_unit)",
@@ -284,14 +318,18 @@ def init_internal_sessions_db():
     with db_connection(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute("BEGIN TRANSACTION")
-        cursor.execute("""
+        cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS session_state (
             session_id TEXT PRIMARY KEY,
             state JSON,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
-        """)
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_session_state_session_id ON session_state(session_id)")
+        """
+        )
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_session_state_session_id ON session_state(session_id)"
+        )
         conn.commit()
     elapsed = time.time() - start_time
     print(f"Internal sessions database initialized in {elapsed:.3f}s")
@@ -303,7 +341,8 @@ def init_social_media_db():
     with db_connection(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute("BEGIN TRANSACTION")
-        cursor.execute("""
+        cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS posts (
             post_id TEXT PRIMARY KEY,
             platform TEXT,
@@ -330,7 +369,8 @@ def init_social_media_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
-        """)
+        """
+        )
         indexes = [
             "CREATE INDEX IF NOT EXISTS idx_posts_platform ON posts(platform)",
             "CREATE INDEX IF NOT EXISTS idx_posts_user_handle ON posts(user_handle)",

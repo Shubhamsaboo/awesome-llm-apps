@@ -6,7 +6,9 @@ from agno.models.ollama import Ollama
 
 # Set up the Streamlit app
 st.title("AI Travel Planner using Llama-3.2 ✈️")
-st.caption("Plan your next adventure with AI Travel Planner by researching and planning a personalized itinerary on autopilot using local Llama-3")
+st.caption(
+    "Plan your next adventure with AI Travel Planner by researching and planning a personalized itinerary on autopilot using local Llama-3"
+)
 
 # Get SerpAPI key from the user
 serp_api_key = st.text_input("Enter Serp API Key for Search functionality", type="password")
@@ -55,7 +57,9 @@ if serp_api_key:
 
     # Input fields for the user's destination and the number of days they want to travel for
     destination = st.text_input("Where do you want to go?")
-    num_days = st.number_input("How many days do you want to travel for?", min_value=1, max_value=30, value=7)
+    num_days = st.number_input(
+        "How many days do you want to travel for?", min_value=1, max_value=30, value=7
+    )
 
     if st.button("Generate Itinerary"):
         with st.spinner("Processing..."):

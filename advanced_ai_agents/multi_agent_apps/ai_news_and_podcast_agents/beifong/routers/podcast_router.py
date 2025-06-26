@@ -3,7 +3,13 @@ from fastapi.responses import FileResponse
 from typing import List, Optional
 import os
 from datetime import datetime
-from models.podcast_schemas import Podcast, PodcastDetail, PodcastCreate, PodcastUpdate, PaginatedPodcasts
+from models.podcast_schemas import (
+    Podcast,
+    PodcastDetail,
+    PodcastCreate,
+    PodcastUpdate,
+    PaginatedPodcasts,
+)
 from services.podcast_service import podcast_service
 
 router = APIRouter()
@@ -78,11 +84,19 @@ async def get_podcast(podcast_id: int = Path(..., description="The ID of the pod
     banner_images = podcast.get("banner_images", [])
     if "banner_images" in podcast:
         del podcast["banner_images"]
-    return {"podcast": podcast, "content": content, "audio_url": audio_url, "sources": sources, "banner_images": banner_images}
+    return {
+        "podcast": podcast,
+        "content": content,
+        "audio_url": audio_url,
+        "sources": sources,
+        "banner_images": banner_images,
+    }
 
 
 @router.get("/by-identifier/{identifier}", response_model=PodcastDetail)
-async def get_podcast_by_identifier(identifier: str = Path(..., description="The unique identifier of the podcast")):
+async def get_podcast_by_identifier(
+    identifier: str = Path(..., description="The unique identifier of the podcast")
+):
     """
     Get detailed information about a specific podcast using string identifier.
 
@@ -101,7 +115,13 @@ async def get_podcast_by_identifier(identifier: str = Path(..., description="The
     banner_images = podcast.get("banner_images", [])
     if "banner_images" in podcast:
         del podcast["banner_images"]
-    return {"podcast": podcast, "content": content, "audio_url": audio_url, "sources": sources, "banner_images": banner_images}
+    return {
+        "podcast": podcast,
+        "content": content,
+        "audio_url": audio_url,
+        "sources": sources,
+        "banner_images": banner_images,
+    }
 
 
 @router.post("/", response_model=Podcast)
@@ -126,7 +146,10 @@ async def create_podcast(podcast_data: PodcastCreate = Body(...)):
 
 
 @router.put("/{podcast_id}", response_model=Podcast)
-async def update_podcast(podcast_id: int = Path(..., description="The ID of the podcast to update"), podcast_data: PodcastUpdate = Body(...)):
+async def update_podcast(
+    podcast_id: int = Path(..., description="The ID of the podcast to update"),
+    podcast_data: PodcastUpdate = Body(...),
+):
     """
     Update an existing podcast's metadata and/or content.
 
@@ -141,7 +164,9 @@ async def update_podcast(podcast_id: int = Path(..., description="The ID of the 
 
 
 @router.delete("/{podcast_id}")
-async def delete_podcast(podcast_id: int = Path(..., description="The ID of the podcast to delete")):
+async def delete_podcast(
+    podcast_id: int = Path(..., description="The ID of the podcast to delete")
+):
     """
     Delete a podcast.
 
@@ -157,7 +182,9 @@ async def delete_podcast(podcast_id: int = Path(..., description="The ID of the 
 
 
 @router.post("/{podcast_id}/audio", response_model=Podcast)
-async def upload_audio(podcast_id: int = Path(..., description="The ID of the podcast"), file: UploadFile = File(...)):
+async def upload_audio(
+    podcast_id: int = Path(..., description="The ID of the podcast"), file: UploadFile = File(...)
+):
     """
     Upload an audio file for a podcast.
 
@@ -171,7 +198,9 @@ async def upload_audio(podcast_id: int = Path(..., description="The ID of the po
 
 
 @router.post("/{podcast_id}/banner", response_model=Podcast)
-async def upload_banner(podcast_id: int = Path(..., description="The ID of the podcast"), file: UploadFile = File(...)):
+async def upload_banner(
+    podcast_id: int = Path(..., description="The ID of the podcast"), file: UploadFile = File(...)
+):
     """
     Upload a banner image for a podcast.
 

@@ -1,4 +1,4 @@
-streamlit 
+streamlit
 agno
 openai
 yfinance

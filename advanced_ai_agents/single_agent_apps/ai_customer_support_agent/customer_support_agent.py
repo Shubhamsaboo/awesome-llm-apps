@@ -13,7 +13,7 @@ st.caption("Chat with a customer support assistant who remembers your past inter
 openai_api_key = st.text_input("Enter OpenAI API Key", type="password")
 
 if openai_api_key:
-    os.environ['OPENAI_API_KEY'] = openai_api_key
+    os.environ["OPENAI_API_KEY"] = openai_api_key
 
     class CustomerSupportAIAgent:
         def __init__(self):
@@ -24,7 +24,7 @@ if openai_api_key:
                     "config": {
                         "host": "localhost",
                         "port": 6333,
-                    }
+                    },
                 },
             }
             try:
@@ -40,7 +40,7 @@ if openai_api_key:
             try:
                 # Search for relevant memories
                 relevant_memories = self.memory.search(query=query, user_id=user_id)
-                
+
                 # Build context from relevant memories
                 context = "Relevant past information:\n"
                 if relevant_memories and "results" in relevant_memories:
@@ -53,15 +53,22 @@ if openai_api_key:
                 response = self.client.chat.completions.create(
                     model="gpt-4",
                     messages=[
-                        {"role": "system", "content": "You are a customer support AI agent for TechGadgets.com, an online electronics store."},
-                        {"role": "user", "content": full_prompt}
-                    ]
+                        {
+                            "role": "system",
+                            "content": "You are a customer support AI agent for TechGadgets.com, an online electronics store.",
+                        },
+                        {"role": "user", "content": full_prompt},
+                    ],
                 )
                 answer = response.choices[0].message.content
 
                 # Add the query and answer to memory
-                self.memory.add(query, user_id=user_id, metadata={"app_id": self.app_id, "role": "user"})
-                self.memory.add(answer, user_id=user_id, metadata={"app_id": self.app_id, "role": "assistant"})
+                self.memory.add(
+                    query, user_id=user_id, metadata={"app_id": self.app_id, "role": "user"}
+                )
+                self.memory.add(
+                    answer, user_id=user_id, metadata={"app_id": self.app_id, "role": "assistant"}
+                )
 
                 return answer
             except Exception as e:
@@ -96,9 +103,12 @@ if openai_api_key:
                 response = self.client.chat.completions.create(
                     model="gpt-4",
                     messages=[
-                        {"role": "system", "content": "You are a data generation AI that creates realistic customer profiles and order histories. Always respond with valid JSON."},
-                        {"role": "user", "content": prompt}
-                    ]
+                        {
+                            "role": "system",
+                            "content": "You are a data generation AI that creates realistic customer profiles and order histories. Always respond with valid JSON.",
+                        },
+                        {"role": "user", "content": prompt},
+                    ],
                 )
 
                 customer_data = json.loads(response.choices[0].message.content)
@@ -108,15 +118,15 @@ if openai_api_key:
                     if isinstance(value, list):
                         for item in value:
                             self.memory.add(
-                                json.dumps(item), 
-                                user_id=user_id, 
-                                metadata={"app_id": self.app_id, "role": "system"}
+                                json.dumps(item),
+                                user_id=user_id,
+                                metadata={"app_id": self.app_id, "role": "system"},
                             )
                     else:
                         self.memory.add(
-                            f"{key}: {json.dumps(value)}", 
-                            user_id=user_id, 
-                            metadata={"app_id": self.app_id, "role": "system"}
+                            f"{key}: {json.dumps(value)}",
+                            user_id=user_id,
+                            metadata={"app_id": self.app_id, "role": "system"},
                         )
 
                 return customer_data
@@ -153,7 +163,9 @@ if openai_api_key:
         if st.session_state.customer_data:
             st.sidebar.json(st.session_state.customer_data)
         else:
-            st.sidebar.info("No customer data generated yet. Click 'Generate Synthetic Data' first.")
+            st.sidebar.info(
+                "No customer data generated yet. Click 'Generate Synthetic Data' first."
+            )
 
     if st.sidebar.button("View Memory Info"):
         if customer_id:

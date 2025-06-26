@@ -10,7 +10,9 @@ from db.config import get_db_path
 def db_connection(db_path: str):
     """Context manager for database connections."""
     if not os.path.exists(db_path):
-        raise HTTPException(status_code=404, detail=f"Database {db_path} not found. Initialize the database first.")
+        raise HTTPException(
+            status_code=404, detail=f"Database {db_path} not found. Initialize the database first."
+        )
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     try:
@@ -65,7 +67,6 @@ class DatabaseService:
             if isinstance(e, HTTPException):
                 raise e
             raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-
 
 
 sources_db = DatabaseService(db_name="sources_db")

@@ -9,8 +9,7 @@ load_dotenv()
 content_analysis_agent = Agent(
     name="content-analysis-agent",
     model=Together(
-        id="meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
-        api_key=os.getenv("TOGETHER_API_KEY")
+        id="meta-llama/Llama-3.3-70B-Instruct-Turbo-Free", api_key=os.getenv("TOGETHER_API_KEY")
     ),
     description="""
         You are a content analysis agent that evaluates transcribed speech for structure, clarity, and filler words.
@@ -24,16 +23,16 @@ content_analysis_agent = Agent(
         "- Suggestions for improving clarity and structure.",
         "The response MUST be in the following JSON format:",
         "{",
-            '"grammar_corrections": [list of corrections],',
-            '"filler_words": { "word": count, ... },',
-            '"suggestions": [list of suggestions]',
+        '"grammar_corrections": [list of corrections],',
+        '"filler_words": { "word": count, ... },',
+        '"suggestions": [list of suggestions]',
         "}",
         "Ensure the response is in proper JSON format with keys and values in double quotes.",
-        "Do not include any additional text outside the JSON response."
+        "Do not include any additional text outside the JSON response.",
     ],
     markdown=True,
     show_tool_calls=True,
-    debug_mode=True
+    debug_mode=True,
 )
 
 # # Example usage
@@ -46,7 +45,7 @@ content_analysis_agent = Agent(
 #     prompt = f"Analyze the following transcript:\n\n{transcript}"
 #     content_analysis_agent.print_response(prompt, stream=True)
 
-    # # Run agent and return the response as a variable
-    # response: RunResponse = content_analysis_agent.run(prompt)
-    # # Print the response in markdown format
-    # pprint_run_response(response, markdown=True)
+# # Run agent and return the response as a variable
+# response: RunResponse = content_analysis_agent.run(prompt)
+# # Print the response in markdown format
+# pprint_run_response(response, markdown=True)

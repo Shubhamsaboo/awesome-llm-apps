@@ -1,3 +1,3 @@
-streamlit 
+streamlit
 scrapegraphai
 playwright

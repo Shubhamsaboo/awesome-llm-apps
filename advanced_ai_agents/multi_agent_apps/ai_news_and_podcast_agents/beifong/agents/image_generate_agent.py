@@ -13,7 +13,8 @@ import requests
 load_dotenv()
 
 IMAGE_GENERATION_AGENT_DESCRIPTION = "You are an AI agent that can generate images using DALL-E."
-IMAGE_GENERATION_AGENT_INSTRUCTIONS = dedent("""
+IMAGE_GENERATION_AGENT_INSTRUCTIONS = dedent(
+    """
                                              When the user asks you to create an image, use the `create_image` tool to create the image.
                                              Create a modern, eye-catching podcast cover images that represents a podcast given podcast topic.
                                              Create 3 images for the given podcast topic.
@@ -27,7 +28,8 @@ IMAGE_GENERATION_AGENT_INSTRUCTIONS = dedent("""
                                             - The image should work well as a podcast cover thumbnail
                                             - Create a clean, professional design suitable for a podcast
                                             - AGAIN, DO NOT INCLUDE ANY TEXT
-                                        """)
+                                        """
+)
 
 
 def download_images(image_urls):
@@ -81,7 +83,10 @@ def image_generation_agent_run(agent: Agent, query: str) -> str:
             show_tool_calls=True,
             session_id=agent.session_id,
         )
-        image_agent.run(f"query: {query},\n podcast script: {json.dumps(session_state['generated_script'])}", session_id=agent.session_id)
+        image_agent.run(
+            f"query: {query},\n podcast script: {json.dumps(session_state['generated_script'])}",
+            session_id=agent.session_id,
+        )
         images = image_agent.get_images()
         image_urls = []
         if images and isinstance(images, list):

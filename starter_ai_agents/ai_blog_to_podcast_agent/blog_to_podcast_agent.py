@@ -77,10 +77,7 @@ if generate_button:
 
                 if podcast.audio and len(podcast.audio) > 0:
                     filename = f"{save_dir}/podcast_{uuid4()}.wav"
-                    write_audio_to_file(
-                        audio=podcast.audio[0].base64_audio,
-                        filename=filename
-                    )
+                    write_audio_to_file(audio=podcast.audio[0].base64_audio, filename=filename)
 
                     st.success("Podcast generated successfully! 🎧")
                     audio_bytes = open(filename, "rb").read()
@@ -90,7 +87,7 @@ if generate_button:
                         label="Download Podcast",
                         data=audio_bytes,
                         file_name="generated_podcast.wav",
-                        mime="audio/wav"
+                        mime="audio/wav",
                     )
                 else:
                     st.error("No audio was generated. Please try again.")

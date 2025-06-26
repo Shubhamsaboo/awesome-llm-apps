@@ -28,7 +28,13 @@ async def read_articles(
     - **search**: Search in title and summary
     """
     return await article_service.get_articles(
-        page=page, per_page=per_page, source=source, category=category, date_from=date_from, date_to=date_to, search=search
+        page=page,
+        per_page=per_page,
+        source=source,
+        category=category,
+        date_from=date_from,
+        date_to=date_to,
+        search=search,
     )
 
 

@@ -11,17 +11,21 @@ client = Swarm()
 st.set_page_config(page_title="AI News Processor", page_icon="📰")
 st.title("📰 News Inshorts Agent")
 
+
 def search_news(topic):
     """Search for news articles using DuckDuckGo"""
     with DDGS() as ddg:
         results = ddg.text(f"{topic} news {datetime.now().strftime('%Y-%m')}", max_results=3)
         if results:
-            news_results = "\n\n".join([
-                f"Title: {result['title']}\nURL: {result['href']}\nSummary: {result['body']}" 
-                for result in results
-            ])
+            news_results = "\n\n".join(
+                [
+                    f"Title: {result['title']}\nURL: {result['href']}\nSummary: {result['body']}"
+                    for result in results
+                ]
+            )
             return news_results
         return f"No news found for {topic}."
+
 
 # Create specialized agents
 search_agent = Agent(
@@ -33,7 +37,7 @@ search_agent = Agent(
     3. Return the raw search results in a structured format
     """,
     functions=[search_news],
-    model=MODEL
+    model=MODEL,
 )
 
 synthesis_agent = Agent(
@@ -48,7 +52,7 @@ synthesis_agent = Agent(
     6. Write in a clear, professional style
     Provide a 2-3 paragraph synthesis of the main points.
     """,
-    model=MODEL
+    model=MODEL,
 )
 
 summary_agent = Agent(
@@ -76,12 +80,13 @@ summary_agent = Agent(
 
     Focus on answering: What happened? Why is it significant? What's the impact?
 
-    IMPORTANT: Provide ONLY the summary paragraph. Do not include any introductory phrases, 
+    IMPORTANT: Provide ONLY the summary paragraph. Do not include any introductory phrases,
     labels, or meta-text like "Here's a summary" or "In AP/Reuters style."
     Start directly with the news content.
     """,
-    model=MODEL
+    model=MODEL,
 )
+
 
 def process_news(topic):
     """Run the news processing workflow"""
@@ -90,25 +95,28 @@ def process_news(topic):
         status.write("🔍 Searching for news...")
         search_response = client.run(
             agent=search_agent,
-            messages=[{"role": "user", "content": f"Find recent news about {topic}"}]
+            messages=[{"role": "user", "content": f"Find recent news about {topic}"}],
         )
         raw_news = search_response.messages[-1]["content"]
-        
+
         # Synthesize
         status.write("🔄 Synthesizing information...")
         synthesis_response = client.run(
             agent=synthesis_agent,
-            messages=[{"role": "user", "content": f"Synthesize these news articles:\n{raw_news}"}]
+            messages=[{"role": "user", "content": f"Synthesize these news articles:\n{raw_news}"}],
         )
         synthesized_news = synthesis_response.messages[-1]["content"]
-        
+
         # Summarize
         status.write("📝 Creating summary...")
         summary_response = client.run(
             agent=summary_agent,
-            messages=[{"role": "user", "content": f"Summarize this synthesis:\n{synthesized_news}"}]
+            messages=[
+                {"role": "user", "content": f"Summarize this synthesis:\n{synthesized_news}"}
+            ],
         )
         return raw_news, synthesized_news, summary_response.messages[-1]["content"]
+
 
 # User Interface
 topic = st.text_input("Enter news topic:", value="artificial intelligence")

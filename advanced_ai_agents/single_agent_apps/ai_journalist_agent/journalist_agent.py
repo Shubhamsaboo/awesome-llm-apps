@@ -8,7 +8,9 @@ from agno.models.openai import OpenAIChat
 
 # Set up the Streamlit app
 st.title("AI Journalist Agent 🗞️")
-st.caption("Generate High-quality articles with AI Journalist by researching, wriritng and editing quality articles on autopilot using GPT-4o")
+st.caption(
+    "Generate High-quality articles with AI Journalist by researching, wriritng and editing quality articles on autopilot using GPT-4o"
+)
 
 # Get OpenAI API key from user
 openai_api_key = st.text_input("Enter OpenAI API Key to access GPT-4o", type="password")

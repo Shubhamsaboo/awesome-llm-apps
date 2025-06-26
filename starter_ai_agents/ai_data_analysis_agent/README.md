@@ -4,17 +4,20 @@ An AI data analysis Agent built using the Agno Agent framework and Openai's gpt-
 
 ## Features
 
-- 📤 **File Upload Support**: 
+- 📤 **File Upload Support**:
+
   - Upload CSV and Excel files
   - Automatic data type detection and schema inference
   - Support for multiple file formats
 
-- 💬 **Natural Language Queries**: 
+- 💬 **Natural Language Queries**:
+
   - Convert natural language questions into SQL queries
   - Get instant answers about your data
   - No SQL knowledge required
 
 - 🔍 **Advanced Analysis**:
+
   - Perform complex data aggregations
   - Filter and sort data
   - Generate statistical summaries
@@ -28,6 +31,7 @@ An AI data analysis Agent built using the Agno Agent framework and Openai's gpt-
 ## How to Run
 
 1. **Setup Environment**
+
    ```bash
    # Clone the repository
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
@@ -38,6 +42,7 @@ An AI data analysis Agent built using the Agno Agent framework and Openai's gpt-
    ```
 
 2. **Configure API Keys**
+
    - Get OpenAI API key from [OpenAI Platform](https://platform.openai.com)
 
 3. **Run the Application**
@@ -52,4 +57,3 @@ An AI data analysis Agent built using the Agno Agent framework and Openai's gpt-
 3. Upload your CSV or Excel file through the Streamlit interface
 4. Ask questions about your data in natural language
 5. View the results and generated visualizations
-

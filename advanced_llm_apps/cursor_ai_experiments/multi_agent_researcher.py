@@ -6,11 +6,12 @@ import os
 # Initialize the GPT-4 model
 gpt4_model = None
 
+
 def create_article_crew(topic):
     """Creates a team of agents to research, write, and edit an article on a given topic.
 
-    This function sets up a crew consisting of three agents: a researcher, a writer, and an editor. 
-    Each agent is assigned a specific task to ensure the production of a well-researched, 
+    This function sets up a crew consisting of three agents: a researcher, a writer, and an editor.
+    Each agent is assigned a specific task to ensure the production of a well-researched,
     well-written, and polished article. The article is formatted using markdown standards.
 
     Args:
@@ -20,41 +21,41 @@ def create_article_crew(topic):
         Crew: A crew object that contains the agents and tasks necessary to complete the article."""
     # Create agents
     researcher = Agent(
-        role='Researcher',
-        goal='Conduct thorough research on the given topic',
-        backstory='You are an expert researcher with a keen eye for detail',
+        role="Researcher",
+        goal="Conduct thorough research on the given topic",
+        backstory="You are an expert researcher with a keen eye for detail",
         verbose=True,
         allow_delegation=False,
-        llm=gpt4_model
+        llm=gpt4_model,
     )
 
     writer = Agent(
-        role='Writer',
-        goal='Write a detailed and engaging article based on the research, using proper markdown formatting',
-        backstory='You are a skilled writer with expertise in creating informative content and formatting it beautifully in markdown',
+        role="Writer",
+        goal="Write a detailed and engaging article based on the research, using proper markdown formatting",
+        backstory="You are a skilled writer with expertise in creating informative content and formatting it beautifully in markdown",
         verbose=True,
         allow_delegation=False,
-        llm=gpt4_model
+        llm=gpt4_model,
     )
 
     editor = Agent(
-        role='Editor',
-        goal='Review and refine the article for clarity, accuracy, engagement, and proper markdown formatting',
-        backstory='You are an experienced editor with a sharp eye for quality content and excellent markdown structure',
+        role="Editor",
+        goal="Review and refine the article for clarity, accuracy, engagement, and proper markdown formatting",
+        backstory="You are an experienced editor with a sharp eye for quality content and excellent markdown structure",
         verbose=True,
         allow_delegation=False,
-        llm=gpt4_model
+        llm=gpt4_model,
     )
 
     # Create tasks
     research_task = Task(
         description=f"Conduct comprehensive research on the topic: {topic}. Gather key information, statistics, and expert opinions.",
         agent=researcher,
-        expected_output="A comprehensive research report on the given topic, including key information, statistics, and expert opinions."
+        expected_output="A comprehensive research report on the given topic, including key information, statistics, and expert opinions.",
     )
 
     writing_task = Task(
-        description="""Using the research provided, write a detailed and engaging article. 
+        description="""Using the research provided, write a detailed and engaging article.
         Ensure proper structure, flow, and clarity. Format the article using markdown, including:
         1. A main title (H1)
         2. Section headings (H2)
@@ -63,11 +64,11 @@ def create_article_crew(topic):
         5. Emphasis on key points using bold or italic text
         Make sure the content is well-organized and easy to read.""",
         agent=writer,
-        expected_output="A well-structured, detailed, and engaging article based on the provided research, formatted in markdown with proper headings and subheadings."
+        expected_output="A well-structured, detailed, and engaging article based on the provided research, formatted in markdown with proper headings and subheadings.",
     )
 
     editing_task = Task(
-        description="""Review the article for clarity, accuracy, engagement, and proper markdown formatting. 
+        description="""Review the article for clarity, accuracy, engagement, and proper markdown formatting.
         Ensure that:
         1. The markdown formatting is correct and consistent
         2. Headings and subheadings are used appropriately
@@ -75,7 +76,7 @@ def create_article_crew(topic):
         4. Key points are emphasized correctly
         Make necessary edits and improvements to both content and formatting.""",
         agent=editor,
-        expected_output="A final, polished version of the article with improved clarity, accuracy, engagement, and proper markdown formatting."
+        expected_output="A final, polished version of the article with improved clarity, accuracy, engagement, and proper markdown formatting.",
     )
 
     # Create the crew
@@ -83,16 +84,18 @@ def create_article_crew(topic):
         agents=[researcher, writer, editor],
         tasks=[research_task, writing_task, editing_task],
         verbose=2,
-        process=Process.sequential
+        process=Process.sequential,
     )
 
     return crew
+
 
 # Streamlit app
 st.set_page_config(page_title="Multi Agent AI Researcher", page_icon="📝")
 
 # Custom CSS for better appearance
-st.markdown("""
+st.markdown(
+    """
     <style>
     .stApp {
         max-width: 1800px;
@@ -111,7 +114,9 @@ st.markdown("""
         background-color: #ffffff;
     }
     </style>
-    """, unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True,
+)
 
 st.title("📝 Multi Agent AI Researcher")
 
@@ -129,7 +134,10 @@ with st.sidebar:
 # Main content
 st.markdown("Generate detailed articles on any topic using AI agents!")
 
-topic = st.text_input("Enter the topic for the article:", placeholder="e.g., The Impact of Artificial Intelligence on Healthcare")
+topic = st.text_input(
+    "Enter the topic for the article:",
+    placeholder="e.g., The Impact of Artificial Intelligence on Healthcare",
+)
 
 if st.button("Generate Article"):
     if not api_key:

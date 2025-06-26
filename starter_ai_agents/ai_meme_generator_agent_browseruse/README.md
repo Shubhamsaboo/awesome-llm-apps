@@ -5,18 +5,21 @@ The AI Meme Generator Agent is a powerful browser automation tool that creates m
 ## Features
 
 - **Multi-LLM Support**
+
   - Claude 3.5 Sonnet (Anthropic)
   - GPT-4o (OpenAI)
   - Deepseek v3 (Deepseek)
   - Automatic model switching with API key validation
 
 - **Browser Automation**:
+
   - Direct interaction with imgflip.com meme templates
   - Automated search for relevant meme formats
   - Dynamic text insertion for top/bottom captions
   - Image link extraction from generated memes
 
 - **Smart Generation Workflow**:
+
   - Action verb extraction from prompts
   - Metaphorical template matching
   - Multi-step quality validation
@@ -28,10 +31,10 @@ The AI Meme Generator Agent is a powerful browser automation tool that creates m
   - Direct meme preview with clickable links
   - Responsive error handling
 
-
 API keys required:
+
 - **Anthropic** (for Claude)
-- **Deepseek** 
+- **Deepseek**
 - **OpenAI** (for GPT-4o)
 
 ## How to Run
@@ -42,15 +45,16 @@ API keys required:
    cd ai_agent_tutorials/ai_meme_generator_browseruse
    ```
 2. **Install the dependencies**:
-    ```bash
-    pip install -r requirements.txt
-    ```
-    Install `playwright` if needed.
-    ```bash
-    python -m playwright install --with-deps
-    ```
+   ```bash
+   pip install -r requirements.txt
+   ```
+   Install `playwright` if needed.
+   ```bash
+   python -m playwright install --with-deps
+   ```
 3. **Run the Streamlit app**:
-    ```bash
-    streamlit run ai_meme_generator_agent.py
 
-    ```
+   ```bash
+   streamlit run ai_meme_generator_agent.py
+
+   ```

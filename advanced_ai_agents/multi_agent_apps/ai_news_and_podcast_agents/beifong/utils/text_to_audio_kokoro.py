@@ -24,7 +24,9 @@ def create_slience_audio(silence_duration: float, sampling_rate: int) -> np.ndar
     return np.zeros(int(sampling_rate * silence_duration), dtype=np.float32)
 
 
-def text_to_speech(pipeline: KPipeline, text: str, speaker_id: int, sampling_rate: int, lang_code: str) -> np.ndarray:
+def text_to_speech(
+    pipeline: KPipeline, text: str, speaker_id: int, sampling_rate: int, lang_code: str
+) -> np.ndarray:
     if lang_code == "h":
         voices = {1: "hf_alpha", 2: "hm_omega"}
     else:
@@ -100,7 +102,9 @@ def create_podcast(
             script = translate_script(script.entries, lang_code)
     output_path = os.path.abspath(output_path)
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    audio_segments = create_audio_segments(pipeline, script, silence_duration, sampling_rate, lang_code)
+    audio_segments = create_audio_segments(
+        pipeline, script, silence_duration, sampling_rate, lang_code
+    )
     full_audio = combine_full_segments(audio_segments)
     write_to_disk(output_path, full_audio, sampling_rate)
     return output_path

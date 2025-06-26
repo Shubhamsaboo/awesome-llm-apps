@@ -20,7 +20,11 @@ TASK_TYPES = {
         "command": "python -m processors.feed_processor",
         "description": "Processes RSS feeds and stores new entries",
     },
-    "url_crawler": {"name": "URL Crawler", "command": "python -m processors.url_processor", "description": "Crawls URLs and extracts content"},
+    "url_crawler": {
+        "name": "URL Crawler",
+        "command": "python -m processors.url_processor",
+        "description": "Crawls URLs and extracts content",
+    },
     "ai_analyzer": {
         "name": "AI Analyzer",
         "command": "python -m processors.ai_analysis_processor",

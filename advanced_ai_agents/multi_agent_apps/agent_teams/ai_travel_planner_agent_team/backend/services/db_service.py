@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import (
     AsyncSession,
     create_async_engine,
     async_sessionmaker,
-    AsyncEngine
+    AsyncEngine,
 )
 from loguru import logger
 
@@ -29,6 +29,7 @@ if DATABASE_URL.startswith("postgresql://"):
 # Global engine and session factory
 _engine: Optional[AsyncEngine] = None
 _session_factory: Optional[async_sessionmaker[AsyncSession]] = None
+
 
 async def initialize_db_pool(pool_size: int = 10, max_overflow: int = 20) -> None:
     """Initialize the SQLAlchemy engine and session factory.
@@ -67,6 +68,7 @@ async def initialize_db_pool(pool_size: int = 10, max_overflow: int = 20) -> Non
         logger.error(f"Failed to initialize SQLAlchemy engine and session factory: {e}")
         raise
 
+
 async def close_db_pool() -> None:
     """Close the SQLAlchemy engine and connection pool."""
     global _engine
@@ -74,6 +76,7 @@ async def close_db_pool() -> None:
         logger.info("Closing SQLAlchemy engine and connection pool")
         await _engine.dispose()
         _engine = None
+
 
 @asynccontextmanager
 async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
@@ -99,6 +102,7 @@ async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
             await session.rollback()
             logger.error(f"Database session operation failed: {e}")
             raise
+
 
 async def execute_query(query: str, params: Optional[Dict[str, Any]] = None) -> list:
     """Execute a database query and return results.

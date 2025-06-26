@@ -6,7 +6,9 @@ from agno.models.openai import OpenAIChat
 
 # Set up the Streamlit app
 st.title("AI Travel Planner ✈️")
-st.caption("Plan your next adventure with AI Travel Planner by researching and planning a personalized itinerary on autopilot using GPT-4o")
+st.caption(
+    "Plan your next adventure with AI Travel Planner by researching and planning a personalized itinerary on autopilot using GPT-4o"
+)
 
 # Get OpenAI API key from user
 openai_api_key = st.text_input("Enter OpenAI API Key to access GPT-4o", type="password")
@@ -58,23 +60,27 @@ if openai_api_key and serp_api_key:
 
     # Input fields for the user's destination and the number of days they want to travel for
     destination = st.text_input("Where do you want to go?")
-    num_days = st.number_input("How many days do you want to travel for?", min_value=1, max_value=30, value=7)
+    num_days = st.number_input(
+        "How many days do you want to travel for?", min_value=1, max_value=30, value=7
+    )
 
     if st.button("Generate Itinerary"):
         with st.spinner("Researching your destination..."):
             # First get research results
-            research_results = researcher.run(f"Research {destination} for a {num_days} day trip", stream=False)
-            
+            research_results = researcher.run(
+                f"Research {destination} for a {num_days} day trip", stream=False
+            )
+
             # Show research progress
             st.write("✓ Research completed")
-            
+
         with st.spinner("Creating your personalized itinerary..."):
             # Pass research results to planner
             prompt = f"""
             Destination: {destination}
             Duration: {num_days} days
             Research Results: {research_results.content}
-            
+
             Please create a detailed itinerary based on this research.
             """
             response = planner.run(prompt, stream=False)

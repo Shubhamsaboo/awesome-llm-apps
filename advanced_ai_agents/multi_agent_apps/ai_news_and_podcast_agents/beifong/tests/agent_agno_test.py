@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 load_dotenv()
 agent = Agent(model=OpenAIChat(id="gpt-4o-mini"))
 response: RunResponse = agent.run("Tell me a 5 second short story about a robot")
-response_stream: Iterator[RunResponse] = agent.run("Tell me a 5 second short story about a lion", stream=True)
+response_stream: Iterator[RunResponse] = agent.run(
+    "Tell me a 5 second short story about a lion", stream=True
+)
 pprint_run_response(response, markdown=True)
 pprint_run_response(response_stream, markdown=True)

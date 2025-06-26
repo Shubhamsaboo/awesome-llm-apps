@@ -12,7 +12,7 @@ def create_task(
     enabled=True,
 ):
     query = """
-    INSERT INTO tasks 
+    INSERT INTO tasks
     (name, description, command, frequency, frequency_unit, enabled, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?)
     """
@@ -30,8 +30,8 @@ def create_task(
 
 def is_task_running(tasks_db_path, task_id):
     query = """
-    SELECT 1 
-    FROM task_executions 
+    SELECT 1
+    FROM task_executions
     WHERE task_id = ? AND status = 'running'
     LIMIT 1
     """
@@ -121,7 +121,7 @@ def update_task_last_run(tasks_db_path, task_id, timestamp=None):
 def create_task_execution(tasks_db_path, task_id, status, error_message=None, output=None):
     start_time = datetime.now().isoformat()
     query = """
-    INSERT INTO task_executions 
+    INSERT INTO task_executions
     (task_id, start_time, status, error_message, output)
     VALUES (?, ?, ?, ?, ?)
     """
@@ -199,7 +199,7 @@ def mark_task_enabled(tasks_db_path, task_id):
 
 def get_task_stats(tasks_db_path):
     query = """
-    SELECT 
+    SELECT
         COUNT(*) as total_tasks,
         SUM(CASE WHEN enabled = 1 THEN 1 ELSE 0 END) as active_tasks,
         SUM(CASE WHEN enabled = 0 THEN 1 ELSE 0 END) as disabled_tasks,
@@ -212,13 +212,13 @@ def get_task_stats(tasks_db_path):
 def get_execution_stats(tasks_db_path, days=7):
     cutoff_date = (datetime.now() - timedelta(days=days)).isoformat()
     query = """
-    SELECT 
+    SELECT
         COUNT(*) as total_executions,
         COALESCE(SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END), 0) as successful_executions,
         COALESCE(SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END), 0) as failed_executions,
         COALESCE(SUM(CASE WHEN status = 'running' THEN 1 ELSE 0 END), 0) as running_executions,
-        COALESCE(AVG(CASE WHEN end_time IS NOT NULL 
-            THEN (julianday(end_time) - julianday(start_time)) * 86400.0 
+        COALESCE(AVG(CASE WHEN end_time IS NOT NULL
+            THEN (julianday(end_time) - julianday(start_time)) * 86400.0
             ELSE NULL END), 0) as avg_execution_time_seconds
     FROM task_executions
     WHERE start_time >= ?
@@ -232,8 +232,8 @@ def get_pending_tasks(tasks_db_path):
     FROM tasks
     WHERE enabled = 1
     AND (
-        last_run IS NULL 
-        OR 
+        last_run IS NULL
+        OR
         CASE frequency_unit
             WHEN 'minutes' THEN datetime(last_run, '+' || frequency || ' minutes') <= datetime('now', 'localtime')
             WHEN 'hours' THEN datetime(last_run, '+' || frequency || ' hours') <= datetime('now', 'localtime')

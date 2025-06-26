@@ -20,7 +20,7 @@ if openai_api_key:
             "config": {
                 "host": "localhost",
                 "port": 6333,
-            }
+            },
         },
     }
     memory = Memory.from_config(config)
@@ -81,9 +81,12 @@ if openai_api_key:
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": "You are a travel assistant with access to past conversations."},
-                {"role": "user", "content": full_prompt}
-            ]
+                {
+                    "role": "system",
+                    "content": "You are a travel assistant with access to past conversations.",
+                },
+                {"role": "user", "content": full_prompt},
+            ],
         )
         answer = response.choices[0].message.content
 

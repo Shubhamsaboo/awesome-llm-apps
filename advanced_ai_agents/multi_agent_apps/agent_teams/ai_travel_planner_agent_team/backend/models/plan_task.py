@@ -33,9 +33,7 @@ class PlanTask(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     trip_plan_id: Mapped[str] = mapped_column(String(50), index=True)
     task_type: Mapped[str] = mapped_column(String(50))
-    status: Mapped[TaskStatus] = mapped_column(
-        SQLEnum(TaskStatus, name="plan_task_status")
-    )
+    status: Mapped[TaskStatus] = mapped_column(SQLEnum(TaskStatus, name="plan_task_status"))
     input_data: Mapped[dict] = mapped_column(JSON)
     output_data: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     error_message: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)

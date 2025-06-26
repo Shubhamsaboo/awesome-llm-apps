@@ -31,7 +31,8 @@ def send_error_message(thread_key: str, error_message: str):
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("""
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS thread_sessions (
             thread_key TEXT PRIMARY KEY,
             session_id TEXT NOT NULL,
@@ -40,14 +41,17 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
-    """)
-    cursor.execute("""
+    """
+    )
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS session_state (
             session_id TEXT PRIMARY KEY,
             state_data TEXT,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
-    """)
+    """
+    )
     conn.commit()
     conn.close()
 
@@ -113,7 +117,9 @@ class PodcastAgentClient:
         try:
             async with aiohttp.ClientSession(timeout=self.timeout) as session:
                 payload = {"session_id": session_id} if session_id else {}
-                async with session.post(f"{self.base_url}/api/podcast-agent/session", json=payload) as resp:
+                async with session.post(
+                    f"{self.base_url}/api/podcast-agent/session", json=payload
+                ) as resp:
                     resp.raise_for_status()
                     return await resp.json()
         except Exception as e:
@@ -124,7 +130,9 @@ class PodcastAgentClient:
         try:
             async with aiohttp.ClientSession(timeout=self.timeout) as session:
                 payload = {"session_id": session_id, "message": message}
-                async with session.post(f"{self.base_url}/api/podcast-agent/chat", json=payload) as resp:
+                async with session.post(
+                    f"{self.base_url}/api/podcast-agent/chat", json=payload
+                ) as resp:
                     resp.raise_for_status()
                     return await resp.json()
         except Exception as e:
@@ -137,7 +145,9 @@ class PodcastAgentClient:
                 payload = {"session_id": session_id}
                 if task_id:
                     payload["task_id"] = task_id
-                async with session.post(f"{self.base_url}/api/podcast-agent/status", json=payload) as resp:
+                async with session.post(
+                    f"{self.base_url}/api/podcast-agent/status", json=payload
+                ) as resp:
                     resp.raise_for_status()
                     return await resp.json()
         except Exception as e:
@@ -235,10 +245,14 @@ async def send_completion_message(thread_key: str, status_response):
     session_state = status_response.get("session_state")
     if session_state:
         try:
-            state_data = json.loads(session_state) if isinstance(session_state, str) else session_state
+            state_data = (
+                json.loads(session_state) if isinstance(session_state, str) else session_state
+            )
             if state_data.get("show_sources_for_selection") and state_data.get("search_results"):
                 await send_source_selection_blocks(thread_key, state_data, response_text)
-            elif state_data.get("show_script_for_confirmation") and state_data.get("generated_script"):
+            elif state_data.get("show_script_for_confirmation") and state_data.get(
+                "generated_script"
+            ):
                 await send_script_confirmation_blocks(thread_key, state_data, response_text)
             elif state_data.get("show_banner_for_confirmation") and state_data.get("banner_url"):
                 await send_banner_confirmation_blocks(thread_key, state_data, response_text)
@@ -400,7 +414,10 @@ async def send_script_confirmation_blocks(thread_key: str, state_data: dict, res
     title = script.get("title", "Podcast Script") if isinstance(script, dict) else "Podcast Script"
     full_script_text = format_script_for_slack_snippet(script)
     if len(full_script_text) > 2500:
-        full_script_text = full_script_text[:2400] + "\n\n... (script continues)\n\nFull script will be available after approval."
+        full_script_text = (
+            full_script_text[:2400]
+            + "\n\n... (script continues)\n\nFull script will be available after approval."
+        )
     section_count = len(script.get("sections", [])) if isinstance(script, dict) else 0
     dialog_count = 0
     if isinstance(script, dict) and script.get("sections"):
@@ -580,7 +597,9 @@ async def send_final_presentation_blocks(thread_key: str, state_data: dict, resp
     await send_slack_blocks(thread_key, blocks, "🎉 Podcast Complete!")
 
 
-async def send_slack_blocks(thread_key: str, blocks: list, fallback_text: str = "Interactive elements loaded"):
+async def send_slack_blocks(
+    thread_key: str, blocks: list, fallback_text: str = "Interactive elements loaded"
+):
     try:
         session_info = get_session_info(thread_key)
         if not session_info:
@@ -619,10 +638,14 @@ async def send_slack_message(thread_key: str, text: str):
                     if thread_key.startswith("dm_"):
                         app.client.chat_postMessage(channel=channel_id, text=chunk)
                     else:
-                        app.client.chat_postMessage(channel=channel_id, text=chunk, thread_ts=thread_key)
+                        app.client.chat_postMessage(
+                            channel=channel_id, text=chunk, thread_ts=thread_key
+                        )
                 else:
                     if thread_key.startswith("dm_"):
-                        app.client.chat_postMessage(channel=channel_id, text=f"...continued:\n{chunk}")
+                        app.client.chat_postMessage(
+                            channel=channel_id, text=f"...continued:\n{chunk}"
+                        )
                     else:
                         app.client.chat_postMessage(
                             channel=channel_id,
@@ -720,11 +743,19 @@ def handle_confirm_sources(ack, body, client):
             selected_language = "en"
             if "state" in body and "values" in body["state"]:
                 values = body["state"]["values"]
-                if "source_selection_block" in values and "source_selection" in values["source_selection_block"]:
+                if (
+                    "source_selection_block" in values
+                    and "source_selection" in values["source_selection_block"]
+                ):
                     source_data = values["source_selection_block"]["source_selection"]
                     if "selected_options" in source_data and source_data["selected_options"]:
-                        selected_sources = [int(opt["value"]) for opt in source_data["selected_options"]]
-                if "language_selection_block" in values and "language_selection" in values["language_selection_block"]:
+                        selected_sources = [
+                            int(opt["value"]) for opt in source_data["selected_options"]
+                        ]
+                if (
+                    "language_selection_block" in values
+                    and "language_selection" in values["language_selection_block"]
+                ):
                     lang_data = values["language_selection_block"]["language_selection"]
                     if "selected_option" in lang_data and lang_data["selected_option"]:
                         selected_language = lang_data["selected_option"]["value"]
@@ -746,11 +777,17 @@ def handle_confirm_sources(ack, body, client):
             sources = state_data.get("search_results", [])
             if selected_sources:
                 source_indices = [str(i + 1) for i in selected_sources]
-                selected_source_titles = [sources[i].get("title", f"Source {i + 1}") for i in selected_sources if i < len(sources)]
+                selected_source_titles = [
+                    sources[i].get("title", f"Source {i + 1}")
+                    for i in selected_sources
+                    if i < len(sources)
+                ]
                 message = f"I've selected sources {', '.join(source_indices)} and I want the podcast in {language_name}."
             else:
                 source_indices = [str(i + 1) for i in range(len(sources))]
-                selected_source_titles = [source.get("title", f"Source {i + 1}") for i, source in enumerate(sources)]
+                selected_source_titles = [
+                    source.get("title", f"Source {i + 1}") for i, source in enumerate(sources)
+                ]
                 message = f"I want the podcast in {language_name} using all available sources."
             try:
                 confirmation_blocks = create_confirmation_blocks(
@@ -785,7 +822,9 @@ def handle_confirm_sources(ack, body, client):
     executor.submit(process_confirmation)
 
 
-def create_confirmation_blocks(selected_sources, selected_source_titles, language_name, total_sources):
+def create_confirmation_blocks(
+    selected_sources, selected_source_titles, language_name, total_sources
+):
     if selected_sources:
         source_text = ""
         for i, (idx, title) in enumerate(zip(selected_sources, selected_source_titles)):
@@ -796,7 +835,9 @@ def create_confirmation_blocks(selected_sources, selected_source_titles, languag
                 remaining = len(selected_sources) - 3
                 source_text += f"• _...and {remaining} more sources_\n"
                 break
-        source_summary = f"*Selected {len(selected_sources)} of {total_sources} sources:*\n{source_text}"
+        source_summary = (
+            f"*Selected {len(selected_sources)} of {total_sources} sources:*\n{source_text}"
+        )
     else:
         source_summary = f"*Selected all {total_sources} sources*"
     blocks = [
@@ -1010,7 +1051,11 @@ def handle_approve_audio(ack, body, client):
                 thread_ts=thread_key if not thread_key.startswith("dm_") else None,
                 text="🔄 Audio approved! Finalizing your podcast...",
             )
-            asyncio.run(process_approval_action(body, "The audio sounds great! I'm happy with the final podcast."))
+            asyncio.run(
+                process_approval_action(
+                    body, "The audio sounds great! I'm happy with the final podcast."
+                )
+            )
         except Exception as e:
             print(f"Error in approve_audio: {e}")
 
@@ -1079,7 +1124,9 @@ def handle_app_mention(event, say, client):
     user_id = event["user"]
 
     def handle_async():
-        asyncio.run(handle_user_message(thread_key, user_input, say, channel_id, user_id, is_mention=True))
+        asyncio.run(
+            handle_user_message(thread_key, user_input, say, channel_id, user_id, is_mention=True)
+        )
 
     executor.submit(handle_async)
 
@@ -1098,7 +1145,9 @@ def handle_message(message, say, client):
     thread_key = get_thread_key(message, is_dm)
 
     def handle_async():
-        asyncio.run(handle_user_message(thread_key, user_input, say, channel_id, user_id, is_dm=is_dm))
+        asyncio.run(
+            handle_user_message(thread_key, user_input, say, channel_id, user_id, is_dm=is_dm)
+        )
 
     executor.submit(handle_async)
 
@@ -1119,7 +1168,16 @@ async def handle_user_message(
             script = session_state.get("generated_script", {})
             podcast_title = script.get("title") if isinstance(script, dict) else "Your Podcast"
             podcast_id = session_state.get("podcast_id", "")
-            completion_queries = ["download", "script", "audio", "banner", "share", "link", "asset", "file"]
+            completion_queries = [
+                "download",
+                "script",
+                "audio",
+                "banner",
+                "share",
+                "link",
+                "asset",
+                "file",
+            ]
             is_asset_query = any(query in user_input.lower() for query in completion_queries)
             if is_asset_query:
                 completion_message = (
@@ -1146,7 +1204,9 @@ async def handle_user_message(
                 say(text=completion_message, thread_ts=thread_key)
             else:
                 say(text=completion_message)
-            print(f"Session {session_id} is complete - prevented API call for: {user_input[:50]}...")
+            print(
+                f"Session {session_id} is complete - prevented API call for: {user_input[:50]}..."
+            )
             return
         if session_id in active_sessions:
             active_session = active_sessions[session_id]
@@ -1170,9 +1230,13 @@ async def handle_user_message(
                 f"_Please wait while I complete this step. This can take several minutes for high-quality results._"
             )
             if current_stage == "search":
-                progress_message += "\n\n💡 *Currently:* Finding the best sources across multiple platforms"
+                progress_message += (
+                    "\n\n💡 *Currently:* Finding the best sources across multiple platforms"
+                )
             elif current_stage == "script":
-                progress_message += "\n\n💡 *Currently:* Crafting engaging dialogue and content structure"
+                progress_message += (
+                    "\n\n💡 *Currently:* Crafting engaging dialogue and content structure"
+                )
             elif current_stage in ["banner", "image"]:
                 progress_message += "\n\n💡 *Currently:* Generating professional banner designs"
             elif current_stage == "audio":
@@ -1181,7 +1245,9 @@ async def handle_user_message(
                 say(text=progress_message, thread_ts=thread_key)
             else:
                 say(text=progress_message)
-            print(f"Session {session_id} already processing ({current_stage}) - prevented API call for: {user_input[:50]}...")
+            print(
+                f"Session {session_id} already processing ({current_stage}) - prevented API call for: {user_input[:50]}..."
+            )
             return
         print(f"Processing message for session {session_id}: {user_input[:50]}...")
         chat_response = await api_client.chat(session_id, user_input)
@@ -1204,7 +1270,9 @@ async def handle_user_message(
     except Exception as e:
         print(f"Error handling message: {e}")
         if "timeout" in str(e).lower():
-            error_msg = "⏱️ Request timed out. The system might be busy. Please try again in a moment."
+            error_msg = (
+                "⏱️ Request timed out. The system might be busy. Please try again in a moment."
+            )
         elif "connection" in str(e).lower():
             error_msg = "🔌 Connection issue. Please check your connection and try again."
         else:

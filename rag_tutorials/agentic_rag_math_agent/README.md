@@ -14,8 +14,8 @@ This project implements an **Agentic-RAG architecture** to simulate a math profe
 - 💻 **Streamlit UI**: Interactive dashboard with multiple tabs.
 
 ## 🚀 Architecture Flow
-<img width="465" alt="Screenshot 2025-05-04 at 3 45 58 PM" src="https://github.com/user-attachments/assets/c0a9e612-2ef0-413c-b779-c99fe9f48619" />
 
+<img width="465" alt="Screenshot 2025-05-04 at 3 45 58 PM" src="https://github.com/user-attachments/assets/c0a9e612-2ef0-413c-b779-c99fe9f48619" />
 
 ## 📚 Knowledge Base
 
@@ -28,12 +28,10 @@ This project implements an **Agentic-RAG architecture** to simulate a math profe
 - Uses **Tavily API** for fallback search when the KB doesn't contain a good match
 - Fetched content is piped into **GPT-4o** for clean explanation
 
-
 ## 🔐 Guardrails
 
 - **Input Guardrail (DSPy):** Accepts only math-related academic questions
 - **Output Guardrail (DSPy):** Blocks hallucinated or off-topic content
-
 
 ## 👨‍🏫 Human-in-the-Loop Feedback
 
@@ -46,14 +44,10 @@ This project implements an **Agentic-RAG architecture** to simulate a math profe
 - **Current Accuracy:** 66%
 - Benchmark results saved to: `benchmark/results.csv`
 
-
-## 🚀 Demo 
+## 🚀 Demo
 
 To run the app with Streamlit:
 
 ```bash
 streamlit run app/streamlit.py
-
-
-
-
+```

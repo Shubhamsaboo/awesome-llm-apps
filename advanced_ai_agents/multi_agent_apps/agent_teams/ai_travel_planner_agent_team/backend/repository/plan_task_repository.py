@@ -70,7 +70,5 @@ async def get_tasks_by_trip_plan(trip_plan_id: str) -> List[PlanTask]:
 async def get_tasks_by_status(status: TaskStatus) -> List[PlanTask]:
     """Get all tasks with a specific status."""
     async with get_db_session() as session:
-        result = await session.execute(
-            select(PlanTask).where(PlanTask.status == status)
-        )
+        result = await session.execute(select(PlanTask).where(PlanTask.status == status))
         return list(result.scalars().all())

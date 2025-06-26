@@ -27,6 +27,7 @@ A powerful research assistant that leverages OpenAI's Agents SDK and Firecrawl's
 ## Installation
 
 1. Clone this repository:
+
    ```bash
    git clone  https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd advanced_ai_agents/single_agent_apps/ai_deep_research_agent
@@ -40,11 +41,13 @@ A powerful research assistant that leverages OpenAI's Agents SDK and Firecrawl's
 ## Usage
 
 1. Run the Streamlit app:
+
    ```bash
    streamlit run deep_research_openai.py
    ```
 
 2. Enter your API keys in the sidebar:
+
    - OpenAI API key
    - Firecrawl API key
 
@@ -71,4 +74,3 @@ The application uses two specialized agents:
 2. **Elaboration Agent**: Enhances the initial research by adding detailed explanations, examples, case studies, and practical implications.
 
 The Firecrawl deep research tool performs multiple iterations of web searches, content extraction, and analysis to provide thorough coverage of the topic.
-

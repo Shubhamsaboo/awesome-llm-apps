@@ -12,8 +12,8 @@ class PodcastConfigService:
         try:
             if active_only:
                 query = """
-                SELECT id, name, description, prompt, time_range_hours, limit_articles, 
-                       is_active, tts_engine, language_code, podcast_script_prompt, 
+                SELECT id, name, description, prompt, time_range_hours, limit_articles,
+                       is_active, tts_engine, language_code, podcast_script_prompt,
                        image_prompt, created_at, updated_at
                 FROM podcast_configs
                 WHERE is_active = 1
@@ -22,8 +22,8 @@ class PodcastConfigService:
                 params = ()
             else:
                 query = """
-                SELECT id, name, description, prompt, time_range_hours, limit_articles, 
-                       is_active, tts_engine, language_code, podcast_script_prompt, 
+                SELECT id, name, description, prompt, time_range_hours, limit_articles,
+                       is_active, tts_engine, language_code, podcast_script_prompt,
                        image_prompt, created_at, updated_at
                 FROM podcast_configs
                 ORDER BY name
@@ -36,14 +36,16 @@ class PodcastConfigService:
         except Exception as e:
             if isinstance(e, HTTPException):
                 raise e
-            raise HTTPException(status_code=500, detail=f"Error fetching podcast configurations: {str(e)}")
+            raise HTTPException(
+                status_code=500, detail=f"Error fetching podcast configurations: {str(e)}"
+            )
 
     async def get_config(self, config_id: int) -> Dict[str, Any]:
         """Get a specific podcast configuration by ID."""
         try:
             query = """
-            SELECT id, name, description, prompt, time_range_hours, limit_articles, 
-                   is_active, tts_engine, language_code, podcast_script_prompt, 
+            SELECT id, name, description, prompt, time_range_hours, limit_articles,
+                   is_active, tts_engine, language_code, podcast_script_prompt,
                    image_prompt, created_at, updated_at
             FROM podcast_configs
             WHERE id = ?
@@ -56,7 +58,9 @@ class PodcastConfigService:
         except Exception as e:
             if isinstance(e, HTTPException):
                 raise e
-            raise HTTPException(status_code=500, detail=f"Error fetching podcast configuration: {str(e)}")
+            raise HTTPException(
+                status_code=500, detail=f"Error fetching podcast configuration: {str(e)}"
+            )
 
     async def create_config(
         self,
@@ -75,9 +79,9 @@ class PodcastConfigService:
         try:
             current_time = datetime.now().isoformat()
             query = """
-            INSERT INTO podcast_configs 
-            (name, description, prompt, time_range_hours, limit_articles, 
-             is_active, tts_engine, language_code, podcast_script_prompt, 
+            INSERT INTO podcast_configs
+            (name, description, prompt, time_range_hours, limit_articles,
+             is_active, tts_engine, language_code, podcast_script_prompt,
              image_prompt, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
@@ -100,7 +104,9 @@ class PodcastConfigService:
         except Exception as e:
             if isinstance(e, HTTPException):
                 raise e
-            raise HTTPException(status_code=500, detail=f"Error creating podcast configuration: {str(e)}")
+            raise HTTPException(
+                status_code=500, detail=f"Error creating podcast configuration: {str(e)}"
+            )
 
     async def update_config(self, config_id: int, updates: Dict[str, Any]) -> Dict[str, Any]:
         """Update an existing podcast configuration."""
@@ -140,7 +146,9 @@ class PodcastConfigService:
         except Exception as e:
             if isinstance(e, HTTPException):
                 raise e
-            raise HTTPException(status_code=500, detail=f"Error updating podcast configuration: {str(e)}")
+            raise HTTPException(
+                status_code=500, detail=f"Error updating podcast configuration: {str(e)}"
+            )
 
     async def delete_config(self, config_id: int) -> Dict[str, str]:
         """Delete a podcast configuration."""
@@ -155,7 +163,9 @@ class PodcastConfigService:
         except Exception as e:
             if isinstance(e, HTTPException):
                 raise e
-            raise HTTPException(status_code=500, detail=f"Error deleting podcast configuration: {str(e)}")
+            raise HTTPException(
+                status_code=500, detail=f"Error deleting podcast configuration: {str(e)}"
+            )
 
     async def toggle_config(self, config_id: int, enable: bool) -> Dict[str, Any]:
         """Enable or disable a podcast configuration."""
@@ -171,7 +181,9 @@ class PodcastConfigService:
         except Exception as e:
             if isinstance(e, HTTPException):
                 raise e
-            raise HTTPException(status_code=500, detail=f"Error updating podcast configuration: {str(e)}")
+            raise HTTPException(
+                status_code=500, detail=f"Error updating podcast configuration: {str(e)}"
+            )
 
 
 podcast_config_service = PodcastConfigService()

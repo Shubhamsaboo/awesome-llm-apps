@@ -7,7 +7,12 @@ import json
 def check_ad(soup):
     is_ad = False
     ad_label = soup.find(
-        lambda tag: tag.name and tag.text and tag.text.strip() == "Ad" and "r-bcqeeo" in tag.get("class", []) if hasattr(tag, "get") else False
+        lambda tag: tag.name
+        and tag.text
+        and tag.text.strip() == "Ad"
+        and "r-bcqeeo" in tag.get("class", [])
+        if hasattr(tag, "get")
+        else False
     )
     if ad_label:
         is_ad = True
@@ -34,7 +39,11 @@ def x_post_extractor(html_content):
     data["is_ad"] = check_ad(soup)
     user_element = soup.find("div", {"data-testid": "User-Name"})
     if user_element:
-        display_name_element = user_element.find(lambda tag: tag.name and (tag.name == "span" or tag.name == "div") and "Henrik" in tag.text)
+        display_name_element = user_element.find(
+            lambda tag: tag.name
+            and (tag.name == "span" or tag.name == "div")
+            and "Henrik" in tag.text
+        )
         if display_name_element:
             data["user_display_name"] = display_name_element.text.strip()
         username_element = user_element.find(lambda tag: tag.name == "a" and "@" in tag.text)
@@ -73,31 +82,41 @@ def x_post_extractor(html_content):
 
     reply_button = soup.find("button", {"data-testid": "reply"})
     if reply_button:
-        count_span = reply_button.select_one("span[data-testid='app-text-transition-container'] span span")
+        count_span = reply_button.select_one(
+            "span[data-testid='app-text-transition-container'] span span"
+        )
         if count_span:
             data["engagement_reply_count"] = count_span.text.strip()
 
     retweet_button = soup.find("button", {"data-testid": "retweet"})
     if retweet_button:
-        count_span = retweet_button.select_one("span[data-testid='app-text-transition-container'] span span")
+        count_span = retweet_button.select_one(
+            "span[data-testid='app-text-transition-container'] span span"
+        )
         if count_span:
             data["engagement_retweet_count"] = count_span.text.strip()
 
     like_button = soup.find("button", {"data-testid": "like"})
     if like_button:
-        count_span = like_button.select_one("span[data-testid='app-text-transition-container'] span span")
+        count_span = like_button.select_one(
+            "span[data-testid='app-text-transition-container'] span span"
+        )
         if count_span:
             data["engagement_like_count"] = count_span.text.strip()
 
     bookmark_button = soup.find("button", {"data-testid": "bookmark"})
     if bookmark_button:
-        count_span = bookmark_button.select_one("span[data-testid='app-text-transition-container'] span span")
+        count_span = bookmark_button.select_one(
+            "span[data-testid='app-text-transition-container'] span span"
+        )
         if count_span:
             data["engagement_bookmark_count"] = count_span.text.strip()
 
     views_element = soup.select_one("a[href*='/analytics']")
     if views_element:
-        views_span = views_element.select_one("span[data-testid='app-text-transition-container'] span span")
+        views_span = views_element.select_one(
+            "span[data-testid='app-text-transition-container'] span span"
+        )
         if views_span:
             data["engagement_view_count"] = views_span.text.strip()
 

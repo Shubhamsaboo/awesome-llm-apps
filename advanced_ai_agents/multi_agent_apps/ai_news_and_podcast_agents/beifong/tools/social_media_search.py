@@ -37,16 +37,16 @@ def social_media_search(agent: Agent, topic: str, limit: int = 10) -> str:
         with get_social_media_db() as conn:
             cursor = conn.cursor()
             sql_query = """
-            SELECT 
+            SELECT
                 post_id,
                 user_display_name,
                 post_timestamp,
                 post_url,
                 post_text,
                 platform
-            FROM posts 
-            WHERE 
-                categories LIKE '%"news"%' 
+            FROM posts
+            WHERE
+                categories LIKE '%"news"%'
                 AND sentiment = 'positive'
                 AND datetime(post_timestamp) >= datetime(?)
                 AND (post_text LIKE ? OR user_display_name LIKE ?)
@@ -64,7 +64,9 @@ def social_media_search(agent: Agent, topic: str, limit: int = 10) -> str:
                     "id": f"social_{row['post_id']}",
                     "url": row["post_url"] or f"https://{row['platform']}/post/{row['post_id']}",
                     "published_date": row["post_timestamp"],
-                    "description": row["post_text"][:200] + "..." if len(row["post_text"]) > 200 else row["post_text"],
+                    "description": row["post_text"][:200] + "..."
+                    if len(row["post_text"]) > 200
+                    else row["post_text"],
                     "source_id": "social_media_db",
                     "source_name": f"{row['platform'].title()}",
                     "categories": ["news"],
@@ -96,7 +98,7 @@ def social_media_trending_search(agent: Agent, limit: int = 10) -> str:
         with get_social_media_db() as conn:
             cursor = conn.cursor()
             trending_sql = """
-            SELECT 
+            SELECT
                 post_id,
                 user_display_name,
                 post_timestamp,
@@ -104,13 +106,13 @@ def social_media_trending_search(agent: Agent, limit: int = 10) -> str:
                 post_text,
                 platform
             FROM posts
-            WHERE 
+            WHERE
                 categories LIKE '%"news"%'
                 AND sentiment = 'positive'
                 AND datetime(post_timestamp) >= datetime(?)
-            ORDER BY 
-                (COALESCE(engagement_like_count, 0) + 
-                 COALESCE(engagement_retweet_count, 0) + 
+            ORDER BY
+                (COALESCE(engagement_like_count, 0) +
+                 COALESCE(engagement_retweet_count, 0) +
                  COALESCE(engagement_reply_count, 0)) DESC,
                 datetime(post_timestamp) DESC
             LIMIT ?

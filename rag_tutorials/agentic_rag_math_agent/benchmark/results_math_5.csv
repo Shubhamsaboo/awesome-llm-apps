@@ -7,9 +7,9 @@ Question,Expected,Predicted,Correct,TimeTakenSec
 
 (C) $-2 \tan \theta$
 
-(D) 0",C,"To find the values of $\alpha_{1}$ and $\beta_{1}$, we need to solve the equation $x^{2}-2 x \sec \theta+1=0$. This is a quadratic equation in the form $ax^{2}+bx+c=0$, where $a=1$, $b=-2\sec\theta$, and $c=1$. 
+(D) 0",C,"To find the values of $\alpha_{1}$ and $\beta_{1}$, we need to solve the equation $x^{2}-2 x \sec \theta+1=0$. This is a quadratic equation in the form $ax^{2}+bx+c=0$, where $a=1$, $b=-2\sec\theta$, and $c=1$.
 
-The roots of a quadratic equation $ax^{2}+bx+c=0$ are given by the formula $x=\frac{-b\pm\sqrt{b^{2}-4ac}}{2a}$. 
+The roots of a quadratic equation $ax^{2}+bx+c=0$ are given by the formula $x=\frac{-b\pm\sqrt{b^{2}-4ac}}{2a}$.
 
 For the equation $x^{2}-2 x \sec \theta+1=0$, we have $a=1$, $b=-2\sec\theta$, and $c=1$. Plugging these values into the formula, we get:
 
@@ -17,9 +17,9 @@ $\alpha_{1}=\frac{2\sec\theta+\sqrt{4\sec^{2}\theta-4}}{2}=\sec\theta+\sqrt{\sec
 
 $\beta_{1}=\frac{2\sec\theta-\sqrt{4\sec^{2}\theta-4}}{2}=\sec\theta-\sqrt{\sec^{2}\theta-1}$
 
-Since $\alpha_{1}>\beta_{1}$, we have $\sec\theta+\sqrt{\sec^{2}\theta-1}>\sec\theta-\sqrt{\sec^{2}\theta-1}$. 
+Since $\alpha_{1}>\beta_{1}$, we have $\sec\theta+\sqrt{\sec^{2}\theta-1}>\sec\theta-\sqrt{\sec^{2}\theta-1}$.
 
-Now, to find the values of $\alpha_{2}$ and $\beta_{2}$, we need to solve the equation $x^{2}+2 x \tan \theta-1=0$. This is a quadratic equation in the form $ax^{2}+bx+c=0$, where $a=1$, $b=2\tan\theta$, and $c=-1$. 
+Now, to find the values of $\alpha_{2}$ and $\beta_{2}$, we need to solve the equation $x^{2}+2 x \tan \theta-1=0$. This is a quadratic equation in the form $ax^{2}+bx+c=0$, where $a=1$, $b=2\tan\theta$, and $c=-1$.
 
 Using the quadratic formula, we find:
 
@@ -27,7 +27,7 @@ $\alpha_{2}=\frac{-2\tan\theta+\sqrt{4\tan^{2}\theta+4}}{2}=-\tan\theta+\sqrt{\t
 
 $\beta_{2}=\frac{-2\tan\theta-\sqrt{4\tan^{2}\theta+4}}{2}=-\tan\theta-\sqrt{\tan^{2}\theta+1}$
 
-Since $\alpha_{2}>\beta_{2}$, we have $-\tan\theta+\sqrt{\tan^{2}\theta+1}>-\tan\theta-\sqrt{\tan^{2}\theta+1}$. 
+Since $\alpha_{2}>\beta_{2}$, we have $-\tan\theta+\sqrt{\tan^{2}\theta+1}>-\tan\theta-\sqrt{\tan^{2}\theta+1}$.
 
 Finally, we need to find $\alpha_{1}+\beta_{2}$. Substituting the values we found earlier, we get:
 

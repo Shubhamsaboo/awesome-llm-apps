@@ -18,7 +18,7 @@ knowledge_base.load(upsert=True)
 rag_agent = Agent(
     model=OpenAIChat(id="gpt-4o"),
     agent_id="rag-agent",
-    knowledge=knowledge_base, # Add the knowledge base to the agent
+    knowledge=knowledge_base,  # Add the knowledge base to the agent
     tools=[DuckDuckGoTools()],
     show_tool_calls=True,
     markdown=True,

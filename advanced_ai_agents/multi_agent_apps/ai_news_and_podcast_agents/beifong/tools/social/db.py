@@ -70,7 +70,13 @@ def parse_engagement_count(count_str):
 
 def process_post_data(post_data):
     data = post_data.copy()
-    metrics = ["engagement_reply_count", "engagement_retweet_count", "engagement_like_count", "engagement_bookmark_count", "engagement_view_count"]
+    metrics = [
+        "engagement_reply_count",
+        "engagement_retweet_count",
+        "engagement_like_count",
+        "engagement_bookmark_count",
+        "engagement_view_count",
+    ]
     for metric in metrics:
         if metric in data:
             data[metric] = parse_engagement_count(data[metric])
@@ -119,7 +125,13 @@ def check_and_store_post(conn, post_data):
 
 
 def update_changed_metrics(conn, existing_post, new_data):
-    metrics = ["engagement_reply_count", "engagement_retweet_count", "engagement_like_count", "engagement_bookmark_count", "engagement_view_count"]
+    metrics = [
+        "engagement_reply_count",
+        "engagement_retweet_count",
+        "engagement_like_count",
+        "engagement_bookmark_count",
+        "engagement_view_count",
+    ]
     changes = {}
     for metric in metrics:
         if metric in new_data and metric in existing_post:
@@ -149,12 +161,12 @@ def update_posts_with_analysis(conn, post_ids, analysis_results):
             categories = json.dumps(analysis.get("categories", []))
             tags = json.dumps(analysis.get("tags", []))
             conn.execute(
-                """UPDATE posts SET 
-                   sentiment = ?, 
-                   categories = ?, 
-                   tags = ?, 
+                """UPDATE posts SET
+                   sentiment = ?,
+                   categories = ?,
+                   tags = ?,
                    analysis_reasoning = ?,
-                   updated_at = CURRENT_TIMESTAMP 
+                   updated_at = CURRENT_TIMESTAMP
                    WHERE post_id = ?""",
                 (analysis.get("sentiment"), categories, tags, analysis.get("reasoning"), post_id),
             )

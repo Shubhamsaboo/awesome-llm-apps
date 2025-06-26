@@ -14,17 +14,17 @@ image_url = "https://example.com/sample_image.jpg"
 audio_file = "sample_audio.mp3"
 
 # 4. Video Input
-video_file = upload_file("sample_video.mp4")  
-while video_file.state.name == "PROCESSING":  
+video_file = upload_file("sample_video.mp4")
+while video_file.state.name == "PROCESSING":
     time.sleep(2)
     video_file = get_file(video_file.name)
 
 # 5. Multimodal Query
-query = """ 
+query = """
 Combine insights from the inputs:
-1. **Image**: Describe the scene and its significance.  
-2. **Audio**: Extract key messages that relate to the visual.  
-3. **Video**: Look at the video input and provide insights that connect with the image and audio context.  
+1. **Image**: Describe the scene and its significance.
+2. **Audio**: Extract key messages that relate to the visual.
+3. **Video**: Look at the video input and provide insights that connect with the image and audio context.
 4. **Web Search**: Find the latest updates or events linking all these topics.
 Summarize the overall theme or story these inputs convey.
 """

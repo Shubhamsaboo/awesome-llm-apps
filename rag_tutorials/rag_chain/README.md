@@ -1,18 +1,22 @@
 # PharmaQuery
 
 ## Overview
+
 PharmaQuery is an advanced Pharmaceutical Insight Retrieval System designed to help users gain meaningful insights from research papers and documents in the pharmaceutical domain.
 
 ## Demo
+
 https://github.com/user-attachments/assets/c12ee305-86fe-4f71-9219-57c7f438f291
 
 ## Features
+
 - **Natural Language Querying**: Ask complex questions about the pharmaceutical industry and get concise, accurate answers.
 - **Custom Database**: Upload your own research documents to enhance the retrieval system's knowledge base.
 - **Similarity Search**: Retrieves the most relevant documents for your query using AI embeddings.
 - **Streamlit Interface**: User-friendly interface for queries and document uploads.
 
 ## Technologies Used
+
 - **Programming Language**: [Python 3.10+](https://www.python.org/downloads/release/python-31011/)
 - **Framework**: [LangChain](https://www.langchain.com/)
 - **Database**: [ChromaDB](https://www.trychroma.com/)
@@ -23,12 +27,15 @@ https://github.com/user-attachments/assets/c12ee305-86fe-4f71-9219-57c7f438f291
 - **Document Splitter**: [SentenceTransformersTokenTextSplitter](https://python.langchain.com/api_reference/text_splitters/sentence_transformers/langchain_text_splitters.sentence_transformers.SentenceTransformersTokenTextSplitter.html)
 
 ## Requirements
+
 1. **Install Dependencies**:
+
    ```bash
    pip install -r requirements.txt
    ```
 
 2. **Run the Application**:
+
    ```bash
    streamlit run app.py
    ```
@@ -39,6 +46,7 @@ https://github.com/user-attachments/assets/c12ee305-86fe-4f71-9219-57c7f438f291
    - Optionally, upload research papers in the sidebar to enhance the database.
 
 ## :mailbox: Connect With Me
+
 <img align="right" src="https://media.giphy.com/media/2HtWpp60NQ9CU/giphy.gif" alt="handshake gif" width="150">
 
 <p align="left">

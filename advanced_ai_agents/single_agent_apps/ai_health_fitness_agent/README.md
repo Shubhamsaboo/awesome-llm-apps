@@ -5,20 +5,22 @@ The **AI Health & Fitness Planner** is a personalized health and fitness Agent p
 ## Features
 
 - **Health Agent and Fitness Agent**
-    - The app has two phidata agents that are specialists in giving Diet advice and Fitness/workout advice respectively.
+
+  - The app has two phidata agents that are specialists in giving Diet advice and Fitness/workout advice respectively.
 
 - **Personalized Dietary Plans**:
+
   - Generates detailed meal plans (breakfast, lunch, dinner, and snacks).
   - Includes important considerations like hydration, electrolytes, and fiber intake.
   - Supports various dietary preferences like Keto, Vegetarian, Low Carb, etc.
 
 - **Personalized Fitness Plans**:
+
   - Provides customized exercise routines based on fitness goals.
   - Covers warm-ups, main workouts, and cool-downs.
   - Includes actionable fitness tips and progress tracking advice.
 
 - **Interactive Q&A**: Allows users to ask follow-up questions about their plans.
-
 
 ## Requirements
 
@@ -36,18 +38,17 @@ Follow the steps below to set up and run the application:
 Before anything else, Please get a free Gemini API Key provided by Google AI here: https://aistudio.google.com/apikey
 
 1. **Clone the Repository**:
+
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    cd advanced_ai_agents/single_agent_apps/ai_health_fitness_agent
    ```
 
 2. **Install the dependencies**
-    ```bash
-    pip install -r requirements.txt
-    ```
+   ```bash
+   pip install -r requirements.txt
+   ```
 3. **Run the Streamlit app**
-    ```bash
-    streamlit run health_agent.py
-    ```
-
-
+   ```bash
+   streamlit run health_agent.py
+   ```

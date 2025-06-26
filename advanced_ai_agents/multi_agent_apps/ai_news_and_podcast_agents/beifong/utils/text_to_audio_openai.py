@@ -18,7 +18,9 @@ def create_silence_audio(silence_duration: float, sampling_rate: int) -> np.ndar
     return np.zeros(int(sampling_rate * silence_duration), dtype=np.float32)
 
 
-def combine_audio_segments(audio_segments: List[np.ndarray], silence_duration: float, sampling_rate: int) -> np.ndarray:
+def combine_audio_segments(
+    audio_segments: List[np.ndarray], silence_duration: float, sampling_rate: int
+) -> np.ndarray:
     if not audio_segments:
         return np.zeros(0, dtype=np.float32)
     silence = create_silence_audio(silence_duration, sampling_rate)
@@ -174,7 +176,9 @@ def create_podcast(
                 try:
                     import librosa
 
-                    segment_audio = librosa.resample(segment_audio, orig_sr=segment_rate, target_sr=sampling_rate_detected)
+                    segment_audio = librosa.resample(
+                        segment_audio, orig_sr=segment_rate, target_sr=sampling_rate_detected
+                    )
                     print(f"INFO: Resampled to {sampling_rate_detected} Hz")
                 except ImportError:
                     sampling_rate_detected = segment_rate
@@ -191,7 +195,9 @@ def create_podcast(
         print("ERROR: Could not determine sample rate")
         return None
     print(f"INFO: Combining {len(generated_segments)} audio segments")
-    full_audio = combine_audio_segments(generated_segments, silence_duration, sampling_rate_detected)
+    full_audio = combine_audio_segments(
+        generated_segments, silence_duration, sampling_rate_detected
+    )
     if full_audio.size == 0:
         print("ERROR: Combined audio is empty")
         return None

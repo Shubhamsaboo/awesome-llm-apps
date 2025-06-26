@@ -100,7 +100,7 @@ def _execute_search(
         except Exception as e:
             print(f"Warning: Could not adjust date with fallback: {e}")
     base_query = """
-        SELECT DISTINCT ca.id, ca.title, ca.url, ca.published_date, ca.summary as content, 
+        SELECT DISTINCT ca.id, ca.title, ca.url, ca.published_date, ca.summary as content,
                ca.source_id, ca.feed_id
         FROM crawled_articles ca
         WHERE ca.processed = 1 AND ca.published_date >= ?
@@ -156,7 +156,7 @@ def _add_source_names(cursor, articles):
             try:
                 cursor.execute(
                     f"""
-                    SELECT sf.id, s.name 
+                    SELECT sf.id, s.name
                     FROM source_feeds sf
                     JOIN sources s ON sf.source_id = s.id
                     WHERE sf.id IN ({placeholders})

@@ -11,16 +11,19 @@ This is a Streamlit-based application that allows users to generate music using 
 
 ## Setup
 
-### Requirements 
+### Requirements
 
 1. **API Keys**:
+
    - **OpenAI API Key**: Sign up at [OpenAI](https://platform.openai.com/api-keys) to obtain your API key.
    - **ModelsLab API Key**: Sign up at [ModelsLab](https://modelslab.com/dashboard/api-keys) to get your API key.
 
 2. **Python 3.8+**: Ensure you have Python 3.8 or higher installed.
 
 ### Installation
+
 1. Clone this repository:
+
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps
    cd ai_agent_tutorials/ai_models_lab_music_generator_agent
@@ -30,9 +33,11 @@ This is a Streamlit-based application that allows users to generate music using 
    ```bash
    pip install -r requirements.txt
    ```
+
 ### Running the App
 
 1. Start the Streamlit app:
+
    ```bash
    streamlit run models_lab_music_generator_agent.py
    ```

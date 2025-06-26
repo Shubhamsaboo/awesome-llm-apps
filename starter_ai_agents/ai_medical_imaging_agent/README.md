@@ -15,6 +15,7 @@ A Medical Imaging Diagnosis Agent build on agno powered by Gemini 2.0 Flash that
 ## How to Run
 
 1. **Setup Environment**
+
    ```bash
    # Clone the repository
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
@@ -25,6 +26,7 @@ A Medical Imaging Diagnosis Agent build on agno powered by Gemini 2.0 Flash that
    ```
 
 2. **Configure API Keys**
+
    - Get Google API key from [Google AI Studio](https://aistudio.google.com)
 
 3. **Run the Application**
@@ -35,15 +37,18 @@ A Medical Imaging Diagnosis Agent build on agno powered by Gemini 2.0 Flash that
 ## Analysis Components
 
 - **Image Type and Region**
+
   - Identifies imaging modality
   - Specifies anatomical region
 
 - **Key Findings**
+
   - Systematic listing of observations
   - Detailed appearance descriptions
   - Abnormality highlighting
 
 - **Diagnostic Assessment**
+
   - Potential diagnoses ranking
   - Differential diagnoses
   - Severity assessment
@@ -57,7 +62,7 @@ A Medical Imaging Diagnosis Agent build on agno powered by Gemini 2.0 Flash that
 
 - Uses Gemini 2.0 Flash for analysis
 - Requires stable internet connection
-- Free API usage costs -  1,500 free requests per day by google!
+- Free API usage costs - 1,500 free requests per day by google!
 - For educational and development purposes only
 - Not a replacement for professional medical diagnosis
 

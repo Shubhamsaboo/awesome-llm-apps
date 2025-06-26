@@ -28,14 +28,16 @@ def cleanup_stuck_tasks():
             cursor = conn.cursor()
             cursor.execute(
                 """
-                SELECT id FROM task_executions 
+                SELECT id FROM task_executions
                 WHERE status = 'running'
                 LIMIT 100
                 """
             )
             running_executions = [dict(row) for row in cursor.fetchall()]
             if running_executions:
-                print(f"WARNING: Found {len(running_executions)} tasks stuck in 'running' state. Marking as failed.")
+                print(
+                    f"WARNING: Found {len(running_executions)} tasks stuck in 'running' state. Marking as failed."
+                )
                 for execution in running_executions:
                     execution_id = execution["id"]
                     error_message = "Task was interrupted by system shutdown or crash"
@@ -64,7 +66,7 @@ def execute_task(task_id, command):
             cursor = conn.cursor()
             cursor.execute(
                 """
-                SELECT 1 FROM task_executions 
+                SELECT 1 FROM task_executions
                 WHERE task_id = ? AND status = 'running'
                 LIMIT 1
                 """,
@@ -77,7 +79,7 @@ def execute_task(task_id, command):
                 return
             cursor.execute(
                 """
-                INSERT INTO task_executions 
+                INSERT INTO task_executions
                 (task_id, start_time, status)
                 VALUES (?, ?, ?)
                 """,
@@ -109,7 +111,9 @@ def execute_task(task_id, command):
                 print(f"INFO: Task {task_id} completed successfully")
             else:
                 status = "failed"
-                error_message = stderr if stderr else f"Process exited with code {process.returncode}"
+                error_message = (
+                    stderr if stderr else f"Process exited with code {process.returncode}"
+                )
                 print(f"ERROR: Task {task_id} failed: {error_message}")
         except subprocess.TimeoutExpired:
             process.kill()
@@ -142,7 +146,9 @@ def check_for_tasks():
             for task in pending_tasks:
                 task_id = task["id"]
                 command = task["command"]
-                print(f"INFO: Scheduling task {task_id}: {task['name']} (Last run: {task['last_run']})")
+                print(
+                    f"INFO: Scheduling task {task_id}: {task['name']} (Last run: {task['last_run']})"
+                )
                 executor.submit(execute_task, task_id, command)
     except Exception as e:
         print(f"ERROR: Error in check_for_tasks: {str(e)}")
@@ -155,7 +161,9 @@ def check_missed_tasks():
         print("INFO: Checking for missed tasks during downtime...")
         pending_tasks = get_pending_tasks(tasks_db_path)
         if pending_tasks:
-            print(f"INFO: Found {len(pending_tasks)} tasks to run (including any missed during downtime)")
+            print(
+                f"INFO: Found {len(pending_tasks)} tasks to run (including any missed during downtime)"
+            )
         else:
             print("INFO: No missed tasks found")
     except Exception as e:

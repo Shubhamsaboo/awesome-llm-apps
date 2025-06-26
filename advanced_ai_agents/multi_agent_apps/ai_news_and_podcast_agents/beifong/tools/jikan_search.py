@@ -10,10 +10,10 @@ def jikan_search(agent: Agent, query: str) -> str:
     """
     Search for anime information using the Jikan API (MyAnimeList API).
     This provides anime data, reviews, and recommendations to enhance podcast content.
-    
+
     Jikan scrapes public MyAnimeList pages.
     The service consists of two core parts
-    
+
     Args:
         agent: The agent instance
         query: The search query
@@ -172,13 +172,14 @@ def _format_anime_info(anime: Dict[str, Any]) -> Dict[str, Any]:
             "id": f"jikan_{mal_id}",
             "title": f"{title_display} (Anime)",
             "url": url,
-            "published_date": aired_string.split(" to ")[0] if " to " in aired_string else aired_string,
+            "published_date": aired_string.split(" to ")[0]
+            if " to " in aired_string
+            else aired_string,
             "description": content,
             "source_id": "jikan",
             "source_name": "MyAnimeList",
             "categories": categories,
             "is_scrapping_required": False,
-
         }
     except Exception as _:
         return {
@@ -192,8 +193,7 @@ def _format_anime_info(anime: Dict[str, Any]) -> Dict[str, Any]:
             "categories": ["anime", "japanese animation", "entertainment"],
             "is_scrapping_required": False,
         }
-        
-        
+
+
 if __name__ == "__main__":
     print(jikan_search({}, "One Piece anime overview and details"))
-    

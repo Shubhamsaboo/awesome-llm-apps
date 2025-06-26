@@ -45,21 +45,11 @@ class TravelPlanResponse(BaseModel):
 
 
 class DayByDayPlan(BaseModel):
-    day: int = Field(
-        default=0, description="The day number in the itinerary, starting from 0"
-    )
-    date: str = Field(
-        default="", description="The date for this day in YYYY-MM-DD format"
-    )
-    morning: str = Field(
-        default="", description="Description of morning activities and plans"
-    )
-    afternoon: str = Field(
-        default="", description="Description of afternoon activities and plans"
-    )
-    evening: str = Field(
-        default="", description="Description of evening activities and plans"
-    )
+    day: int = Field(default=0, description="The day number in the itinerary, starting from 0")
+    date: str = Field(default="", description="The date for this day in YYYY-MM-DD format")
+    morning: str = Field(default="", description="Description of morning activities and plans")
+    afternoon: str = Field(default="", description="Description of afternoon activities and plans")
+    evening: str = Field(default="", description="Description of evening activities and plans")
     notes: str = Field(
         default="",
         description="Additional tips, reminders or important information for the day",
@@ -68,16 +58,12 @@ class DayByDayPlan(BaseModel):
 
 class Attraction(BaseModel):
     name: str = Field(default="", description="Name of the attraction")
-    description: str = Field(
-        default="", description="Detailed description of the attraction"
-    )
+    description: str = Field(default="", description="Detailed description of the attraction")
 
 
 class FlightResult(BaseModel):
     duration: str = Field(default="", description="Duration of the flight")
-    price: str = Field(
-        default="", description="Price of the flight in the local currency"
-    )
+    price: str = Field(default="", description="Price of the flight in the local currency")
     departure_time: str = Field(default="", description="Departure time of the flight")
     arrival_time: str = Field(default="", description="Arrival time of the flight")
     airline: str = Field(default="", description="Airline of the flight")
@@ -90,9 +76,7 @@ class RestaurantResult(BaseModel):
     name: str = Field(default="", description="Name of the restaurant")
     description: str = Field(default="", description="Description of the restaurant")
     location: str = Field(default="", description="Location of the restaurant")
-    url: str = Field(
-        default="", description="Website or booking URL for the restaurant"
-    )
+    url: str = Field(default="", description="Website or booking URL for the restaurant")
 
 
 class TravelPlanTeamResponse(BaseModel):
@@ -107,9 +91,5 @@ class TravelPlanTeamResponse(BaseModel):
     restaurants: List[RestaurantResult] = Field(
         description="A list of recommended restaurants for the trip"
     )
-    budget_insights: List[str] = Field(
-        description="A list of budget insights for the trip"
-    )
-    tips: List[str] = Field(
-        description="A list of tips or recommendations for the trip"
-    )
+    budget_insights: List[str] = Field(description="A list of budget insights for the trip")
+    tips: List[str] = Field(description="A list of tips or recommendations for the trip")

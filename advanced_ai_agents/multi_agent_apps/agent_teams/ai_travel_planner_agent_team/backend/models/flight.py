@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
+
 class FlightResult(BaseModel):
     flight_number: str = Field(description="The flight number of the flight")
     price: str = Field(description="The price of the flight")
@@ -10,8 +11,10 @@ class FlightResult(BaseModel):
     duration: str = Field(description="The duration of the flight")
     stops: int = Field(description="The number of stops of the flight")
 
+
 class FlightResults(BaseModel):
     flights: List[FlightResult] = Field(description="The list of flights")
+
 
 class FlightSearchRequest(BaseModel):
     departure: str = Field(description="The departure airport")

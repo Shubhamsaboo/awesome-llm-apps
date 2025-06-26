@@ -10,7 +10,9 @@ logging.basicConfig(level=logging.DEBUG)
 
 # Setting up Streamlit app
 st.title("AI Startup Trend Analysis Agent 📈")
-st.caption("Get the latest trend analysis and startup opportunities based on your topic of interest in a click!.")
+st.caption(
+    "Get the latest trend analysis and startup opportunities based on your topic of interest in a click!."
+)
 
 topic = st.text_input("Enter the area of interest for your Startup:")
 anthropic_api_key = st.sidebar.text_input("Enter Anthropic API Key", type="password")
@@ -22,7 +24,7 @@ if st.button("Generate Analysis"):
         with st.spinner("Processing your request..."):
             try:
                 # Initialize Anthropic model
-                anthropic_model = Claude(id ="claude-3-5-sonnet-20240620",api_key=anthropic_api_key)
+                anthropic_model = Claude(id="claude-3-5-sonnet-20240620", api_key=anthropic_api_key)
 
                 # Define News Collector Agent - Duckduckgo_search tool enables an Agent to search the web for information.
                 search_tool = DuckDuckGoTools(search=True, news=True, fixed_max_results=5)
@@ -67,7 +69,7 @@ if st.button("Generate Analysis"):
                         "Important: you must ensure that the summary writer receives all the article links to read.",
                         "Next, the summary writer will read the articles and prepare concise summaries of each.",
                         "After summarizing, the summaries will be passed to the trend analyzer.",
-                        "Finally, the trend analyzer will identify emerging trends and potential startup opportunities based on the summaries provided in a detailed Report form so that any young entreprenur can get insane value reading this easily"
+                        "Finally, the trend analyzer will identify emerging trends and potential startup opportunities based on the summaries provided in a detailed Report form so that any young entreprenur can get insane value reading this easily",
                     ],
                     show_tool_calls=True,
                     markdown=True,
@@ -79,11 +81,15 @@ if st.button("Generate Analysis"):
                 articles = news_response.content
 
                 # Step 2: Summarize articles
-                summary_response = summary_writer.run(f"Summarize the following articles:\n{articles}")
+                summary_response = summary_writer.run(
+                    f"Summarize the following articles:\n{articles}"
+                )
                 summaries = summary_response.content
 
                 # Step 3: Analyze trends
-                trend_response = trend_analyzer.run(f"Analyze trends from the following summaries:\n{summaries}")
+                trend_response = trend_analyzer.run(
+                    f"Analyze trends from the following summaries:\n{summaries}"
+                )
                 analysis = trend_response.content
 
                 # Display results - if incase you want to use this furthur, you can uncomment the below 2 lines to get the summaries too!

@@ -9,7 +9,9 @@ from db.articles import get_unprocessed_articles, update_article_status
 from utils.load_api_keys import load_api_key
 
 WEB_PAGE_ANALYSE_MODEL = "gpt-4o"
-MODEL_INSTRUCTION = "You are a helpful assistant that analyzes articles and extracts structured information."
+MODEL_INSTRUCTION = (
+    "You are a helpful assistant that analyzes articles and extracts structured information."
+)
 
 
 def extract_clean_text(raw_html, max_tokens=8000):
@@ -106,7 +108,11 @@ def analyze_articles(tracking_db_path=None, openai_api_key=None, batch_size=5, d
             categories_display = ", ".join(results["categories"])
             print(f"Successfully processed article ID {article_id}")
             print(f"Categories: {categories_display}")
-            print(f"Summary: {results['summary'][:100]}..." if len(results["summary"]) > 100 else f"Summary: {results['summary']}")
+            print(
+                f"Summary: {results['summary'][:100]}..."
+                if len(results["summary"]) > 100
+                else f"Summary: {results['summary']}"
+            )
             stats["success_count"] += 1
         else:
             print(f"Failed to process article ID {article_id}: {error_message}")
@@ -178,7 +184,9 @@ if __name__ == "__main__":
     args = parse_arguments()
     api_key = args.api_key or load_api_key()
     if not api_key:
-        print("Error: No OpenAI API key provided. Please provide via --api_key or set OPENAI_API_KEY in .env file")
+        print(
+            "Error: No OpenAI API key provided. Please provide via --api_key or set OPENAI_API_KEY in .env file"
+        )
         exit(1)
     stats = analyze_in_batches(
         openai_api_key=api_key,

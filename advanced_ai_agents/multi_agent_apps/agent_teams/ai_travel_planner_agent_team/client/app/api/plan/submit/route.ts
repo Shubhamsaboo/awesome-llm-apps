@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 interface TripFormData {
   name: string;
@@ -31,16 +31,20 @@ export async function POST(request: NextRequest) {
     const tripData: TripFormData = await request.json();
 
     // Log the trip data for debugging
-    console.log('Received trip planning data:', JSON.stringify(tripData, null, 2));
+    console.log(
+      "Received trip planning data:",
+      JSON.stringify(tripData, null, 2),
+    );
 
     // Validate required fields
     if (!tripData.name || !tripData.destination || !tripData.startingLocation) {
       return NextResponse.json(
         {
           success: false,
-          message: 'Missing required fields: name, destination, or starting location'
+          message:
+            "Missing required fields: name, destination, or starting location",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -71,11 +75,11 @@ export async function POST(request: NextRequest) {
         lovedPlaces: tripData.lovedPlaces || null,
         additionalInfo: tripData.additionalInfo || null,
         // userId can be added later when auth is implemented
-        userId: null
-      }
+        userId: null,
+      },
     });
 
-    console.log('Trip plan saved to database:', savedTripPlan.id);
+    console.log("Trip plan saved to database:", savedTripPlan.id);
 
     const requestBody = {
       trip_plan_id: savedTripPlan.id,
@@ -85,7 +89,7 @@ export async function POST(request: NextRequest) {
         starting_location: tripData.startingLocation,
         travel_dates: {
           start: tripData.travelDates.start,
-          end: tripData.travelDates.end || ""
+          end: tripData.travelDates.end || "",
         },
         date_input_type: tripData.dateInputType,
         duration: tripData.duration,
@@ -104,52 +108,55 @@ export async function POST(request: NextRequest) {
         pace: tripData.pace,
         been_there_before: tripData.beenThereBefore || "",
         loved_places: tripData.lovedPlaces || "",
-        additional_info: tripData.additionalInfo || ""
-      }
-    }
+        additional_info: tripData.additionalInfo || "",
+      },
+    };
 
-    console.log('Request body:', JSON.stringify(requestBody, null, 2));
+    console.log("Request body:", JSON.stringify(requestBody, null, 2));
 
     // Call backend API to trigger trip planning
-    const backendResponse = await fetch(`${process.env.BACKEND_API_URL}/api/plan/trigger`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const backendResponse = await fetch(
+      `${process.env.BACKEND_API_URL}/api/plan/trigger`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
       },
-      body: JSON.stringify(requestBody)
-    });
+    );
 
     if (!backendResponse.ok) {
-      console.error('Backend API error:', await backendResponse.text());
+      console.error("Backend API error:", await backendResponse.text());
       return NextResponse.json(
         {
           success: false,
-          message: 'Failed to trigger trip planning'
+          message: "Failed to trigger trip planning",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
     const responseData = await backendResponse.json();
-    console.log('Backend response:', JSON.stringify(responseData, null, 2));
+    console.log("Backend response:", JSON.stringify(responseData, null, 2));
 
     return NextResponse.json(
       {
         success: true,
-        message: 'Trip planning triggered successfully',
+        message: "Trip planning triggered successfully",
         response: responseData,
-        tripPlanId: savedTripPlan.id
+        tripPlanId: savedTripPlan.id,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
-    console.error('Error processing trip submission:', error);
+    console.error("Error processing trip submission:", error);
     return NextResponse.json(
       {
         success: false,
-        message: 'Failed to save trip plan to database'
+        message: "Failed to save trip plan to database",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

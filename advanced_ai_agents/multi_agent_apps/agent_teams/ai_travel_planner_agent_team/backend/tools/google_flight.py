@@ -28,15 +28,11 @@ def get_google_flights(
     :return: Flight Results
 
     """
-    logger.info(
-        f"Getting flights from Google Flights for {departure} to {destination} on {date}"
-    )
+    logger.info(f"Getting flights from Google Flights for {departure} to {destination} on {date}")
 
     try:
         result: Result = get_flights(
-            flight_data=[
-                FlightData(date=date, from_airport=departure, to_airport=destination)
-            ],
+            flight_data=[FlightData(date=date, from_airport=departure, to_airport=destination)],
             trip=trip,
             seat=cabin_class,
             passengers=Passengers(

@@ -38,7 +38,7 @@ def get_article_details(tracking_db_path, article_ids):
         return []
     placeholders = ",".join(["?"] * len(article_ids))
     query = f"""
-    SELECT id, title, url, published_date, summary 
+    SELECT id, title, url, published_date, summary
     FROM crawled_articles
     WHERE id IN ({placeholders})
     """
@@ -169,7 +169,9 @@ if __name__ == "__main__":
     args = parse_arguments()
     api_key = args.api_key or load_api_key()
     if not api_key:
-        print("Error: No OpenAI API key provided. Please provide via --api_key or set OPENAI_API_KEY in .env file")
+        print(
+            "Error: No OpenAI API key provided. Please provide via --api_key or set OPENAI_API_KEY in .env file"
+        )
         exit(1)
     search_params = {}
     if args.nprobe:

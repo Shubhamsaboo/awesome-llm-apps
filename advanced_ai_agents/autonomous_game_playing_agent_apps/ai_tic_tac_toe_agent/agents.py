@@ -104,7 +104,8 @@ def get_tic_tac_toe_players(
 
     player_x = Agent(
         name="Player X",
-        description=dedent("""\
+        description=dedent(
+            """\
         You are Player X in a Tic Tac Toe game. Your goal is to win by placing three X's in a row (horizontally, vertically, or diagonally).
 
         BOARD LAYOUT:
@@ -127,14 +128,16 @@ def get_tic_tac_toe_players(
         - Block your opponent's potential winning moves
         - Create opportunities for multiple winning paths
         - Pay attention to the valid moves and avoid illegal moves
-        """),
+        """
+        ),
         model=model_x,
         debug_mode=debug_mode,
     )
 
     player_o = Agent(
         name="Player O",
-        description=dedent("""\
+        description=dedent(
+            """\
         You are Player O in a Tic Tac Toe game. Your goal is to win by placing three O's in a row (horizontally, vertically, or diagonally).
 
         BOARD LAYOUT:
@@ -157,7 +160,8 @@ def get_tic_tac_toe_players(
         - Block your opponent's potential winning moves
         - Create opportunities for multiple winning paths
         - Pay attention to the valid moves and avoid illegal moves
-        """),
+        """
+        ),
         model=model_o,
         debug_mode=debug_mode,
     )

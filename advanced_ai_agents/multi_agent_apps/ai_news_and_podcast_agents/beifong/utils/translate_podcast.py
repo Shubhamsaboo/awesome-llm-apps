@@ -39,7 +39,10 @@ def translate_script(script: List[Dict[str, Any]], lang_code: str = "b") -> List
     response = client.chat.completions.create(
         model=TRANSLATION_MODEL,
         messages=[
-            {"role": "system", "content": "You are a professional translator specializing in podcast content."},
+            {
+                "role": "system",
+                "content": "You are a professional translator specializing in podcast content.",
+            },
             {"role": "user", "content": prompt},
         ],
         response_format={"type": "json_object"},
@@ -54,5 +57,7 @@ def translate_script(script: List[Dict[str, Any]], lang_code: str = "b") -> List
     if not isinstance(translated_script, list):
         raise ValueError("Unexpected response format: not a list")
     if len(translated_script) != len(script):
-        raise ValueError(f"Translation returned {len(translated_script)} entries, expected {len(script)}")
+        raise ValueError(
+            f"Translation returned {len(translated_script)} entries, expected {len(script)}"
+        )
     return translated_script

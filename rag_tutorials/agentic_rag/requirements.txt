@@ -1,8 +1,8 @@
 agno
 openai
-lancedb 
-tantivy 
-pypdf 
-sqlalchemy 
-pgvector 
+lancedb
+tantivy
+pypdf
+sqlalchemy
+pgvector
 psycopg[binary]
