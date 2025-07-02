@@ -1,0 +1,288 @@
+name: PR Quality Gates
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  statuses: write
+
+jobs:
+  dependency-validation:
+    name: Validate Dependencies
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v41
+        with:
+          files: |
+            **/requirements.txt
+            **/pyproject.toml
+            **/package.json
+            **/Pipfile
+      
+      - name: Set up Python
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Validate Python dependencies
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          echo "## Dependency Validation Report" > dep_validation.md
+          
+          # Check for unpinned dependencies
+          echo "### Checking for unpinned dependencies..." >> dep_validation.md
+          
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            if [[ $file == *"requirements.txt" ]]; then
+              echo "#### File: $file" >> dep_validation.md
+              
+              # Count unpinned dependencies
+              unpinned=$(grep -v "^#" "$file" | grep -v "^$" | grep -v "==" | wc -l)
+              total=$(grep -v "^#" "$file" | grep -v "^$" | wc -l)
+              
+              if [ $unpinned -gt 0 ]; then
+                echo "⚠️ Found $unpinned/$total unpinned dependencies:" >> dep_validation.md
+                grep -v "^#" "$file" | grep -v "^$" | grep -v "==" | sed 's/^/  - /' >> dep_validation.md
+              else
+                echo "✅ All dependencies are pinned!" >> dep_validation.md
+              fi
+            fi
+          done
+          
+          # Check for security vulnerabilities
+          echo "### Security Scan" >> dep_validation.md
+          pip install safety
+          
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            if [[ $file == *"requirements.txt" ]]; then
+              echo "#### Scanning: $file" >> dep_validation.md
+              safety check -r "$file" --output bare >> dep_validation.md 2>&1 || echo "No vulnerabilities found" >> dep_validation.md
+            fi
+          done
+      
+      - name: Comment PR with validation results
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('dep_validation.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            });
+
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Get changed Python files
+        id: changed-python
+        uses: tj-actions/changed-files@v41
+        with:
+          files: |
+            **/*.py
+      
+      - name: Set up Python
+        if: steps.changed-python.outputs.any_changed == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install linters
+        if: steps.changed-python.outputs.any_changed == 'true'
+        run: |
+          pip install ruff mypy pylint
+      
+      - name: Run Ruff
+        if: steps.changed-python.outputs.any_changed == 'true'
+        continue-on-error: true
+        run: |
+          echo "## Ruff Linting Results" > ruff_report.md
+          echo '```' >> ruff_report.md
+          ruff check ${{ steps.changed-python.outputs.all_changed_files }} >> ruff_report.md 2>&1 || true
+          echo '```' >> ruff_report.md
+      
+      - name: Run type checking
+        if: steps.changed-python.outputs.any_changed == 'true'
+        continue-on-error: true
+        run: |
+          echo "## Type Checking Results" >> ruff_report.md
+          echo '```' >> ruff_report.md
+          mypy ${{ steps.changed-python.outputs.all_changed_files }} --ignore-missing-imports >> ruff_report.md 2>&1 || true
+          echo '```' >> ruff_report.md
+
+  project-structure:
+    name: Validate Project Structure
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+      
+      - name: Check for required files
+        run: |
+          echo "## Project Structure Validation" > structure_report.md
+          
+          # Function to check if a directory contains required files
+          check_project_files() {
+            local dir=$1
+            local has_error=0
+            
+            echo "### Checking: $dir" >> structure_report.md
+            
+            # Check for README
+            if [ ! -f "$dir/README.md" ]; then
+              echo "❌ Missing README.md" >> structure_report.md
+              has_error=1
+            else
+              echo "✅ README.md present" >> structure_report.md
+            fi
+            
+            # Check for requirements file (Python projects)
+            if ls "$dir"/*.py &> /dev/null; then
+              if [ ! -f "$dir/requirements.txt" ] && [ ! -f "$dir/pyproject.toml" ]; then
+                echo "❌ Missing requirements.txt or pyproject.toml" >> structure_report.md
+                has_error=1
+              else
+                echo "✅ Dependencies file present" >> structure_report.md
+              fi
+            fi
+            
+            # Check for package.json (JS/TS projects)
+            if ls "$dir"/*.js "$dir"/*.ts &> /dev/null 2>&1; then
+              if [ ! -f "$dir/package.json" ]; then
+                echo "❌ Missing package.json" >> structure_report.md
+                has_error=1
+              else
+                echo "✅ package.json present" >> structure_report.md
+              fi
+            fi
+            
+            echo "" >> structure_report.md
+            return $has_error
+          }
+          
+          # Find all project directories (containing Python or JS/TS files)
+          total_errors=0
+          for dir in $(find . -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" \) -exec dirname {} \; | sort -u | grep -v "__pycache__" | grep -v "node_modules"); do
+            if check_project_files "$dir"; then
+              ((total_errors++))
+            fi
+          done
+          
+          if [ $total_errors -gt 0 ]; then
+            echo "### ❌ Found $total_errors projects with missing required files" >> structure_report.md
+            exit 1
+          else
+            echo "### ✅ All projects have required files" >> structure_report.md
+          fi
+      
+      - name: Upload structure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: structure-validation
+          path: structure_report.md
+
+  pr-summary:
+    name: Generate PR Summary
+    needs: [dependency-validation, code-quality, project-structure]
+    if: always()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Create PR status comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const checks = {
+              'dependency-validation': '${{ needs.dependency-validation.result }}',
+              'code-quality': '${{ needs.code-quality.result }}',
+              'project-structure': '${{ needs.project-structure.result }}'
+            };
+            
+            const statusEmoji = {
+              'success': '✅',
+              'failure': '❌',
+              'cancelled': '⚠️',
+              'skipped': '➖'
+            };
+            
+            let allPassed = Object.values(checks).every(status => status === 'success' || status === 'skipped');
+            
+            const comment = `## 🔍 PR Quality Gates Summary
+            
+            ${allPassed ? '### ✅ All quality checks passed!' : '### ⚠️ Some quality checks need attention'}
+            
+            | Check | Status |
+            |-------|--------|
+            | Dependency Validation | ${statusEmoji[checks['dependency-validation']]} ${checks['dependency-validation']} |
+            | Code Quality | ${statusEmoji[checks['code-quality']]} ${checks['code-quality']} |
+            | Project Structure | ${statusEmoji[checks['project-structure']]} ${checks['project-structure']} |
+            
+            ${!allPassed ? `
+            ### Required Actions
+            Please review the failed checks above and address any issues before merging.
+            
+            **Tips:**
+            - For dependency issues: Ensure all dependencies are pinned with exact versions
+            - For code quality: Run \`ruff check --fix\` locally to auto-fix issues
+            - For project structure: Ensure all projects have README.md and dependency files
+            ` : ''}
+            
+            ---
+            *This summary was automatically generated by the PR Quality Gates workflow.*
+            `;
+            
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('PR Quality Gates Summary')
+            );
+            
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: comment
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }

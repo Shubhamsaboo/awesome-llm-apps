@@ -1,0 +1,105 @@
+# Pre-commit hooks for awesome-llm-apps
+# Install with: pip install pre-commit && pre-commit install
+
+repos:
+  # Python code quality
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.3.4
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+
+  # Python type checking
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.9.0
+    hooks:
+      - id: mypy
+        args: [--ignore-missing-imports, --no-strict-optional]
+        additional_dependencies: [types-requests]
+
+  # Security checks
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.8
+    hooks:
+      - id: bandit
+        args: [-ll, -i, -x, "tests/*,test_*.py"]
+
+  # Markdown formatting
+  - repo: https://github.com/executablebooks/mdformat
+    rev: 0.7.17
+    hooks:
+      - id: mdformat
+        additional_dependencies:
+          - mdformat-gfm
+          - mdformat-frontmatter
+
+  # YAML formatting
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: [--maxkb=1000]
+      - id: check-json
+      - id: pretty-format-json
+        args: [--autofix, --no-sort-keys]
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+  # Custom dependency validation hook
+  - repo: local
+    hooks:
+      - id: validate-dependencies
+        name: Validate Python dependencies
+        entry: python scripts/pre_commit_dependency_validator.py
+        language: python
+        files: requirements\.txt$
+        pass_filenames: true
+        additional_dependencies: [packaging, requests]
+
+      - id: validate-documentation
+        name: Validate documentation standards
+        entry: python scripts/pre_commit_doc_validator.py
+        language: python
+        files: README\.md$
+        pass_filenames: true
+
+      - id: check-sensitive-files
+        name: Check for sensitive information
+        entry: python scripts/pre_commit_sensitive_check.py
+        language: python
+        types: [text]
+        exclude: ^(\.git|__pycache__|\.env\.example|.*\.md)$
+
+# Configuration for specific hooks
+exclude: |
+  (?x)^(
+    \.git/|
+    \.github/|
+    __pycache__/|
+    \.mypy_cache/|
+    \.pytest_cache/|
+    node_modules/|
+    venv/|
+    \.env
+  )
+
+# Global configurations
+default_language_version:
+  python: python3.12
+
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from hooks
+
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: weekly
+  skip: [mypy]  # Skip mypy in CI as it's handled separately
