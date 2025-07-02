@@ -23,7 +23,7 @@ This example shows how to build an interactive Tic Tac Toe game where AI agents 
    ```bash
    # Clone the repository
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-   cd ai_agent_tutorials/ai_tic_tac_toe_agent
+   cd advanced_ai_agents/autonomous_game_playing_agent_apps/ai_tic_tac_toe_agent
 
    # Install dependencies
    pip install -r requirements.txt
@@ -35,19 +35,28 @@ This example shows how to build an interactive Tic Tac Toe game where AI agents 
 pip install -r requirements.txt
 ```
 
-### 3. Export API Keys
+### 3. Setup API Keys
 
-The game supports multiple AI models. Export the API keys for the models you want to use:
+The game supports multiple AI models. Create a `.env` file in this directory and add your API keys:
 
-```shell
-# Required for OpenAI models
-export OPENAI_API_KEY=***
+1. **Create a `.env` file:**
+   ```bash
+   # In the ai_tic_tac_toe_agent directory
+   touch .env
+   ```
 
-# Optional - for additional models
-export ANTHROPIC_API_KEY=***  # For Claude models
-export GOOGLE_API_KEY=***     # For Gemini models
-export GROQ_API_KEY=***       # For Groq models
-```
+2. **Add your API keys to the `.env` file:**
+   ```env
+   # Required for OpenAI models (gpt-4o, o3-mini)
+   OPENAI_API_KEY=your_actual_openai_api_key_here
+
+   # Optional - for additional models
+   ANTHROPIC_API_KEY=your_actual_anthropic_api_key_here  # For Claude models
+   GOOGLE_API_KEY=your_actual_google_api_key_here        # For Gemini models
+   GROQ_API_KEY=your_actual_groq_api_key_here           # For Groq models
+   ```
+
+   > **Note:** Replace the placeholder values with your actual API keys. The app will show helpful error messages if required keys are missing.
 
 ### 4. Run the Game
 
