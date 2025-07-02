@@ -1,0 +1,134 @@
+[project]
+name = "PROJECT_NAME"
+version = "0.1.0"
+description = "PROJECT_DESCRIPTION"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+authors = [
+    {name = "Your Name", email = "your.email@example.com"},
+]
+keywords = ["KEYWORD1", "KEYWORD2", "KEYWORD3"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    # Add your dependencies here
+    # Examples:
+    # "fastapi>=0.115.0",
+    # "pydantic>=2.11.0",
+    # "numpy>=1.24.0,<2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+]
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.0.0",
+    "mkdocstrings[python]>=0.24.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/yourproject"
+Documentation = "https://yourproject.readthedocs.io"
+Repository = "https://github.com/yourusername/yourproject.git"
+Issues = "https://github.com/yourusername/yourproject/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+include = [
+    "src/**/*.py",
+    "LICENSE",
+    "README.md",
+]
+exclude = [
+    "*.pyc",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+]
+
+[tool.uv]
+# UV-specific configuration
+# index-url = "https://pypi.org/simple"
+# extra-index-url = ["https://your-private-index.com/simple"]
+
+[tool.uv.workspace]
+# Uncomment for monorepo/workspace setup
+# members = ["packages/*"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+extend-select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "SIM",  # flake8-simplify
+]
+ignore = ["E501"]  # line too long
+
+[tool.ruff.isort]
+known-first-party = ["PROJECT_NAME"]
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--cov=PROJECT_NAME",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["*/tests/*", "*/test_*.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if __name__ == .__main__.:",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+]

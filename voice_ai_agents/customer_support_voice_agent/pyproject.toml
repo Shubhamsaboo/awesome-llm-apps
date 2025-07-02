@@ -1,0 +1,19 @@
+[project]
+name = "customer-support-voice-agent"
+version = "0.1.0"
+description = "Customer Support Voice Agent - Voice-powered responses using OpenAI GPT-4o and TTS"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "firecrawl-py",
+    "qdrant-client",
+    "streamlit==1.46.1",
+    "fastembed",
+    "openai==1.93.0",
+    "python-dotenv",
+    "openai-agents",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
