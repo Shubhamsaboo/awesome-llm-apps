@@ -1,4 +1,4 @@
-streamlit 
-agno
-openai
+streamlit==1.41.1
+agno==1.7.0
+openai==1.58.1
 google-search-results

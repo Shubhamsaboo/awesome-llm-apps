@@ -1,5 +1,5 @@
-streamlit
+streamlit==1.41.1
 chess==1.11.1
 autogen==0.6.1
 cairosvg
-pillow
+pillow==11.0.0

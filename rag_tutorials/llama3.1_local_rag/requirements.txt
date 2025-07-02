@@ -1,5 +1,5 @@
-streamlit 
+streamlit==1.41.1
 ollama 
-langchain 
+langchain==0.3.12
 langchain_community
 langchain_ollama

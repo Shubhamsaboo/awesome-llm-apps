@@ -1,7 +1,7 @@
 firecrawl-py
 qdrant-client
-streamlit
+streamlit==1.41.1
 fastembed
-openai>=1.0.0
+openai==1.58.1
 python-dotenv 
 openai-agents

@@ -1,4 +1,4 @@
-streamlit
+streamlit==1.41.1
 e2b-code-interpreter
-agno
-Pillow
+agno==1.7.0
+pillow==11.0.0

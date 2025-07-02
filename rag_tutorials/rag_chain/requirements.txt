@@ -1,8 +1,8 @@
-streamlit
+streamlit==1.41.1
 langchain-google-genai
 langchain-chroma
-langchain-community
-langchain-core
+langchain-community==0.3.12
+langchain-core==0.3.28
 chromadb
 sentence-transformers
 PyPDF2

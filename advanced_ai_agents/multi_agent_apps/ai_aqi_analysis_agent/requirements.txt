@@ -1,6 +1,6 @@
-agno
-openai
+agno==1.7.0
+openai==1.58.1
 firecrawl-py==1.9.0
 gradio==5.9.1
-pydantic
+pydantic==2.10.5
 dataclasses

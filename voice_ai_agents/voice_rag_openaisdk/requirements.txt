@@ -1,8 +1,8 @@
 openai-agents
-streamlit
+streamlit==1.41.1
 qdrant-client
 fastembed
-langchain
-langchain-community
+langchain==0.3.12
+langchain-community==0.3.12
 langchain-openai
-openai
+openai==1.58.1

@@ -1,7 +1,7 @@
-agno
+agno==1.7.0
 qdrant-client
 ollama
 pypdf 
-openai
-fastapi
-uvicorn
+openai==1.58.1
+fastapi==0.115.5
+uvicorn==0.32.1

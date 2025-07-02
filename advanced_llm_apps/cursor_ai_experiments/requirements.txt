@@ -1,7 +1,7 @@
 scrapegraphai
 playwright
-langchain-community
+langchain-community==0.3.12
 streamlit-chat
-streamlit
-crewai
+streamlit==1.41.1
+crewai==0.76.9
 ollama

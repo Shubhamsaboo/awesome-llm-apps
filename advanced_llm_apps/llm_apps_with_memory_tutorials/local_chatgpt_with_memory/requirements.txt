@@ -1,4 +1,4 @@
-streamlit 
-openai
+streamlit==1.41.1
+openai==1.58.1
 mem0ai==0.1.29
 litellm

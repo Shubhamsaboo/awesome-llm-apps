@@ -1,4 +1,4 @@
-streamlit 
-crewai
+streamlit==1.41.1
+crewai==0.76.9
 crewai-tools
-openai
+openai==1.58.1

@@ -1,4 +1,4 @@
 openai-agents
 firecrawl
-streamlit
+streamlit==1.41.1
 firecrawl-py

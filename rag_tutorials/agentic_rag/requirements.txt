@@ -1,8 +1,8 @@
-agno
-openai
+agno==1.7.0
+openai==1.58.1
 lancedb 
 tantivy 
 pypdf 
-sqlalchemy 
+sqlalchemy==2.0.36
 pgvector 
 psycopg[binary]

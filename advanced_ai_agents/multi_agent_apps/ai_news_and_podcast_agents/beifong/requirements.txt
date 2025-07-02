@@ -1,5 +1,5 @@
 addict==2.4.0
-agno==1.4.2
+agno==1.7.0
 aiofiles==24.1.0
 aiohappyeyeballs==2.6.1
 aiohttp==3.11.18
@@ -8,7 +8,7 @@ aiosignal==1.3.2
 aiosqlite==0.21.0
 amqp==5.3.1
 annotated-types==0.7.0
-anthropic==0.49.0
+anthropic==0.39.0
 anyio==4.9.0
 APScheduler==3.11.0
 asgi-csrf==0.11
@@ -54,7 +54,7 @@ duckduckgo_search==8.0.1
 elevenlabs==1.57.0
 espeakng-loader==0.2.4
 faiss-cpu==1.9.0.post1
-fastapi==0.115.12
+fastapi==0.115.5
 feedparser==6.0.11
 filelock==3.18.0
 filetype==1.2.0
@@ -96,10 +96,10 @@ jsonschema==4.23.0
 jsonschema-specifications==2025.4.1
 kokoro==0.9.4
 kombu==5.5.3
-langchain==0.3.22
+langchain==0.3.12
 langchain-anthropic==0.3.3
 langchain-aws==0.2.19
-langchain-core==0.3.49
+langchain-core==0.3.28
 langchain-deepseek==0.1.3
 langchain-google-genai==2.1.2
 langchain-ollama==0.3.0
@@ -137,12 +137,12 @@ num2words==0.5.14
 numba==0.61.2
 numpy==1.26.4
 ollama==0.4.7
-openai==1.74.0
+openai==1.58.1
 orjson==3.10.16
 packaging==24.2
 pandas==2.2.3
 phonemizer-fork==3.3.2
-pillow==11.2.1
+pillow==11.0.0
 pip-chill==1.0.3
 playwright==1.52.0
 pluggy==1.6.0
@@ -159,7 +159,7 @@ psycopg2-binary==2.9.10
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
 pycparser==2.22
-pydantic==2.10.6
+pydantic==2.10.5
 pydantic-settings==2.9.1
 pydantic_core==2.27.2
 pydub==0.25.1
@@ -202,7 +202,7 @@ spacy==3.8.5
 spacy-curated-transformers==0.3.0
 spacy-legacy==3.0.12
 spacy-loggers==1.0.5
-SQLAlchemy==2.0.40
+sqlalchemy==2.0.36
 srsly==2.5.1
 starlette==0.46.2
 sympy==1.14.0
@@ -224,8 +224,8 @@ tzdata==2025.2
 tzlocal==5.3.1
 uc-micro-py==1.0.3
 uritemplate==4.1.1
-urllib3==2.4.0
-uvicorn==0.34.2
+urllib3==2.2.3
+uvicorn==0.32.1
 vine==5.1.0
 wasabi==1.1.3
 weasel==0.4.1

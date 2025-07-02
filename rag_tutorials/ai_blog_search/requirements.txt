@@ -1,7 +1,7 @@
-langchain
+langchain==0.3.12
 langgraph
 langchainhub
-langchain-community
+langchain-community==0.3.12
 langchain-google-genai
 langchain-qdrant
 langchain-text-splitters

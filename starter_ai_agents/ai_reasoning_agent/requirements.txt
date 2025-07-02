@@ -1,4 +1,4 @@
-agno
+agno==1.7.0
 ollama
-fastapi
-uvicorn
+fastapi==0.115.5
+uvicorn==0.32.1

@@ -1,4 +1,4 @@
-streamlit
-agno
+streamlit==1.41.1
+agno==1.7.0
 firecrawl
 

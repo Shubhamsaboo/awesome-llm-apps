@@ -1,4 +1,4 @@
-agno
+agno==1.7.0
 python-dotenv
 mcp
-openai
+openai==1.58.1

@@ -1,7 +1,7 @@
 # Core dependencies
-streamlit
-pandas
-langchain
-langchain-core
+streamlit==1.41.1
+pandas==2.2.3
+langchain==0.3.12
+langchain-core==0.3.28
 langchain-ollama
 ollama

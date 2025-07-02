@@ -1,7 +1,7 @@
 # Core dependencies
 phidata
-agno
-streamlit==1.40.2
+agno==1.7.0
+streamlit==1.41.1
 PyPDF2==3.0.1
 streamlit-pdf-viewer==0.0.19
 requests==2.32.3

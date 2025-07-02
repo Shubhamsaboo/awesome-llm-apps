@@ -1,5 +1,5 @@
 composio
-agno
-streamlit
+agno==1.7.0
+streamlit==1.41.1
 composio-agno
 together

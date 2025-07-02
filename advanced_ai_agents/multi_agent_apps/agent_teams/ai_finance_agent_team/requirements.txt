@@ -1,6 +1,6 @@
-openai
-agno
+openai==1.58.1
+agno==1.7.0
 duckduckgo-search
 yfinance
-fastapi[standard] 
-sqlalchemy
+fastapi==0.115.5
+sqlalchemy==2.0.36

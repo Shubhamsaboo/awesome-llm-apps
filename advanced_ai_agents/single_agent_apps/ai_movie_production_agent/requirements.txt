@@ -1,5 +1,5 @@
-streamlit 
-agno
-anthropic
+streamlit==1.41.1
+agno==1.7.0
+anthropic==0.39.0
 google-search-results  
 lxml_html_clean

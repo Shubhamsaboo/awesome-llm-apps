@@ -1,6 +1,6 @@
-agno
-streamlit==1.40.2     
+agno==1.7.0
+streamlit==1.41.1
 qdrant-client==1.12.1         
-openai
+openai==1.58.1
 pypdf
 duckduckgo-search

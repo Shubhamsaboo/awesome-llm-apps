@@ -1,5 +1,5 @@
-streamlit 
-agno
+streamlit==1.41.1
+agno==1.7.0
 arxiv
-openai
+openai==1.58.1
 pypdf

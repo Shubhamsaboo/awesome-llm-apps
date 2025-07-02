@@ -1,5 +1,5 @@
-agno
+agno==1.7.0
 duckduckgo-search
 yfinance
-fastapi[standard] 
-openai
+fastapi==0.115.5
+openai==1.58.1

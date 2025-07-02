@@ -1,8 +1,8 @@
-agno
+agno==1.7.0
 pypdf
 exa
 qdrant-client
 langchain-qdrant
-langchain-community
-streamlit
+langchain-community==0.3.12
+streamlit==1.41.1
 ollama

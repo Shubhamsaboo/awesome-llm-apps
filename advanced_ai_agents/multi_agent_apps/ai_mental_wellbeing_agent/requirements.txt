@@ -1,4 +1,4 @@
 autogen-agentchat
 autogen-ext
 pyautogen
-streamlit
+streamlit==1.41.1

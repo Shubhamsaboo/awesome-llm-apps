@@ -1,6 +1,6 @@
-agno
+agno==1.7.0
 exa==0.5.26
 qdrant-client==1.12.1
 langchain-qdrant==0.2.0
-langchain-community==0.3.13
+langchain-community==0.3.12
 streamlit==1.41.1

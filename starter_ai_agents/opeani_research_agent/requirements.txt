@@ -1,7 +1,7 @@
 openai-agents
-openai
-streamlit
+openai==1.58.1
+streamlit==1.41.1
 uuid
-pydantic
+pydantic==2.10.5
 python-dotenv
 asyncio

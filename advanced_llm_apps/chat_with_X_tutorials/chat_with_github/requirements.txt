@@ -1,2 +1,2 @@
-streamlit
+streamlit==1.41.1
 embedchain[github]

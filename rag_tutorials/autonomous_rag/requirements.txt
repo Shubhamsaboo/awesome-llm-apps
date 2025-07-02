@@ -1,10 +1,10 @@
-streamlit 
-agno
-openai
+streamlit==1.41.1
+agno==1.7.0
+openai==1.58.1
 psycopg-binary
 pgvector
-requests
-sqlalchemy
+requests==2.32.3
+sqlalchemy==2.0.36
 pypdf
 duckduckgo-search
 nest_asyncio
