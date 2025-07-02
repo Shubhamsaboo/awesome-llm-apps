@@ -1,5 +1,11 @@
 import nest_asyncio
 import streamlit as st
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
+
 from agents import get_tic_tac_toe_players
 from agno.utils.log import logger
 from utils import (
@@ -25,6 +31,20 @@ st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
 
 def main():
+    ####################################################################
+    # Check for required API keys
+    ####################################################################
+    required_keys_info = {
+        "gpt-4o": "OPENAI_API_KEY",
+        "o3-mini": "OPENAI_API_KEY", 
+        "claude-3.5": "ANTHROPIC_API_KEY",
+        "claude-3.7": "ANTHROPIC_API_KEY",
+        "claude-3.7-thinking": "ANTHROPIC_API_KEY",
+        "gemini-flash": "GOOGLE_API_KEY",
+        "gemini-pro": "GOOGLE_API_KEY",
+        "llama-3.3": "GROQ_API_KEY",
+    }
+    
     ####################################################################
     # App header
     ####################################################################
@@ -70,12 +90,39 @@ def main():
         )
 
         ################################################################
+        # API Key validation
+        ################################################################
+        missing_keys = []
+        for model in [selected_p_x, selected_p_o]:
+            required_key = required_keys_info.get(model)
+            if required_key and not os.getenv(required_key):
+                missing_keys.append(f"**{model}** requires `{required_key}`")
+        
+        if missing_keys:
+            st.error(f"""
+            🔑 **Missing API Keys:**
+            
+            {chr(10).join(f"• {key}" for key in missing_keys)}
+            
+            **To fix this:**
+            1. Create a `.env` file in this directory
+            2. Add your API keys:
+            ```
+            OPENAI_API_KEY=your_key_here
+            ANTHROPIC_API_KEY=your_key_here  
+            GOOGLE_API_KEY=your_key_here
+            GROQ_API_KEY=your_key_here
+            ```
+            3. Restart the app
+            """)
+
+        ################################################################
         # Game controls
         ################################################################
         col1, col2 = st.columns(2)
         with col1:
             if not st.session_state.game_started:
-                if st.button("▶️ Start Game"):
+                if st.button("▶️ Start Game", disabled=bool(missing_keys)):
                     st.session_state.player_x, st.session_state.player_o = (
                         get_tic_tac_toe_players(
                             model_x=model_options[selected_p_x],
