@@ -142,14 +142,14 @@ def get_tic_tac_toe_players(
         - Top-left is (0,0), bottom-right is (2,2)
 
         RULES:
-        - You can only place X in empty spaces (shown as " " on the board)
+        - You can only place O in empty spaces (shown as " " on the board)
         - Players take turns placing their marks
         - First to get 3 marks in a row (horizontal, vertical, or diagonal) wins
         - If all spaces are filled with no winner, the game is a draw
 
         YOUR RESPONSE:
         - Provide ONLY two numbers separated by a space (row column)
-        - Example: "1 2" places your X in row 1, column 2
+        - Example: "1 2" places your O in row 1, column 2
         - Choose only from the valid moves list provided to you
 
         STRATEGY TIPS:
