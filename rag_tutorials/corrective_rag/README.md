@@ -19,6 +19,21 @@ A sophisticated Retrieval-Augmented Generation (RAG) system that implements a co
    ```
 
 2. **Install Dependencies**:
+
+   ### Using UV (Recommended)
+   
+   This project uses [UV](https://github.com/astral-sh/uv) for fast, reliable Python package management.
+   
+   ```bash
+   # Install UV (if not already installed)
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   
+   # Install dependencies
+   uv sync
+   ```
+   
+   ### Using pip (Traditional)
+   
    ```bash
    pip install -r requirements.txt
    ```
@@ -37,6 +52,13 @@ A sophisticated Retrieval-Augmented Generation (RAG) system that implements a co
          - Qdrant URL: Your cluster URL (format: `https://xxx-xxx.aws.cloud.qdrant.io`)
 
 4. **Run the Application**:
+   
+   ### Using UV
+   ```bash
+   uv run streamlit run corrective_rag.py
+   ```
+   
+   ### Using Traditional Python
    ```bash
    streamlit run corrective_rag.py
    ```

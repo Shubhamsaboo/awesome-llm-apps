@@ -27,9 +27,26 @@ An OpenAI SDK powered customer support agent application that delivers voice-pow
    ```bash
    # Clone the repository
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-   cd awesome-llm-apps/ai_agent_tutorials/ai_voice_agent_openaisdk
+   cd awesome-llm-apps/voice_ai_agents/customer_support_voice_agent
+   ```
+
+2. **Install Dependencies**
+
+   ### Using UV (Recommended)
+   
+   This project uses [UV](https://github.com/astral-sh/uv) for fast, reliable Python package management.
+   
+   ```bash
+   # Install UV (if not already installed)
+   curl -LsSf https://astral.sh/uv/install.sh | sh
    
    # Install dependencies
+   uv sync
+   ```
+   
+   ### Using pip (Traditional)
+   
+   ```bash
    pip install -r requirements.txt
    ```
 
@@ -39,8 +56,15 @@ An OpenAI SDK powered customer support agent application that delivers voice-pow
    - Get Firecrawl API key for documentation crawling
 
 3. **Run the Application**
+
+   ### Using UV
    ```bash
-   streamlit run ai_voice_agent_docs.py
+   uv run streamlit run customer_support_voice_agent.py
+   ```
+   
+   ### Using Traditional Python
+   ```bash
+   streamlit run customer_support_voice_agent.py
    ```
 
 4. **Use the Interface**

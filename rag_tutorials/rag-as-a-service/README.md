@@ -31,3 +31,55 @@ pip install -r requirements.txt
 ```bash
 streamlit run rag_app.py
 ```
+
+## 📖 How It Works
+
+1. **Document Upload**: Enter URLs of documents you want to query
+2. **Processing Mode**: Choose between fast (quick indexing) or accurate (thorough analysis) mode
+3. **Document Ingestion**: Ragie.ai processes and indexes your documents
+4. **Query Processing**: Ask questions about your uploaded documents
+5. **RAG Pipeline**: System retrieves relevant chunks and generates responses using Claude 3.5 Sonnet
+
+## 💡 Usage Examples
+
+Perfect for:
+- **Knowledge Base Q&A**: Query technical documentation or manuals
+- **Research Assistant**: Analyze academic papers and reports
+- **Content Analysis**: Extract insights from articles and blogs
+- **Document Intelligence**: Build custom document understanding systems
+
+## 🔧 Configuration
+
+### Processing Modes
+- **Fast Mode**: Quick document processing for rapid prototyping
+- **Accurate Mode**: Comprehensive analysis for production use
+
+### API Integration
+- **Ragie.ai**: Handles document ingestion, chunking, and retrieval
+- **Claude 3.5 Sonnet**: Generates contextual responses from retrieved content
+- **Streamlit**: Provides the web interface
+
+## 🚀 Advanced Features
+
+- Supports multiple document formats through URL upload
+- Maintains document context across queries
+- Scalable architecture for production deployment
+- Built-in error handling and retry logic
+
+## 🤝 Contributing
+
+Enhance this RAG service by:
+- Adding support for local file uploads
+- Implementing document management features
+- Creating custom retrieval strategies
+- Adding authentication and user management
+
+## 📄 License
+
+This project is part of the Awesome LLM Apps repository.
+
+## 🔗 Related Projects
+
+- [Agentic RAG](../agentic_rag)
+- [Chat with PDF](../../advanced_llm_apps/chat_with_X_tutorials/chat_with_pdf)
+- [Autonomous RAG](../autonomous_rag)
