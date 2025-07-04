@@ -1,6 +1,6 @@
-# AI Consultant Agent with Google ADK
+# 🤝 AI Consultant Agent with Google ADK 
 
-A powerful business consultant powered by Google's Agent Development Kit that provides comprehensive market analysis, strategic planning, and actionable business recommendations.
+A powerful business consultant Agent built with Google's Agent Development Kit that provides comprehensive market analysis, strategic planning, and actionable business recommendations.
 
 ## Features
 

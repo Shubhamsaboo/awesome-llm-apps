@@ -66,6 +66,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 ### 🚀 Advanced AI Agents
 
 *   [🔍 AI Deep Research Agent](advanced_ai_agents/single_agent_apps/ai_deep_research_agent/)
+*   [🤝 AI Consultant Agent](advanced_ai_agents/single_agent_apps/ai_consultant_agent)
 *   [🏗️ AI System Architect Agent](advanced_ai_agents/single_agent_apps/ai_system_architect_r1/)
 *   [🎯 AI Lead Generation Agent](advanced_ai_agents/single_agent_apps/ai_lead_generation_agent/)
 *   [💰 AI Financial Coach Agent](advanced_ai_agents/multi_agent_apps/ai_financial_coach_agent/)
