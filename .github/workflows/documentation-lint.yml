@@ -1,0 +1,220 @@
+name: Documentation Quality Check
+
+on:
+  pull_request:
+    paths:
+      - '**/*.md'
+      - '**/README.md'
+      - 'docs/**'
+  push:
+    branches:
+      - main
+    paths:
+      - '**/*.md'
+      - '**/README.md'
+      - 'docs/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  lint-documentation:
+    name: Lint Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history for PR comparisons
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install linting tools
+        run: |
+          pip install --upgrade pip
+          # Markdown linting
+          npm install -g markdownlint-cli
+          # Link checking
+          pip install linkchecker-markdown
+          # Spell checking
+          npm install -g cspell
+      
+      - name: Run documentation consistency analyzer
+        id: doc_analysis
+        run: |
+          python scripts/doc_consistency_analyzer.py --output-format json > doc_analysis.json
+          
+          # Extract key metrics
+          echo "total_issues=$(jq '.total_issues' doc_analysis.json)" >> $GITHUB_OUTPUT
+          echo "critical_issues=$(jq '.critical_issues' doc_analysis.json)" >> $GITHUB_OUTPUT
+      
+      - name: Markdown lint
+        continue-on-error: true
+        run: |
+          echo "## Markdown Linting Results" > markdown_lint_report.md
+          echo '```' >> markdown_lint_report.md
+          
+          # Custom markdownlint configuration
+          cat > .markdownlint.json << EOF
+          {
+            "default": true,
+            "MD013": false,
+            "MD033": false,
+            "MD041": false,
+            "MD024": { "siblings_only": true },
+            "MD026": { "punctuation": ".,;:!" }
+          }
+          EOF
+          
+          # Run markdownlint
+          markdownlint '**/*.md' -c .markdownlint.json 2>&1 | tee -a markdown_lint_report.md || true
+          echo '```' >> markdown_lint_report.md
+      
+      - name: Check for broken links
+        continue-on-error: true
+        run: |
+          echo "## Broken Links Report" >> markdown_lint_report.md
+          echo '```' >> markdown_lint_report.md
+          
+          # Check all markdown files for broken links
+          find . -name "*.md" -type f | while read -r file; do
+            echo "Checking links in: $file" >> markdown_lint_report.md
+            # Extract and validate links
+            grep -Eo 'https?://[^[:space:]]+' "$file" | while read -r url; do
+              # Remove trailing punctuation
+              url=$(echo "$url" | sed 's/[.,;:!?)]*$//')
+              if ! curl -s -o /dev/null -w "%{http_code}" "$url" | grep -q "^[23]"; then
+                echo "  ❌ Broken: $url" >> markdown_lint_report.md
+              fi
+            done
+          done
+          
+          echo '```' >> markdown_lint_report.md
+      
+      - name: Spell check
+        continue-on-error: true
+        run: |
+          echo "## Spell Check Results" >> markdown_lint_report.md
+          echo '```' >> markdown_lint_report.md
+          
+          # Create cspell configuration
+          cat > cspell.json << EOF
+          {
+            "version": "0.2",
+            "language": "en",
+            "words": [
+              "agno", "streamlit", "fastapi", "openai", "anthropic", "genai",
+              "lancedb", "tantivy", "pypdf", "sqlalchemy", "pgvector", "mem0ai",
+              "uv", "ruff", "oxc", "bun", "pnpm", "llm", "llms", "rag", "mcp",
+              "gradio", "chainlit", "langchain", "llamaindex", "pinecone",
+              "vectordb", "embeddings", "huggingface", "transformers"
+            ],
+            "ignoreRegExpList": [
+              "/```[\\s\\S]*?```/gm",
+              "/`[^`]+`/g",
+              "\\b[A-Z]{2,}\\b"
+            ]
+          }
+          EOF
+          
+          cspell "**/*.md" --config ./cspell.json 2>&1 | tee -a markdown_lint_report.md || true
+          echo '```' >> markdown_lint_report.md
+      
+      - name: Documentation standards check
+        run: |
+          echo "## Documentation Standards Report" >> markdown_lint_report.md
+          
+          # Check for required sections in README files
+          python -c "
+import os
+import json
+
+required_sections = ['Overview', 'Features', 'Requirements', 'Installation', 'Usage']
+missing_sections = []
+
+for root, dirs, files in os.walk('.'):
+    if 'README.md' in files and not any(skip in root for skip in ['.git', 'node_modules', '__pycache__']):
+        readme_path = os.path.join(root, 'README.md')
+        with open(readme_path, 'r', encoding='utf-8') as f:
+            content = f.read().lower()
+        
+        missing = []
+        for section in required_sections:
+            if f'## {section.lower()}' not in content and f'# {section.lower()}' not in content:
+                missing.append(section)
+        
+        if missing:
+            missing_sections.append({
+                'file': readme_path,
+                'missing': missing
+            })
+
+if missing_sections:
+    print('### Missing Required Sections')
+    for item in missing_sections:
+        print(f\"- **{item['file']}**: Missing {', '.join(item['missing'])}\")
+else:
+    print('✅ All README files have required sections')
+" >> markdown_lint_report.md
+      
+      - name: Generate PR comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('markdown_lint_report.md', 'utf8');
+            const docAnalysis = JSON.parse(fs.readFileSync('doc_analysis.json', 'utf8'));
+            
+            const comment = `## 📝 Documentation Quality Report
+            
+            ### Summary
+            - **Total Issues**: ${docAnalysis.total_issues || 0}
+            - **Critical Issues**: ${docAnalysis.critical_issues || 0}
+            - **Files Analyzed**: ${docAnalysis.files_analyzed || 0}
+            
+            ${docAnalysis.critical_issues > 0 ? '### ⚠️ Critical Issues Found' : '### ✅ No Critical Issues'}
+            
+            <details>
+            <summary>Click to see detailed report</summary>
+            
+            ${report}
+            
+            </details>
+            
+            ### Recommendations
+            ${docAnalysis.recommendations?.slice(0, 3).map(rec => `- ${rec}`).join('\n') || '- Keep up the good documentation practices!'}
+            
+            ---
+            *This comment was automatically generated by the Documentation Quality workflow.*
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+      
+      - name: Upload analysis results
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-lint-results
+          path: |
+            doc_analysis.json
+            markdown_lint_report.md
+          retention-days: 30
+      
+      - name: Fail if critical issues
+        if: steps.doc_analysis.outputs.critical_issues > 0
+        run: |
+          echo "❌ Documentation quality check failed!"
+          echo "Found ${{ steps.doc_analysis.outputs.critical_issues }} critical issues."
+          exit 1

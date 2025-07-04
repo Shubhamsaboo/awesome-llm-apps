@@ -1,0 +1,219 @@
+name: Weekly Dependency Audit
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:  # Allow manual triggering
+    inputs:
+      detailed_report:
+        description: 'Generate detailed security report'
+        required: false
+        default: 'true'
+        type: boolean
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  analyze-dependencies:
+    name: Analyze Python Dependencies
+    runs-on: ubuntu-latest
+    outputs:
+      has_issues: ${{ steps.analyze.outputs.has_issues }}
+      
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better analysis
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install analysis tools
+        run: |
+          pip install --upgrade pip
+          pip install safety bandit pip-audit semgrep requests
+      
+      - name: Run version hunter analysis
+        id: analyze
+        run: |
+          python scripts/version_hunter.py --output-format json > version_report.json
+          
+          # Check if there are critical issues
+          if grep -q '"severity": "critical"' version_report.json; then
+            echo "has_issues=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_issues=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Security scan with safety
+        continue-on-error: true
+        run: |
+          echo "## Safety Security Scan Results" > security_report.md
+          echo '```' >> security_report.md
+          
+          # Scan all requirements.txt files
+          find . -name "requirements.txt" -type f | while read -r req_file; do
+            echo "Scanning: $req_file" >> security_report.md
+            safety check -r "$req_file" --json | jq -r '.vulnerabilities[] | "\(.package_name) \(.analyzed_version) - \(.vulnerability_id): \(.more_info_url)"' >> security_report.md 2>/dev/null || true
+            echo "" >> security_report.md
+          done
+          
+          echo '```' >> security_report.md
+      
+      - name: SAST scan with bandit
+        continue-on-error: true
+        run: |
+          echo "## Bandit SAST Results" >> security_report.md
+          echo '```' >> security_report.md
+          bandit -r . -f json -o bandit_results.json || true
+          if [ -f bandit_results.json ]; then
+            jq -r '.results[] | select(.issue_severity == "HIGH" or .issue_severity == "MEDIUM") | "\(.filename):\(.line_number) - \(.issue_severity): \(.issue_text)"' bandit_results.json >> security_report.md || true
+          fi
+          echo '```' >> security_report.md
+      
+      - name: Dependency confusion check
+        run: |
+          echo "## Dependency Confusion Check" >> security_report.md
+          echo "Checking for potential typosquatting or suspicious packages..." >> security_report.md
+          echo '```' >> security_report.md
+          
+          # Extract all unique package names
+          find . -name "requirements.txt" -type f -exec cat {} \; | \
+            grep -v "^#" | \
+            grep -v "^$" | \
+            sed 's/[<>=!~].*//' | \
+            sort -u > all_packages.txt
+          
+          # Check against common typosquatting patterns
+          python -c "
+import re
+suspicious_patterns = [
+    (r'tensoflow', 'tensorflow'),
+    (r'beautifulsoup', 'beautifulsoup4'),
+    (r'django-rest', 'djangorestframework'),
+    (r'pillow', 'Pillow'),
+    (r'pyyaml', 'PyYAML'),
+]
+
+with open('all_packages.txt', 'r') as f:
+    packages = f.read().splitlines()
+
+for pkg in packages:
+    for pattern, correct in suspicious_patterns:
+        if re.match(pattern, pkg.lower()) and pkg != correct:
+            print(f'Warning: {pkg} might be a typo of {correct}')
+"
+          echo '```' >> security_report.md
+      
+      - name: Upload analysis results
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-audit-results
+          path: |
+            version_report.json
+            security_report.md
+            bandit_results.json
+          retention-days: 30
+      
+      - name: Create issue if critical issues found
+        if: steps.analyze.outputs.has_issues == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const versionReport = JSON.parse(fs.readFileSync('version_report.json', 'utf8'));
+            const securityReport = fs.readFileSync('security_report.md', 'utf8');
+            
+            // Count critical issues
+            const criticalCount = versionReport.critical_issues?.length || 0;
+            const securityCount = versionReport.security_vulnerabilities?.length || 0;
+            
+            const issueBody = `## 🚨 Weekly Dependency Audit Alert
+            
+            The automated dependency audit has detected issues that require attention.
+            
+            ### Summary
+            - **Critical Issues**: ${criticalCount}
+            - **Security Vulnerabilities**: ${securityCount}
+            - **Projects Affected**: ${versionReport.affected_projects?.length || 0}
+            
+            ### Top Priority Issues
+            ${versionReport.critical_issues?.slice(0, 5).map(issue => 
+              `- [ ] **${issue.package}** in \`${issue.file}\`: ${issue.description}`
+            ).join('\n') || 'No critical issues found'}
+            
+            ### Security Report
+            ${securityReport.substring(0, 2000)}...
+            
+            [View full report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            
+            ### Next Steps
+            1. Review the full audit report in the workflow artifacts
+            2. Update dependencies with security vulnerabilities
+            3. Pin versions for critical packages
+            4. Consider migrating to UV for better dependency management
+            
+            ---
+            *This issue was automatically created by the Weekly Dependency Audit workflow.*
+            `;
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 Dependency Audit: ${criticalCount} critical issues found`,
+              body: issueBody,
+              labels: ['security', 'dependencies', 'automated']
+            });
+
+  create-fix-pr:
+    name: Create Automated Fix PR
+    needs: analyze-dependencies
+    if: needs.analyze-dependencies.outputs.has_issues == 'true'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Run systematic fixer
+        run: |
+          python scripts/systematic_fixer.py --mode=security --auto-fix
+      
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "fix: automated security updates from dependency audit"
+          title: "🔐 Automated Security Updates from Weekly Audit"
+          body: |
+            ## Automated Dependency Security Updates
+            
+            This PR contains automated fixes for security vulnerabilities detected in the weekly audit.
+            
+            ### Changes Made
+            - Updated packages with known vulnerabilities
+            - Pinned versions for critical dependencies
+            - Removed deprecated packages
+            
+            ### Testing Required
+            - [ ] All applications still install correctly
+            - [ ] No breaking changes in APIs
+            - [ ] Security vulnerabilities resolved
+            
+            Please review carefully before merging.
+          branch: automated/security-updates-${{ github.run_number }}
+          labels: security,automated,dependencies
