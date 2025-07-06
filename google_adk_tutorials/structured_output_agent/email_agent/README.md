@@ -1,4 +1,4 @@
-# 📧 Structured Output in Google ADK
+# 📧 Email Generation Agent with Structured Output
 
 A tutorial demonstrating how to implement structured output using Google's ADK (Agent Development Kit) framework. This example uses an email generator agent to show how to create type-safe, structured responses with Pydantic schemas and Gemini 2.5 Flash model.
 
@@ -25,7 +25,7 @@ A tutorial demonstrating how to implement structured output using Google's ADK (
    ```bash
    # Clone the repository
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-   cd awesome-llm-apps/google_adk_tutorials/structured_output_agent/email_generator_agent
+   cd awesome-llm-apps/google_adk_tutorials/structured_output_agent/email_agent
 
    # Install dependencies
    pip install -r requirements.txt
@@ -38,7 +38,7 @@ A tutorial demonstrating how to implement structured output using Google's ADK (
 3. **Run the Agent**
    ```bash
    # Start the ADK web interface from the root folder
-   cd google_adk_tutorials/structured_output_agent
+   cd google_adk_tutorials/structured_output_agent/email_agent
    adk web
    ```
    Then:
