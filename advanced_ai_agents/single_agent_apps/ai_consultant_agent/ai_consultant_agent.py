@@ -2,10 +2,12 @@ import logging
 from typing import Dict, Any, List, Union
 from dataclasses import dataclass
 import base64
+import requests
+import os
 
 # Google ADK imports
 from google.adk.agents import LlmAgent
-from google.adk.tools import google_search_tool
+from google.adk.tools import google_search
 from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
 
@@ -188,11 +190,32 @@ def generate_strategic_recommendations(analysis_data: Dict[str, Any]) -> List[Di
     
     return recommendations
 
+def perplexity_search(query: str, system_prompt: str = "Be precise and concise. Focus on business insights and market data.") -> Dict[str, Any]:
+    """Search the web using Perplexity AI for real-time information and insights."""
+    try:
+        api_key = os.getenv("PERPLEXITY_API_KEY")
+        if not api_key:
+            return {"error": "Perplexity API key not found. Please set PERPLEXITY_API_KEY environment variable.", "query": query, "status": "error"}
+        
+        response = requests.post("https://api.perplexity.ai/chat/completions", 
+            json={"model": "sonar", "messages": [{"role": "system", "content": system_prompt}, {"role": "user", "content": query}]},
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}, timeout=30)
+        response.raise_for_status()
+        result = response.json()
+        
+        if "choices" in result and result["choices"]:
+            return {"query": query, "content": result["choices"][0]["message"]["content"], "citations": result.get("citations", []), 
+                   "search_results": result.get("search_results", []), "status": "success", "source": "Perplexity AI", 
+                   "model": result.get("model", "sonar"), "usage": result.get("usage", {}), "response_id": result.get("id", ""), "created": result.get("created", 0)}
+        return {"error": "No response content found", "query": query, "status": "error", "raw_response": result}
+    except Exception as e:
+        return {"error": f"Error: {str(e)}", "query": query, "status": "error"}
+
 # Define the consultant tools with safety wrappers
 consultant_tools = [
-    google_search_tool,
     safe_tool_wrapper(analyze_market_data),
-    safe_tool_wrapper(generate_strategic_recommendations)
+    safe_tool_wrapper(generate_strategic_recommendations),
+    safe_tool_wrapper(perplexity_search)
 ]
 
 INSTRUCTIONS = """You are a senior AI business consultant specializing in market analysis and strategic planning.
@@ -202,40 +225,41 @@ Your expertise includes:
 - Risk assessment and mitigation planning
 - Implementation planning with timelines
 - Market analysis using your knowledge and available tools
-- Real-time market research using Google search capabilities
+- Real-time web research using Perplexity AI search capabilities
 
 When consulting with clients:
-1. Use Google search to gather current market data, competitor information, and industry trends
+1. Use Perplexity search to gather current market data, competitor information, and industry trends from the web
 2. Use the market analysis tool to process business queries and generate insights
 3. Use the strategic recommendations tool to create actionable business advice
 4. Provide clear, specific recommendations with implementation timelines
 5. Focus on practical solutions that drive measurable business outcomes
 
 **Core Responsibilities:**
-- Conduct real-time market research using Google search for current data
+- Conduct real-time web research using Perplexity AI for current market data and trends
 - Analyze competitive landscapes and market opportunities using search results and your knowledge
 - Provide strategic guidance with clear action items based on up-to-date information
 - Assess risks and suggest mitigation strategies using current market conditions
 - Create implementation roadmaps with realistic timelines
-- Generate comprehensive business insights combining search data with analysis tools
+- Generate comprehensive business insights combining web research with analysis tools
 
 **Critical Rules:**
-- Always search for current market data, trends, and competitor information when relevant
-- Base recommendations on sound business principles, current market insights, and real-time data
+- Always search for current market data, trends, and competitor information when relevant using Perplexity search
+- Base recommendations on sound business principles, current market insights, and real-time web data
 - Provide specific, actionable advice rather than generic guidance
 - Include timelines and success metrics in recommendations
 - Prioritize recommendations by business impact and feasibility
-- Use Google search to validate assumptions and gather supporting evidence
+- Use Perplexity search to validate assumptions and gather supporting evidence with citations
 - Combine search results with your analysis tools for comprehensive consultation
 
 **Search Strategy:**
-- Search for competitor analysis, market size, industry trends, and regulatory changes
+- Use Perplexity search for competitor analysis, market size, industry trends, and regulatory changes
 - Look up recent news, funding rounds, and market developments in relevant sectors
-- Verify market assumptions with current data before making recommendations
+- Verify market assumptions with current web data before making recommendations
 - Research best practices and case studies from similar businesses
+- Always include citations and sources when referencing search results
 
 Always maintain a professional, analytical approach while being results-oriented.
-Use all available tools including Google search to provide comprehensive, well-researched consultation backed by current market data."""
+Use all available tools including Perplexity search to provide comprehensive, well-researched consultation backed by current web data and citations."""
 
 # Define the agent instance
 root_agent = LlmAgent(
