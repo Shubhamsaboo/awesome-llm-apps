@@ -1,9 +1,10 @@
-## 🌍 AI Travel Planner Agent
+## 🌍 AI Travel Planner MCP Agent
 
 This is a Streamlit-based application that helps users plan their travel itineraries using AI. The app integrates with various mcp servers to provide a comprehensive travel planning experience, including weather forecasts, maps, and calendar integration.
 
 ## Features
-## MCP Servers Integration
+
+### MCP Servers Integration
 
 This project utilizes several MCP (Model Context Protocol) servers to provide a comprehensive travel planning experience:
 

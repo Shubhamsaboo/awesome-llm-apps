@@ -1,0 +1,16 @@
+streamlit
+pandas
+plotly
+opencv-python
+tf-keras
+deepface
+mediapipe
+agno
+openai
+requests
+librosa
+python-dotenv
+moviepy
+faster-whisper
+fastapi
+uvicorn

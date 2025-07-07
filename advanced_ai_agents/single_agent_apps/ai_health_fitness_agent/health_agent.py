@@ -104,7 +104,7 @@ def main():
 
     if gemini_api_key:
         try:
-            gemini_model = Gemini(id="gemini-1.5-flash", api_key=gemini_api_key)
+            gemini_model = Gemini(id="gemini-2.5-flash-preview-05-20", api_key=gemini_api_key)
         except Exception as e:
             st.error(f"❌ Error initializing Gemini model: {e}")
             return

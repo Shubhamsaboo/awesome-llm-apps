@@ -36,7 +36,7 @@ Follow the steps below to set up and run the application:
 1. **Clone the Repository**
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-   cd ai_agent_tutorials/ai_coding_agent_o3-mini
+   cd advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_coding_agent_team
    ```
 
 2. **Install the dependencies**

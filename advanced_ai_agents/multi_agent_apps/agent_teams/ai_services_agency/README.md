@@ -64,7 +64,7 @@ Before anything else, Please get your OpenAI API Key here: https://platform.open
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-   cd awesome-llm-apps/ai_agent_tutorials/ai_services_agency
+   cd advanced_ai_agents/multi_agent_apps/agent_teams/ai_services_agency
    ```
 
 2. **Install the dependencies**:
@@ -74,7 +74,7 @@ Before anything else, Please get your OpenAI API Key here: https://platform.open
 
 3. **Run the Streamlit app**:
     ```bash
-    streamlit run ai_services_agency/agency.py
+    streamlit run agency.py
     ```
 
 4. **Enter your OpenAI API Key** in the sidebar when prompted and start analyzing your startup idea!
