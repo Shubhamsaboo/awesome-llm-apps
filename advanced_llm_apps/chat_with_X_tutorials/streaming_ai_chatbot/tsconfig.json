@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "outDir": "dist",
+    "rootDir": ".",
+    "baseUrl": ".",
+    "jsx": "react-jsx"
+  },
+"include": [
+     "**/*.ts",
+     "**/*.tsx",
+     "**/*.js",
+     "**/*.jsx",
+    "types.d.ts"
+   ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests"
+  ]
+}

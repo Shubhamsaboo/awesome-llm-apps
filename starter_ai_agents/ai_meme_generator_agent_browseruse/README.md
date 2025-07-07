@@ -45,7 +45,12 @@ API keys required:
     ```bash
     pip install -r requirements.txt
     ```
+    Install `playwright` if needed.
+    ```bash
+    python -m playwright install --with-deps
+    ```
 3. **Run the Streamlit app**:
     ```bash
-    streamlit run ai_meme_generator.py
+    streamlit run ai_meme_generator_agent.py
+
     ```

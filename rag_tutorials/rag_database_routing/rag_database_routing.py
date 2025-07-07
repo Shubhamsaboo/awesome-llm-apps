@@ -134,7 +134,7 @@ def process_document(file) -> List[Document]:
         return []
 
 def create_routing_agent() -> Agent:
-    """Creates a routing agent using phidata framework"""
+    """Creates a routing agent using agno framework"""
     return Agent(
         model=OpenAIChat(
             id="gpt-4o",

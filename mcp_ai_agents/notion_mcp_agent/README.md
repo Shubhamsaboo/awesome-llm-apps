@@ -1,4 +1,4 @@
-# Notion MCP Agent with Agno
+# 📑 Notion MCP Agent
 
 A terminal-based Notion Agent for interacting with your Notion pages using natural language through the Notion MCP (Model Context Protocol) server.
 
