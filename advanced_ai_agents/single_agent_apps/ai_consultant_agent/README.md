@@ -1,10 +1,13 @@
 # 🤝 AI Consultant Agent with Google ADK 
 
-A powerful business consultant Agent built with Google's Agent Development Kit that provides comprehensive market analysis, strategic planning, and actionable business recommendations.
+
+A powerful business consultant powered by Google's Agent Development Kit that provides comprehensive market analysis, strategic planning, and actionable business recommendations with real-time web research.
+
 
 ## Features
 
-- **Market Analysis**: Leverages Google search and AI insights to analyze market conditions and opportunities
+- **Real-time Web Research**: Uses Perplexity AI search for current market data, trends, and competitor intelligence
+- **Market Analysis**: Leverages web search and AI insights to analyze market conditions and opportunities
 - **Strategic Recommendations**: Generates actionable business strategies with timelines and implementation plans
 - **Risk Assessment**: Identifies potential risks and provides mitigation strategies
 - **Interactive UI**: Clean Google ADK web interface for easy consultation
@@ -13,15 +16,17 @@ A powerful business consultant Agent built with Google's Agent Development Kit t
 ## How It Works
 
 1. **Input Phase**: User provides business questions or consultation requests through the ADK web interface
-2. **Analysis Phase**: The agent uses market analysis tools to process the query and generate insights
-3. **Strategy Phase**: Strategic recommendations are generated based on the analysis
-4. **Synthesis Phase**: The agent combines findings into a comprehensive consultation report
-5. **Output Phase**: Actionable recommendations with timelines and implementation steps are presented
+2. **Research Phase**: The agent conducts real-time web research using Perplexity AI to gather current market data
+3. **Analysis Phase**: The agent uses market analysis tools to process the query and generate insights
+4. **Strategy Phase**: Strategic recommendations are generated based on the analysis and web research
+5. **Synthesis Phase**: The agent combines findings into a comprehensive consultation report with citations
+6. **Output Phase**: Actionable recommendations with timelines and implementation steps are presented
 
 ## Requirements
 
 - Python 3.8+
 - Google API key (for Gemini model)
+- Perplexity API key (for real-time web search)
 - Required Python packages (see `requirements.txt`)
 
 ## Installation
@@ -39,9 +44,10 @@ A powerful business consultant Agent built with Google's Agent Development Kit t
 
 ## Usage
 
-1. Set your Google API key:
+1. Set your API keys:
    ```bash
-   export GOOGLE_API_KEY=your-api-key
+   export GOOGLE_API_KEY=your-google-api-key
+   export PERPLEXITY_API_KEY=your-perplexity-api-key
    ```
 
 2. Start the Google ADK web interface:
@@ -55,7 +61,7 @@ A powerful business consultant Agent built with Google's Agent Development Kit t
 
 5. Enter your business questions or consultation requests
 
-6. Review the comprehensive analysis and strategic recommendations
+6. Review the comprehensive analysis and strategic recommendations with real-time web data and citations
 
 7. Use the Eval tab to save and evaluate consultation sessions
 
@@ -71,11 +77,13 @@ A powerful business consultant Agent built with Google's Agent Development Kit t
 
 The application uses specialized analysis tools:
 
-1. **Market Analysis Tool**: Processes business queries and generates market insights, competitive analysis, and opportunity identification.
+1. **Perplexity Search Tool**: Conducts real-time web research using Perplexity AI's "sonar" model to gather current market data, competitor information, and industry trends with citations.
 
-2. **Strategic Recommendations Tool**: Creates actionable business strategies with priority levels, timelines, and implementation roadmaps.
+2. **Market Analysis Tool**: Processes business queries and generates market insights, competitive analysis, and opportunity identification.
 
-The agent is built on Google ADK's LlmAgent framework using the Gemini 2.0 Flash model, providing fast and accurate business consultation capabilities.
+3. **Strategic Recommendations Tool**: Creates actionable business strategies with priority levels, timelines, and implementation roadmaps.
+
+The agent is built on Google ADK's LlmAgent framework using the Gemini 2.5 Flash model, providing fast and accurate business consultation capabilities backed by real-time web research.
 
 ## Evaluation and Testing
 
