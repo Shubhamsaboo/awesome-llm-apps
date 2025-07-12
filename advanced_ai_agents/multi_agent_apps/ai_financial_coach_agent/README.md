@@ -48,7 +48,7 @@ Follow the steps below to set up and run the application:
 2. **Clone the Repository**:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-   cd awesome-llm-apps/ai_agent_tutorials/ai_financial_coach_agent
+   cd awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_financial_coach_agent/
    ```
 
 3. **Install Dependencies**:
