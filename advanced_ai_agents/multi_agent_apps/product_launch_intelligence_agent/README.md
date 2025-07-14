@@ -3,7 +3,7 @@
 A **streamlined intelligence hub** for Go-To-Market (GTM) & Product-Marketing teams.  
 Built with **Streamlit + Agno (GPT-4o) + Firecrawl**, the app turns scattered public-web data into concise, actionable launch insights.
 
-## 3 Specialized Agents
+## 3 Specialized Agents in Coordinated Team
 
 | Tab | What You Get |
 |-----|--------------|
@@ -14,7 +14,7 @@ Built with **Streamlit + Agno (GPT-4o) + Firecrawl**, the app turns scattered pu
 Additional goodies:
 
 * 🔑 **Sidebar key input** – enter OpenAI & Firecrawl keys securely (type="password")
-* 🧠 **Specialised multi-agent core** – three expert agents collaborate for richer insight
+* 🧠 **Coordinated multi-agent team** – three expert agents work together for richer insight
   * 🔍 Product Launch Analyst (GTM strategist)
   * 💬 Market Sentiment Specialist (consumer-perception guru)
   * 📈 Launch Metrics Specialist (performance analyst)
@@ -27,7 +27,7 @@ Additional goodies:
 | Layer | Details |
 |-------|---------|
 | Data | **Firecrawl** async search + crawl API |
-| Agents | **Agno** (GPT-4o) with FirecrawlTools |
+| Agents | **Agno Team** (GPT-4o) with FirecrawlTools |
 | UI | **Streamlit** wide-layout, tabbed workflow |
 | LLM | **OpenAI GPT-4o** |
 
@@ -67,7 +67,17 @@ streamlit run product_launch_intelligence_agent.py
 
 1. Enter **API keys** in the sidebar (or ensure they are in your environment).
 2. Type a **company / product / hashtag** in the main input box.
-3. Pick a tab and hit the corresponding **Analyze** button – a spinner will appear while the agent works.
+3. Pick a tab and hit the corresponding **Analyze** button – a spinner will appear while the coordinated team works.
 4. Review the two-part analysis:
    * Bullet list of key findings
    * Expanded, richly-formatted report (tables, call-outs, recommendations)
+
+## 🤖 How the Coordinated Team Works
+
+The application uses a **coordinated team approach** where three specialized agents work together:
+
+- **Product Launch Analyst**: Evaluates competitive positioning, launch strategies, strengths, and weaknesses
+- **Market Sentiment Specialist**: Analyzes social media sentiment, customer feedback, and brand perception  
+- **Launch Metrics Specialist**: Tracks KPIs, adoption rates, press coverage, and performance indicators
+
+The team coordinates based on the analysis type requested, ensuring the most appropriate agent handles each task while maintaining consistency and comprehensive coverage across all analysis types.
