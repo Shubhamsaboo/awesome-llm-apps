@@ -31,13 +31,17 @@ streamlit run research_agent.py
 ### How it works?
 
 - Upon running the app, you will be prompted to enter your OpenAI API key. This key is used to authenticate and access the OpenAI language models.
-- Once you provide a valid API key, three instances of the Assistant class are created:
-    - **story_researcher**: Specializes in researching HackerNews stories.
-    - **user_researcher**: Focuses on researching HackerNews users and reading articles from URLs.
-    - **hn_assistant**: A team assistant that coordinates the research efforts of the story and user researchers.
+- Once you provide a valid API key, three specialized AI agents are created:
+    - **HackerNews Researcher**: Specializes in getting top stories from HackerNews using the HackerNews API.
+    - **Web Searcher**: Searches the web for additional information on topics using DuckDuckGo search.
+    - **Article Reader**: Reads and extracts content from article URLs using newspaper4k tools.
 
+- These agents work together as a coordinated team under the **HackerNews Team** which orchestrates the research process.
 - Enter your research query in the provided text input field. This could be a topic, keyword, or specific question related to HackerNews stories or users.
-- The hn_assistant will orchestrate the research process by delegating tasks to the story_researcher and user_researcher based on your query.
-- The AI assistants will gather relevant information from HackerNews using the provided tools and generate a comprehensive response using the GPT-4 language model.
-- The generated content, which could be a blog post, report, or social media post, will be displayed in the app for you to review and use.
+- The HackerNews Team follows a structured workflow:
+    1. First searches HackerNews for relevant stories based on your query
+    2. Uses the Article Reader to extract detailed content from the story URLs
+    3. Leverages the Web Searcher to gather additional context and information
+    4. Finally provides a thoughtful and engaging summary with title, summary, and reference links
+- The generated content is structured as an Article with a title, summary, and reference links for easy review and use.
 
