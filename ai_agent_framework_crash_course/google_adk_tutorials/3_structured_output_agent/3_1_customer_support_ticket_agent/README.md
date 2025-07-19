@@ -24,26 +24,31 @@ A tutorial demonstrating how to implement a structured customer support ticketin
   - Automatic priority assignment based on issue description
   - Category-based routing for different departments
 
-## How to Run
+## 🚀 Getting Started
 
-1. **Setup Environment**
+1. **Set up your environment**:
    ```bash
-   # Clone the repository
-   git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-   cd awesome-llm-apps/google_adk_tutorials/structured_output_agent/customer_support_ticket_agent
+   cd 3_1_customer_support_ticket_agent
+   
+   # Copy the environment template
+   cp env.example .env
+   
+   # Edit .env and add your Google AI API key
+   # Get your API key from: https://aistudio.google.com/
+   ```
 
-   # Install dependencies
+2. **Install dependencies**:
+   ```bash
+   # Navigate back to the directory
+   cd ..
+
+   # Install required packages
    pip install -r requirements.txt
    ```
 
-2. **Configure API Keys**
-   - Get Google AI API key from [Google AI Studio](https://aistudio.google.com/)
-   - Set up your API credentials for Gemini access
-
 3. **Run the Agent**
    ```bash
-   # Start the ADK web interface from the root folder
-   cd google_adk_tutorials/structured_output_agent/customer_support_ticket_agent
+   # Start the ADK web interface
    adk web
    ```
    Then:
