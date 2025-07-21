@@ -62,6 +62,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [📊 xAI Finance Agent](starter_ai_agents/xai_finance_agent/)
 *   [🔍 OpenAI Research Agent](starter_ai_agents/opeani_research_agent/)
 *   [🕸️ Web Scrapping AI Agent (Local & Cloud)](starter_ai_agents/web_scrapping_ai_agent/)
+*   [🤖 Gpt Agent - Computer Automation](https://github.com/iris-networks/gpt-agent)
 
 ### 🚀 Advanced AI Agents
 
