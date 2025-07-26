@@ -1,5 +1,5 @@
 import streamlit as st
-from exa_py import Exa
+# from exa_py import Exa
 from agno.agent import Agent
 from agno.tools.firecrawl import FirecrawlTools
 from agno.models.openai import OpenAIChat
@@ -195,100 +195,68 @@ if "openai_api_key" in st.session_state and "firecrawl_api_key" in st.session_st
                 
                 response = app.extract(
                     [url_pattern],
-                    {
-                        'prompt': extraction_prompt,
-                        'schema': CompetitorDataSchema.model_json_schema(),
-                    }
+                    prompt=extraction_prompt,
+                    schema=CompetitorDataSchema.model_json_schema()
                 )
                 
-                if response.get('success') and response.get('data'):
-                    extracted_info = response['data']
-                    
-                    # Create JSON structure
-                    competitor_json = {
-                        "competitor_url": competitor_url,
-                        "company_name": extracted_info.get('company_name', 'N/A'),
-                        "pricing": extracted_info.get('pricing', 'N/A'),
-                        "key_features": extracted_info.get('key_features', [])[:5],  # Top 5 features
-                        "tech_stack": extracted_info.get('tech_stack', [])[:5],      # Top 5 tech stack items
-                        "marketing_focus": extracted_info.get('marketing_focus', 'N/A'),
-                        "customer_feedback": extracted_info.get('customer_feedback', 'N/A')
-                    }
-                    
-                    return competitor_json
-                    
-                else:
+                # Handle ExtractResponse object
+                try:
+                    if hasattr(response, 'success') and response.success:
+                        if hasattr(response, 'data') and response.data:
+                            extracted_info = response.data
+                            
+                            # Create JSON structure
+                            competitor_json = {
+                                "competitor_url": competitor_url,
+                                "company_name": extracted_info.get('company_name', 'N/A') if isinstance(extracted_info, dict) else getattr(extracted_info, 'company_name', 'N/A'),
+                                "pricing": extracted_info.get('pricing', 'N/A') if isinstance(extracted_info, dict) else getattr(extracted_info, 'pricing', 'N/A'),
+                                "key_features": extracted_info.get('key_features', [])[:5] if isinstance(extracted_info, dict) and extracted_info.get('key_features') else getattr(extracted_info, 'key_features', [])[:5] if hasattr(extracted_info, 'key_features') else ['N/A'],
+                                "tech_stack": extracted_info.get('tech_stack', [])[:5] if isinstance(extracted_info, dict) and extracted_info.get('tech_stack') else getattr(extracted_info, 'tech_stack', [])[:5] if hasattr(extracted_info, 'tech_stack') else ['N/A'],
+                                "marketing_focus": extracted_info.get('marketing_focus', 'N/A') if isinstance(extracted_info, dict) else getattr(extracted_info, 'marketing_focus', 'N/A'),
+                                "customer_feedback": extracted_info.get('customer_feedback', 'N/A') if isinstance(extracted_info, dict) else getattr(extracted_info, 'customer_feedback', 'N/A')
+                            }
+                            
+                            return competitor_json
+                        else:
+                            return None
+                    else:
+                        return None
+                        
+                except Exception as response_error:
                     return None
                     
             except Exception as e:
                 return None
 
         def generate_comparison_report(competitor_data: list) -> None:
-            # Format the competitor data for the prompt
-            formatted_data = json.dumps(competitor_data, indent=2)
-            print(formatted_data)
+            # Create DataFrame directly from competitor data
+            if not competitor_data:
+                st.error("No competitor data available for comparison")
+                return
             
-            # Updated system prompt for more structured output
-            system_prompt = f"""
-            As an expert business analyst, analyze the following competitor data in JSON format and create a structured comparison.
-            Extract and summarize the key information into concise points.
-
-            {formatted_data}
-
-            Return the data in a structured format with EXACTLY these columns:
-            Company, Pricing, Key Features, Tech Stack, Marketing Focus, Customer Feedback
-
-            Rules:
-            1. For Company: Include company name and URL
-            2. For Key Features: List top 3 most important features only
-            3. For Tech Stack: List top 3 most relevant technologies only
-            4. Keep all entries clear and concise
-            5. Format feedback as brief quotes
-            6. Return ONLY the structured data, no additional text
-            """
-
-            # Get comparison data from agent
-            comparison_response = comparison_agent.run(system_prompt)
+            # Prepare data for DataFrame
+            table_data = []
+            for competitor in competitor_data:
+                row = {
+                    'Company': f"{competitor.get('company_name', 'N/A')} ({competitor.get('competitor_url', 'N/A')})",
+                    'Pricing': competitor.get('pricing', 'N/A')[:100] + '...' if len(competitor.get('pricing', '')) > 100 else competitor.get('pricing', 'N/A'),
+                    'Key Features': ', '.join(competitor.get('key_features', [])[:3]) if competitor.get('key_features') else 'N/A',
+                    'Tech Stack': ', '.join(competitor.get('tech_stack', [])[:3]) if competitor.get('tech_stack') else 'N/A',
+                    'Marketing Focus': competitor.get('marketing_focus', 'N/A')[:100] + '...' if len(competitor.get('marketing_focus', '')) > 100 else competitor.get('marketing_focus', 'N/A'),
+                    'Customer Feedback': competitor.get('customer_feedback', 'N/A')[:100] + '...' if len(competitor.get('customer_feedback', '')) > 100 else competitor.get('customer_feedback', 'N/A')
+                }
+                table_data.append(row)
             
-            try:
-                # Split the response into lines and clean them
-                table_lines = [
-                    line.strip() 
-                    for line in comparison_response.content.split('\n') 
-                    if line.strip() and '|' in line
-                ]
-                
-                # Extract headers (first row)
-                headers = [
-                    col.strip() 
-                    for col in table_lines[0].split('|') 
-                    if col.strip()
-                ]
-                
-                # Extract data rows (skip header and separator rows)
-                data_rows = []
-                for line in table_lines[2:]:  # Skip header and separator rows
-                    row_data = [
-                        cell.strip() 
-                        for cell in line.split('|') 
-                        if cell.strip()
-                    ]
-                    if len(row_data) == len(headers):
-                        data_rows.append(row_data)
-                
-                # Create DataFrame
-                df = pd.DataFrame(
-                    data_rows,
-                    columns=headers
-                )
-                
-                # Display the table
-                st.subheader("Competitor Comparison")
-                st.table(df)
-                
-            except Exception as e:
-                st.error(f"Error creating comparison table: {str(e)}")
-                st.write("Raw comparison data for debugging:", comparison_response.content)
+            # Create DataFrame
+            df = pd.DataFrame(table_data)
+            
+            # Display the table
+            st.subheader("Competitor Comparison")
+            st.dataframe(df, use_container_width=True)
+            
+            # Also show raw data for debugging
+            with st.expander("View Raw Competitor Data"):
+                st.json(competitor_data)
 
         def generate_analysis_report(competitor_data: list):
             # Format the competitor data for the prompt
@@ -319,16 +287,31 @@ if "openai_api_key" in st.session_state and "firecrawl_api_key" in st.session_st
             if url or description:
                 with st.spinner("Fetching competitor URLs..."):
                     competitor_urls = get_competitor_urls(url=url, description=description)
-                    st.write(f"Competitor URLs: {competitor_urls}")
+                    st.write(f"Found {len(competitor_urls)} competitor URLs")
+                
+                if not competitor_urls:
+                    st.error("No competitor URLs found!")
+                    st.stop()
                 
                 competitor_data = []
-                for comp_url in competitor_urls:
-                    with st.spinner(f"Analyzing Competitor: {comp_url}..."):
+                successful_extractions = 0
+                failed_extractions = 0
+                
+                for i, comp_url in enumerate(competitor_urls):
+                    with st.spinner(f"Analyzing Competitor {i+1}/{len(competitor_urls)}: {comp_url}"):
                         competitor_info = extract_competitor_info(comp_url)
+                        
                         if competitor_info is not None:
                             competitor_data.append(competitor_info)
+                            successful_extractions += 1
+                            st.success(f"✓ Successfully analyzed {comp_url}")
+                        else:
+                            failed_extractions += 1
+                            st.error(f"✗ Failed to analyze {comp_url}")
                 
                 if competitor_data:
+                    st.success(f"Successfully analyzed {successful_extractions}/{len(competitor_urls)} competitors!")
+                    
                     # Generate and display comparison report
                     with st.spinner("Generating comparison table..."):
                         generate_comparison_report(competitor_data)
@@ -342,5 +325,9 @@ if "openai_api_key" in st.session_state and "firecrawl_api_key" in st.session_st
                     st.success("Analysis complete!")
                 else:
                     st.error("Could not extract data from any competitor URLs")
+                    st.write("This might be due to:")
+                    st.write("- API rate limits (try again in a few minutes)")
+                    st.write("- Website access issues (some sites block automated access)")
+                    st.write("- Invalid URLs (try with a different company description)")
             else:
                 st.error("Please provide either a URL or a description.")
