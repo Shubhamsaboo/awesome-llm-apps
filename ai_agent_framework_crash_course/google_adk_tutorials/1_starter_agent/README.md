@@ -103,8 +103,9 @@ By the end of this tutorial, you'll understand:
 ## 🔗 Next Steps
 
 After completing this tutorial, you'll be ready for:
-- **[Tutorial 2: Structured Output Agent](../2_structured_output_agent/README.md)** - Learn to create type-safe, structured responses
-- **[Tutorial 3: Tool Using Agent](../3_tool_using_agent/README.md)** - Add custom tools and functions to your agent
+- **[Tutorial 2: Model agnostic Agent](../2_model_agnostic_agent/README.md)** - create agents that work with different AI models
+- **[Tutorial 3: Structured Output Agent](../3_structured_output_agent/README.md)** - Learn to create type-safe, structured responses
+- **[Tutorial 4: Tool Using Agent](../4_tool_using_agent/README.md)** - Add custom tools and functions to your agent
 
 ## 💡 Pro Tips
 
