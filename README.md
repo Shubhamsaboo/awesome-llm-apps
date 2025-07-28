@@ -154,6 +154,10 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 *   [🔧 Llama 3.2 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/llama3.2_finetuning/)
 
+### 🩺 AI health App
+
+*   [🩺 AI Health App](ai_health_app/cardiovascular_disease_predictor/)  
+  
 ## 🚀 Getting Started
 
 1. **Clone the repository** 
