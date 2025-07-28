@@ -1,4 +1,5 @@
 import asyncio
+import sys
 import streamlit as st
 from browser_use import Agent, SystemPrompt
 from langchain_openai import ChatOpenAI
@@ -128,3 +129,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# Using ProactorEventLoop on Windows
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
