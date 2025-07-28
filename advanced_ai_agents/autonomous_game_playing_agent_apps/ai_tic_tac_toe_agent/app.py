@@ -36,13 +36,15 @@ def main():
     ####################################################################
     required_keys_info = {
         "gpt-4o": "OPENAI_API_KEY",
-        "o3-mini": "OPENAI_API_KEY", 
+        "o3-mini": "OPENAI_API_KEY",
         "claude-3.5": "ANTHROPIC_API_KEY",
         "claude-3.7": "ANTHROPIC_API_KEY",
         "claude-3.7-thinking": "ANTHROPIC_API_KEY",
         "gemini-flash": "GOOGLE_API_KEY",
         "gemini-pro": "GOOGLE_API_KEY",
         "llama-3.3": "GROQ_API_KEY",
+        "deepseek-chat": "DEEPSEEK_API_KEY",
+        "deepseek-reasoner": "DEEPSEEK_API_KEY",
     }
     
     ####################################################################
@@ -72,6 +74,8 @@ def main():
             "gemini-flash": "google:gemini-2.0-flash",
             "gemini-pro": "google:gemini-2.0-pro-exp-02-05",
             "llama-3.3": "groq:llama-3.3-70b-versatile",
+            "deepseek-chat": "deepseek:deepseek-chat",
+            "deepseek-reasoner": "deepseek:deepseek-reasoner",
         }
         ################################################################
         # Model selection
@@ -109,9 +113,10 @@ def main():
             2. Add your API keys:
             ```
             OPENAI_API_KEY=your_key_here
-            ANTHROPIC_API_KEY=your_key_here  
+            ANTHROPIC_API_KEY=your_key_here
             GOOGLE_API_KEY=your_key_here
             GROQ_API_KEY=your_key_here
+            DEEPSEEK_API_KEY=your_key_here
             ```
             3. Restart the app
             """)
