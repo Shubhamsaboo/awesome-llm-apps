@@ -1,0 +1,7 @@
+streamlit==1.28.2
+scikit-learn==1.3.2
+xgboost==2.0.2
+numpy==1.26.2
+#pandas==2.1.3
+#scipy==1.11.4
+#mdurl==0.1.2
