@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  kali:
+    build:
+      context: .
+      dockerfile: Dockerfile.attacker
+    container_name: attacker
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./data:/root/data  # 원하는 디렉토리 마운트
+    network_mode: host
+        
+  metasploitable2:
+    image: tleemcjr/metasploitable2
+    container_name: victim
+    privileged: true
+    stdin_open: true
+    tty: true
+    network_mode: host
+    command: /bin/bash -c "/bin/services.sh && bash"
+    # 내부 통신 전용이므로 ports 옵션은 생략
+
+networks:
+  pentest_network:
+    driver: bridge

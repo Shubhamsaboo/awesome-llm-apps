@@ -1,0 +1,68 @@
+[
+  {
+    "display_name": "Claude 3.5 Sonnet",
+    "model_name": "claude-3-5-sonnet-latest",
+    "provider": "anthropic"
+  },
+  {
+    "display_name": "Claude Sonnet 4",
+    "model_name": "claude-sonnet-4-20250514",
+    "provider": "anthropic"
+  },
+  {
+    "display_name": "Claude Opus 4",
+    "model_name": "claude-opus-4-20250514",
+    "provider": "anthropic"
+  },
+  {
+    "display_name": "Claude Sonnet 3.7",
+    "model_name": "claude-3-7-sonnet-latest",
+    "provider": "anthropic"
+  },
+  {
+    "display_name": "Claude 3.5 Haiku",
+    "model_name": "claude-3-5-haiku-latest",
+    "provider": "anthropic"
+  },
+
+  {
+    "display_name": "GPT-4o",
+    "model_name": "gpt-4o",
+    "provider": "openai"
+  },
+  {
+    "display_name": "GPT-4.1",
+    "model_name": "gpt-4.1-2025-04-14",
+    "provider": "openai"
+  },
+  {
+    "display_name": "o4 Mini",
+    "model_name": "o4-mini-2025-04-14",
+    "provider": "openai"
+  },
+  {
+    "display_name": "o3 Mini",
+    "model_name": "o3-mini",
+    "provider": "openai"
+  },
+  {
+    "display_name": "o1 Mini",
+    "model_name": "o1-mini",
+    "provider": "openai"
+  },
+  {
+    "display_name": "GPT-4o Mini",
+    "model_name": "gpt-4o-mini",
+    "provider": "openai"
+  },
+  {
+    "display_name": "o3",
+    "model_name": "o3-2025-04-16",
+    "provider": "openai"
+  },
+  {
+    "display_name": "o1",
+    "model_name": "o1-2024-12-17",
+    "provider": "openai"
+  }
+]

@@ -79,6 +79,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [📑 AI Meeting Agent](advanced_ai_agents/single_agent_apps/ai_meeting_agent/)
 *   [🧬 AI Self-Evolving Agent](advanced_ai_agents/multi_agent_apps/ai_Self-Evolving_agent/)
 *   [🎧 AI Social Media News and Podcast Agent](advanced_ai_agents/multi_agent_apps/ai_news_and_podcast_agents/)
+*   [💣 AI Vibe Hacking Agent](/advanced_ai_agents/multi_agent_apps/agent_teams/ai_vibe_hacking_agent_team)
 
 ### 🎮 Autonomous Game Playing Agents
 
@@ -98,6 +99,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [💻 Multimodal Coding Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_coding_agent_team/)
 *   [✨ Multimodal Design Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_design_agent_team/)
 *   [🌏 AI Travel Planner Agent Team](/advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/)
+*   [💣 AI Vibe Hacking Agent Team](/advanced_ai_agents/multi_agent_apps/agent_teams/ai_vibe_hacking_agent_team)
 
 ### 🗣️ Voice AI Agents
 

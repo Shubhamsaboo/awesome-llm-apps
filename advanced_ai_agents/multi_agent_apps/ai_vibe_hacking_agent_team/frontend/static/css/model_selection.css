@@ -1,0 +1,237 @@
+/* Model Selection UI CSS - Simple and Clean */
+.model-selection-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 0 24px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.model-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.model-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.model-subtitle {
+    font-size: 18px;
+    line-height: 1.6;
+    opacity: 0.7;
+}
+
+.model-section {
+    margin-bottom: 40px;
+}
+
+.model-section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+/* Clean card styles */
+.provider-card, .model-card {
+    border: 1px solid var(--border-color, #404040);
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    background: var(--card-bg, #2D2D2D);
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.provider-card:hover, .model-card:hover {
+    transform: translateY(-2px);
+    border-color: #4A90E2;
+    box-shadow: 0 8px 20px rgba(74, 144, 226, 0.2);
+}
+
+.provider-card:active, .model-card:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+}
+
+.provider-name, .model-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text-color, #FFFFFF);
+    pointer-events: none;
+}
+
+.provider-desc, .model-desc {
+    font-size: 13px;
+    opacity: 0.7;
+    line-height: 1.3;
+    pointer-events: none;
+}
+
+/* Model card specific styles */
+.model-card {
+    min-height: 80px;
+    padding: 16px;
+}
+
+.model-name {
+    font-size: 14px;
+}
+
+.model-desc {
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+/* Streamlit selectbox styling */
+.model-selection-container .stSelectbox > div > div {
+    background: var(--card-bg, #2D2D2D);
+    border: 1px solid var(--border-color, #404040);
+    border-radius: 8px;
+}
+
+.model-selection-container .stSelectbox > div > div:hover {
+    border-color: #4A90E2;
+}
+
+/* Button styling */
+.model-selection-container .stButton > button {
+    background: #4A90E2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.model-selection-container .stButton > button:hover {
+    background: #357ABD;
+    transform: translateY(-1px);
+}
+
+/* Back button styles */
+.model-selection-container .stButton:first-child > button {
+    background: transparent;
+    border: 1px solid var(--border-color, #404040);
+    color: var(--text-color, #FFFFFF);
+    margin-bottom: 24px;
+}
+
+.model-selection-container .stButton:first-child > button:hover {
+    background: var(--hover-bg, #3A3A3A);
+}
+
+/* Loading screen */
+.loading-container {
+    text-align: center;
+    padding-top: 100px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.loading-title {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text-color, #FFFFFF);
+}
+
+.loading-subtitle {
+    font-size: 16px;
+    opacity: 0.7;
+    margin-bottom: 48px;
+    line-height: 1.5;
+}
+
+.loading-bar {
+    width: 280px;
+    height: 6px;
+    background: var(--border-color, #404040);
+    border-radius: 3px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.loading-progress {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #4A90E2, #357ABD);
+    border-radius: 3px;
+    animation: loading 2s infinite;
+}
+
+/* Animations */
+@keyframes loading {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Theme variables */
+[data-theme="dark"] .model-selection-container {
+    --card-bg: #2D2D2D;
+    --text-color: #FFFFFF;
+    --border-color: #404040;
+    --hover-bg: #3A3A3A;
+}
+
+[data-theme="light"] .model-selection-container {
+    --card-bg: #FFFFFF;
+    --text-color: #1A1A1A;
+    --border-color: #E5E5E5;
+    --hover-bg: #F8F9FA;
+}
+
+/* Default variables (fallback) */
+.model-selection-container {
+    --card-bg: #2D2D2D;
+    --text-color: #FFFFFF;
+    --border-color: #404040;
+    --hover-bg: #3A3A3A;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .model-selection-container {
+        padding: 0 16px;
+    }
+    
+    .provider-card, .model-card {
+        padding: 16px;
+        min-height: 80px;
+    }
+    
+    .provider-name, .model-name {
+        font-size: 15px;
+    }
+    
+    .provider-desc, .model-desc {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .provider-card, .model-card {
+        padding: 12px;
+        min-height: 60px;
+    }
+    
+    .provider-name, .model-name {
+        font-size: 14px;
+    }
+    
+    .provider-desc, .model-desc {
+        font-size: 11px;
+    }
+}

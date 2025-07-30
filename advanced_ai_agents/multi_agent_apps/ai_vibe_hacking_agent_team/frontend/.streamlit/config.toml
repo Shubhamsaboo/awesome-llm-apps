@@ -1,0 +1,24 @@
+[browser]
+serverAddress = "localhost"
+
+[server]
+maxUploadSize = 200
+enableWebsocketCompression = true
+runOnSave = true
+
+[client]
+showSidebarNavigation = false
+
+[theme]
+base = "dark"
+primaryColor = "#FF4B4B"
+backgroundColor = "#111111"
+secondaryBackgroundColor = "#1E1E1E"
+textColor = "#E0E0E0"
+linkColor = "#FF6B6B"
+font = "sans-serif"
+
+[theme.sidebar]
+backgroundColor = "#0B0B12"
+secondaryBackgroundColor = "#191925"
+textColor = "#E0E0E0"
