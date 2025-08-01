@@ -1,0 +1,69 @@
+{
+  "colors": {
+    "cli": {
+      "planner": "cyan",
+      "reconnaissance": "magenta", 
+      "initial_access": "yellow",
+      "execution": "red",
+      "persistence": "bright_magenta",
+      "privilege_escalation": "bright_red",
+      "defense_evasion": "bright_cyan",
+      "summary": "bright_yellow",
+      "tool": "green",
+      "supervisor": "blue",
+      "default": "blue"
+    },
+    "frontend": {
+      "planner": "#4dabf7",
+      "reconnaissance": "#7950f2",
+      "initial_access": "#fab005", 
+      "execution": "#f76707",
+      "persistence": "#ae3ec9",
+      "privilege_escalation": "#d6336c",
+      "defense_evasion": "#1098ad",
+      "summary": "#fd7e14",
+      "tool": "#82c91e",
+      "supervisor": "#6c5ce7",
+      "default": "#adb5bd"
+    }
+  },
+  "avatars": {
+    "planner": "🧠",
+    "reconnaissance": "🔍",
+    "initial_access": "🔑", 
+    "execution": "💻",
+    "persistence": "🔐",
+    "privilege_escalation": "🔒",
+    "defense_evasion": "🕵️",
+    "summary": "📋",
+    "tool": "🔧",
+    "supervisor": "👑",
+    "default": "🤖"
+  },
+  "css_classes": {
+    "planner": "planner-message",
+    "reconnaissance": "recon-message",
+    "initial_access": "initaccess-message",
+    "execution": "execution-message", 
+    "persistence": "persistence-message",
+    "privilege_escalation": "privilege-escalation-message",
+    "defense_evasion": "defense-evasion-message",
+    "summary": "summary-message",
+    "tool": "tool-message",
+    "supervisor": "supervisor-message",
+    "default": "agent-message"
+  },
+  "display_names": {
+    "planner": "Planner",
+    "reconnaissance": "Reconnaissance",
+    "initial_access": "Initial Access",
+    "execution": "Execution",
+    "persistence": "Persistence", 
+    "privilege_escalation": "Privilege Escalation",
+    "defense_evasion": "Defense Evasion",
+    "summary": "Summary",
+    "tool": "Tool",
+    "supervisor": "Supervisor",
+    "default": "Unknown Agent"
+  }
+}

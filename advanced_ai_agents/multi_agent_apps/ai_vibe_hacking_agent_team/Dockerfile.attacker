@@ -1,0 +1,29 @@
+FROM kalilinux/kali-rolling
+
+# korea 
+
+RUN apt update && apt install -y \
+    net-tools python3 python3-pip \
+    apt-transport-https \
+    ca-certificates \
+    openssh-server openssh-client \
+    curl whatweb seclists openvpn \
+    ftp \
+    dnsutils \
+    whois \
+    exploitdb \
+    hydra \
+    iputils-ping openvpn\
+    nmap \
+    smbclient \
+    tmux \
+    wget \
+    netcat-traditional \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && chmod 755 msfinstall && ./msfinstall
+
+
+
+# 컨테이너 시작
+CMD ["/bin/bash"]

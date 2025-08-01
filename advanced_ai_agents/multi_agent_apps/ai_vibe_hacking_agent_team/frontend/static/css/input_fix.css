@@ -1,0 +1,28 @@
+/* 채팅 입력창 고정 스타일 - 데스크톱 전용 */
+
+/* 입력창 하단 고정 스타일 - 기본 */
+.stChatInput, 
+div[data-testid="stChatInput"] {
+    position: fixed !important;
+    bottom: 20px !important;
+    left: calc(22% + 10px) !important; /* 사이드바 고려 (펼친 상태) */
+    width: 56% !important;
+    max-width: 56% !important;
+    z-index: 999 !important;
+    background-color: transparent !important;
+}
+
+/* 사이드바 접힌 상태 선택자 (Streamlit 네이티브) */
+section[data-testid="stSidebar"][aria-expanded="false"] ~ div div[data-testid="stChatInput"],
+section[data-testid="stSidebar"][aria-expanded="false"] ~ main div[data-testid="stChatInput"],
+[data-testid="stSidebarCollapsed"] ~ div div[data-testid="stChatInput"],
+[data-testid="collapsedControl"] ~ div div[data-testid="stChatInput"] {
+    left: 60px !important;
+    width: 64% !important;
+    max-width: 64% !important;
+}
+
+/* 채팅 영역 하단 여백 - 입력창을 위한 공간 확보 */
+.chat-messages-container {
+    padding-bottom: 90px;
+}

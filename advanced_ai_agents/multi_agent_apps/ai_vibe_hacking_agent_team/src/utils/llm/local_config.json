@@ -1,0 +1,97 @@
+[
+  {
+    "display_name": "[Meta] Llama 3.3 (70B) - Latest",
+    "model_name": "llama3.3:70b",
+    "provider": "ollama"
+  },
+  {
+    "display_name": "[Meta] Llama 3.1 (8B)",
+    "model_name": "llama3.1:8b",
+    "provider": "ollama"
+  },
+  {
+    "display_name": "[Meta] Llama 3.1 (70B)",
+    "model_name": "llama3.1:70b",
+    "provider": "ollama"
+  },
+  {
+    "display_name": "[DeepSeek] DeepSeek-R1 (7B)",
+    "model_name": "deepseek-r1:7b",
+    "provider": "ollama"
+  },
+  {
+    "display_name": "[DeepSeek] DeepSeek-R1 (14B)",
+    "model_name": "deepseek-r1:14b",
+    "provider": "ollama"
+  },
+  {
+    "display_name": "[DeepSeek] DeepSeek-R1 (1.5B)",
+    "model_name": "deepseek-r1:1.5b",
+    "provider": "ollama"
+  },
+  {
+    "display_name": "[Google] Gemma 3 (27B)",
+    "model_name": "gemma3:27b",
+    "provider": "ollama"
+  },
+  {
+    "display_name": "[Google] Gemma 3 (12B)",
+    "model_name": "gemma3:12b",
+    "provider": "ollama"
+  },
+  {
+    "display_name": "[Google] Gemma 3 (4B)",
+    "model_name": "gemma3:4b",
+    "provider": "ollama"
+  },
+  {
+    "display_name": "[Microsoft] Phi-4 (14B)",
+    "model_name": "phi4:14b",
+    "provider": "ollama"
+  },
+  {
+    "display_name": "[Mistral] Mistral Small 3.1 (24B)",
+    "model_name": "mistral-small3.1:24b",
+    "provider": "ollama"
+  },
+  {
+    "display_name": "[Alibaba] Qwen 3 (30B)",
+    "model_name": "qwen3:30b",
+    "provider": "ollama"
+  },
+  {
+    "display_name": "[Alibaba] Qwen 3 (4B)",
+    "model_name": "qwen3:4b",
+    "provider": "ollama"
+  },
+  {
+    "display_name": "[DeepSeek] DeepCoder (14B)",
+    "model_name": "deepcoder:14b",
+    "provider": "ollama"
+  },
+  {
+    "display_name": "[DeepSeek] DeepCoder (1.5B)",
+    "model_name": "deepcoder:1.5b",
+    "provider": "ollama"
+  },
+  {
+    "display_name": "[Nvidia] Nemotron (70B)",
+    "model_name": "nemotron:70b",
+    "provider": "ollama"
+  },
+  {
+    "display_name": "[HuggingFace] SmolLM2 (1.7B)",
+    "model_name": "smollm2:1.7b",
+    "provider": "ollama"
+  },
+  {
+    "display_name": "[Vision] LLaVA (7B)",
+    "model_name": "llava:7b",
+    "provider": "ollama"
+  },
+  {
+    "display_name": "[Vision] BakLLaVA (7B)",
+    "model_name": "bakllava:7b",
+    "provider": "ollama"
+  }
+]
