@@ -214,7 +214,7 @@ IMPORTANT: Store your final plan in state['debt_reduction'] and ensure it aligns
                 "debts": financial_data.get("debts", [])
             }
             
-            session = self.session_service.create_session(
+            session = await self.session_service.create_session(
                 app_name=APP_NAME,
                 user_id=USER_ID,
                 session_id=session_id,
@@ -242,7 +242,7 @@ IMPORTANT: Store your final plan in state['debt_reduction'] and ensure it aligns
                 if event.is_final_response() and event.author == self.coordinator_agent.name:
                     break
             
-            updated_session = self.session_service.get_session(
+            updated_session = await self.session_service.get_session(
                 app_name=APP_NAME,
                 user_id=USER_ID,
                 session_id=session_id
@@ -259,7 +259,7 @@ IMPORTANT: Store your final plan in state['debt_reduction'] and ensure it aligns
             logger.exception(f"Error during finance analysis: {str(e)}")
             raise
         finally:
-            self.session_service.delete_session(
+            await self.session_service.delete_session(
                 app_name=APP_NAME,
                 user_id=USER_ID,
                 session_id=session_id
