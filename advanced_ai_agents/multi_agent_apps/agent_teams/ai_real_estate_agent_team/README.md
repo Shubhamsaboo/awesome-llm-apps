@@ -1,6 +1,6 @@
-# AI Multi-Agent Real Estate Team 🏠
+# 🏠 AI Real Estate Agent Team
 
-The **AI Multi-Agent Real Estate Team** is a sophisticated property search and analysis platform powered by specialized AI agents with firecrawl's extarct endpoint. This application provides comprehensive real estate insights, market analysis, and property recommendations using advanced web scraping and AI-powered search capabilities.
+The **AI Real Estate Agent Team** is a sophisticated property search and analysis platform powered by specialized AI agents with firecrawl's extract endpoint. This application provides comprehensive real estate insights, market analysis, and property recommendations using advanced web scraping and AI-powered search capabilities.
 
 ## Features
 
@@ -31,9 +31,9 @@ The **AI Multi-Agent Real Estate Team** is a sophisticated property search and a
 
 - **Smart Fallback System**:
   - Primary: Firecrawl extract endpoint for structured data
-  - Fallback: Perplexity AI search when extract returns no results
+  - Fallback: Google Search when extract returns no results
   - Seamless transition between data sources
-  - "Rigorously" indicator when using AI-powered search
+  - Google Search indicator when using web search
 
 - **Interactive UI Features**:
   - Real-time agent progression tracking
@@ -48,12 +48,12 @@ Follow the steps below to set up and run the application:
 ### 1. **Get API Keys**:
    - **OpenAI API Key**: Get from [OpenAI Platform](https://platform.openai.com/api-keys)
    - **Firecrawl API Key**: Get from [Firecrawl](https://firecrawl.dev)
-   - **Perplexity API Key**: Get from [Perplexity AI](https://www.perplexity.ai/settings/api)
+   - **Google Search**: No API key required - uses Agno's GoogleSearchTools
 
 ### 2. **Clone the Repository**:
    ```bash
    git clone https://github.com/your-username/awesome-llm-apps.git
-   cd awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_multiagent_realtor
+   cd awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_real_estate_agent_team
    ```
 
 ### 3. **Set Up Environment Variables**:
@@ -61,10 +61,8 @@ Follow the steps below to set up and run the application:
    ```
    OPENAI_API_KEY=your_openai_api_key_here
    FIRECRAWL_API_KEY=your_firecrawl_api_key_here
-   PERPLEXITY_API_KEY=your_perplexity_api_key_here
    ```
-   
-   **Note**: Never commit your `.env` file to version control. The `.gitignore` file is already configured to exclude it.
+   **Google Search is included automatically** - no API key required for fallback search functionality.
 
 ### 4. **Install Dependencies**:
    ```bash
@@ -73,7 +71,7 @@ Follow the steps below to set up and run the application:
 
 ### 5. **Run the Streamlit App**:
    ```bash
-   streamlit run ai_multiagent_realtor.py
+   streamlit run real_estate_agent_team.py
    ```
 
 ## Usage Guide
@@ -143,8 +141,8 @@ Follow the steps below to set up and run the application:
 ## File Structure
 
 ```
-ai_multiagent_realtor/
-├── ai_multiagent_realtor.py    # Main application file
+ai_real_estate_agent_team/
+├── real_estate_agent_team.py   # Main application file
 ├── requirements.txt            # Python dependencies
 ├── README.md                   # This documentation
 └── .env                        # Environment variables (create this)
@@ -162,10 +160,10 @@ ai_multiagent_realtor/
 - **Usage**: Property listing extraction from real estate websites
 - **Rate Limits**: Firecrawl standard rate limits
 
-### **Perplexity API**
-- **Model**: Sonar Pro
-- **Usage**: AI-powered property search fallback
-- **Rate Limits**: Perplexity standard rate limits
+### **Google Search**
+- **Tool**: Agno GoogleSearchTools
+- **Usage**: Web search for property listings fallback
+- **Rate Limits**: Google Search standard rate limits
 
 ## Troubleshooting
 

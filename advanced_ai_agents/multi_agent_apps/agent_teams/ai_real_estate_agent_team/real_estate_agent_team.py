@@ -6,6 +6,7 @@ import requests
 from agno.agent import Agent
 from agno.team import Team
 from agno.models.openai import OpenAIChat
+from agno.tools.googlesearch import GoogleSearchTools
 from dotenv import load_dotenv
 from firecrawl import FirecrawlApp
 from pydantic import BaseModel, Field
@@ -17,7 +18,6 @@ load_dotenv()
 # API keys - must be set in environment variables
 DEFAULT_OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 DEFAULT_FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY", "")
-DEFAULT_PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY", "")
 
 # Pydantic schemas
 class PropertyDetails(BaseModel):
@@ -78,39 +78,33 @@ def extract_property_listings(url, user_criteria=None):
     except Exception as e:
         return {"error": f"Failed to extract listings: {str(e)}"}
 
-def search_perplexity_properties(city, state, user_criteria):
-    """Search for properties using Perplexity API"""
+def search_google_properties(city, state, user_criteria):
+    """Search for properties using Google Search"""
     try:
-        api_key = os.getenv("PERPLEXITY_API_KEY", DEFAULT_PERPLEXITY_API_KEY)
-        
+        # Create Google Search query
         search_query = f"""
-        Find real estate properties for sale in {city}, {state} matching:
-        - Budget: {user_criteria.get('budget_range', 'Any')}
-        - Type: {user_criteria.get('property_type', 'Any')}
-        - Bedrooms: {user_criteria.get('bedrooms', 'Any')}
-        - Bathrooms: {user_criteria.get('bathrooms', 'Any')}
-        - Min Sqft: {user_criteria.get('min_sqft', 'Any')}
-        - Features: {user_criteria.get('special_features', 'Any')}
-        
-        Search: Zillow, Realtor.com, Trulia, Homes.com, Redfin
-        Provide: detailed property info, market insights, neighborhood analysis
-        Include: specific addresses, prices, features, listing URLs, market trends
+        Find real estate properties for sale {city} {state}
+        budget {user_criteria.get('budget_range', '')}
+        {user_criteria.get('property_type', '')} 
+        {user_criteria.get('bedrooms', '')} bedrooms
+        {user_criteria.get('bathrooms', '')} bathrooms
+        {user_criteria.get('min_sqft', '')} sqft
+        {user_criteria.get('special_features', '')}
+        site:zillow.com OR site:realtor.com OR site:trulia.com OR site:homes.com OR site:redfin.com
         """
         
-        response = requests.post(
-            'https://api.perplexity.ai/chat/completions',
-            headers={'Authorization': f'Bearer {api_key}', 'Content-Type': 'application/json'},
-            json={'model': 'sonar-pro', 'messages': [{'role': 'user', 'content': search_query}]}
+        # Use GoogleSearchTools to perform the search
+        google_search = GoogleSearchTools()
+        search_results = google_search.google_search(
+            query=search_query,
+            max_results=10,
+            language="en"
         )
         
-        if response.status_code == 200:
-            content = response.json()['choices'][0]['message']['content']
-            return {"success": True, "content": content, "source": "Perplexity Search"}
-        else:
-            return {"error": f"Perplexity API error: {response.status_code}"}
+        return {"success": True, "content": search_results, "source": "Google Search"}
             
     except Exception as e:
-        return {"error": f"Perplexity search failed: {str(e)}"}
+        return {"error": f"Google search failed: {str(e)}"}
 
 def search_real_estate_websites(city, state, user_criteria, selected_websites, update_callback):
     """Search real estate websites"""
@@ -132,24 +126,24 @@ def search_real_estate_websites(city, state, user_criteria, selected_websites, u
     for i, (site_name, search_url) in enumerate(search_urls.items()):
         try:
             progress = 0.2 + (i * 0.6 / len(search_urls))
-            update_callback(progress, f"Searching {site_name}...", f"Analyzing {site_name}")
+            update_callback(progress, f"Searching {site_name}...", f"🔍 Analyzing {site_name}...")
             
             if i > 0:
-                time.sleep(2)
+                time.sleep(1.5)  # Reduced delay for better UX
             
             result = extract_property_listings(search_url, user_criteria)
             
             if "error" not in result and len(result.get('properties', [])) > 0:
                 results[site_name] = result
                 property_count = len(result.get('properties', []))
-                update_callback(progress + 0.3, f"Found {property_count} properties on {site_name}", f"Successfully analyzed {site_name}")
+                update_callback(progress + 0.3, f"Found {property_count} properties on {site_name}", f"✅ Successfully analyzed {site_name} ({property_count} properties)")
             else:
                 results[site_name] = {"error": f"No data from {site_name}"}
-                update_callback(progress + 0.3, f"Analyzing {site_name}", f"Gathering insights from {site_name}")
+                update_callback(progress + 0.3, f"Analyzing {site_name}", f"⚠️ No properties found on {site_name}")
                 
         except Exception as e:
             results[site_name] = {"error": f"Error: {str(e)}"}
-            update_callback(progress + 0.3, f"Analyzing {site_name}", f"Processing {site_name}")
+            update_callback(progress + 0.3, f"Analyzing {site_name}", f"❌ Error processing {site_name}")
     
     return results
 
@@ -160,11 +154,14 @@ def create_firecrawl_tools(user_criteria):
         result = extract_property_listings(url, user_criteria)
         return json.dumps(result, indent=2) if "error" not in result else f"Error: {result['error']}"
     
-    def perplexity_search_tool(city: str, state: str) -> str:
-        result = search_perplexity_properties(city, state, user_criteria)
+    def google_search_tool(city: str, state: str) -> str:
+        result = search_google_properties(city, state, user_criteria)
         return json.dumps(result, indent=2) if "error" not in result else f"Error: {result['error']}"
     
-    return [extract_listings_tool, perplexity_search_tool]
+    # Include both Firecrawl extract and Google Search tools
+    tools = [extract_listings_tool, google_search_tool]
+    
+    return tools
 
 def create_real_estate_agents(llm, firecrawl_tools, user_criteria):
     """Create specialized agents"""
@@ -179,7 +176,7 @@ def create_real_estate_agents(llm, firecrawl_tools, user_criteria):
         1. SEARCH FOR PROPERTIES:
            - Use Firecrawl extract tools to search real estate websites
            - Focus on properties matching user criteria
-           - Use Perplexity search tool if no properties found
+           - Use Google Search tool if extract methods don't find properties
         
         2. GATHER PROPERTY DATA:
            - Extract detailed property information
@@ -191,7 +188,8 @@ def create_real_estate_agents(llm, firecrawl_tools, user_criteria):
            - Include clickable listing URLs
            - Rank by match quality
         
-        IMPORTANT: Always use perplexity_search_tool if extract methods don't find properties.
+        IMPORTANT: Use google_search_tool if extract methods don't find properties.
+        Google Search will find relevant real estate listings from Zillow, Realtor.com, Trulia, Homes.com, and Redfin.
         Focus on finding properties that match user's exact criteria.
         """,
     )
@@ -282,13 +280,13 @@ def create_real_estate_team(llm, firecrawl_tools, user_criteria):
     property_search_agent, market_analysis_agent, property_valuation_agent = create_real_estate_agents(llm, firecrawl_tools, user_criteria)
     
     return Team(
-        name="Real Estate Analysis Team",
+        name="🏠 AI Real Estate Agent Team",
         mode="coordinate",
         model=llm,
         members=[property_search_agent, market_analysis_agent, property_valuation_agent],
         instructions=[
-            "You are a professional real estate analysis team.",
-            "1. Property Search Agent: Find properties using extract + Perplexity fallback",
+            "You are a professional AI Real Estate Agent Team.",
+            "1. Property Search Agent: Find properties using extract + Google Search fallback",
             "2. Market Analysis Agent: Provide ELABORATE market trends and neighborhood insights",
             "3. Property Valuation Agent: Give ELABORATE property valuations and investment analysis",
             "IMPORTANT: Provide detailed, actionable insights with specific data points.",
@@ -301,8 +299,11 @@ def create_real_estate_team(llm, firecrawl_tools, user_criteria):
 
 def display_property_results(result):
     """Display property results with clickable links"""
-    st.markdown("## Property Analysis Report")
-    st.markdown("### AI-Powered Real Estate Recommendations")
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem;">
+        <h3 style="color: white; text-align: center; margin: 0;">🤖 AI-Powered Real Estate Recommendations</h3>
+    </div>
+    """, unsafe_allow_html=True)
     
     if hasattr(result, 'content'):
         result_text = result.content
@@ -310,7 +311,7 @@ def display_property_results(result):
         result_text = str(result)
     
     # Display the full text result with markdown support for links
-    st.markdown("### Analysis Report")
+    st.markdown("### 📋 Analysis Report")
     st.markdown(result_text)
     
     # Extract and display clickable links
@@ -318,92 +319,277 @@ def display_property_results(result):
     urls = re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', result_text)
     
     if urls:
-        st.markdown("### 🔗 Property Links")
+        st.markdown("""
+        <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 2rem 0;">
+            <h3 style="color: #667eea; margin-bottom: 1rem;">🔗 Property Links</h3>
+        """, unsafe_allow_html=True)
+        
         for i, url in enumerate(set(urls), 1):
-            st.markdown(f"{i}. [{url}]({url})")
+            st.markdown(f"""
+            <div style="margin: 0.5rem 0; padding: 0.5rem; background: #f8f9fa; border-radius: 5px;">
+                <a href="{url}" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 600;">
+                    {i}. {url}
+                </a>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("</div>", unsafe_allow_html=True)
 
 def main():
-    st.set_page_config(page_title="AI Multi-Agent Real Estate Team", page_icon="🏠", layout="wide")
+    st.set_page_config(
+        page_title="AI Real Estate Agent Team", 
+        page_icon="🏠", 
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
     
-    st.title("AI Multi-Agent Real Estate Team")
-    st.markdown("### Find Your Dream Home with Specialized AI Agents")
+    # Custom CSS for better styling
+    st.markdown("""
+    <style>
+    .main-header {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+    .main-header h1 {
+        color: white;
+        font-size: 3rem;
+        font-weight: 700;
+        text-align: center;
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    .main-header p {
+        color: rgba(255,255,255,0.9);
+        text-align: center;
+        font-size: 1.2rem;
+        margin: 0.5rem 0 0 0;
+    }
+    .feature-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        margin: 1rem 0;
+        border-left: 4px solid #667eea;
+    }
+    .status-info {
+        background: linear-gradient(90deg, #2196F3, #1976D2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        margin: 0.5rem 0;
+        text-align: center;
+    }
+    .status-success {
+        background: linear-gradient(90deg, #4CAF50, #45a049);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        margin: 0.5rem 0;
+        text-align: center;
+    }
+    .status-error {
+        background: linear-gradient(90deg, #f44336, #da190b);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        margin: 0.5rem 0;
+        text-align: center;
+    }
+    .form-container {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        margin: 2rem 0;
+    }
+    .progress-container {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        border-radius: 15px;
+        margin: 2rem 0;
+        color: white;
+    }
+    .result-container {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        margin: 2rem 0;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # Beautiful header
+    st.markdown("""
+    <div class="main-header">
+        <h1>🏠 AI Real Estate Agent Team</h1>
+        <p>Find Your Dream Home with Specialized AI Agents</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Sidebar configuration
     with st.sidebar:
-        st.header("Configuration")
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+            <h3 style="color: white; margin: 0; text-align: center;">⚙️ Configuration</h3>
+        </div>
+        """, unsafe_allow_html=True)
         
         # API Key inputs with validation
-        openai_key = st.text_input("OpenAI API Key", value=DEFAULT_OPENAI_API_KEY, type="password", 
-                                  help="Get your API key from https://platform.openai.com/api-keys")
-        firecrawl_key = st.text_input("Firecrawl API Key", value=DEFAULT_FIRECRAWL_API_KEY, type="password",
-                                     help="Get your API key from https://firecrawl.dev")
-        perplexity_key = st.text_input("Perplexity API Key", value=DEFAULT_PERPLEXITY_API_KEY, type="password",
-                                      help="Get your API key from https://www.perplexity.ai/settings/api")
-        
-        # Show API key status
-        if openai_key:
-            st.success("✅ OpenAI API Key provided")
-        else:
-            st.error("❌ OpenAI API Key required")
+        with st.expander("🔑 API Keys", expanded=True):
+            openai_key = st.text_input(
+                "OpenAI API Key", 
+                value=DEFAULT_OPENAI_API_KEY, 
+                type="password",
+                help="Get your API key from https://platform.openai.com/api-keys",
+                placeholder="sk-..."
+            )
+            firecrawl_key = st.text_input(
+                "Firecrawl API Key", 
+                value=DEFAULT_FIRECRAWL_API_KEY, 
+                type="password",
+                help="Get your API key from https://firecrawl.dev",
+                placeholder="fc_..."
+            )
             
-        if firecrawl_key:
-            st.success("✅ Firecrawl API Key provided")
-        else:
-            st.error("❌ Firecrawl API Key required")
-            
-        if perplexity_key:
-            st.success("✅ Perplexity API Key provided")
-        else:
-            st.error("❌ Perplexity API Key required")
-        
-        # Update environment variables
-        if openai_key: os.environ["OPENAI_API_KEY"] = openai_key
-        if firecrawl_key: os.environ["FIRECRAWL_API_KEY"] = firecrawl_key
-        if perplexity_key: os.environ["PERPLEXITY_API_KEY"] = perplexity_key
-        
-        st.markdown("---")
+            # Update environment variables
+            if openai_key: os.environ["OPENAI_API_KEY"] = openai_key
+            if firecrawl_key: os.environ["FIRECRAWL_API_KEY"] = firecrawl_key
         
         # Website selection
-        st.subheader("Select Websites to Search")
-        available_websites = ["Zillow", "Realtor.com", "Trulia", "Homes.com"]
-        selected_websites = [site for site in available_websites if st.checkbox(site, value=site in ["Zillow", "Realtor.com"])]
+        with st.expander("🌐 Search Sources", expanded=True):
+            st.markdown("**Select real estate websites to search:**")
+            available_websites = ["Zillow", "Realtor.com", "Trulia", "Homes.com"]
+            selected_websites = [site for site in available_websites if st.checkbox(site, value=site in ["Zillow", "Realtor.com"])]
+            
+            if selected_websites:
+                st.markdown(f'<div class="status-success">✅ {len(selected_websites)} sources selected</div>', unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="status-error">⚠️ Please select at least one website</div>', unsafe_allow_html=True)
         
-        if selected_websites:
-            st.success(f"Selected: {', '.join(selected_websites)}")
-        else:
-            st.warning("Please select at least one website")
-        
-        st.markdown("---")
-        st.markdown("### How it works")
-        st.markdown("""
-        1. **Property Search Agent** - Uses extract + Perplexity fallback
-        2. **Market Analysis Agent** - Analyzes trends and neighborhood insights  
-        3. **Property Valuation Agent** - Evaluates values and investment potential
-        """)
+        # How it works
+        with st.expander("🤖 How It Works", expanded=False):
+            st.markdown("""
+            <div class="feature-card">
+                <h4>🔍 Property Search Agent</h4>
+                <p>Uses extract + Google Search fallback</p>
+            </div>
+            <div class="feature-card">
+                <h4>📊 Market Analysis Agent</h4>
+                <p>Analyzes trends and neighborhood insights</p>
+            </div>
+            <div class="feature-card">
+                <h4>💰 Property Valuation Agent</h4>
+                <p>Evaluates values and investment potential</p>
+            </div>
+            """, unsafe_allow_html=True)
     
     # Main form
-    st.header("Your Property Requirements")
+    st.markdown("""
+    <div class="form-container">
+        <h2 style="color: #667eea; margin-bottom: 1.5rem; text-align: center;">🏠 Your Property Requirements</h2>
+    """, unsafe_allow_html=True)
     
     with st.form("property_preferences"):
+        # Location and Budget Section
+        st.markdown("### 📍 Location & Budget")
         col1, col2 = st.columns(2)
         
         with col1:
-            city = st.text_input("City", placeholder="e.g., San Francisco")
-            state = st.text_input("State/Province (optional)", placeholder="e.g., CA")
-            min_price = st.number_input("Minimum Price ($)", min_value=0, value=500000, step=50000)
-            max_price = st.number_input("Maximum Price ($)", min_value=0, value=1500000, step=50000)
+            city = st.text_input(
+                "🏙️ City", 
+                placeholder="e.g., San Francisco",
+                help="Enter the city where you want to buy property"
+            )
+            state = st.text_input(
+                "🗺️ State/Province (optional)", 
+                placeholder="e.g., CA",
+                help="Enter the state or province (optional)"
+            )
         
         with col2:
-            property_type = st.selectbox("Property Type", ["Any", "House", "Condo", "Townhouse", "Apartment"])
-            bedrooms = st.selectbox("Bedrooms", ["Any", "1", "2", "3", "4", "5+"])
-            bathrooms = st.selectbox("Bathrooms", ["Any", "1", "1.5", "2", "2.5", "3", "3.5", "4+"])
-            min_sqft = st.number_input("Minimum Square Feet", min_value=0, value=1000, step=100)
+            min_price = st.number_input(
+                "💰 Minimum Price ($)", 
+                min_value=0, 
+                value=500000, 
+                step=50000,
+                help="Your minimum budget for the property"
+            )
+            max_price = st.number_input(
+                "💰 Maximum Price ($)", 
+                min_value=0, 
+                value=1500000, 
+                step=50000,
+                help="Your maximum budget for the property"
+            )
         
-        special_features = st.text_area("Special Features", placeholder="e.g., Parking, Yard, View, Near public transport, etc.")
-        timeline = st.selectbox("Timeline", ["Flexible", "1-3 months", "3-6 months", "6+ months"])
-        urgency = st.selectbox("Urgency", ["Not urgent", "Somewhat urgent", "Very urgent"])
+        # Property Details Section
+        st.markdown("### 🏡 Property Details")
+        col1, col2, col3 = st.columns(3)
         
-        submitted = st.form_submit_button("Start Property Analysis", type="primary")
+        with col1:
+            property_type = st.selectbox(
+                "🏠 Property Type",
+                ["Any", "House", "Condo", "Townhouse", "Apartment"],
+                help="Type of property you're looking for"
+            )
+            bedrooms = st.selectbox(
+                "🛏️ Bedrooms",
+                ["Any", "1", "2", "3", "4", "5+"],
+                help="Number of bedrooms required"
+            )
+        
+        with col2:
+            bathrooms = st.selectbox(
+                "🚿 Bathrooms",
+                ["Any", "1", "1.5", "2", "2.5", "3", "3.5", "4+"],
+                help="Number of bathrooms required"
+            )
+            min_sqft = st.number_input(
+                "📏 Minimum Square Feet",
+                min_value=0,
+                value=1000,
+                step=100,
+                help="Minimum square footage required"
+            )
+        
+        with col3:
+            timeline = st.selectbox(
+                "⏰ Timeline",
+                ["Flexible", "1-3 months", "3-6 months", "6+ months"],
+                help="When do you plan to buy?"
+            )
+            urgency = st.selectbox(
+                "🚨 Urgency",
+                ["Not urgent", "Somewhat urgent", "Very urgent"],
+                help="How urgent is your purchase?"
+            )
+        
+        # Special Features
+        st.markdown("### ✨ Special Features")
+        special_features = st.text_area(
+            "🎯 Special Features & Requirements",
+            placeholder="e.g., Parking, Yard, View, Near public transport, Good schools, Walkable neighborhood, etc.",
+            help="Any specific features or requirements you're looking for"
+        )
+        
+        # Submit button with custom styling
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            submitted = st.form_submit_button(
+                "🚀 Start Property Analysis",
+                type="primary",
+                use_container_width=True
+            )
+    
+    st.markdown("</div>", unsafe_allow_html=True)
     
     # Process form submission
     if submitted:
@@ -413,15 +599,17 @@ def main():
             missing_items.append("OpenAI API Key")
         if not firecrawl_key:
             missing_items.append("Firecrawl API Key")
-        if not perplexity_key:
-            missing_items.append("Perplexity API Key")
         if not city:
             missing_items.append("City")
         if not selected_websites:
             missing_items.append("At least one website selection")
         
         if missing_items:
-            st.error(f"Please provide: {', '.join(missing_items)}")
+            st.markdown(f"""
+            <div class="status-error" style="text-align: center; margin: 2rem 0;">
+                ⚠️ Please provide: {', '.join(missing_items)}
+            </div>
+            """, unsafe_allow_html=True)
             return
         
         try:
@@ -441,20 +629,33 @@ def main():
             real_estate_team = create_real_estate_team(llm, firecrawl_tools, user_criteria)
             
         except Exception as e:
-            st.error(f"Error initializing: {str(e)}")
+            st.markdown(f"""
+            <div class="status-error" style="text-align: center; margin: 2rem 0;">
+                ❌ Error initializing: {str(e)}
+            </div>
+            """, unsafe_allow_html=True)
             return
         
         # Display progress
-        st.markdown("---")
-        st.header("Property Analysis in Progress")
+        st.markdown("""
+        <div class="progress-container">
+            <h2 style="color: white; text-align: center; margin-bottom: 1rem;">🚀 Property Analysis in Progress</h2>
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔍</div>
+                <div style="font-size: 1.1rem; opacity: 0.9;">AI Agents are working together to find your perfect home</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
         status_container = st.container()
         with status_container:
-            st.subheader("Current Activity")
+            st.markdown("### 📊 Current Activity")
+            progress_bar = st.progress(0)
             current_activity = st.empty()
         
         def update_progress(progress, status, activity=None):
             if activity:
+                progress_bar.progress(progress)
                 current_activity.text(activity)
         
         try:
@@ -469,10 +670,10 @@ def main():
             # Process results
             successful_searches = sum(1 for result in search_results.values() if "error" not in result)
             total_properties = sum(len(result.get('properties', [])) for result in search_results.values() if "error" not in result)
-            use_perplexity_fallback = total_properties == 0
+            use_google_fallback = total_properties == 0
             
-            if use_perplexity_fallback:
-                update_progress(0.85, "Running analysis...", "🔍 Searching rigorously across real estate platforms...")
+            if use_google_fallback:
+                update_progress(0.85, "Running analysis...", "🔍 Searching Google for real estate listings...")
             else:
                 update_progress(0.85, "Running analysis...", "Property Search Agent: Analyzing search results")
             
@@ -506,50 +707,71 @@ def main():
             Include relevant links and sources when possible.
             """
             
-            # Show agent progression
+            # Show agent progression with better messaging
             agent_messages = [
-                "Property Search Agent: Processing property data",
-                "Market Analysis Agent: Analyzing market trends", 
-                "Property Valuation Agent: Evaluating property values"
+                "🔍 Property Search Agent: Processing property data and listings",
+                "📊 Market Analysis Agent: Analyzing market trends and neighborhood insights", 
+                "💰 Property Valuation Agent: Evaluating property values and investment potential"
             ]
             
             for i, message in enumerate(agent_messages):
                 progress = 0.87 + (i * 0.03)
                 update_progress(progress, "Analysis in progress...", message)
-                time.sleep(1)
+                time.sleep(1.5)  # Slightly longer for better UX
             
-            # Execute agents
-            if use_perplexity_fallback:
-                with st.spinner("🔍 Searching rigorously across real estate platforms..."):
+            # Execute agents with better UX
+            if use_google_fallback:
+                with st.spinner("🔍 Searching Google for real estate listings..."):
                     result = real_estate_team.run(prompt)
             else:
-                result = real_estate_team.run(prompt)
+                with st.spinner("🤖 AI Agents are analyzing your property requirements..."):
+                    result = real_estate_team.run(prompt)
             
             agent_duration = time.time() - agent_start
             total_time = time.time() - start_time
             
             # Display results
-            st.markdown("---")
+            st.markdown("""
+            <div class="result-container">
+                <h2 style="color: #667eea; text-align: center; margin-bottom: 2rem;">🎉 Analysis Complete!</h2>
+            """, unsafe_allow_html=True)
             display_property_results(result)
+            st.markdown("</div>", unsafe_allow_html=True)
             
-            # Download button
+            # Download button with better styling
             if hasattr(result, 'content'):
                 download_content = result.content
             else:
                 download_content = str(result)
             
-            st.download_button(
-                label="Download Report",
-                data=download_content,
-                file_name="property_analysis_report.md",
-                mime="text/markdown"
-            )
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                st.download_button(
+                    label="📄 Download Full Report",
+                    data=download_content,
+                    file_name="property_analysis_report.md",
+                    mime="text/markdown",
+                    use_container_width=True
+                )
             
-            # Timing info
-            st.info(f"⏱️ Total time: {total_time:.2f}s | Search: {search_duration:.2f}s | Agents: {agent_duration:.2f}s")
+            # Timing info with better styling
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 1rem; border-radius: 10px; text-align: center; margin: 2rem 0;">
+                <h4 style="color: #667eea; margin-bottom: 0.5rem;">⏱️ Performance Metrics</h4>
+                <p style="margin: 0; color: #6c757d;">
+                    Total: <strong>{total_time:.2f}s</strong> | 
+                    Search: <strong>{search_duration:.2f}s</strong> | 
+                    AI Analysis: <strong>{agent_duration:.2f}s</strong>
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
             
         except Exception as e:
-            st.error(f"An error occurred: {str(e)}")
+            st.markdown(f"""
+            <div class="status-error" style="text-align: center; margin: 2rem 0;">
+                ❌ An error occurred: {str(e)}
+            </div>
+            """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

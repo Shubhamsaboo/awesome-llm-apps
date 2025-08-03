@@ -26,29 +26,30 @@ This crash course covers the essential concepts of Google ADK through hands-on t
    - Simple text processing
 
 2. **[2_model_agnostic_agent](./2_model_agnostic_agent/README.md)** - Model-agnostic agent development
-   - Google Gemini models (AI Studio & Vertex AI)
-   - Anthropic Claude integration
-   - Local models with Ollama
-   - LiteLLM integration for multiple providers
+   - **[2.1 OpenAI Agent](./2_model_agnostic_agent/2_1_openai_adk_agent/README.md)** - OpenAI integration
+   - **[2.2 Anthropic Claude Agent](./2_model_agnostic_agent/2_2_anthropic_adk_agent/README.md)** - Claude integration
 
 3. **[3_structured_output_agent](./3_structured_output_agent/README.md)** - Type-safe responses
-   - Pydantic schemas
-   - Structured data validation
-   - Business logic implementation
+   - **[3.1 Customer Support Ticket Agent](./3_structured_output_agent/3_1_customer_support_ticket_agent/README.md)** - Pydantic schemas
+   - **[3.2 Email Agent](./3_structured_output_agent/3_2_email_agent/README.md)** - Structured data validation
 
 4. **[4_tool_using_agent](./4_tool_using_agent/README.md)** - Agent with tools
-   - Built-in tools (Search, Code Execution)
-   - Function tools (Custom Python functions)
-   - Third-party tools (LangChain, CrewAI)
-   - MCP tools integration
+   - **[4.1 Built-in Tools](./4_tool_using_agent/4_1_builtin_tools/README.md)** - Search, Code Execution
+   - **[4.2 Function Tools](./4_tool_using_agent/4_2_function_tools/README.md)** - Custom Python functions
+   - **[4.3 Third-party Tools](./4_tool_using_agent/4_3_thirdparty_tools/README.md)** - LangChain, CrewAI
+   - **[4.4 MCP Tools](./4_tool_using_agent/4_4_mcp_tools/README.md)** - MCP tools integration
 
-5. **More tutorials coming soon!**
+5. **[5_memory_agent](./5_memory_agent/README.md)** - Memory and session management
+   - **[5.1 In-Memory Conversation](./5_memory_agent/5_1_in_memory_conversation/README.md)** - Basic session management
+   - **[5.2 Persistent Conversation](./5_memory_agent/5_2_persistent_conversation/README.md)** - Database storage with SQLite
+
+6. **More tutorials coming soon!**
 
 ## 🛠️ Prerequisites
 
 Before starting this crash course, ensure you have:
 
-- **Python 3.8+** installed
+- **Python 3.11+** installed
 - **Google AI API Key** from [Google AI Studio](https://aistudio.google.com/)
 - Basic understanding of Python and APIs
 

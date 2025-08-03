@@ -21,22 +21,22 @@ Learn how to create agents that work with **different AI models** using OpenRout
 
 ```
 2_model_agnostic_agent/
-├── README.md                    # This overview
-├── requirements.txt             # Shared dependencies
-├── openai_adk_agent/           # OpenAI GPT-4 agent
-│   └── agent.py                # Agent implementation
-└── anthropic_adk_agent/        # Anthropic Claude agent
-    └── agent.py                # Agent implementation
+├── README.md                       # This overview
+├── requirements.txt                # Shared dependencies
+├── 2_1_openai_adk_agent/           # OpenAI GPT-4 agent
+│   └── agent.py                    # Agent implementation
+└── 2_2_anthropic_adk_agent/        # Anthropic Claude agent
+    └── agent.py                    # Agent implementation
 ```
 
 ## 🔧 Available Agents
 
-### **OpenAI Agent** (`openai_adk_agent/`)
+### **OpenAI Agent** (`2_1_openai_adk_agent/`)
 - **Model**: GPT-4 via OpenRouter
 - **Agent Name**: `root_agent` (required by ADK)
 - **Features**: Fun fact tool with OpenAI personality
 
-### **Anthropic Agent** (`anthropic_adk_agent/`)
+### **Anthropic Agent** (`2_2_anthropic_adk_agent/`)
 - **Model**: Claude 4 Sonnet via OpenRouter
 - **Agent Name**: `root_agent` (required by ADK)
 - **Features**: Fun fact tool with Claude personality
@@ -50,12 +50,12 @@ Learn how to create agents that work with **different AI models** using OpenRout
 ### 2. **Set Environment Variable**
 Create a `.env` file in each agent folder:
 
-**In `openai_adk_agent/.env`:**
+**In `2_1_openai_adk_agent/.env`:**
 ```bash
 OPENROUTER_API_KEY=your_openrouter_api_key_here
 ```
 
-**In `anthropic_adk_agent/.env`:**
+**In `2_2_anthropic_adk_agent/.env`:**
 ```bash
 OPENROUTER_API_KEY=your_openrouter_api_key_here
 ```
@@ -68,7 +68,7 @@ pip install -r requirements.txt
 
 ### 4. **Test OpenAI Agent**
 ```bash
-cd openai_adk_agent
+cd 2_1_openai_adk_agent
 adk web
 ```
 - Try asking: "Tell me a fun fact!"
@@ -76,7 +76,7 @@ adk web
 
 ### 5. **Test Anthropic Agent**
 ```bash
-cd anthropic_adk_agent
+cd 2_2_anthropic_adk_agent
 adk web
 ```
 - Try asking: "Tell me a fun fact!"

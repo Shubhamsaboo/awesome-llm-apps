@@ -40,9 +40,10 @@ from google.adk.agents import LlmAgent
 
 ## 🚀 Tutorial Overview
 
-In this tutorial, we'll create a **Simple Greeting Agent** that:
-- Takes user input (name, mood, etc.)
-- Generates personalized greetings
+In this tutorial, we'll create a **Creative Writing Agent** that:
+- Helps users develop story ideas and characters
+- Provides writing prompts and inspiration
+- Assists with plot structure and pacing
 - Demonstrates basic ADK functionality
 
 ## 📁 Project Structure
@@ -51,10 +52,9 @@ In this tutorial, we'll create a **Simple Greeting Agent** that:
 1_starter_agent/
 ├── README.md              # This file - concept explanation
 ├── requirements.txt       # Dependencies
-└── greeting_agent/       # Agent implementation
+└── creative_writing_agent/ # Agent implementation
     ├── __init__.py       # Makes it a Python package
-    ├── agent.py          # Main agent code
-    └── env.example       # Environment variables template
+    └── agent.py          # Main agent code
 ```
 
 ## 🎯 Learning Objectives
@@ -69,36 +69,29 @@ By the end of this tutorial, you'll understand:
 
 1. **Set up your environment**:
    ```bash
-   cd greeting_agent
-   
-   # Copy the environment template
-   cp env.example .env
-   
-   # Edit .env and add your Google AI API key
+   # Make sure you have your Google AI API key
    # Get your API key from: https://aistudio.google.com/
    ```
 
 2. **Install dependencies**:
    ```bash
-   # Navigate back to the 1_starter_agent directory
-   cd ..
-
    # Install required packages
    pip install -r requirements.txt
    ```
 
-3. **Run the greeting agent**:
+3. **Run the creative writing agent**:
    ```bash
    # Start the ADK web interface
    adk web
    
-   # In the web interface, select: greeting_agent
+   # In the web interface, select: creative_writing_agent
    ```
 
 4. **Test your agent**:
-   - Try different greetings: "Hello, I'm John and I'm feeling great today!"
-   - Experiment with different moods and names
-   - See how the agent personalizes responses
+   - Try asking for story ideas: "I want to write a story about a magical forest"
+   - Get character help: "Help me create a protagonist for my sci-fi story"
+   - Request writing prompts: "Give me a creative writing prompt"
+   - Ask for plot advice: "How can I structure my story's climax?"
 
 ## 🔗 Next Steps
 
