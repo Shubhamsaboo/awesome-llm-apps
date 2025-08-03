@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Enterprise Knowledge Orchestrator - Complete Multi-Agent System with MCP Tools
-Full implementation for ADK Web with all MCP tools (filesystem, Notion, GitHub, Figma)
-"""
-
 import os
 import asyncio
 import logging
@@ -57,7 +51,7 @@ async def create_mcp_agents_with_tools():
             name="FileAnalysisAgent",
             model="gemini-2.0-flash",
             description="Analyzes local documents and extracts key information",
-            instruction=f"""You are a File Analysis Agent with DIRECT ACCESS to the filesystem at: {folder_path}
+            instruction=f"""You are a File Analysis AI Agent with DIRECT ACCESS to the filesystem at: {folder_path}
 
 You have MCP tools that allow you to:
 - List files and directories (list_directory)
@@ -267,8 +261,8 @@ Current version provides guidance and best practices for Figma operations."""
     
     return agents
 
-class EnterpriseKnowledgeOrchestrator:
-    """Enterprise Knowledge Orchestrator - Multi-Agent System with MCP Tools"""
+class EnterpriseMCPAIAgentTeam:
+    """Enterprise MCP AI Agent Team - Multi-Agent System with MCP Tools"""
     
     def __init__(self):
         """Initialize the orchestrator"""
@@ -287,10 +281,10 @@ class EnterpriseKnowledgeOrchestrator:
             
             # Create root agent with comprehensive routing instructions
             self.root_agent = LlmAgent(
-                name="EnterpriseKnowledgeOrchestrator",
+                name="EnterpriseMCPAIAgentTeam",
                 model="gemini-2.0-flash",
-                description="Enterprise Knowledge Orchestrator - Multi-agent system with MCP tools",
-                instruction="""You are an Enterprise Knowledge Orchestrator that routes tasks to specialized agents.
+                description="Enterprise MCP AI Agent Team - Multi-agent system with MCP tools",
+                instruction="""You are an Enterprise MCP AI Agent Team that routes tasks to specialized agents.
         
 You have access to multiple specialized agents with MCP tools and can coordinate between them:
 
@@ -335,10 +329,10 @@ The agents have real MCP tools connected - they can perform actual operations!""
     def _create_fallback_agents(self):
         """Create fallback agents without MCP tools"""
         self.root_agent = LlmAgent(
-            name="EnterpriseKnowledgeOrchestrator",
+            name="EnterpriseMCPAIAgentTeam",
             model="gemini-2.0-flash",
-            description="Enterprise Knowledge Orchestrator - Multi-agent system",
-            instruction="""You are an Enterprise Knowledge Orchestrator that routes tasks to specialized agents.
+            description="Enterprise MCP AI Agent Team - Multi-agent system",
+            instruction="""You are an Enterprise MCP AI Agent Team that routes tasks to specialized agents.
         
 You have access to multiple specialized agents and can coordinate between them:
 
@@ -404,16 +398,16 @@ For full MCP tool functionality, ensure all environment variables are set correc
 
 # Create root_agent for ADK Web compatibility
 try:
-    orchestrator = EnterpriseKnowledgeOrchestrator()
+    orchestrator = EnterpriseMCPAIAgentTeam()
     root_agent = orchestrator.root_agent
-    logger.info("✅ EnterpriseKnowledgeOrchestrator class and root_agent created successfully")
+    logger.info("✅ EnterpriseMCPAIAgentTeam class and root_agent created successfully")
 except Exception as e:
-    logger.error(f"❌ Failed to create EnterpriseKnowledgeOrchestrator: {str(e)}")
+    logger.error(f"❌ Failed to create EnterpriseMCPAIAgentTeam: {str(e)}")
     # Fallback: create basic root_agent
     root_agent = LlmAgent(
-        name="EnterpriseKnowledgeOrchestrator",
+        name="EnterpriseMCPAIAgentTeam",
         model="gemini-2.0-flash",
-        description="Enterprise Knowledge Orchestrator - Basic multi-agent system",
-        instruction="You are an Enterprise Knowledge Orchestrator that routes tasks to specialized agents.",
+        description="Enterprise MCP AI Agent Team - Basic multi-agent system",
+        instruction="You are an Enterprise MCP AI Agent Team that routes tasks to specialized agents.",
         sub_agents=[]
     )

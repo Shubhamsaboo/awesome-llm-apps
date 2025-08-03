@@ -1,4 +1,4 @@
-# Enterprise Knowledge Orchestrator
+# Enterprise MCP AI Agent Team 
 
 A production-grade multi-agent system built with Google ADK that orchestrates knowledge management across local files and SaaS platforms using MCP (Model Context Protocol).
 
@@ -9,30 +9,30 @@ This system combines:
 - **Notion MCP Server** - for managing Notion workspaces and content
 - **Composio MCP Server** - for GitHub and Figma integration
 - **Intelligent Router/Orchestrator** - context-aware task delegation with state management
-- **4 Specialized Agents** - each handling specific platform capabilities
+- **4 Specialized AI Agents** - each handling specific platform capabilities
 
 ## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                Router/Orchestrator Agent                    │
+│                Enterprise MCP AI Agent Team                 │
 │              (Coordinator/Dispatcher Pattern)               │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐ │
 │  │ File Analysis   │  │ Notion Agent    │  │ GitHub Agent │ │
-│  │ Agent           │  │ (Optional)      │  │ (Optional)   │ │
+│  │ AI Agent        │  │ (Optional)      │  │ (Optional)   │ │
 │  └─────────────────┘  └─────────────────┘  └──────────────┘ │
-│           │                     │                    │       │
+│           │                     │                    │      │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐ │
 │  │ Filesystem MCP  │  │ Notion MCP      │  │ Composio MCP │ │
 │  │ Server          │  │ Server          │  │ Server       │ │
 │  └─────────────────┘  └─────────────────┘  └──────────────┘ │
-│           │                     │                    │       │
+│           │                     │                    │      │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐ │
 │  │ Local Documents │  │ Notion Pages &  │  │ GitHub Repos │ │
 │  │ (PDF, DOC, XLS) │  │ Databases       │  │ & Issues     │ │
 │  └─────────────────┘  └─────────────────┘  └──────────────┘ │
-│                                                              │
+│                                                             │
 │  ┌─────────────────┐  ┌─────────────────┐                   │
 │  │ Figma Agent     │  │ Composio MCP    │                   │
 │  │ (Optional)      │  │ Server          │                   │
@@ -78,11 +78,11 @@ This system combines:
 - Searches for design elements and styles
 - Manages design system components
 
-### 🎯 Router/Orchestrator Agent
-- Analyzes user requests and determines which agents should handle them
-- Routes tasks to appropriate specialized agents based on capabilities
-- Coordinates multi-step workflows that require multiple agents
-- Shares context and results between agents through session state
+### 🎯 Enterprise MCP AI Agent Team (Router/Orchestrator)
+- Analyzes user requests and determines which AI agents should handle them
+- Routes tasks to appropriate specialized AI agents based on capabilities
+- Coordinates multi-step workflows that require multiple AI agents
+- Shares context and results between AI agents through session state
 - Provides comprehensive results and recommendations
 
 ### 🛡️ Error Handling & Graceful Degradation
