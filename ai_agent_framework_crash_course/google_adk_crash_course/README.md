@@ -43,7 +43,12 @@ This crash course covers the essential concepts of Google ADK through hands-on t
    - **[5.1 In-Memory Conversation](./5_memory_agent/5_1_in_memory_conversation/README.md)** - Basic session management
    - **[5.2 Persistent Conversation](./5_memory_agent/5_2_persistent_conversation/README.md)** - Database storage with SQLite
 
-6. **More tutorials coming soon!**
+6. **[6_callbacks](./6_callbacks/README.md)** - Callback patterns and monitoring
+   - **[6.1 Agent Lifecycle Callbacks](./6_callbacks/6_1_agent_lifecycle_callbacks/README.md)** - Monitor agent creation and cleanup
+   - **[6.2 LLM Interaction Callbacks](./6_callbacks/6_2_llm_interaction_callbacks/README.md)** - Track model requests and responses
+   - **[6.3 Tool Execution Callbacks](./6_callbacks/6_3_tool_execution_callbacks/README.md)** - Monitor tool calls and results
+
+7. **More tutorials coming soon!**
 
 ## 🛠️ Prerequisites
 

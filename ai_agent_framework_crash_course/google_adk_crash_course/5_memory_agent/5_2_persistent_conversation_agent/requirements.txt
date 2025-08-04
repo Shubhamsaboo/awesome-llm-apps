@@ -1,0 +1,5 @@
+google-adk>=1.9.0
+streamlit>=1.47.1
+python-dotenv>=1.1.1
+sqlalchemy>=2.0.0
+asyncio 
