@@ -125,11 +125,9 @@ A **Session** is like a conversation thread that keeps track of all interactions
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## 🎯 Tutorial Structure
+## 📚 Tutorial Structure
 
 This tutorial is divided into three progressive levels:
-
-### 📚 **Tutorials**
 
 1. **[5_1_in_memory_conversation](./5_1_in_memory_conversation/README.md)** - Basic session management
    - InMemorySessionService for temporary conversations

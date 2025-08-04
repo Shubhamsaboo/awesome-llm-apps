@@ -1,11 +1,11 @@
-# 🎯 Tutorial 6: Callbacks
+# 📋 Tutorial 6: Callbacks
 
 ## 🎯 What You'll Learn
 - **Agent Lifecycle Callbacks**: Monitor agent creation, initialization, and cleanup
 - **LLM Interaction Callbacks**: Track model requests, responses, and token usage
 - **Tool Execution Callbacks**: Monitor tool calls, parameters, and results
 
-## 🧠 Core Concept: Callbacks
+## 💡 Core Concept: Callbacks
 
 Callbacks are functions that get executed at specific points during agent execution, allowing you to monitor, log, and control the agent's behavior without modifying the core logic.
 
@@ -30,7 +30,7 @@ Callbacks are functions that get executed at specific points during agent execut
 - **Integration**: Connect agents to external systems
 - **Debugging**: Understand what's happening inside the agent
 
-## 🚀 Tutorial Overview
+## 📖 Tutorial Overview
 
 This tutorial covers three essential callback patterns in Google ADK:
 
@@ -100,12 +100,12 @@ cd ../6_3_tool_execution_callbacks
 streamlit run app.py
 ```
 
-## 🔧 Callback Patterns
+## ⚙️ Callback Patterns
 
 ### **1. Agent Lifecycle Callbacks**
 ```python
 def on_agent_start(agent_name: str):
-    print(f"🚀 Agent {agent_name} started")
+    print(f"▶️ Agent {agent_name} started")
 
 def on_agent_end(agent_name: str, result: str):
     print(f"✅ Agent {agent_name} completed: {result}")
@@ -122,10 +122,10 @@ agent = LlmAgent(
 ### **2. LLM Interaction Callbacks**
 ```python
 def on_llm_request(model: str, prompt: str):
-    print(f"🤖 LLM Request to {model}: {prompt[:50]}...")
+    print(f"📤 LLM Request to {model}: {prompt[:50]}...")
 
 def on_llm_response(model: str, response: str, tokens: int):
-    print(f"📝 LLM Response from {model}: {tokens} tokens")
+    print(f"📥 LLM Response from {model}: {tokens} tokens")
 
 # Register callbacks
 agent = LlmAgent(
@@ -154,7 +154,7 @@ agent = LlmAgent(
 )
 ```
 
-## 🎯 Use Cases
+## 📊 Use Cases
 
 ### **Monitoring & Analytics**
 - Track agent performance metrics
