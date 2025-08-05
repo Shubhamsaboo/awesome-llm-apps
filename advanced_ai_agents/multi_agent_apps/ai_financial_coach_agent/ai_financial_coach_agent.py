@@ -102,7 +102,7 @@ class FinanceAdvisorSystem:
         
         self.budget_analysis_agent = LlmAgent(
             name="BudgetAnalysisAgent",
-            model="gemini-2.0-flash-exp",
+            model="gemini-2.5-flash",
             description="Analyzes financial data to categorize spending patterns and recommend budget improvements",
             instruction="""You are a Budget Analysis Agent specialized in reviewing financial transactions and expenses.
 You are the first agent in a sequence of three financial advisor agents.
@@ -136,7 +136,7 @@ IMPORTANT: Store your analysis in state['budget_analysis'] for use by subsequent
         
         self.savings_strategy_agent = LlmAgent(
             name="SavingsStrategyAgent",
-            model="gemini-2.0-flash-exp",
+            model="gemini-2.5-flash",
             description="Recommends optimal savings strategies based on income, expenses, and financial goals",
             instruction="""You are a Savings Strategy Agent specialized in creating personalized savings plans.
 You are the second agent in the sequence. READ the budget analysis from state['budget_analysis'] first.
@@ -162,7 +162,7 @@ IMPORTANT: Store your strategy in state['savings_strategy'] for use by the Debt 
         
         self.debt_reduction_agent = LlmAgent(
             name="DebtReductionAgent",
-            model="gemini-2.0-flash-exp",
+            model="gemini-2.5-flash",
             description="Creates optimized debt payoff plans to minimize interest paid and time to debt freedom",
             instruction="""You are a Debt Reduction Agent specialized in creating debt payoff strategies.
 You are the final agent in the sequence. READ both state['budget_analysis'] and state['savings_strategy'] first.
@@ -282,7 +282,7 @@ IMPORTANT: Store your final plan in state['debt_reduction'] and ensure it aligns
     
     def _preprocess_manual_expenses(self, session):
         manual_expenses = session.state.get("manual_expenses", {})
-        if not manual_expenses:
+        if not manual_expenses or manual_expenses is None:
             return
         
         session.state.update({
@@ -293,6 +293,10 @@ IMPORTANT: Store your final plan in state['debt_reduction'] and ensure it aligns
     def _create_default_results(self, financial_data: Dict[str, Any]) -> Dict[str, Any]:
         monthly_income = financial_data.get("monthly_income", 0)
         expenses = financial_data.get("manual_expenses", {})
+        
+        # Ensure expenses is not None
+        if expenses is None:
+            expenses = {}
         
         if not expenses and financial_data.get("transactions"):
             expenses = {}
@@ -774,7 +778,7 @@ def main():
                             help=f"Enter your monthly {cat.lower()} expenses"
                         )
                 
-                if any(manual_expenses.values()):
+                if manual_expenses and any(manual_expenses.values()):
                     st.markdown("#### 📊 Summary of Entered Expenses")
                     manual_df_disp = pd.DataFrame({
                         'Category': list(manual_expenses.keys()),
@@ -883,7 +887,7 @@ def main():
             if expense_option == "Upload CSV Transactions" and transactions_df is None:
                 st.error("Please upload a valid transaction CSV file or choose manual entry.")
                 return
-            if use_manual_expenses and not any(manual_expenses.values()):
+            if use_manual_expenses and (not manual_expenses or not any(manual_expenses.values())):
                 st.warning("No manual expenses entered. Analysis might be limited.")
 
             st.header("Financial Analysis Results")
