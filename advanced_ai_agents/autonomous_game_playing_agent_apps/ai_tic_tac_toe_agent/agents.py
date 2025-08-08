@@ -31,6 +31,7 @@ from agno.models.anthropic import Claude
 from agno.models.google import Gemini
 from agno.models.groq import Groq
 from agno.models.openai import OpenAIChat
+from agno.models.deepseek import DeepSeek
 
 project_root = str(Path(__file__).parent.parent.parent.parent)
 if project_root not in sys.path:
@@ -42,7 +43,7 @@ def get_model_for_provider(provider: str, model_name: str):
     Creates and returns the appropriate model instance based on the provider.
 
     Args:
-        provider: The model provider (e.g., 'openai', 'google', 'anthropic', 'groq')
+        provider: The model provider (e.g., 'openai', 'google', 'anthropic', 'groq', 'deepseek')
         model_name: The specific model name/ID
 
     Returns:
@@ -73,6 +74,8 @@ def get_model_for_provider(provider: str, model_name: str):
             return Claude(id=model_name)
     elif provider == "groq":
         return Groq(id=model_name)
+    elif provider == "deepseek":
+        return DeepSeek(id=model_name)
     else:
         raise ValueError(f"Unsupported model provider: {provider}")
 
