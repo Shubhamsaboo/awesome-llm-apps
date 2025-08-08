@@ -1,0 +1,207 @@
+/* 라이트 모드 테마 스타일 */
+
+.main {
+    background-color: #FFFFFF;
+    color: #31333F;
+}
+.stApp {
+    background-color: #FFFFFF;
+}
+.stChatMessage {
+    background-color: rgba(240, 242, 246, 0.5);
+}
+
+/* 사이드바 스타일링 */
+.stSidebar {
+    background-color: #F0F2F6 !important;
+    color: #31333F !important;
+}
+.stSidebar [data-testid="stSidebar"] {
+    background-color: #F0F2F6 !important;
+}
+.stSidebar [data-testid="stSidebarNav"] {
+    background-color: #F0F2F6 !important;
+}
+.stSidebar [data-testid="stSidebarContent"] {
+    background-color: #F0F2F6 !important;
+}
+.stSidebar .sidebar-content {
+    background-color: #F0F2F6 !important;
+}
+
+/* 사이드바 내부 요소 */
+.stSidebar h1, .stSidebar h2, .stSidebar h3, .stSidebar h4, .stSidebar h5, .stSidebar h6 {
+    color: #31333F !important;
+}
+.stSidebar p, .stSidebar div, .stSidebar span {
+    color: #31333F !important;
+}
+.stSidebar button {
+    background-color: #FFFFFF !important;
+    color: #31333F !important;
+    border: 1px solid #DFE2E6 !important;
+    border-radius: 6px !important;
+    padding: 8px 16px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+}
+.stSidebar button:hover {
+    background-color: #E8EAF0 !important;
+    color: #31333F !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+.stSidebar button:active {
+    background-color: #FF4B4B !important;
+    color: #FFFFFF !important;
+    transform: translateY(0px) !important;
+}
+
+/* 터미널 스타일링 */
+.terminal-container {
+    background-color: #F5F7F9;
+    color: #333333;
+    border: 1px solid #DFE2E6;
+}
+.terminal-header {
+    background-color: #DFE2E6;
+    color: #31333F;
+}
+.terminal-prompt {
+    color: #2C7CB0;
+}
+.terminal-command {
+    color: #7F5500;
+}
+.terminal-output {
+    color: #333333;
+}
+.terminal-success {
+    color: #35792B;
+}
+.terminal-error {
+    color: #D62728;
+}
+.terminal-warning {
+    color: #B76A00;
+}
+
+/* 코드 블록 스타일링 */
+pre[data-testid="stCodeBlock"] {
+    background-color: #F5F7F9 !important;
+    color: #24292e !important;
+    border-radius: 5px;
+    padding: 15px !important;
+    margin: 10px 0;
+    border-left: 4px solid #2C7CB0;
+    font-family: 'Courier New', monospace;
+    font-size: 14px !important;
+    overflow-x: auto;
+    white-space: pre-wrap !important;
+    word-wrap: break-word;
+}
+
+/* Planner 메시지에 대한 특별 스타일링 */
+div.stChatMessage[data-testid="stChatMessage"]:has(div strong:contains("Planner")) pre[data-testid="stCodeBlock"] {
+    background-color: #F8F8F0 !important;
+    border-left: 4px solid #FF8F40;
+}
+
+/* 에이전트 상태 스타일링 */
+.agent-status {
+    background: linear-gradient(to right, #F0F2F6, #FFFFFF, #F0F2F6);
+    border: 1px solid #DFE2E6;
+    color: #31333F;
+}
+.agent-status div {
+    color: #31333F;
+}
+.agent-status:hover {
+    background: linear-gradient(to right, #E8EAF0, #F5F7F9, #E8EAF0);
+}
+.agent-status.status-active {
+    background: linear-gradient(to right, #FFF0F0, #FFF5F5, #FFF0F0);
+    border: 2px solid #FF4B4B;
+    box-shadow: 0 0 8px rgba(255, 75, 75, 0.3);
+    animation: pulse-button-light 1.5s infinite;
+}
+.agent-status.status-completed {
+    background: linear-gradient(to right, #F0FFF0, #F5FFF5, #F0FFF0);
+    border: 2px solid #4CAF50;
+}
+
+/* 채팅 메시지 스타일링 */
+.agent-header {
+    color: #31333F;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* 에이전트별 스타일링 */
+div.stChatMessage[data-testid="stChatMessage"]:has(.supervisor-message) {
+    border-left: 5px solid #D73A49;
+}
+div.stChatMessage[data-testid="stChatMessage"]:has(.planner-message) {
+    border-left: 5px solid #0366D6;
+}
+div.stChatMessage[data-testid="stChatMessage"]:has(.recon-message) {
+    border-left: 5px solid #5A32A3;
+}
+div.stChatMessage[data-testid="stChatMessage"]:has(.initaccess-message) {
+    border-left: 5px solid #E36209;
+}
+div.stChatMessage[data-testid="stChatMessage"]:has(.execution-message) {
+    border-left: 5px solid #D15704;
+}
+div.stChatMessage[data-testid="stChatMessage"]:has(.persistence-message) {
+    border-left: 5px solid #6F42C1;
+}
+div.stChatMessage[data-testid="stChatMessage"]:has(.privilege-escalation-message) {
+    border-left: 5px solid #B31D28;
+}
+div.stChatMessage[data-testid="stChatMessage"]:has(.defense-evasion-message) {
+    border-left: 5px solid #0550AE;
+}
+div.stChatMessage[data-testid="stChatMessage"]:has(.tool-message) {
+    border-left: 5px solid #22863A;
+}
+div.stChatMessage[data-testid="stChatMessage"]:has(.tool-output-message) {
+    border-left: 5px solid #22863A;
+}
+div.stChatMessage[data-testid="stChatMessage"]:has(.agent-message) {
+    border-left: 5px solid #6F42C1;
+}
+
+/* 채팅 메시지 테마 조정 - 이름 부분만 */
+.supervisor-message strong {
+    color: #D73A49;
+}
+.planner-message strong {
+    color: #0366D6;
+}
+.recon-message strong {
+    color: #5A32A3;
+}
+.initaccess-message strong {
+    color: #E36209;
+}
+.execution-message strong {
+    color: #D15704;
+}
+.persistence-message strong {
+    color: #6F42C1;
+}
+.privilege-escalation-message strong {
+    color: #B31D28;
+}
+.defense-evasion-message strong {
+    color: #0550AE;
+}
+.tool-message strong {
+    color: #22863A;
+}
+.tool-output-message strong {
+    color: #22863A;
+}
+.agent-message strong {
+    color: #6F42C1;
+}
