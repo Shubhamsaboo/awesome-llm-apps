@@ -4,7 +4,7 @@ An agentic RAG application built with the Agno framework, featuring GPT-5 and La
 
 ## ✨ Features
 
-- **🤖 GPT-5-nano**: Latest OpenAI model for intelligent responses
+- **🤖 GPT-5**: Latest OpenAI model for intelligent responses
 - **🗄️ LanceDB**: Lightweight vector database for fast similarity search
 - **🔍 Agentic RAG**: Intelligent retrieval augmented generation
 - **📝 Markdown Formatting**: Beautiful, structured responses
