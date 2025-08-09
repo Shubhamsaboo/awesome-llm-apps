@@ -1,0 +1,31 @@
+{
+  "name": "ai-news-briefing-generator",
+  "version": "1.0.0",
+  "description": "一个使用AI进行新闻抓取、排名、处理和简报生成的工具。",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "ai",
+    "news",
+    "automation",
+    "llm"
+  ],
+  "author": "",
+
+  "license": "ISC",
+  "dependencies": {
+    "@postlight/mercury-parser": "^2.2.0",
+    "axios": "^1.7.2",
+    "boxen": "^7.1.1",
+    "chalk": "^5.3.0",
+    "cheerio": "1.0.0-rc.12",
+    "cli-progress": "^3.12.0",
+    "lodash": "^4.17.21",
+    "ora": "^8.0.1",
+    "p-limit": "^5.0.0",
+    "winston": "^3.13.0"
+  }
+}
