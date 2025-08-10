@@ -1,0 +1,19 @@
+numpy<2.0.0
+scipy
+numba
+requests
+openai
+torch
+tensorboard
+wandb
+pytz
+pandas
+matplotlib
+ttkbootstrap
+codebleu
+tree-sitter-python==0.21
+gym
+datasets
+huggingface_hub
+networkx
+# langchain_ollama

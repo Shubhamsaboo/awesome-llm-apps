@@ -1,0 +1,7 @@
+name: MCTS_AHD
+max_sample_nums: 200
+pop_size: 10
+num_samplers: 4
+num_evaluators: 4
+alpha: 0.5
+lambda_0: 0.1

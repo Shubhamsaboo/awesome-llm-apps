@@ -1,0 +1,5 @@
+name: LHNS
+method: vns
+max_sample_nums: 20
+cooling_rate: 0.1
+num_evaluators: 1
