@@ -67,7 +67,7 @@ problem_para_value_name_list = []
 llm_para_entry_list = []
 llm_para_value_name_list = ['name', 'host', 'key', 'model']
 llm_para_default_value_list = ['HttpsApi', '', '', '']
-llm_para_placeholder_list = ['HttpsApi', 'api.bltcy.top', 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'gpt-4o-mini']
+llm_para_placeholder_list = ['HttpsApi', 'api.bltcy.top', '', 'gpt-4o-mini']
 
 default_method = 'eoh'
 default_problem = ['admissible_set', 'car_mountain', 'bactgrow']
