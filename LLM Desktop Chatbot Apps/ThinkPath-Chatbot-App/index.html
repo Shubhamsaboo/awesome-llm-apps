@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guided LLM Chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-bar {
+            background: rgba(255, 255, 255, 0.1);
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            color: white;
+            font-size: 14px;
+            -webkit-app-region: drag;
+        }
+
+        .title-text {
+            flex: 1;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 10px;
+            -webkit-app-region: no-drag;
+        }
+
+        .window-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .window-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .btn-close {
+            background: #ff5f57;
+        }
+
+        .btn-close:hover {
+            background: #ff3b30;
+        }
+
+        .btn-minimize {
+            background: #ffbd2e;
+        }
+
+        .btn-minimize:hover {
+            background: #ff9500;
+        }
+
+        .btn-maximize {
+            background: #28ca42;
+        }
+
+        .btn-maximize:hover {
+            background: #30d158;
+        }
+
+        .update-paths-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-bottom: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .update-paths-btn:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .update-paths-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px 15px 0 0;
+            margin-bottom: 0;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            max-width: 80%;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            background: #007bff;
+            color: white;
+            margin-left: auto;
+        }
+
+        .bot-message {
+            background: #f8f9fa;
+            color: #333;
+            border: 1px solid #e9ecef;
+        }
+
+        .loading {
+            background: #f8f9fa;
+            color: #666;
+            font-style: italic;
+        }
+
+        .thinking-paths {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 0 0 15px 15px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .paths-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .thinking-path {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .thinking-path:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .path-header {
+            font-weight: 600;
+            font-size: 14px;
+            color: #495057;
+            margin-bottom: 12px;
+            text-align: center;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .path-steps {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .path-step {
+            padding: 8px 12px;
+            margin: 6px 0;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            position: relative;
+        }
+
+        .path-step:hover {
+            background: #e9ecef;
+            border-color: #c8b99c;
+        }
+
+        .path-step:before {
+            content: attr(data-step);
+            background: #c8b99c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .thinking-indicator {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .response-with-path {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            margin-bottom: 15px;
+        }
+
+        .path-info {
+            font-size: 12px;
+            color: #17a2b8;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: rgba(23, 162, 184, 0.1);
+            border-radius: 6px;
+        }
+
+        .response-content {
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .response-content strong,
+        .response-content b {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .response-content h3 {
+            color: #2c3e50;
+            font-size: 16px;
+            margin: 15px 0 10px 0;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #3498db;
+            font-weight: 600;
+        }
+
+        .response-content h4 {
+            color: #34495e;
+            font-size: 15px;
+            margin: 14px 0 8px 0;
+            font-weight: 600;
+        }
+
+        .response-content p {
+            margin: 10px 0;
+            color: #2c3e50;
+        }
+
+        .response-content ul {
+            margin: 8px 0 12px 20px;
+            color: #2c3e50;
+        }
+
+        .response-content li {
+            margin: 4px 0;
+            line-height: 1.6;
+        }
+
+        .thinking-step {
+            background: #f8f9fa;
+            border-left: 4px solid #17a2b8;
+            padding: 15px 18px;
+            margin: 12px 0;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .thinking-step h4 {
+            color: #17a2b8 !important;
+            margin-top: 0 !important;
+            margin-bottom: 10px !important;
+            font-size: 15px !important;
+            font-weight: 600 !important;
+        }
+
+        .auto-updating {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #856404;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .step-executed {
+            background: #d4edda !important;
+            border-color: #c3e6cb !important;
+        }
+
+        .step-executed:before {
+            background: #28a745 !important;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .chat-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+
+        .send-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s ease;
+        }
+
+        .send-btn:hover {
+            background: #0056b3;
+        }
+
+        .send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .category-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .actions-section {
+            margin-bottom: 20px;
+        }
+
+        .status-indicator {
+            position: fixed;
+            top: 40px;
+            right: 20px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ddd;
+        }
+
+        .status-connected {
+            color: #28a745;
+        }
+
+        .status-disconnected {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="title-bar">
+        <div class="window-controls">
+            <button class="window-btn btn-close" onclick="closeWindow()" title="Close"></button>
+            <button class="window-btn btn-minimize" onclick="minimizeWindow()" title="Minimize"></button>
+            <button class="window-btn btn-maximize" onclick="toggleMaximize()" title="Maximize"></button>
+        </div>
+        <div class="title-text">
+            Guided LLM Chat - Strategic Thinking Assistant
+        </div>
+        <div style="width: 70px;"></div> <!-- Spacer for centering -->
+    </div>
+    
+    <div class="status-indicator" id="status">
+        <span class="status-disconnected">● Connecting...</span>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                🧠 Hello! I'm your strategic thinking assistant. Ask me any question and I'll generate different thinking approaches for you to explore step-by-step. Each approach offers a unique way to tackle your problem.
+            </div>
+        </div>
+
+        <div class="thinking-paths" id="thinkingPaths">
+            <div class="thinking-indicator">
+                Ask me a question and I'll show you different thinking approaches...
+            </div>
+
+            <div class="input-container">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Type your question..." onkeypress="handleKeyPress(event)">
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        
+        let isConnected = false;
+        let isLoading = false;
+
+        // Check Ollama connection on startup
+        checkOllamaConnection();
+
+        async function checkOllamaConnection() {
+            try {
+                const result = await ipcRenderer.invoke('send-to-llm', 'test');
+                isConnected = result.success;
+                updateStatus();
+            } catch (error) {
+                isConnected = false;
+                updateStatus();
+            }
+        }
+
+        function updateStatus() {
+            const statusEl = document.getElementById('status');
+            if (isConnected) {
+                statusEl.innerHTML = '<span class="status-connected">● Connected to Llama</span>';
+            } else {
+                statusEl.innerHTML = '<span class="status-disconnected">● Disconnected</span>';
+            }
+        }
+
+        function addMessage(content, isUser = false, isLoading = false) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageEl = document.createElement('div');
+            
+            let className = 'message ';
+            if (isUser) className += 'user-message';
+            else if (isLoading) className += 'loading';
+            else className += 'bot-message';
+            
+            messageEl.className = className;
+            messageEl.textContent = content;
+            
+            messagesContainer.appendChild(messageEl);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            return messageEl;
+        }
+
+        let currentQuery = '';
+        let currentPaths = [];
+        let conversationContext = [];
+        let lastBotResponse = '';
+
+        // Window control functions
+        async function closeWindow() {
+            await ipcRenderer.invoke('window-close');
+        }
+
+        async function minimizeWindow() {
+            await ipcRenderer.invoke('window-minimize');
+        }
+
+        async function toggleMaximize() {
+            await ipcRenderer.invoke('window-maximize');
+        }
+
+        async function sendMessage() {
+            if (isLoading) return;
+            
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Store current query
+            currentQuery = message;
+            
+            // Add user message
+            addMessage(message, true);
+            input.value = '';
+            
+            // Show thinking indicator
+            isLoading = true;
+            document.getElementById('sendBtn').disabled = true;
+            showThinkingIndicator('Analyzing your question and generating thinking approaches...');
+            
+            try {
+                // Generate thinking paths
+                const pathsResult = await ipcRenderer.invoke('generate-thinking-paths', message);
+                
+                if (pathsResult.success && pathsResult.paths.length > 0) {
+                    currentPaths = pathsResult.paths;
+                    displayThinkingPaths(pathsResult.paths, false); // First time, no update button
+                    isConnected = true;
+                } else {
+                    addMessage(`Error generating thinking paths: ${pathsResult.error || 'Unknown error'}`, false);
+                    hideThinkingPaths();
+                    isConnected = false;
+                }
+            } catch (error) {
+                addMessage(`Connection error: ${error.message}`, false);
+                hideThinkingPaths();
+                isConnected = false;
+            }
+            
+            isLoading = false;
+            document.getElementById('sendBtn').disabled = false;
+            updateStatus();
+        }
+
+        function showThinkingIndicator(message) {
+            const thinkingPathsEl = document.getElementById('thinkingPaths');
+            thinkingPathsEl.innerHTML = `
+                <div class="thinking-indicator">${message}</div>
+                <div class="input-container">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Type your question..." onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+                </div>
+            `;
+        }
+
+        function displayThinkingPaths(paths, showUpdateButton = false, isAutoUpdate = false) {
+            const thinkingPathsEl = document.getElementById('thinkingPaths');
+            
+            let pathsHTML = `
+                <div class="thinking-indicator">Choose a thinking approach and step:</div>
+            `;
+            
+            // Show auto-update indicator if this was automatically generated
+            if (isAutoUpdate) {
+                pathsHTML += `
+                    <div class="auto-updating">
+                        🔄 Approaches automatically updated based on conversation
+                    </div>
+                `;
+            }
+            
+            // Add manual update button if there's conversation context
+            if (showUpdateButton) {
+                pathsHTML += `
+                    <button class="update-paths-btn" id="updatePathsBtn" onclick="updateThinkingPaths()">
+                        🔄 Generate New Approaches Based on Conversation
+                    </button>
+                `;
+            }
+            
+            pathsHTML += '<div class="paths-grid">';
+            
+            paths.forEach((path, pathIndex) => {
+                pathsHTML += `
+                    <div class="thinking-path">
+                        <div class="path-header">${path.name}</div>
+                        <ul class="path-steps">
+                `;
+                
+                path.steps.forEach((step, stepIndex) => {
+                    pathsHTML += `
+                        <li class="path-step" 
+                            data-step="${stepIndex + 1}"
+                            onclick="executeThinkingPath(${pathIndex}, ${stepIndex + 1})">
+                            ${step}
+                        </li>
+                    `;
+                });
+                
+                pathsHTML += '</ul></div>';
+            });
+            
+            pathsHTML += `
+                </div>
+                <div class="input-container">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Type your question..." onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+                </div>
+            `;
+            
+            thinkingPathsEl.innerHTML = pathsHTML;
+        }
+
+        async function autoUpdateThinkingPaths(pathName, stepsExecuted) {
+            try {
+                const pathsResult = await ipcRenderer.invoke('generate-updated-paths', {
+                    originalQuery: currentQuery,
+                    lastResponse: lastBotResponse,
+                    conversationContext: conversationContext,
+                    lastPathName: pathName,
+                    lastStepsExecuted: stepsExecuted
+                });
+                
+                if (pathsResult.success && pathsResult.paths.length > 0) {
+                    currentPaths = pathsResult.paths;
+                    displayThinkingPaths(pathsResult.paths, true, true); // Show as auto-updated
+                }
+            } catch (error) {
+                console.error('Error auto-updating paths:', error);
+            }
+        }
+
+        async function executeThinkingPath(pathIndex, stepNumber) {
+            if (isLoading) return;
+            
+            const path = currentPaths[pathIndex];
+            if (!path) return;
+            
+            // Show loading
+            isLoading = true;
+            document.getElementById('sendBtn').disabled = true;
+            
+            // Highlight executed steps
+            highlightExecutedSteps(pathIndex, stepNumber);
+            
+            const loadingEl = addMessage(`Following "${path.name}" approach through step ${stepNumber}...`, false, true);
+            
+            try {
+                const result = await ipcRenderer.invoke('execute-thinking-path', {
+                    query: currentQuery,
+                    pathName: path.name,
+                    steps: path.steps,
+                    executeUpToStep: stepNumber
+                });
+                
+                // Remove loading message
+                loadingEl.remove();
+                
+                if (result.success) {
+                    // Store the response for context
+                    lastBotResponse = result.response;
+                    conversationContext.push({
+                        query: currentQuery,
+                        pathName: result.pathName,
+                        stepsExecuted: result.stepsExecuted,
+                        response: result.response
+                    });
+                    
+                    // Add response with path info
+                    addMessageWithPath(result.response, result.pathName, result.stepsExecuted);
+                    
+                    // Auto-generate new thinking paths based on the response
+                    setTimeout(() => {
+                        autoUpdateThinkingPaths(result.pathName, result.stepsExecuted);
+                    }, 1000); // Small delay for better UX
+                    
+                    isConnected = true;
+                } else {
+                    addMessage(`Error: ${result.error}`, false);
+                    isConnected = false;
+                }
+            } catch (error) {
+                loadingEl.remove();
+                addMessage(`Connection error: ${error.message}`, false);
+                isConnected = false;
+            }
+            
+            isLoading = false;
+            document.getElementById('sendBtn').disabled = false;
+            updateStatus();
+        }
+
+        function highlightExecutedSteps(pathIndex, stepNumber) {
+            // Reset all steps
+            document.querySelectorAll('.path-step').forEach(step => {
+                step.classList.remove('step-executed');
+            });
+            
+            // Highlight executed steps in the selected path
+            const pathElement = document.querySelectorAll('.thinking-path')[pathIndex];
+            const steps = pathElement.querySelectorAll('.path-step');
+            
+            for (let i = 0; i < stepNumber; i++) {
+                if (steps[i]) {
+                    steps[i].classList.add('step-executed');
+                }
+            }
+        }
+
+        function addMessageWithPath(content, pathName, stepsExecuted) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageEl = document.createElement('div');
+            
+            // Format the response content to highlight thinking steps
+            const formattedContent = formatThinkingResponse(content);
+            
+            messageEl.className = 'message bot-message response-with-path';
+            messageEl.innerHTML = `
+                <div class="path-info">
+                    🧠 Following "${pathName}" approach - Steps 1-${stepsExecuted} executed
+                </div>
+                <div class="response-content">${formattedContent}</div>
+            `;
+            
+            messagesContainer.appendChild(messageEl);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            return messageEl;
+        }
+
+        function formatThinkingResponse(content) {
+            // Convert the response to show clear thinking steps with better formatting
+            let formatted = content;
+            
+            // Format step headers (e.g., "Step 1:", "**Step 1:**", etc.)
+            formatted = formatted.replace(/\*\*Step (\d+):(.*?)\*\*/g, '<div class="thinking-step"><h4>🔹 Step $1:$2</h4>');
+            formatted = formatted.replace(/Step (\d+):(.*?)(?=\n|Step|\*\*|$)/g, '<div class="thinking-step"><h4>🔹 Step $1:$2</h4>');
+            
+            // Format bold text (**text**)
+            formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Format bullet points (• or *)
+            formatted = formatted.replace(/^[•*]\s+(.+)$/gm, '<li>$1</li>');
+            formatted = formatted.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+            
+            // Clean up multiple consecutive ul tags
+            formatted = formatted.replace(/<\/ul>\s*<ul>/g, '');
+            
+            // Format numbered lists (1. 2. 3.)
+            formatted = formatted.replace(/^(\d+)\.\s+(.+)$/gm, '<li>$2</li>');
+            
+            // Close thinking step divs (simple approach - close before next step or at summary)
+            formatted = formatted.replace(/(<div class="thinking-step">.*?)<div class="thinking-step">/gs, '$1</div><div class="thinking-step">');
+            
+            // Handle summary section
+            formatted = formatted.replace(/\*\*Summary:\*\*/g, '</div><h3>📋 Summary:</h3>');
+            formatted = formatted.replace(/Summary:/g, '</div><h3>📋 Summary:</h3>');
+            
+            // Handle approach headers
+            formatted = formatted.replace(/\*\*Following "(.*?)" Approach:\*\*/g, '<h3>🎯 Following "$1" Approach:</h3>');
+            
+            // Format scenario headers (like "Optimistic Scenario", "Moderate Scenario", etc.)
+            formatted = formatted.replace(/\*\*([A-Z][a-z]+ Scenario[^*]*)\*\*/g, '<h4><strong>$1</strong></h4>');
+            
+            // Format any remaining bold patterns
+            formatted = formatted.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+            
+            // Close any remaining open thinking-step divs
+            if (formatted.includes('<div class="thinking-step">') && !formatted.endsWith('</div>')) {
+                formatted += '</div>';
+            }
+            
+            // Convert line breaks to proper HTML
+            formatted = formatted.replace(/\n\n/g, '</p><p>');
+            formatted = formatted.replace(/\n/g, '<br>');
+            
+            // Wrap in paragraphs where needed
+            if (!formatted.includes('<p>') && !formatted.includes('<div>') && !formatted.includes('<h3>')) {
+                formatted = '<p>' + formatted + '</p>';
+            }
+            
+            return formatted;
+        }
+
+        async function updateThinkingPaths() {
+            if (isLoading) return;
+            
+            isLoading = true;
+            document.getElementById('updatePathsBtn').disabled = true;
+            document.getElementById('updatePathsBtn').textContent = '🔄 Generating...';
+            
+            try {
+                const pathsResult = await ipcRenderer.invoke('generate-updated-paths', {
+                    originalQuery: currentQuery,
+                    lastResponse: lastBotResponse,
+                    conversationContext: conversationContext,
+                    lastPathName: conversationContext[conversationContext.length - 1]?.pathName || '',
+                    lastStepsExecuted: conversationContext[conversationContext.length - 1]?.stepsExecuted || 1
+                });
+                
+                if (pathsResult.success && pathsResult.paths.length > 0) {
+                    currentPaths = pathsResult.paths;
+                    displayThinkingPaths(pathsResult.paths, true, false); // Manual update, not auto
+                } else {
+                    console.error('Failed to generate updated paths:', pathsResult.error);
+                }
+            } catch (error) {
+                console.error('Error updating paths:', error);
+            }
+            
+            isLoading = false;
+        }
+
+        function hideThinkingPaths() {
+            const thinkingPathsEl = document.getElementById('thinkingPaths');
+            thinkingPathsEl.innerHTML = `
+                <div class="thinking-indicator">Ask me a question and I'll show you different thinking approaches...</div>
+                <div class="input-container">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Type your question..." onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+                </div>
+            `;
+        }
+
+        function updateGuidedActions(actions) {
+            // This function is no longer used in the new thinking paths system
+            // Keeping it for backwards compatibility but it won't be called
+        }
+
+        function handleAction(actionType) {
+            // This function is no longer used in the new thinking paths system
+            // Keeping it for backwards compatibility but it won't be called
+        }
+
+        function sendQuickMessage(message) {
+            document.getElementById('chatInput').value = message;
+            sendMessage();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Focus input on load and add keyboard shortcuts
+        window.addEventListener('load', () => {
+            document.getElementById('chatInput').focus();
+        });
+
+        // Global keyboard shortcuts
+        document.addEventListener('keydown', (event) => {
+            // Ctrl/Cmd + W to close
+            if ((event.ctrlKey || event.metaKey) && event.key === 'w') {
+                event.preventDefault();
+                closeWindow();
+            }
+            
+            // Ctrl/Cmd + M to minimize
+            if ((event.ctrlKey || event.metaKey) && event.key === 'm') {
+                event.preventDefault();
+                minimizeWindow();
+            }
+            
+            // F11 to toggle maximize
+            if (event.key === 'F11') {
+                event.preventDefault();
+                toggleMaximize();
+            }
+            
+            // Ctrl/Cmd + R to update paths (if available)
+            if ((event.ctrlKey || event.metaKey) && event.key === 'r' && document.getElementById('updatePathsBtn')) {
+                event.preventDefault();
+                updateThinkingPaths();
+            }
+        });
+    </script>
+</body>
+</html>
