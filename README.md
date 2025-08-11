@@ -155,6 +155,11 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 *   [🔧 Llama 3.2 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/llama3.2_finetuning/)
 
+### 🖥️ LLM Desktop Chatbot Apps
+
+*   [🧠 ThinkPath Desktop Chatbot app with Ollama ](https://github.com/Ahmed-G-ElTaher/awesome-llm-apps/tree/main/LLM%20Desktop%20Chatbot%20Apps/ThinkPath-Chatbot-App)
+
+
 ## 🚀 Getting Started
 
 1. **Clone the repository** 
