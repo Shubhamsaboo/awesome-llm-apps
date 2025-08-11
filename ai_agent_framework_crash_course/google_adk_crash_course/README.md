@@ -54,7 +54,14 @@ This crash course covers the essential concepts of Google ADK through hands-on t
    - Error handling and logging
    - Usage analytics and monitoring
 
-8. **More tutorials coming soon!**
+8. **[8_simple_multi_agent](./8_simple_multi_agent/README.md)** - Multi-agent orchestration
+   - **[8.1 Multi-Agent Researcher](./8_simple_multi_agent/multi_agent_researcher/README.md)** - Research pipeline with specialized agents
+   - Coordinator agent with sub-agents
+   - Sequential workflow: Research → Summarize → Critique
+   - Web search integration and comprehensive analysis
+
+9. **[9_multi_agent_patterns](./9_multi_agent_patterns/README.md)** - Multi-Agent Patterns
+   - **[9.1 Sequential Agent](./9_multi_agent_patterns/9_1_sequential_agent/README.md)** — Deterministic pipeline of sub-agents (e.g., Draft → Critique → Improve)
 
 ## 🛠️ Prerequisites
 
