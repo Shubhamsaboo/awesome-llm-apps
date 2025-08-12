@@ -1,20 +1,19 @@
 # 🏠 AI Real Estate Agent Team
 
-The **AI Real Estate Agent Team** is a sophisticated property search and analysis platform powered by specialized AI agents with firecrawl's extract endpoint. This application provides comprehensive real estate insights, market analysis, and property recommendations using advanced web scraping and AI-powered search capabilities.
+The **AI Real Estate Agent Team** is a sophisticated property search and analysis platform powered by specialized AI agents with Firecrawl's extract endpoint. This application provides comprehensive real estate insights, market analysis, and property recommendations using advanced web scraping and AI-powered search capabilities.
 
 ## Features
 
 - **Multi-Agent Analysis System**
-    - **Property Search Agent**: Finds properties using Firecrawl extract + Perplexity fallback
-    - **Market Analysis Agent**: Provides elaborate market trends and neighborhood insights
-    - **Property Valuation Agent**: Gives comprehensive property valuations and investment analysis
+    - **Property Search Agent**: Finds properties using direct Firecrawl integration
+    - **Market Analysis Agent**: Provides concise market trends and neighborhood insights
+    - **Property Valuation Agent**: Gives brief property valuations and investment analysis
 
 - **Multi-Platform Property Search**:
   - **Zillow**: Largest real estate marketplace with comprehensive listings
   - **Realtor.com**: Official site of the National Association of Realtors
   - **Trulia**: Neighborhood-focused real estate search
   - **Homes.com**: Comprehensive property search platform
-  - **Perplexity AI**: AI-powered search across multiple sources as fallback
 
 - **Advanced Property Analysis**:
   - Detailed property information extraction (address, price, bedrooms, bathrooms, sqft)
@@ -24,16 +23,16 @@ The **AI Real Estate Agent Team** is a sophisticated property search and analysi
 
 - **Comprehensive Market Insights**:
   - Current market conditions (buyer's/seller's market)
-  - Price trends over 6-12 months
-  - Neighborhood analysis with school districts and safety ratings
-  - Investment potential assessment with ROI projections
-  - Comparative market analysis
+  - Price trends and market direction
+  - Neighborhood analysis with key insights
+  - Investment potential assessment
+  - Strategic recommendations
 
-- **Smart Fallback System**:
-  - Primary: Firecrawl extract endpoint for structured data
-  - Fallback: Google Search when extract returns no results
-  - Seamless transition between data sources
-  - Google Search indicator when using web search
+- **Sequential Manual Execution**:
+  - Optimized for speed and reliability
+  - Direct data flow between agents
+  - Manual coordination for better control
+  - Reduced overhead and improved performance
 
 - **Interactive UI Features**:
   - Real-time agent progression tracking
@@ -41,156 +40,172 @@ The **AI Real Estate Agent Team** is a sophisticated property search and analysi
   - Downloadable analysis reports
   - Timing information for performance monitoring
 
+## Requirements
+
+The application requires the following Python libraries:
+
+- `agno`
+- `streamlit`
+- `firecrawl-py`
+- `python-dotenv`
+- `pydantic`
+
+You'll also need API keys for:
+- **Cloud Version**: Google AI (Gemini) + Firecrawl
+- **Local Version**: Firecrawl only (uses Ollama locally)
+
 ## How to Run
 
-Follow the steps below to set up and run the application:
+Follow these steps to set up and run the application:
 
-### 1. **Get API Keys**:
-   - **OpenAI API Key**: Get from [OpenAI Platform](https://platform.openai.com/api-keys)
-   - **Firecrawl API Key**: Get from [Firecrawl](https://firecrawl.dev)
-   - **Google Search**: No API key required - uses Agno's GoogleSearchTools
+### **API Version (Gemini 2.5 Flash)**
 
-### 2. **Clone the Repository**:
+1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/your-username/awesome-llm-apps.git
-   cd awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_real_estate_agent_team
+   git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
+   cd advanced_ai_agents/multi_agent_apps/agent_teams/ai_real_estate_agent_team
    ```
 
-### 3. **Set Up Environment Variables**:
-   Create a `.env` file in the project root and add your API keys:
-   ```
-   OPENAI_API_KEY=your_openai_api_key_here
-   FIRECRAWL_API_KEY=your_firecrawl_api_key_here
-   ```
-   **Google Search is included automatically** - no API key required for fallback search functionality.
+2. **Install the dependencies**:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-### 4. **Install Dependencies**:
+3. **Set up your API keys**:
+    - Get a Google AI API key from: https://aistudio.google.com/app/apikey
+    - Get a Firecrawl API key from: [Firecrawl website](https://firecrawl.dev)
+
+4. **Run the Streamlit app**:
+    ```bash
+    streamlit run real_estate_agent_team.py
+    ```
+
+### **Local Version (Ollama)**
+
+1. **Install Ollama**:
    ```bash
-   pip install -r requirements.txt
+   #Pull the model: make sure to have a device that has more than 16GB RAM to run this model locally!
+   ollama pull gpt-oss:20b  
    ```
 
-### 5. **Run the Streamlit App**:
-   ```bash
-   streamlit run real_estate_agent_team.py
-   ```
+2. **Install the dependencies**:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-## Usage Guide
+3. **Set up your API key**:
+    - Get a Firecrawl API key from: [Firecrawl website](https://firecrawl.dev)
 
-### 1. **Configuration (Sidebar)**:
-   - Enter your API keys (or use environment variables)
-   - Select real estate websites to search
-   - View the 3-agent workflow explanation
+4. **Run the local Streamlit app**:
+    ```bash
+    streamlit run local_ai_real_estate_agent_team.py
+    ```
 
-### 2. **Property Requirements**:
-   - **Location**: City and state/province
-   - **Budget**: Minimum and maximum price range
-   - **Property Details**: Type, bedrooms, bathrooms, minimum square feet
-   - **Special Features**: Parking, yard, view, proximity to amenities
-   - **Timeline & Urgency**: How soon you need to move
+## Usage
 
-### 3. **Analysis Process**:
-   - **Search Phase**: Extracts property data from selected websites
-   - **Agent Analysis**: Three specialized agents provide insights
-   - **Results**: Comprehensive report with clickable property links
+### **Cloud Version**
 
-### 4. **Understanding Results**:
-   - **Property Search Agent**: Lists found properties with details
-   - **Market Analysis Agent**: Provides market trends and neighborhood insights
-   - **Property Valuation Agent**: Gives investment analysis and valuations
-   - **Property Links**: Clickable URLs to original listings
+1. Enter your API keys in the sidebar:
+   - Google AI API Key
+   - Firecrawl API Key
+
+2. Select real estate websites to search from:
+   - Zillow
+   - Realtor.com
+   - Trulia
+   - Homes.com
+
+3. Configure your property requirements:
+   - Location (city, state)
+   - Budget range
+   - Property details (type, bedrooms, bathrooms, sqft)
+   - Special features and timeline
+
+4. Click "Start Property Analysis" to generate:
+   - Property listings with details
+   - Market analysis and trends
+   - Property valuations and recommendations
+
+### **Local Version**
+
+1. Enter your Firecrawl API key in the sidebar
+2. Ensure Ollama is running with `gpt-oss:20b` model
+3. Follow the same property configuration steps as cloud version
+4. Get the same comprehensive analysis with local AI processing
 
 ## Agent Workflow
 
 ### **Property Search Agent**
-- Uses Firecrawl extract tools to search real estate websites
+- Uses direct Firecrawl integration to search real estate websites
 - Focuses on properties matching user criteria
-- Falls back to Perplexity search if no properties found
+- Extracts structured property data with all details
 - Organizes results with clickable listing URLs
 
 ### **Market Analysis Agent**
-- **Market Trends**: Current conditions, price trends, inventory levels
-- **Neighborhood Analysis**: Schools, safety, amenities, transportation
-- **Investment Insights**: Potential assessment, rental data, development plans
-- **Comparative Analysis**: Market comparisons and unique advantages
+- **Market Condition**: Buyer's/seller's market, price trends
+- **Key Neighborhoods**: Brief overview of areas where properties are located
+- **Investment Outlook**: 2-3 key points about investment potential
+- **Format**: Concise bullet points under 100 words per section
 
 ### **Property Valuation Agent**
-- **Property Valuation**: Fair market value with detailed reasoning
-- **Pricing Assessment**: Over/under-priced analysis with strategies
-- **Investment Analysis**: ROI projections and risk assessment
-- **Features Evaluation**: Detailed property analysis and improvements
-- **Market Positioning**: Competitive analysis and target profiles
+- **Value Assessment**: Fair price, over/under priced analysis
+- **Investment Potential**: High/Medium/Low with brief reasoning
+- **Key Recommendation**: One actionable insight per property
+- **Format**: Brief assessments under 50 words per property
 
 ## Technical Architecture
 
 ### **Data Sources**:
 - **Firecrawl Extract API**: Structured property data extraction
-- **Perplexity AI**: AI-powered search across multiple sources
 - **Pydantic Schemas**: Structured data validation and formatting
 
 ### **AI Framework**:
-- **Agno Framework**: Multi-agent coordination and communication
-- **OpenAI GPT-4**: Advanced language model for analysis
+- **Cloud Version**: Agno Framework with Google Gemini 2.5 Flash
+- **Local Version**: Agno Framework with Ollama gpt-oss:20b
 - **Streamlit**: Interactive web application interface
 
 ### **Performance Features**:
-- **Rate Limiting**: Prevents API overload with intelligent delays
+- **Sequential Execution**: Manual coordination for optimal performance
 - **Progress Tracking**: Real-time updates on analysis progress
-- **Timeout Handling**: Prevents hanging with 3-minute agent timeout
-- **Error Recovery**: Graceful fallback when primary methods fail
+- **Error Recovery**: Graceful handling of extraction failures
+- **Direct Integration**: Bypasses tool wrappers for faster execution
 
 ## File Structure
 
 ```
 ai_real_estate_agent_team/
-├── real_estate_agent_team.py   # Main application file
-├── requirements.txt            # Python dependencies
-├── README.md                   # This documentation
-└── .env                        # Environment variables (create this)
+├── real_estate_agent_team.py           # API version (Google Gemini)
+├── local_ai_real_estate_agent_team.py  # Local version (Ollama)
+├── requirements.txt                    # Python dependencies
+├── README.md                          # This documentation
+└── .env                               # Environment variables (create this)
 ```
 
 ## API Requirements
 
-### **OpenAI API**
-- **Model**: GPT-4o
-- **Usage**: Multi-agent analysis and property insights
-- **Rate Limits**: Standard OpenAI rate limits apply
+### **Cloud Version**
 
-### **Firecrawl API**
+#### **Google AI API**
+- **Model**: Gemini 2.5 Flash
+- **Usage**: Multi-agent analysis and property insights
+- **Rate Limits**: Standard Google AI rate limits apply
+
+#### **Firecrawl API**
 - **Endpoint**: Extract API for structured data
 - **Usage**: Property listing extraction from real estate websites
 - **Rate Limits**: Firecrawl standard rate limits
 
-### **Google Search**
-- **Tool**: Agno GoogleSearchTools
-- **Usage**: Web search for property listings fallback
-- **Rate Limits**: Google Search standard rate limits
+### **Local Version**
 
-## Troubleshooting
+#### **Firecrawl API**
+- **Endpoint**: Extract API for structured data
+- **Usage**: Property listing extraction from real estate websites
+- **Rate Limits**: Firecrawl standard rate limits
 
-### **Common Issues**:
+#### **Ollama (Local)**
+- **Model**: gpt-oss:20b
+- **Usage**: All AI processing locally
+- **Requirements**: ~16GB RAM recommended
+- **No API costs**: Completely local processing
 
-1. **"No properties found"**:
-   - This is normal for specific criteria
-   - Perplexity fallback will provide market insights
-   - Try broadening your search criteria
-
-2. **API Key Errors**:
-   - Ensure all API keys are valid and have sufficient credits
-   - Check environment variables are properly set
-   - Verify API key permissions
-
-3. **Slow Performance**:
-   - Reduce number of selected websites
-   - Simplify property criteria
-   - Check internet connection
-
-4. **Agent Timeout**:
-   - Simplify search criteria
-   - Reduce number of websites
-   - Try again with different parameters
-
-### **Performance Tips**:
-- Start with 1-2 websites for testing
-- Use specific but not overly restrictive criteria
-- Monitor timing information for optimization
 
