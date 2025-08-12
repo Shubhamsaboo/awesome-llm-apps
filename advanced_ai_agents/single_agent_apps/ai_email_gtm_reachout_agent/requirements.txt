@@ -1,0 +1,4 @@
+agno>=0.1.0
+streamlit>=1.32.0
+pydantic>=2.0.0
+openai>=1.0.0
