@@ -62,6 +62,8 @@ This crash course covers the essential concepts of Google ADK through hands-on t
 
 9. **[9_multi_agent_patterns](./9_multi_agent_patterns/README.md)** - Multi-Agent Patterns
    - **[9.1 Sequential Agent](./9_multi_agent_patterns/9_1_sequential_agent/README.md)** — Deterministic pipeline of sub-agents (e.g., Draft → Critique → Improve)
+   - **[9.2 Loop Agent](./9_multi_agent_patterns/9_2_loop_agent/README.md)** — Iterative refinement with an explicit stop condition (max iterations or an exit tool). A tweet crafting loop demonstrates the pattern. 
+   - **[9.3 Parallel Agent](./9_multi_agent_patterns/9_3_parallel_agent/README.md)** — Execute multiple sub-agents concurrently and merge results.
 
 ## 🛠️ Prerequisites
 
