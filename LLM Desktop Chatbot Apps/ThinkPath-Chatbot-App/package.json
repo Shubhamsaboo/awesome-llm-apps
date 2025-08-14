@@ -1,0 +1,20 @@
+{
+  "name": "guided-llm-chat",
+  "version": "1.0.0",
+  "description": "Local LLM chat with guided responses",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "concurrently \"npm run start\" \"npm run watch\"",
+    "watch": "nodemon --exec npm run start",
+    "build": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^27.0.0",
+    "concurrently": "^8.2.0",
+    "nodemon": "^3.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}
