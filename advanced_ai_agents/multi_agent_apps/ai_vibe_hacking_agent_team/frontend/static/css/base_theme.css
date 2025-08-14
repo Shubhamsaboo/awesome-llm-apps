@@ -1,0 +1,105 @@
+/* 기본 공통 테마 스타일 */
+
+/* 채팅 메시지 스타일링 */
+.agent-header {
+    font-size: 24px !important;
+    font-weight: 600;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    position: relative;
+}
+
+/* 에이전트별 스타일링 - 주요 레이아웃 */
+div.stChatMessage[data-testid="stChatMessage"]:has(.supervisor-message),
+div.stChatMessage[data-testid="stChatMessage"]:has(.planner-message),
+div.stChatMessage[data-testid="stChatMessage"]:has(.recon-message),
+div.stChatMessage[data-testid="stChatMessage"]:has(.initaccess-message),
+div.stChatMessage[data-testid="stChatMessage"]:has(.execution-message),
+div.stChatMessage[data-testid="stChatMessage"]:has(.persistence-message),
+div.stChatMessage[data-testid="stChatMessage"]:has(.privilege-escalation-message),
+div.stChatMessage[data-testid="stChatMessage"]:has(.defense-evasion-message),
+div.stChatMessage[data-testid="stChatMessage"]:has(.tool-message),
+div.stChatMessage[data-testid="stChatMessage"]:has(.tool-output-message),
+div.stChatMessage[data-testid="stChatMessage"]:has(.agent-message) {
+    margin-bottom: 25px;
+}
+
+/* 입력창 스타일링 */
+.stChatInput {
+    position: fixed; 
+    bottom: 30px;
+    width: calc(50% - 50px);
+    z-index: 999;
+    background-color: transparent !important;
+}
+
+/* 에이전트 아바타 크기 키우기 */
+div.stChatMessage[data-testid="stChatMessage"] .stChatMessageAvatar {
+    transform: scale(3);
+    margin-right: 8px;
+}
+
+/* 에이전트 이름 크기 키우기 */
+div.stChatMessage[data-testid="stChatMessage"] div strong:not(:contains("You")) {
+    font-size: 30px !important;
+    font-weight: bold;
+}
+
+/* 애니메이션 정의 */
+@keyframes pulse-button {
+    0% {
+        background-color: rgba(255, 75, 75, 0.15);
+        box-shadow: 0 0 0 0 rgba(255, 75, 75, 0.7);
+    }
+    50% {
+        background-color: rgba(255, 75, 75, 0.3);
+        box-shadow: 0 0 10px 0 rgba(255, 75, 75, 0.7);
+    }
+    100% {
+        background-color: rgba(255, 75, 75, 0.15);
+        box-shadow: 0 0 0 0 rgba(255, 75, 75, 0);
+    }
+}
+
+/* 라이트 모드용 펄스 애니메이션 */
+@keyframes pulse-button-light {
+    0% {
+        background-color: rgba(255, 75, 75, 0.05);
+        box-shadow: 0 0 0 0 rgba(255, 75, 75, 0.3);
+    }
+    50% {
+        background-color: rgba(255, 75, 75, 0.1);
+        box-shadow: 0 0 10px 0 rgba(255, 75, 75, 0.3);
+    }
+    100% {
+        background-color: rgba(255, 75, 75, 0.05);
+        box-shadow: 0 0 0 0 rgba(255, 75, 75, 0);
+    }
+}
+
+/* 스트리밍 효과를 위한 추가 스타일 */
+.typing-container {
+    display: inline-block;
+    width: 100%;
+}
+
+/* 스트리밍 텍스트 스타일 */
+.streaming-text {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* 채팅 메시지 헤더 스타일 */
+div.stChatMessage[data-testid="stChatMessage"] {
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+/* 아바타 크기와 위치 조정 */
+div.stChatMessage[data-testid="stChatMessage"] .stChatMessageAvatar {
+    transform: scale(1.5);
+    margin-right: 12px;
+    position: relative;
+    top: -5px;
+}

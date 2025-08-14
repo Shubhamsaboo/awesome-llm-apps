@@ -1,0 +1,256 @@
+/* 터미널 UI 스타일 - 맥 스타일 (테마 대응) */
+
+/* ========================================
+   일반 터미널 래퍼 스타일
+   ======================================== */
+.terminal-wrapper {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    background: transparent;
+    margin-bottom: 20px;
+}
+
+/* ========================================
+   플로팅 터미널 래퍼 스타일 - 크기 맞춤
+   ======================================== */
+.floating-terminal-wrapper {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid #374151 !important;
+    backdrop-filter: blur(16px) !important;
+    /* 정확한 크기 설정 - 헤더(35px) + 터미널(450px) */
+    height: 700px !important;
+    max-height: 700px !important;
+    overflow-y: hidden;
+}
+
+/* ========================================
+   터미널 컨테이너 스타일 - 복원됨 (다크 모드 기준)
+   ======================================== */
+.terminal-container {
+    background-color: #1E1E1E !important;
+    color: #FFFFFF;
+    font-family: 'Courier New', monospace;
+    padding: 15px;
+    height: 700px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    border: none !important;
+    border-radius: 0 0 12px 12px !important;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+/* ========================================
+   플로팅 터미널의 컨테이너 스타일 - 중첩 테두리 제거
+   ======================================== */
+.floating-terminal-wrapper .terminal-container {
+    height: 700px !important;
+    max-height: 700px !important;
+    background: #1E1E1E !important;
+    border-radius: 0 0 12px 12px !important; /* 하단만 둥글게 */
+    border: none !important; /* 테두리 제거 */
+    margin-top: 0 !important;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+/* ========================================
+   맥 스타일 헤더 - 복원됨 (다크 모드 기준)
+   ======================================== */
+.mac-terminal-header {
+    background: linear-gradient(to bottom, #515151, #333333) !important;
+    color: #FFFFFF;
+    padding: 8px 15px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+    height: 35px;
+    transition: all 0.3s ease;
+    position: relative;
+    border-radius: 12px 12px 0 0 !important;
+    border-bottom: none !important; /* 기본적으로 하단 테두리 없음 */
+    margin-bottom: 0 !important;
+}
+
+/* 플로팅 터미널의 헤더 스타일 - 다른 배경만 적용 */
+.floating-terminal-wrapper .mac-terminal-header {
+    background: linear-gradient(to bottom, #4a5568, #2d3748) !important;
+    backdrop-filter: blur(8px) !important;
+}
+
+/* ========================================
+   맥 스타일 버튼들 - 복원됨
+   ======================================== */
+.mac-buttons {
+    display: flex;
+    align-items: center;
+    margin-right: auto;
+}
+
+/* 헤더 버튼 스타일 */
+.terminal-header-button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    transition: transform 0.1s ease;
+}
+
+.terminal-header-button:hover {
+    transform: scale(1.1);
+}
+
+.terminal-header-button.red {
+    background: radial-gradient(circle, #ff5f57 0%, #ff5f57 60%, #ce4a41 100%);
+    border: 1px solid #b03a37;
+}
+
+.terminal-header-button.yellow {
+    background: radial-gradient(circle, #ffbd2e 0%, #ffbd2e 60%, #dda012 100%);
+    border: 1px solid #b38416;
+}
+
+.terminal-header-button.green {
+    background: radial-gradient(circle, #28c940 0%, #28c940 60%, #17a82b 100%);
+    border: 1px solid #178323;
+}
+
+/* ========================================
+   터미널 텍스트 스타일 - 기본값 (다크 모드 기준)
+   ======================================== */
+
+/* 터미널 프롬프트 스타일 */
+.terminal-prompt {
+    margin-bottom: 5px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    line-height: 1.4;
+}
+
+/* root@kali 부분 */
+.terminal-user {
+    color: #4EC9B0;
+    transition: color 0.3s ease;
+}
+
+/* 프롬프트 텍스트 부분(:~$) */
+.terminal-prompt-text {
+    color: #FFFFFF;
+    transition: color 0.3s ease;
+}
+
+/* 명령어 텍스트 부분 */
+.terminal-command-text {
+    color: #DCDCAA;
+    font-weight: normal;
+    transition: color 0.3s ease;
+}
+
+/* 터미널 출력 스타일 */
+.terminal-output {
+    color: #CCCCCC;
+    margin-bottom: 8px;
+    padding-left: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    transition: color 0.3s ease;
+    line-height: 1.3;
+}
+
+/* ========================================
+   커서 애니메이션
+   ======================================== */
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.terminal-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 15px;
+    background-color: #4EC9B0;
+    margin-left: 2px;
+    animation: blink 1.2s infinite;
+    border-radius: 1px;
+}
+
+/* ========================================
+   스크롤바 스타일 - 복원됨 (다크 모드 기준)
+   ======================================== */
+.terminal-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.terminal-container::-webkit-scrollbar-track {
+    background: rgba(30, 30, 30, 0.1);
+    border-radius: 3px;
+}
+
+.terminal-container::-webkit-scrollbar-thumb {
+    background-color: rgba(78, 201, 176, 0.3);
+    border-radius: 3px;
+    transition: background-color 0.3s ease;
+}
+
+.terminal-container::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(78, 201, 176, 0.6);
+}
+
+/* 플로팅 터미널의 스크롤바 스타일 */
+.floating-terminal-wrapper .terminal-container::-webkit-scrollbar-thumb {
+    background-color: rgba(78, 201, 176, 0.4);
+}
+
+.floating-terminal-wrapper .terminal-container::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(78, 201, 176, 0.8);
+}
+
+/* ========================================
+   반응형 디자인 - 인라인 스타일로 반영
+   ======================================== */
+/* 반응형 디자인은 필요시 terminal_ui.py에서 처리 */
+
+/* ========================================
+   라이트 모드 지원 (필요시 활성화)
+   ======================================== */
+/*
+[data-theme="light"] .terminal-container {
+    background-color: #F8F9FA !important;
+    color: #212529;
+}
+
+[data-theme="light"] .mac-terminal-header {
+    background: linear-gradient(to bottom, #E9ECEF, #DEE2E6) !important;
+    color: #212529;
+}
+
+[data-theme="light"] .terminal-user {
+    color: #0D6EFD;
+}
+
+[data-theme="light"] .terminal-prompt-text {
+    color: #212529;
+}
+
+[data-theme="light"] .terminal-command-text {
+    color: #6F42C1;
+}
+
+[data-theme="light"] .terminal-output {
+    color: #495057;
+}
+
+[data-theme="light"] .terminal-cursor {
+    background-color: #0D6EFD;
+}
+*/

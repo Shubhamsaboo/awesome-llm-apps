@@ -1,0 +1,111 @@
+/* 채팅 UI 스타일 - 공통 레이아웃 속성 (테마 대응) */
+
+/* 에이전트별 스타일링의 공통 속성 */
+div.stChatMessage[data-testid="stChatMessage"] {
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    background-color: transparent;
+}
+
+/* 채팅 메시지 컨테이너 테마 대응 */
+div.stChatMessage[data-testid="stChatMessage"] .stChatMessageContent {
+    background-color: transparent;
+    transition: background-color 0.3s ease;
+}
+
+/* 스트리밍 효과 */
+.typing-container {
+    display: inline-block;
+    width: 100%;
+}
+
+.streaming-text {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* 채팅 메시지 헤더 - 테마 대응 */
+.agent-header {
+    font-size: 24px !important;
+    font-weight: 600;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    position: relative;
+    transition: all 0.3s ease;
+    border-bottom-color: transparent;
+}
+
+/* 아바타 스타일링 - 테마 대응 */
+div.stChatMessage[data-testid="stChatMessage"] .stChatMessageAvatar {
+    transform: scale(1.5);
+    margin-right: 12px;
+    position: relative;
+    top: -5px;
+    transition: all 0.3s ease;
+    filter: brightness(1);
+}
+
+/* 에이전트 이름 스타일링 - 테마 대응 */
+div.stChatMessage[data-testid="stChatMessage"] div strong:not(:contains("You")) {
+    font-size: 30px !important;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+
+/* 에이전트별 테두리 색상 클래스 정의 - 테마 대응 */
+
+/* CSS 기반 테두리 색상 (fallback) */
+.supervisor-message-container {
+    border-left: 4px solid #fd6262 !important;
+    transition: border-color 0.3s ease;
+}
+
+.planner-message-container {
+    border-left: 4px solid #4dabf7 !important;
+    transition: border-color 0.3s ease;
+}
+
+.recon-message-container {
+    border-left: 4px solid #7950f2 !important;
+    transition: border-color 0.3s ease;
+}
+
+.initaccess-message-container {
+    border-left: 4px solid #fab005 !important;
+    transition: border-color 0.3s ease;
+}
+
+.execution-message-container {
+    border-left: 4px solid #f76707 !important;
+    transition: border-color 0.3s ease;
+}
+
+.persistence-message-container {
+    border-left: 4px solid #ae3ec9 !important;
+    transition: border-color 0.3s ease;
+}
+
+.privilege-escalation-message-container {
+    border-left: 4px solid #d6336c !important;
+    transition: border-color 0.3s ease;
+}
+
+.defense-evasion-message-container {
+    border-left: 4px solid #1098ad !important;
+    transition: border-color 0.3s ease;
+}
+
+.tool-message-container {
+    border-left: 4px solid #82c91e !important;
+    transition: border-color 0.3s ease;
+}
+
+.agent-message-container {
+    border-left: 4px solid #9775fa !important;
+    transition: border-color 0.3s ease;
+}
+
+/* 색상 관련 스타일링은 테마 CSS 파일에서 처리됨 */
