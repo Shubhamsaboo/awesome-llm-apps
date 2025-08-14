@@ -1,0 +1,5 @@
+name: FunSearch
+max_sample_nums: 20
+samples_per_prompt: 4
+num_samplers: 4
+num_evaluators: 4

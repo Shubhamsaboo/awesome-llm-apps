@@ -1,0 +1,3 @@
+name: CarMountainCEvaluation
+max_steps: 500
+timeout_seconds: 20
