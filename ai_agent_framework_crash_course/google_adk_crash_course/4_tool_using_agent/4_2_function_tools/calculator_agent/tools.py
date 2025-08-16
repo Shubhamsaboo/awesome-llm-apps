@@ -194,7 +194,7 @@ def calculate_percentage(value: float, total: float) -> Dict[str, Union[float, s
             "status": "error"
         }
 
-def calculate_statistics(numbers: List[float]) -> Dict[str, Union[float, str, int]]:
+def calculate_statistics(numbers: List[float]) -> Dict[str, Union[float, str, int, List[float]]]:
     """
     Calculate basic statistics for a list of numbers.
     
