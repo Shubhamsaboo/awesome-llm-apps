@@ -155,7 +155,7 @@ def calculate_compound_interest(principal: float, rate: float, years: int, compo
             "status": "error"
         }
 
-def calculate_percentage(value: float, total: float) -> Dict[str, Union[float, str]]:
+def calculate_percentage(value: float, total: float) -> Dict[str, Union[float, str, Dict]]:
     """
     Calculate what percentage one value is of another.
     
