@@ -10,7 +10,7 @@ This example shows how to build an interactive Tic Tac Toe game where AI agents 
 - Display real-time game progress and move history
 
 ## Features
-- Multiple AI models support (GPT-4, Claude, Gemini, etc.)
+- Multiple AI models support (GPT-4, Claude, Gemini, DeepSeek, etc.)
 - Real-time game visualization
 - Move history tracking with board states
 - Interactive player selection
@@ -54,6 +54,7 @@ The game supports multiple AI models. Create a `.env` file in this directory and
    ANTHROPIC_API_KEY=your_actual_anthropic_api_key_here  # For Claude models
    GOOGLE_API_KEY=your_actual_google_api_key_here        # For Gemini models
    GROQ_API_KEY=your_actual_groq_api_key_here           # For Groq models
+   DEEPSEEK_API_KEY=your_actual_deepseek_api_key_here   # For DeepSeek models
    ```
 
    > **Note:** Replace the placeholder values with your actual API keys. The app will show helpful error messages if required keys are missing.
@@ -90,6 +91,8 @@ The game supports various AI models:
 - Gemini (Google)
 - Llama 3 (Groq)
 - Claude (Anthropic)
+- DeepSeek Chat (DeepSeek)
+- DeepSeek Reasoner (DeepSeek)
 
 ## Game Features
 
