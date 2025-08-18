@@ -155,7 +155,6 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 *   [🔧 Llama 3.2 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/llama3.2_finetuning/)
 
-
 ## 🚀 Getting Started
 
 1. **Clone the repository** 
