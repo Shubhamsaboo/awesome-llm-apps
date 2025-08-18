@@ -240,10 +240,6 @@ We welcome contributions! Here's how you can help:
 - **Features**: New thinking methodologies and tools
 - **Documentation**: Tutorials, guides, and examples
 
-## 📝 **License**
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 🙏 **Acknowledgments**
 
 - **Ollama**: For making local LLM deployment accessible
