@@ -155,6 +155,15 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 *   [🔧 Llama 3.2 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/llama3.2_finetuning/)
 
+### 🧑‍🏫 AI Agent Framework Crash Course
+
+- [Google ADK Crash Course](ai_agent_framework_crash_course/google_adk_crash_course/)
+  - Starter agent; model‑agnostic (OpenAI, Claude)
+  - Structured outputs (Pydantic)
+  - Tools: built‑in, function, third‑party, MCP tools
+  - Memory; callbacks; Plugins
+  - Simple multi‑agent; Multi‑agent patterns
+
 ## 🚀 Getting Started
 
 1. **Clone the repository** 
