@@ -1,0 +1,23 @@
+version: "3.10"
+
+services:
+  app:
+    image: mmmay0722/webqa-agent:latest
+    container_name: webqa-agent
+    volumes:
+      - ./config:/app/config:ro
+      - ./logs:/app/logs
+      - ./reports:/app/reports
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+      - DOCKER_ENV=true 
+    restart: "no"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

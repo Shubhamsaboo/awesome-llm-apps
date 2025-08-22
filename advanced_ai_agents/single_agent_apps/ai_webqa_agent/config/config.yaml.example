@@ -1,0 +1,32 @@
+target:
+  url: https://demo.chat-sdk.dev/
+  description: 
+  # max_concurrent_tests: 2 
+
+test_config:
+  function_test:
+    enabled: True
+    type: ai  # default or ai
+    business_objectives: Test chat function, generating 2 cases
+  ux_test:
+    enabled: True
+  performance_test:
+    enabled: False
+  security_test:
+    enabled: False
+
+llm_config: 
+  model: gpt-4.1 
+  api_key: your_api_key
+  base_url:  https://api.example.com/v1
+  temperature: 0.1
+  # top_p: 0.9 
+
+browser_config:
+  viewport: {"width": 1280, "height": 720}
+  headless: False 
+  language: zh-CN
+  cookies: []
+
+log:
+  level: info
