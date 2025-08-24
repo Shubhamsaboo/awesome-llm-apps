@@ -43,6 +43,31 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 - 🔥 Explore apps that combine LLMs from OpenAI, Anthropic, Gemini, and open-source alternatives with AI Agents, Agent Teams, MCP & RAG.
 - 🎓 Learn from well-documented projects and contribute to the growing open-source ecosystem of LLM-powered applications.
 
+## 🙏 Thanks to our sponsors
+
+<table align="center" cellpadding="16" cellspacing="12">
+  <tr>
+    <td align="center">
+      <a href="https://getunblocked.com/unblocked-mcp/?utm_source=oss&utm_medium=sponsorship&utm_campaign=awesome-llm-apps" target="_blank" rel="noopener" title="Unblocked">
+        <img src="docs/banner/sponsors/unblocked.png" alt="Unblocked" width="450">
+      </a>
+      <br>
+      <a href="https://getunblocked.com/unblocked-mcp/?utm_source=oss&utm_medium=sponsorship&utm_campaign=awesome-llm-apps" target="_blank" rel="noopener" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
+        Unblocked
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://sponsorunwindai.com/" title="Sponsor Awesome LLM Apps Repo">
+        <img src="docs/banner/sponsor_awesome_llm_apps.png" alt="Sponsor Awesome LLM Apps Repo" width="450">
+      </a>
+      <br>
+      <a href="https://sponsorunwindai.com/" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
+        Become a Sponsor
+      </a>
+    </td>
+  </tr>
+</table>
+
 ## 📂 Featured AI Projects
 
 ### AI Agents
