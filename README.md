@@ -45,8 +45,6 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 ## 🙏 Thanks to our sponsors
 
-
-
 <table align="center" cellpadding="16" cellspacing="12">
   <tr>
     <td align="center">
@@ -64,7 +62,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
       </a>
       <br>
       <a href="https://sponsorunwindai.com/" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
-        Sponsor Awesome LLM Apps Repo
+        Become a Sponsor
       </a>
     </td>
   </tr>
