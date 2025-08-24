@@ -1,1 +1,0 @@
-# No external dependencies required for core MCP server 
