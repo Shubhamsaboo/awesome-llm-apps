@@ -20,18 +20,18 @@ with st.sidebar:
     st.markdown("### Example Commands")
     
     st.markdown("**Navigation**")
-    st.markdown("- Go to wikipedia.org/wiki/computer_vision")
+    st.markdown("- Go to github.com/Shubhamsaboo/awesome-llm-apps")
     
     st.markdown("**Interactions**")
-    st.markdown("- Click on the link to object detection and take a screenshot")
+    st.markdown("- click on mcp_ai_agents")
     st.markdown("- Scroll down to view more content")
     
     st.markdown("**Multi-step Tasks**")
-    st.markdown("- Navigate to wikipedia.org/wiki/computer_vision, scroll down, and report details")
-    st.markdown("- Scroll down and summarize the wikipedia page")
+    st.markdown("- Navigate to github.com/Shubhamsaboo/awesome-llm-apps, scroll down, and report details")
+    st.markdown("- Scroll down and summarize the github readme")
     
     st.markdown("---")
-    st.caption("Note: The agent uses Puppeteer to control a real browser.")
+    st.caption("Note: The agent uses Playwright to control a real browser.")
 
 # Query input
 query = st.text_area("Your Command", 
@@ -47,6 +47,7 @@ if 'initialized' not in st.session_state:
     st.session_state.llm = None
     st.session_state.loop = asyncio.new_event_loop()
     asyncio.set_event_loop(st.session_state.loop)
+    st.session_state.is_processing = False
 
 # Setup function that runs only once
 async def setup_agent():
@@ -59,15 +60,15 @@ async def setup_agent():
             # Create and initialize agent
             st.session_state.browser_agent = Agent(
                 name="browser",
-                instruction="""You are a helpful web browsing assistant that can interact with websites using puppeteer.
+                instruction="""You are a helpful web browsing assistant that can interact with websites using playwright.
                     - Navigate to websites and perform browser actions (click, scroll, type)
                     - Extract information from web pages 
                     - Take screenshots of page elements when useful
                     - Provide concise summaries of web content using markdown
                     - Follow multi-step browsing sequences to complete tasks
                     
-                    When navigating, start with "www.lastmileai.dev" unless instructed otherwise.""",
-                server_names=["puppeteer"],
+                Respond back with a status update on completing the commands.""",
+                server_names=["playwright"],
             )
             
             # Initialize agent and attach LLM
@@ -100,20 +101,47 @@ async def run_mcp_agent(message):
         # Switch use_history to False to reduce the passed context
         result = await st.session_state.llm.generate_str(
             message=message, 
-            request_params=RequestParams(use_history=True)
+            request_params=RequestParams(use_history=True, maxTokens=10000)
             )
         return result
     except Exception as e:
         return f"Error: {str(e)}"
 
-# Run button
-if st.button("🚀 Run Command", type="primary", use_container_width=True):
+# Defaults
+if 'is_processing' not in st.session_state:
+    st.session_state.is_processing = False
+if 'last_result' not in st.session_state:
+    st.session_state.last_result = None
+
+def start_run():
+    st.session_state.is_processing = True
+
+# Button (use a callback so the click just flips state)
+st.button(
+    "🚀 Run Command",
+    type="primary",
+    use_container_width=True,
+    disabled=st.session_state.is_processing,
+    on_click=start_run,
+)
+
+# If we’re in a processing run, do the work now
+if st.session_state.is_processing:
     with st.spinner("Processing your request..."):
         result = st.session_state.loop.run_until_complete(run_mcp_agent(query))
-    
-    # Display results
+    # persist result across the next rerun
+    st.session_state.last_result = result
+    # unlock the button and refresh UI
+    st.session_state.is_processing = False
+    st.rerun()
+
+# Render the most recent result (after the rerun)
+if st.session_state.last_result:
     st.markdown("### Response")
-    st.markdown(result)
+    st.markdown(st.session_state.last_result)
+else:
+    # (your existing help text here)
+    pass
 
 # Display help text for first-time users
 if 'result' not in locals():
@@ -127,7 +155,7 @@ if 'result' not in locals():
         </ol>
         <p><strong>Capabilities:</strong></p>
         <ul>
-            <li>Navigate to websites using Puppeteer</li>
+            <li>Navigate to websites using Playwright</li>
             <li>Click on elements, scroll, and type text</li>
             <li>Take screenshots of specific elements</li>
             <li>Extract information from web pages</li>
@@ -139,4 +167,4 @@ if 'result' not in locals():
 
 # Footer
 st.markdown("---")
-st.write("Built with Streamlit, Puppeteer, and MCP-Agent Framework ❤️")
+st.write("Built with Streamlit, Playwright, and [MCP-Agent](https://www.github.com/lastmile-ai/mcp-agent) Framework ❤️")
