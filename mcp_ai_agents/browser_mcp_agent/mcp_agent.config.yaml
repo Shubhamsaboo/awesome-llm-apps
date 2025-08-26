@@ -10,11 +10,11 @@ logger:
 
 mcp:
   servers:
-    puppeteer:
+    playwright:
       command: "npx"
-      args: ["-y", "@modelcontextprotocol/server-puppeteer"]
+      args: ["@playwright/mcp@latest"]
 
 
 openai:
   # Secrets (API keys, etc.) are stored in an mcp_agent.secrets.yaml file which can be gitignored
-  default_model: "gpt-4.1-mini-2025-04-14"
+  default_model: "gpt-4o-mini"
