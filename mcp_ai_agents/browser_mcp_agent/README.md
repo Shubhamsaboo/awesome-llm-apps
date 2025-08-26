@@ -1,6 +1,6 @@
 # 🌐 Browser MCP Agent
 
-![Area](https://github.com/user-attachments/assets/285a6a02-c1a9-4581-b32b-b244f665f648)
+https://github.com/user-attachments/assets/a01e09fa-131b-479a-8df3-2d1a61fd80f3
 
 A Streamlit application that allows you to browse and interact with websites using natural language commands through the Model Context Protocol (MCP) and [MCP-Agent](https://github.com/lastmile-ai/mcp-agent) with Playwright integration.
 
@@ -65,7 +65,7 @@ A Streamlit application that allows you to browse and interact with websites usi
 ### Example Commands
 
 #### Basic Navigation
-- "Go to www.lastmileai.dev"
+- "Go to www.mcp-agent.com"
 - "Go back to the previous page"
 
 #### Interaction
