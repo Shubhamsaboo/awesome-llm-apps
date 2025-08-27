@@ -1,0 +1,6 @@
+torch
+transformers
+datasets
+trl
+unsloth
+unsloth_zoo
