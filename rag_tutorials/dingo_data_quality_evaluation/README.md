@@ -20,9 +20,6 @@ streamlit run dingo_quality_assessment.py
 ### Quality Evaluation Results
 ![Evaluation Results](asset/evaluation_results.png)
 
-### Quality Insights Dashboard
-![Quality Insights](asset/quality_insights.png)
-
 ## Features
 
 ### 🎯 Multi-dimensional Quality Assessment
