@@ -37,7 +37,7 @@ The streaming voice pipeline processes audio continuously in real-time. Think of
 │       │                                                     │
 │       ▼                                                     │
 │  ┌─────────────┐    2. LIVE TRANSCRIPTION                   │
-│  │ STREAMING   │    ◦ Real-time speech-to-text             │
+│  │ STREAMING   │    ◦ Real-time speech-to-text              │
 │  │TRANSCRIPTION│    ◦ Turn boundary detection               │
 │  └─────────────┘                                            │
 │       │                                                     │
@@ -45,18 +45,18 @@ The streaming voice pipeline processes audio continuously in real-time. Think of
 │  ┌─────────────┐    3. CONCURRENT PROCESSING                │
 │  │  PARALLEL   │    ◦ Agent workflow execution              │
 │  │ AGENT EXEC  │    ◦ Tool calls & handoffs                 │
-│  └─────────────┘    ◦ Multiple turns in session            │
+│  └─────────────┘    ◦ Multiple turns in session             │
 │       │                                                     │
 │       ▼                                                     │
 │  ┌─────────────┐    4. STREAMING RESPONSE                   │
-│  │  LIVE TTS   │    ◦ Real-time text-to-speech             │
+│  │  LIVE TTS   │    ◦ Real-time text-to-speech              │
 │  │  PLAYBACK   │    ◦ Chunked audio output                  │
-│  └─────────────┘    ◦ Immediate response playback          │
+│  └─────────────┘    ◦ Immediate response playback           │
 │       │                                                     │
 │       ▼                                                     │
 │  🔊 CONTINUOUS AUDIO OUTPUT                                 │
 │                                                             │
-│  ↺ LOOP FOR MULTIPLE TURNS                                 │
+│  ↺ LOOP FOR MULTIPLE TURNS                                  │
 └─────────────────────────────────────────────────────────────┘
 ```
 

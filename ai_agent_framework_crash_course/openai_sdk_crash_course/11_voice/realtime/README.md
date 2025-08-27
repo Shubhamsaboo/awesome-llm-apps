@@ -27,30 +27,30 @@ Based on the [official documentation](https://openai.github.io/openai-agents-pyt
 │                   REALTIME VOICE WORKFLOW                   │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  🎤 LIVE AUDIO INPUT                                        │
+│  🎤 LIVE AUDIO INPUT                                        |
 │       │                                                     │
 │       ▼                                                     │
 │  ┌─────────────┐    1. WEBSOCKET CONNECTION                 │
 │  │ PERSISTENT  │    ◦ Continuous audio streaming            │
 │  │ CONNECTION  │    ◦ Ultra-low latency pipeline            │
-│  └─────────────┘    ◦ Real-time processing                 │
+│  └─────────────┘    ◦ Real-time processing                  │
 │       │                                                     │
 │       ▼                                                     │
 │  ┌─────────────┐    2. INSTANT PROCESSING                   │
 │  │ REALTIME    │    ◦ Immediate speech recognition          │
 │  │ AGENTS      │    ◦ Live agent reasoning                  │
-│  └─────────────┘    ◦ Real-time tool execution             │
+│  └─────────────┘    ◦ Real-time tool execution              │
 │       │                                                     │
 │       ▼                                                     │
 │  ┌─────────────┐    3. IMMEDIATE RESPONSE                   │
 │  │   LIVE      │    ◦ Real-time audio generation            │
 │  │ RESPONSE    │    ◦ Streaming audio output                │
-│  └─────────────┘    ◦ Interruption handling                │
+│  └─────────────┘    ◦ Interruption handling                 │
 │       │                                                     │
 │       ▼                                                     │
-│  🔊 INSTANT AUDIO OUTPUT                                    │
+│  🔊 INSTANT AUDIO OUTPUT                                    |
 │                                                             │
-│  ↺ CONTINUOUS CONVERSATION LOOP                            │
+│  ↺ CONTINUOUS CONVERSATION LOOP                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 

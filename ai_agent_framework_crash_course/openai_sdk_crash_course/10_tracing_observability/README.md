@@ -27,24 +27,24 @@ Tracing provides **comprehensive workflow monitoring** that automatically captur
 │  AGENT WORKFLOW                                             │
 │       │                                                     │
 │       ▼                                                     │
-│  ┌─────────────┐    AUTOMATIC CAPTURE                      │
+│  ┌─────────────┐    AUTOMATIC CAPTURE                       │
 │  │    TRACE    │◀─────────────────────────────────────────┐ │
 │  │ (Workflow)  │                                          │ │
 │  └─────────────┘                                          │ │
 │       │                                                   │ │
 │       ▼                                                   │ │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐   │ │
-│  │    SPAN     │    │    SPAN     │    │    SPAN     │   │ │
-│  │ (LLM Call)  │    │ (Tool Call) │    │ (Handoff)   │   │ │
-│  └─────────────┘    └─────────────┘    └─────────────┘   │ │
-│       │                    │                    │        │ │
-│       ▼                    ▼                    ▼        │ │
-│  ┌─────────────────────────────────────────────────────┐ │ │
-│  │         OPENAI TRACES DASHBOARD                    │ │ │
-│  │    • Execution Visualization                       │ │ │
-│  │    • Performance Metrics                           │ │ │
-│  │    • Debug Information                             │ │ │
-│  └─────────────────────────────────────────────────────┘ │ │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    │ │
+│  │    SPAN     │    │    SPAN     │    │    SPAN     │    │ │
+│  │ (LLM Call)  │    │ (Tool Call) │    │ (Handoff)   │    │ │
+│  └─────────────┘    └─────────────┘    └─────────────┘    │ │
+│       │                    │                    │         │ │
+│       ▼                    ▼                    ▼         │ │
+│  ┌─────────────────────────────────────────────────────┐  │ │
+│  │         OPENAI TRACES DASHBOARD                     │  │ │
+│  │    • Execution Visualization                        │  │ │
+│  │    • Performance Metrics                            │__| │ 
+│  │    • Debug Information                              │    │
+│  └─────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────┘
 ```
 

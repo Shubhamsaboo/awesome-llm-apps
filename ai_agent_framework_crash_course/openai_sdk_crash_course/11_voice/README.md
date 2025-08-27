@@ -30,19 +30,19 @@ Voice agents combine the power of AI language models with speech processing to c
 │       │                                                     │
 │       ▼                                                     │
 │  ┌─────────────┐    1. SPEECH-TO-TEXT                       │
-│  │   AUDIO     │    ◦ Convert speech to text               │
-│  │  PIPELINE   │    ◦ Handle multiple languages            │
+│  │   AUDIO     │    ◦ Convert speech to text                │
+│  │  PIPELINE   │    ◦ Handle multiple languages             │
 │  └─────────────┘                                            │
 │       │                                                     │
 │       ▼                                                     │
 │  ┌─────────────┐    2. AGENT PROCESSING                     │
 │  │    AGENT    │    ◦ Multi-agent workflows                 │
 │  │ ECOSYSTEM   │    ◦ Tool calling & handoffs               │
-│  └─────────────┘    ◦ Context management                   │
+│  └─────────────┘    ◦ Context management                    │
 │       │                                                     │
 │       ▼                                                     │
 │  ┌─────────────┐    3. TEXT-TO-SPEECH                       │
-│  │   SPEECH    │    ◦ Convert response to speech           │
+│  │   SPEECH    │    ◦ Convert response to speech            │
 │  │ SYNTHESIS   │    ◦ Natural voice output                  │
 │  └─────────────┘                                            │
 │       │                                                     │

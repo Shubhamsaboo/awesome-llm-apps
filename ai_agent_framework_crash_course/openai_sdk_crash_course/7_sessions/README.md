@@ -26,7 +26,7 @@ Sessions provide **automatic conversation memory** that eliminates the need to m
 │  USER INPUT                                                 │
 │       │                                                     │
 │       ▼                                                     │
-│  ┌─────────────┐    1. RETRIEVE HISTORY                    │
+│  ┌─────────────┐    1. RETRIEVE HISTORY                     │
 │  │   SESSION   │◀─────────────────────────────────────────┐ │
 │  │   MEMORY    │                                          │ │
 │  └─────────────┘    2. PREPEND TO INPUT                   │ │
@@ -38,7 +38,7 @@ Sessions provide **automatic conversation memory** that eliminates the need to m
 │  └─────────────┘                                          │ │
 │       │                                                   │ │
 │       ▼                                                   │ │
-│  ┌─────────────┐    4. STORE NEW ITEMS                   │ │
+│  ┌─────────────┐    4. STORE NEW ITEMS                    │ │
 │  │   RESPONSE  │──────────────────────────────────────────┘ │
 │  │  GENERATED  │                                            │
 │  └─────────────┘                                            │

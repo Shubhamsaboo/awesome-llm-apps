@@ -25,7 +25,7 @@ The static voice pipeline processes a complete audio recording in one workflow. 
 │                    STATIC VOICE WORKFLOW                    │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  🎤 RECORD AUDIO                                            │
+│  🎤 RECORD AUDIO                                            |
 │       │                                                     │
 │       ▼                                                     │
 │  ┌─────────────┐    1. COMPLETE RECORDING                   │
@@ -35,7 +35,7 @@ The static voice pipeline processes a complete audio recording in one workflow. 
 │       │                                                     │
 │       ▼                                                     │
 │  ┌─────────────┐    2. SPEECH-TO-TEXT                       │
-│  │ TRANSCRIBE  │    ◦ Convert full audio to text           │
+│  │ TRANSCRIBE  │    ◦ Convert full audio to text            │
 │  │   AUDIO     │    ◦ Complete transcription                │
 │  └─────────────┘                                            │
 │       │                                                     │

@@ -19,35 +19,35 @@ Multi-agent orchestration enables **coordinated AI workflows** where multiple sp
 - Complex tasks are broken down across multiple AI capabilities
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                MULTI-AGENT ORCHESTRATION                    │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  COMPLEX TASK                                               │
-│       │                                                     │
-│       ▼                                                     │
-│  ┌─────────────┐    1. TASK DECOMPOSITION                  │
-│  │ORCHESTRATOR │                                           │
-│  │   AGENT     │    2. AGENT COORDINATION                  │
-│  └─────────────┘                                           │
-│       │                                                     │
-│       ▼                                                     │
+┌─────────────────────────────────────────────────────────────-┐
+│                MULTI-AGENT ORCHESTRATION                     │
+├─────────────────────────────────────────────────────────────-┤
+│                                                              │
+│  COMPLEX TASK                                                │
+│       │                                                      │
+│       ▼                                                      │
+│  ┌─────────────┐    1. TASK DECOMPOSITION                    │
+│  │ORCHESTRATOR │                                             │
+│  │   AGENT     │    2. AGENT COORDINATION                    │
+│  └─────────────┘                                             │
+│       │                                                      │
+│       ▼                                                      │
 │  ┌─────────────────────────────────────────────────────────┐ │
 │  │              PARALLEL EXECUTION                         │ │
-│  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐   │ │
-│  │  │RESEARCH │  │WRITING  │  │ANALYSIS │  │REVIEW   │   │ │
-│  │  │ AGENT   │  │ AGENT   │  │ AGENT   │  │ AGENT   │   │ │
-│  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘   │ │
+│  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐   │ │ |
+│  │  │RESEARCH │  │WRITING  │  │ANALYSIS │  │REVIEW   │   │ │ |
+│  │  │ AGENT   │  │ AGENT   │  │ AGENT   │  │ AGENT   │   │ │ |
+│  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘   │ │ |
 │  └─────────────────────────────────────────────────────────┘ │
-│       │              │              │              │        │
-│       ▼              ▼              ▼              ▼        │
+│       │              │              │              │         │
+│       ▼              ▼              ▼              ▼         │
 │  ┌─────────────────────────────────────────────────────────┐ │
 │  │              RESULT SYNTHESIS                           │ │
 │  │        • Combine outputs intelligently                  │ │
 │  │        • Quality assessment and selection               │ │
 │  │        • Final coordinated response                     │ │
 │  └─────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────┘
+└─────────────────────────────────────────────────────────────-┘
 ```
 
 ## 🚀 Tutorial Overview
