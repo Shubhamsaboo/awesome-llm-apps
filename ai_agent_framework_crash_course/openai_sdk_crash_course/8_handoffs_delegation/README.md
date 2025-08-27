@@ -26,28 +26,28 @@ Handoffs enable **agent specialization and delegation** where agents can transfe
 │  USER REQUEST                                               │
 │       │                                                     │
 │       ▼                                                     │
-│  ┌─────────────┐    1. ANALYZE REQUEST                     │
-│  │   TRIAGE    │                                           │
-│  │   AGENT     │    2. DECIDE DELEGATION                   │
-│  └─────────────┘                                           │
+│  ┌─────────────┐    1. ANALYZE REQUEST                      │
+│  │   TRIAGE    │                                            │
+│  │   AGENT     │    2. DECIDE DELEGATION                    │
+│  └─────────────┘                                            │
 │       │                                                     │
 │       ▼                                                     │
-│  ┌─────────────┐    3. CALL HANDOFF TOOL                   │
-│  │   HANDOFF   │    "transfer_to_billing_agent"            │
-│  │    TOOL     │                                           │
-│  └─────────────┘                                           │
+│  ┌─────────────┐    3. CALL HANDOFF TOOL                    │
+│  │   HANDOFF   │    "transfer_to_billing_agent"             │
+│  │    TOOL     │                                            │
+│  └─────────────┘                                            │
 │       │                                                     │
 │       ▼                                                     │
-│  ┌─────────────┐    4. TRANSFER CONTEXT                    │
+│  ┌─────────────┐    4. TRANSFER CONTEXT                     │
 │  │  BILLING    │    (with optional filtering)               │
-│  │   AGENT     │                                           │
-│  └─────────────┘    5. PROCESS REQUEST                     │
+│  │   AGENT     │                                            │
+│  └─────────────┘    5. PROCESS REQUEST                      │
 │       │                                                     │
 │       ▼                                                     │
-│  ┌─────────────┐    6. RETURN RESPONSE                     │
-│  │  RESPONSE   │                                           │
-│  │   TO USER   │                                           │
-│  └─────────────┘                                           │
+│  ┌─────────────┐    6. RETURN RESPONSE                      │
+│  │  RESPONSE   │                                            │
+│  │   TO USER   │                                            │
+│  └─────────────┘                                            │
 └─────────────────────────────────────────────────────────────┘
 ```
 

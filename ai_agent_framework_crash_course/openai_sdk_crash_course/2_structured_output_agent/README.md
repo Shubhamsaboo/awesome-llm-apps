@@ -24,16 +24,16 @@ Traditional AI responses are unstructured text, making them difficult to process
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  UNSTRUCTURED OUTPUT:                                       │
-│  "The customer John Doe submitted a high priority          │
-│   billing issue about charges on January 15th..."          │
+│  "The customer John Doe submitted a high priority           │
+│   billing issue about charges on January 15th..."           │
 │                                                             │
 │  STRUCTURED OUTPUT:                                         │
 │  {                                                          │
-│    "customer_name": "John Doe",                            │
-│    "issue_type": "billing",                               │
-│    "priority": "high",                                     │
-│    "date_submitted": "2024-01-15",                        │
-│    "description": "Incorrect charges on account"          │
+│    "customer_name": "John Doe",                             │
+│    "issue_type": "billing",                                 │
+│    "priority": "high",                                      │
+│    "date_submitted": "2024-01-15",                          │
+│    "description": "Incorrect charges on account"            │
 │  }                                                          │
 └─────────────────────────────────────────────────────────────┘
 ```

@@ -19,25 +19,25 @@ When you call any Runner method, the SDK executes a sophisticated loop that hand
 │                    THE AGENT LOOP                           │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  START: Runner.run(agent, input)                           │
+│  START: Runner.run(agent, input)                            │
 │       │                                                     │
 │       ▼                                                     │
-│  ┌─────────────┐    1. CALL LLM                            │
-│  │     LLM     │    ◦ Current agent + input                │
-│  │   CALL      │    ◦ Generate response                    │
-│  └─────────────┘                                           │
+│  ┌─────────────┐    1. CALL LLM                             │
+│  │     LLM     │    ◦ Current agent + input                 │
+│  │   CALL      │    ◦ Generate response                     │
+│  └─────────────┘                                            │
 │       │                                                     │
 │       ▼                                                     │
-│  ┌─────────────┐    2. PROCESS OUTPUT                      │
-│  │   OUTPUT    │    ◦ Final output? → END                  │
-│  │  ANALYSIS   │    ◦ Tool calls? → Execute tools          │
-│  └─────────────┘    ◦ Handoff? → Switch agent              │
+│  ┌─────────────┐    2. PROCESS OUTPUT                       │
+│  │   OUTPUT    │    ◦ Final output? → END                   │
+│  │  ANALYSIS   │    ◦ Tool calls? → Execute tools           │
+│  └─────────────┘    ◦ Handoff? → Switch agent               │
 │       │                                                     │
 │       ▼                                                     │
-│  ┌─────────────┐    3. CONTINUE LOOP                       │
-│  │   REPEAT    │    ◦ Append results to input              │
-│  │   LOOP      │    ◦ Check max_turns limit                │
-│  └─────────────┘    ◦ Loop until final output             │
+│  ┌─────────────┐    3. CONTINUE LOOP                        │
+│  │   REPEAT    │    ◦ Append results to input               │ 
+│  │   LOOP      │    ◦ Check max_turns limit                 │
+│  └─────────────┘    ◦ Loop until final output               │
 └─────────────────────────────────────────────────────────────┘
 ```
 

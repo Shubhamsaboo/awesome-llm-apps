@@ -47,7 +47,7 @@ Context management allows you to pass **custom data structures** to your agents 
 │                         ▼                                   │
 │                   ┌─────────────┐    4. CONTEXT CAN BE      │
 │                   │  CONTEXT    │       MODIFIED AND        │
-│                   │ UPDATED     │       PERSISTS             │
+│                   │ UPDATED     │       PERSISTS            │
 │                   └─────────────┘                           │
 └─────────────────────────────────────────────────────────────┘
 ```
