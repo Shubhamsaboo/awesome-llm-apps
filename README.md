@@ -49,7 +49,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
   <tr>
     <td align="center">
       <a href="https://getunblocked.com/unblocked-mcp/?utm_source=oss&utm_medium=sponsorship&utm_campaign=awesome-llm-apps" target="_blank" rel="noopener" title="Unblocked">
-        <img src="docs/banner/sponsors/unblocked.png" alt="Unblocked" width="450">
+        <img src="docs/banner/sponsors/unblocked.png" alt="Unblocked" width="6000">
       </a>
       <br>
       <a href="https://getunblocked.com/unblocked-mcp/?utm_source=oss&utm_medium=sponsorship&utm_campaign=awesome-llm-apps" target="_blank" rel="noopener" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
@@ -58,7 +58,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
     </td>
     <td align="center">
       <a href="https://sponsorunwindai.com/" title="Sponsor Awesome LLM Apps Repo">
-        <img src="docs/banner/sponsor_awesome_llm_apps.png" alt="Sponsor Awesome LLM Apps Repo" width="450">
+        <img src="docs/banner/sponsor_awesome_llm_apps.png" alt="Sponsor Awesome LLM Apps Repo" width="6000">
       </a>
       <br>
       <a href="https://sponsorunwindai.com/" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
@@ -180,6 +180,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 *   [🔧 Llama 3.2 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/llama3.2_finetuning/)
 
+
 ### 🧑‍🏫 AI Agent Framework Crash Course
 
 - [Google ADK Crash Course](ai_agent_framework_crash_course/google_adk_crash_course/)
@@ -188,6 +189,13 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
   - Tools: built‑in, function, third‑party, MCP tools
   - Memory; callbacks; Plugins
   - Simple multi‑agent; Multi‑agent patterns
+
+- [OpenAI Agents SDK Crash Course](ai_agent_framework_crash_course/openai_sdk_crash_course/)
+  - Starter agent; function calling; structured outputs
+  - Tools: built‑in, function, third‑party integrations
+  - Memory; callbacks; evaluation
+  - Multi‑agent patterns; agent handoffs
+  - Swarm orchestration; routing logic
 
 ## 🚀 Getting Started
 

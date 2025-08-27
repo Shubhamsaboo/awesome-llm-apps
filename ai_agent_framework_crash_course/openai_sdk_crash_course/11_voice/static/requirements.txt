@@ -1,0 +1,6 @@
+openai-agents[voice]>=1.0.0
+sounddevice>=0.4.0
+numpy>=1.21.0
+soundfile>=0.12.0
+librosa>=0.10.0
+python-dotenv>=1.0.0
