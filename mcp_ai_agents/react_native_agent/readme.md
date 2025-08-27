@@ -25,10 +25,7 @@ This project is an AI agent designed to interact with React Native applications 
    npm install @mcp/react-native-agent
    ```
 
-2. Install Python dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+2. No external dependencies required for core MCP server 
 
 ### Usage
 
@@ -52,13 +49,11 @@ This project is an AI agent designed to interact with React Native applications 
 
 ## File Structure
 
-- `main.py` — Main entry point for the agent
 - `mcp_server.py` — MCP server implementation
 - `native.py` — Native React Native integration logic
 
 ## Customization
 
-- Modify `main.py` to implement your agent’s logic.
 - Extend `native.py` for additional React Native features.
 
 
