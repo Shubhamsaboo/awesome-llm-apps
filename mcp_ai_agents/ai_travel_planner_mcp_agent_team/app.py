@@ -1,356 +1,319 @@
+import re
 import asyncio
-import os
-
+from textwrap import dedent
 from agno.agent import Agent
-from agno.team.team import Team
 from agno.tools.mcp import MultiMCPTools
+from agno.tools.googlesearch import GoogleSearchTools
 from agno.models.openai import OpenAIChat
+from icalendar import Calendar, Event
+from datetime import datetime, timedelta
 import streamlit as st
 from datetime import date
+import os
 
-# Remove dotenv import and loading since we'll use sidebar
-# from dotenv import load_dotenv
-# load_dotenv()
+def generate_ics_content(plan_text: str, start_date: datetime = None) -> bytes:
+    """
+    Generate an ICS calendar file from a travel itinerary text.
 
-async def run_agent(message: str):
-    """Run the Airbnb, Google Maps, Weather and Calendar agent with the given message."""
+    Args:
+        plan_text: The travel itinerary text
+        start_date: Optional start date for the itinerary (defaults to today)
 
-    # Get API keys from session state
-    google_maps_key = st.session_state.get('google_maps_key')
-    accuweather_key = st.session_state.get('accuweather_key')
-    openai_key = st.session_state.get('openai_key')
-    google_client_id = st.session_state.get('google_client_id')
-    google_client_secret = st.session_state.get('google_client_secret')
-    google_refresh_token = st.session_state.get('google_refresh_token')
+    Returns:
+        bytes: The ICS file content as bytes
+    """
+    cal = Calendar()
+    cal.add('prodid','-//AI Travel Planner//github.com//')
+    cal.add('version', '2.0')
 
-    if not google_maps_key:
-        raise ValueError("🚨 Missing Google Maps API Key. Please enter it in the sidebar.")
-    elif not accuweather_key:
-        raise ValueError("🚨 Missing AccuWeather API Key. Please enter it in the sidebar.")
-    elif not openai_key:
-        raise ValueError("🚨 Missing OpenAI API Key. Please enter it in the sidebar.")
-    elif not google_client_id:
-        raise ValueError("🚨 Missing Google Client ID. Please enter it in the sidebar.")
-    elif not google_client_secret:
-        raise ValueError("🚨 Missing Google Client Secret. Please enter it in the sidebar.")
-    elif not google_refresh_token:
-        raise ValueError("🚨 Missing Google Refresh Token. Please enter it in the sidebar.")
+    if start_date is None:
+        start_date = datetime.today()
 
-    # 👉 Set OPENAI_API_KEY globally
-    os.environ["OPENAI_API_KEY"] = openai_key
+    # Split the plan into days
+    day_pattern = re.compile(r'Day (\d+)[:\s]+(.*?)(?=Day \d+|$)', re.DOTALL)
+    days = day_pattern.findall(plan_text)
 
-    env = {
-        **os.environ,
-        "GOOGLE_MAPS_API_KEY": google_maps_key,
-        "ACCUWEATHER_API_KEY": accuweather_key,
-        "OPENAI_API_KEY": openai_key,
-        "GOOGLE_CLIENT_ID": google_client_id,
-        "GOOGLE_CLIENT_SECRET": google_client_secret,
-        "GOOGLE_REFRESH_TOKEN": google_refresh_token
-    }
+    if not days:  # If no day pattern found, create a single all-day event with the entire content
+        event = Event()
+        event.add('summary', "Travel Itinerary")
+        event.add('description', plan_text)
+        event.add('dtstart', start_date.date())
+        event.add('dtend', start_date.date())
+        event.add("dtstamp", datetime.now())
+        cal.add_component(event)
+    else:
+        # Process each day
+        for day_num, day_content in days:
+            day_num = int(day_num)
+            current_date = start_date + timedelta(days=day_num - 1)
 
-    async with MultiMCPTools(
-        [
-            "npx -y @openbnb/mcp-server-airbnb --ignore-robots-txt", # ✅ Airbnb mcp added
-            "npx -y @modelcontextprotocol/server-google-maps", # ✅ Google Maps mcp added
-            "uvx --from git+https://github.com/adhikasp/mcp-weather.git mcp-weather", # ✅ Weather mcp added
-            "./calendar_mcp.py"
-        ],
-        env=env,
-    ) as mcp_tools:
-        
-        #Define specialized agents with enhanced instructions
-        maps_agent = Agent(
-            tools=[mcp_tools],
-            model=OpenAIChat(id="gpt-4o-mini", api_key=openai_key),
-            name="Maps Agent",
-            goal="""As a Maps Agent, your responsibilities include:
-            1. Finding optimal routes between locations
-            2. Identifying points of interest near destinations
-            3. Calculating travel times and distances
-            4. Suggesting transportation options
-            5. Finding nearby amenities and services
-            6. Providing location-based recommendations
-            
-            Always consider:
-            - Traffic conditions and peak hours
-            - Alternative routes and transportation modes
-            - Accessibility and convenience
-            - Safety and well-lit areas
-            - Proximity to other planned activities"""
-        )
+            # Create a single event for the entire day
+            event = Event()
+            event.add('summary', f"Day {day_num} Itinerary")
+            event.add('description', day_content.strip())
 
-        weather_agent = Agent(
-            tools=[mcp_tools],
-            name="Weather Agent",
-            model=OpenAIChat(id="gpt-4o-mini", api_key=openai_key),
-            goal="""As a Weather Agent, your responsibilities include:
-            1. Providing detailed weather forecasts for destinations
-            2. Alerting about severe weather conditions
-            3. Suggesting weather-appropriate activities
-            4. Recommending the best travel times based on the weather conditions.
-            5. Providing seasonal travel recommendations
-            
-            Always consider:
-            - Temperature ranges and comfort levels
-            - Precipitation probability
-            - Wind conditions
-            - UV index and sun protection
-            - Seasonal variations
-            - Weather alerts and warnings"""
-        )
+            # Make it an all-day event
+            event.add('dtstart', current_date.date())
+            event.add('dtend', current_date.date())
+            event.add("dtstamp", datetime.now())
+            cal.add_component(event)
 
-        booking_agent = Agent(
-            tools=[mcp_tools],
-            name="Booking Agent",
-            model=OpenAIChat(id="gpt-4o-mini", api_key=openai_key),
-            goal="""As a Booking Agent, your responsibilities include:
-            1. Finding accommodations within budget on airbnb
-            2. Comparing prices across platforms
-            3. Checking availability for specific dates
-            4. Verifying amenities and policies
-            5. Finding last-minute deals when applicable
-            
-            Always consider:
-            - Location convenience
-            - Price competitiveness
-            - Cancellation policies
-            - Guest reviews and ratings
-            - Amenities matching preferences
-            - Special requirements or accessibility needs"""
-        )
+    return cal.to_ical()
 
-        calendar_agent = Agent(
-            tools=[mcp_tools],
-            name="Calendar Agent",
-            model=OpenAIChat(id="gpt-4o-mini", api_key=openai_key),
-            goal="""As a Calendar Agent, your responsibilities include:
-            1. Creating detailed travel itineraries
-            2. Setting reminders for bookings and check-ins
-            3. Scheduling activities and reservations
-            4. Adding reminders for booking deadlines, check-ins, and other important events.
-            5. Coordinating with other team members' schedules
-            
-            Always consider:
-            - Time zone differences
-            - Travel duration between activities
-            - Buffer time for unexpected delays
-            - Important deadlines and check-in times
-            - Synchronization with other team members"""
-        )
+async def run_mcp_travel_planner(destination: str, num_days: int, preferences: str, budget: int, openai_key: str, google_maps_key: str):
+    """Run the MCP-based travel planner agent with real-time data access."""
 
-        team = Team(
-            members=[maps_agent, weather_agent, booking_agent, calendar_agent],
-            name="Travel Planning Team",
+    try:
+        # Set Google Maps API key environment variable
+        os.environ["GOOGLE_MAPS_API_KEY"] = google_maps_key
+
+        # Initialize MCPTools with Airbnb MCP
+        mcp_tools = MultiMCPTools(
+            [
+            "npx -y @openbnb/mcp-server-airbnb --ignore-robots-txt",
+            "npx @gongrzhe/server-travelplanner-mcp",
+            ],      
+            env={
+                "GOOGLE_MAPS_API_KEY": google_maps_key,
+            },
+            timeout_seconds=60,
+        )   
+
+        # Connect to Airbnb MCP server
+        await mcp_tools.connect()
+
+
+        travel_planner = Agent(
+            name="Travel Planner",
+            role="Creates travel itineraries using Airbnb, Google Maps, and Google Search",
+            model=OpenAIChat(id="gpt-4o", api_key=openai_key),
+            description=dedent(
+                """\
+                You are a professional travel consultant AI that creates highly detailed travel itineraries directly without asking questions.
+
+                You have access to:
+                🏨 Airbnb listings with real availability and current pricing
+                🗺️ Google Maps MCP for location services, directions, distance calculations, and local navigation
+                🔍 Web search capabilities for current information, reviews, and travel updates
+
+                ALWAYS create a complete, detailed itinerary immediately without asking for clarification or additional information.
+                Use Google Maps MCP extensively to calculate distances between all locations and provide precise travel times.
+                If information is missing, use your best judgment and available tools to fill in the gaps.
+                """
+            ),
+            instructions=[
+                "IMPORTANT: Never ask questions or request clarification - always generate a complete itinerary",
+                "Research the destination thoroughly using all available tools to gather comprehensive current information",
+                "Find suitable accommodation options within the budget using Airbnb MCP with real prices and availability",
+                "Create an extremely detailed day-by-day itinerary with specific activities, locations, exact timing, and distances",
+                "Use Google Maps MCP extensively to calculate distances between ALL locations and provide travel times",
+                "Include detailed transportation options and turn-by-turn navigation tips using Google Maps MCP",
+                "Research dining options with specific restaurant names, addresses, price ranges, and distance from accommodation",
+                "Check current weather conditions, seasonal factors, and provide detailed packing recommendations",
+                "Calculate precise estimated costs for EVERY aspect of the trip and ensure recommendations fit within budget",
+                "Include detailed information about each attraction: opening hours, ticket prices, best visiting times, and distance from accommodation",
+                "Add practical information including local transportation costs, currency exchange, safety tips, and cultural norms",
+                "Structure the itinerary with clear sections, detailed timing for each activity, and include buffer time between activities",
+                "Use all available tools proactively without asking for permission",
+                "Generate the complete, detailed itinerary in one response without follow-up questions"
+            ],
+            tools=[mcp_tools, GoogleSearchTools()],
+            add_datetime_to_instructions=True,
             markdown=True,
-            show_tool_calls=True,
-            instructions="""As a Travel Planning Team, coordinate to create comprehensive travel plans:
-            1. Share information between agents to ensure consistency
-            2. Consider dependencies between different aspects of the trip
-            3. Prioritize user preferences and constraints
-            4. Provide backup options when primary choices are unavailable
-            5. Maintain a balance between planned activities and free time
-            6. Consider local events and seasonal factors
-            7. Ensure all recommendations align with the user's budget
-            8. Provide a detailed breakdown of the trip, including bookings, routes, weather, and planned activities.
-            9. Add the journey start date in the user calendar"""
+            show_tool_calls=False,
         )
 
-        result = await team.arun(message)
-        output = result.messages[-1].content
-        return output  
+        # Create the planning prompt
+        prompt = f"""
+        IMMEDIATELY create an extremely detailed and comprehensive travel itinerary for:
+
+        **Destination:** {destination}
+        **Duration:** {num_days} days
+        **Budget:** ${budget} USD total
+        **Preferences:** {preferences}
+
+        DO NOT ask any questions. Generate a complete, highly detailed itinerary now using all available tools.
+
+        **CRITICAL REQUIREMENTS:**
+        - Use Google Maps MCP to calculate distances and travel times between ALL locations
+        - Include specific addresses for every location, restaurant, and attraction
+        - Provide detailed timing for each activity with buffer time between locations
+        - Calculate precise costs for transportation between each location
+        - Include opening hours, ticket prices, and best visiting times for all attractions
+        - Provide detailed weather information and specific packing recommendations
+
+        **REQUIRED OUTPUT FORMAT:**
+        1. **Trip Overview** - Summary, total estimated cost breakdown, detailed weather forecast
+        2. **Accommodation** - 3 specific Airbnb options with real prices, addresses, amenities, and distance from city center
+        3. **Transportation Overview** - Detailed transportation options, costs, and recommendations
+        4. **Day-by-Day Itinerary** - Extremely detailed schedule with:
+           - Specific start/end times for each activity
+           - Exact distances and travel times between locations (use Google Maps MCP)
+           - Detailed descriptions of each location with addresses
+           - Opening hours, ticket prices, and best visiting times
+           - Estimated costs for each activity and transportation
+           - Buffer time between activities for unexpected delays
+        5. **Dining Plan** - Specific restaurants with addresses, price ranges, cuisine types, and distance from accommodation
+        6. **Detailed Practical Information**:
+           - Weather forecast with clothing recommendations
+           - Currency exchange rates and costs
+           - Local transportation options and costs
+           - Safety information and emergency contacts
+           - Cultural norms and etiquette tips
+           - Communication options (SIM cards, WiFi, etc.)
+           - Health and medical considerations
+           - Shopping and souvenir recommendations
+
+        Use Airbnb MCP for real accommodation data, Google Maps MCP for ALL distance calculations and location services, and web search for current information.
+        Make reasonable assumptions and fill in any gaps with your knowledge.
+        Generate the complete, highly detailed itinerary in one response without asking for clarification.
+        """
+
+        response = await travel_planner.arun(prompt)
+        return response.content
+
+    finally:
+        await mcp_tools.close()
+
+def run_travel_planner(destination: str, num_days: int, preferences: str, budget: int, openai_key: str, google_maps_key: str):
+    """Synchronous wrapper for the async MCP travel planner."""
+    return asyncio.run(run_mcp_travel_planner(destination, num_days, preferences, budget, openai_key, google_maps_key))
     
 # -------------------- Streamlit App --------------------
     
 # Configure the page
 st.set_page_config(
-    page_title="AI Travel Planner",
+    page_title="MCP AI Travel Planner",
     page_icon="✈️",
     layout="wide"
 )
 
-# Add sidebar for API keys
-with st.sidebar:
-    st.header("🔑 API Keys Configuration")
-    st.markdown("Please enter your API keys to use the travel planner.")
-    
-    # Initialize session state for API keys if not exists
-    if 'google_maps_key' not in st.session_state:
-        st.session_state.google_maps_key = ""
-    if 'accuweather_key' not in st.session_state:
-        st.session_state.accuweather_key = ""
-    if 'openai_key' not in st.session_state:
-        st.session_state.openai_key = ""
-    if 'google_client_id' not in st.session_state:
-        st.session_state.google_client_id = ""
-    if 'google_client_secret' not in st.session_state:
-        st.session_state.google_client_secret = ""
-    if 'google_refresh_token' not in st.session_state:
-        st.session_state.google_refresh_token = ""
-
-    # API key input fields
-    st.session_state.google_maps_key = st.text_input(
-        "Google Maps API Key",
-        value=st.session_state.google_maps_key,
-        type="password"
-    )
-    st.session_state.accuweather_key = st.text_input(
-        "AccuWeather API Key",
-        value=st.session_state.accuweather_key,
-        type="password"
-    )
-    st.session_state.openai_key = st.text_input(
-        "OpenAI API Key",
-        value=st.session_state.openai_key,
-        type="password"
-    )
-    st.session_state.google_client_id = st.text_input(
-        "Google Client ID",
-        value=st.session_state.google_client_id,
-        type="password"
-    )
-    st.session_state.google_client_secret = st.text_input(
-        "Google Client Secret",
-        value=st.session_state.google_client_secret,
-        type="password"
-    )
-    st.session_state.google_refresh_token = st.text_input(
-        "Google Refresh Token",
-        value=st.session_state.google_refresh_token,
-        type="password"
-    )
-
-    # Check if all API keys are filled
-    all_keys_filled = all([
-        st.session_state.google_maps_key,
-        st.session_state.accuweather_key,
-        st.session_state.openai_key,
-        st.session_state.google_client_id,
-        st.session_state.google_client_secret,
-        st.session_state.google_refresh_token
-    ])
-
-    if not all_keys_filled:
-        st.warning("⚠️ Please fill in all API keys to use the travel planner.")
-    else:
-        st.success("✅ All API keys are configured!")
+# Initialize session state
+if 'itinerary' not in st.session_state:
+    st.session_state.itinerary = None
 
 # Title and description
-st.title("✈️ AI Travel Planner")
-st.markdown("""
-This AI-powered travel planner helps you create personalized travel itineraries using:
-- 🗺️ Maps and navigation
-- 🌤️ Weather forecasts
-- 🏨 Accommodation booking
-- 📅 Calendar management
-""")
+st.title("✈️ MCP AI Travel Planner")
+st.caption("Plan your next adventure with AI Travel Planner using MCP servers for real-time data access")
 
-# Create two columns for input
-col1, col2 = st.columns(2)
+# Sidebar for API keys
+with st.sidebar:
+    st.header("🔑 API Keys Configuration")
+    st.warning("⚠️ These services require API keys:")
 
-with col1:
-    # Source and Destination
-    source = st.text_input("Source", placeholder="Enter your departure city")
-    destination = st.text_input("Destination", placeholder= "Enter your destination city")
-    
-    # Travel Dates
-    travel_dates = st.date_input(
-        "Travel Dates",
-        [date.today(), date.today()],
-        min_value=date.today(),
-        help="Select your travel dates"
+    openai_api_key = st.text_input("OpenAI API Key", type="password", help="Required for AI planning")
+    google_maps_key = st.text_input("Google Maps API Key", type="password", help="Required for location services")
+
+    # Check if API keys are provided (both OpenAI and Google Maps are required)
+    api_keys_provided = openai_api_key and google_maps_key
+
+    if api_keys_provided:
+        st.success("✅ All API keys configured!")
+    else:
+        st.warning("⚠️ Please enter both API keys to use the travel planner.")
+        st.info("""
+        **Required API Keys:**
+        - **OpenAI API Key**: https://platform.openai.com/api-keys
+        - **Google Maps API Key**: https://console.cloud.google.com/apis/credentials (for location services)
+        """)
+
+# Main content (only shown if API keys are provided)
+if api_keys_provided:
+    # Main input section
+    st.header("🌍 Trip Details")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        destination = st.text_input("Destination", placeholder="e.g., Paris, Tokyo, New York")
+        num_days = st.number_input("Number of Days", min_value=1, max_value=30, value=7)
+
+    with col2:
+        budget = st.number_input("Budget (USD)", min_value=100, max_value=10000, step=100, value=2000)
+        start_date = st.date_input("Start Date", min_value=date.today(), value=date.today())
+
+    # Preferences section
+    st.subheader("🎯 Travel Preferences")
+    preferences_input = st.text_area(
+        "Describe your travel preferences",
+        placeholder="e.g., adventure activities, cultural sites, food, relaxation, nightlife...",
+        height=100
     )
 
-with col2:
-    # Budget
-    budget = st.number_input(
-        "Budget (in USD)",
-        min_value=0,
-        max_value=10000,
-        step=100,
-        help="Enter your total budget for the trip"
-    )
-    
-    # Travel Preferences
-    travel_preferences = st.multiselect(
-        "Travel Preferences",
-        ["Adventure", "Relaxation", "Sightseeing", "Cultural Experiences", 
+    # Quick preference buttons
+    quick_prefs = st.multiselect(
+        "Quick Preferences (optional)",
+        ["Adventure", "Relaxation", "Sightseeing", "Cultural Experiences",
          "Beach", "Mountain", "Luxury", "Budget-Friendly", "Food & Dining",
          "Shopping", "Nightlife", "Family-Friendly"],
-        help="Select your travel preferences"
+        help="Select multiple preferences or describe in detail above"
     )
 
-# Additional preferences
-st.subheader("Additional Preferences")
-col3, col4 = st.columns(2)
+    # Combine preferences
+    all_preferences = []
+    if preferences_input:
+        all_preferences.append(preferences_input)
+    if quick_prefs:
+        all_preferences.extend(quick_prefs)
 
-with col3:
-    accommodation_type = st.selectbox(
-        "Preferred Accommodation",
-        ["Any", "Hotel", "Hostel", "Apartment", "Resort"],
-        help="Select your preferred type of accommodation"
-    )
-    
-    transportation_mode = st.multiselect(
-        "Preferred Transportation",
-        ["Train", "Bus", "Flight", "Rental Car"],
-        help="Select your preferred modes of transportation"
-    )
+    preferences = ", ".join(all_preferences) if all_preferences else "General sightseeing"
 
-with col4:
-    dietary_restrictions = st.multiselect(
-        "Dietary Restrictions",
-        ["None", "Vegetarian", "Vegan", "Gluten-Free", "Halal", "Kosher"],
-        help="Select any dietary restrictions"
-    )
+    # Generate button
+    col1, col2 = st.columns([1, 1])
 
-# Submit Button
-if st.button("Plan My Trip", type="primary", disabled=not all_keys_filled):
-    if not source or not destination:
-        st.error("Please enter both source and destination cities.")
-    elif not travel_preferences:
-        st.warning("Consider selecting some travel preferences for better recommendations.")
-    else:
-        # Create a loading spinner
-        with st.spinner("🤖 AI Agents are planning your perfect trip..."):
-            try:
-                # Construct the message for the agents
-                message = f"""
-                Plan a trip with the following details:
-                - From: {source}
-                - To: {destination}
-                - Dates: {travel_dates[0]} to {travel_dates[1]}
-                - Budget in USD: ${budget}
-                - Preferences: {', '.join(travel_preferences)}
-                - Accommodation: {accommodation_type}
-                - Transportation: {', '.join(transportation_mode)}
-                - Dietary Restrictions: {', '.join(dietary_restrictions)}
-                
-                Please provide a comprehensive travel plan including:
-                1. Recommended accommodations
-                2. Daily itinerary with activities
-                3. Transportation options
-                4. The Expected Day Weather
-                5. Estimated cost of the Trip
-                6. Add the Departure Date to the calendar
-                """
-                
-                # Run the agents
-                response = asyncio.run(run_agent(message))
-                
-                # Display the response
-                st.success("✅ Your travel plan is ready!")
-                st.markdown(response)
-                
-            except Exception as e:
-                st.error(f"An error occurred while planning your trip: {str(e)}")
-                st.info("Please try again or contact support if the issue persists.")
+    with col1:
+        if st.button("🎯 Generate Itinerary", type="primary"):
+            if not destination:
+                st.error("Please enter a destination.")
+            elif not preferences:
+                st.warning("Please describe your preferences or select quick preferences.")
+            else:
+                tools_message = "🏨 Connecting to Airbnb MCP"
+                if google_maps_key:
+                    tools_message += " and Google Maps MCP"
+                tools_message += ", creating itinerary..."
 
-# Add a footer
-st.markdown("---")
-st.markdown("""
-<div style='text-align: center'>
-    <p>Powered by AI Travel Planning Agents</p>
-    <p>Your personal travel assistant for creating memorable experiences</p>
-</div>
-""", unsafe_allow_html=True)
+                with st.spinner(tools_message):
+                    try:
+                        # Calculate number of days from start date
+                        response = run_travel_planner(
+                            destination=destination,
+                            num_days=num_days,
+                            preferences=preferences,
+                            budget=budget,
+                            openai_key=openai_api_key,
+                            google_maps_key=google_maps_key or ""
+                        )
+
+                        # Store the response in session state
+                        st.session_state.itinerary = response
+
+                        # Show MCP connection status
+                        if "Airbnb" in response and ("listing" in response.lower() or "accommodation" in response.lower()):
+                            st.success("✅ Your travel itinerary is ready with Airbnb data!")
+                            st.info("🏨 Used real Airbnb listings for accommodation recommendations")
+                        else:
+                            st.success("✅ Your travel itinerary is ready!")
+                            st.info("📝 Used general knowledge for accommodation suggestions (Airbnb MCP may have failed to connect)")
+
+                    except Exception as e:
+                        st.error(f"Error: {str(e)}")
+                        st.info("Please try again or check your internet connection.")
+
+    with col2:
+        if st.session_state.itinerary:
+            # Generate the ICS file
+            ics_content = generate_ics_content(st.session_state.itinerary, datetime.combine(start_date, datetime.min.time()))
+
+            # Provide the file for download
+            st.download_button(
+                label="📅 Download as Calendar",
+                data=ics_content,
+                file_name="travel_itinerary.ics",
+                mime="text/calendar"
+            )
+
+    # Display itinerary
+    if st.session_state.itinerary:
+        st.header("📋 Your Travel Itinerary")
+        st.markdown(st.session_state.itinerary)
