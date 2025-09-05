@@ -1,0 +1,4 @@
+streamlit==1.40.2
+contextual-client>=0.1.0
+requests>=2.32.0
+pydantic==2.9.2
