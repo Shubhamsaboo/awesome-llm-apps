@@ -144,6 +144,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [🧐 Agentic RAG with Reasoning](rag_tutorials/agentic_rag_with_reasoning/)
 *   [📰 AI Blog Search (RAG)](rag_tutorials/ai_blog_search/)
 *   [🔍 Autonomous RAG](rag_tutorials/autonomous_rag/)
+*   [🔄 Contextual AI RAG Agent](rag_tutorials/contextualai_rag_agent/)
 *   [🔄 Corrective RAG (CRAG)](rag_tutorials/corrective_rag/)
 *   [🐋 Deepseek Local RAG Agent](rag_tutorials/deepseek_local_rag_agent/)
 *   [🤔 Gemini Agentic RAG](rag_tutorials/gemini_agentic_rag/)
