@@ -1,0 +1,413 @@
+From a00c670985ea9c2021434862c2c591b4f671c9e9 Mon Sep 17 00:00:00 2001
+From: rishindramani <rishindramani@outlook.com>
+Date: Sat, 13 Sep 2025 03:43:38 +0530
+Subject: [PATCH] docs: Add comprehensive documentation across AI agent
+ applications
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- Added detailed module-level docstrings to key Python files
+- Enhanced function documentation with parameter descriptions and return types
+- Documented technical architectures, dependencies, and usage patterns
+- Improved code comprehension for AI agents, RAG tutorials, and MCP implementations
+
+Key files documented:
+• starter_ai_agents: travel_agent.py, local_travel_agent.py, ai_data_analyst.py
+• advanced_ai_agents: legal_agent_team.py
+• rag_tutorials: agentic_rag_embeddinggemma.py
+• voice_ai_agents: rag_voice.py
+• mcp_ai_agents: main.py (browser_mcp_agent)
+
+This documentation review ensures consistent, professional documentation
+that explains purpose, functionality, requirements, and usage of each
+application following Python docstring conventions.
+---
+ .../ai_legal_agent_team/legal_agent_team.py   | 29 +++++++++
+ mcp_ai_agents/browser_mcp_agent/main.py       | 63 ++++++++++++++++++-
+ .../agentic_rag_embeddinggemma.py             | 46 +++++++++++++-
+ .../ai_data_analysis_agent/ai_data_analyst.py | 43 ++++++++++++-
+ .../ai_travel_agent/local_travel_agent.py     | 21 +++++++
+ .../ai_travel_agent/travel_agent.py           | 47 +++++++++++---
+ .../voice_rag_openaisdk/rag_voice.py          | 36 +++++++++++
+ 7 files changed, 271 insertions(+), 14 deletions(-)
+
+diff --git a/advanced_ai_agents/multi_agent_apps/agent_teams/ai_legal_agent_team/legal_agent_team.py b/advanced_ai_agents/multi_agent_apps/agent_teams/ai_legal_agent_team/legal_agent_team.py
+index 047da4a..a7f2b04 100644
+--- a/advanced_ai_agents/multi_agent_apps/agent_teams/ai_legal_agent_team/legal_agent_team.py
++++ b/advanced_ai_agents/multi_agent_apps/agent_teams/ai_legal_agent_team/legal_agent_team.py
+@@ -1,3 +1,32 @@
++"""AI Legal Agent Team Application
++
++A comprehensive Streamlit application that provides AI-powered legal document analysis
++using a team of specialized AI agents. The system integrates with Qdrant vector database
++for document storage and retrieval, and uses OpenAI's GPT models for analysis.
++
++Key Features:
++    - Multi-agent legal analysis team (Researcher, Analyst, Strategist)
++    - PDF document upload and processing
++    - Vector database integration with Qdrant
++    - RAG (Retrieval Augmented Generation) for document-aware responses
++    - Multiple analysis types: Contract Review, Legal Research, Risk Assessment, etc.
++    - Web search integration for case law and precedent research
++
++Agent Roles:
++    - Legal Researcher: Finds relevant cases and precedents
++    - Contract Analyst: Reviews contracts and identifies key terms
++    - Legal Strategist: Develops legal strategies and recommendations
++    - Team Lead: Coordinates analysis between team members
++
++Requires:
++    - OpenAI API key for GPT model access
++    - Qdrant API key and URL for vector database
++    - PDF documents for analysis
++
++Usage:
++    streamlit run legal_agent_team.py
++"""
++
+ import streamlit as st
+ from agno.agent import Agent
+ from agno.knowledge.pdf import PDFKnowledgeBase, PDFReader
+diff --git a/mcp_ai_agents/browser_mcp_agent/main.py b/mcp_ai_agents/browser_mcp_agent/main.py
+index 6cf81e1..8335a1b 100644
+--- a/mcp_ai_agents/browser_mcp_agent/main.py
++++ b/mcp_ai_agents/browser_mcp_agent/main.py
+@@ -1,5 +1,51 @@
++"""Browser MCP Agent Application
++
++A Streamlit application that demonstrates web browsing automation using the Model Context
++Protocol (MCP) framework with Playwright for browser control. The agent can navigate
++websites, interact with page elements, and extract information from web content.
++
++Key Features:
++    - Web navigation using Playwright browser automation
++    - Model Context Protocol (MCP) integration for tool management
++    - OpenAI GPT model integration for intelligent web interactions
++    - Real-time browser control and page interaction
++    - Multi-step browsing task execution
++    - Screenshot capture capabilities
++    - Content extraction and summarization
++
++Capabilities:
++    - Navigate to any website URL
++    - Click on page elements and buttons
++    - Scroll through page content
++    - Type text into input fields
++    - Take screenshots of page elements
++    - Extract and summarize web content
++    - Execute complex multi-step browsing workflows
++
++Technical Architecture:
++    - MCP framework for tool management and orchestration
++    - Playwright for browser automation and control
++    - OpenAI GPT models for intelligent decision making
++    - Streamlit for web interface
++    - Async/await pattern for efficient execution
++
++Requires:
++    - OpenAI API key configured in mcp_agent.secrets.yaml
++    - Playwright browser dependencies
++    - MCP agent framework installation
++
++Usage:
++    streamlit run main.py
++
++Example Commands:
++    - "Go to github.com and search for awesome-llm-apps"
++    - "Navigate to the repository and click on the README file"
++    - "Scroll down and summarize the project description"
++"""
++
+ import asyncio
+ import os
++from typing import Optional, Any
+ import streamlit as st
+ from textwrap import dedent
+ 
+@@ -49,8 +95,21 @@ if 'initialized' not in st.session_state:
+     asyncio.set_event_loop(st.session_state.loop)
+     st.session_state.is_processing = False
+ 
+-# Setup function that runs only once
+-async def setup_agent():
++async def setup_agent() -> Optional[str]:
++    """Initialize the MCP agent and browser automation setup.
++    
++    This function sets up the MCP application context, initializes the browser agent
++    with Playwright capabilities, and configures the OpenAI LLM integration.
++    Only runs once per session to avoid reinitializing components.
++    
++    Returns:
++        Optional[str]: Error message if initialization fails, None if successful
++        
++    Side Effects:
++        - Updates session state with initialized components
++        - Creates browser agent with web automation capabilities
++        - Establishes connection to MCP tools and services
++    """
+     if not st.session_state.initialized:
+         try:
+             # Create context manager and store it in session state
+diff --git a/rag_tutorials/agentic_rag_embedding_gemma/agentic_rag_embeddinggemma.py b/rag_tutorials/agentic_rag_embedding_gemma/agentic_rag_embeddinggemma.py
+index d411068..1825f89 100644
+--- a/rag_tutorials/agentic_rag_embedding_gemma/agentic_rag_embeddinggemma.py
++++ b/rag_tutorials/agentic_rag_embedding_gemma/agentic_rag_embeddinggemma.py
+@@ -1,3 +1,32 @@
++"""Agentic RAG with Google's EmbeddingGemma
++
++A Streamlit application demonstrating a 100% local Retrieval Augmented Generation (RAG)
++system using Google's EmbeddingGemma model for embeddings and Llama 3.2 for text generation.
++All processing runs locally through Ollama without requiring external API calls.
++
++Key Features:
++    - 100% local processing using Ollama
++    - EmbeddingGemma for high-quality vector embeddings
++    - LanceDB as the local vector database
++    - PDF URL knowledge base integration
++    - Real-time streaming responses
++    - Interactive knowledge source management
++
++Technical Stack:
++    - Agno framework for agent orchestration
++    - Ollama for local model serving
++    - LanceDB for vector storage
++    - Streamlit for web interface
++
++Requires:
++    - Ollama installation with embeddinggemma:latest and llama3.2:latest models
++    - No external API keys needed
++
++Usage:
++    streamlit run agentic_rag_embeddinggemma.py
++"""
++
++from typing import List
+ import streamlit as st
+ from agno.agent import Agent
+ from agno.embedder.ollama import OllamaEmbedder
+@@ -13,7 +42,22 @@ st.set_page_config(
+ )
+ 
+ @st.cache_resource
+-def load_knowledge_base(urls):
++def load_knowledge_base(urls: List[str]) -> PDFUrlKnowledgeBase:
++    """Load and cache the knowledge base with PDF URLs.
++    
++    This function creates a knowledge base from PDF URLs using EmbeddingGemma
++    for vector embeddings and LanceDB for storage. Results are cached to 
++    avoid reloading on every app refresh.
++    
++    Args:
++        urls (List[str]): List of PDF URLs to include in the knowledge base
++        
++    Returns:
++        PDFUrlKnowledgeBase: Configured knowledge base ready for querying
++        
++    Note:
++        Uses Streamlit's @st.cache_resource decorator for efficient caching
++    """
+     knowledge_base = PDFUrlKnowledgeBase(
+         urls=urls,
+         vector_db=LanceDb(
+diff --git a/starter_ai_agents/ai_data_analysis_agent/ai_data_analyst.py b/starter_ai_agents/ai_data_analysis_agent/ai_data_analyst.py
+index cfc90af..b1e94d9 100644
+--- a/starter_ai_agents/ai_data_analysis_agent/ai_data_analyst.py
++++ b/starter_ai_agents/ai_data_analysis_agent/ai_data_analyst.py
+@@ -1,6 +1,29 @@
++"""AI Data Analyst Agent
++
++A Streamlit application that provides AI-powered data analysis capabilities using
++GPT-4 and DuckDB. Users can upload CSV or Excel files and ask natural language
++questions about their data, which are converted to SQL queries and executed.
++
++Features:
++    - File upload support for CSV and Excel formats
++    - Automatic data type detection and preprocessing
++    - Natural language to SQL query conversion
++    - Interactive data exploration via chat interface
++    - Real-time query execution and results display
++
++Requires:
++    - OpenAI API key for GPT-4 access
++    - DuckDB for SQL query execution
++    - Pandas for data manipulation
++
++Usage:
++    streamlit run ai_data_analyst.py
++"""
++
+ import json
+ import tempfile
+ import csv
++from typing import Optional, List, Tuple
+ import streamlit as st
+ import pandas as pd
+ from agno.models.openai import OpenAIChat
+@@ -8,8 +31,24 @@ from phi.agent.duckdb import DuckDbAgent
+ from agno.tools.pandas import PandasTools
+ import re
+ 
+-# Function to preprocess and save the uploaded file
+-def preprocess_and_save(file):
++def preprocess_and_save(file) -> Tuple[Optional[str], Optional[List[str]], Optional[pd.DataFrame]]:
++    """Preprocess uploaded file and save to temporary CSV.
++    
++    This function handles CSV and Excel file uploads, performs data type detection,
++    cleans the data, and saves it to a temporary CSV file for processing by DuckDB.
++    
++    Args:
++        file: Streamlit uploaded file object (CSV or Excel)
++        
++    Returns:
++        Tuple containing:
++        - str: Path to temporary CSV file (None if error)
++        - List[str]: List of column names (None if error)  
++        - pd.DataFrame: Processed DataFrame (None if error)
++        
++    Raises:
++        Displays Streamlit error messages for file format issues
++    """
+     try:
+         # Read the uploaded file into a DataFrame
+         if file.name.endswith('.csv'):
+diff --git a/starter_ai_agents/ai_travel_agent/local_travel_agent.py b/starter_ai_agents/ai_travel_agent/local_travel_agent.py
+index 25f086d..608ba9d 100644
+--- a/starter_ai_agents/ai_travel_agent/local_travel_agent.py
++++ b/starter_ai_agents/ai_travel_agent/local_travel_agent.py
+@@ -1,3 +1,24 @@
++"""Local AI Travel Planner Application
++
++A Streamlit-based AI travel planner that uses Llama 3.2 (via Ollama) and web search
++to create personalized travel itineraries. This version runs completely locally using
++Ollama for the language model while still using SerpAPI for web search.
++
++Features:
++    - Local Llama 3.2 model for AI processing
++    - Web search integration via SerpAPI
++    - Calendar file (.ics) generation for itineraries
++    - Two-agent system: researcher and planner
++
++Requires:
++    - Ollama installation with Llama 3.2 model
++    - SerpAPI key for web search functionality
++
++Usage:
++    streamlit run local_travel_agent.py
++"""
++
++from typing import Optional
+ from textwrap import dedent
+ from agno.agent import Agent
+ from agno.tools.serpapi import SerpApiTools
+diff --git a/starter_ai_agents/ai_travel_agent/travel_agent.py b/starter_ai_agents/ai_travel_agent/travel_agent.py
+index b43dc53..92ebec6 100644
+--- a/starter_ai_agents/ai_travel_agent/travel_agent.py
++++ b/starter_ai_agents/ai_travel_agent/travel_agent.py
+@@ -1,3 +1,21 @@
++"""AI Travel Planner Application
++
++A Streamlit-based AI travel planner that uses GPT-4o and web search to create
++personalized travel itineraries. The application features two AI agents:
++- A researcher agent that searches for travel information
++- A planner agent that creates detailed itineraries
++
++The app also generates downloadable calendar (.ics) files for the itineraries.
++
++Requires:
++    - OpenAI API key for GPT-4o access
++    - SerpAPI key for web search functionality
++
++Usage:
++    streamlit run travel_agent.py
++"""
++
++from typing import Optional
+ from textwrap import dedent
+ from agno.agent import Agent
+ from agno.tools.serpapi import SerpApiTools
+@@ -8,17 +26,28 @@ from icalendar import Calendar, Event
+ from datetime import datetime, timedelta
+ 
+ 
+-def generate_ics_content(plan_text:str, start_date: datetime = None) -> bytes:
+-    """
+-        Generate an ICS calendar file from a travel itinerary text.
++def generate_ics_content(plan_text: str, start_date: datetime = None) -> bytes:
++    """Generate an ICS calendar file from a travel itinerary text.
+ 
+-        Args:
+-            plan_text: The travel itinerary text
+-            start_date: Optional start date for the itinerary (defaults to today)
++    This function parses a travel itinerary text that contains day-by-day plans
++    and converts it into an ICS (iCalendar) format file that can be imported
++    into calendar applications.
+ 
+-        Returns:
+-            bytes: The ICS file content as bytes
+-        """
++    Args:
++        plan_text (str): The travel itinerary text containing day-by-day plans.
++            Expected format includes "Day X:" patterns for each day.
++        start_date (datetime, optional): The start date for the itinerary.
++            Defaults to today's date if not provided.
++
++    Returns:
++        bytes: The ICS file content as bytes, ready for download or saving.
++
++    Example:
++        >>> itinerary = "Day 1: Visit museum\nDay 2: Go to beach"
++        >>> ics_data = generate_ics_content(itinerary)
++        >>> with open('trip.ics', 'wb') as f:
++        ...     f.write(ics_data)
++    """
+     cal = Calendar()
+     cal.add('prodid','-//AI Travel Planner//github.com//' )
+     cal.add('version', '2.0')
+diff --git a/voice_ai_agents/voice_rag_openaisdk/rag_voice.py b/voice_ai_agents/voice_rag_openaisdk/rag_voice.py
+index 9333352..6cf17f9 100644
+--- a/voice_ai_agents/voice_rag_openaisdk/rag_voice.py
++++ b/voice_ai_agents/voice_rag_openaisdk/rag_voice.py
+@@ -1,3 +1,39 @@
++"""Voice RAG Agent with OpenAI SDK
++
++A comprehensive Streamlit application that combines Retrieval Augmented Generation (RAG)
++with voice capabilities using OpenAI's text-to-speech models. Users can upload PDF documents,
++ask questions via text, and receive both text and audio responses.
++
++Key Features:
++    - PDF document upload and processing
++    - Vector search using Qdrant vector database
++    - FastEmbed for efficient text embeddings
++    - AI agent-based query processing
++    - Text-to-speech conversion with multiple voice options
++    - Real-time streaming responses
++    - Document chunking and metadata preservation
++
++Technical Architecture:
++    - Qdrant for vector storage and similarity search
++    - FastEmbed for generating text embeddings
++    - OpenAI GPT-4 for query processing and response generation
++    - OpenAI TTS for voice synthesis
++    - LangChain for document processing
++    - Streamlit for web interface
++
++Agent System:
++    - Documentation Processor Agent: Analyzes documents and answers questions
++    - Text-to-Speech Agent: Converts responses to natural speech
++
++Requires:
++    - OpenAI API key for GPT-4 and TTS access
++    - Qdrant cloud instance or local setup
++    - PDF documents for knowledge base
++
++Usage:
++    streamlit run rag_voice.py
++"""
++
+ from typing import List, Dict, Optional, Tuple
+ import os
+ import tempfile
+-- 
+2.43.0
+
