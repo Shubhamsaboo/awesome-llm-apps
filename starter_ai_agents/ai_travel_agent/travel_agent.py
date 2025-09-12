@@ -1,3 +1,21 @@
+"""AI Travel Planner Application
+
+A Streamlit-based AI travel planner that uses GPT-4o and web search to create
+personalized travel itineraries. The application features two AI agents:
+- A researcher agent that searches for travel information
+- A planner agent that creates detailed itineraries
+
+The app also generates downloadable calendar (.ics) files for the itineraries.
+
+Requires:
+    - OpenAI API key for GPT-4o access
+    - SerpAPI key for web search functionality
+
+Usage:
+    streamlit run travel_agent.py
+"""
+
+from typing import Optional
 from textwrap import dedent
 from agno.agent import Agent
 from agno.tools.serpapi import SerpApiTools
@@ -8,17 +26,28 @@ from icalendar import Calendar, Event
 from datetime import datetime, timedelta
 
 
-def generate_ics_content(plan_text:str, start_date: datetime = None) -> bytes:
+def generate_ics_content(plan_text: str, start_date: datetime = None) -> bytes:
+    """Generate an ICS calendar file from a travel itinerary text.
+
+    This function parses a travel itinerary text that contains day-by-day plans
+    and converts it into an ICS (iCalendar) format file that can be imported
+    into calendar applications.
+
+    Args:
+        plan_text (str): The travel itinerary text containing day-by-day plans.
+            Expected format includes "Day X:" patterns for each day.
+        start_date (datetime, optional): The start date for the itinerary.
+            Defaults to today's date if not provided.
+
+    Returns:
+        bytes: The ICS file content as bytes, ready for download or saving.
+
+    Example:
+        >>> itinerary = "Day 1: Visit museum\nDay 2: Go to beach"
+        >>> ics_data = generate_ics_content(itinerary)
+        >>> with open('trip.ics', 'wb') as f:
+        ...     f.write(ics_data)
     """
-        Generate an ICS calendar file from a travel itinerary text.
-
-        Args:
-            plan_text: The travel itinerary text
-            start_date: Optional start date for the itinerary (defaults to today)
-
-        Returns:
-            bytes: The ICS file content as bytes
-        """
     cal = Calendar()
     cal.add('prodid','-//AI Travel Planner//github.com//' )
     cal.add('version', '2.0')

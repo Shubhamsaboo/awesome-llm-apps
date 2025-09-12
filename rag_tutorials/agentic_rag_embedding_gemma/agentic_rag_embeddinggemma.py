@@ -1,3 +1,32 @@
+"""Agentic RAG with Google's EmbeddingGemma
+
+A Streamlit application demonstrating a 100% local Retrieval Augmented Generation (RAG)
+system using Google's EmbeddingGemma model for embeddings and Llama 3.2 for text generation.
+All processing runs locally through Ollama without requiring external API calls.
+
+Key Features:
+    - 100% local processing using Ollama
+    - EmbeddingGemma for high-quality vector embeddings
+    - LanceDB as the local vector database
+    - PDF URL knowledge base integration
+    - Real-time streaming responses
+    - Interactive knowledge source management
+
+Technical Stack:
+    - Agno framework for agent orchestration
+    - Ollama for local model serving
+    - LanceDB for vector storage
+    - Streamlit for web interface
+
+Requires:
+    - Ollama installation with embeddinggemma:latest and llama3.2:latest models
+    - No external API keys needed
+
+Usage:
+    streamlit run agentic_rag_embeddinggemma.py
+"""
+
+from typing import List
 import streamlit as st
 from agno.agent import Agent
 from agno.embedder.ollama import OllamaEmbedder
@@ -13,7 +42,22 @@ st.set_page_config(
 )
 
 @st.cache_resource
-def load_knowledge_base(urls):
+def load_knowledge_base(urls: List[str]) -> PDFUrlKnowledgeBase:
+    """Load and cache the knowledge base with PDF URLs.
+    
+    This function creates a knowledge base from PDF URLs using EmbeddingGemma
+    for vector embeddings and LanceDB for storage. Results are cached to 
+    avoid reloading on every app refresh.
+    
+    Args:
+        urls (List[str]): List of PDF URLs to include in the knowledge base
+        
+    Returns:
+        PDFUrlKnowledgeBase: Configured knowledge base ready for querying
+        
+    Note:
+        Uses Streamlit's @st.cache_resource decorator for efficient caching
+    """
     knowledge_base = PDFUrlKnowledgeBase(
         urls=urls,
         vector_db=LanceDb(

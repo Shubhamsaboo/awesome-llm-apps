@@ -1,6 +1,29 @@
+"""AI Data Analyst Agent
+
+A Streamlit application that provides AI-powered data analysis capabilities using
+GPT-4 and DuckDB. Users can upload CSV or Excel files and ask natural language
+questions about their data, which are converted to SQL queries and executed.
+
+Features:
+    - File upload support for CSV and Excel formats
+    - Automatic data type detection and preprocessing
+    - Natural language to SQL query conversion
+    - Interactive data exploration via chat interface
+    - Real-time query execution and results display
+
+Requires:
+    - OpenAI API key for GPT-4 access
+    - DuckDB for SQL query execution
+    - Pandas for data manipulation
+
+Usage:
+    streamlit run ai_data_analyst.py
+"""
+
 import json
 import tempfile
 import csv
+from typing import Optional, List, Tuple
 import streamlit as st
 import pandas as pd
 from agno.models.openai import OpenAIChat
@@ -8,8 +31,24 @@ from phi.agent.duckdb import DuckDbAgent
 from agno.tools.pandas import PandasTools
 import re
 
-# Function to preprocess and save the uploaded file
-def preprocess_and_save(file):
+def preprocess_and_save(file) -> Tuple[Optional[str], Optional[List[str]], Optional[pd.DataFrame]]:
+    """Preprocess uploaded file and save to temporary CSV.
+    
+    This function handles CSV and Excel file uploads, performs data type detection,
+    cleans the data, and saves it to a temporary CSV file for processing by DuckDB.
+    
+    Args:
+        file: Streamlit uploaded file object (CSV or Excel)
+        
+    Returns:
+        Tuple containing:
+        - str: Path to temporary CSV file (None if error)
+        - List[str]: List of column names (None if error)  
+        - pd.DataFrame: Processed DataFrame (None if error)
+        
+    Raises:
+        Displays Streamlit error messages for file format issues
+    """
     try:
         # Read the uploaded file into a DataFrame
         if file.name.endswith('.csv'):
