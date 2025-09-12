@@ -1,3 +1,39 @@
+"""Voice RAG Agent with OpenAI SDK
+
+A comprehensive Streamlit application that combines Retrieval Augmented Generation (RAG)
+with voice capabilities using OpenAI's text-to-speech models. Users can upload PDF documents,
+ask questions via text, and receive both text and audio responses.
+
+Key Features:
+    - PDF document upload and processing
+    - Vector search using Qdrant vector database
+    - FastEmbed for efficient text embeddings
+    - AI agent-based query processing
+    - Text-to-speech conversion with multiple voice options
+    - Real-time streaming responses
+    - Document chunking and metadata preservation
+
+Technical Architecture:
+    - Qdrant for vector storage and similarity search
+    - FastEmbed for generating text embeddings
+    - OpenAI GPT-4 for query processing and response generation
+    - OpenAI TTS for voice synthesis
+    - LangChain for document processing
+    - Streamlit for web interface
+
+Agent System:
+    - Documentation Processor Agent: Analyzes documents and answers questions
+    - Text-to-Speech Agent: Converts responses to natural speech
+
+Requires:
+    - OpenAI API key for GPT-4 and TTS access
+    - Qdrant cloud instance or local setup
+    - PDF documents for knowledge base
+
+Usage:
+    streamlit run rag_voice.py
+"""
+
 from typing import List, Dict, Optional, Tuple
 import os
 import tempfile

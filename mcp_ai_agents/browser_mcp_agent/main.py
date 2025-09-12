@@ -1,5 +1,51 @@
+"""Browser MCP Agent Application
+
+A Streamlit application that demonstrates web browsing automation using the Model Context
+Protocol (MCP) framework with Playwright for browser control. The agent can navigate
+websites, interact with page elements, and extract information from web content.
+
+Key Features:
+    - Web navigation using Playwright browser automation
+    - Model Context Protocol (MCP) integration for tool management
+    - OpenAI GPT model integration for intelligent web interactions
+    - Real-time browser control and page interaction
+    - Multi-step browsing task execution
+    - Screenshot capture capabilities
+    - Content extraction and summarization
+
+Capabilities:
+    - Navigate to any website URL
+    - Click on page elements and buttons
+    - Scroll through page content
+    - Type text into input fields
+    - Take screenshots of page elements
+    - Extract and summarize web content
+    - Execute complex multi-step browsing workflows
+
+Technical Architecture:
+    - MCP framework for tool management and orchestration
+    - Playwright for browser automation and control
+    - OpenAI GPT models for intelligent decision making
+    - Streamlit for web interface
+    - Async/await pattern for efficient execution
+
+Requires:
+    - OpenAI API key configured in mcp_agent.secrets.yaml
+    - Playwright browser dependencies
+    - MCP agent framework installation
+
+Usage:
+    streamlit run main.py
+
+Example Commands:
+    - "Go to github.com and search for awesome-llm-apps"
+    - "Navigate to the repository and click on the README file"
+    - "Scroll down and summarize the project description"
+"""
+
 import asyncio
 import os
+from typing import Optional, Any
 import streamlit as st
 from textwrap import dedent
 
@@ -49,8 +95,21 @@ if 'initialized' not in st.session_state:
     asyncio.set_event_loop(st.session_state.loop)
     st.session_state.is_processing = False
 
-# Setup function that runs only once
-async def setup_agent():
+async def setup_agent() -> Optional[str]:
+    """Initialize the MCP agent and browser automation setup.
+    
+    This function sets up the MCP application context, initializes the browser agent
+    with Playwright capabilities, and configures the OpenAI LLM integration.
+    Only runs once per session to avoid reinitializing components.
+    
+    Returns:
+        Optional[str]: Error message if initialization fails, None if successful
+        
+    Side Effects:
+        - Updates session state with initialized components
+        - Creates browser agent with web automation capabilities
+        - Establishes connection to MCP tools and services
+    """
     if not st.session_state.initialized:
         try:
             # Create context manager and store it in session state

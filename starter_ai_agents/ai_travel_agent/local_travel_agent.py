@@ -1,3 +1,24 @@
+"""Local AI Travel Planner Application
+
+A Streamlit-based AI travel planner that uses Llama 3.2 (via Ollama) and web search
+to create personalized travel itineraries. This version runs completely locally using
+Ollama for the language model while still using SerpAPI for web search.
+
+Features:
+    - Local Llama 3.2 model for AI processing
+    - Web search integration via SerpAPI
+    - Calendar file (.ics) generation for itineraries
+    - Two-agent system: researcher and planner
+
+Requires:
+    - Ollama installation with Llama 3.2 model
+    - SerpAPI key for web search functionality
+
+Usage:
+    streamlit run local_travel_agent.py
+"""
+
+from typing import Optional
 from textwrap import dedent
 from agno.agent import Agent
 from agno.tools.serpapi import SerpApiTools

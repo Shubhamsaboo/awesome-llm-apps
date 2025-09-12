@@ -1,3 +1,32 @@
+"""AI Legal Agent Team Application
+
+A comprehensive Streamlit application that provides AI-powered legal document analysis
+using a team of specialized AI agents. The system integrates with Qdrant vector database
+for document storage and retrieval, and uses OpenAI's GPT models for analysis.
+
+Key Features:
+    - Multi-agent legal analysis team (Researcher, Analyst, Strategist)
+    - PDF document upload and processing
+    - Vector database integration with Qdrant
+    - RAG (Retrieval Augmented Generation) for document-aware responses
+    - Multiple analysis types: Contract Review, Legal Research, Risk Assessment, etc.
+    - Web search integration for case law and precedent research
+
+Agent Roles:
+    - Legal Researcher: Finds relevant cases and precedents
+    - Contract Analyst: Reviews contracts and identifies key terms
+    - Legal Strategist: Develops legal strategies and recommendations
+    - Team Lead: Coordinates analysis between team members
+
+Requires:
+    - OpenAI API key for GPT model access
+    - Qdrant API key and URL for vector database
+    - PDF documents for analysis
+
+Usage:
+    streamlit run legal_agent_team.py
+"""
+
 import streamlit as st
 from agno.agent import Agent
 from agno.knowledge.pdf import PDFKnowledgeBase, PDFReader
