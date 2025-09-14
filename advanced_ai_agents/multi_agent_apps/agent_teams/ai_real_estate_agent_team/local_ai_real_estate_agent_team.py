@@ -800,8 +800,7 @@ def main():
                     final_result['property_valuations'],
                     final_result['total_properties']
                 )
-            else:
-                # Fallback to markdown display
+
             st.markdown("### 🏠 Comprehensive Real Estate Analysis")
             st.markdown(final_result)
             
