@@ -1,0 +1,4 @@
+streamlit
+requests
+pandas
+matplotlib
