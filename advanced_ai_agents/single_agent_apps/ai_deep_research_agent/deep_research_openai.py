@@ -34,12 +34,32 @@ with st.sidebar:
         type="password"
     )
     
+
     if openai_api_key:
         st.session_state.openai_api_key = openai_api_key
         set_default_openai_key(openai_api_key)
-
     if firecrawl_api_key:
         st.session_state.firecrawl_api_key = firecrawl_api_key
+
+    # --- Search options controls ---
+    st.subheader("Search options")
+    st.session_state["allow_any_domain"] = st.checkbox("Open Search Mode", value=True)
+    st.session_state["max_pages"] = st.number_input("Max pages", min_value=6, max_value=25, value=12, step=1)
+    st.session_state["start_date"] = st.date_input("Start date", value=None)
+    st.session_state["end_date"] = st.date_input("End date", value=None)
+
+    st.text_area(
+        "Domains to search (one per line)",
+        value="visa.com/newsroom\nmastercard.com/news\nswift.com/news\nbis.org\nimf.org\nfatf-gafi.org\necb.europa.eu\nbanxico.org.mx\nwise.com\nremitly.com\nwesternunion.com",
+        key="domains_text",
+        height=120
+    )
+
+    dom_count = len([l for l in st.session_state["domains_text"].splitlines() if l.strip()])
+    window = ""
+    if st.session_state["start_date"] and st.session_state["end_date"]:
+        window = f"  Window: {st.session_state['start_date']} to {st.session_state['end_date']}"
+    st.caption(f"Domains loaded: {dom_count}.{window}")
 
 # Inserted OpenAI client block
 import os
