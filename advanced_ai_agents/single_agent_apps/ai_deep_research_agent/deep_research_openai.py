@@ -199,6 +199,27 @@ async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: i
                 continue
 
         if not web_results:
+            fallback_queries = [
+                f"{query} site:prnewswire.com",
+                f"{query} site:businesswire.com",
+                f"{query} site:globenewswire.com",
+                f"{query} site:newsroom.visa.com OR site:visa.com/newsroom",
+                f"{query} site:mastercard.com/news",
+                f"{query} site:swift.com/news",
+                f"{query} site:reuters.com",
+            ]
+            for fq in fallback_queries:
+                try:
+                    res = firecrawl_app.search(query=fq, limit=5)
+                    items = res.get('data', {}).get('web') or res.get('web') or res
+                    for it in items or []:
+                        url = (it.get('url') or it.get('link') or str(it)).strip()
+                        if url and url not in seen_urls:
+                            seen_urls.add(url)
+                            web_results.append({'url': url, 'title': it.get('title', url)})
+                except Exception:
+                    continue
+        if not web_results:
             return {"success": False, "error": "No search results", "sources": []}
 
         # 5) Rank results before scraping
