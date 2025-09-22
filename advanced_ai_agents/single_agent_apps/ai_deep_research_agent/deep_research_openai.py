@@ -152,8 +152,11 @@ import os
 from openai import OpenAI
 
 # Ensure both the OpenAI client and the Agents SDK see the key
+
+# Set OpenAI environment variables for both OpenAI and Agents SDK
 if st.session_state.openai_api_key:
     os.environ["OPENAI_API_KEY"] = st.session_state.openai_api_key
+    os.environ["AGENTS_PROVIDER"] = "openai"
     st.caption("OpenAI key prefix: " + st.session_state.openai_api_key[:8] + "…")
     st.caption("Model: gpt-4o-mini")
     client = OpenAI(api_key=st.session_state.openai_api_key)
@@ -345,8 +348,10 @@ Rules:
 
 
 # Keep the original agents
+
 research_agent = Agent(
     name="research_agent",
+    model="gpt-4o-mini",
     instructions="""
 You are a research analyst. Use ONLY the scraped materials provided by the deep_research tool.
 Every claim must have an inline citation like [n] that maps to the Sources list at the end.
@@ -357,8 +362,10 @@ Organize your report with clear sections and keep citations consistent.
     tools=[deep_research]
 )
 
+
 elaboration_agent = Agent(
     name="elaboration_agent",
+    model="gpt-4o-mini",
     instructions="""You are an expert content enhancer specializing in research elaboration.
 
     When given a research report:
@@ -393,15 +400,40 @@ async def run_research_process(topic: str):
     except Exception as e:
         st.warning(f"OpenAI test failed: {e}")
 
+
+
+    # OpenAI sanity ping: visible 200-token completion
+    if client:
+        try:
+            test = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "Write exactly 150 tokens of the letter A."},
+                    {"role": "user", "content": "Go"}
+                ],
+                temperature=0
+            )
+            st.caption("OpenAI sanity ping model: gpt-4o-mini, approx tokens: ~150")
+        except Exception as e:
+            st.warning(f"OpenAI sanity ping failed: {e}")
+
     # Step 1: Initial Research
     with st.spinner("Conducting initial research..."):
         research_result = await Runner.run(research_agent, topic)
+        try:
+            m = getattr(research_result, "model", "unknown")
+            u = getattr(research_result, "usage", None)
+            st.caption(f"Research model: {m}")
+            if u:
+                st.caption(f"Research tokens — prompt: {u.get('prompt_tokens')}, output: {u.get('completion_tokens')}, total: {u.get('total_tokens')}")
+        except Exception:
+            pass
         initial_report = research_result.final_output
-    
+
     # Display initial report in an expander
     with st.expander("View Initial Research Report"):
         st.markdown(initial_report)
-    
+
     # Step 2: Enhance the report
     with st.spinner("Enhancing the report with additional information..."):
         elaboration_input = f"""
@@ -418,8 +450,16 @@ async def run_research_process(topic: str):
         - Your job is to elaborate and clarify, not to add new information.
         """
         elaboration_result = await Runner.run(elaboration_agent, elaboration_input)
+        try:
+            m = getattr(elaboration_result, "model", "unknown")
+            u = getattr(elaboration_result, "usage", None)
+            st.caption(f"Elaboration model: {m}")
+            if u:
+                st.caption(f"Elaboration tokens — prompt: {u.get('prompt_tokens')}, output: {u.get('completion_tokens')}, total: {u.get('total_tokens')}")
+        except Exception:
+            pass
         enhanced_report = elaboration_result.final_output
-    
+
     return enhanced_report
 
 # Main research process
