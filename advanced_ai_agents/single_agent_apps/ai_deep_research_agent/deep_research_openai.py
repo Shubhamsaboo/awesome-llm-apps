@@ -46,44 +46,91 @@ st.markdown("This OpenAI Agent from the OpenAI Agents SDK performs deep research
 # Research topic input
 research_topic = st.text_input("Enter your research topic:", placeholder="e.g., Latest developments in AI")
 
-# Keep the original deep_research tool
+# Replace the entire deep_research tool with this
 @function_tool
 async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: int) -> Dict[str, Any]:
     """
-    Perform comprehensive web research using Firecrawl's deep research endpoint.
+    Perform comprehensive web research using Firecrawl by combining Search and Scrape.
+    This replaces the old deep_research call that is not available in current SDKs.
     """
     try:
-        # Initialize FirecrawlApp with the API key from session state
         firecrawl_app = FirecrawlApp(api_key=st.session_state.firecrawl_api_key)
-        
-        # Define research parameters
-        params = {
-            "maxDepth": max_depth,
-            "timeLimit": time_limit,
-            "maxUrls": max_urls
-        }
-        
-        # Set up a callback for real-time updates
-        def on_activity(activity):
-            st.write(f"[{activity['type']}] {activity['message']}")
-        
-        # Run deep research
-        with st.spinner("Performing deep research..."):
-            results = firecrawl_app.deep_research(
-                query=query,
-                params=params,
-                on_activity=on_activity
-            )
-        
+
+        # 1) Search for relevant pages
+        st.write("Searching the web...")
+        search = firecrawl_app.search(query=query, limit=max_urls)
+
+        # Normalize possible return shapes
+        web_results: List[Dict[str, Any]] = []
+        if isinstance(search, dict):
+            if "data" in search and isinstance(search["data"], dict) and "web" in search["data"]:
+                web_results = search["data"]["web"]
+            elif "web" in search:
+                web_results = search["web"]
+        elif isinstance(search, list):
+            web_results = search
+
+        if not web_results:
+            return {"success": False, "error": "No search results", "sources": []}
+
+        # 2) Scrape each result to get content
+        st.write(f"Found {len(web_results)} candidates. Extracting content...")
+        sources = []
+        for item in web_results[:max_urls]:
+            try:
+                url = item.get("url") if isinstance(item, dict) else str(item)
+                if not url:
+                    continue
+                doc = firecrawl_app.scrape(url=url, formats=["markdown"])
+
+                # Normalize markdown field
+                if isinstance(doc, dict):
+                    md = doc.get("data", {}).get("markdown") or doc.get("markdown") or ""
+                else:
+                    md = str(doc)
+
+                title = item.get("title", url) if isinstance(item, dict) else url
+                sources.append({"url": url, "title": title, "markdown": md})
+                st.write(f"Scraped: {title}")
+            except Exception as e:
+                st.write(f"Skipping one URL due to error: {e}")
+                continue
+
+        if not sources:
+            return {"success": False, "error": "Could not scrape any sources", "sources": []}
+
+        # 3) Build an initial report string for the agent pipeline
+        joined = "\n\n".join(
+            f"# {s['title']}\nSource: {s['url']}\n\n{s['markdown'][:4000]}"
+            for s in sources
+        )
+
+        initial_report = f"""
+You are a precise research writer. Read the sources and produce an "Initial Research Report" for the topic.
+
+Topic: {query}
+
+Include:
+- Executive Summary with 5 to 7 bullets
+- Key developments and examples with short evidence
+- Practical implications for consumers, SMEs, and banks
+- Inline citations like [1], [2] that match a Sources list at the end
+
+Sources:
+{joined}
+"""
+
         return {
             "success": True,
-            "final_analysis": results['data']['finalAnalysis'],
-            "sources_count": len(results['data']['sources']),
-            "sources": results['data']['sources']
+            "final_analysis": initial_report,
+            "sources_count": len(sources),
+            "sources": [{"url": s["url"], "title": s["title"]} for s in sources],
         }
+
     except Exception as e:
         st.error(f"Deep research error: {str(e)}")
         return {"error": str(e), "success": False}
+
 
 # Keep the original agents
 research_agent = Agent(
