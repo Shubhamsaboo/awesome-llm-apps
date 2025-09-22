@@ -1,5 +1,6 @@
-#
-async def plan_queries(topic: str) -> Dict[str, Any]:
+from typing import Any
+
+async def plan_queries(topic: str) -> dict[str, Any]:
     "Use the global OpenAI client to produce diverse web search queries and site hints."
     import json
     try:
