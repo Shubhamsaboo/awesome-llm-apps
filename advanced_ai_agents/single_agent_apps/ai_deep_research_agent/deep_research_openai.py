@@ -1,4 +1,6 @@
-from typing import Any
+import os, json, time, asyncio, requests
+from typing import Any, Dict, List
+from urllib.parse import urlparse
 
 async def plan_queries(topic: str) -> dict[str, Any]:
     "Use the global OpenAI client to produce diverse web search queries and site hints."
@@ -58,7 +60,10 @@ with st.sidebar:
         value=st.session_state.firecrawl_api_key,
         type="password"
     )
-    
+    tavily_api_key = st.text_input("Tavily API Key", value=st.session_state.get("tavily_api_key",""), type="password")
+    if tavily_api_key:
+        st.session_state["tavily_api_key"] = tavily_api_key
+        st.caption("Tavily enabled")
 
     if openai_api_key:
         st.session_state.openai_api_key = openai_api_key
@@ -66,25 +71,81 @@ with st.sidebar:
     if firecrawl_api_key:
         st.session_state.firecrawl_api_key = firecrawl_api_key
 
-    # --- Search options controls ---
     st.subheader("Search options")
     st.session_state["allow_any_domain"] = st.checkbox("Open Search Mode", value=True)
     st.session_state["max_pages"] = st.number_input("Max pages", min_value=6, max_value=25, value=12, step=1)
-    st.session_state["start_date"] = st.date_input("Start date", value=None)
-    st.session_state["end_date"] = st.date_input("End date", value=None)
-
-    st.text_area(
+    st.session_state["start_date"] = st.text_input("Start date (YYYY-MM-DD)", value=st.session_state.get("start_date",""))
+    st.session_state["end_date"] = st.text_input("End date (YYYY-MM-DD)", value=st.session_state.get("end_date",""))
+    st.session_state["domains_text"] = st.text_area(
         "Domains to search (one per line)",
-        value="visa.com/newsroom\nmastercard.com/news\nswift.com/news\nbis.org\nimf.org\nfatf-gafi.org\necb.europa.eu\nbanxico.org.mx\nwise.com\nremitly.com\nwesternunion.com",
-        key="domains_text",
+        value=st.session_state.get("domains_text","visa.com/newsroom\nmastercard.com/news\nswift.com/news\nbis.org\nimf.org\nfatf-gafi.org\necb.europa.eu\nbanxico.org.mx\nwise.com\nremitly.com\nwesternunion.com"),
         height=120
     )
-
     dom_count = len([l for l in st.session_state["domains_text"].splitlines() if l.strip()])
-    window = ""
+    win = ""
     if st.session_state["start_date"] and st.session_state["end_date"]:
-        window = f"  Window: {st.session_state['start_date']} to {st.session_state['end_date']}"
-    st.caption(f"Domains loaded: {dom_count}.{window}")
+        win = f"  Window: {st.session_state['start_date']} to {st.session_state['end_date']}"
+    st.caption(f"Domains loaded: {dom_count}.{win}")
+# --- Helper functions ---
+def host_of(u: str) -> str:
+    try:
+        return (urlparse(u).hostname or "").lower()
+    except:
+        return ""
+
+def _rank_score(url: str, title: str) -> int:
+    h = host_of(url)
+    s = 0
+    if any(k in h for k in ["news","press","blog"]): s += 3
+    if any(x in (title or "") for x in ["2025","2024","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]): s += 2
+    return s
+
+def tavily_search(topic: str, max_results: int = 12, days: int | None = None, api_key: str | None = None) -> List[Dict[str, Any]]:
+    """
+    Use Tavily Search API to get results with content snippets.
+    Returns a list of dicts: {url, title, content}
+    """
+    if not api_key:
+        return []
+    try:
+        payload = {
+            "api_key": api_key,
+            "query": topic,
+            "include_answer": False,
+            "max_results": max_results,
+            "include_raw_content": False,
+            "search_depth": "advanced"
+        }
+        if days is not None:
+            payload["days"] = days
+        r = requests.post("https://api.tavily.com/search", json=payload, timeout=25)
+        r.raise_for_status()
+        data = r.json()
+        out = []
+        for it in data.get("results", []) or []:
+            url = it.get("url")
+            if not url:
+                continue
+            out.append({
+                "url": url,
+                "title": it.get("title") or url,
+                "content": it.get("content") or ""
+            })
+        return out
+    except Exception:
+        return []
+
+async def safe_search_firecrawl(app, q: str, limit: int, retries: int = 2):
+    for i in range(retries + 1):
+        try:
+            return app.search(query=q, limit=limit)
+        except Exception as e:
+            msg = str(e)
+            if "Rate limit" in msg or "rate limit" in msg:
+                await asyncio.sleep(12 * (i + 1))
+                continue
+            return {"data":{"web":[]}}
+    return {"data":{"web":[]}}
 
 # Inserted OpenAI client block
 import os
@@ -133,158 +194,147 @@ async def plan_queries(topic: str) -> Dict[str, Any]:
 @function_tool
 async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: int) -> Dict[str, Any]:
     """
-    Perform comprehensive web research using Firecrawl by combining Search and Scrape.
-    Uses OpenAI to plan queries, supports open/closed search, time window, ranking, and strict citation rules.
+    Perform comprehensive web research using Tavily as primary, Firecrawl as fallback, with strict caps and formal cited output.
     """
-    from urllib.parse import urlparse
-    def host_of(u: str) -> str:
-        try: return (urlparse(u).hostname or "").lower()
-        except: return ""
-    def score_item(url: str, title: str, hints: list) -> int:
-        h = host_of(url)
-        s = 0
-        if any(k in h for k in ["news","press","blog"]): s += 3
-        if any(x in (title or "") for x in ["2025","2024","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]): s += 2
-        if any(hint in h for hint in planned.get("hints", [])): s += 1
-        return s
     try:
-        # 1) Read user settings
+        # Read user settings
         allow_any = bool(st.session_state.get("allow_any_domain", True))
         max_pages = int(st.session_state.get("max_pages", 12))
+        start_date = st.session_state.get("start_date", "")
+        end_date = st.session_state.get("end_date", "")
         domains_text = st.session_state.get("domains_text", "")
-        start_date = st.session_state.get("start_date")
-        end_date = st.session_state.get("end_date")
+        tavily_key = st.session_state.get("tavily_api_key")
 
-        firecrawl_app = FirecrawlApp(api_key=st.session_state.firecrawl_api_key)
+        # 4a) Build a human-readable topic string with optional dates from sidebar
+        topic_hint = query
+        days = None
+        try:
+            if start_date and end_date and len(start_date)==10 and len(end_date)==10:
+                from datetime import date
+                sd = date.fromisoformat(start_date); ed = date.fromisoformat(end_date)
+                days = max(1, (ed - sd).days)
+        except Exception:
+            days = None
 
-        # 2) Call the planner
-        planned = await plan_queries(query)
+        # 4b) Try Tavily first
+        st.write("Searching with Tavily...")
+        tavily_hits = tavily_search(topic_hint, max_results=max_pages, days=days, api_key=tavily_key)
 
-        # 3) Build queries_to_run
-        if allow_any:
-            queries_to_run = planned["queries"]
-            if start_date and end_date:
-                time_hint = f" after:{start_date} before:{end_date}"
-                queries_to_run = [q + time_hint for q in queries_to_run[:4]] + queries_to_run[4:]
-        else:
-            doms = [d.strip() for d in domains_text.splitlines() if d.strip()]
-            queries_to_run = [f"{query} site:{d}" for d in doms]
-            if not doms:
-                st.warning("No domains provided, enable Open Search Mode or add domains")
-                return {"success": False, "error": "No domains", "sources": []}
+        # De-dupe and rank Tavily results
+        seen, candidates = set(), []
+        for it in tavily_hits:
+            u = it["url"].strip()
+            if u and u not in seen:
+                seen.add(u)
+                candidates.append({"url": u, "title": it["title"], "content": it.get("content","")})
 
-        # 4) Run Firecrawl search for each query, deduplicate by URL
-        st.write("Searching the web...")
-        web_results = []
-        seen_urls = set()
-        for q in queries_to_run:
-            try:
-                search = firecrawl_app.search(query=q, limit=min(5, max_pages))
-                items = []
-                if isinstance(search, dict):
-                    if "data" in search and isinstance(search["data"], dict) and "web" in search["data"]:
-                        items = search["data"]["web"]
-                    elif "web" in search:
-                        items = search["web"]
-                elif isinstance(search, list):
-                    items = search
-                for item in items:
-                    url = item.get("url") if isinstance(item, dict) else str(item)
-                    if not url or url in seen_urls:
-                        continue
-                    seen_urls.add(url)
-                    web_results.append(item)
-            except Exception as e:
-                st.write(f"Search error for query '{q}': {e}")
-                continue
+        candidates.sort(key=lambda x: _rank_score(x["url"], x["title"]), reverse=True)
+        candidates = candidates[:max_pages]
 
-        if not web_results:
-            fallback_queries = [
-                f"{query} site:prnewswire.com",
-                f"{query} site:businesswire.com",
-                f"{query} site:globenewswire.com",
-                f"{query} site:newsroom.visa.com OR site:visa.com/newsroom",
-                f"{query} site:mastercard.com/news",
-                f"{query} site:swift.com/news",
-                f"{query} site:reuters.com",
-            ]
-            for fq in fallback_queries:
-                try:
-                    res = firecrawl_app.search(query=fq, limit=5)
-                    items = res.get('data', {}).get('web') or res.get('web') or res
+        # 4c) If Tavily is empty, fall back to Firecrawl with strict caps
+        if not candidates:
+            st.write("Tavily returned no usable results, falling back to Firecrawl...")
+            firecrawl_app = FirecrawlApp(api_key=st.session_state.firecrawl_api_key)
+            MAX_SEARCH_CALLS = 6
+            PER_QUERY_LIMIT = 3
+            search_calls = 0
+
+            if allow_any:
+                queries_to_run = [query]
+                if start_date and end_date:
+                    queries_to_run.append(f"{query} after:{start_date} before:{end_date}")
+            else:
+                doms = [d.strip() for d in domains_text.splitlines() if d.strip()]
+                if not doms:
+                    st.warning("No domains provided, enable Open Search Mode or add domains")
+                    return {"success": False, "error": "No domains", "sources": []}
+                queries_to_run = [f"{query} site:{d}" for d in doms]
+
+            web_results: List[Dict[str, Any]] = []
+            for q in queries_to_run[:MAX_SEARCH_CALLS]:
+                res = await safe_search_firecrawl(firecrawl_app, q, PER_QUERY_LIMIT)
+                search_calls += 1
+                items = res.get("data", {}).get("web") or res.get("web") or res
+                for it in items or []:
+                    url = (it.get("url") or it.get("link") or str(it)).strip()
+                    if url and url not in seen:
+                        seen.add(url)
+                        web_results.append({"url": url, "title": it.get("title", url)})
+
+            # simple press-wire fallback if still empty
+            if not web_results:
+                for fq in [f"{query} site:prnewswire.com", f"{query} site:businesswire.com", f"{query} site:globenewswire.com", f"{query} site:reuters.com"]:
+                    res = await safe_search_firecrawl(firecrawl_app, fq, PER_QUERY_LIMIT)
+                    items = res.get("data", {}).get("web") or res.get("web") or res
                     for it in items or []:
-                        url = (it.get('url') or it.get('link') or str(it)).strip()
-                        if url and url not in seen_urls:
-                            seen_urls.add(url)
-                            web_results.append({'url': url, 'title': it.get('title', url)})
+                        url = (it.get("url") or it.get("link") or str(it)).strip()
+                        if url and url not in seen:
+                            seen.add(url)
+                            web_results.append({"url": url, "title": it.get("title", url)})
+
+            # rank Firecrawl candidates
+            web_results.sort(key=lambda x: _rank_score(x["url"], x["title"]), reverse=True)
+            candidates = web_results[:max_pages]
+
+        # 4d) Extract content, prefer Tavily content, else Firecrawl scrape
+        sources: List[Dict[str, Any]] = []
+        firecrawl_app = firecrawl_app if 'firecrawl_app' in locals() else FirecrawlApp(api_key=st.session_state.firecrawl_api_key)
+        st.write(f"Extracting content from up to {len(candidates)} pages...")
+        for c in candidates:
+            url, title = c["url"], c["title"]
+            # skip known JS-heavy calculator pages
+            if any(x in url.lower() for x in ["/calculator", "/estimator", "/pricing", "/price"]):
+                continue
+            text = c.get("content","") or ""
+            if not text:
+                try:
+                    doc = firecrawl_app.scrape(url=url, formats=["markdown"])
+                    text = (doc.get("data", {}).get("markdown") or doc.get("markdown") or "") if isinstance(doc, dict) else str(doc)
                 except Exception:
                     continue
-        if not web_results:
-            return {"success": False, "error": "No search results", "sources": []}
-
-        # 5) Rank results before scraping
-        hints = planned.get("hints", [])
-        def get_url_title(item):
-            if isinstance(item, dict):
-                return item.get("url", ""), item.get("title", "")
-            return str(item), str(item)
-        scored = sorted(web_results, key=lambda item: score_item(*get_url_title(item), hints), reverse=True)
-        scored = scored[:max_pages]
-
-        # 6) Scrape each result to get content (cap at max_pages, skip unwanted paths)
-        st.write(f"Found {len(scored)} candidates. Extracting content...")
-        sources = []
-        for item in scored:
+            if not text:
+                continue
+            sources.append({"url": url, "title": title, "markdown": text[:4000]})
             if len(sources) >= max_pages:
                 break
-            try:
-                url = item.get("url") if isinstance(item, dict) else str(item)
-                if not url:
-                    continue
-                path = urlparse(url).path.lower()
-                if any(x in path for x in ["calculator", "estimator", "pricing", "price"]):
-                    continue
-                doc = firecrawl_app.scrape(url=url, formats=["markdown"])
-                if isinstance(doc, dict):
-                    md = doc.get("data", {}).get("markdown") or doc.get("markdown") or ""
-                else:
-                    md = str(doc)
-                title = item.get("title", url) if isinstance(item, dict) else url
-                sources.append({"url": url, "title": title, "markdown": md})
-                st.write(f"Scraped: {title}")
-            except Exception as e:
-                st.write(f"Skipping one URL due to error: {e}")
-                continue
 
         if not sources:
-            return {"success": False, "error": "Could not scrape any sources", "sources": []}
+            return {"success": False, "error": "No readable sources", "sources": []}
 
-        # 7) Print sources summary
+        # 4e) Visible summary for the user
         st.success(f"Sources scraped: {len(sources)}")
         for i, s in enumerate(sources, 1):
             st.write(f"[{i}] {s['title']} — {s['url']}")
 
-        # 8) Build an initial report string for the agent pipeline
-        joined = "\n\n".join(
-            f"# {s['title']}\nSource: {s['url']}\n\n{s['markdown'][:4000]}"
-            for s in sources
-        )
+        # 4f) Build materials and strict instructions
+        materials = "\n\n".join(f"# [{i}] {s['title']}\nSource: {s['url']}\n\n{s['markdown']}" for i, s in enumerate(sources, 1))
+        bibliography = "\n".join(f"[{i}] {s['title']} — {s['url']}" for i, s in enumerate(sources, 1))
 
-        initial_report = f"""
-You are a research analyst. Use ONLY the scraped materials below.
-Every claim must have an inline citation like [n] that maps to the Sources list.
-Extract an ISO date from each page; if none is visible write 'date unknown' and mark that line 'uncertain'.
-Do not invent sources or facts.
+        initial_materials = f"""### COLLECTED MATERIALS
+Use ONLY the materials and Sources below. Do not invent sources.
 
 Topic: {query}
 
-Sources:
-{joined}
+Output a formal report with sections:
+- Executive Summary
+- Key Developments
+- Implications for stakeholders
+- Watchlist
+
+Rules:
+- Every claim must have an inline citation like [n] that maps to the Sources list.
+- Extract an ISO date from each page. If no visible date, write "date unknown" and mark that line "uncertain".
+- Keep it concise and factual.
+
+{materials}
+
+### Sources
+{bibliography}
 """
 
         return {
             "success": True,
-            "final_analysis": initial_report,
+            "final_analysis": initial_materials,
             "sources_count": len(sources),
             "sources": [{"url": s["url"], "title": s["title"]} for s in sources],
         }
