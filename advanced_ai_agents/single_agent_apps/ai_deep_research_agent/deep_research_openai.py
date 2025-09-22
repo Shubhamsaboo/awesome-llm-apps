@@ -5,6 +5,7 @@ from agents import Agent, Runner, trace
 from agents import set_default_openai_key
 from firecrawl import FirecrawlApp
 from agents.tool import function_tool
+from openai import OpenAI
 
 # Set page configuration
 st.set_page_config(
@@ -36,8 +37,22 @@ with st.sidebar:
     if openai_api_key:
         st.session_state.openai_api_key = openai_api_key
         set_default_openai_key(openai_api_key)
+
     if firecrawl_api_key:
         st.session_state.firecrawl_api_key = firecrawl_api_key
+
+# Inserted OpenAI client block
+import os
+from openai import OpenAI
+
+# Ensure both the OpenAI client and the Agents SDK see the key
+if st.session_state.openai_api_key:
+    os.environ["OPENAI_API_KEY"] = st.session_state.openai_api_key
+    st.caption("OpenAI key prefix: " + st.session_state.openai_api_key[:8] + "…")
+    st.caption("Model: gpt-4o-mini")
+    client = OpenAI(api_key=st.session_state.openai_api_key)
+else:
+    client = None
 
 # Main content
 st.title("📘 OpenAI Deep Research Agent")
@@ -172,6 +187,21 @@ elaboration_agent = Agent(
 
 async def run_research_process(topic: str):
     """Run the complete research process."""
+    # OpenAI test call
+    try:
+        if client:
+            ping = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "Say OK in one word."},
+                    {"role": "user", "content": "Ping"}
+                ],
+                temperature=0
+            )
+            st.caption("OpenAI test response: " + ping.choices[0].message.content)
+    except Exception as e:
+        st.warning(f"OpenAI test failed: {e}")
+
     # Step 1: Initial Research
     with st.spinner("Conducting initial research..."):
         research_result = await Runner.run(research_agent, topic)
