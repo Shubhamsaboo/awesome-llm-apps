@@ -1,3 +1,27 @@
+#
+async def plan_queries(topic: str) -> Dict[str, Any]:
+    "Use the global OpenAI client to produce diverse web search queries and site hints."
+    import json
+    try:
+        if client is None:
+            return {"queries": [topic], "hints": [], "language": "en"}
+        sys = "You are a research query planner. Output compact JSON only."
+        user = f"Topic: {topic}\nProduce JSON with keys: queries, hints, language.\nRules: return 8 to 12 diverse queries, some site-neutral and some site-specific, at least 2 with time windows like 'last 30 days' or exact dates; each query under 120 characters."
+        resp = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role":"system","content":sys},{"role":"user","content":user}],
+            temperature=0.2
+        )
+        txt = resp.choices[0].message.content.strip()
+        data = json.loads(txt)
+        if not isinstance(data.get("queries", []), list):
+            data["queries"] = [topic]
+        data.setdefault("hints", [])
+        data.setdefault("language", "en")
+        return data
+    except Exception:
+        return {"queries": [topic], "hints": [], "language": "en"}
+
 import asyncio
 import streamlit as st
 from typing import Dict, Any, List
@@ -109,52 +133,46 @@ async def plan_queries(topic: str) -> Dict[str, Any]:
 async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: int) -> Dict[str, Any]:
     """
     Perform comprehensive web research using Firecrawl by combining Search and Scrape.
-    Enhanced: uses OpenAI to plan queries, supports domain restriction, date cues, and result ranking.
+    Uses OpenAI to plan queries, supports open/closed search, time window, ranking, and strict citation rules.
     """
     from urllib.parse import urlparse
     def host_of(u: str) -> str:
-        try:
-            return (urlparse(u).hostname or "").lower()
-        except:
-            return ""
-    def score_item(url: str, title: str, hints: List[str]) -> int:
+        try: return (urlparse(u).hostname or "").lower()
+        except: return ""
+    def score_item(url: str, title: str, hints: list) -> int:
         h = host_of(url)
         s = 0
-        if any(k in h for k in ["news","press","blog"]):
-            s += 3
-        if any(x in (title or "") for x in ["2025","2024","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]):
-            s += 2
-        if any(hint in h for hint in planned.get("hints", [])):
-            s += 1
+        if any(k in h for k in ["news","press","blog"]): s += 3
+        if any(x in (title or "") for x in ["2025","2024","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]): s += 2
+        if any(hint in h for hint in planned.get("hints", [])): s += 1
         return s
-
     try:
-        # Read sidebar/session state
+        # 1) Read user settings
         allow_any = bool(st.session_state.get("allow_any_domain", True))
         max_pages = int(st.session_state.get("max_pages", 12))
         domains_text = st.session_state.get("domains_text", "")
-        start_date = st.session_state.get("start_date", None)
-        end_date = st.session_state.get("end_date", None)
+        start_date = st.session_state.get("start_date")
+        end_date = st.session_state.get("end_date")
 
         firecrawl_app = FirecrawlApp(api_key=st.session_state.firecrawl_api_key)
 
-        # Plan queries
+        # 2) Call the planner
         planned = await plan_queries(query)
 
-        # Build queries_to_run
-        queries_to_run = []
+        # 3) Build queries_to_run
         if allow_any:
             queries_to_run = planned["queries"]
-            # Add date cues to a subset if dates provided
             if start_date and end_date:
-                date_cue = f" after:{start_date} before:{end_date}"
-                for i in range(min(2, len(queries_to_run))):
-                    queries_to_run[i] = queries_to_run[i][:110] + date_cue
+                time_hint = f" after:{start_date} before:{end_date}"
+                queries_to_run = [q + time_hint for q in queries_to_run[:4]] + queries_to_run[4:]
         else:
-            domain_list = [d.strip() for d in domains_text.splitlines() if d.strip()]
-            queries_to_run = [f"{query} site:{d}" for d in domain_list]
+            doms = [d.strip() for d in domains_text.splitlines() if d.strip()]
+            queries_to_run = [f"{query} site:{d}" for d in doms]
+            if not doms:
+                st.warning("No domains provided, enable Open Search Mode or add domains")
+                return {"success": False, "error": "No domains", "sources": []}
 
-        # Search and collect web results, deduplicate by absolute URL
+        # 4) Run Firecrawl search for each query, deduplicate by URL
         st.write("Searching the web...")
         web_results = []
         seen_urls = set()
@@ -182,7 +200,7 @@ async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: i
         if not web_results:
             return {"success": False, "error": "No search results", "sources": []}
 
-        # Rank results before scraping
+        # 5) Rank results before scraping
         hints = planned.get("hints", [])
         def get_url_title(item):
             if isinstance(item, dict):
@@ -191,7 +209,7 @@ async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: i
         scored = sorted(web_results, key=lambda item: score_item(*get_url_title(item), hints), reverse=True)
         scored = scored[:max_pages]
 
-        # Scrape each result to get content (cap at max_pages)
+        # 6) Scrape each result to get content (cap at max_pages, skip unwanted paths)
         st.write(f"Found {len(scored)} candidates. Extracting content...")
         sources = []
         for item in scored:
@@ -201,8 +219,6 @@ async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: i
                 url = item.get("url") if isinstance(item, dict) else str(item)
                 if not url:
                     continue
-                # Skip URLs with unwanted path segments
-                from urllib.parse import urlparse
                 path = urlparse(url).path.lower()
                 if any(x in path for x in ["calculator", "estimator", "pricing", "price"]):
                     continue
@@ -221,12 +237,12 @@ async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: i
         if not sources:
             return {"success": False, "error": "Could not scrape any sources", "sources": []}
 
-        # Print sources summary
+        # 7) Print sources summary
         st.success(f"Sources scraped: {len(sources)}")
         for i, s in enumerate(sources, 1):
             st.write(f"[{i}] {s['title']} — {s['url']}")
 
-        # 3) Build an initial report string for the agent pipeline
+        # 8) Build an initial report string for the agent pipeline
         joined = "\n\n".join(
             f"# {s['title']}\nSource: {s['url']}\n\n{s['markdown'][:4000]}"
             for s in sources
@@ -234,7 +250,6 @@ async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: i
 
         initial_report = f"""
 You are a research analyst. Use ONLY the scraped materials below.
-Produce a formal report with sections: Executive Summary, Key Developments, Implications for stakeholders, Watchlist.
 Every claim must have an inline citation like [n] that maps to the Sources list.
 Extract an ISO date from each page; if none is visible write 'date unknown' and mark that line 'uncertain'.
 Do not invent sources or facts.
