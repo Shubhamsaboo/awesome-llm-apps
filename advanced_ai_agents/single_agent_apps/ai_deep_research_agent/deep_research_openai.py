@@ -61,49 +61,136 @@ st.markdown("This OpenAI Agent from the OpenAI Agents SDK performs deep research
 # Research topic input
 research_topic = st.text_input("Enter your research topic:", placeholder="e.g., Latest developments in AI")
 
+async def plan_queries(topic: str) -> Dict[str, Any]:
+    "Use OpenAI to produce diverse search queries and site hints."
+    import json
+    try:
+        if client is None:
+            return {"queries": [topic], "hints": [], "language": "en"}
+        sys = "You are a research query planner. Output compact JSON only."
+        user = f"Topic: {topic}\nProduce JSON with keys: queries, hints, language.\nRules: return 8 to 12 diverse queries, some site-neutral and some site-specific, at least 2 with time windows like 'last 30 days' or exact dates; each query under 120 chars."
+        resp = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role":"system","content":sys},{"role":"user","content":user}],
+            temperature=0.2
+        )
+        txt = resp.choices[0].message.content.strip()
+        data = json.loads(txt)
+        if not isinstance(data.get("queries", []), list):
+            data["queries"] = [topic]
+        data.setdefault("hints", [])
+        data.setdefault("language", "en")
+        return data
+    except Exception:
+        return {"queries": [topic], "hints": [], "language": "en"}
+
 # Replace the entire deep_research tool with this
 @function_tool
 async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: int) -> Dict[str, Any]:
     """
     Perform comprehensive web research using Firecrawl by combining Search and Scrape.
-    This replaces the old deep_research call that is not available in current SDKs.
+    Enhanced: uses OpenAI to plan queries, supports domain restriction, date cues, and result ranking.
     """
+    from urllib.parse import urlparse
+    def host_of(u: str) -> str:
+        try:
+            return (urlparse(u).hostname or "").lower()
+        except:
+            return ""
+    def score_item(url: str, title: str, hints: List[str]) -> int:
+        h = host_of(url)
+        s = 0
+        if any(k in h for k in ["news","press","blog"]):
+            s += 3
+        if any(x in (title or "") for x in ["2025","2024","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]):
+            s += 2
+        if any(hint in h for hint in planned.get("hints", [])):
+            s += 1
+        return s
+
     try:
+        # Read sidebar/session state
+        allow_any = bool(st.session_state.get("allow_any_domain", True))
+        max_pages = int(st.session_state.get("max_pages", 12))
+        domains_text = st.session_state.get("domains_text", "")
+        start_date = st.session_state.get("start_date", None)
+        end_date = st.session_state.get("end_date", None)
+
         firecrawl_app = FirecrawlApp(api_key=st.session_state.firecrawl_api_key)
 
-        # 1) Search for relevant pages
-        st.write("Searching the web...")
-        search = firecrawl_app.search(query=query, limit=max_urls)
+        # Plan queries
+        planned = await plan_queries(query)
 
-        # Normalize possible return shapes
-        web_results: List[Dict[str, Any]] = []
-        if isinstance(search, dict):
-            if "data" in search and isinstance(search["data"], dict) and "web" in search["data"]:
-                web_results = search["data"]["web"]
-            elif "web" in search:
-                web_results = search["web"]
-        elif isinstance(search, list):
-            web_results = search
+        # Build queries_to_run
+        queries_to_run = []
+        if allow_any:
+            queries_to_run = planned["queries"]
+            # Add date cues to a subset if dates provided
+            if start_date and end_date:
+                date_cue = f" after:{start_date} before:{end_date}"
+                for i in range(min(2, len(queries_to_run))):
+                    queries_to_run[i] = queries_to_run[i][:110] + date_cue
+        else:
+            domain_list = [d.strip() for d in domains_text.splitlines() if d.strip()]
+            queries_to_run = [f"{query} site:{d}" for d in domain_list]
+
+        # Search and collect web results, deduplicate by absolute URL
+        st.write("Searching the web...")
+        web_results = []
+        seen_urls = set()
+        for q in queries_to_run:
+            try:
+                search = firecrawl_app.search(query=q, limit=min(5, max_pages))
+                items = []
+                if isinstance(search, dict):
+                    if "data" in search and isinstance(search["data"], dict) and "web" in search["data"]:
+                        items = search["data"]["web"]
+                    elif "web" in search:
+                        items = search["web"]
+                elif isinstance(search, list):
+                    items = search
+                for item in items:
+                    url = item.get("url") if isinstance(item, dict) else str(item)
+                    if not url or url in seen_urls:
+                        continue
+                    seen_urls.add(url)
+                    web_results.append(item)
+            except Exception as e:
+                st.write(f"Search error for query '{q}': {e}")
+                continue
 
         if not web_results:
             return {"success": False, "error": "No search results", "sources": []}
 
-        # 2) Scrape each result to get content
-        st.write(f"Found {len(web_results)} candidates. Extracting content...")
+        # Rank results before scraping
+        hints = planned.get("hints", [])
+        def get_url_title(item):
+            if isinstance(item, dict):
+                return item.get("url", ""), item.get("title", "")
+            return str(item), str(item)
+        scored = sorted(web_results, key=lambda item: score_item(*get_url_title(item), hints), reverse=True)
+        scored = scored[:max_pages]
+
+        # Scrape each result to get content (cap at max_pages)
+        st.write(f"Found {len(scored)} candidates. Extracting content...")
         sources = []
-        for item in web_results[:max_urls]:
+        for item in scored:
+            if len(sources) >= max_pages:
+                break
             try:
                 url = item.get("url") if isinstance(item, dict) else str(item)
                 if not url:
                     continue
+                # Skip URLs with unwanted path segments
+                from urllib.parse import urlparse
+                path = urlparse(url).path.lower()
+                if any(x in path for x in ["calculator", "estimator", "pricing", "price"]):
+                    continue
                 doc = firecrawl_app.scrape(url=url, formats=["markdown"])
-
-                # Normalize markdown field
                 if isinstance(doc, dict):
                     md = doc.get("data", {}).get("markdown") or doc.get("markdown") or ""
                 else:
                     md = str(doc)
-
                 title = item.get("title", url) if isinstance(item, dict) else url
                 sources.append({"url": url, "title": title, "markdown": md})
                 st.write(f"Scraped: {title}")
@@ -114,6 +201,11 @@ async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: i
         if not sources:
             return {"success": False, "error": "Could not scrape any sources", "sources": []}
 
+        # Print sources summary
+        st.success(f"Sources scraped: {len(sources)}")
+        for i, s in enumerate(sources, 1):
+            st.write(f"[{i}] {s['title']} — {s['url']}")
+
         # 3) Build an initial report string for the agent pipeline
         joined = "\n\n".join(
             f"# {s['title']}\nSource: {s['url']}\n\n{s['markdown'][:4000]}"
@@ -121,15 +213,13 @@ async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: i
         )
 
         initial_report = f"""
-You are a precise research writer. Read the sources and produce an "Initial Research Report" for the topic.
+You are a research analyst. Use ONLY the scraped materials below.
+Produce a formal report with sections: Executive Summary, Key Developments, Implications for stakeholders, Watchlist.
+Every claim must have an inline citation like [n] that maps to the Sources list.
+Extract an ISO date from each page; if none is visible write 'date unknown' and mark that line 'uncertain'.
+Do not invent sources or facts.
 
 Topic: {query}
-
-Include:
-- Executive Summary with 5 to 7 bullets
-- Key developments and examples with short evidence
-- Practical implications for consumers, SMEs, and banks
-- Inline citations like [1], [2] that match a Sources list at the end
 
 Sources:
 {joined}
@@ -150,18 +240,12 @@ Sources:
 # Keep the original agents
 research_agent = Agent(
     name="research_agent",
-    instructions="""You are a research assistant that can perform deep web research on any topic.
-
-    When given a research topic or question:
-    1. Use the deep_research tool to gather comprehensive information
-       - Always use these parameters:
-         * max_depth: 3 (for moderate depth)
-         * time_limit: 180 (3 minutes)
-         * max_urls: 10 (sufficient sources)
-    2. The tool will search the web, analyze multiple sources, and provide a synthesis
-    3. Review the research results and organize them into a well-structured report
-    4. Include proper citations for all sources
-    5. Highlight key findings and insights
+    instructions="""
+You are a research analyst. Use ONLY the scraped materials provided by the deep_research tool.
+Every claim must have an inline citation like [n] that maps to the Sources list at the end.
+Prefer dated, first-party items. If a source has no visible date, state 'date unknown' and mark that line 'uncertain'.
+Do not invent sources or facts. Do not use any information not present in the scraped materials.
+Organize your report with clear sections and keep citations consistent.
     """,
     tools=[deep_research]
 )
@@ -215,14 +299,17 @@ async def run_research_process(topic: str):
     with st.spinner("Enhancing the report with additional information..."):
         elaboration_input = f"""
         RESEARCH TOPIC: {topic}
-        
+
         INITIAL RESEARCH REPORT:
         {initial_report}
-        
-        Please enhance this research report with additional information, examples, case studies, 
-        and deeper insights while maintaining its academic rigor and factual accuracy.
+
+        Please enhance this research report by adding clarity, detail, and examples, but you must:
+        - Keep all existing citations ([n]) and do not remove or change them.
+        - Do not introduce any new sources or facts not present in the original report.
+        - The Sources list must remain unchanged.
+        - If you add new sentences, cite them to the correct [n] as in the original.
+        - Your job is to elaborate and clarify, not to add new information.
         """
-        
         elaboration_result = await Runner.run(elaboration_agent, elaboration_input)
         enhanced_report = elaboration_result.final_output
     
