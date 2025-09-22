@@ -48,39 +48,60 @@ research_topic = st.text_input("Enter your research topic:", placeholder="e.g., 
 
 # Keep the original deep_research tool
 @function_tool
+
+@function_tool
 async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: int) -> Dict[str, Any]:
     """
-    Perform comprehensive web research using Firecrawl's deep research endpoint.
+    Perform comprehensive web research using Firecrawl search + scrape.
     """
     try:
-        # Initialize FirecrawlApp with the API key from session state
         firecrawl_app = FirecrawlApp(api_key=st.session_state.firecrawl_api_key)
-        
-        # Define research parameters
-        params = {
-            "maxDepth": max_depth,
-            "timeLimit": time_limit,
-            "maxUrls": max_urls
-        }
-        
-        # Set up a callback for real-time updates
-        def on_activity(activity):
-            st.write(f"[{activity['type']}] {activity['message']}")
-        
-        # Run deep research
-        with st.spinner("Performing deep research..."):
-            results = firecrawl_app.deep_research(
-                query=query,
-                params=params,
-                on_activity=on_activity
-            )
-        
+
+        # Step 1: Search for relevant pages
+        st.write("Searching the web...")
+        results = firecrawl_app.search(query=query, limit=max_urls)
+
+        web_results = results.get("data", {}).get("web", []) if isinstance(results, dict) else results
+        if not web_results:
+            return {"success": False, "error": "No search results", "sources": []}
+
+        # Step 2: Scrape each result to get content
+        st.write(f"Found {len(web_results)} results. Extracting content...")
+        sources = []
+        for item in web_results[:max_urls]:
+            url = item.get("url") if isinstance(item, dict) else str(item)
+            if not url:
+                continue
+
+            try:
+                doc = firecrawl_app.scrape(url=url, formats=["markdown"])
+                markdown = doc.get("data", {}).get("markdown") if isinstance(doc, dict) else str(doc)
+                sources.append({
+                    "url": url,
+                    "title": item.get("title", url),
+                    "markdown": markdown[:4000]  # keep it short
+                })
+                st.write(f"Scraped: {url}")
+            except Exception as e:
+                st.write(f"Skipping {url}: {e}")
+                continue
+
+        if not sources:
+            return {"success": False, "error": "No content scraped", "sources": []}
+
+        # Step 3: Build the final analysis text
+        joined = "\n\n".join(
+            f"# {s['title']}\nSource: {s['url']}\n\n{s['markdown']}"
+            for s in sources
+        )
+
         return {
             "success": True,
-            "final_analysis": results['data']['finalAnalysis'],
-            "sources_count": len(results['data']['sources']),
-            "sources": results['data']['sources']
+            "final_analysis": f"### Research Report\n\nTopic: {query}\n\n{joined}",
+            "sources_count": len(sources),
+            "sources": [{"url": s["url"], "title": s["title"]} for s in sources]
         }
+
     except Exception as e:
         st.error(f"Deep research error: {str(e)}")
         return {"error": str(e), "success": False}
