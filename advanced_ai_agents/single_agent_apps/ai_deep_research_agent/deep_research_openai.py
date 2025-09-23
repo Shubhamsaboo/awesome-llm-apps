@@ -1,9 +1,11 @@
 import asyncio
 import streamlit as st
+import os
+import json
+import requests
 from typing import Dict, Any, List
 from agents import Agent, Runner, trace
 from agents import set_default_openai_key
-from firecrawl import FirecrawlApp
 from agents.tool import function_tool
 import importlib.metadata
 
@@ -47,7 +49,7 @@ with st.sidebar:
 # Main content
 st.title("📘 OpenAI Deep Research Agent")
 st.markdown("This OpenAI Agent from the OpenAI Agents SDK performs deep research on any topic using Firecrawl")
-st.caption(f"firecrawl version: {importlib.metadata.version('firecrawl')}")
+st.caption("Mode: REST-only Firecrawl client")
 
 # Research topic input
 research_topic = st.text_input("Enter your research topic:", placeholder="e.g., Latest developments in AI")
@@ -55,47 +57,43 @@ research_topic = st.text_input("Enter your research topic:", placeholder="e.g., 
 # Keep the original deep_research tool
 @function_tool
 async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: int) -> Dict[str, Any]:
-    """
-    Perform comprehensive web research using Firecrawl's deep research endpoint.
-    """
-    import requests
+    """Call Firecrawl Deep Research REST endpoint directly. No SDK."""
     try:
-        app = FirecrawlApp(api_key=st.session_state.firecrawl_api_key)
-        def on_activity(activity):
-            st.write(f"[{activity.get('type','activity')}] {activity.get('message','')}")
+        api_key = st.session_state.get("firecrawl_api_key") or os.getenv("FIRECRAWL_API_KEY", "")
+        if not api_key:
+            st.error("Missing FIRECRAWL_API_KEY")
+            return {"error": "Missing FIRECRAWL_API_KEY", "success": False}
+
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "query": query,
+            "maxDepth": max_depth,
+            "timeLimit": time_limit,
+            "maxUrls": max_urls,
+        }
+
         with st.spinner("Performing deep research..."):
-            # Try SDK method if available
-            if hasattr(app, "deep_research"):
-                results = app.deep_research(
-                    query=query,
-                    max_depth=max_depth,
-                    time_limit=time_limit,
-                    max_urls=max_urls,
-                    on_activity=on_activity,
-                )
-                data = results["data"]
-            else:
-                # Fallback to REST API
-                url = "https://api.firecrawl.dev/v1/deep-research"
-                headers = {"Authorization": f"Bearer {st.session_state.firecrawl_api_key}", "Content-Type": "application/json"}
-                payload = {
-                    "query": query,
-                    "maxDepth": max_depth,
-                    "timeLimit": time_limit,
-                    "maxUrls": max_urls
-                }
-                resp = requests.post(url, json=payload, headers=headers, timeout=180)
-                resp.raise_for_status()
-                data = resp.json()["data"]
+            resp = requests.post(
+                "https://api.firecrawl.dev/v1/deep-research",
+                headers=headers,
+                data=json.dumps(payload),
+                timeout=180,
+            )
+            resp.raise_for_status()
+            data = resp.json().get("data", {})
+
         return {
             "success": True,
             "final_analysis": data.get("finalAnalysis", ""),
             "sources_count": len(data.get("sources", [])),
-            "sources": data.get("sources", [])
+            "sources": data.get("sources", []),
         }
     except Exception as e:
         st.error(f"Deep research error: {str(e)}")
-        return {"success": False, "error": str(e), "final_analysis": "", "sources_count": 0, "sources": []}
+        return {"error": str(e), "success": False}
 
 # Keep the original agents
 research_agent = Agent(
