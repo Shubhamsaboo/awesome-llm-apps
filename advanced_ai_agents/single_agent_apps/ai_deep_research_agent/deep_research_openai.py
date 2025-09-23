@@ -1,3 +1,34 @@
+# ---------- Date utilities ----------
+from datetime import date, datetime, timedelta
+import re
+
+def _parse_iso_from_text(md: str) -> Optional[date]:
+    # Try ISO first
+    m = re.search(r"\b(20\d{2})-(\d{2})-(\d{2})\b", md)
+    if m:
+        try:
+            return date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        except:
+            pass
+    # Try Month Day, Year (Sep 12, 2025)
+    m = re.search(r"\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(\d{1,2}),\s+(20\d{2})\b", md, re.I)
+    if m:
+        try:
+            mon = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"].index(m.group(1).lower())+1
+            return date(int(m.group(3)), mon, int(m.group(2)))
+        except:
+            pass
+    return None
+
+def _window_days_from_query(q: str, default_days: int = 60) -> int:
+    m = re.search(r"last\s+(\d{1,3})\s+days", q, re.I)
+    return int(m.group(1)) if m else default_days
+
+def _within_window(d: Optional[date], days: int, today: Optional[date] = None) -> bool:
+    if d is None:
+        return False
+    today = today or date.today()
+    return today - timedelta(days=days) <= d <= today
 import asyncio
 from typing import Dict, Any, List, Optional
 from urllib.parse import urlparse
@@ -129,12 +160,44 @@ async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: i
         for i, s in enumerate(sources, 1):
             st.write(f"[{i}] {s['title']} — {s['url']}")
 
-        # 5) Build materials for the agent with a numbered Sources list
+
+        # --- Filter by time window based on the user's query ---
+        days_window = _window_days_from_query(query, default_days=60)
+        today = date.today()
+
+        filtered = []
+        discarded = []
+        for s in sources:
+            d = _parse_iso_from_text(s["markdown"])
+            if _within_window(d, days_window, today):
+                s["iso_date"] = d.isoformat()
+                filtered.append(s)
+            else:
+                s["iso_date"] = d.isoformat() if d else "date unknown"
+                discarded.append(s)
+
+        # If filtering killed everything, fall back to original sources but mark them uncertain
+        if filtered:
+            sources = filtered
+        else:
+            for s in sources:
+                if "iso_date" not in s:
+                    d = _parse_iso_from_text(s["markdown"])
+                    s["iso_date"] = d.isoformat() if d else "date unknown"
+                s["uncertain"] = True
+
+        st.caption(f"Time window: last {days_window} days")
+        st.caption(f"Kept {len(sources)} source(s), discarded {len(discarded)} as out-of-window")
+
+        # 5) Build materials for the agent with a numbered Sources list (with ISO date and uncertainty)
         materials = "\n\n".join(
             f"# [{i}] {s['title']}\nSource: {s['url']}\n\n{s['markdown']}"
             for i, s in enumerate(sources, 1)
         )
-        sources_list = "\n".join(f"[{i}] {s['title']} — {s['url']}" for i, s in enumerate(sources, 1))
+        sources_list = "\n".join(
+            f"[{i}] {s['title']} — {s['url']} — {s.get('iso_date','date unknown')}{' (uncertain)' if s.get('uncertain') else ''}"
+            for i, s in enumerate(sources, 1)
+        )
 
         final = f"""### COLLECTED MATERIALS
 Use ONLY the materials and Sources below. Do not invent sources.
@@ -167,7 +230,8 @@ research_agent = Agent(
         "1) Use ONLY the provided materials, do not add outside sources.\n"
         "2) Write a concise report with sections: Executive Summary, Key Developments, Implications, Watchlist.\n"
         "3) Every claim must cite a source inline like [n] that matches the Sources list.\n"
-        "4) Prefer dated, first-party items. If a page has no date, state 'date unknown' and mark that line 'uncertain'."
+        "4) Prefer dated, first-party items. If a page has no date, state 'date unknown' and mark that line 'uncertain'.\n"
+        "Use ONLY the provided Sources. Do not alter or add to the Sources list. If a source is marked '(uncertain)' or 'date unknown', you may mention it only outside the Executive Summary. All summary bullets must cite in-window sources."
     ),
     tools=[deep_research],
 )
@@ -193,9 +257,11 @@ async def run_research_process(topic: str) -> str:
         st.markdown(initial_report)
 
     # Step 2: Editorial pass
+
     with st.spinner("Enhancing the report…"):
         elaboration_input = (
             "Use ONLY the text below and keep citations [n] intact.\n\n"
+            "Do not modify the Sources list. Do not add new sources. Keep all [n] citations and their mapping to Sources.\n\n"
             f"{initial_report}"
         )
         res2 = await Runner.run(elaboration_agent, elaboration_input)
