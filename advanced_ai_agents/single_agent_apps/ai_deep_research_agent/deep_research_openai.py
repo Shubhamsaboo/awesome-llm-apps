@@ -1,3 +1,66 @@
+# Helper to normalize Firecrawl search results
+def _hits_from_search(results) -> List[Dict[str, str]]:
+    """
+    Normalize Firecrawl search() responses across SDK versions to:
+    [{url: "...", title: "..."}]
+    Supports dict, list, pydantic-like objects with .data or .model_dump().
+    """
+    out: List[Dict[str, str]] = []
+
+    # If pydantic-like, try model_dump first
+    try:
+        if hasattr(results, "model_dump"):
+            results = results.model_dump()
+    except Exception:
+        pass
+
+    # Dict shape
+    if isinstance(results, dict):
+        data = results.get("data") or {}
+        web = data.get("web") or results.get("web") or results.get("results") or []
+        for it in (web or []):
+            if isinstance(it, dict):
+                url = it.get("url") or it.get("link") or ""
+                title = it.get("title") or url
+            else:
+                url = getattr(it, "url", None) or getattr(it, "link", None) or str(it)
+                title = getattr(it, "title", None) or url
+            if url:
+                out.append({"url": url, "title": title})
+        return out
+
+    # List shape
+    if isinstance(results, list):
+        for it in results:
+            if isinstance(it, dict):
+                url = it.get("url") or it.get("link") or ""
+                title = it.get("title") or url
+            else:
+                url = getattr(it, "url", None) or getattr(it, "link", None) or str(it)
+                title = getattr(it, "title", None) or url
+            if url:
+                out.append({"url": url, "title": title})
+        return out
+
+    # Object shape with attributes: .data.web or .web
+    data = getattr(results, "data", None)
+    web = None
+    if isinstance(data, dict):
+        web = data.get("web") or data.get("results")
+    else:
+        web = getattr(data, "web", None) or getattr(results, "web", None)
+
+    for it in (web or []):
+        if isinstance(it, dict):
+            url = it.get("url") or it.get("link") or ""
+            title = it.get("title") or url
+        else:
+            url = getattr(it, "url", None) or getattr(it, "link", None) or str(it)
+            title = getattr(it, "title", None) or url
+        if url:
+            out.append({"url": url, "title": title})
+
+    return out
 # === Deep Research Agent: Firecrawl search+scrape, date filter, strict citations ===
 import asyncio
 import re
@@ -182,10 +245,10 @@ async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: i
 
         for q in queries:
             res = await _safe_search(app, q, limit=min(10, max_urls))
-            items = res.get("data", {}).get("web") or res.get("web") or []
-            for it in items or []:
-                url = (it.get("url") or it.get("link") or "").strip()
-                title = it.get("title") or url
+            items = _hits_from_search(res)
+            for it in items:
+                url = it["url"].strip()
+                title = it.get("title", url) if isinstance(it, dict) else it["url"]
                 if not url or url in seen:
                     continue
                 seen.add(url)
@@ -206,7 +269,21 @@ async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: i
             low = url.lower()
             if any(x in low for x in ["/calculator", "/estimator", "/pricing", "/price"]):
                 continue
-            md = await _safe_scrape(app, url)
+            # Normalize scrape responses that might be objects
+            md_obj = app.scrape(url=url, formats=["markdown"])
+            if isinstance(md_obj, dict):
+                md = md_obj.get("data", {}).get("markdown") or md_obj.get("markdown") or ""
+            else:
+                # pydantic-like
+                try:
+                    if hasattr(md_obj, "model_dump"):
+                        md_obj = md_obj.model_dump()
+                        md = md_obj.get("data", {}).get("markdown") or md_obj.get("markdown") or ""
+                    else:
+                        md = str(md_obj)
+                except Exception:
+                    md = str(md_obj)
+
             if not md:
                 continue
             sources.append({"url": url, "title": title, "markdown": md[:5000]})
