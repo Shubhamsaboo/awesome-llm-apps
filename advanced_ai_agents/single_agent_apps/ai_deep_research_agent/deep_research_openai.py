@@ -58,39 +58,44 @@ async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: i
     """
     Perform comprehensive web research using Firecrawl's deep research endpoint.
     """
+    import requests
     try:
         app = FirecrawlApp(api_key=st.session_state.firecrawl_api_key)
-        
-        # Define research parameters
-        params = {
-            "maxDepth": max_depth,
-            "timeLimit": time_limit,
-            "maxUrls": max_urls
-        }
-        
-        # Set up a callback for real-time updates
         def on_activity(activity):
-            st.write(f"[{activity['type']}] {activity['message']}")
-        
-        # Run deep research
+            st.write(f"[{activity.get('type','activity')}] {activity.get('message','')}")
         with st.spinner("Performing deep research..."):
-            results = app.deep_research(
-                query=query,
-                max_depth=max_depth,
-                time_limit=time_limit,
-                max_urls=max_urls,
-                on_activity=on_activity,
-            )
-        
+            # Try SDK method if available
+            if hasattr(app, "deep_research"):
+                results = app.deep_research(
+                    query=query,
+                    max_depth=max_depth,
+                    time_limit=time_limit,
+                    max_urls=max_urls,
+                    on_activity=on_activity,
+                )
+                data = results["data"]
+            else:
+                # Fallback to REST API
+                url = "https://api.firecrawl.dev/v1/deep-research"
+                headers = {"Authorization": f"Bearer {st.session_state.firecrawl_api_key}", "Content-Type": "application/json"}
+                payload = {
+                    "query": query,
+                    "maxDepth": max_depth,
+                    "timeLimit": time_limit,
+                    "maxUrls": max_urls
+                }
+                resp = requests.post(url, json=payload, headers=headers, timeout=180)
+                resp.raise_for_status()
+                data = resp.json()["data"]
         return {
             "success": True,
-            "final_analysis": results['data']['finalAnalysis'],
-            "sources_count": len(results['data']['sources']),
-            "sources": results['data']['sources']
+            "final_analysis": data.get("finalAnalysis", ""),
+            "sources_count": len(data.get("sources", [])),
+            "sources": data.get("sources", [])
         }
     except Exception as e:
         st.error(f"Deep research error: {str(e)}")
-        return {"error": str(e), "success": False}
+        return {"success": False, "error": str(e), "final_analysis": "", "sources_count": 0, "sources": []}
 
 # Keep the original agents
 research_agent = Agent(
@@ -189,4 +194,4 @@ if st.button("Start Research", disabled=not (openai_api_key and firecrawl_api_ke
 
 # Footer
 st.markdown("---")
-st.markdown("Powered by OpenAI Agents SDK and Firecrawl") 
+st.markdown("Powered by OpenAI Agents SDK and Firecrawl")
