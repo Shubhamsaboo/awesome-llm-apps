@@ -1,3 +1,4 @@
 openai-agents
 streamlit
+requests
 firecrawl>=2.0.0
