@@ -11,7 +11,13 @@ from agents.tool import function_tool
 from firecrawl import FirecrawlApp
 
 # ---------- Page ----------
+
 st.set_page_config(page_title="OpenAI Deep Research Agent", page_icon="📘", layout="wide")
+
+# Guard against double execution
+if "booted" not in st.session_state:
+    st.session_state["booted"] = True
+    st.caption("App booted")
 
 # ---------- Session defaults ----------
 st.session_state.setdefault("openai_api_key", "")
@@ -20,21 +26,32 @@ st.session_state.setdefault("firecrawl_api_key", "")
 # ---------- Sidebar ----------
 with st.sidebar:
     st.title("API Configuration")
-    openai_api_key = st.text_input("OpenAI API Key", value=st.session_state.openai_api_key, type="password")
-    firecrawl_api_key = st.text_input("Firecrawl API Key", value=st.session_state.firecrawl_api_key, type="password")
+
+    openai_api_key = st.text_input("OpenAI API Key", value=st.session_state.openai_api_key, type="password", key="openai_key_input")
+    firecrawl_api_key = st.text_input("Firecrawl API Key", value=st.session_state.firecrawl_api_key, type="password", key="firecrawl_key_input")
+
 
     if openai_api_key:
         st.session_state.openai_api_key = openai_api_key
         set_default_openai_key(openai_api_key)
-
     if firecrawl_api_key:
         st.session_state.firecrawl_api_key = firecrawl_api_key
+
+    # OpenAI env and client
+    import os
+    from openai import OpenAI
+    if openai_api_key:
+        os.environ["OPENAI_API_KEY"] = openai_api_key
+        client = OpenAI(api_key=openai_api_key)
+        st.caption("OpenAI key prefix: " + openai_api_key[:8] + "…")
+    else:
+        client = None
 
 # ---------- Main ----------
 st.title("📘 OpenAI Deep Research Agent")
 st.markdown("Search and scrape with Firecrawl, enforce a date window, then write a cited report using only scraped materials.")
 
-research_topic = st.text_input("Enter your research topic:", placeholder="e.g., Instant cross border payouts in LATAM, last 60 days")
+research_topic = st.text_input("Enter your research topic:", placeholder="e.g., Instant cross-border payouts in LATAM, last 60 days", key="topic_input")
 
 # ---------- Helpers (Python 3.9-safe) ----------
 def _host(u: str) -> str:
@@ -223,6 +240,7 @@ Topic: {query}
 # ---------- Agents ----------
 research_agent = Agent(
     name="research_agent",
+    model="gpt-4o-mini",
     instructions=(
         "You will receive COLLECTED MATERIALS that include a numbered Sources list.\n"
         "Rules:\n"
@@ -236,6 +254,7 @@ research_agent = Agent(
 
 elaboration_agent = Agent(
     name="elaboration_agent",
+    model="gpt-4o-mini",
     instructions=(
         "Improve clarity and structure of the report you are given.\n"
         "Keep all [n] citations intact, do not modify the Sources list, and do not add new facts."
@@ -244,7 +263,22 @@ elaboration_agent = Agent(
 
 # ---------- Pipeline ----------
 async def run_research_process(topic: str) -> str:
+
     with st.spinner("Conducting initial research…"):
+        # OpenAI sanity ping
+        try:
+            if client:
+                _ping = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {"role": "system", "content": "Reply with exactly the word OK."},
+                        {"role": "user", "content": "Ping"}
+                    ],
+                    temperature=0
+                )
+                st.caption("OpenAI sanity ping: " + _ping.choices[0].message.content)
+        except Exception as e:
+            st.warning(f"OpenAI sanity ping failed: {e}")
         res = await Runner.run(research_agent, topic)
         initial_report = res.final_output
 
@@ -262,8 +296,8 @@ async def run_research_process(topic: str) -> str:
     return enhanced
 
 # ---------- UI action ----------
-btn_enabled = bool(openai_api_key and firecrawl_api_key and research_topic)
-if st.button("Start Research", disabled=not btn_enabled):
+btn_enabled = bool(openai_api_key and research_topic and firecrawl_api_key)
+if st.button("Start Research", disabled=not btn_enabled, key="start_btn"):
     if not openai_api_key:
         st.warning("Please enter your OpenAI API key."); st.stop()
     if not firecrawl_api_key:
