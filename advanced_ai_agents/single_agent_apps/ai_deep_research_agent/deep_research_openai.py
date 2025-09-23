@@ -1,5 +1,7 @@
+# Ensure typing import is present exactly once
+from typing import Any, Dict, List, Optional
 # Helper to normalize Firecrawl search results
-def _hits_from_search(results) -> List[Dict[str, str]]:
+def _hits_from_search(results: Any) -> List[Dict[str, str]]:
     """
     Normalize Firecrawl search() responses across SDK versions to:
     [{url: "...", title: "..."}]
@@ -157,7 +159,7 @@ def _rank(url: str, title: str) -> int:
         s += 2
     return s
 
-async def _safe_search(app: FirecrawlApp, q: str, limit: int, retries: int = 2):
+async def _safe_search(app: FirecrawlApp, q: str, limit: int, retries: int = 2) -> Any:
     for i in range(retries + 1):
         try:
             return app.search(query=q, limit=limit)
