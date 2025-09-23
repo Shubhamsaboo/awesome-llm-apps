@@ -1,4 +1,4 @@
-openai-agents
-firecrawl
-streamlit
-firecrawl-py
+streamlit>=1.29
+openai>=1.40.0
+firecrawl>=0.0.11
+requests>=2.31.0
