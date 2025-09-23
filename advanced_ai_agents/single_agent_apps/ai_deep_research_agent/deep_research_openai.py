@@ -5,6 +5,7 @@ from agents import Agent, Runner, trace
 from agents import set_default_openai_key
 from firecrawl import FirecrawlApp
 from agents.tool import function_tool
+import importlib.metadata
 
 # Set page configuration
 st.set_page_config(
@@ -13,7 +14,11 @@ st.set_page_config(
     layout="wide"
 )
 
-# Initialize session state for API keys if not exists
+# Preload keys from Streamlit Secrets if available, then fallback to session state defaults
+st.session_state.openai_api_key = st.secrets.get("OPENAI_API_KEY", st.session_state.get("openai_api_key", ""))
+st.session_state.firecrawl_api_key = st.secrets.get("FIRECRAWL_API_KEY", st.session_state.get("firecrawl_api_key", ""))
+
+# Initialize session state defaults if still empty
 if "openai_api_key" not in st.session_state:
     st.session_state.openai_api_key = ""
 if "firecrawl_api_key" not in st.session_state:
@@ -42,6 +47,7 @@ with st.sidebar:
 # Main content
 st.title("📘 OpenAI Deep Research Agent")
 st.markdown("This OpenAI Agent from the OpenAI Agents SDK performs deep research on any topic using Firecrawl")
+st.caption(f"firecrawl version: {importlib.metadata.version('firecrawl')}")
 
 # Research topic input
 research_topic = st.text_input("Enter your research topic:", placeholder="e.g., Latest developments in AI")
@@ -53,8 +59,7 @@ async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: i
     Perform comprehensive web research using Firecrawl's deep research endpoint.
     """
     try:
-        # Initialize FirecrawlApp with the API key from session state
-        firecrawl_app = FirecrawlApp(api_key=st.session_state.firecrawl_api_key)
+        app = FirecrawlApp(api_key=st.session_state.firecrawl_api_key)
         
         # Define research parameters
         params = {
@@ -69,10 +74,12 @@ async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: i
         
         # Run deep research
         with st.spinner("Performing deep research..."):
-            results = firecrawl_app.deep_research(
+            results = app.deep_research(
                 query=query,
-                params=params,
-                on_activity=on_activity
+                max_depth=max_depth,
+                time_limit=time_limit,
+                max_urls=max_urls,
+                on_activity=on_activity,
             )
         
         return {

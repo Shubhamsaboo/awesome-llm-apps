@@ -1,1 +1,3 @@
-requests>=2.31
+openai-agents
+streamlit
+firecrawl>=2.0.0
