@@ -3,7 +3,11 @@ import uuid
 import asyncio
 import streamlit as st
 import json
-from openai_researcher_agent import deep_search_api_first
+# Use package-safe import for deep_search_api_first
+try:
+    from .openai_researcher_agent import deep_search_api_first
+except ImportError:
+    from starter_ai_agents.opeani_research_agent.openai_researcher_agent import deep_search_api_first
 from tools.fetch_firecrawl import fetch_firecrawl as _fetch_firecrawl
 # Cache Firecrawl to save cost
 import streamlit as st
