@@ -1,13 +1,12 @@
 import os
-import requests
 import time
-from typing import Dict, Any, Optional
+import httpx
+from typing import Dict, Any
 
 FIRECRAWL_API_KEY = os.environ.get("FIRECRAWL_API_KEY")
 FIRECRAWL_API_URL = "https://api.firecrawl.dev/v1/scrape"
 
-
-def fetch_firecrawl(url: str, max_retries: int = 3, backoff: float = 1.0) -> Dict[str, Any]:
+def fetch_firecrawl(url: str) -> Dict[str, Any]:
     """
     Fetches content from Firecrawl API and returns a normalized dict:
     {url, content_md, links, detected_date=None}
@@ -25,24 +24,28 @@ def fetch_firecrawl(url: str, max_retries: int = 3, backoff: float = 1.0) -> Dic
         "includeLinks": True,
     }
 
-    for attempt in range(1, max_retries + 1):
+    for attempt in range(3):
         try:
-            resp = requests.post(FIRECRAWL_API_URL, headers=headers, json=payload, timeout=30)
-            resp.raise_for_status()
-            data = resp.json()
-            content_md = data.get("markdown", "")
-            links = data.get("links", [])
-            return {
-                "url": url,
-                "content_md": content_md,
-                "links": links,
-                "detected_date": None,
-            }
+            with httpx.Client(timeout=45.0) as client:
+                resp = client.post(FIRECRAWL_API_URL, headers=headers, json=payload)
+                resp.raise_for_status()
+                data = resp.json()
+                content_md = data.get("markdown", "")
+                links = data.get("links", [])
+                return {
+                    "url": url,
+                    "content_md": content_md,
+                    "links": links,
+                    "detected_date": None,
+                }
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code in {429, 500, 502, 503, 504} and attempt < 2:
+                time.sleep(1.5)
+                continue
+            raise RuntimeError(f"Firecrawl fetch failed: {e}")
         except Exception as e:
-            if attempt == max_retries:
-                raise
-            time.sleep(backoff * attempt)
-
-# Example usage (for testing only):
-# if __name__ == "__main__":
-#     print(fetch_firecrawl("https://en.wikipedia.org/wiki/Artificial_intelligence"))
+            if attempt < 2:
+                time.sleep(1.5)
+                continue
+            raise RuntimeError(f"Firecrawl fetch failed: {e}")
+    return {"url": url, "content_md": "", "links": [], "detected_date": None}

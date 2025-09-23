@@ -1,3 +1,27 @@
+# Deep Search (API-first, no tests)
+
+This mode enables advanced research using Perplexity, Tavily, and Firecrawl APIs (no test coverage).
+
+**Required secrets:**
+- `OPENAI_API_KEY`
+- `PERPLEXITY_API_KEY`
+- `TAVILY_API_KEY`
+- `FIRECRAWL_API_KEY`
+
+**Run locally:**
+```bash
+streamlit run openai_researcher_agent.py
+```
+
+**Deploy on Streamlit Cloud:**
+- Push to GitHub, create app on Streamlit Cloud
+- Set all secrets in Settings → Secrets
+
+**Cost control tips:**
+- Use a smaller Days window
+- Set Max items = 8
+- Keep caching enabled (default)
+
 ## Deep Search (API-first)
 
 This app includes a powerful **Deep Search (API-first)** mode for advanced, multi-source research.
