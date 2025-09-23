@@ -1,3 +1,49 @@
+## Deep Search (API-first)
+
+This app includes a powerful **Deep Search (API-first)** mode for advanced, multi-source research.
+
+### Required Secrets
+
+Set the following environment variables (all are required):
+
+- `OPENAI_API_KEY`
+- `PERPLEXITY_API_KEY`
+- `TAVILY_API_KEY`
+- `FIRECRAWL_API_KEY`
+
+### How to Run Locally
+
+1. Install dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+2. Set all required API keys as environment variables:
+    ```bash
+    export OPENAI_API_KEY=...
+    export PERPLEXITY_API_KEY=...
+    export TAVILY_API_KEY=...
+    export FIRECRAWL_API_KEY=...
+    ```
+3. Start the app:
+    ```bash
+    streamlit run openai_researcher_agent.py
+    ```
+
+### How to Deploy on Streamlit Cloud
+
+1. Push your code to GitHub.
+2. Go to [Streamlit Cloud](https://streamlit.io/cloud) and create a new app from your repo.
+3. In the app settings, add all required secrets (`OPENAI_API_KEY`, `PERPLEXITY_API_KEY`, `TAVILY_API_KEY`, `FIRECRAWL_API_KEY`).
+4. Deploy and use the app from your browser.
+
+### Cost-Saving Tips
+
+- To keep cost **below $0.50 per run**, use:
+  - **Days = 90**
+  - **Max items = 8**
+  - Caching is enabled by default for Firecrawl fetches (10 min TTL)
+
+This ensures broad coverage while minimizing API usage and cost.
 # OpenAI Researcher Agent
 A multi-agent research application built with OpenAI's Agents SDK and Streamlit. This application enables users to conduct comprehensive research on any topic by leveraging multiple specialized AI agents.
 

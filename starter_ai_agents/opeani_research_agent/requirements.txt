@@ -1,7 +1,5 @@
-openai-agents
-openai
 streamlit
-uuid
+openai
+httpx
 pydantic
-python-dotenv
-asyncio
+python-dateutil

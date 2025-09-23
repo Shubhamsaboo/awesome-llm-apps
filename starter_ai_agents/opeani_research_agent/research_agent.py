@@ -2,6 +2,157 @@ import os
 import uuid
 import asyncio
 import streamlit as st
+import json
+from openai_researcher_agent import deep_search_api_first
+from tools.fetch_firecrawl import fetch_firecrawl as _fetch_firecrawl
+# Cache Firecrawl to save cost
+import streamlit as st
+@st.cache_data(ttl=600)
+def fetch_firecrawl(url: str):
+    return _fetch_firecrawl(url)
+# --- DEEP SEARCH UI PATH ---
+with st.sidebar:
+    st.header("Deep Search (API-first)")
+    user_topic_ds = st.text_input("Topic for Deep Search:", key="ds_topic")
+    days_ds = st.radio("Days window", [7, 30, 90], index=2, horizontal=True, key="ds_days")
+    max_items_ds = st.slider("Max items", 6, 10, 8, key="ds_max_items")
+    start_button_ds = st.button("Start Deep Search", type="primary", disabled=not user_topic_ds, key="ds_start")
+
+tab_live, tab_brief, tab_diag = st.tabs(["Live research", "Brief", "Diagnostics"])
+import os
+from tools.search_perplexity import search_perplexity
+from tools.search_tavily import search_tavily
+with tab_diag:
+    st.header("Diagnostics")
+    # 1. Check env vars
+    st.subheader("Environment Variables")
+    envs = [
+        ("PERPLEXITY_API_KEY", os.environ.get("PERPLEXITY_API_KEY")),
+        ("TAVILY_API_KEY", os.environ.get("TAVILY_API_KEY")),
+        ("FIRECRAWL_API_KEY", os.environ.get("FIRECRAWL_API_KEY")),
+    ]
+    for k, v in envs:
+        if v:
+            st.success(f"{k}: PASS")
+        else:
+            st.error(f"{k}: FAIL (not set)")
+
+    # 2. Perplexity dry-run
+    st.subheader("Perplexity API Test")
+    perplexity_status = "PASS"
+    perplexity_urls = []
+    try:
+        results = search_perplexity('site:reuters.com payments last 7 days', max_results=3, days=7)
+        perplexity_urls = [r.get("url") for r in results][:3]
+        if not perplexity_urls:
+            perplexity_status = "FAIL"
+    except Exception as e:
+        perplexity_status = f"FAIL ({e})"
+    st.markdown(f"Status: {'✅' if perplexity_status=='PASS' else '❌'} {perplexity_status}")
+    for u in perplexity_urls:
+        st.write(u)
+
+    # 3. Tavily dry-run
+    st.subheader("Tavily API Test")
+    tavily_status = "PASS"
+    tavily_urls = []
+    try:
+        results = search_tavily('ECB instant payments last 30 days', max_results=3, days=30)
+        tavily_urls = [r.get("url") for r in results][:3]
+        if not tavily_urls:
+            tavily_status = "FAIL"
+    except Exception as e:
+        tavily_status = f"FAIL ({e})"
+    st.markdown(f"Status: {'✅' if tavily_status=='PASS' else '❌'} {tavily_status}")
+    for u in tavily_urls:
+        st.write(u)
+
+    # 4. Firecrawl dry-run
+    st.subheader("Firecrawl API Test")
+    firecrawl_status = "PASS"
+    firecrawl_md = ""
+    test_url = "https://www.reuters.com/business/finance/"
+    try:
+        fc = fetch_firecrawl(test_url)
+        firecrawl_md = fc.get("content_md", "")[:200]
+        if not firecrawl_md:
+            firecrawl_status = "FAIL"
+    except Exception as e:
+        firecrawl_status = f"FAIL ({e})"
+    st.markdown(f"Status: {'✅' if firecrawl_status=='PASS' else '❌'} {firecrawl_status}")
+    st.code(firecrawl_md)
+
+if "deep_search_result" not in st.session_state:
+    st.session_state.deep_search_result = None
+if "deep_search_queries" not in st.session_state:
+    st.session_state.deep_search_queries = []
+if "deep_search_urls" not in st.session_state:
+    st.session_state.deep_search_urls = []
+
+if start_button_ds:
+    with st.spinner(f"Running Deep Search: {user_topic_ds}"):
+        try:
+            result = deep_search_api_first(user_topic_ds, days=days_ds)
+            st.session_state.deep_search_result = result
+            st.session_state.deep_search_queries = result.get("queries", []) if result else []
+            st.session_state.deep_search_urls = [item["url"] for item in result.get("items", [])] if result and "items" in result else []
+        except Exception as e:
+            st.error(f"Deep Search failed: {e}")
+            st.session_state.deep_search_result = {"status": "fail", "reason": str(e)}
+
+with tab_live:
+    result = st.session_state.deep_search_result
+    if result:
+        st.subheader("Issued Queries")
+        queries = st.session_state.deep_search_queries or result.get("queries", [])
+        for q in queries:
+            st.code(q)
+        st.divider()
+        st.subheader("Combined Results Table")
+        items = result.get("items", [])
+        if items:
+            import pandas as pd
+            df = pd.DataFrame([
+                {
+                    "Title": i["title"],
+                    "Domain": i["source_domain"],
+                    "Detected Date": i["date"],
+                    "Tool": i.get("source", "?")
+                } for i in items
+            ])
+            st.dataframe(df, use_container_width=True)
+        st.divider()
+        st.subheader("Fetched URLs")
+        urls = st.session_state.deep_search_urls or [i["url"] for i in items]
+        for u in urls:
+            st.write(u)
+
+with tab_brief:
+    result = st.session_state.deep_search_result
+    if result and result.get("status") == "success":
+        st.subheader("Executive Summary")
+        st.markdown(result.get("executive_summary", ""))
+        st.subheader(f"What changed in the last {days_ds} days")
+        for b in result.get("recent_changes", []):
+            st.markdown(f"- {b}")
+        st.subheader("Gaps and limitations")
+        for g in result.get("gaps_and_limitations", []):
+            st.markdown(f"- {g}")
+        # Download buttons
+        st.download_button(
+            label="Download JSON",
+            data=json.dumps(result, indent=2),
+            file_name=f"deep_search_{user_topic_ds.replace(' ', '_')}.json",
+            mime="application/json"
+        )
+        # Markdown version
+        md = f"# Executive Summary\n{result.get('executive_summary','')}\n\n## What changed in the last {days_ds} days\n" + "\n".join([f"- {b}" for b in result.get("recent_changes",[])]) + "\n\n## Gaps and limitations\n" + "\n".join([f"- {g}" for g in result.get("gaps_and_limitations",[])])
+        st.download_button(
+            label="Download Markdown",
+            data=md,
+            file_name=f"deep_search_{user_topic_ds.replace(' ', '_')}.md",
+            mime="text/markdown"
+        )
 from datetime import datetime
 from dotenv import load_dotenv
 
