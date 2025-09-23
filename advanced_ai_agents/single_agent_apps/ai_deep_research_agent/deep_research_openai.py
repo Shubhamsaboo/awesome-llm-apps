@@ -1,455 +1,185 @@
-# Ensure typing import is present exactly once
-from typing import Any, Dict, List, Optional
-# Helper to normalize Firecrawl search results
-def _hits_from_search(results: Any) -> List[Dict[str, str]]:
-    """
-    Normalize Firecrawl search() responses across SDK versions to:
-    [{url: "...", title: "..."}]
-    Supports dict, list, pydantic-like objects with .data or .model_dump().
-    """
-    out: List[Dict[str, str]] = []
-
-    # If pydantic-like, try model_dump first
-    try:
-        if hasattr(results, "model_dump"):
-            results = results.model_dump()
-    except Exception:
-        pass
-
-    # Dict shape
-    if isinstance(results, dict):
-        data = results.get("data") or {}
-        web = data.get("web") or results.get("web") or results.get("results") or []
-        for it in (web or []):
-            if isinstance(it, dict):
-                url = it.get("url") or it.get("link") or ""
-                title = it.get("title") or url
-            else:
-                url = getattr(it, "url", None) or getattr(it, "link", None) or str(it)
-                title = getattr(it, "title", None) or url
-            if url:
-                out.append({"url": url, "title": title})
-        return out
-
-    # List shape
-    if isinstance(results, list):
-        for it in results:
-            if isinstance(it, dict):
-                url = it.get("url") or it.get("link") or ""
-                title = it.get("title") or url
-            else:
-                url = getattr(it, "url", None) or getattr(it, "link", None) or str(it)
-                title = getattr(it, "title", None) or url
-            if url:
-                out.append({"url": url, "title": title})
-        return out
-
-    # Object shape with attributes: .data.web or .web
-    data = getattr(results, "data", None)
-    web = None
-    if isinstance(data, dict):
-        web = data.get("web") or data.get("results")
-    else:
-        web = getattr(data, "web", None) or getattr(results, "web", None)
-
-    for it in (web or []):
-        if isinstance(it, dict):
-            url = it.get("url") or it.get("link") or ""
-            title = it.get("title") or url
-        else:
-            url = getattr(it, "url", None) or getattr(it, "link", None) or str(it)
-            title = getattr(it, "title", None) or url
-        if url:
-            out.append({"url": url, "title": title})
-
-    return out
-# === Deep Research Agent: Firecrawl search+scrape, date filter, strict citations ===
 import asyncio
-import re
-from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse
-from datetime import datetime, timedelta
-
-import requests
 import streamlit as st
-from agents import Agent, Runner, set_default_openai_key
-from agents.tool import function_tool
+from typing import Dict, Any, List
+from agents import Agent, Runner, trace
+from agents import set_default_openai_key
 from firecrawl import FirecrawlApp
-from openai import OpenAI
-import os
+from agents.tool import function_tool
 
-# ---------- Page ----------
-st.set_page_config(page_title="OpenAI Deep Research Agent", page_icon="📘", layout="wide")
+# Set page configuration
+st.set_page_config(
+    page_title="OpenAI Deep Research Agent",
+    page_icon="📘",
+    layout="wide"
+)
 
-# One-time boot marker to avoid duplicate widgets on weird reloads
-st.session_state.setdefault("booted", True)
+# Initialize session state for API keys if not exists
+if "openai_api_key" not in st.session_state:
+    st.session_state.openai_api_key = ""
+if "firecrawl_api_key" not in st.session_state:
+    st.session_state.firecrawl_api_key = ""
 
-# ---------- Session defaults ----------
-st.session_state.setdefault("openai_api_key", "")
-st.session_state.setdefault("firecrawl_api_key", "")
-
-# ---------- Sidebar ----------
+# Sidebar for API keys
 with st.sidebar:
     st.title("API Configuration")
-
     openai_api_key = st.text_input(
-        "OpenAI API Key",
+        "OpenAI API Key", 
         value=st.session_state.openai_api_key,
-        type="password",
-        key="openai_key_input",
+        type="password"
     )
     firecrawl_api_key = st.text_input(
-        "Firecrawl API Key",
+        "Firecrawl API Key", 
         value=st.session_state.firecrawl_api_key,
-        type="password",
-        key="firecrawl_key_input",
+        type="password"
     )
-
+    
     if openai_api_key:
         st.session_state.openai_api_key = openai_api_key
         set_default_openai_key(openai_api_key)
-        os.environ["OPENAI_API_KEY"] = openai_api_key
-        st.caption("OpenAI key prefix: " + openai_api_key[:8] + "…")
-
     if firecrawl_api_key:
         st.session_state.firecrawl_api_key = firecrawl_api_key
 
-    st.subheader("Search options")
-    st.session_state["max_pages"] = st.number_input(
-        "Max pages",
-        min_value=6,
-        max_value=25,
-        value=12,
-        step=1,
-        key="max_pages_input",
-    )
-    st.session_state["window_hint"] = st.text_input(
-        "Time window hint in topic (recommended: last 60 days)",
-        value="",
-        key="window_hint_input",
-        help="You can keep this empty and just include the window in the topic line.",
-    )
-
-# ---------- Main ----------
+# Main content
 st.title("📘 OpenAI Deep Research Agent")
-st.markdown("Search and scrape with Firecrawl, enforce a time window, then write a cited report using only scraped materials.")
+st.markdown("This OpenAI Agent from the OpenAI Agents SDK performs deep research on any topic using Firecrawl")
 
 # Research topic input
-research_topic = st.text_input(
-    "Enter your research topic:",
-    placeholder="Instant cross border payouts in LATAM, last 60 days",
-    key="topic_input",
-)
+research_topic = st.text_input("Enter your research topic:", placeholder="e.g., Latest developments in AI")
 
-# ---------- Helpers (Python 3.9-safe) ----------
-def _host(u: str) -> str:
-    try:
-        return (urlparse(u).hostname or "").lower()
-    except Exception:
-        return ""
-
-def _rank(url: str, title: str) -> int:
-    h = _host(url)
-    s = 0
-    if any(k in h for k in ["news", "press", "blog"]):
-        s += 3
-    if any(x in (title or "") for x in ["2026", "2025", "2024",
-                                        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]):
-        s += 2
-    return s
-
-async def _safe_search(app: FirecrawlApp, q: str, limit: int, retries: int = 2) -> Any:
-    for i in range(retries + 1):
-        try:
-            return app.search(query=q, limit=limit)
-        except Exception as e:
-            msg = str(e)
-            if "rate" in msg.lower():
-                await asyncio.sleep(8 * (i + 1))
-                continue
-            return {"data": {"web": []}}
-    return {"data": {"web": []}}
-
-async def _safe_scrape(app: FirecrawlApp, url: str) -> str:
-    try:
-        doc = app.scrape(url=url, formats=["markdown"])
-        if isinstance(doc, dict):
-            return doc.get("data", {}).get("markdown") or doc.get("markdown") or ""
-        return str(doc)
-    except Exception:
-        return ""
-
-def _parse_iso_from_text(md: str) -> Optional[str]:
-    """Return ISO 'YYYY-MM-DD' if a date is visible in text, else None."""
-    if not md:
-        return None
-    m = re.search(r"\b(20\d{2})-(\d{2})-(\d{2})\b", md)
-    if m:
-        y, mo, d = m.groups()
-        try:
-            datetime(int(y), int(mo), int(d))
-            return f"{y}-{mo}-{d}"
-        except Exception:
-            pass
-    m = re.search(
-        r"\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(\d{1,2}),\s+(20\d{2})\b",
-        md,
-        re.I,
-    )
-    if m:
-        mon_map = {
-            "jan": 1, "feb": 2, "mar": 3, "apr": 4, "may": 5, "jun": 6,
-            "jul": 7, "aug": 8, "sep": 9, "oct": 10, "nov": 11, "dec": 12
-        }
-        mon = mon_map[m.group(1).lower()]
-        day = int(m.group(2))
-        year = int(m.group(3))
-        try:
-            dt = datetime(year, mon, day)
-            return dt.strftime("%Y-%m-%d")
-        except Exception:
-            return None
-    return None
-
-def _window_days_from_query(q: str, default_days: int = 60) -> int:
-    m = re.search(r"last\s+(\d{1,3})\s+days", q, re.I)
-    return int(m.group(1)) if m else default_days
-
-def _within_window(iso: Optional[str], days: int) -> bool:
-    if not iso:
-        return False
-    try:
-        dt = datetime.strptime(iso, "%Y-%m-%d")
-    except Exception:
-        return False
-    return datetime.utcnow() - timedelta(days=days) <= dt <= datetime.utcnow()
-
-# ---------- Tool ----------
+# Keep the original deep_research tool
 @function_tool
 async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: int) -> Dict[str, Any]:
     """
-    Firecrawl search + scrape, rank, date-window filter, and return materials + Sources.
+    Perform comprehensive web research using Firecrawl's deep research endpoint.
     """
     try:
-        if not st.session_state.firecrawl_api_key:
-            return {"success": False, "error": "Missing Firecrawl API key", "sources": []}
-
-        app = FirecrawlApp(api_key=st.session_state.firecrawl_api_key)
-
-        # 1) Search with a primary and a newsroom-biased backup
-        st.write("Searching…")
-        q_full = query.strip()
-        if st.session_state.get("window_hint"):
-            q_full = f"{q_full} {st.session_state['window_hint']}"
-        queries = [q_full, f"{q_full} site:newsroom OR site:press"]
-        seen, candidates = set(), []
-
-        for q in queries:
-            res = await _safe_search(app, q, limit=min(10, max_urls))
-            items = _hits_from_search(res)
-            for it in items:
-                url = it["url"].strip()
-                title = it.get("title", url) if isinstance(it, dict) else it["url"]
-                if not url or url in seen:
-                    continue
-                seen.add(url)
-                candidates.append({"url": url, "title": title})
-
-        if not candidates:
-            return {"success": False, "error": "No search results", "sources": []}
-
-        # 2) Rank and cap
-        candidates.sort(key=lambda x: _rank(x["url"], x["title"]), reverse=True)
-        candidates = candidates[: max(1, min(max_urls, st.session_state["max_pages"]))]
-
-        # 3) Scrape
-        st.write(f"Extracting content from up to {len(candidates)} pages…")
-        sources: List[Dict[str, Any]] = []
-        for c in candidates:
-            url, title = c["url"], c["title"]
-            low = url.lower()
-            if any(x in low for x in ["/calculator", "/estimator", "/pricing", "/price"]):
-                continue
-            # Normalize scrape responses that might be objects
-            md_obj = app.scrape(url=url, formats=["markdown"])
-            if isinstance(md_obj, dict):
-                md = md_obj.get("data", {}).get("markdown") or md_obj.get("markdown") or ""
-            else:
-                # pydantic-like
-                try:
-                    if hasattr(md_obj, "model_dump"):
-                        md_obj = md_obj.model_dump()
-                        md = md_obj.get("data", {}).get("markdown") or md_obj.get("markdown") or ""
-                    else:
-                        md = str(md_obj)
-                except Exception:
-                    md = str(md_obj)
-
-            if not md:
-                continue
-            sources.append({"url": url, "title": title, "markdown": md[:5000]})
-            if len(sources) >= st.session_state["max_pages"]:
-                break
-
-        if not sources:
-            return {"success": False, "error": "No readable sources", "sources": []}
-
-        # 4) Time-window filter
-        days_window = _window_days_from_query(query, default_days=60)
-        kept, dropped = [], []
-        for s in sources:
-            iso = _parse_iso_from_text(s.get("markdown", ""))
-            s["iso_date"] = iso if iso else "date unknown"
-            if _within_window(iso, days_window):
-                kept.append(s)
-            else:
-                dropped.append(s)
-
-        if kept:
-            sources = kept
-        else:
-            for s in sources:
-                if "iso_date" not in s:
-                    s["iso_date"] = "date unknown"
-                s["uncertain"] = True
-
-        st.caption(f"Time window: last {days_window} days; kept {len(sources)}, discarded {len(dropped)}")
-
-        # 5) Show scraped sources
-        st.success(f"Sources scraped: {len(sources)}")
-        for i, s in enumerate(sources, 1):
-            st.write(
-                f"[{i}] {s['title']} — {s['url']} — {s.get('iso_date','date unknown')}"
-                f"{' (uncertain)' if s.get('uncertain') else ''}"
+        # Initialize FirecrawlApp with the API key from session state
+        firecrawl_app = FirecrawlApp(api_key=st.session_state.firecrawl_api_key)
+        
+        # Define research parameters
+        params = {
+            "maxDepth": max_depth,
+            "timeLimit": time_limit,
+            "maxUrls": max_urls
+        }
+        
+        # Set up a callback for real-time updates
+        def on_activity(activity):
+            st.write(f"[{activity['type']}] {activity['message']}")
+        
+        # Run deep research
+        with st.spinner("Performing deep research..."):
+            results = firecrawl_app.deep_research(
+                query=query,
+                params=params,
+                on_activity=on_activity
             )
-
-        # 6) Build materials and Sources list
-        materials = "\n\n".join(
-            f"# [{i}] {s['title']}\nSource: {s['url']} — {s.get('iso_date','date unknown')}"
-            f"{' (uncertain)' if s.get('uncertain') else ''}\n\n{s['markdown']}"
-            for i, s in enumerate(sources, 1)
-        )
-        sources_list = "\n".join(
-            f"[{i}] {s['title']} — {s['url']} — {s.get('iso_date','date unknown')}"
-            f"{' (uncertain)' if s.get('uncertain') else ''}"
-            for i, s in enumerate(sources, 1)
-        )
-
-        final = f"""### COLLECTED MATERIALS
-Use ONLY the materials and Sources below. Do not invent sources.
-
-Topic: {query}
-
-{materials}
-
-### Sources
-{sources_list}
-"""
-
+        
         return {
             "success": True,
-            "final_analysis": final,
-            "sources_count": len(sources),
-            "sources": [{"url": s["url"], "title": s["title"]} for s in sources],
+            "final_analysis": results['data']['finalAnalysis'],
+            "sources_count": len(results['data']['sources']),
+            "sources": results['data']['sources']
         }
-
     except Exception as e:
         st.error(f"Deep research error: {str(e)}")
         return {"error": str(e), "success": False}
 
-# ---------- Agents ----------
+# Keep the original agents
 research_agent = Agent(
     name="research_agent",
-    model="gpt-4o-mini",
-    instructions=(
-        "You will receive COLLECTED MATERIALS that include a numbered Sources list.\n"
-        "Rules:\n"
-        "1) Use ONLY those materials. Do not add outside links or facts.\n"
-        "2) Write a concise, formal report with sections: Executive Summary, Key Developments, Implications, Watchlist.\n"
-        "3) Every claim must cite inline like [n] mapping to the Sources list.\n"
-        "4) Items marked '(uncertain)' or 'date unknown' may not appear in the Executive Summary.\n"
-    ),
-    tools=[deep_research],
+    instructions="""You are a research assistant that can perform deep web research on any topic.
+
+    When given a research topic or question:
+    1. Use the deep_research tool to gather comprehensive information
+       - Always use these parameters:
+         * max_depth: 3 (for moderate depth)
+         * time_limit: 180 (3 minutes)
+         * max_urls: 10 (sufficient sources)
+    2. The tool will search the web, analyze multiple sources, and provide a synthesis
+    3. Review the research results and organize them into a well-structured report
+    4. Include proper citations for all sources
+    5. Highlight key findings and insights
+    """,
+    tools=[deep_research]
 )
 
 elaboration_agent = Agent(
     name="elaboration_agent",
-    model="gpt-4o-mini",
-    instructions=(
-        "Improve clarity and structure of the report you are given.\n"
-        "Keep all [n] citations intact, do not modify the Sources list, and do not add new facts."
-    ),
+    instructions="""You are an expert content enhancer specializing in research elaboration.
+
+    When given a research report:
+    1. Analyze the structure and content of the report
+    2. Enhance the report by:
+       - Adding more detailed explanations of complex concepts
+       - Including relevant examples, case studies, and real-world applications
+       - Expanding on key points with additional context and nuance
+       - Adding visual elements descriptions (charts, diagrams, infographics)
+       - Incorporating latest trends and future predictions
+       - Suggesting practical implications for different stakeholders
+    3. Maintain academic rigor and factual accuracy
+    4. Preserve the original structure while making it more comprehensive
+    5. Ensure all additions are relevant and valuable to the topic
+    """
 )
 
-# ---------- OpenAI client and sanity ping ----------
-client: Optional[OpenAI] = None
-if st.session_state.openai_api_key:
-    try:
-        client = OpenAI(api_key=st.session_state.openai_api_key)
-    except Exception:
-        client = None
-
-async def _ping_openai():
-    if not client:
-        return
-    try:
-        r = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "Reply with exactly the word OK."},
-                {"role": "user", "content": "Ping"},
-            ],
-            temperature=0,
-        )
-        st.caption("OpenAI sanity ping: " + r.choices[0].message.content)
-    except Exception as e:
-        st.warning(f"OpenAI sanity ping failed: {e}")
-
-# ---------- Pipeline ----------
-async def run_research_process(topic: str) -> str:
-    await _ping_openai()
-
-    # Step 1: Initial research
-    with st.spinner("Conducting initial research…"):
-        res = await Runner.run(research_agent, topic)
-        initial_report = res.final_output
-
+async def run_research_process(topic: str):
+    """Run the complete research process."""
+    # Step 1: Initial Research
+    with st.spinner("Conducting initial research..."):
+        research_result = await Runner.run(research_agent, topic)
+        initial_report = research_result.final_output
+    
+    # Display initial report in an expander
     with st.expander("View Initial Research Report"):
         st.markdown(initial_report)
+    
+    # Step 2: Enhance the report
+    with st.spinner("Enhancing the report with additional information..."):
+        elaboration_input = f"""
+        RESEARCH TOPIC: {topic}
+        
+        INITIAL RESEARCH REPORT:
+        {initial_report}
+        
+        Please enhance this research report with additional information, examples, case studies, 
+        and deeper insights while maintaining its academic rigor and factual accuracy.
+        """
+        
+        elaboration_result = await Runner.run(elaboration_agent, elaboration_input)
+        enhanced_report = elaboration_result.final_output
+    
+    return enhanced_report
 
-    # Step 2: Editorial pass
-    with st.spinner("Enhancing the report…"):
-        elaboration_input = (
-            "Edit for clarity and structure only. Keep all [n] citations and the Sources list exactly as-is.\n\n"
-            f"{initial_report}"
-        )
-        res2 = await Runner.run(elaboration_agent, elaboration_input)
-        enhanced = res2.final_output
+# Main research process
+if st.button("Start Research", disabled=not (openai_api_key and firecrawl_api_key and research_topic)):
+    if not openai_api_key or not firecrawl_api_key:
+        st.warning("Please enter both API keys in the sidebar.")
+    elif not research_topic:
+        st.warning("Please enter a research topic.")
+    else:
+        try:
+            # Create placeholder for the final report
+            report_placeholder = st.empty()
+            
+            # Run the research process
+            enhanced_report = asyncio.run(run_research_process(research_topic))
+            
+            # Display the enhanced report
+            report_placeholder.markdown("## Enhanced Research Report")
+            report_placeholder.markdown(enhanced_report)
+            
+            # Add download button
+            st.download_button(
+                "Download Report",
+                enhanced_report,
+                file_name=f"{research_topic.replace(' ', '_')}_report.md",
+                mime="text/markdown"
+            )
+            
+        except Exception as e:
+            st.error(f"An error occurred: {str(e)}")
 
-    return enhanced
-
-# ---------- UI action ----------
-btn_enabled = bool(openai_api_key and firecrawl_api_key and research_topic)
-if st.button("Start Research", disabled=not btn_enabled, key="start_btn"):
-    if not openai_api_key:
-        st.warning("Please enter your OpenAI API key."); st.stop()
-    if not firecrawl_api_key:
-        st.warning("Please enter your Firecrawl API key."); st.stop()
-    try:
-        output = asyncio.run(run_research_process(research_topic))
-        st.markdown("## Enhanced Research Report")
-        st.markdown(output)
-        st.download_button(
-            "Download Report",
-            output,
-            file_name=f"{research_topic.replace(' ', '_')}_report.md",
-            mime="text/markdown",
-            key="download_btn",
-        )
-    except Exception as e:
-        st.error(f"An error occurred: {str(e)}")
-
+# Footer
 st.markdown("---")
-st.markdown("Powered by OpenAI Agents SDK and Firecrawl")
-# === End ===
+st.markdown("Powered by OpenAI Agents SDK and Firecrawl") 

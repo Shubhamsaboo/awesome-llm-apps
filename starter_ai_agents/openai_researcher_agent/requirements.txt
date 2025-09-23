@@ -1,5 +1,0 @@
-streamlit
-openai
-httpx
-pydantic
-python-dateutil
