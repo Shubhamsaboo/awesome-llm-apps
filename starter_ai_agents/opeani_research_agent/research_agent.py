@@ -1,486 +1,103 @@
-import os
-import uuid
-import asyncio
-import streamlit as st
-import json
-# Use package-safe import for deep_search_api_first
-try:
-    from .openai_researcher_agent import deep_search_api_first
-except ImportError:
-    from starter_ai_agents.opeani_research_agent.openai_researcher_agent import deep_search_api_first
-from tools.fetch_firecrawl import fetch_firecrawl as _fetch_firecrawl
-# Cache Firecrawl to save cost
-import streamlit as st
-@st.cache_data(ttl=600)
-def fetch_firecrawl(url: str):
-    return _fetch_firecrawl(url)
-# --- DEEP SEARCH UI PATH ---
-with st.sidebar:
-    st.header("Deep Search (API-first)")
-    user_topic_ds = st.text_input("Topic for Deep Search:", key="ds_topic")
-    days_ds = st.radio("Days window", [7, 30, 90], index=2, horizontal=True, key="ds_days")
-    max_items_ds = st.slider("Max items", 6, 10, 8, key="ds_max_items")
-    start_button_ds = st.button("Start Deep Search", type="primary", disabled=not user_topic_ds, key="ds_start")
+"""
+Research Agent Backend
+Implements the Deep Search (API-first) flow.
+No Streamlit imports. This file can be imported safely.
+"""
 
-tab_live, tab_brief, tab_diag = st.tabs(["Live research", "Brief", "Diagnostics"])
-import os
-from tools.search_perplexity import search_perplexity
-from tools.search_tavily import search_tavily
-with tab_diag:
-    st.header("Diagnostics")
-    # 1. Check env vars
-    st.subheader("Environment Variables")
-    envs = [
-        ("PERPLEXITY_API_KEY", os.environ.get("PERPLEXITY_API_KEY")),
-        ("TAVILY_API_KEY", os.environ.get("TAVILY_API_KEY")),
-        ("FIRECRAWL_API_KEY", os.environ.get("FIRECRAWL_API_KEY")),
-    ]
-    for k, v in envs:
-        if v:
-            st.success(f"{k}: PASS")
-        else:
-            st.error(f"{k}: FAIL (not set)")
+import datetime
+from urllib.parse import urlparse
 
-    # 2. Perplexity dry-run
-    st.subheader("Perplexity API Test")
-    perplexity_status = "PASS"
-    perplexity_urls = []
+from .tools.search_perplexity import search_perplexity
+from .tools.search_tavily import search_tavily
+from .tools.fetch_firecrawl import fetch_firecrawl
+
+# --- Helpers ------------------------------------------------------------
+
+def host_of(url: str) -> str:
     try:
-        results = search_perplexity('site:reuters.com payments last 7 days', max_results=3, days=7)
-        perplexity_urls = [r.get("url") for r in results][:3]
-        if not perplexity_urls:
-            perplexity_status = "FAIL"
-    except Exception as e:
-        perplexity_status = f"FAIL ({e})"
-    st.markdown(f"Status: {'✅' if perplexity_status=='PASS' else '❌'} {perplexity_status}")
-    for u in perplexity_urls:
-        st.write(u)
+        return urlparse(url).netloc.lower()
+    except Exception:
+        return ""
 
-    # 3. Tavily dry-run
-    st.subheader("Tavily API Test")
-    tavily_status = "PASS"
-    tavily_urls = []
+def infer_region(url: str, text: str) -> str:
+    h = host_of(url)
+    if any(t in h for t in [".mx", ".br", ".ar", ".cl", ".pe", ".co"]):
+        return "AMER"
+    if any(t in h for t in [".eu", ".de", ".fr", ".it", ".es", ".uk"]):
+        return "EMEA"
+    if any(t in h for t in [".jp", ".sg", ".hk", ".au", ".in"]):
+        return "APAC"
+    return "GLOBAL"
+
+def iso_or_none(s: str | None) -> str | None:
+    if not s:
+        return None
     try:
-        results = search_tavily('ECB instant payments last 30 days', max_results=3, days=30)
-        tavily_urls = [r.get("url") for r in results][:3]
-        if not tavily_urls:
-            tavily_status = "FAIL"
-    except Exception as e:
-        tavily_status = f"FAIL ({e})"
-    st.markdown(f"Status: {'✅' if tavily_status=='PASS' else '❌'} {tavily_status}")
-    for u in tavily_urls:
-        st.write(u)
+        return datetime.date.fromisoformat(s[:10]).isoformat()
+    except Exception:
+        return None
 
-    # 4. Firecrawl dry-run
-    st.subheader("Firecrawl API Test")
-    firecrawl_status = "PASS"
-    firecrawl_md = ""
-    test_url = "https://www.reuters.com/business/finance/"
-    try:
-        fc = fetch_firecrawl(test_url)
-        firecrawl_md = fc.get("content_md", "")[:200]
-        if not firecrawl_md:
-            firecrawl_status = "FAIL"
-    except Exception as e:
-        firecrawl_status = f"FAIL ({e})"
-    st.markdown(f"Status: {'✅' if firecrawl_status=='PASS' else '❌'} {firecrawl_status}")
-    st.code(firecrawl_md)
+# --- Main Deep Search ---------------------------------------------------
 
-if "deep_search_result" not in st.session_state:
-    st.session_state.deep_search_result = None
-if "deep_search_queries" not in st.session_state:
-    st.session_state.deep_search_queries = []
-if "deep_search_urls" not in st.session_state:
-    st.session_state.deep_search_urls = []
-
-if start_button_ds:
-    with st.spinner(f"Running Deep Search: {user_topic_ds}"):
-        try:
-            result = deep_search_api_first(user_topic_ds, days=days_ds)
-            st.session_state.deep_search_result = result
-            st.session_state.deep_search_queries = result.get("queries", []) if result else []
-            st.session_state.deep_search_urls = [item["url"] for item in result.get("items", [])] if result and "items" in result else []
-        except Exception as e:
-            st.error(f"Deep Search failed: {e}")
-            st.session_state.deep_search_result = {"status": "fail", "reason": str(e)}
-
-with tab_live:
-    result = st.session_state.deep_search_result
-    if result:
-        st.subheader("Issued Queries")
-        queries = st.session_state.deep_search_queries or result.get("queries", [])
-        for q in queries:
-            st.code(q)
-        st.divider()
-        st.subheader("Combined Results Table")
-        items = result.get("items", [])
-        if items:
-            import pandas as pd
-            df = pd.DataFrame([
-                {
-                    "Title": i["title"],
-                    "Domain": i["source_domain"],
-                    "Detected Date": i["date"],
-                    "Tool": i.get("source", "?")
-                } for i in items
-            ])
-            st.dataframe(df, use_container_width=True)
-        st.divider()
-        st.subheader("Fetched URLs")
-        urls = st.session_state.deep_search_urls or [i["url"] for i in items]
-        for u in urls:
-            st.write(u)
-
-with tab_brief:
-    result = st.session_state.deep_search_result
-    if result and result.get("status") == "success":
-        st.subheader("Executive Summary")
-        st.markdown(result.get("executive_summary", ""))
-        st.subheader(f"What changed in the last {days_ds} days")
-        for b in result.get("recent_changes", []):
-            st.markdown(f"- {b}")
-        st.subheader("Gaps and limitations")
-        for g in result.get("gaps_and_limitations", []):
-            st.markdown(f"- {g}")
-        # Download buttons
-        st.download_button(
-            label="Download JSON",
-            data=json.dumps(result, indent=2),
-            file_name=f"deep_search_{user_topic_ds.replace(' ', '_')}.json",
-            mime="application/json"
-        )
-        # Markdown version
-        md = f"# Executive Summary\n{result.get('executive_summary','')}\n\n## What changed in the last {days_ds} days\n" + "\n".join([f"- {b}" for b in result.get("recent_changes",[])]) + "\n\n## Gaps and limitations\n" + "\n".join([f"- {g}" for g in result.get("gaps_and_limitations",[])])
-        st.download_button(
-            label="Download Markdown",
-            data=md,
-            file_name=f"deep_search_{user_topic_ds.replace(' ', '_')}.md",
-            mime="text/markdown"
-        )
-from datetime import datetime
-from dotenv import load_dotenv
-
-from agents import (
-    Agent, 
-    Runner, 
-    WebSearchTool, 
-    function_tool, 
-    handoff, 
-    trace,
-)
-
-from pydantic import BaseModel
-
-# Load environment variables
-load_dotenv()
-
-# Set up page configuration
-st.set_page_config(
-    page_title="OpenAI Researcher Agent",
-    page_icon="📰",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# Make sure API key is set
-if not os.environ.get("OPENAI_API_KEY"):
-    st.error("Please set your OPENAI_API_KEY environment variable")
-    st.stop()
-
-# App title and description
-st.title("📰 OpenAI Researcher Agent")
-st.subheader("Powered by OpenAI Agents SDK")
-st.markdown("""
-This app demonstrates the power of OpenAI's Agents SDK by creating a multi-agent system 
-that researches news topics and generates comprehensive research reports.
-""")
-
-# Define data models
-class ResearchPlan(BaseModel):
-    topic: str
-    search_queries: list[str]
-    focus_areas: list[str]
-
-class ResearchReport(BaseModel):
-    title: str
-    outline: list[str]
-    report: str
-    sources: list[str]
-    word_count: int
-
-# Custom tool for saving facts found during research
-@function_tool
-def save_important_fact(fact: str, source: str = None) -> str:
-    """Save an important fact discovered during research.
-    
-    Args:
-        fact: The important fact to save
-        source: Optional source of the fact
-    
-    Returns:
-        Confirmation message
+def deep_search_api_first(topic: str, days: int = 90, max_items: int = 8) -> dict:
     """
-    if "collected_facts" not in st.session_state:
-        st.session_state.collected_facts = []
-    
-    st.session_state.collected_facts.append({
-        "fact": fact,
-        "source": source or "Not specified",
-        "timestamp": datetime.now().strftime("%H:%M:%S")
-    })
-    
-    return f"Fact saved: {fact}"
+    Run Perplexity + Tavily + Firecrawl pipeline and return structured results.
+    """
+    queries = []
+    subangles = ["regulation policy", "rails networks", "product launches", "funding M&A"]
+    now = datetime.date.today()
+    for sub in subangles:
+        queries.append(f"{topic} {sub} last {days} days")
+        queries.append(f"{topic} {sub} {now.strftime('%B %Y')}")
+        queries.append(f"{topic} {sub} site:reuters.com")
+        queries.append(f"{topic} {sub} site:europa.eu")
 
-# Define the agents
-research_agent = Agent(
-    name="Research Agent",
-    instructions="You are a research assistant. Given a search term, you search the web for that term and"
-    "produce a concise summary of the results. The summary must 2-3 paragraphs and less than 300"
-    "words. Capture the main points. Write succintly, no need to have complete sentences or good"
-    "grammar. This will be consumed by someone synthesizing a report, so its vital you capture the"
-    "essence and ignore any fluff. Do not include any additional commentary other than the summary"
-    "itself.",
-    model="gpt-4o-mini",
-    tools=[
-        WebSearchTool(),
-        save_important_fact
-    ],
-)
+    # COLLECT
+    results = []
+    search_log = []
+    for q in queries:
+        perpl = search_perplexity(q, max_results=5)
+        tavy = search_tavily(q, max_results=5)
+        all_res = (perpl or []) + (tavy or [])
+        search_log.append({"query": q, "results": all_res})
+        for r in all_res:
+            url = r.get("url")
+            if not url:
+                continue
+            try:
+                fetched = fetch_firecrawl(url)
+                one_liner = (
+                    fetched.get("content_md", "")
+                    .replace("\n", " ")
+                    .strip()[:160]
+                )
+                results.append(
+                    {
+                        "date": iso_or_none(r.get("date")),
+                        "title": r.get("title") or url,
+                        "one_liner": one_liner,
+                        "url": url,
+                        "source": host_of(url),
+                        "region": infer_region(url, one_liner),
+                        "confidence": 0.7,  # stub scoring
+                    }
+                )
+            except Exception:
+                continue
 
-editor_agent = Agent(
-    name="Editor Agent",
-    handoff_description="A senior researcher who writes comprehensive research reports",
-    instructions="You are a senior researcher tasked with writing a cohesive report for a research query. "
-    "You will be provided with the original query, and some initial research done by a research "
-    "assistant.\n"
-    "You should first come up with an outline for the report that describes the structure and "
-    "flow of the report. Then, generate the report and return that as your final output.\n"
-    "The final output should be in markdown format, and it should be lengthy and detailed. Aim "
-    "for 5-10 pages of content, at least 1000 words.",
-    model="gpt-4o-mini",
-    output_type=ResearchReport,
-)
+    # Deduplicate by URL
+    seen = {}
+    for it in results:
+        k = it["url"]
+        if k not in seen:
+            seen[k] = it
+    items = list(seen.values())[:max_items]
 
-triage_agent = Agent(
-    name="Triage Agent",
-    instructions="""You are the coordinator of this research operation. Your job is to:
-    1. Understand the user's research topic
-    2. Create a research plan with the following elements:
-       - topic: A clear statement of the research topic
-       - search_queries: A list of 3-5 specific search queries that will help gather information
-       - focus_areas: A list of 3-5 key aspects of the topic to investigate
-    3. Hand off to the Research Agent to collect information
-    4. After research is complete, hand off to the Editor Agent who will write a comprehensive report
-    
-    Make sure to return your plan in the expected structured format with topic, search_queries, and focus_areas.
-    """,
-    handoffs=[
-        handoff(research_agent),
-        handoff(editor_agent)
-    ],
-    model="gpt-4o-mini",
-    output_type=ResearchPlan,
-)
+    # Summary
+    summary = f"Deep search found {len(items)} relevant items for '{topic}' in the last {days} days."
 
-# Create sidebar for input and controls
-with st.sidebar:
-    st.header("Research Topic")
-    user_topic = st.text_input(
-        "Enter a topic to research:",
-    )
-    
-    start_button = st.button("Start Research", type="primary", disabled=not user_topic)
-    
-    st.divider()
-    st.subheader("Example Topics")
-    example_topics = [
-        "What are the best cruise lines in USA for first-time travelers who have never been on a cruise?",
-        "What are the best affordable espresso machines for someone upgrading from a French press?",
-        "What are the best off-the-beaten-path destinations in India for a first-time solo traveler?"
-    ]
-    
-    for topic in example_topics:
-        if st.button(topic):
-            user_topic = topic
-            start_button = True
-
-# Main content area with two tabs
-tab1, tab2 = st.tabs(["Research Process", "Report"])
-
-# Initialize session state for storing results
-if "conversation_id" not in st.session_state:
-    st.session_state.conversation_id = str(uuid.uuid4().hex[:16])
-if "collected_facts" not in st.session_state:
-    st.session_state.collected_facts = []
-if "research_done" not in st.session_state:
-    st.session_state.research_done = False
-if "report_result" not in st.session_state:
-    st.session_state.report_result = None
-
-# Main research function
-async def run_research(topic):
-    # Reset state for new research
-    st.session_state.collected_facts = []
-    st.session_state.research_done = False
-    st.session_state.report_result = None
-    
-    with tab1:
-        message_container = st.container()
-        
-    # Create error handling container
-    error_container = st.empty()
-        
-    # Create a trace for the entire workflow
-    with trace("News Research", group_id=st.session_state.conversation_id):
-        # Start with the triage agent
-        with message_container:
-            st.write("🔍 **Triage Agent**: Planning research approach...")
-        
-        triage_result = await Runner.run(
-            triage_agent,
-            f"Research this topic thoroughly: {topic}. This research will be used to create a comprehensive research report."
-        )
-        
-        # Check if the result is a ResearchPlan object or a string
-        if hasattr(triage_result.final_output, 'topic'):
-            research_plan = triage_result.final_output
-            plan_display = {
-                "topic": research_plan.topic,
-                "search_queries": research_plan.search_queries,
-                "focus_areas": research_plan.focus_areas
-            }
-        else:
-            # Fallback if we don't get the expected output type
-            research_plan = {
-                "topic": topic,
-                "search_queries": ["Researching " + topic],
-                "focus_areas": ["General information about " + topic]
-            }
-            plan_display = research_plan
-        
-        with message_container:
-            st.write("📋 **Research Plan**:")
-            st.json(plan_display)
-        
-        # Display facts as they're collected
-        fact_placeholder = message_container.empty()
-        
-        # Check for new facts periodically
-        previous_fact_count = 0
-        for i in range(15):  # Check more times to allow for more comprehensive research
-            current_facts = len(st.session_state.collected_facts)
-            if current_facts > previous_fact_count:
-                with fact_placeholder.container():
-                    st.write("📚 **Collected Facts**:")
-                    for fact in st.session_state.collected_facts:
-                        st.info(f"**Fact**: {fact['fact']}\n\n**Source**: {fact['source']}")
-                previous_fact_count = current_facts
-            await asyncio.sleep(1)
-        
-        # Editor Agent phase
-        with message_container:
-            st.write("📝 **Editor Agent**: Creating comprehensive research report...")
-        
-        try:
-            report_result = await Runner.run(
-                editor_agent,
-                triage_result.to_input_list()
-            )
-            
-            st.session_state.report_result = report_result.final_output
-            
-            with message_container:
-                st.write("✅ **Research Complete! Report Generated.**")
-                
-                # Preview a snippet of the report
-                if hasattr(report_result.final_output, 'report'):
-                    report_preview = report_result.final_output.report[:300] + "..."
-                else:
-                    report_preview = str(report_result.final_output)[:300] + "..."
-                    
-                st.write("📄 **Report Preview**:")
-                st.markdown(report_preview)
-                st.write("*See the Report tab for the full document.*")
-                
-        except Exception as e:
-            st.error(f"Error generating report: {str(e)}")
-            # Fallback to display raw agent response
-            if hasattr(triage_result, 'new_items'):
-                messages = [item for item in triage_result.new_items if hasattr(item, 'content')]
-                if messages:
-                    raw_content = "\n\n".join([str(m.content) for m in messages if m.content])
-                    st.session_state.report_result = raw_content
-                    
-                    with message_container:
-                        st.write("⚠️ **Research completed but there was an issue generating the structured report.**")
-                        st.write("Raw research results are available in the Report tab.")
-    
-    st.session_state.research_done = True
-
-# Run the research when the button is clicked
-if start_button:
-    with st.spinner(f"Researching: {user_topic}"):
-        try:
-            asyncio.run(run_research(user_topic))
-        except Exception as e:
-            st.error(f"An error occurred during research: {str(e)}")
-            # Set a basic report result so the user gets something
-            st.session_state.report_result = f"# Research on {user_topic}\n\nUnfortunately, an error occurred during the research process. Please try again later or with a different topic.\n\nError details: {str(e)}"
-            st.session_state.research_done = True
-
-# Display results in the Report tab
-with tab2:
-    if st.session_state.research_done and st.session_state.report_result:
-        report = st.session_state.report_result
-        
-        # Handle different possible types of report results
-        if hasattr(report, 'title'):
-            # We have a properly structured ResearchReport object
-            title = report.title
-            
-            # Display outline if available
-            if hasattr(report, 'outline') and report.outline:
-                with st.expander("Report Outline", expanded=True):
-                    for i, section in enumerate(report.outline):
-                        st.markdown(f"{i+1}. {section}")
-            
-            # Display word count if available
-            if hasattr(report, 'word_count'):
-                st.info(f"Word Count: {report.word_count}")
-            
-            # Display the full report in markdown
-            if hasattr(report, 'report'):
-                report_content = report.report
-                st.markdown(report_content)
-            else:
-                report_content = str(report)
-                st.markdown(report_content)
-            
-            # Display sources if available
-            if hasattr(report, 'sources') and report.sources:
-                with st.expander("Sources"):
-                    for i, source in enumerate(report.sources):
-                        st.markdown(f"{i+1}. {source}")
-            
-            # Add download button for the report
-            st.download_button(
-                label="Download Report",
-                data=report_content,
-                file_name=f"{title.replace(' ', '_')}.md",
-                mime="text/markdown"
-            )
-        else:
-            # Handle string or other type of response
-            report_content = str(report)
-            title = user_topic.title()
-            
-            st.title(f"{title}")
-            st.markdown(report_content)
-            
-            # Add download button for the report
-            st.download_button(
-                label="Download Report",
-                data=report_content,
-                file_name=f"{title.replace(' ', '_')}.md",
-                mime="text/markdown"
-            )
+    return {
+        "summary": summary,
+        "items": items,
+        "search_log": search_log,
+    }
