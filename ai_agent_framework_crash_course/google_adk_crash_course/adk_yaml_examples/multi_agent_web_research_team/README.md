@@ -1,8 +1,6 @@
-# Multi-Agent Web Research System
+# Multi-Agent Web Research System (YAML-based)
 
 A sophisticated multi-agent system built with Google ADK that uses Firecrawl MCP tools for web scraping and coordinates between specialized research and summary agents.
-
-> **Location**: This example is part of the Google ADK Crash Course examples, located in `ai_agent_framework_crash_course/google_adk_crash_course/adk_yaml_examples/multi_agent_web_research_team/multi_agent_web_researcher/`
 
 ## Architecture
 
