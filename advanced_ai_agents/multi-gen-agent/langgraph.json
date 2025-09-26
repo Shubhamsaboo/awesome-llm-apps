@@ -1,0 +1,8 @@
+{
+    "dependencies": ["."],
+    "graphs": {
+      "agent": "test:workflow"
+    },
+    "env": ".env"
+}
+  
