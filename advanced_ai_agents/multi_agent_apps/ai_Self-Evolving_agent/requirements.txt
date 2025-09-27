@@ -1,0 +1,52 @@
+pytest
+pytest-cov
+pytest-mock
+pytest-asyncio
+pytest-subtests
+pytest-json-report
+ruff
+
+sympy
+stopit
+scipy
+setuptools
+tree_sitter
+tree_sitter_python
+antlr4-python3-runtime==4.11
+tenacity
+networkx>=3.3
+nltk>=3.9.1
+numpy>=1.26.4
+openai>=1.55.3
+litellm>=1.55.6
+# pydantic>=2.9.0
+pydantic>=2.9.0,<=2.10.6
+pydantic-settings==2.8.1
+pydantic_core>=2.23.2,<=2.27.2
+loguru>=0.7.3 
+pandas>=2.2.3
+matplotlib>=3.10.0
+# --extra-index-url https://download.pytorch.org/whl/cu118
+# torch==2.2.1 
+# torchvision==0.17.1 
+# torchaudio==2.2.1
+transformers>=4.47.1
+datasets>=3.4.0
+faiss-cpu==1.8.0.post1
+textgrad>=0.1.8
+
+# fast api dependencies
+fastapi>=0.115.11
+motor>=3.7.0
+uvicorn>=0.34.0
+sqlalchemy>=2.0.38
+python-jose>=3.3.0
+passlib>=1.7.4
+python-multipart>=0.0.6
+bcrypt>=4.0.1
+celery>=5.3.4
+redis>=5.0.0
+httpx>=0.24.1
+asgi-lifespan>=1.0.1
+python-dotenv>=1.0.0
+jwt>=1.3.1

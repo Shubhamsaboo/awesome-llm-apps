@@ -1,0 +1,5 @@
+agno
+duckduckgo-search
+yfinance
+fastapi[standard] 
+openai

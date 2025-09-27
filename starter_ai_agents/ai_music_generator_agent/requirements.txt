@@ -1,0 +1,3 @@
+agno==1.2.8
+Requests==2.32.3
+streamlit==1.44.1

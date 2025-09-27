@@ -1,0 +1,6 @@
+firecrawl-py==1.9.0
+agno
+composio-phidata
+composio==0.1.1
+pydantic==2.10.5
+streamlit

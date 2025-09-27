@@ -1,0 +1,9 @@
+streamlit>=1.28.0
+agno>=0.1.0
+openai>=1.0.0
+firecrawl-py>=0.1.0
+pydantic>=2.0.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+googlesearch-python>=1.2.3
+pycountry>=23.12.11

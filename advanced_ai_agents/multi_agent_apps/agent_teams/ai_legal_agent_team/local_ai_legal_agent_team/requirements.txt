@@ -1,0 +1,4 @@
+agno
+streamlit==1.40.2
+qdrant-client==1.12.1
+ollama==0.4.4

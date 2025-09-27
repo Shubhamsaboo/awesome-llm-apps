@@ -1,0 +1,10 @@
+streamlit 
+agno
+openai
+psycopg-binary
+pgvector
+requests
+sqlalchemy
+pypdf
+duckduckgo-search
+nest_asyncio

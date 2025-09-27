@@ -1,0 +1,7 @@
+# Core dependencies
+streamlit
+pandas
+langchain
+langchain-core
+langchain-ollama
+ollama
