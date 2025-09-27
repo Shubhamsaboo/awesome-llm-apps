@@ -1,8 +1,45 @@
 import streamlit as st
 import inspect
-from agno.tools.yfinance import YFinanceTools
-from agno.agent import Agent
-from agno.models.openai import OpenAIChat  # fallback if Gemini isn't available
+
+# Defer importing heavy or third-party libraries that may not be installed in
+# all environments until runtime to reduce static linter warnings in IDEs.
+try:
+    from agno.tools.yfinance import YFinanceTools
+except Exception:  # pragma: no cover - optional runtime import
+    YFinanceTools = None
+
+try:
+    from agno.agent import Agent
+except Exception:  # pragma: no cover - optional runtime import
+    Agent = None
+
+try:
+    from agno.models.openai import OpenAIChat  # fallback if Gemini isn't available
+except Exception:  # pragma: no cover - optional runtime import
+    OpenAIChat = None
+
+# Runtime dependency checks: show actionable Streamlit errors and stop execution
+# early if essential components are missing. This helps users install required
+# packages when running the app locally.
+missing_deps = []
+if YFinanceTools is None:
+    missing_deps.append("agno")
+if Agent is None:
+    if "agno" not in missing_deps:
+        missing_deps.append("agno")
+if OpenAIChat is None:
+    # OpenAIChat is optional (fallback), but warn the user if it's needed later
+    missing_deps.append("agno (openai model wrapper)")
+
+if missing_deps:
+    deps_list = ", ".join(sorted(set(missing_deps)))
+    st.error(
+        "Missing required dependencies: "
+        + deps_list
+        + ".\n\nInstall with: `pip install agno google-generativeai streamlit`\n"
+        "If you already installed them, make sure you're running the app in the same virtual environment."
+    )
+    st.stop()
 
 st.set_page_config(page_title="AI Investment Agent", layout="wide")
 st.title("AI Investment Agent 📈🤖")
@@ -61,15 +98,16 @@ def make_gemini_model(api_key):
         try:
             module = __import__(mod_name, fromlist=[cls_name])
             cls = getattr(module, cls_name)
-            # many wrappers accept id / api_key / credentials — try common signatures
+            # many wrappers accept api_key, credentials, or id — try common signatures
             try:
-                return cls(id="gemini", api_key=api_key)
+                return cls(api_key=api_key)
             except TypeError:
                 try:
-                    return cls(api_key=api_key)
+                    return cls(credentials=api_key)
                 except TypeError:
                     try:
-                        return cls(credentials=api_key)
+                        # last resort: try passing just an id (some wrappers accept this)
+                        return cls(id="gemini")
                     except TypeError as e:
                         errors.append(f"{mod_name}.{cls_name} exists but couldn't be constructed: {e}")
                         continue
@@ -79,16 +117,73 @@ def make_gemini_model(api_key):
     # 2) Try using google generative ai official client (if installed)
     try:
         import google.generativeai as genai  # type: ignore
-        # Example lightweight wrapper object expected by agno: we make a minimal shim.
+
+        # Lightweight wrapper expected by the rest of the code. This wrapper will:
+        # - configure the library with the provided key
+        # - attempt to discover a usable model id via list_models (if available)
+        # - ensure a `model` kwarg is present on generate() calls to avoid 404s
         class _GenAIWrapper:
             def __init__(self, api_key):
                 # set API key for the google generative ai lib
                 genai.configure(api_key=api_key)
-                self.id = "gemini"
                 self._lib = genai
+                self.id = None
+
+                # Try to discover available models and pick a reasonable default.
+                # list_models may return different shapes depending on client version,
+                # so guard carefully.
+                discovered = None
+                try:
+                    if hasattr(genai, "list_models"):
+                        models_resp = genai.list_models()
+                        # models_resp may be a dict with 'models' or a list
+                        candidates = []
+                        if isinstance(models_resp, dict):
+                            candidates = models_resp.get("models") or []
+                        elif isinstance(models_resp, (list, tuple)):
+                            candidates = models_resp
+
+                        for m in candidates:
+                            # m might be a dict or an object; try several ways to read its name
+                            name = None
+                            if isinstance(m, dict):
+                                name = m.get("name") or m.get("id")
+                            else:
+                                name = getattr(m, "name", None) or getattr(m, "id", None)
+
+                            if not name:
+                                continue
+                            low = name.lower()
+                            # prefer chat/text/gemini/bison style models
+                            if any(k in low for k in ("chat", "gemini", "bison", "text")):
+                                discovered = name
+                                break
+                except Exception:
+                    # ignore discovery failures; we'll fall back to sensible defaults
+                    discovered = None
+
+                # sensible fallbacks if discovery didn't work
+                for candidate in (
+                    "models/chat-bison-001",
+                    "models/text-bison-001",
+                    "models/gemini-1.0",
+                    "gemini",
+                ):
+                    if discovered:
+                        break
+                    # assign candidate as default; we don't validate by calling network here
+                    discovered = candidate
+
+                self.id = discovered
 
             def generate(self, *args, **kwargs):
-                # a very small pass-through example (may need adapting to agno expectations)
+                """
+                Ensure a `model` kwarg is present (from discovered default) before
+                delegating to the underlying library to avoid the 404 "models/... not found" error.
+                """
+                if "model" not in kwargs or not kwargs.get("model"):
+                    if self.id:
+                        kwargs["model"] = self.id
                 return genai.generate(*args, **kwargs)
 
         return _GenAIWrapper(api_key)
@@ -125,7 +220,13 @@ if api_key:
     if provider.startswith("Gemini"):
         try:
             model = make_gemini_model(api_key)
-            st.success("Gemini model wrapper instantiated.")
+            # If the wrapper exposes an `id` attribute, show it so users know
+            # which model identifier will be used (helps debug 404 model not found).
+            model_id = getattr(model, "id", None)
+            if model_id:
+                st.success(f"Gemini model wrapper instantiated (using model: {model_id}).")
+            else:
+                st.success("Gemini model wrapper instantiated.")
         except Exception as e:
             model_error = e
             st.error("Failed to create Gemini model wrapper. Falling back to OpenAI (if available).")
