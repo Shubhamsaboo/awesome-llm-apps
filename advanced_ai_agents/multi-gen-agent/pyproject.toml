@@ -1,0 +1,17 @@
+[project]
+name = "image-gen-agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "deepagents>=0.0.3",
+    "google-genai>=1.31.0",
+    "google>=3.0.0",
+    "langchain-core>=0.3.72",
+    "langchain-together>=0.3.1",
+    "langgraph-cli[inmem]>=0.3.6",
+    "python-dotenv>=1.1.1",
+    "together>=1.5.21",
+    "langgraph-api>=0.4.1",
+]
