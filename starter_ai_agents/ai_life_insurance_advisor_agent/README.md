@@ -35,7 +35,7 @@ git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
    ```
 4. Run the Streamlit app:
    ```bash
-   streamlit run life_insurance_advisor.py
+   streamlit run life_insurance_advisor_agent.py
    ```
 
 ## Using the App
