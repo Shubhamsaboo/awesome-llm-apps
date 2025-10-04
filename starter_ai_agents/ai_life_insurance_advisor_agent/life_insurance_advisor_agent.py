@@ -5,7 +5,7 @@ from typing import Any, Dict, Optional
 
 import streamlit as st
 from agno.agent import Agent
-from agno.models.openrouter import OpenRouter
+from agno.models.openai import OpenAIChat
 from agno.tools.e2b import E2BTools
 from agno.tools.firecrawl import FirecrawlTools
 
@@ -17,16 +17,7 @@ st.set_page_config(
 
 st.title("🛡️ Life Insurance Coverage Advisor")
 st.caption(
-    "Prototype Streamlit app powered by Agno Agents, Grok 4 Fast via OpenRouter, E2B sandboxed code execution, and Firecrawl search."
-)
-
-DEFAULT_OPENROUTER_REFERRER = os.getenv(
-    "OPENROUTER_REFERRER",
-    "https://github.com/Shubhamsaboo/awesome-llm-apps",
-)
-DEFAULT_OPENROUTER_TITLE = os.getenv(
-    "OPENROUTER_TITLE",
-    "Life Insurance Coverage Advisor",
+    "Prototype Streamlit app powered by Agno Agents, OpenAI GPT-5, E2B sandboxed code execution, and Firecrawl search."
 )
 
 # -----------------------------------------------------------------------------
@@ -35,11 +26,11 @@ DEFAULT_OPENROUTER_TITLE = os.getenv(
 with st.sidebar:
     st.header("API Keys")
     st.write("All keys stay local in your browser session.")
-    openrouter_api_key = st.text_input(
-        "OpenRouter API Key",
+    openai_api_key = st.text_input(
+        "OpenAI API Key",
         type="password",
-        key="openrouter_api_key",
-        help="Create one at https://openrouter.ai/keys",
+        key="openai_api_key",
+        help="Create one at https://platform.openai.com/api-keys",
     )
     firecrawl_api_key = st.text_input(
         "Firecrawl API Key",
@@ -163,23 +154,19 @@ def compute_local_breakdown(profile: Dict[str, Any], real_rate: float) -> Dict[s
 
 
 @st.cache_resource(show_spinner=False)
-def get_agent(openrouter_key: str, firecrawl_key: str, e2b_key: str) -> Optional[Agent]:
-    if not (openrouter_key and firecrawl_key and e2b_key):
+def get_agent(openai_key: str, firecrawl_key: str, e2b_key: str) -> Optional[Agent]:
+    if not (openai_key and firecrawl_key and e2b_key):
         return None
 
-    os.environ["OPENROUTER_API_KEY"] = openrouter_key
+    os.environ["OPENAI_API_KEY"] = openai_key
     os.environ["FIRECRAWL_API_KEY"] = firecrawl_key
     os.environ["E2B_API_KEY"] = e2b_key
 
     return Agent(
         name="Life Insurance Advisor",
-        model=OpenRouter(
-            id="x-ai/grok-4-fast:free",
-            api_key=openrouter_key,
-            default_headers={
-                "HTTP-Referer": DEFAULT_OPENROUTER_REFERRER,
-                "X-Title": DEFAULT_OPENROUTER_TITLE,
-            },
+        model=OpenAIChat(
+            id="gpt-5-mini-2025-08-07",
+            api_key=openai_key,
         ),
         tools=[
             E2BTools(timeout=180),
@@ -392,11 +379,11 @@ def render_recommendations(result: Dict[str, Any], profile: Dict[str, Any]) -> N
 
 
 if submitted:
-    if not all([openrouter_api_key, firecrawl_api_key, e2b_api_key]):
-        st.error("Please configure OpenRouter, Firecrawl, and E2B API keys in the sidebar.")
+    if not all([openai_api_key, firecrawl_api_key, e2b_api_key]):
+        st.error("Please configure OpenAI, Firecrawl, and E2B API keys in the sidebar.")
         st.stop()
 
-    advisor_agent = get_agent(openrouter_api_key, firecrawl_api_key, e2b_api_key)
+    advisor_agent = get_agent(openai_api_key, firecrawl_api_key, e2b_api_key)
     if not advisor_agent:
         st.error("Unable to initialize the advisor. Double-check API keys.")
         st.stop()
