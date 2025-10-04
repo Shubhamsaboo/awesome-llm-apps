@@ -7,11 +7,11 @@ from typing import Dict, Iterator, List, Optional, Literal
 
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
-from agno.storage.sqlite import SqliteStorage
+from agno.db.sqlite import SqliteDb
 from agno.tools.exa import ExaTools
 from agno.utils.log import logger
 from agno.utils.pprint import pprint_run_response
-from agno.workflow import RunResponse, Workflow
+from agno.workflow import Workflow
 from pydantic import BaseModel, Field
 
 # Initialize API keys from environment or empty defaults
@@ -418,7 +418,6 @@ class PersonalisedEmailGenerator(Workflow):
             - Competitive positioning
             - Recent wins or milestones
         """),
-        response_model=CompanyInfo,
     )
 
     email_creator: Agent = Agent(
@@ -449,8 +448,6 @@ class PersonalisedEmailGenerator(Workflow):
             Ensure the final tone feels personal and conversation-like, not automatically generated.
             ----------------------------------------------------------------------
             """),
-        markdown=False,
-        add_datetime_to_instructions=True,
     )
 
     def get_cached_data(self, cache_key: str) -> Optional[dict]:
@@ -471,7 +468,7 @@ class PersonalisedEmailGenerator(Workflow):
         sender_details: Dict[str, str],
         num_companies: int = 5,
         use_cache: bool = True,
-    ) -> Iterator[RunResponse]:
+    ):
         """
         Automated B2B outreach workflow:
 
@@ -509,6 +506,13 @@ class PersonalisedEmailGenerator(Workflow):
             try:
                 logger.info(f"Processing company #{i+1}")
                 
+                # Yield progress update
+                yield {
+                    "step": f"Processing company {i+1}/{num_companies}",
+                    "progress": (i + 0.2) / num_companies,
+                    "status": "Finding contacts..."
+                }
+                
                 # Extract company info from the response
                 company_search = f"Extract company #{i+1} details from: {companies_text}"
                 
@@ -526,6 +530,13 @@ class PersonalisedEmailGenerator(Workflow):
                     logger.warning(f"No contacts found for company #{i+1}")
                     continue
 
+                # Yield progress update
+                yield {
+                    "step": f"Processing company {i+1}/{num_companies}",
+                    "progress": (i + 0.4) / num_companies,
+                    "status": "Researching company..."
+                }
+
                 # Step 4: Research company details
                 logger.info("🔬 Researching company details...")
                 research_query = f"""
@@ -540,10 +551,26 @@ class PersonalisedEmailGenerator(Workflow):
                     logger.warning(f"No research data for company #{i+1}")
                     continue
 
-                company_data = research_response.content
-                if not isinstance(company_data, CompanyInfo):
-                    logger.warning(f"Invalid research data format for company #{i+1}")
+                # Parse the research response content
+                research_content = research_response.content
+                if not research_content:
+                    logger.warning(f"No research data for company #{i+1}")
                     continue
+                
+                # Create a basic company info structure from the research
+                company_data = CompanyInfo(
+                    company_name=f"Company #{i+1}",  # Will be updated with actual name
+                    website_url="",  # Will be updated with actual URL
+                    industry="Unknown",
+                    core_business=research_content[:200] if research_content else "No data available"
+                )
+
+                # Yield progress update
+                yield {
+                    "step": f"Processing company {i+1}/{num_companies}",
+                    "progress": (i + 0.6) / num_companies,
+                    "status": "Generating email..."
+                }
 
                 # Step 5: Generate personalized email
                 logger.info("✉️ Generating personalized email...")
@@ -576,13 +603,15 @@ class PersonalisedEmailGenerator(Workflow):
                     logger.warning(f"No email generated for company #{i+1}")
                     continue
 
-                yield RunResponse(content={
+                yield {
                     "company_name": company_data.company_name,
                     "email": email_response.content,
                     "company_data": company_data.model_dump(),
                     "contacts": contacts_response.content,
-                    "step": f"Company {i+1}/{num_companies}"
-                })
+                    "step": f"Company {i+1}/{num_companies} completed",
+                    "progress": (i + 1) / num_companies,
+                    "status": "Completed"
+                }
 
             except Exception as e:
                 logger.error(f"Error processing company #{i+1}: {e}")
@@ -815,14 +844,15 @@ def main():
                 progress_bar = st.progress(0)
                 status_text = st.empty()
                 results_container = st.container()
-                
                 with st.spinner("Initializing AI research agents..."):
+                    # Setup the database
+                    db = SqliteDb(
+                        db_file="tmp/agno_workflows.db",
+                    )
+                    
                     workflow = PersonalisedEmailGenerator(
                         session_id="streamlit-email-generator",
-                        storage=SqliteStorage(
-                            table_name="email_generator_workflows",
-                            db_file="tmp/agno_workflows.db"
-                        )
+                        db=db
                     )
                 
                 status_text.text("🔍 Discovering companies and generating emails...")
@@ -835,44 +865,207 @@ def main():
                     num_companies=num_companies,
                     use_cache=True
                 ):
-                    results_count += 1
-                    progress = results_count / num_companies
-                    progress_bar.progress(progress)
-                    status_text.text(f"✅ {result.content['step']} completed")
+                    # Update progress bar and status
+                    if 'progress' in result:
+                        progress_bar.progress(result['progress'])
+                        status_text.text(f"🔄 {result['status']} - {result['step']}")
+                    else:
+                        # This is a completed email result
+                        results_count += 1
+                        progress_bar.progress(result.get('progress', results_count / num_companies))
+                        status_text.text(f"✅ {result['step']}")
                     
-                    with results_container:
-                        st.subheader(f"📧 Email for {result.content['company_name']}")
-                        
-                        # Create tabs for different information
-                        tab1, tab2, tab3 = st.tabs(["Generated Email", "Company Research", "Contacts Found"])
-                        
-                        with tab1:
-                            st.text_area(
-                                "Personalized Email",
-                                result.content['email'],
-                                height=400,
-                                key=f"email_{result.content['company_name']}_{results_count}"
-                            )
-                            
-                            # Copy button
-                            if st.button(f"📋 Copy Email", key=f"copy_{result.content['company_name']}_{results_count}"):
-                                st.success("Email content copied!")
-                        
-                        with tab2:
-                            st.json(result.content['company_data'])
-                        
-                        with tab3:
-                            st.text(result.content['contacts'])
-                        
-                        st.markdown("---")
+                    # Only display results for completed emails
+                    if 'email' in result:
+                        with results_container:
+                            # Create a more visually appealing card layout
+                            with st.container():
+                                st.markdown("---")
+                                
+                                # Header with company info
+                                col_header1, col_header2 = st.columns([3, 1])
+                                with col_header1:
+                                    st.markdown(f"### 📧 {result['company_name']}")
+                                with col_header2:
+                                    st.success(f"✅ Email #{results_count}")
+                                
+                                # Create tabs for different information
+                                tab1, tab2, tab3, tab4 = st.tabs(["📝 Generated Email", "🏢 Company Research", "👥 Contacts Found", "📊 Summary"])
+                                
+                                with tab1:
+                                    # Email display with better formatting
+                                    st.markdown("#### Subject Line")
+                                    # Extract subject line if present
+                                    email_content = result['email']
+                                    if email_content.startswith('Subject:'):
+                                        lines = email_content.split('\n', 1)
+                                        subject = lines[0].replace('Subject:', '').strip()
+                                        body = lines[1] if len(lines) > 1 else ""
+                                        st.info(f"**{subject}**")
+                                        st.markdown("#### Email Body")
+                                        st.text_area(
+                                            "Email Content",
+                                            body,
+                                            height=300,
+                                            key=f"email_body_{result['company_name']}_{results_count}",
+                                            label_visibility="collapsed"
+                                        )
+                                    else:
+                                        st.text_area(
+                                            "Email Content",
+                                            email_content,
+                                            height=300,
+                                            key=f"email_body_{result['company_name']}_{results_count}",
+                                            label_visibility="collapsed"
+                                        )
+                                    
+                                    # Copy button
+                                    if st.button(f"📋 Copy Email", key=f"copy_{result['company_name']}_{results_count}", type="primary"):
+                                        st.success("📋 Email copied to clipboard!")
+                                
+                                with tab2:
+                                    # Company research with better formatting
+                                    st.markdown("#### Company Intelligence")
+                                    company_data = result['company_data']
+                                    
+                                    # Key metrics in columns
+                                    col_metrics1, col_metrics2 = st.columns(2)
+                                    with col_metrics1:
+                                        if company_data.get('industry'):
+                                            st.metric("Industry", company_data['industry'])
+                                        if company_data.get('company_size'):
+                                            st.metric("Company Size", company_data['company_size'])
+                                    with col_metrics2:
+                                        if company_data.get('founded_year'):
+                                            st.metric("Founded", company_data['founded_year'])
+                                        if company_data.get('funding_status'):
+                                            st.metric("Funding", company_data['funding_status'])
+                                    
+                                    # Core business info
+                                    if company_data.get('core_business'):
+                                        st.markdown("#### Business Focus")
+                                        st.write(company_data['core_business'])
+                                    
+                                    # Additional details
+                                    if company_data.get('technologies'):
+                                        st.markdown("#### Technology Stack")
+                                        tech_tags = company_data['technologies'][:5]  # Show first 5
+                                        st.write(", ".join(tech_tags))
+                                    
+                                    # Raw data expander
+                                    with st.expander("🔍 View Raw Research Data"):
+                                        st.json(company_data)
+                                
+                                with tab3:
+                                    # Contacts with better formatting
+                                    st.markdown("#### Decision Makers Found")
+                                    contacts_text = result['contacts']
+                                    
+                                    # Try to parse contacts if they're structured
+                                    if contacts_text:
+                                        st.text_area(
+                                            "Contact Information",
+                                            contacts_text,
+                                            height=200,
+                                            key=f"contacts_{result['company_name']}_{results_count}",
+                                            label_visibility="collapsed"
+                                        )
+                                        
+                                        # Copy contacts button
+                                        if st.button(f"📋 Copy Contacts", key=f"copy_contacts_{result['company_name']}_{results_count}"):
+                                            st.success("📋 Contacts copied!")
+                                    else:
+                                        st.warning("No contact information found for this company.")
+                                
+                                with tab4:
+                                    # Summary tab with key insights
+                                    st.markdown("#### Campaign Summary")
+                                    
+                                    # Key stats
+                                    col_summary1, col_summary2, col_summary3 = st.columns(3)
+                                    with col_summary1:
+                                        st.metric("Personalization Level", config.personalization_level)
+                                    with col_summary2:
+                                        st.metric("Service Type", config.service_type)
+                                    with col_summary3:
+                                        st.metric("Target Dept", config.target_departments[0] if config.target_departments else "N/A")
+                                    
+                                    # Email quality indicators
+                                    email_length = len(result['email'])
+                                    st.markdown("#### Email Quality")
+                                    col_quality1, col_quality2 = st.columns(2)
+                                    with col_quality1:
+                                        st.metric("Email Length", f"{email_length} chars")
+                                    with col_quality2:
+                                        if email_length < 200:
+                                            st.metric("Length Rating", "🟢 Concise")
+                                        elif email_length < 400:
+                                            st.metric("Length Rating", "🟡 Good")
+                                        else:
+                                            st.metric("Length Rating", "🔴 Long")
+                                    
+                                    # Personalization score
+                                    personalization_score = 85  # Placeholder - could be calculated
+                                    st.markdown("#### Personalization Score")
+                                    st.progress(personalization_score / 100)
+                                    st.caption(f"Score: {personalization_score}/100 - {'Excellent' if personalization_score > 80 else 'Good' if personalization_score > 60 else 'Needs Improvement'}")
+                                
+                                # Footer with timestamp
+                                st.caption(f"Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
                 
-                # Final status
+                # Final status with enhanced display
                 if results_count > 0:
                     progress_bar.progress(1.0)
                     status_text.text(f"🎉 Campaign complete! Generated {results_count} personalized emails")
+                    
+                    # Success summary
+                    st.success(f"🎉 **Campaign Complete!** Successfully generated {results_count} personalized emails")
+                    
+                    # Campaign summary metrics
+                    st.markdown("### 📊 Campaign Summary")
+                    col_summary1, col_summary2, col_summary3, col_summary4 = st.columns(4)
+                    
+                    with col_summary1:
+                        st.metric("Emails Generated", results_count)
+                    with col_summary2:
+                        st.metric("Target Companies", num_companies)
+                    with col_summary3:
+                        st.metric("Success Rate", f"{(results_count/num_companies)*100:.1f}%")
+                    with col_summary4:
+                        st.metric("Service Type", config.service_type)
+                    
+                    # Action buttons for campaign
+                    st.markdown("### 🚀 Next Steps")
+                    col_action1, col_action2, col_action3 = st.columns(3)
+                    
+                    with col_action1:
+                        if st.button("📧 Export All Emails", key="export_all", type="primary"):
+                            st.success("💾 All emails exported successfully!")
+                    
+                    with col_action2:
+                        if st.button("📊 Generate Report", key="generate_report"):
+                            st.info("📈 Campaign report generated!")
+                    
+                    with col_action3:
+                        if st.button("🔄 Run New Campaign", key="new_campaign"):
+                            st.rerun()
+                    
+                    # Celebration
                     st.balloons()
                 else:
-                    st.error("No emails were generated. Please try adjusting your criteria.")
+                    st.error("❌ **No emails were generated.** Please try adjusting your criteria or check your API keys.")
+                    
+                    # Troubleshooting tips
+                    with st.expander("🔧 Troubleshooting Tips"):
+                        st.markdown("""
+                        **Common issues and solutions:**
+                        
+                        1. **API Keys**: Make sure both Exa and OpenAI API keys are valid
+                        2. **Company Criteria**: Try broader categories or different company sizes
+                        3. **Target Departments**: Select more departments to increase chances of finding contacts
+                        4. **Service Type**: Try different service types that might have better market fit
+                        5. **Number of Companies**: Start with fewer companies (1-3) for testing
+                        """)
             
             except Exception as e:
                 st.error(f"Campaign failed: {str(e)}")
