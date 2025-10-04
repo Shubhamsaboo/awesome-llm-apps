@@ -1,0 +1,5 @@
+streamlit>=1.32,<2.0
+agno>=1.1.7
+firecrawl-py>=1.9.0
+e2b-code-interpreter>=1.0.3
+openai>=1.30.0
