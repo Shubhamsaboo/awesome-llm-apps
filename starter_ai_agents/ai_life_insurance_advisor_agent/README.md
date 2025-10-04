@@ -1,4 +1,4 @@
-# 🛡️ Life Insurance Coverage Advisor
+# 🛡️ Life Insurance Coverage Advisor Agent
 
 A Streamlit application that helps users estimate the amount of term life insurance they may need and surfaces currently available policy options. The app is powered by the [Agno](https://github.com/agno-agi/agno) agent framework, uses **Grok 4 Fast (via OpenRouter)** as the reasoning model, the **E2B** sandbox for deterministic coverage calculations, and **Firecrawl** for live web research.
 
