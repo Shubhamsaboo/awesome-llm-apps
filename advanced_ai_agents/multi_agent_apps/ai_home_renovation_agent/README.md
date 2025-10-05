@@ -58,7 +58,7 @@ The system uses a **Coordinator/Dispatcher pattern** with three specialized agen
    adk web
    ```
 
-5. **Open browser** and select "HomeRenovationPlanner"
+5. **Open browser** and select "ai_home_renovation_agent"
 
 ## Usage Examples
 
