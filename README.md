@@ -49,7 +49,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
   <tr>
     <td align="center">
       <a href="https://getunblocked.com/unblocked-mcp/?utm_source=oss&utm_medium=sponsorship&utm_campaign=awesome-llm-apps" target="_blank" rel="noopener" title="Unblocked">
-        <img src="docs/banner/sponsors/unblocked.png" alt="Unblocked" width="6000">
+        <img src="docs/banner/sponsors/unblocked.png" alt="Unblocked" height="80">
       </a>
       <br>
       <a href="https://getunblocked.com/unblocked-mcp/?utm_source=oss&utm_medium=sponsorship&utm_campaign=awesome-llm-apps" target="_blank" rel="noopener" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
@@ -57,16 +57,22 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
       </a>
     </td>
     <td align="center">
-      <a href="https://sponsorunwindai.com/" title="Sponsor Awesome LLM Apps Repo">
-        <img src="docs/banner/sponsor_awesome_llm_apps.png" alt="Sponsor Awesome LLM Apps Repo" width="6000">
+      <a href="https://github.com/emcie-co/parlant" title="Parlant">
+        <img src="docs/banner/sponsors/parlant.png" alt="Parlant" height="80">
       </a>
       <br>
-      <a href="https://sponsorunwindai.com/" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
-        Become a Sponsor
+      <a href="https://github.com/emcie-co/parlant" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
+        Parlant
       </a>
     </td>
   </tr>
 </table>
+
+<p align="center">
+  <a href="https://sponsorunwindai.com" target="_blank" rel="noopener">
+    <img src="https://img.shields.io/badge/_Sponsor_Us-FF69B4?style=for-the-badge&logo=github-sponsors&logoColor=white" alt="Sponsor Us">
+  </a>
+</p>
 
 ## 📂 Featured AI Projects
 
