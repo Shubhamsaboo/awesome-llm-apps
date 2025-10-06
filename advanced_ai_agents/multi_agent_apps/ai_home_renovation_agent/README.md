@@ -54,7 +54,7 @@ The system uses a **Coordinator/Dispatcher pattern** with three specialized agen
 
 4. **Launch ADK Web** 
    ```bash
-   cd /Users/shubh/Downloads/awesome-llm-apps/multi_agent_apps
+   cd multi_agent_apps
    adk web
    ```
 
