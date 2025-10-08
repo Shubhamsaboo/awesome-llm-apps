@@ -49,7 +49,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
   <tr>
     <td align="center">
       <a href="https://getunblocked.com/unblocked-mcp/?utm_source=oss&utm_medium=sponsorship&utm_campaign=awesome-llm-apps" target="_blank" rel="noopener" title="Unblocked">
-        <img src="docs/banner/sponsors/unblocked.png" alt="Unblocked" height="800">
+        <img src="docs/banner/sponsors/unblocked.png" alt="Unblocked" width="500">
       </a>
       <br>
       <a href="https://getunblocked.com/unblocked-mcp/?utm_source=oss&utm_medium=sponsorship&utm_campaign=awesome-llm-apps" target="_blank" rel="noopener" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
@@ -58,7 +58,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
     </td>
     <td align="center">
       <a href="https://github.com/emcie-co/parlant" title="Parlant">
-        <img src="docs/banner/sponsors/parlant.png" alt="Parlant" height="800">
+        <img src="docs/banner/sponsors/parlant.png" alt="Parlant" width="500">
       </a>
       <br>
       <a href="https://github.com/emcie-co/parlant" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
