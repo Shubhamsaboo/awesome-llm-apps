@@ -14,7 +14,7 @@ A terminal-based Notion Agent for interacting with your Notion pages using natur
 
 ## Prerequisites
 
-- Python 3.9+
+- Python 3.10+
 - A Notion account with admin permissions
 - A Notion Integration token
 - An OpenAI API key
