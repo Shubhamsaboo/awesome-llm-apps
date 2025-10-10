@@ -2,3 +2,4 @@ agno
 python-dotenv
 mcp
 openai
+sqlalchemy
