@@ -10,17 +10,16 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.append(str(PROJECT_ROOT))
 
 from evaluation import CirclePackingEvaluation
-# from llm4ad.tools.llm.llm_api_https import HttpsApi
-from starter_ai_agents.llm_for_algorithm_design.llm4ad_v1.llm_nebuis import NebuisLLM
+from llm4ad.tools.llm.llm_api_https import HttpsApi
 from llm4ad.method.eoh import EoH,EoHProfiler
 
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 def main():
     """
     Run EoH on CirclePackingEvaluation
     """
-    llm = NebuisLLM(host='api.bltcy.ai',  # your host endpoint, e.g., 'api.openai.com', 'api.deepseek.com'
+    llm = HttpsApi(host='api.bltcy.ai',  # your host endpoint, e.g., 'api.openai.com', 'api.deepseek.com'
                    key=os.getenv("LLM4AD_API_KEY"),  # your key
                    model='deepseek-v3',  # your llm, e.g., 'gpt-3.5-turbo'
                    timeout=120)

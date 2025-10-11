@@ -13,6 +13,8 @@ from llm4ad.task.optimization.cvrp_construct import CVRPEvaluation
 from llm4ad.tools.llm.llm_api_https import HttpsApi
 from llm4ad.method.eoh import EoH, EoHProfiler
 
+# from dotenv import load_dotenv
+
 def main():
     """
     Run EoH on CVRP
