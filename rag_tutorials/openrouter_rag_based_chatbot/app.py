@@ -20,7 +20,7 @@ st.caption("Uses uploaded PDFs as knowledge base — session-only chat.")
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
-# Sidebar: PDF upload
+# Sidebar: PDF upload & info
 st.sidebar.header("⚙️ Settings")
 uploaded_file = st.sidebar.file_uploader("Upload Knowledge File (.pdf)", type=["pdf"])
 knowledge_base = ""
@@ -28,6 +28,11 @@ knowledge_base = ""
 if uploaded_file:
     knowledge_base = extract_text_from_pdf(uploaded_file)
     st.sidebar.success("✅ PDF loaded successfully!")
+
+# Add contributor info in sidebar
+st.sidebar.markdown("---")
+st.sidebar.markdown("**Contributor:** Vinayak Vathare")
+st.sidebar.markdown("[GitHub Profile](https://github.com/VathareVinayak)")
 
 def query_openrouter(prompt_text: str, context_text: str = "") -> str:
     """
