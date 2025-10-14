@@ -57,22 +57,16 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
       </a>
     </td>
     <td align="center">
-      <a href="https://github.com/emcie-co/parlant" title="Parlant">
-        <img src="docs/banner/sponsors/parlant.png" alt="Parlant" width="500">
+      <a href="https://sponsorunwindai.com/" title="Parlant">
+        <img src="docs/banner/sponsor_awesome_llm_apps.png" alt="Parlant" width="500">
       </a>
       <br>
-      <a href="https://github.com/emcie-co/parlant" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
-        Parlant
+      <a href="https://sponsorunwindai.com/" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
+        Become a Sponsor
       </a>
     </td>
   </tr>
 </table>
-
-<p align="center">
-  <a href="https://sponsorunwindai.com" target="_blank" rel="noopener">
-    <img src="https://img.shields.io/badge/_Sponsor_Us-FF69B4?style=for-the-badge&logo=github-sponsors&logoColor=white" alt="Sponsor Us">
-  </a>
-</p>
 
 ## 📂 Featured AI Projects
 
