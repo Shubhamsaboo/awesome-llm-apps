@@ -1,0 +1,3 @@
+google-adk
+firecrawl-py
+pydantic>=2.7.0
