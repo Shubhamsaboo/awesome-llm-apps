@@ -137,8 +137,9 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 *   [♾️ Browser MCP Agent](mcp_ai_agents/browser_mcp_agent/)
 *   [🐙 GitHub MCP Agent](mcp_ai_agents/github_mcp_agent/)
-*   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent) 
+*   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent)
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team)
+*   [🧠 Enterprise LLM Integration Agent (Neurolink)](https://github.com/juspay/neurolink) - Enterprise-grade LLM integration framework with built-in hallucination prevention, RAG, and MCP support
 
 ### 📀 RAG (Retrieval Augmented Generation)
 *   [🔥 Agentic RAG with Embedding Gemma](rag_tutorials/agentic_rag_embedding_gemma)
