@@ -9,12 +9,12 @@ The workflow runs three specialized agents in sequence:
 
 from __future__ import annotations
 import os
-from typing import Dict, List, Optional
+from typing import List, Optional
 from pydantic import BaseModel, Field
 from google.adk.agents import LlmAgent, SequentialAgent
-from google.adk.tools import FunctionTool, google_search
+from google.adk.tools import google_search
 from google.adk.tools.agent_tool import AgentTool
-from firecrawl import FirecrawlApp
+from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioServerParameters
 
 
 # =============================================================================
@@ -135,47 +135,21 @@ class OptimizationRecommendation(BaseModel):
 # Tools
 # =============================================================================
 
-
-def firecrawl_scrape(url: str) -> Dict[str, object]:
-    """
-    Scrape a target URL with Firecrawl and return structured data for auditing.
-
-    Args:
-        url: Fully-qualified URL to crawl.
-
-    Returns:
-        Dictionary payload from Firecrawl that includes markdown, html, and link metadata.
-    """
-    api_key = os.getenv("FIRECRAWL_API_KEY")
-    if not api_key:
-        raise RuntimeError(
-            "FIRECRAWL_API_KEY environment variable is not set. "
-            "Provide a valid Firecrawl API key to enable crawling."
-        )
-
-    app = FirecrawlApp(api_key=api_key)
-    try:
-        document = app.scrape(
-            url=url,
-            formats=[
-                "markdown",
-                "html",
-                "links",
-            ],
-            only_main_content=True,
-            timeout=90000,
-            block_ads=True,
-        )
-    except Exception as exc:  # pragma: no cover - tool errors pass to the agent
-        raise RuntimeError(f"Firecrawl scrape failed: {exc}") from exc
-
-    payload = document.model_dump(exclude_none=True)
-    if not payload.get("markdown") and not payload.get("html"):
-        raise RuntimeError("Firecrawl scrape completed but returned no page content.")
-    return payload
-
-
-firecrawl_tool = FunctionTool(firecrawl_scrape)
+# Firecrawl MCP Toolset - connects to Firecrawl's MCP server for advanced web scraping
+firecrawl_toolset = MCPToolset(
+    connection_params=StdioServerParameters(
+        command='npx',
+        args=[
+            "-y",  # Auto-confirm npm package installation
+            "firecrawl-mcp",  # The Firecrawl MCP server package
+        ],
+        env={
+            "FIRECRAWL_API_KEY": os.getenv("FIRECRAWL_API_KEY", "")
+        }
+    ),
+    # Filter to use only the scrape tool for this agent
+    tool_filter=['firecrawl_scrape']
+)
 
 
 # =============================================================================
@@ -208,14 +182,17 @@ page_auditor_agent = LlmAgent(
     description=(
         "Scrapes the target URL, performs a structural on-page SEO audit, and extracts keyword signals."
     ),
-    instruction="""You are Agent 1 in a sequential SEO workflow.
-- Extract the URL from the latest user message. If no valid URL is provided, ask the user for one and stop.
+    instruction="""You are Agent 1 in a sequential SEO workflow. Your role is to gather data silently for the next agents.
+- Extract the URL from the latest user message. The user MUST provide a valid URL.
 - Call the `firecrawl_scrape` tool exactly once to gather page content, metadata, and links.
+  * Use these parameters: {"url": "target_url", "formats": ["markdown", "html", "links"], "onlyMainContent": true}
 - Audit the page structure: title tag, meta description, headings hierarchy, word count, link health, and technical flags.
 - Infer the dominant search intent and identify the primary and secondary keyword targets based on page content.
 - Populate every field in the PageAuditOutput schema and store the result in `state['page_audit']`.
-- Output must be valid JSON only, with no extra commentary. Every string field needs meaningful text (use clear fallbacks like "Not available" if necessary). Keep numeric fields as integers and lists as arrays (use [] when empty).""",
-    tools=[firecrawl_tool],
+- Output must be valid JSON only, with no extra commentary. Every string field needs meaningful text (use clear fallbacks like "Not available" if necessary). Keep numeric fields as integers and lists as arrays (use [] when empty).
+- If the scrape fails or returns no content, still return valid JSON with fallback values like "Error: Unable to scrape page" for string fields.
+- IMPORTANT: Do not include any text before or after the JSON. Just output the raw JSON structure.""",
+    tools=[firecrawl_toolset],
     output_schema=PageAuditOutput,
     output_key="page_audit",
 )
@@ -227,12 +204,13 @@ serp_analyst_agent = LlmAgent(
     description=(
         "Researches the live SERP for the discovered primary keyword and summarizes the competitive landscape."
     ),
-    instruction="""You are Agent 2 in the workflow.
+    instruction="""You are Agent 2 in the workflow. Your role is to silently gather SERP data for the final report agent.
 - Read the keyword data from `state['page_audit']['target_keywords']`.
 - For the primary keyword, call the `perform_google_search` tool with arguments `{"request": "<primary keyword>"}` to fetch the top organic results (request 10 results).
 - Summarize each result with rank, title, URL, snippet, and content type.
 - Highlight common title patterns, dominant content formats, People Also Ask questions, recurring themes, and opportunities to differentiate the page.
-- Populate the SerpAnalysis schema, store it in `state['serp_analysis']`, and return strict JSON only. Ensure `primary_keyword` is a non-empty string (use a clear fallback if the search fails) and keep every list field as an array (return [] when empty).""",
+- Populate the SerpAnalysis schema, store it in `state['serp_analysis']`, and return strict JSON only. Ensure `primary_keyword` is a non-empty string (use a clear fallback if the search fails) and keep every list field as an array (return [] when empty).
+- IMPORTANT: Do not include any text before or after the JSON. Just output the raw JSON structure.""",
     tools=[google_search_tool],
     output_schema=SerpAnalysis,
     output_key="serp_analysis",
@@ -243,16 +221,17 @@ optimization_advisor_agent = LlmAgent(
     name="OptimizationAdvisorAgent",
     model="gemini-2.5-flash",
     description="Synthesizes the audit and SERP findings into a prioritized optimization roadmap.",
-    instruction="""You are Agent 3 and the final expert in the workflow.
+    instruction="""You are Agent 3 and the final expert in the workflow. You create the user-facing report.
 - Review `state['page_audit']` and `state['serp_analysis']` to understand the current page and competitive landscape.
-- Produce a polished Markdown report for the user that includes:
+- Produce a polished, well-formatted Markdown report that includes:
   * Executive summary
   * Key audit findings (technical + content + keyword highlights)
   * Prioritized action list grouped by priority level (P0/P1/P2) with rationale and expected impact
   * Keyword strategy and SERP insights
   * Measurement / next-step suggestions
 - Reference concrete data points from the earlier agents. If some data is missing, acknowledge it directly rather than fabricating.
-- Return Markdown only—no JSON.""",
+- Return ONLY the Markdown report—no JSON, no preamble, no explanatory text. Start directly with "# SEO Audit Report" as the first line.
+- Make the report professional, actionable, and ready to share with stakeholders.""",
 )
 
 

@@ -1,11 +1,11 @@
 # 🔍 AI SEO Audit Team
 
-The **AI SEO Audit Team** is an autonomous, multi-agent workflow built with Google ADK. It takes a webpage URL, crawls the live page, researches real-time SERP competition, and produces a polished, prioritized SEO optimization report. The app uses Firecrawl for accurate page scraping and Google’s Gemini 2.5 Flash for analysis and reporting.
+The **AI SEO Audit Team** is an autonomous, multi-agent workflow built with Google ADK. It takes a webpage URL, crawls the live page, researches real-time SERP competition, and produces a polished, prioritized SEO optimization report. The app uses **Firecrawl via MCP (Model Context Protocol)** for accurate page scraping and Google's Gemini 2.5 Flash for analysis and reporting.
 
 ## Features
 
 - **End-to-End On-Page SEO Evaluation**
-  - Automated crawl of any public URL (Firecrawl)
+  - Automated crawl of any public URL (Firecrawl MCP)
   - Structured audit of titles, headings, content depth, internal/external links, and technical signals
 - **Competitive SERP Intelligence**
   - Google Search research for the inferred primary keyword
@@ -30,23 +30,33 @@ All agents run sequentially using ADK’s `SequentialAgent`, passing state betwe
 
 ## Requirements
 
+### System Requirements
+- **Python 3.10+** for Google ADK
+- **Node.js** (for Firecrawl MCP server via npx)
+
+### Python Dependencies
+
 Install the Python dependencies:
 
 ```bash
-pip install -r advanced_ai_agents/multi_agent_apps/agent_teams/ai_seo_audit_team/requirements.txt
+pip install -r requirements.txt
 ```
 
-You will also need valid API keys:
+### API Keys
+
+You will need valid API keys:
 
 - `GOOGLE_API_KEY` – Gemini (Google AI Studio) for LLM + Google Search
-- `FIRECRAWL_API_KEY` – Firecrawl scrape endpoint
+- `FIRECRAWL_API_KEY` – Firecrawl MCP server ([get one here](https://firecrawl.dev/app/api-keys))
 
-Create a local `.env` (same directory as `agent.py`) and populate:
+Set your environment variables (e.g., add to your shell profile or `export` in your terminal):
 
+```bash
+export GOOGLE_API_KEY=your_gemini_key
+export FIRECRAWL_API_KEY=your_firecrawl_key
 ```
-GOOGLE_API_KEY=your_gemini_key
-FIRECRAWL_API_KEY=your_firecrawl_key
-```
+
+Alternatively, you can put these in a `.env` file if you prefer.
 
 ## Running the App with ADK Dev UI
 
@@ -62,7 +72,7 @@ FIRECRAWL_API_KEY=your_firecrawl_key
 
 3. **Launch the ADK web UI** from the project root:
    ```bash
-   adk web advanced_ai_agents/multi_agent_apps/agent_teams
+   adk web
    ```
 
 4. In the UI:
@@ -81,7 +91,8 @@ FIRECRAWL_API_KEY=your_firecrawl_key
 ```
 ai_seo_audit_team/
 ├── agent.py          # Multi-agent workflow definitions
-├── requirements.txt  # Minimal dependencies (google-adk, firecrawl-py, pydantic)
+├── requirements.txt  # Minimal dependencies
+├── __init__.py       # Module initialization
 └── README.md         # You are here
 ```
 
