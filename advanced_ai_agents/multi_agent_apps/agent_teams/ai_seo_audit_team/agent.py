@@ -135,7 +135,7 @@ class OptimizationRecommendation(BaseModel):
 # Tools
 # =============================================================================
 
-# Firecrawl MCP Toolset - connects to Firecrawl's MCP server for advanced web scraping
+# Firecrawl MCP Toolset - connects to Firecrawl's MCP server for web scraping
 firecrawl_toolset = MCPToolset(
     connection_params=StdioServerParameters(
         command='npx',
@@ -183,15 +183,36 @@ page_auditor_agent = LlmAgent(
         "Scrapes the target URL, performs a structural on-page SEO audit, and extracts keyword signals."
     ),
     instruction="""You are Agent 1 in a sequential SEO workflow. Your role is to gather data silently for the next agents.
-- Extract the URL from the latest user message. The user MUST provide a valid URL.
-- Call the `firecrawl_scrape` tool exactly once to gather page content, metadata, and links.
-  * Use these parameters: {"url": "target_url", "formats": ["markdown", "html", "links"], "onlyMainContent": true}
-- Audit the page structure: title tag, meta description, headings hierarchy, word count, link health, and technical flags.
-- Infer the dominant search intent and identify the primary and secondary keyword targets based on page content.
-- Populate every field in the PageAuditOutput schema and store the result in `state['page_audit']`.
-- Output must be valid JSON only, with no extra commentary. Every string field needs meaningful text (use clear fallbacks like "Not available" if necessary). Keep numeric fields as integers and lists as arrays (use [] when empty).
-- If the scrape fails or returns no content, still return valid JSON with fallback values like "Error: Unable to scrape page" for string fields.
-- IMPORTANT: Do not include any text before or after the JSON. Just output the raw JSON structure.""",
+
+STEP 1: Extract the URL
+- Look for a URL in the user's message (it will start with http:// or https://)
+- Example: If user says "Audit https://theunwindai.com", extract "https://theunwindai.com"
+
+STEP 2: Call firecrawl_scrape
+- Call `firecrawl_scrape` with these exact parameters:
+  url: <the URL you extracted>
+  formats: ["markdown", "html", "links"]
+  onlyMainContent: true
+  timeout: 90000
+- Note: timeout is 90 seconds (90000ms)
+
+STEP 3: Analyze the scraped data
+- Parse the markdown content to find title tag, meta description, H1, H2-H4 headings
+- Count words in the main content
+- Count internal and external links
+- Identify technical SEO issues
+- Identify content opportunities
+
+STEP 4: Infer keywords
+- Based on the page content, determine the primary keyword (1-3 words)
+- Identify 2-5 secondary keywords
+- Determine search intent (informational, transactional, navigational, commercial)
+- List 3-5 supporting topics
+
+STEP 5: Return JSON
+- Populate EVERY field in the PageAuditOutput schema with actual data
+- Use "Not available" only if truly missing from scraped data
+- Return ONLY valid JSON, no extra text before or after""",
     tools=[firecrawl_toolset],
     output_schema=PageAuditOutput,
     output_key="page_audit",
@@ -205,12 +226,37 @@ serp_analyst_agent = LlmAgent(
         "Researches the live SERP for the discovered primary keyword and summarizes the competitive landscape."
     ),
     instruction="""You are Agent 2 in the workflow. Your role is to silently gather SERP data for the final report agent.
-- Read the keyword data from `state['page_audit']['target_keywords']`.
-- For the primary keyword, call the `perform_google_search` tool with arguments `{"request": "<primary keyword>"}` to fetch the top organic results (request 10 results).
-- Summarize each result with rank, title, URL, snippet, and content type.
-- Highlight common title patterns, dominant content formats, People Also Ask questions, recurring themes, and opportunities to differentiate the page.
-- Populate the SerpAnalysis schema, store it in `state['serp_analysis']`, and return strict JSON only. Ensure `primary_keyword` is a non-empty string (use a clear fallback if the search fails) and keep every list field as an array (return [] when empty).
-- IMPORTANT: Do not include any text before or after the JSON. Just output the raw JSON structure.""",
+
+STEP 1: Get the primary keyword
+- Read `state['page_audit']['target_keywords']['primary_keyword']`
+- Example: if it's "AI tools", you'll use that for search
+
+STEP 2: Call perform_google_search
+- IMPORTANT: You MUST call the `perform_google_search` tool
+- Pass the primary keyword as the request parameter
+- Example: if primary_keyword is "AI tools", call perform_google_search with request="AI tools"
+
+STEP 3: Parse search results
+- You should receive 10+ search results with title, url, snippet
+- For each result (up to 10):
+  * Assign rank (1-10)
+  * Extract title
+  * Extract URL
+  * Extract snippet
+  * Infer content_type (blog post, landing page, tool, directory, video, etc.)
+
+STEP 4: Analyze patterns
+- title_patterns: Common words/phrases in titles (e.g., "Best", "Top 10", "Free", year)
+- content_formats: Types you see (guides, listicles, comparison pages, tool directories)
+- people_also_ask: Related questions (infer from snippets if not explicit)
+- key_themes: Recurring topics across results
+- differentiation_opportunities: Gaps or unique angles not covered by competitors
+
+STEP 5: Return JSON
+- Populate ALL fields in SerpAnalysis schema
+- top_10_results MUST have 10 items (or as many as you found)
+- DO NOT return empty arrays unless search truly failed
+- Return ONLY valid JSON, no extra text""",
     tools=[google_search_tool],
     output_schema=SerpAnalysis,
     output_key="serp_analysis",
@@ -222,16 +268,69 @@ optimization_advisor_agent = LlmAgent(
     model="gemini-2.5-flash",
     description="Synthesizes the audit and SERP findings into a prioritized optimization roadmap.",
     instruction="""You are Agent 3 and the final expert in the workflow. You create the user-facing report.
-- Review `state['page_audit']` and `state['serp_analysis']` to understand the current page and competitive landscape.
-- Produce a polished, well-formatted Markdown report that includes:
-  * Executive summary
-  * Key audit findings (technical + content + keyword highlights)
-  * Prioritized action list grouped by priority level (P0/P1/P2) with rationale and expected impact
-  * Keyword strategy and SERP insights
-  * Measurement / next-step suggestions
-- Reference concrete data points from the earlier agents. If some data is missing, acknowledge it directly rather than fabricating.
-- Return ONLY the Markdown report—no JSON, no preamble, no explanatory text. Start directly with "# SEO Audit Report" as the first line.
-- Make the report professional, actionable, and ready to share with stakeholders.""",
+
+STEP 1: Review the data
+- Read `state['page_audit']` for:
+  * Title tag, meta description, H1
+  * Word count, headings structure
+  * Link counts
+  * Technical findings
+  * Content opportunities
+  * Primary and secondary keywords
+- Read `state['serp_analysis']` for:
+  * Top 10 competitors
+  * Title patterns
+  * Content formats
+  * Key themes
+  * Differentiation opportunities
+
+STEP 2: Create the report
+Start with "# SEO Audit Report" and include these sections:
+
+1. **Executive Summary** (2-3 paragraphs)
+   - Page being audited
+   - Primary keyword focus
+   - Key strengths and weaknesses
+
+2. **Technical & On-Page Findings**
+   - Current title tag and suggestions
+   - Current meta description and suggestions
+   - H1 and heading structure analysis
+   - Word count and content depth
+   - Link profile (internal/external counts)
+   - Technical issues found
+
+3. **Keyword Analysis**
+   - Primary keyword: [from state]
+   - Secondary keywords: [list from state]
+   - Search intent: [from state]
+   - Supporting topics: [list from state]
+
+4. **Competitive SERP Analysis**
+   - What top competitors are doing
+   - Common title patterns
+   - Dominant content formats
+   - Key themes in top results
+   - Content gaps/opportunities
+
+5. **Prioritized Recommendations**
+   Group by P0/P1/P2 with:
+   - Specific action
+   - Rationale (cite data)
+   - Expected impact
+   - Effort level
+
+6. **Next Steps**
+   - Measurement plan
+   - Timeline suggestions
+
+STEP 3: Output
+- Return ONLY Markdown
+- NO JSON
+- NO preamble text
+- Start directly with "# SEO Audit Report"
+- Be specific with data points (e.g., "Current title is X characters, recommend Y"
+""",
 )
 
 
