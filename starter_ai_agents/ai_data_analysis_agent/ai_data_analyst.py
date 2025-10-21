@@ -3,9 +3,9 @@ import tempfile
 import csv
 import streamlit as st
 import pandas as pd
-from agno.models.openai import OpenAIChat
+from phi.model.openai import OpenAIChat
 from phi.agent.duckdb import DuckDbAgent
-from agno.tools.pandas import PandasTools
+from phi.tools.pandas import PandasTools
 import re
 
 # Function to preprocess and save the uploaded file
@@ -87,7 +87,7 @@ if uploaded_file is not None and "openai_key" in st.session_state:
         
         # Initialize the DuckDbAgent for SQL query generation
         duckdb_agent = DuckDbAgent(
-            model=OpenAIChat(model="gpt-4", api_key=st.session_state.openai_key),
+            model=OpenAIChat(id="gpt-4o-mini", api_key=st.session_state.openai_key),
             semantic_model=json.dumps(semantic_model),
             tools=[PandasTools()],
             markdown=True,
