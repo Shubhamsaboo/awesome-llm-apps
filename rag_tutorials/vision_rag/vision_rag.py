@@ -8,7 +8,7 @@ import tqdm
 import numpy as np
 import streamlit as st
 import cohere
-from google import genai
+from google import genai  # type: ignore
 import fitz # PyMuPDF
 
 # --- Streamlit App Configuration ---
@@ -80,7 +80,7 @@ with st.expander("ℹ️ About the models used"):
 max_pixels = 1568*1568  #Max resolution for images
 
 # Resize too large images
-def resize_image(pil_image: PIL.Image.Image) -> None:
+def resize_image(pil_image: Image.Image) -> None:
     """Resizes the image in-place if it exceeds max_pixels."""
     org_width, org_height = pil_image.size
 
@@ -94,7 +94,7 @@ def resize_image(pil_image: PIL.Image.Image) -> None:
 # Convert images to a base64 string before sending it to the API
 def base64_from_image(img_path: str) -> str:
     """Converts an image file to a base64 encoded string."""
-    pil_image = PIL.Image.open(img_path)
+    pil_image = Image.open(img_path)
     img_format = pil_image.format if pil_image.format else "PNG"
 
     resize_image(pil_image)
@@ -107,7 +107,7 @@ def base64_from_image(img_path: str) -> str:
     return img_data
 
 # Convert PIL image to base64 string
-def pil_to_base64(pil_image: PIL.Image.Image) -> str:
+def pil_to_base64(pil_image: Image.Image) -> str:
     """Converts a PIL image to a base64 encoded string."""
     if pil_image.format is None:
         img_format = "PNG"
@@ -179,7 +179,7 @@ def process_pdf_file(pdf_file, cohere_client, base_output_folder="pdf_pages") ->
 
             # Render page to pixmap (image)
             pix = page.get_pixmap(dpi=150) # Adjust DPI as needed for quality/performance
-            pil_image = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+            pil_image = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
             
             # Save the page image temporarily
             pil_image.save(page_img_path, "PNG")
@@ -320,11 +320,11 @@ def search(question: str, co_client: cohere.Client, embeddings: np.ndarray, imag
             texts=[question],
         )
 
-        if not api_response.embeddings or not api_response.embeddings.float:
+        if not api_response.embeddings or not api_response.embeddings.float:  # type: ignore
             st.error("Failed to get query embedding.")
             return None
 
-        query_emb = np.asarray(api_response.embeddings.float[0])
+        query_emb = np.asarray(api_response.embeddings.float[0])  # type: ignore
 
         # Ensure query embedding has the correct shape for dot product
         if query_emb.shape[0] != embeddings.shape[1]:
@@ -355,7 +355,7 @@ def answer(question: str, img_path: str, gemini_client) -> str:
         elif not os.path.exists(img_path): missing.append(f"Image file at {img_path}")
         return f"Answering prerequisites not met ({', '.join(missing)} missing or invalid)."
     try:
-        img = PIL.Image.open(img_path)
+        img = Image.open(img_path)
         prompt = [f"""Answer the question based on the following image. Be as elaborate as possible giving extra relevant information.
 Don't use markdown formatting in the response.
 Please provide enough context for your answer.
