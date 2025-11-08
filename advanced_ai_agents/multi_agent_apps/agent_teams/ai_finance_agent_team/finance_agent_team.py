@@ -27,7 +27,7 @@ finance_agent = Agent(
 )
 
 agent_team = Agent(
-    team=[web_agent, finance_agent],
+    agents=[web_agent, finance_agent],
     name="Agent Team (Web+Finance)",
     model=OpenAIChat(id="gpt-4o"),
     show_tool_calls=True,

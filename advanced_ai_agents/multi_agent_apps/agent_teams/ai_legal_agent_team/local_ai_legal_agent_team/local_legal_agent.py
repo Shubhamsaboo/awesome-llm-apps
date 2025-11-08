@@ -1,6 +1,7 @@
 import streamlit as st
 from agno.agent import Agent
-from agno.knowledge.pdf import PDFKnowledgeBase, PDFReader
+from agno.knowledge.pdf_url import PDFUrlKnowledgeBase
+from agno.document.reader.pdf_reader import PDFReader
 from agno.vectordb.qdrant import Qdrant
 from agno.models.ollama import Ollama
 from agno.embedder.ollama import OllamaEmbedder
@@ -32,16 +33,21 @@ def process_document(uploaded_file, vector_db: Qdrant):
 
         try:
             st.write("Processing document...")
+            # Read the PDF document
+            reader = PDFReader()
+            documents = reader.read(temp_file_path)
+            
             # Create knowledge base with local embedder
-            knowledge_base = PDFKnowledgeBase(
-                path=temp_dir,
+            knowledge_base = PDFUrlKnowledgeBase(
                 vector_db=vector_db,
-                reader=PDFReader(chunk=True),
-                recreate_vector_db=True
+                num_documents=3
             )
             
             st.write("Loading knowledge base...")
-            knowledge_base.load()
+            if documents:
+                knowledge_base.load_documents(documents, upsert=True)
+            else:
+                raise Exception("Failed to read documents from PDF")
             
             # Verify knowledge base
             st.write("Verifying knowledge base...")
@@ -128,7 +134,7 @@ def main():
                     name="Legal Team Lead",
                     role="Legal team coordinator",
                     model=Ollama(id="llama3.1:8b"),
-                    team=[legal_researcher, contract_analyst, legal_strategist],
+                    agents=[legal_researcher, contract_analyst, legal_strategist],
                     knowledge=st.session_state.knowledge_base,
                     search_knowledge=True,
                     instructions=[

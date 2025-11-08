@@ -52,7 +52,7 @@ if anthropic_api_key and serp_api_key:
     movie_producer = Agent(
         name="MovieProducer",
         model=Claude(id="claude-3-5-sonnet-20240620", api_key=anthropic_api_key),
-        team=[script_writer, casting_director],
+        agents=[script_writer, casting_director],
         description="Experienced movie producer overseeing script and casting.",
         instructions=[
             "Ask ScriptWriter for a script outline based on the movie idea.",

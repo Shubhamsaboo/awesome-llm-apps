@@ -65,7 +65,7 @@ if openai_api_key and serp_api_key:
     editor = Agent(
         name="Editor",
         model=OpenAIChat(id="gpt-4o", api_key=openai_api_key),
-        team=[searcher, writer],
+        agents=[searcher, writer],
         description="You are a senior NYT editor. Given a topic, your goal is to write a NYT worthy article.",
         instructions=[
             "Given a topic, ask the search journalist to search for the most relevant URLs for that topic.",

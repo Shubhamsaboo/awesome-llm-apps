@@ -1,6 +1,7 @@
 import streamlit as st
 from agno.agent import Agent
-from agno.knowledge.pdf import PDFKnowledgeBase, PDFReader
+from agno.knowledge.pdf_url import PDFUrlKnowledgeBase
+from agno.document.reader.pdf_reader import PDFReader
 from agno.vectordb.qdrant import Qdrant
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.models.openai import OpenAIChat
@@ -46,7 +47,7 @@ def init_qdrant():
         )
         return vector_db
     except Exception as e:
-        st.error(f"🔴 Qdrant connection failed: {str(e)}")
+        st.error(f" Qdrant connection failed: {str(e)}")
         return None
 
 def process_document(uploaded_file, vector_db: Qdrant):
@@ -58,7 +59,7 @@ def process_document(uploaded_file, vector_db: Qdrant):
         vector_db (Qdrant): Initialized Qdrant instance from Agno
     
     Returns:
-        PDFKnowledgeBase: Initialized knowledge base with processed documents
+        PDFUrlKnowledgeBase: Initialized knowledge base with processed documents
     """
     if not st.session_state.openai_api_key:
         raise ValueError("OpenAI API key not provided")
@@ -73,22 +74,25 @@ def process_document(uploaded_file, vector_db: Qdrant):
         
         st.info("Loading and processing document...")
         
-        # Create a PDFKnowledgeBase with the vector_db
-        knowledge_base = PDFKnowledgeBase(
-            path=temp_file_path,  # Single string path, not a list
+        # Read the PDF document
+        reader = PDFReader()
+        documents = reader.read(temp_file_path)
+        
+        # Create a PDFUrlKnowledgeBase with the vector_db
+        knowledge_base = PDFUrlKnowledgeBase(
             vector_db=vector_db,
-            reader=PDFReader(),
-            chunking_strategy=DocumentChunking(
-                chunk_size=1000,
-                overlap=200
-            )
+            num_documents=3
         )
         
         # Load the documents into the knowledge base
-        with st.spinner('📤 Loading documents into knowledge base...'):
+        with st.spinner(' Loading documents into knowledge base...'):
             try:
-                knowledge_base.load(recreate=True, upsert=True)
-                st.success("✅ Documents stored successfully!")
+                if documents:
+                    knowledge_base.load_documents(documents, upsert=True)
+                    st.success(" Documents stored successfully!")
+                else:
+                    st.error("Failed to read the document")
+                    raise ValueError("No documents extracted from PDF")
             except Exception as e:
                 st.error(f"Error loading documents: {str(e)}")
                 raise
@@ -109,10 +113,10 @@ def main():
     st.set_page_config(page_title="Legal Document Analyzer", layout="wide")
     init_session_state()
 
-    st.title("AI Legal Agent Team 👨‍⚖️")
+    st.title("AI Legal Agent Team ")
 
     with st.sidebar:
-        st.header("🔑 API Configuration")
+        st.header(" API Configuration")
    
         openai_key = st.text_input(
             "OpenAI API Key",
@@ -153,7 +157,7 @@ def main():
         st.divider()
 
         if all([st.session_state.openai_api_key, st.session_state.vector_db]):
-            st.header("📄 Document Upload")
+            st.header(" Document Upload")
             uploaded_file = st.file_uploader("Upload Legal Document", type=['pdf'])
             
             if uploaded_file:
@@ -173,7 +177,7 @@ def main():
                                 legal_researcher = Agent(
                                     name="Legal Researcher",
                                     role="Legal research specialist",
-                                    model=OpenAIChat(id="gpt-4.1"),
+                                    model=OpenAIChat(id="gpt-4o"),
                                     tools=[DuckDuckGoTools()],
                                     knowledge=st.session_state.knowledge_base,
                                     search_knowledge=True,
@@ -190,7 +194,7 @@ def main():
                                 contract_analyst = Agent(
                                     name="Contract Analyst",
                                     role="Contract analysis specialist",
-                                    model=OpenAIChat(id="gpt-4.1"),
+                                    model=OpenAIChat(id="gpt-4o"),
                                     knowledge=st.session_state.knowledge_base,
                                     search_knowledge=True,
                                     instructions=[
@@ -204,7 +208,7 @@ def main():
                                 legal_strategist = Agent(
                                     name="Legal Strategist", 
                                     role="Legal strategy specialist",
-                                    model=OpenAIChat(id="gpt-4.1"),
+                                    model=OpenAIChat(id="gpt-4o"),
                                     knowledge=st.session_state.knowledge_base,
                                     search_knowledge=True,
                                     instructions=[
@@ -219,8 +223,8 @@ def main():
                                 st.session_state.legal_team = Agent(
                                     name="Legal Team Lead",
                                     role="Legal team coordinator",
-                                    model=OpenAIChat(id="gpt-4.1"),
-                                    team=[legal_researcher, contract_analyst, legal_strategist],
+                                    model=OpenAIChat(id="gpt-4o"),
+                                    agents=[legal_researcher, contract_analyst, legal_strategist],
                                     knowledge=st.session_state.knowledge_base,
                                     search_knowledge=True,
                                     instructions=[
@@ -234,7 +238,7 @@ def main():
                                     markdown=True
                                 )
                                 
-                                st.success("✅ Document processed and team initialized!")
+                                st.success(" Document processed and team initialized!")
                                 
                         except Exception as e:
                             st.error(f"Error processing document: {str(e)}")
