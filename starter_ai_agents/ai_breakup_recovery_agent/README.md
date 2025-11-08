@@ -52,7 +52,7 @@ This is an AI-powered application designed to help users emotionally recover fro
 
 4. **Run the Streamlit App:**
    ```bash
-   streamlit run app.py
+   streamlit run ai_breakup_recovery_agent.py
    ```
 
 ---
