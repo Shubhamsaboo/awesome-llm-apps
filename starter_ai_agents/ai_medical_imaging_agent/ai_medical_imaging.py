@@ -2,6 +2,7 @@ import os
 from PIL import Image as PILImage
 from agno.agent import Agent
 from agno.models.google import Gemini
+from agno.run.agent import RunOutput
 import streamlit as st
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.media import Image as AgnoImage
@@ -43,7 +44,7 @@ with st.sidebar:
 
 medical_agent = Agent(
     model=Gemini(
-        id="gemini-2.0-flash",
+        id="gemini-2.5-pro",
         api_key=st.session_state.GOOGLE_API_KEY
     ),
     tools=[DuckDuckGoTools()],
@@ -138,10 +139,10 @@ if uploaded_file is not None:
                     resized_image.save(temp_path)
                     
                     # Create AgnoImage object
-                    agno_image = AgnoImage(filepath=temp_path)  # Adjust if constructor differs
+                    agno_image = AgnoImage(filepath=temp_path)
                     
                     # Run analysis
-                    response = medical_agent.run(query, images=[agno_image])
+                    response: RunOutput = medical_agent.run(query, images=[agno_image])
                     st.markdown("### 📋 Analysis Results")
                     st.markdown("---")
                     st.markdown(response.content)

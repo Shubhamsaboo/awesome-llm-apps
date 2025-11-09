@@ -1,5 +1,5 @@
 streamlit==1.40.2
-agno
+agno>=2.2.10
 Pillow==10.0.0
 duckduckgo-search==6.4.1
 google-generativeai==0.8.3
