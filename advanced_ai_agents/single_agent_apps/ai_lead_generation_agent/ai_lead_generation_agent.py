@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.tools.firecrawl import FirecrawlTools
 from agno.models.openai import OpenAIChat
 from firecrawl import FirecrawlApp
@@ -96,7 +97,7 @@ def create_google_sheets_agent(composio_api_key: str, openai_api_key: str) -> Ag
     google_sheets_agent = Agent(
         model=OpenAIChat(id="gpt-4o-mini", api_key=openai_api_key),
         tools=[google_sheets_tool],
-        show_tool_calls=True,
+        debug_mode=True,
         instructions="You are an expert at creating and updating Google Sheets. You will be given user information in JSON format, and you need to write it into a new Google Sheet.",
         markdown=True
     )
@@ -113,7 +114,7 @@ def write_to_google_sheets(flattened_data: List[dict], composio_api_key: str, op
             f"{json.dumps(flattened_data, indent=2)}"
         )
         
-        create_sheet_response = google_sheets_agent.run(message)
+        create_sheet_response: RunOutput = google_sheets_agent.run(message)
         
         if "https://docs.google.com/spreadsheets/d/" in create_sheet_response.content:
             google_sheets_link = create_sheet_response.content.split("https://docs.google.com/spreadsheets/d/")[1].split(" ")[0]
@@ -176,7 +177,7 @@ def main():
         else:
             with st.spinner("Processing your query..."):
                 transform_agent = create_prompt_transformation_agent(openai_api_key)
-                company_description = transform_agent.run(f"Transform this query into a concise 3-4 word company description: {user_query}")
+                company_description: RunOutput = transform_agent.run(f"Transform this query into a concise 3-4 word company description: {user_query}")
                 st.write("🎯 Searching for:", company_description.content)
             
             with st.spinner("Searching for relevant URLs..."):

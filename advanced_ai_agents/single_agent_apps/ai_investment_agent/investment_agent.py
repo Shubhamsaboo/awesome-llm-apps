@@ -1,5 +1,6 @@
 import streamlit as st
 from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.models.openai import OpenAIChat
 from agno.tools.yfinance import YFinanceTools
 
@@ -14,7 +15,7 @@ if openai_api_key:
         tools=[
             YFinanceTools(stock_price=True, analyst_recommendations=True, stock_fundamentals=True)
         ],
-        show_tool_calls=True,
+        debug_mode=True,
         description="You are an investment analyst that researches stock prices, analyst recommendations, and stock fundamentals.",
         instructions=[
             "Format your response using markdown and use tables to display data where possible."
@@ -30,5 +31,5 @@ if openai_api_key:
     if stock1 and stock2:
         with st.spinner(f"Analyzing {stock1} and {stock2}..."):
             query = f"Compare both the stocks - {stock1} and {stock2} and make a detailed report for an investment trying to invest and compare these stocks"
-            response = assistant.run(query, stream=False)
+            response: RunOutput = assistant.run(query, stream=False)
             st.markdown(response.content)

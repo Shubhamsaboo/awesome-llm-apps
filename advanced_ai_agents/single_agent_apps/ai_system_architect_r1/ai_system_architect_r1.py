@@ -8,7 +8,8 @@ from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 from enum import Enum
 import json
-from agno.agent import Agent, RunResponse
+from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.models.anthropic import Claude
 
 # Model Constants
@@ -230,8 +231,8 @@ class ModelChain:
                 DeepSeek Technical Analysis: {normal_content}
                 Give detailed explanation for each key value pair in brief in the JSON object, and why we chose it clearly. Dont use your own opinions, use the reasoning and the structured output to explain the choices."""
                 
-                # Use Phi Agent to get response
-                response: RunResponse = self.agent.run(
+                # Use Claude Agent to get response
+                response: RunOutput = self.agent.run(
                     message=message
                 )
                 

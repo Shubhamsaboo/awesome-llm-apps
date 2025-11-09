@@ -1,5 +1,6 @@
 import streamlit as st
 from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.models.google import Gemini
 
 st.set_page_config(
@@ -173,7 +174,7 @@ def main():
                     Fitness Goals: {fitness_goals}
                     """
 
-                    dietary_plan_response = dietary_agent.run(user_profile)
+                    dietary_plan_response: RunOutput = dietary_agent.run(user_profile)
                     dietary_plan = {
                         "why_this_plan_works": "High Protein, Healthy Fats, Moderate Carbohydrates, and Caloric Balance",
                         "meal_plan": dietary_plan_response.content,
@@ -185,7 +186,7 @@ def main():
                         """
                     }
 
-                    fitness_plan_response = fitness_agent.run(user_profile)
+                    fitness_plan_response: RunOutput = fitness_agent.run(user_profile)
                     fitness_plan = {
                         "goals": "Build strength, improve endurance, and maintain overall fitness",
                         "routine": fitness_plan_response.content,
@@ -222,8 +223,8 @@ def main():
                         full_context = f"{context}\nUser Question: {question_input}"
 
                         try:
-                            agent = Agent(model=gemini_model, show_tool_calls=True, markdown=True)
-                            run_response = agent.run(full_context)
+                            agent = Agent(model=gemini_model, debug_mode=True, markdown=True)
+                            run_response: RunOutput = agent.run(full_context)
 
                             if hasattr(run_response, 'content'):
                                 answer = run_response.content

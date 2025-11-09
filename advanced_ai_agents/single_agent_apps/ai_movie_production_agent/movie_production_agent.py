@@ -1,6 +1,7 @@
 # Import the required libraries
 import streamlit as st
 from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.tools.serpapi import SerpApiTools
 from agno.models.anthropic import Claude
 from textwrap import dedent
@@ -79,5 +80,5 @@ if anthropic_api_key and serp_api_key:
                 f"Target audience: {target_audience}, Estimated runtime: {estimated_runtime} minutes"
             )
             # Get the response from the assistant
-            response = movie_producer.run(input_text, stream=False)
-            st.write(response)
+            response: RunOutput = movie_producer.run(input_text, stream=False)
+            st.write(response.content)

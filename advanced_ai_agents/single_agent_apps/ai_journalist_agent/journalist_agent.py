@@ -1,6 +1,7 @@
 # Import the required libraries
 from textwrap import dedent
 from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.tools.serpapi import SerpApiTools
 from agno.tools.newspaper4k import Newspaper4kTools
 import streamlit as st
@@ -35,7 +36,7 @@ if openai_api_key and serp_api_key:
             "Remember: you are writing for the New York Times, so the quality of the sources is important.",
         ],
         tools=[SerpApiTools(api_key=serp_api_key)],
-        add_datetime_to_instructions=True,
+        add_datetime_to_context=True,
     )
     writer = Agent(
         name="Writer",
@@ -58,7 +59,7 @@ if openai_api_key and serp_api_key:
             "Never make up facts or plagiarize. Always provide proper attribution.",
         ],
         tools=[Newspaper4kTools()],
-        add_datetime_to_instructions=True,
+        add_datetime_to_context=True,
         markdown=True,
     )
 
@@ -76,7 +77,7 @@ if openai_api_key and serp_api_key:
             "Ensure the article is engaging and informative.",
             "Remember: you are the final gatekeeper before the article is published.",
         ],
-        add_datetime_to_instructions=True,
+        add_datetime_to_context=True,
         markdown=True,
     )
 
@@ -86,5 +87,5 @@ if openai_api_key and serp_api_key:
     if query:
         with st.spinner("Processing..."):
             # Get the response from the assistant
-            response = editor.run(query, stream=False)
+            response: RunOutput = editor.run(query, stream=False)
             st.write(response.content)
