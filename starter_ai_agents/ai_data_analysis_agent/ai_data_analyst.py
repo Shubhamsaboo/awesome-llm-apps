@@ -1,12 +1,11 @@
-import json
 import tempfile
 import csv
 import streamlit as st
 import pandas as pd
+from agno.agent import Agent
 from agno.models.openai import OpenAIChat
-from phi.agent.duckdb import DuckDbAgent
+from agno.tools.duckdb import DuckDbTools
 from agno.tools.pandas import PandasTools
-import re
 
 # Function to preprocess and save the uploaded file
 def preprocess_and_save(file):
@@ -74,27 +73,21 @@ if uploaded_file is not None and "openai_key" in st.session_state:
         # Display the columns of the uploaded data
         st.write("Uploaded columns:", columns)
         
-        # Configure the semantic model with the temporary file path
-        semantic_model = {
-            "tables": [
-                {
-                    "name": "uploaded_data",
-                    "description": "Contains the uploaded dataset.",
-                    "path": temp_path,
-                }
-            ]
-        }
+        # Initialize DuckDbTools
+        duckdb_tools = DuckDbTools()
         
-        # Initialize the DuckDbAgent for SQL query generation
-        duckdb_agent = DuckDbAgent(
-            model=OpenAIChat(model="gpt-4", api_key=st.session_state.openai_key),
-            semantic_model=json.dumps(semantic_model),
-            tools=[PandasTools()],
+        # Load the CSV file into DuckDB as a table
+        duckdb_tools.load_local_csv_to_table(
+            path=temp_path,
+            table="uploaded_data",
+        )
+        
+        # Initialize the Agent with DuckDB and Pandas tools
+        data_analyst_agent = Agent(
+            model=OpenAIChat(id="gpt-4o", api_key=st.session_state.openai_key),
+            tools=[duckdb_tools, PandasTools()],
+            system_message="You are an expert data analyst. Use the 'uploaded_data' table to answer user queries. Generate SQL queries using DuckDB tools to solve the user's query. Provide clear and concise answers with the results.",
             markdown=True,
-            add_history_to_messages=False,  # Disable chat history
-            followups=False,  # Disable follow-up queries
-            read_tool_call_history=False,  # Disable reading tool call history
-            system_prompt="You are an expert data analyst. Generate SQL queries to solve the user's query. Return only the SQL query, enclosed in ```sql ``` and give the final answer.",
         )
         
         # Initialize code storage in session state
@@ -114,24 +107,19 @@ if uploaded_file is not None and "openai_key" in st.session_state:
                 try:
                     # Show loading spinner while processing
                     with st.spinner('Processing your query...'):
-                        # Get the response from DuckDbAgent
-               
-                        response1 = duckdb_agent.run(user_query)
+                        # Get the response from the agent
+                        response = data_analyst_agent.run(user_query)
 
-                        # Extract the content from the RunResponse object
-                        if hasattr(response1, 'content'):
-                            response_content = response1.content
+                        # Extract the content from the response object
+                        if hasattr(response, 'content'):
+                            response_content = response.content
                         else:
-                            response_content = str(response1)
-                        response = duckdb_agent.print_response(
-                        user_query,
-                        stream=True,
-                        )
+                            response_content = str(response)
 
                     # Display the response in Streamlit
                     st.markdown(response_content)
                 
                     
                 except Exception as e:
-                    st.error(f"Error generating response from the DuckDbAgent: {e}")
+                    st.error(f"Error generating response from the agent: {e}")
                     st.error("Please try rephrasing your query or check if the data format is correct.")
