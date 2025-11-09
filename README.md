@@ -87,7 +87,6 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [🎵 AI Music Generator Agent](starter_ai_agents/ai_music_generator_agent/)
 *   [🛫 AI Travel Agent (Local & Cloud)](starter_ai_agents/ai_travel_agent/)
 *   [✨ Gemini Multimodal Agent](starter_ai_agents/gemini_multimodal_agent_demo/)
-*   [🌐 Local News Agent (OpenAI Swarm)](starter_ai_agents/local_news_agent_openai_swarm/)
 *   [🔄 Mixture of Agents](starter_ai_agents/mixture_of_agents/)
 *   [📊 xAI Finance Agent](starter_ai_agents/xai_finance_agent/)
 *   [🔍 OpenAI Research Agent](starter_ai_agents/opeani_research_agent/)
