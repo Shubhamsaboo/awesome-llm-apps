@@ -4,10 +4,10 @@ A sophisticated Retrieval-Augmented Generation (RAG) system that implements a co
 ## Features
 
 - **Smart Document Retrieval**: Uses Qdrant vector store for efficient document retrieval
-- **Document Relevance Grading**: Employs Claude 3.5 sonnet to assess document relevance
+- **Document Relevance Grading**: Employs Claude 4.5 sonnet to assess document relevance
 - **Query Transformation**: Improves search results by optimizing queries when needed
 - **Web Search Fallback**: Uses Tavily API for web search when local documents aren't sufficient
-- **Multi-Model Approach**: Combines OpenAI embeddings and Claude 3.5 sonnet for different tasks
+- **Multi-Model Approach**: Combines OpenAI embeddings and Claude 4.5 sonnet for different tasks
 - **Interactive UI**: Built with Streamlit for easy document upload and querying
 
 ## How to Run?
@@ -26,7 +26,7 @@ A sophisticated Retrieval-Augmented Generation (RAG) system that implements a co
 3. **Set Up API Keys**:
    You'll need to obtain the following API keys:
    - [OpenAI API key](https://platform.openai.com/api-keys) (for embeddings)
-   - [Anthropic API key](https://console.anthropic.com/settings/keys) (for Claude 3.5 sonnet as LLM)
+   - [Anthropic API key](https://console.anthropic.com/settings/keys) (for Claude 4.5 sonnet as LLM)
    - [Tavily API key](https://app.tavily.com/home) (for web search)
    - Qdrant Cloud Setup
       1. Visit [Qdrant Cloud](https://cloud.qdrant.io/)
@@ -52,7 +52,7 @@ A sophisticated Retrieval-Augmented Generation (RAG) system that implements a co
 - **LangChain**: For RAG orchestration and chains
 - **LangGraph**: For workflow management
 - **Qdrant**: Vector database for document storage
-- **Claude 3.5 sonnet**: Main language model for analysis and generation
+- **Claude 4.5 sonnet**: Main language model for analysis and generation
 - **OpenAI**: For document embeddings
 - **Tavily**: For web search capabilities
 - **Streamlit**: For the user interface
