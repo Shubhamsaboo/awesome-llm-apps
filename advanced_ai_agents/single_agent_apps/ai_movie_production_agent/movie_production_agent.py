@@ -2,23 +2,24 @@
 import streamlit as st
 from agno.agent import Agent
 from agno.run.agent import RunOutput
+from agno.team import Team
 from agno.tools.serpapi import SerpApiTools
-from agno.models.anthropic import Claude
+from agno.models.google import Gemini
 from textwrap import dedent
 
 # Set up the Streamlit app
 st.title("AI Movie Production Agent 🎬")
 st.caption("Bring your movie ideas to life with the teams of script writing and casting AI agents")
 
-# Get Anthropic API key from user
-anthropic_api_key = st.text_input("Enter Anthropic API Key to access Claude Sonnet 3.5", type="password")
+# Get Google API key from user
+google_api_key = st.text_input("Enter Google API Key to access Gemini 2.5 Flash", type="password")
 # Get SerpAPI key from the user
 serp_api_key = st.text_input("Enter Serp API Key for Search functionality", type="password")
 
-if anthropic_api_key and serp_api_key:
+if google_api_key and serp_api_key:
     script_writer = Agent(
         name="ScriptWriter",
-        model=Claude(id="claude-3-5-sonnet-20240620", api_key=anthropic_api_key),
+        model=Gemini(id="gemini-2.5-flash", api_key=google_api_key),
         description=dedent(
             """\
         You are an expert screenplay writer. Given a movie idea and genre, 
@@ -34,7 +35,7 @@ if anthropic_api_key and serp_api_key:
 
     casting_director = Agent(
         name="CastingDirector",
-        model=Claude(id="claude-3-5-sonnet-20240620", api_key=anthropic_api_key),
+        model=Gemini(id="gemini-2.5-flash", api_key=google_api_key),
         description=dedent(
             """\
         You are a talented casting director. Given a script outline and character descriptions,
@@ -50,10 +51,10 @@ if anthropic_api_key and serp_api_key:
         tools=[SerpApiTools(api_key=serp_api_key)],
     )
 
-    movie_producer = Agent(
+    movie_producer = Team(
         name="MovieProducer",
-        model=Claude(id="claude-3-5-sonnet-20240620", api_key=anthropic_api_key),
-        team=[script_writer, casting_director],
+        model=Gemini(id="gemini-2.5-flash", api_key=google_api_key),
+        members=[script_writer, casting_director],
         description="Experienced movie producer overseeing script and casting.",
         instructions=[
             "Ask ScriptWriter for a script outline based on the movie idea.",

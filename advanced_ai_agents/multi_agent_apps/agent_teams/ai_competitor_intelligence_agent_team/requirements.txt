@@ -1,5 +1,4 @@
-exa-py==1.7.1
 firecrawl-py==1.9.0
 duckduckgo-search==7.2.1
-agno
+agno>=2.2.10
 streamlit==1.41.1
