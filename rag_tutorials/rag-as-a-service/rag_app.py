@@ -80,10 +80,10 @@ class RAGPipeline:
 
     def generate_response(self, system_prompt: str, query: str) -> str:
         """
-        Generate response using Claude 3.5 Sonnet.
+        Generate response using Claude 4.5 Sonnet.
         """
         message = self.anthropic_client.messages.create(
-            model="claude-3-sonnet-20240229",
+            model="claude-sonnet-4-5",
             max_tokens=1024,
             system=system_prompt,
             messages=[
