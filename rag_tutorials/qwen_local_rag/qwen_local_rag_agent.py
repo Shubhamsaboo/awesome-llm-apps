@@ -13,7 +13,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams
 from langchain_core.embeddings import Embeddings
 from agno.tools.exa import ExaTools
-from agno.embedder.ollama import OllamaEmbedder
+from agno.knowledge.embedder.ollama import OllamaEmbedder
 
 
 class OllamaEmbedderr(Embeddings):
@@ -254,7 +254,7 @@ def get_web_search_agent() -> Agent:
         2. Compile and summarize the most relevant information
         3. Include sources in your response
         """,
-        show_tool_calls=True,
+        debug_mode=True,
         markdown=True,
     )
 
@@ -279,7 +279,7 @@ def get_rag_agent() -> Agent:
         
         Always maintain high accuracy and clarity in your responses.
         """,
-        show_tool_calls=True,
+        debug_mode=True,
         markdown=True,
     )
 
