@@ -248,7 +248,7 @@ def generate(state):
             Context: {context}
             Question: {question}
             Answer:""", input_variables=["context", "question"])
-        llm = ChatAnthropic(model="claude-3-5-sonnet-20241022", api_key=st.session_state.anthropic_api_key,
+        llm = ChatAnthropic(model="claude-sonnet-4-5", api_key=st.session_state.anthropic_api_key,
                            temperature=0, max_tokens=1000)
         context = "\n\n".join(doc.page_content for doc in documents)
 
@@ -284,7 +284,7 @@ def grade_documents(state):
     question = state_dict["question"]
     documents = state_dict["documents"]
 
-    llm = ChatAnthropic(model="claude-3-5-sonnet-20241022", api_key=st.session_state.anthropic_api_key,
+    llm = ChatAnthropic(model="claude-sonnet-4-5", api_key=st.session_state.anthropic_api_key,
                        temperature=0, max_tokens=1000)
 
     prompt = PromptTemplate(template="""You are grading the relevance of a retrieved document to a user question.
@@ -356,7 +356,7 @@ def transform_query(state):
 
     # Use Claude instead of Gemini
     llm = ChatAnthropic(
-        model="claude-3-5-sonnet-20240620",
+        model="claude-sonnet-4-5",
         anthropic_api_key=st.session_state.anthropic_api_key,
         temperature=0,
         max_tokens=1000
