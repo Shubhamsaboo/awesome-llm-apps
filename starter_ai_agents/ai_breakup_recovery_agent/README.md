@@ -35,24 +35,18 @@ This is an AI-powered application designed to help users emotionally recover fro
 
 1. **Clone the Repository:**
    ```bash
-   git clone <repository_url>
-   cd breakup-recovery-agent-team
+   git clone https://github.com/Shubhamsaboo/awesome-llm-apps
+   cd ai_agent_tutorials/ai_breakup_recovery_agent
    ```
 
-2. **Create a Virtual Environment (Optional but Recommended):**
-   ```bash
-   conda create --name <env_name> python=<version>
-   conda activate <env_name>
-   ```
-
-3. **Install Dependencies:**
+2. **Install Dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
 
 4. **Run the Streamlit App:**
    ```bash
-   streamlit run app.py
+   streamlit run ai_breakup_recovery_agent.py
    ```
 
 ---
@@ -96,12 +90,3 @@ Make sure to provide your **Gemini API key** in the Streamlit sidebar:
 - **Brutal Honesty Agent**
     - Offers direct, objective feedback on the breakup.
     - Uses factual language with no sugar-coating.
-
----
-
-
-## 📄 License
-
-This project is licensed under the **MIT License**.
-
----

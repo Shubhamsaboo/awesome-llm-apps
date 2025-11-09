@@ -194,7 +194,7 @@ if st.button("Get Recovery Plan 💝", type="primary"):
                         """
                         
                         response = therapist_agent.run(
-                            message=therapist_prompt,
+                            therapist_prompt,
                             images=all_images
                         )
                         
@@ -215,7 +215,7 @@ if st.button("Get Recovery Plan 💝", type="primary"):
                         """
                         
                         response = closure_agent.run(
-                            message=closure_prompt,
+                            closure_prompt,
                             images=all_images
                         )
                         
@@ -236,7 +236,7 @@ if st.button("Get Recovery Plan 💝", type="primary"):
                         """
                         
                         response = routine_planner_agent.run(
-                            message=routine_prompt,
+                            routine_prompt,
                             images=all_images
                         )
                         
@@ -257,7 +257,7 @@ if st.button("Get Recovery Plan 💝", type="primary"):
                         """
                         
                         response = brutal_honesty_agent.run(
-                            message=honesty_prompt,
+                            honesty_prompt,
                             images=all_images
                         )
                         
