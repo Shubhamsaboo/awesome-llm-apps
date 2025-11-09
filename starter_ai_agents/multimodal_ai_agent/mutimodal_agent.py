@@ -1,5 +1,6 @@
 import streamlit as st
 from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.models.google import Gemini
 from agno.media import Video
 import time
@@ -14,15 +15,21 @@ st.set_page_config(
 
 st.title("Multimodal AI Agent 🧬")
 
-# Get Gemini API key from user
-gemini_api_key = st.text_input("Enter your Gemini API Key", type="password")
+# Get Gemini API key from user in sidebar
+with st.sidebar:
+    st.header("🔑 Configuration")
+    gemini_api_key = st.text_input("Enter your Gemini API Key", type="password")
+    st.caption(
+        "Get your API key from [Google AI Studio]"
+        "(https://aistudio.google.com/apikey) 🔑"
+    )
 
 # Initialize single agent with both capabilities
 @st.cache_resource
 def initialize_agent(api_key):
     return Agent(
         name="Multimodal Analyst",
-        model=Gemini(id="gemini-2.0-flash", api_key=api_key),
+        model=Gemini(id="gemini-2.5-flash", api_key=api_key),
         markdown=True,
     )
 
@@ -60,7 +67,7 @@ if gemini_api_key:
                         Provide a comprehensive response focusing on practical, actionable information.
                         """
                         
-                        result = agent.run(prompt, videos=[video])
+                        result: RunOutput = agent.run(prompt, videos=[video])
                         
                     st.subheader("Result")
                     st.markdown(result.content)

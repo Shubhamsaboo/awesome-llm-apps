@@ -1,10 +1,10 @@
 ## 🧬 Multimodal AI Agent
 
-A Streamlit application that combines video analysis and web search capabilities using Google's Gemini 2.0 model. This agent can analyze uploaded videos and answer questions by combining visual understanding with web-search.
+A Streamlit application that combines video analysis and web search capabilities using Google's Gemini 2.5 model. This agent can analyze uploaded videos and answer questions by combining visual understanding with web-search.
 
 ### Features
 
-- Video analysis using Gemini 2.0 Flash
+- Video analysis using Gemini 2.5 Flash/Pro
 - Web research integration via DuckDuckGo
 - Support for multiple video formats (MP4, MOV, AVI)
 - Real-time video processing
