@@ -1,16 +1,11 @@
 import asyncio
-import json
 import os
-import sys
 import uuid
-from typing import List, Optional
 from textwrap import dedent
 from agno.agent import Agent 
 from agno.models.openai import OpenAIChat
 from agno.tools.mcp import MultiMCPTools
-from agno.memory.v2 import Memory
-from mcp import StdioServerParameters
-from agno.utils.pprint import apprint_run_response
+from agno.db.sqlite import SqliteDb
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -64,6 +59,9 @@ async def main():
         "npx @gongrzhe/server-calendar-autoauth-mcp",
         "npx @gongrzhe/server-gmail-autoauth-mcp"
     ]
+    
+    # Setup database for memory
+    db = SqliteDb(db_file="tmp/multi_mcp_agent.db")
     
     # Start the MCP Tools session
     async with MultiMCPTools(mcp_servers, env=env) as mcp_tools:
@@ -126,10 +124,11 @@ async def main():
                 REMEMBER: You're not just answering questions - you're a productivity multiplier. Think big, suggest workflows, and help users achieve more than they imagined possible!
             """),
             markdown=True,
-            show_tool_calls=True,
+            debug_mode=True,
             retries=3,
-            memory=Memory(),
-            add_history_to_messages=True,
+            db=db,
+            enable_user_memories=True,
+            add_history_to_context=True,
             num_history_runs=10,  # Increased for better context retention
         )
         

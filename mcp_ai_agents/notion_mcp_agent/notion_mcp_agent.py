@@ -27,6 +27,7 @@ async def main():
     openai_api_key = OPENAI_API_KEY
     
     # Prompt for page ID first
+    page_id = None
     if len(sys.argv) > 1:
         # Use command-line argument if provided
         page_id = sys.argv[1]
@@ -39,12 +40,13 @@ async def main():
         
         user_input = input("> ")
         
-        # If user input is empty, use default
+        # If user input is empty, prompt again
         if user_input.strip():
             page_id = user_input.strip()
             print(f"Using provided page ID: {page_id}")
         else:
-            print(f"Using default page ID: {page_id}")
+            print("❌ Error: Page ID is required. Please provide a Notion page ID.")
+            return
     
     # Generate unique user and session IDs for this terminal session
     user_id = f"user_{uuid.uuid4().hex[:8]}"

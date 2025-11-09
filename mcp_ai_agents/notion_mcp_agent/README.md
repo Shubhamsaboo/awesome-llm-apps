@@ -106,7 +106,3 @@ You can exit the conversation at any time by typing `exit`, `quit`, `bye`, or `g
 - "Add a comment to the first paragraph saying 'This looks good!'"
 - "Search for any mentions of meetings"
 - "Summarize our conversation so far"
-
-## License
-
-MIT
