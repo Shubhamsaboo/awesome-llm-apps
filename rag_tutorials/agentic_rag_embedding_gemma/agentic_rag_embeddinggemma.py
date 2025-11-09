@@ -1,7 +1,7 @@
 import streamlit as st
 from agno.agent import Agent
-from agno.embedder.ollama import OllamaEmbedder
-from agno.knowledge.pdf_url import PDFUrlKnowledgeBase
+from agno.knowledge.embedder.ollama import OllamaEmbedder
+from agno.knowledge.knowledge import Knowledge
 from agno.models.ollama import Ollama
 from agno.vectordb.lancedb import LanceDb, SearchType
 
@@ -13,9 +13,8 @@ st.set_page_config(
 )
 
 @st.cache_resource
-def load_knowledge_base(urls):
-    knowledge_base = PDFUrlKnowledgeBase(
-        urls=urls,
+def load_knowledge_base():
+    knowledge_base = Knowledge(
         vector_db=LanceDb(
             table_name="recipes",
             uri="tmp/lancedb",
@@ -23,14 +22,21 @@ def load_knowledge_base(urls):
             embedder=OllamaEmbedder(id="embeddinggemma:latest", dimensions=768),
         ),
     )
-    knowledge_base.load()
     return knowledge_base
 
 # Initialize URLs in session state
 if 'urls' not in st.session_state:
     st.session_state.urls = []
+if 'urls_loaded' not in st.session_state:
+    st.session_state.urls_loaded = set()
 
-kb = load_knowledge_base(st.session_state.urls)
+kb = load_knowledge_base()
+
+# Load initial URLs if any (only load once per URL)
+for url in st.session_state.urls:
+    if url not in st.session_state.urls_loaded:
+        kb.add_content(url=url)
+        st.session_state.urls_loaded.add(url)
 
 agent = Agent(
     model=Ollama(id="llama3.2:latest"),
@@ -41,7 +47,7 @@ agent = Agent(
         "Use clear headings, bullet points, or numbered lists where appropriate.",
     ],
     search_knowledge=True,
-    show_tool_calls=False,
+    debug_mode=False,
     markdown=True,
 )
 
@@ -62,17 +68,22 @@ with st.sidebar:
     )
     if st.button("➕ Add URL", type="primary"):
         if new_url:
-            kb.urls.append(new_url)
-            with st.spinner("📥 Adding new URL..."):
-                kb.load(recreate=False, upsert=True)
-            st.success(f"✅ Added: {new_url}")
+            if new_url not in st.session_state.urls:
+                st.session_state.urls.append(new_url)
+                with st.spinner("📥 Adding new URL..."):
+                    kb.add_content(url=new_url)
+                    st.session_state.urls_loaded.add(new_url)
+                st.success(f"✅ Added: {new_url}")
+                st.rerun()
+            else:
+                st.warning("This URL has already been added.")
         else:
             st.error("Please enter a URL")
 
     # Display current URLs
-    if kb.urls:
+    if st.session_state.urls:
         st.subheader("📚 Current Knowledge Sources")
-        for i, url in enumerate(kb.urls, 1):
+        for i, url in enumerate(st.session_state.urls, 1):
             st.markdown(f"{i}. {url}")
 
 # Main title and description
@@ -122,7 +133,7 @@ with st.expander("📖 How This Works"):
 **Key Components:**
 - `EmbeddingGemma` as the embedder
 - `LanceDB` as the vector database
-- `PDFUrlKnowledgeBase`: Manages document loading from PDF URLs
+- `Knowledge`: Manages document loading from PDF URLs
 - `OllamaEmbedder`: Uses EmbeddingGemma for embeddings
 - `Agno Agent`: Orchestrates everything to answer questions
         """
