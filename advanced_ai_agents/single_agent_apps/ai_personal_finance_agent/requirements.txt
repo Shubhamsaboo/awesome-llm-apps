@@ -1,4 +1,4 @@
 streamlit 
-agno
+agno>=2.2.10
 openai
 google-search-results

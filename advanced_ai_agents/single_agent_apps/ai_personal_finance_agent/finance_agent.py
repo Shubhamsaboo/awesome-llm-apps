@@ -1,5 +1,6 @@
 from textwrap import dedent
 from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.tools.serpapi import SerpApiTools
 import streamlit as st
 from agno.models.openai import OpenAIChat
@@ -33,7 +34,7 @@ if openai_api_key and serp_api_key:
             "Remember: the quality of the results is important.",
         ],
         tools=[SerpApiTools(api_key=serp_api_key)],
-        add_datetime_to_instructions=True,
+        add_datetime_to_context=True,
     )
     planner = Agent(
         name="Planner",
@@ -53,7 +54,7 @@ if openai_api_key and serp_api_key:
             "Focus on clarity, coherence, and overall quality.",
             "Never make up facts or plagiarize. Always provide proper attribution.",
         ],
-        add_datetime_to_instructions=True,
+        add_datetime_to_context=True,
     )
 
     # Input fields for the user's financial goals and current financial situation
@@ -63,5 +64,5 @@ if openai_api_key and serp_api_key:
     if st.button("Generate Financial Plan"):
         with st.spinner("Processing..."):
             # Get the response from the assistant
-            response = planner.run(f"Financial goals: {financial_goals}, Current situation: {current_situation}", stream=False)
+            response: RunOutput = planner.run(f"Financial goals: {financial_goals}, Current situation: {current_situation}", stream=False)
             st.write(response.content)

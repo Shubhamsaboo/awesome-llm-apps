@@ -6,6 +6,7 @@ from textwrap import dedent
 from typing import Dict, List, Optional
 
 from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.models.openai import OpenAIChat
 from agno.tools import tool
 import requests
@@ -290,7 +291,7 @@ async def create_agent():
             - Be encouraging and supportive
         """),
         markdown=True,
-        show_tool_calls=True
+        debug_mode=True
     )
     return agent
 
@@ -353,7 +354,7 @@ What would you like to explore? 🍽️"""
                 try:
                     loop = asyncio.new_event_loop()
                     asyncio.set_event_loop(loop)
-                    response = loop.run_until_complete(
+                    response: RunOutput = loop.run_until_complete(
                         st.session_state.agent.arun(user_input)
                     )
                     

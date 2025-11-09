@@ -3,6 +3,7 @@ import streamlit as st
 import os
 import json
 from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.models.openai import OpenAIChat
 
 st.set_page_config(
@@ -234,7 +235,7 @@ Important guidelines:
                                         if openai_api_key:
                                             with st.spinner("Generating AI analysis..."):
                                                 # Run the agent with the extracted data
-                                                agent_response = agno_agent.run(f"Analyze this company data and provide insights: {json.dumps(company_data)}")
+                                                agent_response: RunOutput = agno_agent.run(f"Analyze this company data and provide insights: {json.dumps(company_data)}")
                                                 
                                                 # Display the agent's analysis in a highlighted box
                                                 st.subheader("🧠 AI Business Analysis")

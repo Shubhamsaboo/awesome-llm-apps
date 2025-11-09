@@ -1,4 +1,4 @@
 firecrawl-py
 streamlit
-agno
+agno>=2.2.10
 openai
