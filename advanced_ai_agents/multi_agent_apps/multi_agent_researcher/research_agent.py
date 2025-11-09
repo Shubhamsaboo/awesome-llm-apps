@@ -1,13 +1,12 @@
 # Import the required libraries
 import streamlit as st
 from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.models.openai import OpenAIChat
 from agno.team import Team
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.tools.hackernews import HackerNewsTools
 from agno.tools.newspaper4k import Newspaper4kTools
-from pydantic import BaseModel
-from typing import List         
 import os
 
 # Set up the Streamlit app
@@ -31,7 +30,7 @@ if openai_api_key:
         model=OpenAIChat(id="gpt-4o-mini"),
         role="Searches the web for information on a topic",
         tools=[DuckDuckGoTools()],
-        add_datetime_to_instructions=True,
+        add_datetime_to_context=True,
     )
 
     article_reader = Agent(
@@ -43,7 +42,6 @@ if openai_api_key:
 
     hackernews_team = Team(
         name="HackerNews Team",
-        mode="coordinate",
         model=OpenAIChat(id="gpt-4o-mini"),
         members=[hn_researcher, web_searcher, article_reader],
         instructions=[
@@ -53,7 +51,6 @@ if openai_api_key:
             "Then, ask the web searcher to search for each story to get more information.",
             "Finally, provide a thoughtful and engaging summary.",
         ],
-        show_tool_calls=True,
         markdown=True,
         debug_mode=True,
         show_members_responses=True,
@@ -64,5 +61,5 @@ if openai_api_key:
 
     if query:
         # Get the response from the assistant
-        response = hackernews_team.run(query, stream=False)
+        response: RunOutput = hackernews_team.run(query, stream=False)
         st.write(response.content)

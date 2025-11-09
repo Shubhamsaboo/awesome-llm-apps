@@ -1,4 +1,4 @@
-agno
+agno>=2.2.10
 openai
 firecrawl-py==1.9.0
 gradio==5.9.1
