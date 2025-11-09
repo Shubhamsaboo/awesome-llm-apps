@@ -1,7 +1,4 @@
-agno
+agno>=2.2.10
 qdrant-client
 ollama
 pypdf 
-openai
-fastapi
-uvicorn
