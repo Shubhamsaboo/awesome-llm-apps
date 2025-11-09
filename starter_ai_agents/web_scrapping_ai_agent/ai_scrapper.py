@@ -12,7 +12,7 @@ openai_access_token = st.text_input("OpenAI API Key", type="password")
 if openai_access_token:
     model = st.radio(
         "Select the model",
-        ["gpt-3.5-turbo", "gpt-4"],
+        ["gpt-4o", "gpt-5"],
         index=0,
     )    
     graph_config = {

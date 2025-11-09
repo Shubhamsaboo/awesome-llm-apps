@@ -3,7 +3,7 @@ This Streamlit app allows you to scrape a website using OpenAI API and the scrap
 
 ### Features
 - Scrape any website by providing the URL
-- Utilize OpenAI's LLMs (GPT-3.5-turbo or GPT-4) for intelligent scraping
+- Utilize OpenAI's LLMs (GPT-4o or GPT-5) for intelligent scraping
 - Customize the scraping task by specifying what you want the AI agent to extract
 
 ### How to get Started?
