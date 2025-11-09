@@ -1,10 +1,10 @@
 # Import necessary libraries
 from agno.agent import Agent
 from agno.models.ollama import Ollama
-from agno.knowledge.pdf_url import PDFUrlKnowledgeBase
+from agno.knowledge.knowledge import Knowledge
 from agno.vectordb.qdrant import Qdrant
-from agno.embedder.ollama import OllamaEmbedder
-from agno.playground import Playground, serve_playground_app
+from agno.knowledge.embedder.ollama import OllamaEmbedder
+from agno.os import AgentOS
 
 # Define the collection name for the vector database
 collection_name = "thai-recipe-index"
@@ -16,14 +16,15 @@ vector_db = Qdrant(
     embedder=OllamaEmbedder()
 )
 
-# Define the knowledge base with the specified PDF URL
-knowledge_base = PDFUrlKnowledgeBase(
-    urls=["https://phi-public.s3.amazonaws.com/recipes/ThaiRecipes.pdf"],
+# Define the knowledge base
+knowledge_base = Knowledge(
     vector_db=vector_db,
 )
 
-# Load the knowledge base, comment out after the first run to avoid reloading
-knowledge_base.load(recreate=True, upsert=True)
+# Add content to the knowledge base, comment out after the first run to avoid reloading
+knowledge_base.add_content(
+    url="https://phi-public.s3.amazonaws.com/recipes/ThaiRecipes.pdf"
+)
 
 # Create the Agent using Ollama's llama3.2 model and the knowledge base
 agent = Agent(
@@ -33,8 +34,9 @@ agent = Agent(
 )
 
 # UI for RAG agent
-app = Playground(agents=[agent]).get_app()
+agent_os = AgentOS(agents=[agent])
+app = agent_os.get_app()
 
-# Run the Playground app
+# Run the AgentOS app
 if __name__ == "__main__":
-    serve_playground_app("local_rag_agent:app", reload=True)
+    agent_os.serve(app="local_rag_agent:app", reload=True)
