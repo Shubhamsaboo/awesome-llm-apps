@@ -1,23 +1,38 @@
 import streamlit as st
 from agno.agent import Agent
+from agno.run.agent import RunOutput
+from agno.media import Image
 from agno.models.google import Gemini
 import tempfile
 import os
 
 def main():
-    # Set up the reasoning agent
-    agent = Agent(
-        model=Gemini(id="gemini-2.0-flash-thinking-exp-1219"), 
-        markdown=True
-    )
-
     # Streamlit app title
     st.title("Multimodal Reasoning AI Agent 🧠")
+
+    # Get Gemini API key from user in sidebar
+    with st.sidebar:
+        st.header("🔑 Configuration")
+        gemini_api_key = st.text_input("Enter your Gemini API Key", type="password")
+        st.caption(
+            "Get your API key from [Google AI Studio]"
+            "(https://aistudio.google.com/apikey) 🔑"
+        )
 
     # Instruction
     st.write(
         "Upload an image and provide a reasoning-based task for the AI Agent. "
         "The AI Agent will analyze the image and respond based on your input."
+    )
+
+    if not gemini_api_key:
+        st.warning("Please enter your Gemini API key in the sidebar to continue.")
+        return
+
+    # Set up the reasoning agent
+    agent = Agent(
+        model=Gemini(id="gemini-2.5-pro", api_key=gemini_api_key), 
+        markdown=True
     )
 
     # File uploader for image
@@ -43,7 +58,7 @@ def main():
                 with st.spinner("AI is thinking... 🤖"):
                     try:
                         # Call the agent with the dynamic task and image path
-                        response = agent.run(task_input, images=[temp_path])
+                        response: RunOutput = agent.run(task_input, images=[Image(filepath=temp_path)])
                         
                         # Display the response from the model
                         st.markdown("### AI Response:")
