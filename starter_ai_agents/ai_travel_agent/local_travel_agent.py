@@ -1,5 +1,6 @@
 from textwrap import dedent
 from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.tools.serpapi import SerpApiTools
 import streamlit as st
 import re
@@ -88,7 +89,7 @@ if serp_api_key:
             "Remember: the quality of the results is important.",
         ],
         tools=[SerpApiTools(api_key=serp_api_key)],
-        add_datetime_to_instructions=True,
+        add_datetime_to_context=True,
     )
     planner = Agent(
         name="Planner",
@@ -108,7 +109,7 @@ if serp_api_key:
             "Focus on clarity, coherence, and overall quality.",
             "Never make up facts or plagiarize. Always provide proper attribution.",
         ],
-        add_datetime_to_instructions=True,
+        add_datetime_to_context=True,
     )
 
     # Input fields for the user's destination and the number of days they want to travel for
@@ -121,7 +122,7 @@ if serp_api_key:
         if st.button("Generate Itinerary"):
             with st.spinner("Processing..."):
                 # Get the response from the assistant
-                response = planner.run(f"{destination} for {num_days} days", stream=False)
+                response: RunOutput = planner.run(f"{destination} for {num_days} days", stream=False)
                 # Store the response in session state
                 st.session_state.itinerary = response.content
                 st.write(response.content)
