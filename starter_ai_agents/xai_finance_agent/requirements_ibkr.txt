@@ -1,0 +1,20 @@
+# Core dependencies
+agno>=2.2.10
+duckduckgo-search
+yfinance
+fastapi[standard]
+openai
+
+# IBKR Integration
+ib_insync>=0.9.86
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Notifications
+requests>=2.31.0
+
+# Optional: For advanced scheduling
+schedule>=1.2.0
+python-dotenv>=1.0.0
