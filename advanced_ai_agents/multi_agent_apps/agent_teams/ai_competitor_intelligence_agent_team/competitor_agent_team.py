@@ -1,6 +1,7 @@
 import streamlit as st
-# from exa_py import Exa
 from agno.agent import Agent
+from agno.run.agent import RunOutput
+from agno.tools.exa import ExaTools
 from agno.tools.firecrawl import FirecrawlTools
 from agno.models.openai import OpenAIChat
 from agno.tools.duckduckgo import DuckDuckGoTools
@@ -66,10 +67,6 @@ if "openai_api_key" in st.session_state and "firecrawl_api_key" in st.session_st
     if (search_engine == "Perplexity AI - Sonar Pro" and "perplexity_api_key" in st.session_state) or \
        (search_engine == "Exa AI" and "exa_api_key" in st.session_state):
         
-        # Initialize Exa only if selected
-        if search_engine == "Exa AI":
-            exa = Exa(api_key=st.session_state.exa_api_key)
-
         firecrawl_tools = FirecrawlTools(
             api_key=st.session_state.firecrawl_api_key,
             scrape=False,
@@ -77,23 +74,42 @@ if "openai_api_key" in st.session_state and "firecrawl_api_key" in st.session_st
             limit=5
         )
 
+        # Create ExaTools agent for finding competitor URLs
+        if search_engine == "Exa AI":
+            exa_tools = ExaTools(
+                api_key=st.session_state.exa_api_key,
+                category="company",
+                num_results=3
+            )
+            competitor_finder_agent = Agent(
+                model=OpenAIChat(id="gpt-4o", api_key=st.session_state.openai_api_key),
+                tools=[exa_tools],
+                debug_mode=True,
+                markdown=True,
+                instructions=[
+                    "You are a competitor finder agent. Use ExaTools to find competitor company URLs.",
+                    "When given a URL, find similar companies. When given a description, search for companies matching that description.",
+                    "Return ONLY the URLs, one per line, with no additional text."
+                ]
+            )
+
         firecrawl_agent = Agent(
             model=OpenAIChat(id="gpt-4o", api_key=st.session_state.openai_api_key),
             tools=[firecrawl_tools, DuckDuckGoTools()],
-            show_tool_calls=True,
+            debug_mode=True,
             markdown=True
         )
 
         analysis_agent = Agent(
             model=OpenAIChat(id="gpt-4o", api_key=st.session_state.openai_api_key),
-            show_tool_calls=True,
+            debug_mode=True,
             markdown=True
         )
 
         # New agent for comparing competitor data
         comparison_agent = Agent(
             model=OpenAIChat(id="gpt-4o", api_key=st.session_state.openai_api_key),
-            show_tool_calls=True,
+            debug_mode=True,
             markdown=True
         )
 
@@ -145,22 +161,16 @@ if "openai_api_key" in st.session_state and "firecrawl_api_key" in st.session_st
 
             else:  # Exa AI
                 try:
+                    # Use ExaTools agent to find competitor URLs
                     if url:
-                        result = exa.find_similar(
-                            url=url,
-                            num_results=3,
-                            exclude_source_domain=True,
-                            category="company"
-                        )
+                        prompt = f"Find 3 competitor company URLs similar to: {url}. Return ONLY the URLs, one per line."
                     else:
-                        result = exa.search(
-                            description,
-                            type="neural",
-                            category="company",
-                            use_autoprompt=True,
-                            num_results=3
-                        )
-                    return [item.url for item in result.results]
+                        prompt = f"Find 3 competitor company URLs matching this description: {description}. Return ONLY the URLs, one per line."
+                    
+                    response: RunOutput = competitor_finder_agent.run(prompt)
+                    # Extract URLs from the response
+                    urls = [line.strip() for line in response.content.strip().split('\n') if line.strip() and line.strip().startswith('http')]
+                    return urls[:3]  # Return up to 3 URLs
                 except Exception as e:
                     st.error(f"Error fetching competitor URLs from Exa: {str(e)}")
                     return []
@@ -263,7 +273,7 @@ if "openai_api_key" in st.session_state and "firecrawl_api_key" in st.session_st
             formatted_data = json.dumps(competitor_data, indent=2)
             print("Analysis Data:", formatted_data)  # For debugging
             
-            report = analysis_agent.run(
+            report: RunOutput = analysis_agent.run(
                 f"""Analyze the following competitor data in JSON format and identify market opportunities to improve my own company:
                 
                 {formatted_data}
