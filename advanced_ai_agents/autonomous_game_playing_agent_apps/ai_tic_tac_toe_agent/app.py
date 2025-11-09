@@ -7,6 +7,7 @@ import os
 load_dotenv()
 
 from agents import get_tic_tac_toe_players
+from agno.run.agent import RunOutput
 from agno.utils.log import logger
 from utils import (
     CUSTOM_CSS,
@@ -218,7 +219,7 @@ def main():
                 if current_player == "X"
                 else st.session_state.player_o
             )
-            response = current_agent.run(
+            response: RunOutput = current_agent.run(
                 f"""\
 Current board state:\n{st.session_state.game_board.get_board_state()}\n
 Available valid moves (row, col): {valid_moves}\n
@@ -263,7 +264,7 @@ Respond with ONLY two numbers for row and column, e.g. "1 2".""",
                     st.rerun()
                 else:
                     logger.error(f"Invalid move attempt: {message}")
-                    response = current_agent.run(
+                    response: RunOutput = current_agent.run(
                         f"""\
 Invalid move: {message}
 

@@ -1,6 +1,7 @@
 import streamlit as st
 from openai import OpenAI
 from agno.agent import Agent as AgnoAgent
+from agno.run.agent import RunOutput
 from agno.models.openai import OpenAIChat as AgnoOpenAIChat
 from langchain_openai import ChatOpenAI 
 import asyncio
@@ -87,13 +88,13 @@ if generate_code_btn and query:
         with st.expander("R1's Reasoning"):      
             st.write(reasoning_content)
 
-        # Initialize Claude agent (using PhiAgent)
+        # Initialize OpenAI agent
         openai_agent = AgnoAgent(
             model=AgnoOpenAIChat(
                 id="gpt-4o",
                 api_key=st.session_state.api_keys["openai"]
             ),
-            show_tool_calls=True,
+            debug_mode=True,
             markdown=True
         )
 
@@ -103,7 +104,7 @@ if generate_code_btn and query:
         {reasoning_content}"""
 
         with st.spinner("Extracting code..."):
-            code_response = openai_agent.run(extraction_prompt)
+            code_response: RunOutput = openai_agent.run(extraction_prompt)
             extracted_code = code_response.content
 
         # Store the generated code in session state
