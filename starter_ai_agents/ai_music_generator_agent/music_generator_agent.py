@@ -1,7 +1,8 @@
 import os
 from uuid import uuid4
 import requests
-from agno.agent import Agent, RunResponse
+from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.models.openai import OpenAIChat
 from agno.tools.models_labs import FileType, ModelsLabTools
 from agno.utils.log import logger
@@ -45,7 +46,7 @@ if openai_api_key and models_lab_api_key:
         else:
             with st.spinner("Generating music... 🎵"):
                 try:
-                    music: RunResponse = agent.run(prompt)
+                    music: RunOutput = agent.run(prompt)
 
                     if music.audio and len(music.audio) > 0:
                         save_dir = "audio_generations"
