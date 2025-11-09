@@ -5,7 +5,8 @@ from typing import Any, Dict, List, Optional
 
 import streamlit as st
 from agno.agent import Agent
-from agno.memory.v2 import Memory
+from agno.run.agent import RunOutput
+from agno.db.sqlite import SqliteDb
 from agno.models.openai import OpenAIChat
 from agno.tools.exa import ExaTools
 
@@ -18,15 +19,16 @@ def require_env(var_name: str) -> None:
 
 def create_company_finder_agent() -> Agent:
     exa_tools = ExaTools(category="company")
-    memory = Memory()
+    db = SqliteDb(db_file="tmp/gtm_outreach.db")
     return Agent(
         model=OpenAIChat(id="gpt-5"),
         tools=[exa_tools],
-        memory=memory,
-        add_history_to_messages=True,
-        num_history_responses=6,
+        db=db,
+        enable_user_memories=True,
+        add_history_to_context=True,
+        num_history_runs=6,
         session_id="gtm_outreach_company_finder",
-        show_tool_calls=True,
+        debug_mode=True,
         instructions=[
             "You are CompanyFinderAgent. Use ExaTools to search the web for companies that match the targeting criteria.",
             "Return ONLY valid JSON with key 'companies' as a list; respect the requested limit provided in the user prompt.",
@@ -37,15 +39,16 @@ def create_company_finder_agent() -> Agent:
 
 def create_contact_finder_agent() -> Agent:
     exa_tools = ExaTools()
-    memory = Memory()
+    db = SqliteDb(db_file="tmp/gtm_outreach.db")
     return Agent(
         model=OpenAIChat(id="gpt-4o"),
         tools=[exa_tools],
-        memory=memory,
-        add_history_to_messages=True,
-        num_history_responses=6,
+        db=db,
+        enable_user_memories=True,
+        add_history_to_context=True,
+        num_history_runs=6,
         session_id="gtm_outreach_contact_finder",
-        show_tool_calls=True,
+        debug_mode=True,
         instructions=[
             "You are ContactFinderAgent. Use ExaTools to find 1-2 relevant decision makers per company and their emails if available.",
             "Prioritize roles from Founder's Office, GTM (Marketing/Growth), Sales leadership, Partnerships/Business Development, and Product Marketing.",
@@ -67,16 +70,17 @@ def get_email_style_instruction(style_key: str) -> str:
 
 
 def create_email_writer_agent(style_key: str = "Professional") -> Agent:
-    memory = Memory()
+    db = SqliteDb(db_file="tmp/gtm_outreach.db")
     style_instruction = get_email_style_instruction(style_key)
     return Agent(
         model=OpenAIChat(id="gpt-5"),
         tools=[],
-        memory=memory,
-        add_history_to_messages=True,
-        num_history_responses=6,
+        db=db,
+        enable_user_memories=True,
+        add_history_to_context=True,
+        num_history_runs=6,
         session_id="gtm_outreach_email_writer",
-        show_tool_calls=False,
+        debug_mode=False,
         instructions=[
             "You are EmailWriterAgent. Write concise, personalized B2B outreach emails.",
             style_instruction,
@@ -90,15 +94,16 @@ def create_email_writer_agent(style_key: str = "Professional") -> Agent:
 def create_research_agent() -> Agent:
     """Agent to gather interesting insights from company websites and Reddit."""
     exa_tools = ExaTools()
-    memory = Memory()
+    db = SqliteDb(db_file="tmp/gtm_outreach.db")
     return Agent(
         model=OpenAIChat(id="gpt-5"),
         tools=[exa_tools],
-        memory=memory,
-        add_history_to_messages=True,
-        num_history_responses=6,
+        db=db,
+        enable_user_memories=True,
+        add_history_to_context=True,
+        num_history_runs=6,
         session_id="gtm_outreach_researcher",
-        show_tool_calls=True,
+        debug_mode=True,
         instructions=[
             "You are ResearchAgent. For each company, collect concise, valuable insights from:",
             "1) Their official website (about, blog, product pages)",
@@ -130,7 +135,7 @@ def run_company_finder(agent: Agent, target_desc: str, offering_desc: str, max_c
         f"Offering: {offering_desc}\n"
         "For each, provide: name, website, why_fit (1-2 lines)."
     )
-    resp = agent.run(prompt)
+    resp: RunOutput = agent.run(prompt)
     data = extract_json_or_raise(str(resp.content))
     companies = data.get("companies", [])
     return companies[: max(1, min(max_companies, 10))]
@@ -144,7 +149,7 @@ def run_contact_finder(agent: Agent, companies: List[Dict[str, str]], target_des
         f"Companies JSON: {json.dumps(companies, ensure_ascii=False)}\n"
         "Return JSON: {companies: [{name, contacts: [{full_name, title, email, inferred}]}]}"
     )
-    resp = agent.run(prompt)
+    resp: RunOutput = agent.run(prompt)
     data = extract_json_or_raise(str(resp.content))
     return data.get("companies", [])
 
@@ -155,7 +160,7 @@ def run_research(agent: Agent, companies: List[Dict[str, str]]) -> List[Dict[str
         f"Companies JSON: {json.dumps(companies, ensure_ascii=False)}\n"
         "Return JSON: {companies: [{name, insights: [string, ...]}]}"
     )
-    resp = agent.run(prompt)
+    resp: RunOutput = agent.run(prompt)
     data = extract_json_or_raise(str(resp.content))
     return data.get("companies", [])
 
@@ -170,7 +175,7 @@ def run_email_writer(agent: Agent, contacts_data: List[Dict[str, Any]], research
         f"Research JSON: {json.dumps(research_data, ensure_ascii=False)}\n"
         "Return JSON with key 'emails' as a list of {company, contact, subject, body}."
     )
-    resp = agent.run(prompt)
+    resp: RunOutput = agent.run(prompt)
     data = extract_json_or_raise(str(resp.content))
     return data.get("emails", [])
 

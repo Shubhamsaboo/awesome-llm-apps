@@ -1,5 +1,5 @@
 composio
-agno
+agno>=2.2.10
 streamlit
 composio-agno
 together

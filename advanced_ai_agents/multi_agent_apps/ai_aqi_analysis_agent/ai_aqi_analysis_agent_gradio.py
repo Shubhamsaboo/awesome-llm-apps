@@ -2,6 +2,7 @@ from typing import Dict, Optional
 from dataclasses import dataclass
 from pydantic import BaseModel, Field
 from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.models.openai import OpenAIChat
 from firecrawl import FirecrawlApp
 import gradio as gr
@@ -95,7 +96,7 @@ class HealthRecommendationAgent:
         user_input: UserInput
     ) -> str:
         prompt = self._create_prompt(aqi_data, user_input)
-        response = self.agent.run(prompt)
+        response: RunOutput = self.agent.run(prompt)
         return response.content
     
     def _create_prompt(self, aqi_data: Dict[str, float], user_input: UserInput) -> str:

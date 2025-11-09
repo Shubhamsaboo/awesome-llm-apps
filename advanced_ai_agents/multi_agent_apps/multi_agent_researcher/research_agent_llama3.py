@@ -1,6 +1,7 @@
 # Import the required libraries
 import streamlit as st
 from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.team import Team
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.tools.hackernews import HackerNewsTools
@@ -24,7 +25,7 @@ web_searcher = Agent(
     model=Ollama(id="llama3.2", max_tokens=1024),
     role="Searches the web for information on a topic",
     tools=[DuckDuckGoTools()],
-    add_datetime_to_instructions=True,
+    add_datetime_to_context=True,
 )
 
 article_reader = Agent(
@@ -36,7 +37,6 @@ article_reader = Agent(
 
 hackernews_team = Team(
     name="HackerNews Team",
-    mode="coordinate",
     model=Ollama(id="llama3.2", max_tokens=1024),
     members=[hn_researcher, web_searcher, article_reader],
     instructions=[
@@ -46,7 +46,6 @@ hackernews_team = Team(
         "Then, ask the web searcher to search for each story to get more information.",
         "Finally, provide a thoughtful and engaging summary.",
     ],
-    show_tool_calls=True,
     markdown=True,
     debug_mode=True,
     show_members_responses=True,
@@ -57,5 +56,5 @@ query = st.text_input("Enter your report query")
 
 if query:
     # Get the response from the assistant
-    response = hackernews_team.run(query, stream=False)
+    response: RunOutput = hackernews_team.run(query, stream=False)
     st.write(response.content)
