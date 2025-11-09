@@ -1,8 +1,8 @@
 import streamlit as st
 import os
 from agno.agent import Agent
-from agno.embedder.openai import OpenAIEmbedder
-from agno.knowledge.url import UrlKnowledge
+from agno.knowledge.embedder.openai import OpenAIEmbedder
+from agno.knowledge.knowledge import Knowledge
 from agno.models.openai import OpenAIChat
 from agno.vectordb.lancedb import LanceDb, SearchType
 
@@ -44,7 +44,7 @@ with st.sidebar:
     st.subheader("🌐 Add Knowledge Sources")
     new_url = st.text_input(
         "Add URL",
-        placeholder="https://docs.agno.com/introduction",
+        placeholder="https://www.theunwindai.com/p/mcp-vs-a2a-complementing-or-supplementing",
         help="Enter a URL to add to the knowledge base"
     )
     
@@ -57,12 +57,17 @@ with st.sidebar:
 
 # Check if API key is provided
 if openai_key:
+    # Initialize URLs in session state
+    if 'knowledge_urls' not in st.session_state:
+        st.session_state.knowledge_urls = ["https://www.theunwindai.com/p/mcp-vs-a2a-complementing-or-supplementing"]  # Default URL
+    if 'urls_loaded' not in st.session_state:
+        st.session_state.urls_loaded = set()
+
     # Initialize knowledge base (cached to avoid reloading)
     @st.cache_resource(show_spinner="📚 Loading knowledge base...")
-    def load_knowledge() -> UrlKnowledge:
+    def load_knowledge() -> Knowledge:
         """Load and initialize the knowledge base with LanceDB"""
-        kb = UrlKnowledge(
-            urls=["https://docs.agno.com/introduction/agents.md"],  # Default URL
+        kb = Knowledge(
             vector_db=LanceDb(
                 uri="tmp/lancedb",
                 table_name="agentic_rag_docs",
@@ -72,16 +77,15 @@ if openai_key:
                 ),
             ),
         )
-        kb.load(recreate=True)  # Load documents into LanceDB
         return kb
 
     # Initialize agent (cached to avoid reloading)
     @st.cache_resource(show_spinner="🤖 Loading agent...")
-    def load_agent(_kb: UrlKnowledge) -> Agent:
+    def load_agent(_kb: Knowledge) -> Agent:
         """Create an agent with reasoning capabilities"""
         return Agent(
             model=OpenAIChat(
-                id="gpt-5-nano",
+                id="gpt-5",
                 api_key=openai_key
             ),
             knowledge=_kb,
@@ -97,24 +101,31 @@ if openai_key:
 
     # Load knowledge and agent
     knowledge = load_knowledge()
+    
+    # Load initial URLs if any (only load once per URL)
+    for url in st.session_state.knowledge_urls:
+        if url not in st.session_state.urls_loaded:
+            knowledge.add_content(url=url)
+            st.session_state.urls_loaded.add(url)
+    
     agent = load_agent(knowledge)
     
     # Display current URLs in knowledge base
-    if knowledge.urls:
+    if st.session_state.knowledge_urls:
         st.sidebar.subheader("📚 Current Knowledge Sources")
-        for i, url in enumerate(knowledge.urls, 1):
+        for i, url in enumerate(st.session_state.knowledge_urls, 1):
             st.sidebar.markdown(f"{i}. {url}")
     
     # Handle URL additions
     if hasattr(st.session_state, 'urls_to_add') and st.session_state.urls_to_add:
+        new_url = st.session_state.urls_to_add
+        if new_url not in st.session_state.knowledge_urls:
+            st.session_state.knowledge_urls.append(new_url)
         with st.spinner("📥 Loading new documents..."):
-            knowledge.urls.append(st.session_state.urls_to_add)
-            knowledge.load(
-                recreate=False,  # Don't recreate DB
-                upsert=True,     # Update existing docs
-                skip_existing=True  # Skip already loaded docs
-            )
-        st.success(f"✅ Added: {st.session_state.urls_to_add}")
+            if new_url not in st.session_state.urls_loaded:
+                knowledge.add_content(url=new_url)
+                st.session_state.urls_loaded.add(new_url)
+        st.success(f"✅ Added: {new_url}")
         del st.session_state.urls_to_add
         st.rerun()
 
@@ -126,19 +137,19 @@ if openai_key:
     st.markdown("**Try these prompts:**")
     col1, col2, col3 = st.columns(3)
     with col1:
-        if st.button("What is Agno?", use_container_width=True):
-            st.session_state.query = "What is Agno and how do Agents work?"
+        if st.button("What is MCP?", use_container_width=True):
+            st.session_state.query = "What is MCP (Model Context Protocol) and how does it work?"
     with col2:
-        if st.button("Teams in Agno", use_container_width=True):
-            st.session_state.query = "What are Teams in Agno and how do they work?"
+        if st.button("MCP vs A2A", use_container_width=True):
+            st.session_state.query = "How do MCP and A2A protocols differ, and are they complementary or competing?"
     with col3:
-        if st.button("Build RAG system", use_container_width=True):
-            st.session_state.query = "Give me a step-by-step guide to building a RAG system."
+        if st.button("Agent Communication", use_container_width=True):
+            st.session_state.query = "How do MCP and A2A work together in AI agent systems for communication and tool access?"
     
     # Query input
     query = st.text_area(
         "Your question:",
-        value=st.session_state.get("query", "What are AI Agents?"),
+        value=st.session_state.get("query", "What is the difference between MCP and A2A protocols?"),
         height=100,
         help="Ask anything about the loaded knowledge sources"
     )
@@ -160,14 +171,13 @@ if openai_key:
                     query,
                     stream=True,  # Enable streaming
                 ):
-                    # Update answer display - only show content from RunResponseContent events
-                    if hasattr(chunk, 'event') and chunk.event == "RunResponseContent":
-                        if hasattr(chunk, 'content') and chunk.content and isinstance(chunk.content, str):
-                            answer_text += chunk.content
-                            answer_placeholder.markdown(
-                                answer_text, 
-                                unsafe_allow_html=True
-                            )
+                    # Update answer display - show content from streaming chunks
+                    if hasattr(chunk, 'content') and chunk.content and isinstance(chunk.content, str):
+                        answer_text += chunk.content
+                        answer_placeholder.markdown(
+                            answer_text, 
+                            unsafe_allow_html=True
+                        )
         else:
             st.error("Please enter a question")
 
@@ -194,10 +204,9 @@ with st.expander("📖 How This Works"):
     3. **GPT-5**: OpenAI's GPT-5 model processes the information and generates answers
     
     **Key Components:**
-    - `UrlKnowledge`: Manages document loading from URLs
+    - `Knowledge`: Manages document loading from URLs
     - `LanceDb`: Vector database for efficient similarity search
     - `OpenAIEmbedder`: Converts text to embeddings using OpenAI's embedding model
-
     - `Agent`: Orchestrates everything to answer questions
     
     **Why LanceDB?**
