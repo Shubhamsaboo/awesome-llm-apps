@@ -2,6 +2,7 @@ import re
 import asyncio
 from textwrap import dedent
 from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.tools.mcp import MultiMCPTools
 from agno.tools.googlesearch import GoogleSearchTools
 from agno.models.openai import OpenAIChat
@@ -118,9 +119,9 @@ async def run_mcp_travel_planner(destination: str, num_days: int, preferences: s
                 "Generate the complete, detailed itinerary in one response without follow-up questions"
             ],
             tools=[mcp_tools, GoogleSearchTools()],
-            add_datetime_to_instructions=True,
+            add_datetime_to_context=True,
             markdown=True,
-            show_tool_calls=False,
+            debug_mode=False,
         )
 
         # Create the planning prompt
@@ -169,7 +170,7 @@ async def run_mcp_travel_planner(destination: str, num_days: int, preferences: s
         Generate the complete, highly detailed itinerary in one response without asking for clarification.
         """
 
-        response = await travel_planner.arun(prompt)
+        response: RunOutput = await travel_planner.arun(prompt)
         return response.content
 
     finally:
