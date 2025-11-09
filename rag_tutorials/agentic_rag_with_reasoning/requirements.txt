@@ -1,8 +1,5 @@
 streamlit
-agno
-anthropic
-cohere
+agno>=2.2.10
 lancedb
-pandas
-numpy
-pyarrow
+openai
+python-dotenv

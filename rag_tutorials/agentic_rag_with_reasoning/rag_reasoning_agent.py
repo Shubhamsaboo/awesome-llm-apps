@@ -1,8 +1,8 @@
 import streamlit as st
-from agno.agent import Agent, RunEvent
-from agno.embedder.openai import OpenAIEmbedder
-from agno.knowledge.url import UrlKnowledge
-from agno.models.anthropic import Claude
+from agno.agent import Agent
+from agno.knowledge.embedder.openai import OpenAIEmbedder
+from agno.knowledge.knowledge import Knowledge
+from agno.models.google import Gemini
 from agno.tools.reasoning import ReasoningTools
 from agno.vectordb.lancedb import LanceDb, SearchType
 from dotenv import load_dotenv
@@ -33,11 +33,11 @@ Enter your API keys below to get started!
 st.subheader("🔑 API Keys")
 col1, col2 = st.columns(2)
 with col1:
-    anthropic_key = st.text_input(
-        "Anthropic API Key", 
+    google_key = st.text_input(
+        "Google API Key", 
         type="password",
-        value=os.getenv("ANTHROPIC_API_KEY", ""),
-        help="Get your key from https://console.anthropic.com/"
+        value=os.getenv("GOOGLE_API_KEY", ""),
+        help="Get your key from https://aistudio.google.com/apikey"
     )
 with col2:
     openai_key = st.text_input(
@@ -48,14 +48,19 @@ with col2:
     )
 
 # Check if API keys are provided
-if anthropic_key and openai_key:
+if google_key and openai_key:
     
+    # Initialize URLs in session state
+    if 'knowledge_urls' not in st.session_state:
+        st.session_state.knowledge_urls = ["https://www.theunwindai.com/p/mcp-vs-a2a-complementing-or-supplementing"]  # Default URL
+    if 'urls_loaded' not in st.session_state:
+        st.session_state.urls_loaded = set()
+
     # Initialize knowledge base (cached to avoid reloading)
     @st.cache_resource(show_spinner="📚 Loading knowledge base...")
-    def load_knowledge() -> UrlKnowledge:
+    def load_knowledge() -> Knowledge:
         """Load and initialize the knowledge base with vector database"""
-        kb = UrlKnowledge(
-            urls=["https://docs.agno.com/introduction/agents.md"],  # Default URL
+        kb = Knowledge(
             vector_db=LanceDb(
                 uri="tmp/lancedb",
                 table_name="agno_docs",
@@ -65,17 +70,16 @@ if anthropic_key and openai_key:
                 ),
             ),
         )
-        kb.load(recreate=True)  # Load documents into vector DB
         return kb
 
     # Initialize agent (cached to avoid reloading)
     @st.cache_resource(show_spinner="🤖 Loading agent...")
-    def load_agent(_kb: UrlKnowledge) -> Agent:
+    def load_agent(_kb: Knowledge) -> Agent:
         """Create an agent with reasoning capabilities"""
         return Agent(
-            model=Claude(
-                id="claude-sonnet-4-20250514", 
-                api_key=anthropic_key
+            model=Gemini(
+                id="gemini-2.5-flash", 
+                api_key=google_key
             ),
             knowledge=_kb,
             search_knowledge=True,  # Enable knowledge search
@@ -89,6 +93,13 @@ if anthropic_key and openai_key:
 
     # Load knowledge and agent
     knowledge = load_knowledge()
+    
+    # Load initial URLs if any (only load once per URL)
+    for url in st.session_state.knowledge_urls:
+        if url not in st.session_state.urls_loaded:
+            knowledge.add_content(url=url)
+            st.session_state.urls_loaded.add(url)
+    
     agent = load_agent(knowledge)
 
     # Sidebar for knowledge management
@@ -98,26 +109,25 @@ if anthropic_key and openai_key:
         
         # Show current URLs
         st.write("**Current sources:**")
-        for i, url in enumerate(knowledge.urls):
+        for i, url in enumerate(st.session_state.knowledge_urls):
             st.text(f"{i+1}. {url}")
         
         # Add new URL
         st.divider()
         new_url = st.text_input(
             "Add new URL", 
-            placeholder="https://example.com/docs",
+            placeholder="https://www.theunwindai.com/p/mcp-vs-a2a-complementing-or-supplementing",
             help="Enter a URL to add to the knowledge base"
         )
         
         if st.button("➕ Add URL", type="primary"):
             if new_url:
+                if new_url not in st.session_state.knowledge_urls:
+                    st.session_state.knowledge_urls.append(new_url)
                 with st.spinner("📥 Loading new documents..."):
-                    knowledge.urls.append(new_url)
-                    knowledge.load(
-                        recreate=False,  # Don't recreate DB
-                        upsert=True,     # Update existing docs
-                        skip_existing=True  # Skip already loaded docs
-                    )
+                    if new_url not in st.session_state.urls_loaded:
+                        knowledge.add_content(url=new_url)
+                        st.session_state.urls_loaded.add(new_url)
                 st.success(f"✅ Added: {new_url}")
                 st.rerun()  # Refresh to show new URL
             else:
@@ -127,10 +137,23 @@ if anthropic_key and openai_key:
     st.divider()
     st.subheader("🤔 Ask a Question")
     
+    # Suggested prompts
+    st.markdown("**Try these prompts:**")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        if st.button("What is MCP?", use_container_width=True):
+            st.session_state.query = "What is MCP (Model Context Protocol) and how does it work?"
+    with col2:
+        if st.button("MCP vs A2A", use_container_width=True):
+            st.session_state.query = "How do MCP and A2A protocols differ, and are they complementary or competing?"
+    with col3:
+        if st.button("Agent Communication", use_container_width=True):
+            st.session_state.query = "How do MCP and A2A work together in AI agent systems for communication and tool access?"
+    
     # Query input
     query = st.text_area(
         "Your question:",
-        value="What are Agents?",
+        value=st.session_state.get("query", "What is the difference between MCP and A2A protocols?"),
         height=100,
         help="Ask anything about the loaded knowledge sources"
     )
@@ -161,11 +184,10 @@ if anthropic_key and openai_key:
                 for chunk in agent.run(
                     query,
                     stream=True,  # Enable streaming
-                    show_full_reasoning=True,  # Show reasoning steps
-                    stream_intermediate_steps=True,  # Stream intermediate updates
+                    stream_events=True,  # Stream all events including reasoning
                 ):
                     # Update reasoning display
-                    if chunk.reasoning_content:
+                    if hasattr(chunk, 'reasoning_content') and chunk.reasoning_content:
                         reasoning_text = chunk.reasoning_content
                         reasoning_placeholder.markdown(
                             reasoning_text, 
@@ -173,17 +195,17 @@ if anthropic_key and openai_key:
                         )
                     
                     # Update answer display
-                    if chunk.content and chunk.event in {RunEvent.run_response, RunEvent.run_completed}:
-                        if isinstance(chunk.content, str):
-                            answer_text += chunk.content
-                            answer_placeholder.markdown(
-                                answer_text, 
-                                unsafe_allow_html=True
-                            )
+                    if hasattr(chunk, 'content') and chunk.content and isinstance(chunk.content, str):
+                        answer_text += chunk.content
+                        answer_placeholder.markdown(
+                            answer_text, 
+                            unsafe_allow_html=True
+                        )
                     
                     # Collect citations
-                    if chunk.citations and chunk.citations.urls:
-                        citations = chunk.citations.urls
+                    if hasattr(chunk, 'citations') and chunk.citations:
+                        if hasattr(chunk.citations, 'urls') and chunk.citations.urls:
+                            citations = chunk.citations.urls
             
             # Show citations if available
             if citations:
@@ -200,8 +222,8 @@ else:
     st.info("""
     👋 **Welcome! To use this app, you need:**
     
-    1. **Anthropic API Key** - For Claude AI model
-       - Sign up at [console.anthropic.com](https://console.anthropic.com/)
+    1. **Google API Key** - For Gemini AI model
+       - Sign up at [aistudio.google.com](https://aistudio.google.com/apikey)
     
     2. **OpenAI API Key** - For embeddings
        - Sign up at [platform.openai.com](https://platform.openai.com/)
@@ -218,10 +240,10 @@ with st.expander("📖 How This Works"):
     1. **Knowledge Loading**: URLs are processed and stored in a vector database (LanceDB)
     2. **Vector Search**: Uses OpenAI's embeddings for semantic search to find relevant information
     3. **Reasoning Tools**: The agent uses special tools to think through problems step-by-step
-    4. **Claude AI**: Anthropic's Claude model processes the information and generates answers
+    4. **Gemini AI**: Google's Gemini model processes the information and generates answers
     
     **Key Components:**
-    - `UrlKnowledge`: Manages document loading from URLs
+    - `Knowledge`: Manages document loading from URLs
     - `LanceDb`: Vector database for efficient similarity search
     - `OpenAIEmbedder`: Converts text to embeddings using OpenAI's embedding model
     - `ReasoningTools`: Enables step-by-step reasoning
