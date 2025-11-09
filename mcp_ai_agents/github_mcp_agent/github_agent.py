@@ -3,9 +3,9 @@ import os
 import streamlit as st
 from textwrap import dedent
 from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.tools.mcp import MCPTools
-from mcp import ClientSession, StdioServerParameters
-from mcp.client.stdio import stdio_client
+from mcp import StdioServerParameters
 
 st.set_page_config(page_title="🐙 GitHub MCP Agent", page_icon="🐙", layout="wide")
 
@@ -86,26 +86,22 @@ async def run_github_agent(message):
             }
         )
         
-        async with stdio_client(server_params) as (read, write):
-            async with ClientSession(read, write) as session:
-                mcp_tools = MCPTools(session=session)
-                await mcp_tools.initialize()
-                
-                agent = Agent(
-                    tools=[mcp_tools],
-                    instructions=dedent("""\
-                        You are a GitHub assistant. Help users explore repositories and their activity.
-                        - Provide organized, concise insights about the repository
-                        - Focus on facts and data from the GitHub API
-                        - Use markdown formatting for better readability
-                        - Present numerical data in tables when appropriate
-                        - Include links to relevant GitHub pages when helpful
-                    """),
-                    markdown=True,
-                )
-                
-                response = await asyncio.wait_for(agent.arun(message), timeout=120.0)
-                return response.content
+        async with MCPTools(server_params=server_params) as mcp_tools:
+            agent = Agent(
+                tools=[mcp_tools],
+                instructions=dedent("""\
+                    You are a GitHub assistant. Help users explore repositories and their activity.
+                    - Provide organized, concise insights about the repository
+                    - Focus on facts and data from the GitHub API
+                    - Use markdown formatting for better readability
+                    - Present numerical data in tables when appropriate
+                    - Include links to relevant GitHub pages when helpful
+                """),
+                markdown=True,
+            )
+            
+            response: RunOutput = await asyncio.wait_for(agent.arun(message), timeout=120.0)
+            return response.content
                 
     except asyncio.TimeoutError:
         return "Error: Request timed out after 120 seconds"
@@ -152,6 +148,3 @@ if 'result' not in locals():
         </div>""", 
         unsafe_allow_html=True
     )
-
-st.markdown("---")
-st.write("Built with Streamlit, Agno, and Model Context Protocol ❤️")
