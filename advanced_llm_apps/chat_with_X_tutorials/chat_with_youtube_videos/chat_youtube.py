@@ -131,45 +131,113 @@ with st.expander("🎯 Try these working example videos", expanded=False):
 
 st.divider()
 
+# Initialize session state variables
+if 'app' not in st.session_state:
+    st.session_state.app = None
+if 'current_video_url' not in st.session_state:
+    st.session_state.current_video_url = None
+if 'transcript_loaded' not in st.session_state:
+    st.session_state.transcript_loaded = False
+if 'transcript_text' not in st.session_state:
+    st.session_state.transcript_text = None
+if 'word_count' not in st.session_state:
+    st.session_state.word_count = 0
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = []
+
 # Get OpenAI API key from user
 openai_access_token = st.text_input("OpenAI API Key", type="password")
 
 # If OpenAI API key is provided, create an instance of App
 if openai_access_token:
-    # Create a temporary directory to store the database
-    db_path = tempfile.mkdtemp()
-    # Create an instance of Embedchain App
-    app = embedchain_bot(db_path, openai_access_token)
+    # Create/update the embedchain app only if needed
+    if st.session_state.app is None:
+        # Create a temporary directory to store the database
+        db_path = tempfile.mkdtemp()
+        # Create an instance of Embedchain App
+        st.session_state.app = embedchain_bot(db_path, openai_access_token)
+    
     # Get the YouTube video URL from the user
     video_url = st.text_input("Enter YouTube Video URL", type="default")
-    # Add the video to the knowledge base
-    if video_url:
+    
+    # Check if we have a new video URL or no transcript loaded yet
+    if video_url and (video_url != st.session_state.current_video_url or not st.session_state.transcript_loaded):
         with st.spinner("🔍 Checking video and fetching transcript..."):
             try:
                 title, transcript = fetch_video_data(video_url)
                 if transcript != "No transcript available for this video." and transcript != "Invalid YouTube URL provided.":
                     with st.spinner("🧠 Adding to knowledge base..."):
-                        app.add(transcript, data_type="text", metadata={"title": title, "url": video_url})
-                        st.success(f"✅ Added video to knowledge base! You can now ask questions about it.")
+                        # Clear previous video data if it exists
+                        if st.session_state.transcript_loaded:
+                            # Create a new app instance for the new video
+                            db_path = tempfile.mkdtemp()
+                            st.session_state.app = embedchain_bot(db_path, openai_access_token)
+                            # Clear chat history for new video
+                            st.session_state.chat_history = []
                         
-                        # Show some transcript stats
-                        word_count = len(transcript.split())
-                        st.info(f"📊 Transcript contains {word_count} words")
+                        st.session_state.app.add(transcript, data_type="text", metadata={"title": title, "url": video_url})
+                        
+                        # Store in session state
+                        st.session_state.current_video_url = video_url
+                        st.session_state.transcript_loaded = True
+                        st.session_state.transcript_text = transcript
+                        st.session_state.word_count = len(transcript.split())
+                        
+                        st.success(f"✅ Added video to knowledge base! You can now ask questions about it.")
+                        st.info(f"📊 Transcript contains {st.session_state.word_count} words")
                 else:
                     st.warning(f"❌ Cannot add video to knowledge base: {transcript}")
+                    st.session_state.transcript_loaded = False
+                    st.session_state.current_video_url = None
             except Exception as e:
                 st.error(f"❌ Error processing video: {e}")
-                
-        # Ask a question about the video
-        prompt = st.text_input("Ask any question about the YouTube Video")
-        # Chat with the video
-        if prompt:
-            if 'transcript' in locals() and transcript != "No transcript available for this video." and transcript != "Invalid YouTube URL provided.":
-                try:
-                    with st.spinner("🤔 Thinking..."):
-                        answer = app.chat(prompt)
-                        st.write(answer)
-                except Exception as e:
-                    st.error(f"❌ Error chatting with the video: {e}")
-            else:
-                st.warning("⚠️ Please add a valid video with transcripts first before asking questions.")
+                st.session_state.transcript_loaded = False
+                st.session_state.current_video_url = None
+    
+    # Show current video status
+    if st.session_state.transcript_loaded and st.session_state.current_video_url:
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.success(f"📹 Current video: {st.session_state.current_video_url}")
+            st.info(f"📊 Transcript: {st.session_state.word_count} words loaded in memory")
+        with col2:
+            if st.button("🗑️ Clear Video", help="Remove current video and load a new one"):
+                st.session_state.transcript_loaded = False
+                st.session_state.current_video_url = None
+                st.session_state.transcript_text = None
+                st.session_state.word_count = 0
+                st.session_state.app = None
+                st.session_state.chat_history = []
+                st.rerun()
+        
+        # Display chat history
+        if st.session_state.chat_history:
+            with st.expander("💬 Chat History", expanded=True):
+                for i, (question, answer) in enumerate(st.session_state.chat_history):
+                    st.markdown(f"**Q{i+1}:** {question}")
+                    st.markdown(f"**A{i+1}:** {answer}")
+                    st.divider()
+        
+    # Ask a question about the video
+    prompt = st.text_input("Ask any question about the YouTube Video")
+    
+    # Chat with the video
+    if prompt:
+        if st.session_state.transcript_loaded and st.session_state.app:
+            try:
+                with st.spinner("🤔 Thinking..."):
+                    answer = st.session_state.app.chat(prompt)
+                    
+                    # Add to chat history
+                    st.session_state.chat_history.append((prompt, answer))
+                    
+                    # Display the current answer
+                    st.write("**Answer:**")
+                    st.write(answer)
+                    
+                    # Clear the input by refreshing (optional)
+                    # st.rerun()
+            except Exception as e:
+                st.error(f"❌ Error chatting with the video: {e}")
+        else:
+            st.warning("⚠️ Please add a valid video with transcripts first before asking questions.")
