@@ -1,4 +1,5 @@
 from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.models.google import Gemini
 from agno.media import Image as AgnoImage
 from agno.tools.duckduckgo import DuckDuckGoTools
@@ -188,7 +189,7 @@ if st.session_state.api_key_input:
                                 Focus on concrete observations and actionable insights.
                                 """
                                 
-                                response = vision_agent.run(
+                                response: RunOutput = vision_agent.run(
                                     message=vision_prompt,
                                     images=all_images
                                 )
@@ -209,7 +210,7 @@ if st.session_state.api_key_input:
                                 Focus on concrete observations and actionable improvements.
                                 """
                                 
-                                response = ux_agent.run(
+                                response: RunOutput = ux_agent.run(
                                     message=ux_prompt,
                                     images=all_images
                                 )
@@ -230,7 +231,7 @@ if st.session_state.api_key_input:
                             Focus on concrete market insights and actionable recommendations.
                             """
                             
-                            response = market_agent.run(
+                            response: RunOutput = market_agent.run(
                                 message=market_prompt,
                                 images=all_images
                             )
