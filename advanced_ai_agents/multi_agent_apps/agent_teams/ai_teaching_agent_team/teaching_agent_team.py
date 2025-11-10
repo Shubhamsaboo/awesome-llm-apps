@@ -1,5 +1,6 @@
 import streamlit as st
-from agno.agent import Agent, RunResponse
+from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.models.openai import OpenAIChat
 from composio_phidata import Action, ComposioToolSet
 import os
@@ -58,7 +59,7 @@ professor_agent = Agent(
         "Make sure it is formatted in a way that is easy to read and understand. DONT FORGET TO CREATE THE GOOGLE DOCUMENT.",
         "Open a new Google Doc and write down the response of the agent neatly with great formatting and structure in it. **Include the Google Doc link in your response.**",
     ],
-    show_tool_calls=True,
+    debug_mode=True,
     markdown=True,
 )
 
@@ -76,7 +77,7 @@ academic_advisor_agent = Agent(
         "Open a new Google Doc and write down the response of the agent neatly with great formatting and structure in it. **Include the Google Doc link in your response.**",
 
     ],
-    show_tool_calls=True,
+    debug_mode=True,
     markdown=True
 )
 
@@ -93,7 +94,7 @@ research_librarian_agent = Agent(
         "Present the resources in a curated list with descriptions and quality assessments. DONT FORGET TO CREATE THE GOOGLE DOCUMENT.",
         "Open a new Google Doc and write down the response of the agent neatly with great formatting and structure in it. **Include the Google Doc link in your response.**",
     ],
-    show_tool_calls=True,
+    debug_mode=True,
     markdown=True,
 )
 
@@ -111,7 +112,7 @@ teaching_assistant_agent = Agent(
         "Provide detailed solutions and explanations for all practice materials.DONT FORGET TO CREATE THE GOOGLE DOCUMENT.",
         "Open a new Google Doc and write down the response of the agent neatly with great formatting and structure in it. **Include the Google Doc link in your response.**",
     ],
-    show_tool_calls=True,
+    debug_mode=True,
     markdown=True,
 )
 
@@ -132,27 +133,23 @@ if st.button("Start"):
     else:
         # Display loading animations while generating responses
         with st.spinner("Generating Knowledge Base..."):
-            professor_response: RunResponse = professor_agent.run(
-                f"the topic is: {st.session_state['topic']},Don't forget to add the Google Doc link in your response.",
-                stream=False
+            professor_response: RunOutput = professor_agent.run(
+                f"the topic is: {st.session_state['topic']},Don't forget to add the Google Doc link in your response."
             )
             
         with st.spinner("Generating Learning Roadmap..."):
-            academic_advisor_response: RunResponse = academic_advisor_agent.run(
-                f"the topic is: {st.session_state['topic']},Don't forget to add the Google Doc link in your response.",
-                stream=False
+            academic_advisor_response: RunOutput = academic_advisor_agent.run(
+                f"the topic is: {st.session_state['topic']},Don't forget to add the Google Doc link in your response."
             )
             
         with st.spinner("Curating Learning Resources..."):
-            research_librarian_response: RunResponse = research_librarian_agent.run(
-                f"the topic is: {st.session_state['topic']},Don't forget to add the Google Doc link in your response.",
-                stream=False
+            research_librarian_response: RunOutput = research_librarian_agent.run(
+                f"the topic is: {st.session_state['topic']},Don't forget to add the Google Doc link in your response."
             )
             
         with st.spinner("Creating Practice Materials..."):
-            teaching_assistant_response: RunResponse = teaching_assistant_agent.run(
-                f"the topic is: {st.session_state['topic']},Don't forget to add the Google Doc link in your response.",
-                stream=False
+            teaching_assistant_response: RunOutput = teaching_assistant_agent.run(
+                f"the topic is: {st.session_state['topic']},Don't forget to add the Google Doc link in your response."
             )
 
         # Extract Google Doc links from the responses

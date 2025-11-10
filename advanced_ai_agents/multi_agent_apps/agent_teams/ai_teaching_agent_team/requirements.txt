@@ -2,7 +2,7 @@ streamlit==1.41.1
 openai==1.58.1
 duckduckgo-search==6.4.1
 typing-extensions>=4.5.0
-agno
+agno>=2.2.10
 composio-phidata==0.6.9
 composio_core
 composio==0.1.1
