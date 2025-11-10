@@ -1,13 +1,14 @@
 import streamlit as st
 from agno.agent import Agent
-from agno.knowledge.pdf import PDFKnowledgeBase, PDFReader
+from agno.run.agent import RunOutput
+from agno.team import Team
+from agno.knowledge.knowledge import Knowledge
 from agno.vectordb.qdrant import Qdrant
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.models.openai import OpenAIChat
-from agno.embedder.openai import OpenAIEmbedder
+from agno.knowledge.embedder.openai import OpenAIEmbedder
 import tempfile
 import os
-from agno.document.chunking.document import DocumentChunking
 
 def init_session_state():
     """Initialize session state variables"""
@@ -58,7 +59,7 @@ def process_document(uploaded_file, vector_db: Qdrant):
         vector_db (Qdrant): Initialized Qdrant instance from Agno
     
     Returns:
-        PDFKnowledgeBase: Initialized knowledge base with processed documents
+        Knowledge: Initialized knowledge base with processed documents
     """
     if not st.session_state.openai_api_key:
         raise ValueError("OpenAI API key not provided")
@@ -73,21 +74,15 @@ def process_document(uploaded_file, vector_db: Qdrant):
         
         st.info("Loading and processing document...")
         
-        # Create a PDFKnowledgeBase with the vector_db
-        knowledge_base = PDFKnowledgeBase(
-            path=temp_file_path,  # Single string path, not a list
-            vector_db=vector_db,
-            reader=PDFReader(),
-            chunking_strategy=DocumentChunking(
-                chunk_size=1000,
-                overlap=200
-            )
+        # Create a Knowledge base with the vector_db
+        knowledge_base = Knowledge(
+            vector_db=vector_db
         )
         
-        # Load the documents into the knowledge base
+        # Add the document to the knowledge base
         with st.spinner('📤 Loading documents into knowledge base...'):
             try:
-                knowledge_base.load(recreate=True, upsert=True)
+                knowledge_base.add_content(path=temp_file_path)
                 st.success("✅ Documents stored successfully!")
             except Exception as e:
                 st.error(f"Error loading documents: {str(e)}")
@@ -173,7 +168,7 @@ def main():
                                 legal_researcher = Agent(
                                     name="Legal Researcher",
                                     role="Legal research specialist",
-                                    model=OpenAIChat(id="gpt-4.1"),
+                                    model=OpenAIChat(id="gpt-5"),
                                     tools=[DuckDuckGoTools()],
                                     knowledge=st.session_state.knowledge_base,
                                     search_knowledge=True,
@@ -183,14 +178,14 @@ def main():
                                         "Reference specific sections from the uploaded document",
                                         "Always search the knowledge base for relevant information"
                                     ],
-                                    show_tool_calls=True,
+                                    debug_mode=True,
                                     markdown=True
                                 )
 
                                 contract_analyst = Agent(
                                     name="Contract Analyst",
                                     role="Contract analysis specialist",
-                                    model=OpenAIChat(id="gpt-4.1"),
+                                    model=OpenAIChat(id="gpt-5"),
                                     knowledge=st.session_state.knowledge_base,
                                     search_knowledge=True,
                                     instructions=[
@@ -204,7 +199,7 @@ def main():
                                 legal_strategist = Agent(
                                     name="Legal Strategist", 
                                     role="Legal strategy specialist",
-                                    model=OpenAIChat(id="gpt-4.1"),
+                                    model=OpenAIChat(id="gpt-5"),
                                     knowledge=st.session_state.knowledge_base,
                                     search_knowledge=True,
                                     instructions=[
@@ -216,11 +211,10 @@ def main():
                                 )
 
                                 # Legal Agent Team
-                                st.session_state.legal_team = Agent(
+                                st.session_state.legal_team = Team(
                                     name="Legal Team Lead",
-                                    role="Legal team coordinator",
-                                    model=OpenAIChat(id="gpt-4.1"),
-                                    team=[legal_researcher, contract_analyst, legal_strategist],
+                                    model=OpenAIChat(id="gpt-5"),
+                                    members=[legal_researcher, contract_analyst, legal_strategist],
                                     knowledge=st.session_state.knowledge_base,
                                     search_knowledge=True,
                                     instructions=[
@@ -230,7 +224,7 @@ def main():
                                         "Reference specific parts of the uploaded document",
                                         "Always search the knowledge base before delegating tasks"
                                     ],
-                                    show_tool_calls=True,
+                                    debug_mode=True,
                                     markdown=True
                                 )
                                 
@@ -345,7 +339,7 @@ def main():
                             Focus Areas: {', '.join(analysis_configs[analysis_type]['agents'])}
                             """
 
-                        response = st.session_state.legal_team.run(combined_query)
+                        response: RunOutput = st.session_state.legal_team.run(combined_query)
                         
                         # Display results in tabs
                         tabs = st.tabs(["Analysis", "Key Points", "Recommendations"])
@@ -361,7 +355,7 @@ def main():
                         
                         with tabs[1]:
                             st.markdown("### Key Points")
-                            key_points_response = st.session_state.legal_team.run(
+                            key_points_response: RunOutput = st.session_state.legal_team.run(
                                 f"""Based on this previous analysis:    
                                 {response.content}
                                 
@@ -377,7 +371,7 @@ def main():
                         
                         with tabs[2]:
                             st.markdown("### Recommendations")
-                            recommendations_response = st.session_state.legal_team.run(
+                            recommendations_response: RunOutput = st.session_state.legal_team.run(
                                 f"""Based on this previous analysis:
                                 {response.content}
                                 
