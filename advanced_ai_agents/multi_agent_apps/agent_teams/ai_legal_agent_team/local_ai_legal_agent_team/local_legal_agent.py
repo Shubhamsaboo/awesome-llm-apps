@@ -1,9 +1,11 @@
 import streamlit as st
 from agno.agent import Agent
-from agno.knowledge.pdf import PDFKnowledgeBase, PDFReader
+from agno.run.agent import RunOutput
+from agno.team import Team
+from agno.knowledge.knowledge import Knowledge
 from agno.vectordb.qdrant import Qdrant
 from agno.models.ollama import Ollama
-from agno.embedder.ollama import OllamaEmbedder
+from agno.knowledge.embedder.ollama import OllamaEmbedder
 import tempfile
 import os
 
@@ -33,22 +35,13 @@ def process_document(uploaded_file, vector_db: Qdrant):
         try:
             st.write("Processing document...")
             # Create knowledge base with local embedder
-            knowledge_base = PDFKnowledgeBase(
-                path=temp_dir,
-                vector_db=vector_db,
-                reader=PDFReader(chunk=True),
-                recreate_vector_db=True
+            knowledge_base = Knowledge(
+                vector_db=vector_db
             )
             
             st.write("Loading knowledge base...")
-            knowledge_base.load()
+            knowledge_base.add_content(path=temp_file_path)
             
-            # Verify knowledge base
-            st.write("Verifying knowledge base...")
-            test_results = knowledge_base.search("test")
-            if not test_results:
-                raise Exception("Knowledge base verification failed")
-                
             st.write("Knowledge base ready!")
             return knowledge_base
             
@@ -124,11 +117,10 @@ def main():
                 )
 
                 # Legal Agent Team
-                st.session_state.legal_team = Agent(
+                st.session_state.legal_team = Team(
                     name="Legal Team Lead",
-                    role="Legal team coordinator",
                     model=Ollama(id="llama3.1:8b"),
-                    team=[legal_researcher, contract_analyst, legal_strategist],
+                    members=[legal_researcher, contract_analyst, legal_strategist],
                     knowledge=st.session_state.knowledge_base,
                     search_knowledge=True,
                     instructions=[
@@ -221,7 +213,7 @@ def main():
                         else:
                             combined_query = user_query
 
-                        response = st.session_state.legal_team.run(combined_query)
+                        response: RunOutput = st.session_state.legal_team.run(combined_query)
                         
                         # Display results in tabs
                         tabs = st.tabs(["Analysis", "Key Points", "Recommendations"])
@@ -237,7 +229,7 @@ def main():
                         
                         with tabs[1]:
                             st.markdown("### Key Points")
-                            key_points_response = st.session_state.legal_team.run(
+                            key_points_response: RunOutput = st.session_state.legal_team.run(
                                 f"""Based on this previous analysis:    
                                 {response.content}
                                 
@@ -253,7 +245,7 @@ def main():
                         
                         with tabs[2]:
                             st.markdown("### Recommendations")
-                            recommendations_response = st.session_state.legal_team.run(
+                            recommendations_response: RunOutput = st.session_state.legal_team.run(
                                 f"""Based on this previous analysis:
                                 {response.content}
                                 
