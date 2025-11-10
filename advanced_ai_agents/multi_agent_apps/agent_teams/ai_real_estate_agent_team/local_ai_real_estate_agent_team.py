@@ -4,6 +4,7 @@ import json
 import time
 import re
 from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.models.ollama import Ollama
 from dotenv import load_dotenv
 from firecrawl import FirecrawlApp
@@ -296,7 +297,7 @@ def run_sequential_analysis(city, state, user_criteria, selected_websites, firec
     Keep each section under 100 words. Use bullet points.
     """
     
-    market_result = market_analysis_agent.run(market_analysis_prompt)
+    market_result: RunOutput = market_analysis_agent.run(market_analysis_prompt)
     market_analysis = market_result.content
     
     update_callback(0.7, "Market analysis complete", "✅ Market analysis completed")
@@ -351,7 +352,7 @@ def run_sequential_analysis(city, state, user_criteria, selected_websites, firec
     - Use bullet points as shown
     """
     
-    valuation_result = property_valuation_agent.run(valuation_prompt)
+    valuation_result: RunOutput = property_valuation_agent.run(valuation_prompt)
     property_valuations = valuation_result.content
     
     update_callback(0.9, "Valuation complete", "✅ Property valuations completed")

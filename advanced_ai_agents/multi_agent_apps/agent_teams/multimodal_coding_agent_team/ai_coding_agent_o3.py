@@ -1,13 +1,16 @@
 from typing import Optional, Dict, Any
 import streamlit as st
-from agno.agent import Agent, RunResponse
+from agno.agent import Agent
+from agno.run.agent import RunOutput
 from agno.models.openai import OpenAIChat
 from agno.models.google import Gemini
+from agno.media import Image as AgnoImage
 from e2b_code_interpreter import Sandbox
 import os
 from PIL import Image
 from io import BytesIO
 import base64
+from pathlib import Path
 
 def initialize_session_state() -> None:
     if 'openai_key' not in st.session_state:
@@ -110,14 +113,13 @@ def process_image_with_gemini(vision_agent: Agent, image: Image) -> str:
             image = image.convert('RGB')
         image.save(temp_path, format="PNG")
         
-        # Read the file and create image data
-        with open(temp_path, 'rb') as img_file:
-            img_bytes = img_file.read()
+        # Create Agno Image object
+        agno_image = AgnoImage(filepath=Path(temp_path))
             
         # Pass image to Gemini
-        response = vision_agent.run(
+        response: RunOutput = vision_agent.run(
             prompt,
-            images=[{"filepath": temp_path}]  # Use filepath instead of content
+            images=[agno_image]
         )
         return response.content
     except Exception as e:
@@ -143,7 +145,7 @@ def execute_code_with_agent(execution_agent: Agent, code: str, sandbox: Sandbox)
             Error: {execution.error}
             
             Please analyze the error and provide a clear explanation of what went wrong."""
-            response = execution_agent.run(error_prompt)
+            response: RunOutput = execution_agent.run(error_prompt)
             return f"⚠️ Execution Error:\n{response.content}"
         
         # Get files list safely
@@ -158,7 +160,7 @@ def execute_code_with_agent(execution_agent: Agent, code: str, sandbox: Sandbox)
         
         Please provide a clear explanation of the results and any outputs."""
         
-        response = execution_agent.run(prompt)
+        response: RunOutput = execution_agent.run(prompt)
         return response.content
     except Exception as e:
         # Reinitialize sandbox on error
@@ -220,7 +222,7 @@ def main() -> None:
                     
                     # Pass extracted query to coding agent
                     with st.spinner("Generating solution..."):
-                        response = coding_agent.run(extracted_query)
+                        response: RunOutput = coding_agent.run(extracted_query)
                 except Exception as e:
                     st.error(f"Error processing image: {str(e)}")
                     return
@@ -228,7 +230,7 @@ def main() -> None:
         elif user_query and not uploaded_image:
             # Direct text input processing
             with st.spinner("Generating solution..."):
-                response = coding_agent.run(user_query)
+                response: RunOutput = coding_agent.run(user_query)
                 
         elif user_query and uploaded_image:
             st.error("Please use either image upload OR text input, not both.")
