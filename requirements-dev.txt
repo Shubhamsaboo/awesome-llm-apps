@@ -1,0 +1,38 @@
+# Development dependencies for testing, linting, and security
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.21.0
+pytest-mock>=3.11.1
+pytest-timeout>=2.1.0
+pytest-xdist>=3.3.1  # Parallel test execution
+
+# Security scanning
+bandit>=1.7.5  # Python security linter
+safety>=2.3.5  # Dependency vulnerability scanner
+
+# Code quality
+ruff>=0.1.0  # Fast Python linter and formatter
+black>=23.7.0  # Code formatter
+isort>=5.12.0  # Import sorter
+mypy>=1.5.0  # Static type checker
+
+# Type stubs for better type checking
+types-requests>=2.31.0
+types-python-dateutil>=2.8.19
+
+# Pre-commit hooks
+pre-commit>=3.3.3
+
+# Documentation
+mkdocs>=1.5.0
+mkdocs-material>=9.2.0
+mkdocstrings[python]>=0.22.0
+
+# Code coverage visualization
+coverage[toml]>=7.3.0
+
+# Debugging
+ipdb>=0.13.13
+ipython>=8.14.0

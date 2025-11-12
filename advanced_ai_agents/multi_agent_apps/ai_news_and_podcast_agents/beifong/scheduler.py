@@ -2,6 +2,7 @@ import os
 import time
 import signal
 import subprocess
+import shlex
 from datetime import datetime
 import traceback
 from concurrent.futures import ThreadPoolExecutor
@@ -94,9 +95,27 @@ def execute_task(task_id, command):
             return
     print(f"INFO: Starting task {task_id}: {command}")
     try:
+        # Security: Parse command safely and avoid shell=True
+        # Use shlex.split() to properly parse the command into arguments
+        # This prevents shell injection attacks
+        try:
+            command_args = shlex.split(command)
+        except ValueError as e:
+            error_message = f"Invalid command syntax: {str(e)}"
+            print(f"ERROR: {error_message}")
+            update_task_execution(tasks_db_path, execution_id, "failed", error_message)
+            return
+
+        # Validate that we have a command to run
+        if not command_args:
+            error_message = "Empty command provided"
+            print(f"ERROR: {error_message}")
+            update_task_execution(tasks_db_path, execution_id, "failed", error_message)
+            return
+
         process = subprocess.Popen(
-            command,
-            shell=True,
+            command_args,
+            shell=False,  # Security: Never use shell=True with user input
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,

@@ -1,17 +1,55 @@
 import math
+import ast
+import operator
 from typing import Dict, Union, List
+
+# Safe mathematical operators for expression evaluation
+SAFE_OPERATORS = {
+    ast.Add: operator.add,
+    ast.Sub: operator.sub,
+    ast.Mult: operator.mul,
+    ast.Div: operator.truediv,
+    ast.Pow: operator.pow,
+    ast.USub: operator.neg,
+    ast.UAdd: operator.pos,
+}
+
+def _safe_eval_node(node):
+    """
+    Safely evaluate an AST node containing only mathematical operations.
+    This prevents code injection by only allowing mathematical operations.
+    """
+    if isinstance(node, ast.Constant):  # Python 3.8+
+        return node.value
+    elif isinstance(node, ast.Num):  # Python 3.7 compatibility
+        return node.n
+    elif isinstance(node, ast.BinOp):
+        left = _safe_eval_node(node.left)
+        right = _safe_eval_node(node.right)
+        op_type = type(node.op)
+        if op_type not in SAFE_OPERATORS:
+            raise ValueError(f"Unsupported operation: {op_type.__name__}")
+        return SAFE_OPERATORS[op_type](left, right)
+    elif isinstance(node, ast.UnaryOp):
+        operand = _safe_eval_node(node.operand)
+        op_type = type(node.op)
+        if op_type not in SAFE_OPERATORS:
+            raise ValueError(f"Unsupported operation: {op_type.__name__}")
+        return SAFE_OPERATORS[op_type](operand)
+    else:
+        raise ValueError(f"Unsupported node type: {type(node).__name__}")
 
 def calculate_basic_math(expression: str) -> Dict[str, Union[float, str]]:
     """
-    Calculate basic mathematical expressions safely.
-    
+    Calculate basic mathematical expressions safely using AST parsing.
+
     Use this function when users ask for basic arithmetic calculations
     like addition, subtraction, multiplication, division, or expressions
     with parentheses.
-    
+
     Args:
         expression: A mathematical expression as a string (e.g., "2 + 3 * 4")
-    
+
     Returns:
         Dictionary containing the result and operation details
     """
@@ -19,15 +57,16 @@ def calculate_basic_math(expression: str) -> Dict[str, Union[float, str]]:
         # Remove any potentially dangerous characters and keep only safe ones
         allowed_chars = "0123456789+-*/.() "
         safe_expression = ''.join(c for c in expression if c in allowed_chars)
-        
+
         if not safe_expression.strip():
             return {
                 "error": "Empty or invalid expression",
                 "status": "error"
             }
-        
-        # Evaluate the expression
-        result = eval(safe_expression)
+
+        # Parse and safely evaluate the expression using AST
+        tree = ast.parse(safe_expression, mode='eval')
+        result = _safe_eval_node(tree.body)
         
         return {
             "result": float(result),

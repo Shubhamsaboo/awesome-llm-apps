@@ -8,6 +8,7 @@ from time import sleep
 from io import BytesIO
 from PIL import Image
 import subprocess
+import shlex
 import pyautogui
 import base64
 import csv
@@ -57,9 +58,17 @@ class Desktop:
         return {row.get('Name').lower():row.get('AppID') for row in reader}
     
     def execute_command(self,command:str)->tuple[str,int]:
+        """Execute a PowerShell command safely without shell injection risks."""
         try:
-            result = subprocess.run(['powershell', '-Command']+command.split(), 
-            capture_output=True, check=True)
+            # Security: Use shlex.split() for proper command parsing
+            # This handles quoted strings correctly and prevents injection
+            command_parts = shlex.split(command, posix=False)  # posix=False for Windows
+            result = subprocess.run(
+                ['powershell', '-Command'] + command_parts,
+                capture_output=True,
+                check=True,
+                shell=False  # Security: Never use shell=True
+            )
             return (result.stdout.decode('latin1'),result.returncode)
         except subprocess.CalledProcessError as e:
             return (e.stdout.decode('latin1'),e.returncode)

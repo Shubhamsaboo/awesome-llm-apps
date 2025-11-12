@@ -1,4 +1,5 @@
 import os
+import subprocess
 import soundfile as sf
 import platform
 import time
@@ -14,14 +15,16 @@ from kokoro import KPipeline
 
 
 def play_audio(file_path):
+    """Play audio file safely using subprocess instead of os.system()."""
     system = platform.system()
     try:
+        # Security: Use subprocess.run() instead of os.system() to prevent command injection
         if system == "Darwin":
-            os.system(f"afplay {file_path}")
+            subprocess.run(["afplay", file_path], check=False)
         elif system == "Linux":
-            os.system(f"aplay {file_path}")
+            subprocess.run(["aplay", file_path], check=False)
         elif system == "Windows":
-            os.system(f'start "" "{file_path}"')
+            subprocess.run(["start", "", file_path], shell=True, check=False)  # Windows requires shell for 'start'
         else:
             print(f"Audio saved to {file_path} (auto-play not supported on this system)")
     except Exception as e:
