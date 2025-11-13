@@ -68,19 +68,19 @@ pip install -r requirements.txt
 
 ### 4. **Test OpenAI Agent**
 ```bash
-cd 2_1_openai_adk_agent
 adk web
 ```
+Then select the 2_1_openai_adk_agent in the ADK web UI
 - Try asking: "Tell me a fun fact!"
 - Notice the OpenAI GPT-4 response style
 
 ### 5. **Test Anthropic Agent**
 ```bash
-cd 2_2_anthropic_adk_agent
 adk web
 ```
+Then select the 2_2_anthropic_adk_agent in the ADK web UI
 - Try asking: "Tell me a fun fact!"
-- Compare with the Claude response style
+- Compare with the GPT-4 response style
 
 ## 💡 Key Code Pattern
 
