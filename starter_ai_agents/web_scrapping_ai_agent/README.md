@@ -1,39 +1,270 @@
-## 💻 Web Scrapping AI Agent
-This Streamlit app allows you to scrape a website using OpenAI API and the scrapegraphai library. Simply provide your OpenAI API key, enter the URL of the website you want to scrape, and specify what you want the AI agent to extract from the website.
+# 🕷️ Web Scraping AI Agent
 
-### Features
-- Scrape any website by providing the URL
-- Utilize OpenAI's LLMs (GPT-4o or GPT-5) for intelligent scraping
-- Customize the scraping task by specifying what you want the AI agent to extract
+AI-powered web scraping using **ScrapeGraph AI** - extract structured data from websites using natural language prompts. This folder contains two implementations:
 
-### How to get Started?
+1. **🏠 Local Library** - Using `scrapegraphai` library (runs locally)
+2. **☁️ Cloud SDK** - Using ScrapeGraph AI API (managed service)
 
-1. Clone the GitHub repository
+---
 
-```bash
-git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-cd awesome-llm-apps/advanced_tools_frameworks/web_scrapping_ai_agent
-```
-2. Install the required dependencies:
+## 📁 What's Inside
 
+### 🏠 Local Library Version
+**Files**: `ai_scrapper.py`, `local_ai_scrapper.py`
+
+Use the open-source ScrapeGraph AI library that runs on your local machine.
+
+**✅ Pros:**
+- Free to use (no API costs)
+- Full control over execution
+- Privacy-friendly (all data stays local)
+
+**❌ Cons:**
+- Requires local installation and dependencies
+- Limited by your hardware
+- Need to manage updates
+
+**Quick Start:**
 ```bash
 pip install -r requirements.txt
-```
-3. Get your OpenAI API Key
-
-- Sign up for an [OpenAI account](https://platform.openai.com/) (or the LLM provider of your choice) and obtain your API key.
-
-4. Run the Streamlit App
-```bash
 streamlit run ai_scrapper.py
 ```
 
-### How it Works?
+---
 
-- The app prompts you to enter your OpenAI API key, which is used to authenticate and access the OpenAI language models.
-- You can select the desired language model (GPT-3.5-turbo or GPT-4) for the scraping task.
-- Enter the URL of the website you want to scrape in the provided text input field.
-- Specify what you want the AI agent to extract from the website by entering a user prompt.
-- The app creates a SmartScraperGraph object using the provided URL, user prompt, and OpenAI configuration.
-- The SmartScraperGraph object scrapes the website and extracts the requested information using the specified language model.
-- The scraped results are displayed in the app for you to view
+### ☁️ Cloud SDK Version
+**Folder**: `scrapegraph_ai_sdk/`
+
+Use the managed ScrapeGraph AI API with advanced features and no setup required.
+
+**✅ Pros:**
+- No setup required (just API key)
+- Scalable and fast
+- Advanced features (SmartCrawler, SearchScraper, Markdownify)
+- Always up-to-date
+
+**❌ Cons:**
+- Pay-per-use (credit-based)
+- Requires internet connection
+
+**Quick Start:**
+```bash
+cd scrapegraph_ai_sdk/
+pip install -r requirements.txt
+export SGAI_API_KEY='your-api-key'
+python quickstart.py
+```
+
+**📖 Full Documentation**: [See scrapegraph_ai_sdk/README.md](scrapegraph_ai_sdk/README.md)
+
+---
+
+## 🚀 Getting Started
+
+### Local Library Version
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
+cd awesome-llm-apps/starter_ai_agents/web_scrapping_ai_agent
+```
+
+2. **Install dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+3. **Get your OpenAI API Key**
+- Sign up for an [OpenAI account](https://platform.openai.com/)
+- Obtain your API key
+
+4. **Run the Streamlit App**
+```bash
+streamlit run ai_scrapper.py
+# Or for local models:
+streamlit run local_ai_scrapper.py
+```
+
+### Cloud SDK Version
+
+1. **Navigate to SDK folder**
+```bash
+cd scrapegraph_ai_sdk/
+```
+
+2. **Install dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+3. **Get your ScrapeGraph AI API Key**
+- Sign up at [scrapegraphai.com](https://scrapegraphai.com)
+- Get your API key
+
+4. **Set API key**
+```bash
+export SGAI_API_KEY='your-api-key-here'
+```
+
+5. **Run demos**
+```bash
+# Quick test
+python quickstart.py
+
+# SmartScraper demo
+python smart_scraper_demo.py
+
+# Interactive app
+streamlit run scrapegraph_app.py
+```
+
+---
+
+## 📊 Feature Comparison
+
+| Feature | Local Library | Cloud SDK |
+|---------|--------------|-----------|
+| **Setup** | Install dependencies | API key only |
+| **Cost** | Free (+ LLM costs) | Pay-per-use |
+| **Processing** | Your hardware | Cloud-based |
+| **Speed** | Depends on hardware | Fast & optimized |
+| **SmartScraper** | ✅ | ✅ |
+| **SearchScraper** | ❌ | ✅ |
+| **SmartCrawler** | ❌ | ✅ |
+| **Markdownify** | ❌ | ✅ |
+| **Scheduled Jobs** | ❌ | ✅ |
+| **Scalability** | Limited | Unlimited |
+| **Maintenance** | Self-managed | Fully managed |
+
+---
+
+## 💡 Use Cases
+
+### E-commerce Scraping
+```python
+# Extract product information
+prompt = "Extract product names, prices, and availability"
+```
+
+### Content Aggregation
+```python
+# Convert articles to structured data
+prompt = "Extract article title, author, date, and main content"
+```
+
+### Competitive Intelligence
+```python
+# Monitor competitor websites
+prompt = "Extract pricing, features, and updates"
+```
+
+### Lead Generation
+```python
+# Extract contact information
+prompt = "Find company names, emails, and phone numbers"
+```
+
+---
+
+## 🔧 How It Works
+
+### Local Library
+1. You provide your OpenAI API key
+2. Select the model (GPT-4o, GPT-5, or local models)
+3. Enter the URL and extraction prompt
+4. The app uses ScrapeGraphAI to scrape and extract data locally
+5. Results are displayed in the app
+
+### Cloud SDK
+1. You provide your ScrapeGraph AI API key
+2. Choose the scraping method (SmartScraper, SearchScraper, etc.)
+3. Define extraction prompt and optional output schema
+4. API processes the request in the cloud
+5. Structured results are returned
+
+---
+
+## 🌟 Cloud SDK Features
+
+### 🤖 SmartScraper
+Extract structured data using natural language:
+```python
+response = client.smartscraper(
+    website_url="https://example.com",
+    user_prompt="Extract all products with prices"
+)
+```
+
+### 🔍 SearchScraper
+AI-powered web search with structured results:
+```python
+response = client.smartscraper(
+    user_prompt="Find top 5 AI news websites",
+    num_results=5
+)
+```
+
+### 📝 Markdownify
+Convert webpages to clean markdown:
+```python
+response = client.markdownify(
+    website_url="https://example.com/article"
+)
+```
+
+### 🕷️ SmartCrawler
+Crawl multiple pages intelligently:
+```python
+request_id = client.smartcrawler(
+    url="https://docs.example.com",
+    user_prompt="Extract all API endpoints",
+    max_pages=50
+)
+```
+
+---
+
+## 📖 Documentation
+
+- **Local Library**: [ScrapeGraphAI GitHub](https://github.com/VinciGit00/Scrapegraph-ai)
+- **Cloud SDK**: [See scrapegraph_ai_sdk/README.md](scrapegraph_ai_sdk/README.md)
+- **API Docs**: https://docs.scrapegraphai.com
+
+---
+
+## 🤝 Which Version Should I Use?
+
+**Use Local Library if:**
+- ✅ You want free, open-source solution
+- ✅ You have good hardware
+- ✅ You need full control
+- ✅ Privacy is critical
+
+**Use Cloud SDK if:**
+- ✅ You want quick setup
+- ✅ You need advanced features
+- ✅ You want scalability
+- ✅ You prefer managed service
+
+**💡 Pro Tip**: Start with the local version to learn, then switch to SDK for production!
+
+---
+
+## 🔗 Resources
+
+- **ScrapeGraph AI Website**: https://scrapegraphai.com
+- **GitHub Repository**: https://github.com/ScrapeGraphAI/scrapegraph-sdk
+- **Documentation**: https://docs.scrapegraphai.com
+- **Get API Key**: https://scrapegraphai.com
+
+---
+
+## 💬 Support
+
+- 📧 Email: support@scrapegraphai.com
+- 💻 GitHub Issues
+- 🌟 Star the repo if you find it useful!
+
+---
+
+Made with ❤️ by the ScrapeGraph AI team
