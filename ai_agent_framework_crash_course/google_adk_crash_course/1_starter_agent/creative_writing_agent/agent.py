@@ -22,5 +22,5 @@ root_agent = LlmAgent(
     - Provide constructive feedback
     
     Keep responses creative, inspiring, and supportive of artistic expression.
-    """
+    """,
 )

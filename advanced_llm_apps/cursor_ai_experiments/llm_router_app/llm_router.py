@@ -1,7 +1,7 @@
 import os
 
 os.environ["OPENAI_API_KEY"] = "your_openai_api_key"
-os.environ['TOGETHERAI_API_KEY'] = "your_togetherai_api_key"
+os.environ["TOGETHERAI_API_KEY"] = "your_togetherai_api_key"
 
 import streamlit as st
 from routellm.controller import Controller
@@ -38,15 +38,16 @@ if prompt := st.chat_input("What is your message?"):
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         response = client.chat.completions.create(
-            model="router-mf-0.11593",
-            messages=[{"role": "user", "content": prompt}]
+            model="router-mf-0.11593", messages=[{"role": "user", "content": prompt}]
         )
-        message_content = response['choices'][0]['message']['content']
-        model_name = response['model']
-        
+        message_content = response["choices"][0]["message"]["content"]
+        model_name = response["model"]
+
         # Display assistant's response
         message_placeholder.markdown(message_content)
         st.caption(f"Model used: {model_name}")
-    
+
     # Add assistant's response to chat history
-    st.session_state.messages.append({"role": "assistant", "content": message_content, "model": model_name})
+    st.session_state.messages.append(
+        {"role": "assistant", "content": message_content, "model": model_name}
+    )

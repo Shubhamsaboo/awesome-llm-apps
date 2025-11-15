@@ -2,15 +2,24 @@ import streamlit as st
 from embedchain import App
 import tempfile
 
+
 # Define the embedchain_bot function
 def embedchain_bot(db_path, api_key):
     return App.from_config(
         config={
-            "llm": {"provider": "openai", "config": {"model": "gpt-4-turbo", "temperature": 0.5, "api_key": api_key}},
+            "llm": {
+                "provider": "openai",
+                "config": {
+                    "model": "gpt-4-turbo",
+                    "temperature": 0.5,
+                    "api_key": api_key,
+                },
+            },
             "vectordb": {"provider": "chroma", "config": {"dir": db_path}},
             "embedder": {"provider": "openai", "config": {"api_key": api_key}},
         }
     )
+
 
 st.title("Chat with Substack Newsletter 📝")
 st.caption("This app allows you to chat with Substack newsletter using OpenAI API")
@@ -29,7 +38,7 @@ if openai_access_token:
 
     if substack_url:
         # Add the Substack blog to the knowledge base
-        app.add(substack_url, data_type='substack')
+        app.add(substack_url, data_type="substack")
         st.success(f"Added {substack_url} to knowledge base!")
 
         # Ask a question about the Substack blog

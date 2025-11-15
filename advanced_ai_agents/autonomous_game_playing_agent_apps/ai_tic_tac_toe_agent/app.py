@@ -37,7 +37,7 @@ def main():
     ####################################################################
     required_keys_info = {
         "gpt-4o": "OPENAI_API_KEY",
-        "o3-mini": "OPENAI_API_KEY", 
+        "o3-mini": "OPENAI_API_KEY",
         "claude-3.5": "ANTHROPIC_API_KEY",
         "claude-3.7": "ANTHROPIC_API_KEY",
         "claude-3.7-thinking": "ANTHROPIC_API_KEY",
@@ -45,7 +45,7 @@ def main():
         "gemini-pro": "GOOGLE_API_KEY",
         "llama-3.3": "GROQ_API_KEY",
     }
-    
+
     ####################################################################
     # App header
     ####################################################################
@@ -98,7 +98,7 @@ def main():
             required_key = required_keys_info.get(model)
             if required_key and not os.getenv(required_key):
                 missing_keys.append(f"**{model}** requires `{required_key}`")
-        
+
         if missing_keys:
             st.error(f"""
             🔑 **Missing API Keys:**

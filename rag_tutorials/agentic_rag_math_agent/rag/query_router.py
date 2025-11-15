@@ -1,19 +1,16 @@
 # rag/query_router.py
 import sys
 import os
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 
 import os
 import requests
-import openai  
-import json
-import inspect
-from llama_index.core import StorageContext,load_index_from_storage
+from llama_index.core import StorageContext, load_index_from_storage
 from dotenv import load_dotenv
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
-from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.llms.openai import OpenAI
 from rag.guardrails import OutputValidator, InputValidator
 
@@ -26,12 +23,16 @@ TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 output_validator = OutputValidator()
 input_validator = InputValidator()
 
+
 def load_kb_index():
     qdrant_client = QdrantClient(host="localhost", port=6333)
     vector_store = QdrantVectorStore(client=qdrant_client, collection_name="math_agent")
-    storage_context = StorageContext.from_defaults(persist_dir="storage",vector_store=vector_store)
+    storage_context = StorageContext.from_defaults(
+        persist_dir="storage", vector_store=vector_store
+    )
     index = load_index_from_storage(storage_context)
     return index
+
 
 def query_kb(question: str):
     index = load_kb_index()
@@ -48,6 +49,7 @@ def query_kb(question: str):
 
     return matched_text, similarity
 
+
 def query_web(question: str):
     url = "https://api.tavily.com/search"
     headers = {"Content-Type": "application/json"}
@@ -56,11 +58,12 @@ def query_web(question: str):
         "query": question,
         "search_depth": "basic",
         "include_answer": True,
-        "include_raw_content": False
+        "include_raw_content": False,
     }
     response = requests.post(url, json=payload, headers=headers)
     data = response.json()
     return data.get("answer", "No answer found.")
+
 
 def explain_with_openai(question: str, web_content: str):
     prompt = f"""
@@ -96,8 +99,10 @@ def answer_math_question(question: str):
         kb_answer, similarity = query_kb(question)
         print("🧪 KB raw answer:", kb_answer)
 
-        if similarity > 0.:
-            print("✅ High similarity KB match, using GPT for step-by-step explanation...")
+        if similarity > 0.0:
+            print(
+                "✅ High similarity KB match, using GPT for step-by-step explanation..."
+            )
 
             prompt = f"""
 You are a helpful math tutor.
@@ -141,6 +146,7 @@ Use the KB content as your only source. Do not guess or recalculate.
         from_kb = False
 
     return answer
+
 
 if __name__ == "__main__":
     question = """

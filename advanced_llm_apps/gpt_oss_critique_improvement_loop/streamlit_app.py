@@ -30,7 +30,10 @@ SAMPLE_PROMPTS = [
 
 # --- Helper functions --------------------------------------------------------
 
-def _one_completion(client: Groq, messages: List[Dict[str, str]], temperature: float) -> str:
+
+def _one_completion(
+    client: Groq, messages: List[Dict[str, str]], temperature: float
+) -> str:
     """Single non-streaming completion with basic retries."""
     delay = 0.5
     for attempt in range(3):
@@ -57,25 +60,26 @@ def generate_initial_answer(client: Groq, prompt: str) -> str:
     candidates = []
     with cf.ThreadPoolExecutor(max_workers=3) as ex:
         futures = [
-            ex.submit(_one_completion, client, 
-                     [{"role": "user", "content": prompt}], 0.9)
+            ex.submit(
+                _one_completion, client, [{"role": "user", "content": prompt}], 0.9
+            )
             for _ in range(3)
         ]
         for fut in cf.as_completed(futures):
             candidates.append(fut.result())
-    
+
     # Synthesize candidates
     candidate_texts = []
     for i, c in enumerate(candidates):
-        candidate_texts.append(f"--- Candidate {i+1} ---\n{c}")
-    
+        candidate_texts.append(f"--- Candidate {i + 1} ---\n{c}")
+
     synthesis_prompt = (
         f"You are given 3 candidate answers. Synthesize them into ONE best answer, "
         f"eliminating repetition and ensuring coherence:\n\n"
         f"{chr(10).join(candidate_texts)}\n\n"
         f"Return the single best final answer."
     )
-    
+
     return _one_completion(client, [{"role": "user", "content": synthesis_prompt}], 0.2)
 
 
@@ -88,11 +92,13 @@ def critique_answer(client: Groq, prompt: str, answer: str) -> str:
         f"unclear explanations, or areas that need improvement. Be constructive but thorough. "
         f"Format as a bulleted list starting with '•'."
     )
-    
+
     return _one_completion(client, [{"role": "user", "content": critique_prompt}], 0.3)
 
 
-def revise_answer(client: Groq, prompt: str, original_answer: str, critiques: str) -> str:
+def revise_answer(
+    client: Groq, prompt: str, original_answer: str, critiques: str
+) -> str:
     """Revise the original answer addressing all critiques."""
     revision_prompt = (
         f"Original question: {prompt}\n\n"
@@ -102,56 +108,56 @@ def revise_answer(client: Groq, prompt: str, original_answer: str, critiques: st
         f"Maintain the good parts, fix the issues, and add missing information. "
         f"Return the improved answer."
     )
-    
+
     return _one_completion(client, [{"role": "user", "content": revision_prompt}], 0.2)
 
 
-def critique_improvement_loop(prompt: str, max_iterations: int = 2, groq_api_key: str | None = None) -> Dict[str, Any]:
+def critique_improvement_loop(
+    prompt: str, max_iterations: int = 2, groq_api_key: str | None = None
+) -> Dict[str, Any]:
     """Main function implementing the critique and improvement loop."""
     client = Groq(api_key=groq_api_key) if groq_api_key else Groq()
-    
-    results = {
-        "iterations": [],
-        "final_answer": "",
-        "total_iterations": 0
-    }
-    
+
+    results = {"iterations": [], "final_answer": "", "total_iterations": 0}
+
     # Generate initial answer
     with st.spinner("Generating initial answer..."):
         initial_answer = generate_initial_answer(client, prompt)
-        results["iterations"].append({
-            "type": "initial",
-            "answer": initial_answer,
-            "critiques": None
-        })
-    
+        results["iterations"].append(
+            {"type": "initial", "answer": initial_answer, "critiques": None}
+        )
+
     current_answer = initial_answer
-    
+
     # Improvement loop
     for iteration in range(max_iterations):
         with st.spinner(f"Critiquing iteration {iteration + 1}..."):
             critiques = critique_answer(client, prompt, current_answer)
-        
+
         with st.spinner(f"Revising iteration {iteration + 1}..."):
             revised_answer = revise_answer(client, prompt, current_answer, critiques)
-            
-            results["iterations"].append({
-                "type": "improvement",
-                "answer": revised_answer,
-                "critiques": critiques
-            })
-            
+
+            results["iterations"].append(
+                {
+                    "type": "improvement",
+                    "answer": revised_answer,
+                    "critiques": critiques,
+                }
+            )
+
             current_answer = revised_answer
-    
+
     results["final_answer"] = current_answer
     results["total_iterations"] = len(results["iterations"])
-    
+
     return results
 
 
 # --- Streamlit UI ------------------------------------------------------------
 
-st.set_page_config(page_title="Critique & Improvement Loop", page_icon="🔄", layout="wide")
+st.set_page_config(
+    page_title="Critique & Improvement Loop", page_icon="🔄", layout="wide"
+)
 st.title("🔄 Critique & Improvement Loop")
 
 st.markdown(
@@ -160,7 +166,9 @@ st.markdown(
 
 with st.sidebar:
     st.header("Settings")
-    api_key = st.text_input("Groq API Key", value=os.getenv("GROQ_API_KEY", ""), type="password")
+    api_key = st.text_input(
+        "Groq API Key", value=os.getenv("GROQ_API_KEY", ""), type="password"
+    )
     max_iterations = st.slider("Max Improvement Iterations", 1, 3, 2)
     st.markdown("---")
     st.caption("Each iteration adds critique + revision steps for higher quality.")
@@ -169,11 +177,16 @@ with st.sidebar:
 if "prompt" not in st.session_state:
     st.session_state["prompt"] = ""
 
+
 def random_prompt_callback():
     import random
+
     st.session_state["prompt"] = random.choice(SAMPLE_PROMPTS)
 
-prompt = st.text_area("Your prompt", height=150, placeholder="Ask me anything…", key="prompt")
+
+prompt = st.text_area(
+    "Your prompt", height=150, placeholder="Ask me anything…", key="prompt"
+)
 
 col1, col2 = st.columns([1, 1])
 with col1:
@@ -187,7 +200,9 @@ if generate_clicked:
         st.stop()
 
     try:
-        results = critique_improvement_loop(prompt, max_iterations, groq_api_key=api_key or None)
+        results = critique_improvement_loop(
+            prompt, max_iterations, groq_api_key=api_key or None
+        )
     except Exception as e:
         st.exception(e)
         st.stop()
@@ -195,25 +210,27 @@ if generate_clicked:
     # Display results
     st.subheader("🎯 Final Answer")
     st.write(results["final_answer"])
-    
+
     # Show improvement history
-    with st.expander(f"📋 Show Improvement History ({results['total_iterations']} iterations)"):
+    with st.expander(
+        f"📋 Show Improvement History ({results['total_iterations']} iterations)"
+    ):
         for i, iteration in enumerate(results["iterations"]):
             if iteration["type"] == "initial":
-                st.markdown(f"### 🚀 Initial Answer")
+                st.markdown("### 🚀 Initial Answer")
                 st.write(iteration["answer"])
             else:
                 st.markdown(f"### 🔍 Iteration {i}")
-                
+
                 # Show critiques
                 if iteration["critiques"]:
                     st.markdown("**Critiques:**")
                     st.write(iteration["critiques"])
-                
+
                 # Show improved answer
                 st.markdown("**Improved Answer:**")
                 st.write(iteration["answer"])
-            
+
             if i < len(results["iterations"]) - 1:
                 st.markdown("---")
 
@@ -225,4 +242,4 @@ if generate_clicked:
     with col2:
         st.metric("Improvement Rounds", max_iterations)
     with col3:
-        st.metric("Final Answer Length", len(results["final_answer"])) 
+        st.metric("Final Answer Length", len(results["final_answer"]))

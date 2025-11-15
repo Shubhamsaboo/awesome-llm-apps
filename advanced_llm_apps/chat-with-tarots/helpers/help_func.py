@@ -29,47 +29,54 @@ def generate_random_draw(num_cards, card_names_dataset):
 
     return drawn_cards
 
+
 # --- Helper Functions for LangChain Chain ---
 def format_card_details_for_prompt(card_data, card_meanings):
     """Formats card details (name + upright/reversed meaning) for the prompt."""
     details = []
     for card_info in card_data:
-        card_name = card_info['name']
-        is_reversed = card_info.get('is_reversed', False)
+        card_name = card_info["name"]
+        is_reversed = card_info.get("is_reversed", False)
         if card_name in card_meanings:
             meanings = card_meanings[card_name]
-            if is_reversed and 'reversed' in meanings:
-                meaning = meanings['reversed']
+            if is_reversed and "reversed" in meanings:
+                meaning = meanings["reversed"]
                 orientation = "(reversed)"
             else:
-                meaning = meanings['upright']
+                meaning = meanings["upright"]
                 orientation = "(upright)"
             details.append(f"Card: {card_name} {orientation} - Meaning: {meaning}")
         else:
             details.append(f"Meaning of '{card_name}' not found in the dataset.")
     return "\n".join(details)
 
+
 def prepare_prompt_input(input_dict, meanings_dict):
     """Prepares the input for the prompt by retrieving card details."""
-    card_list = input_dict['cards']
-    context = input_dict['context']
+    card_list = input_dict["cards"]
+    context = input_dict["context"]
     formatted_details = format_card_details_for_prompt(card_list, meanings_dict)
     # Extract and concatenate the symbolism of each card
     symbolisms = []
     for card_info in card_list:
-        card_name = card_info['name']
+        card_name = card_info["name"]
         if card_name in meanings_dict:
-            symbolism = meanings_dict[card_name].get('symbolism', '')
+            symbolism = meanings_dict[card_name].get("symbolism", "")
             if symbolism:
                 symbolisms.append(f"{card_name}: {symbolism}")
     symbolism_str = "\n".join(symbolisms)
-    return {"card_details": formatted_details, "context": context, "symbolism": symbolism_str}
+    return {
+        "card_details": formatted_details,
+        "context": context,
+        "symbolism": symbolism_str,
+    }
+
 
 # --- Configure the LLM model ---
 llm = ChatOllama(
-    base_url ="http://localhost:11434",
-    model = "phi4",
-    temperature = 0.8,
+    base_url="http://localhost:11434",
+    model="phi4",
+    temperature=0.8,
 )
 print(f"\nLLM model '{llm.model}' configured.")
 

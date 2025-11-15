@@ -1,18 +1,18 @@
-
-
 from config.logger import setup_logging
+
 setup_logging(console_level="INFO")
 from loguru import logger
 
 logger.info("Starting the application")
 logger.info("Loading environment variables")
 from dotenv import load_dotenv
+
 load_dotenv()
 logger.info("Loaded environment variables")
 
 logger.info("Loading agents")
-from agents.flight import flight_search_agent
 from agents.hotel import hotel_search_agent
+
 logger.info("Loaded agents")
 
 # structured_output_agent = Agent(

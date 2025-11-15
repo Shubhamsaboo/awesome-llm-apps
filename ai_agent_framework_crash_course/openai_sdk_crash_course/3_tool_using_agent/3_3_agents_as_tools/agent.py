@@ -2,18 +2,15 @@ from agents import Agent
 
 # Define specialized translation agents
 spanish_agent = Agent(
-    name="Spanish Agent",
-    instructions="You translate the user's message to Spanish"
+    name="Spanish Agent", instructions="You translate the user's message to Spanish"
 )
 
 french_agent = Agent(
-    name="French Agent", 
-    instructions="You translate the user's message to French"
+    name="French Agent", instructions="You translate the user's message to French"
 )
 
 german_agent = Agent(
-    name="German Agent",
-    instructions="You translate the user's message to German"
+    name="German Agent", instructions="You translate the user's message to German"
 )
 
 # Create orchestrator agent that uses other agents as tools
@@ -37,15 +34,15 @@ root_agent = Agent(
     tools=[
         spanish_agent.as_tool(
             tool_name="translate_to_spanish",
-            tool_description="Translate the user's message to Spanish"
+            tool_description="Translate the user's message to Spanish",
         ),
         french_agent.as_tool(
-            tool_name="translate_to_french", 
-            tool_description="Translate the user's message to French"
+            tool_name="translate_to_french",
+            tool_description="Translate the user's message to French",
         ),
         german_agent.as_tool(
             tool_name="translate_to_german",
-            tool_description="Translate the user's message to German"
-        )
-    ]
+            tool_description="Translate the user's message to German",
+        ),
+    ],
 )

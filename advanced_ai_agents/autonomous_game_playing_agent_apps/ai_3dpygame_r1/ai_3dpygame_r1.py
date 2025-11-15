@@ -3,7 +3,7 @@ from openai import OpenAI
 from agno.agent import Agent as AgnoAgent
 from agno.run.agent import RunOutput
 from agno.models.openai import OpenAIChat as AgnoOpenAIChat
-from langchain_openai import ChatOpenAI 
+from langchain_openai import ChatOpenAI
 import asyncio
 from browser_use import Browser
 
@@ -11,25 +11,18 @@ st.set_page_config(page_title="PyGame Code Generator", layout="wide")
 
 # Initialize session state
 if "api_keys" not in st.session_state:
-    st.session_state.api_keys = {
-        "deepseek": "",
-        "openai": ""
-    }
+    st.session_state.api_keys = {"deepseek": "", "openai": ""}
 
 # Streamlit sidebar for API keys
 with st.sidebar:
     st.title("API Keys Configuration")
     st.session_state.api_keys["deepseek"] = st.text_input(
-        "DeepSeek API Key",
-        type="password",
-        value=st.session_state.api_keys["deepseek"]
+        "DeepSeek API Key", type="password", value=st.session_state.api_keys["deepseek"]
     )
     st.session_state.api_keys["openai"] = st.text_input(
-        "OpenAI API Key",
-        type="password",
-        value=st.session_state.api_keys["openai"]
+        "OpenAI API Key", type="password", value=st.session_state.api_keys["openai"]
     )
-    
+
     st.markdown("---")
     st.info("""
     📝 How to use:
@@ -46,9 +39,7 @@ with st.sidebar:
 st.title("🎮 AI 3D Visualizer with DeepSeek R1")
 example_query = "Create a particle system simulation where 100 particles emit from the mouse position and respond to keyboard-controlled wind forces"
 query = st.text_area(
-    "Enter your PyGame query:",
-    height=70,
-    placeholder=f"e.g.: {example_query}"
+    "Enter your PyGame query:", height=70, placeholder=f"e.g.: {example_query}"
 )
 
 # Split the buttons into columns
@@ -57,14 +48,17 @@ generate_code_btn = col1.button("Generate Code")
 generate_vis_btn = col2.button("Generate Visualization")
 
 if generate_code_btn and query:
-    if not st.session_state.api_keys["deepseek"] or not st.session_state.api_keys["openai"]:
+    if (
+        not st.session_state.api_keys["deepseek"]
+        or not st.session_state.api_keys["openai"]
+    ):
         st.error("Please provide both API keys in the sidebar")
         st.stop()
 
     # Initialize Deepseek client
     deepseek_client = OpenAI(
         api_key=st.session_state.api_keys["deepseek"],
-        base_url="https://api.deepseek.com"
+        base_url="https://api.deepseek.com",
     )
 
     system_prompt = """You are a Pygame and Python Expert that specializes in making games and visualisation through pygame and python programming. 
@@ -78,24 +72,23 @@ if generate_code_btn and query:
                 model="deepseek-reasoner",
                 messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": query}
+                    {"role": "user", "content": query},
                 ],
-                max_tokens=1  
+                max_tokens=1,
             )
 
         reasoning_content = deepseek_response.choices[0].message.reasoning_content
         print("\nDeepseek Reasoning:\n", reasoning_content)
-        with st.expander("R1's Reasoning"):      
+        with st.expander("R1's Reasoning"):
             st.write(reasoning_content)
 
         # Initialize OpenAI agent
         openai_agent = AgnoAgent(
             model=AgnoOpenAIChat(
-                id="gpt-4o",
-                api_key=st.session_state.api_keys["openai"]
+                id="gpt-4o", api_key=st.session_state.api_keys["openai"]
             ),
             debug_mode=True,
-            markdown=True
+            markdown=True,
         )
 
         # Extract code
@@ -109,12 +102,14 @@ if generate_code_btn and query:
 
         # Store the generated code in session state
         st.session_state.generated_code = extracted_code
-        
+
         # Display the code
-        with st.expander("Generated PyGame Code", expanded=True):      
+        with st.expander("Generated PyGame Code", expanded=True):
             st.code(extracted_code, language="python")
-            
-        st.success("Code generated successfully! Click 'Generate Visualization' to run it.")
+
+        st.success(
+            "Code generated successfully! Click 'Generate Visualization' to run it."
+        )
 
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
@@ -123,35 +118,36 @@ elif generate_vis_btn:
     if "generated_code" not in st.session_state:
         st.warning("Please generate code first before visualization")
     else:
+
         async def run_pygame_on_trinket(code: str) -> None:
             browser = Browser()
-            from browser_use import Agent 
+            from browser_use import Agent
+
             async with await browser.new_context() as context:
                 model = ChatOpenAI(
-                    model="gpt-4o", 
-                    api_key=st.session_state.api_keys["openai"]
+                    model="gpt-4o", api_key=st.session_state.api_keys["openai"]
                 )
-                
+
                 agent1 = Agent(
-                    task='Go to https://trinket.io/features/pygame, thats your only job.',
+                    task="Go to https://trinket.io/features/pygame, thats your only job.",
                     llm=model,
                     browser_context=context,
                 )
-                
+
                 executor = Agent(
-                    task='Executor. Execute the code written by the User by clicking on the run button on the right. ',
+                    task="Executor. Execute the code written by the User by clicking on the run button on the right. ",
                     llm=model,
-                    browser_context=context
+                    browser_context=context,
                 )
 
                 coder = Agent(
-                    task='Coder. Your job is to wait for the user for 10 seconds to write the code in the code editor.',
+                    task="Coder. Your job is to wait for the user for 10 seconds to write the code in the code editor.",
                     llm=model,
-                    browser_context=context
+                    browser_context=context,
                 )
-                
+
                 viewer = Agent(
-                    task='Viewer. Your job is to just view the pygame window for 10 seconds.',
+                    task="Viewer. Your job is to just view the pygame window for 10 seconds.",
                     llm=model,
                     browser_context=context,
                 )
@@ -165,7 +161,9 @@ elif generate_vis_btn:
                         st.success("Code is running on Trinket!")
                     except Exception as e:
                         st.error(f"Error running code on Trinket: {str(e)}")
-                        st.info("You can still copy the code above and run it manually on Trinket")
+                        st.info(
+                            "You can still copy the code above and run it manually on Trinket"
+                        )
 
         # Run the async function with the stored code
         asyncio.run(run_pygame_on_trinket(st.session_state.generated_code))

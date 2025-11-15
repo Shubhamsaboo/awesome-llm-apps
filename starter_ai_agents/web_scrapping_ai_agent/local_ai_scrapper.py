@@ -27,9 +27,7 @@ user_prompt = st.text_input("What you want the AI agent to scrape from the websi
 
 # Create a SmartScraperGraph object
 smart_scraper_graph = SmartScraperGraph(
-    prompt=user_prompt,
-    source=url,
-    config=graph_config
+    prompt=user_prompt, source=url, config=graph_config
 )
 # Scrape the website
 if st.button("Scrape"):

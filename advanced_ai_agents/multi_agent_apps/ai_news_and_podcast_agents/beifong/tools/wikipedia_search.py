@@ -17,7 +17,7 @@ def wikipedia_search(agent: Agent, query: str, srlimit: int = 5) -> str:
     import requests
     import html
     import json
-    
+
     print("Wikipedia Search Input:", query)
     try:
         search_url = "https://en.wikipedia.org/w/api.php"
@@ -31,21 +31,13 @@ def wikipedia_search(agent: Agent, query: str, srlimit: int = 5) -> str:
         }
         search_response = requests.get(search_url, params=search_params)
         search_data = search_response.json()
-        if (
-            "query" not in search_data
-            or "search" not in search_data["query"]
-            or not search_data["query"]["search"]
-        ):
+        if "query" not in search_data or "search" not in search_data["query"] or not search_data["query"]["search"]:
             print(f"No Wikipedia results found for query: {query}")
             return "No relevant Wikipedia articles found for this topic."
         results = []
         for item in search_data["query"]["search"]:
             title = item["title"]
-            snippet = html.unescape(
-                item["snippet"]
-                .replace('<span class="searchmatch">', "")
-                .replace("</span>", "")
-            )
+            snippet = html.unescape(item["snippet"].replace('<span class="searchmatch">', "").replace("</span>", ""))
             url = f"https://en.wikipedia.org/wiki/{title.replace(' ', '_')}"
             result = {
                 "title": title,

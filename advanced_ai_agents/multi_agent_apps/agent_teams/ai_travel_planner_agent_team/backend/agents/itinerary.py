@@ -3,8 +3,6 @@ from agno.tools.exa import ExaTools
 from agno.tools.firecrawl import FirecrawlTools
 from agno.tools.reasoning import ReasoningTools
 from config.llm import model
-from typing import Optional
-from datetime import datetime, timedelta
 from textwrap import dedent
 
 

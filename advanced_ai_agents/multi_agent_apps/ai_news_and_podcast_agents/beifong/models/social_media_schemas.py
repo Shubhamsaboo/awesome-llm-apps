@@ -2,6 +2,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 
+
 class PostBase(BaseModel):
     post_id: str
     platform: str
@@ -14,6 +15,7 @@ class PostBase(BaseModel):
     post_text: Optional[str] = None
     post_mentions: Optional[str] = None
 
+
 class PostEngagement(BaseModel):
     replies: Optional[int] = None
     retweets: Optional[int] = None
@@ -21,9 +23,11 @@ class PostEngagement(BaseModel):
     bookmarks: Optional[int] = None
     views: Optional[int] = None
 
+
 class MediaItem(BaseModel):
-    type: str 
+    type: str
     url: str
+
 
 class Post(PostBase):
     engagement: Optional[PostEngagement] = None
@@ -37,6 +41,7 @@ class Post(PostBase):
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
+
 class PaginatedPosts(BaseModel):
     items: List[Post]
     total: int
@@ -45,6 +50,7 @@ class PaginatedPosts(BaseModel):
     total_pages: int
     has_next: bool
     has_prev: bool
+
 
 class PostFilterParams(BaseModel):
     platform: Optional[str] = None

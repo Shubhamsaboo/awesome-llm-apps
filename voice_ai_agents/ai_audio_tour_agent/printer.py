@@ -24,7 +24,11 @@ class Printer:
         self.hide_done_ids.add(item_id)
 
     def update_item(
-        self, item_id: str, content: str, is_done: bool = False, hide_checkmark: bool = False
+        self,
+        item_id: str,
+        content: str,
+        is_done: bool = False,
+        hide_checkmark: bool = False,
     ) -> None:
         self.items[item_id] = (content, is_done)
         if hide_checkmark:

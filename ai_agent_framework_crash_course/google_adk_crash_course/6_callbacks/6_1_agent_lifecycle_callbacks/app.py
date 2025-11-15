@@ -5,14 +5,12 @@ Streamlit App for Agent Lifecycle Callbacks Demo
 
 import streamlit as st
 import asyncio
-from agent import llm_agent_with_callbacks, runner
+from agent import runner
 from google.genai import types
 
 # Page configuration
 st.set_page_config(
-    page_title="Agent Lifecycle Callbacks Demo",
-    page_icon="🔄",
-    layout="wide"
+    page_title="Agent Lifecycle Callbacks Demo", page_icon="🔄", layout="wide"
 )
 
 # Title and description
@@ -34,7 +32,7 @@ with st.sidebar:
     - Calculates execution duration
     - Logs completion time
     """)
-    
+
     st.header("🔧 Technical Details")
     st.markdown("""
     - Uses `InMemoryRunner` for session management
@@ -45,46 +43,41 @@ with st.sidebar:
 # Main chat interface
 st.header("💬 Chat with Agent")
 
+
 # Define the get_response function
 async def get_response(prompt_text: str) -> str:
     """Run agent with the given prompt"""
     user_id = "demo_user"
     session_id = "demo_session"
-    
+
     # Get the bundled session service
     session_service = runner.session_service
-    
+
     # Get or create session
     session = await session_service.get_session(
-        app_name="agent_lifecycle_callback_demo", 
-        user_id=user_id, 
-        session_id=session_id
+        app_name="agent_lifecycle_callback_demo", user_id=user_id, session_id=session_id
     )
     if not session:
         session = await session_service.create_session(
             app_name="agent_lifecycle_callback_demo",
             user_id=user_id,
-            session_id=session_id
+            session_id=session_id,
         )
-    
+
     # Create user content
-    user_content = types.Content(
-        role='user',
-        parts=[types.Part(text=prompt_text)]
-    )
-    
+    user_content = types.Content(role="user", parts=[types.Part(text=prompt_text)])
+
     # Run agent and get response
     response_text = ""
     async for event in runner.run_async(
-        user_id=user_id,
-        session_id=session_id,
-        new_message=user_content
+        user_id=user_id, session_id=session_id, new_message=user_content
     ):
         if event.is_final_response() and event.content:
             response_text = event.content.parts[0].text.strip()
             # Don't break - let the loop complete to ensure callbacks run
-    
+
     return response_text
+
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -105,16 +98,16 @@ if prompt := st.chat_input("Ask me anything..."):
     # Add assistant response to chat history
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
-        
+
         # Show loading message
         message_placeholder.markdown("🤔 Thinking...")
-        
+
         # Get response
         response = asyncio.run(get_response(prompt))
-        
+
         # Update placeholder with response
         message_placeholder.markdown(response)
-    
+
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})
 
@@ -158,8 +151,11 @@ if st.button("🗑️ Clear Chat"):
 
 # Footer
 st.markdown("---")
-st.markdown("""
+st.markdown(
+    """
 <div style='text-align: center; color: #666;'>
     <p>Check the console/terminal for callback timing information</p>
 </div>
-""", unsafe_allow_html=True) 
+""",
+    unsafe_allow_html=True,
+)

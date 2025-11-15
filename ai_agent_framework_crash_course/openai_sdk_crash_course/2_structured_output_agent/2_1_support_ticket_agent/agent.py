@@ -3,11 +3,13 @@ from enum import Enum
 from agents import Agent
 from pydantic import BaseModel, Field
 
+
 class Priority(str, Enum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
     CRITICAL = "critical"
+
 
 class SupportTicket(BaseModel):
     title: str = Field(description="A concise summary of the issue")
@@ -16,11 +18,12 @@ class SupportTicket(BaseModel):
     category: str = Field(description="The department this ticket belongs to")
     steps_to_reproduce: Optional[List[str]] = Field(
         description="Steps to reproduce the issue (for technical problems)",
-        default=None
+        default=None,
     )
     estimated_resolution_time: str = Field(
         description="Estimated time to resolve this issue"
     )
+
 
 root_agent = Agent(
     name="Support Ticket Creator",
@@ -38,5 +41,5 @@ root_agent = Agent(
     
     IMPORTANT: Response must be valid JSON matching the SupportTicket schema.
     """,
-    output_type=SupportTicket
+    output_type=SupportTicket,
 )

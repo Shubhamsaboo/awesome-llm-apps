@@ -7,28 +7,43 @@ import os
 
 GITHUB_TOKEN = os.getenv("Your GitHub Token")
 
+
 def get_loader():
-    loader = GithubLoader(
-        config={
-            "token": GITHUB_TOKEN
-        }
-    )
+    loader = GithubLoader(config={"token": GITHUB_TOKEN})
     return loader
 
+
 if "loader" not in st.session_state:
-    st.session_state['loader'] = get_loader()
+    st.session_state["loader"] = get_loader()
 
 loader = st.session_state.loader
+
 
 # Define the embedchain_bot function
 def embedchain_bot(db_path):
     return App.from_config(
         config={
-            "llm": {"provider": "ollama", "config": {"model": "llama3:instruct", "max_tokens": 250, "temperature": 0.5, "stream": True, "base_url": 'http://localhost:11434'}},
+            "llm": {
+                "provider": "ollama",
+                "config": {
+                    "model": "llama3:instruct",
+                    "max_tokens": 250,
+                    "temperature": 0.5,
+                    "stream": True,
+                    "base_url": "http://localhost:11434",
+                },
+            },
             "vectordb": {"provider": "chroma", "config": {"dir": db_path}},
-            "embedder": {"provider": "ollama", "config": {"model": "llama3:instruct", "base_url": 'http://localhost:11434'}},
+            "embedder": {
+                "provider": "ollama",
+                "config": {
+                    "model": "llama3:instruct",
+                    "base_url": "http://localhost:11434",
+                },
+            },
         }
     )
+
 
 def load_repo(git_repo):
     global app
@@ -40,23 +55,28 @@ def load_repo(git_repo):
 
 def make_db_path():
     ret = tempfile.mkdtemp(suffix="chroma")
-    print(f"Created Chroma DB at {ret}")    
+    print(f"Created Chroma DB at {ret}")
     return ret
+
 
 # Create Streamlit app
 st.title("Chat with GitHub Repository 💬")
-st.caption("This app allows you to chat with a GitHub Repo using Llama-3 running with Ollama")
+st.caption(
+    "This app allows you to chat with a GitHub Repo using Llama-3 running with Ollama"
+)
 
 # Initialize the Embedchain App
 if "app" not in st.session_state:
-    st.session_state['app'] = embedchain_bot(make_db_path())
+    st.session_state["app"] = embedchain_bot(make_db_path())
 
 app = st.session_state.app
 
 # Get the GitHub repo from the user
 git_repo = st.text_input("Enter the GitHub Repo", type="default")
 
-if git_repo and ("repos" not in st.session_state or git_repo not in st.session_state.repos):
+if git_repo and (
+    "repos" not in st.session_state or git_repo not in st.session_state.repos
+):
     if "repos" not in st.session_state:
         st.session_state["repos"] = [git_repo]
     else:

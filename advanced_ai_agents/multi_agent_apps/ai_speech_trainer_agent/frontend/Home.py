@@ -39,7 +39,7 @@ def clear_session_response():
     st.session_state.facial_expression_response = None
     st.session_state.voice_analysis_response = None
     st.session_state.content_analysis_response = None
-    st.session_state.feedback_response = None    
+    st.session_state.feedback_response = None
 
 
 # Create two columns with a 70:30 width ratio
@@ -52,7 +52,7 @@ with col1:
     if st.session_state.begin:
         with spacer1:
             st.markdown("<h4>📽️ Video</h4>", unsafe_allow_html=True)
-        
+
         with btn_col:
             if st.button("📤 Upload Video"):
                 if st.session_state.video_path:
@@ -62,16 +62,15 @@ with col1:
                 st.session_state.upload_file = True
                 st.rerun()  # Force rerun to fully reset uploader
 
-    
     if st.session_state.get("upload_file"):
         uploaded_file = st.file_uploader("📤 Upload Video", type=["mp4"])
-        
+
         if uploaded_file is not None:
             temp_dir = tempfile.gettempdir()
             # Use a random name to avoid reuse
-            unique_name = f"{int(np.random.rand()*1e8)}_{uploaded_file.name}"
+            unique_name = f"{int(np.random.rand() * 1e8)}_{uploaded_file.name}"
             file_path = os.path.join(temp_dir, unique_name)
-            
+
             if not os.path.exists(file_path):
                 with open(file_path, "wb") as f:
                     f.write(uploaded_file.read())
@@ -84,7 +83,7 @@ with col1:
         st.success("""
             **Welcome to AI Speech Trainer!**  
             Your ultimate companion to help improve your public speaking skills.
-            """)        
+            """)
         st.info("""
                 🚀 To get started:
                 \n\t1. Record a video of yourself practicing a speech or presentation - use any video recording app.
@@ -97,24 +96,36 @@ with col1:
 
     if st.session_state.video_path:
         st.video(st.session_state.video_path, autoplay=False)
-        
+
         if not st.session_state.response:
             if st.button("▶️ Analyze Video"):
                 with st.spinner("Analyzing video..."):
-                    st.warning("⚠️ This process may take some time, so please be patient and wait for the analysis to complete.")
+                    st.warning(
+                        "⚠️ This process may take some time, so please be patient and wait for the analysis to complete."
+                    )
                     API_URL = "http://localhost:8000/analyze"
-                    response = requests.post(API_URL, json={"video_url": st.session_state.video_path})
-                    
+                    response = requests.post(
+                        API_URL, json={"video_url": st.session_state.video_path}
+                    )
+
                     if response.status_code == 200:
                         st.success("Video analysis completed successfully.")
                         response = response.json()
                         st.session_state.response = response
-                        st.session_state.facial_expression_response = response.get("facial_expression_response")
-                        st.session_state.voice_analysis_response = response.get("voice_analysis_response")
-                        st.session_state.content_analysis_response = response.get("content_analysis_response")
-                        st.session_state.feedback_response = response.get("feedback_response")
+                        st.session_state.facial_expression_response = response.get(
+                            "facial_expression_response"
+                        )
+                        st.session_state.voice_analysis_response = response.get(
+                            "voice_analysis_response"
+                        )
+                        st.session_state.content_analysis_response = response.get(
+                            "content_analysis_response"
+                        )
+                        st.session_state.feedback_response = response.get(
+                            "feedback_response"
+                        )
                         st.rerun()
-                    else:   
+                    else:
                         st.error("🚨 Error during video analysis. Please try again.")
 
 # Right column: Transcript and feedback
@@ -136,7 +147,7 @@ with col2:
         </div>
         <br>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     if st.button("📝 Get Feedback"):

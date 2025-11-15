@@ -22,5 +22,5 @@ root_agent = Agent(
     2. Use code execution for computations and analysis
     3. Provide clear explanations of results
     """,
-    tools=[WebSearchTool(), CodeInterpreterTool()]
+    tools=[WebSearchTool(), CodeInterpreterTool()],
 )

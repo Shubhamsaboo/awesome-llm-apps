@@ -1,14 +1,10 @@
 from datetime import datetime, timezone
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from models.trip_db import TripPlanStatus, TripPlanOutput
 from models.travel_plan import (
     TravelPlanAgentRequest,
     TravelPlanRequest,
     TravelPlanTeamResponse,
 )
 from loguru import logger
-from agents.team import trip_planning_team
 import json
 import time
 from agents.structured_output import convert_to_model
@@ -82,7 +78,7 @@ def travel_request_to_markdown(data: TravelPlanRequest) -> str:
     vibes_descriptions = [travel_vibes.get(v, v) for v in vibes]
 
     lines = [
-        f"# 🧳 Travel Plan Request",
+        "# 🧳 Travel Plan Request",
         "",
         "## 📍 Trip Overview",
         f"- **Traveler:** {data.name.title() if data.name else 'Unnamed Traveler'}",

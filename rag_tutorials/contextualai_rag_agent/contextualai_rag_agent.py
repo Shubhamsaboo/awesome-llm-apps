@@ -73,7 +73,9 @@ def sidebar_api_form() -> bool:
 def ensure_client():
     if not st.session_state.get("contextual_api_key"):
         raise ValueError("Contextual AI API key not provided")
-    return ContextualAI(api_key=st.session_state.contextual_api_key, base_url=st.session_state.base_url)
+    return ContextualAI(
+        api_key=st.session_state.contextual_api_key, base_url=st.session_state.base_url
+    )
 
 
 def create_datastore(client, name: str) -> Optional[str]:
@@ -87,20 +89,31 @@ def create_datastore(client, name: str) -> Optional[str]:
 
 ALLOWED_EXTS = {".pdf", ".html", ".htm", ".mhtml", ".doc", ".docx", ".ppt", ".pptx"}
 
-def upload_documents(client, datastore_id: str, files: List[bytes], filenames: List[str], metadata: Optional[dict]) -> List[str]:
+
+def upload_documents(
+    client,
+    datastore_id: str,
+    files: List[bytes],
+    filenames: List[str],
+    metadata: Optional[dict],
+) -> List[str]:
     doc_ids: List[str] = []
     for content, fname in zip(files, filenames):
         try:
             ext = os.path.splitext(fname)[1].lower()
             if ext not in ALLOWED_EXTS:
-                st.error(f"Unsupported file extension for {fname}. Allowed: {sorted(ALLOWED_EXTS)}")
+                st.error(
+                    f"Unsupported file extension for {fname}. Allowed: {sorted(ALLOWED_EXTS)}"
+                )
                 continue
             with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
                 tmp.write(content)
                 tmp_path = tmp.name
             with open(tmp_path, "rb") as f:
                 if metadata:
-                    result = client.datastores.documents.ingest(datastore_id, file=f, metadata=metadata)
+                    result = client.datastores.documents.ingest(
+                        datastore_id, file=f, metadata=metadata
+                    )
                 else:
                     result = client.datastores.documents.ingest(datastore_id, file=f)
                 doc_ids.append(getattr(result, "id", ""))
@@ -114,7 +127,13 @@ def upload_documents(client, datastore_id: str, files: List[bytes], filenames: L
     return doc_ids
 
 
-def wait_until_documents_ready(api_key: str, datastore_id: str, base_url: str, max_checks: int = 30, interval_sec: float = 5.0) -> None:
+def wait_until_documents_ready(
+    api_key: str,
+    datastore_id: str,
+    base_url: str,
+    max_checks: int = 30,
+    interval_sec: float = 5.0,
+) -> None:
     url = f"{base_url.rstrip('/')}/datastores/{datastore_id}/documents"
     headers = {"Authorization": f"Bearer {api_key}"}
 
@@ -130,9 +149,13 @@ def wait_until_documents_ready(api_key: str, datastore_id: str, base_url: str, m
             time.sleep(interval_sec)
 
 
-def create_agent(client, name: str, description: str, datastore_id: str) -> Optional[str]:
+def create_agent(
+    client, name: str, description: str, datastore_id: str
+) -> Optional[str]:
     try:
-        agent = client.agents.create(name=name, description=description, datastore_ids=[datastore_id])
+        agent = client.agents.create(
+            name=name, description=description, datastore_ids=[datastore_id]
+        )
         return getattr(agent, "id", None)
     except Exception as e:
         st.error(f"Failed to create agent: {e}")
@@ -141,7 +164,9 @@ def create_agent(client, name: str, description: str, datastore_id: str) -> Opti
 
 def query_agent(client, agent_id: str, query: str) -> Tuple[str, Any]:
     try:
-        resp = client.agents.query.create(agent_id=agent_id, messages=[{"role": "user", "content": query}])
+        resp = client.agents.query.create(
+            agent_id=agent_id, messages=[{"role": "user", "content": query}]
+        )
         if hasattr(resp, "content"):
             return resp.content, resp
         if hasattr(resp, "message") and hasattr(resp.message, "content"):
@@ -168,7 +193,9 @@ def show_retrieval_info(client, raw_response, agent_id: str) -> None:
         if not first_content_id:
             st.info("Missing content_id in retrieval metadata.")
             return
-        ret_result = client.agents.query.retrieval_info(message_id=message_id, agent_id=agent_id, content_ids=[first_content_id])
+        ret_result = client.agents.query.retrieval_info(
+            message_id=message_id, agent_id=agent_id, content_ids=[first_content_id]
+        )
         metadatas = getattr(ret_result, "content_metadatas", [])
         if not metadatas:
             st.info("No content metadatas found.")
@@ -178,6 +205,7 @@ def show_retrieval_info(client, raw_response, agent_id: str) -> None:
             st.info("No page image provided in metadata.")
             return
         import base64
+
         img_bytes = base64.b64decode(page_img_b64)
         st.image(img_bytes, caption="Top Attribution Page", use_container_width=True)
         # Removed raw object rendering to keep UI clean
@@ -196,7 +224,9 @@ def update_agent_prompt(client, agent_id: str, system_prompt: str) -> bool:
 
 def evaluate_with_lmunit(client, query: str, response_text: str, unit_test: str):
     try:
-        result = client.lmunit.create(query=query, response=response_text, unit_test=unit_test)
+        result = client.lmunit.create(
+            query=query, response=response_text, unit_test=unit_test
+        )
         st.subheader("Evaluation Result")
         st.code(str(result), language="json")
     except Exception as e:
@@ -232,8 +262,16 @@ with st.expander("1) Create or Select Datastore", expanded=True):
         st.success(f"Using Datastore: {st.session_state.datastore_id}")
 
 with st.expander("2) Upload Documents", expanded=True):
-    uploaded_files = st.file_uploader("Upload PDFs or text files", type=["pdf", "txt", "md"], accept_multiple_files=True)
-    metadata_json = st.text_area("Custom Metadata (JSON)", value="", placeholder='{"custom_metadata": {"field1": "value1"}}')
+    uploaded_files = st.file_uploader(
+        "Upload PDFs or text files",
+        type=["pdf", "txt", "md"],
+        accept_multiple_files=True,
+    )
+    metadata_json = st.text_area(
+        "Custom Metadata (JSON)",
+        value="",
+        placeholder='{"custom_metadata": {"field1": "value1"}}',
+    )
     if uploaded_files and st.session_state.datastore_id:
         contents = [f.getvalue() for f in uploaded_files]
         names = [f.name for f in uploaded_files]
@@ -245,18 +283,28 @@ with st.expander("2) Upload Documents", expanded=True):
                 except Exception as e:
                     st.error(f"Invalid metadata JSON: {e}")
                     parsed_metadata = None
-            ids = upload_documents(client, st.session_state.datastore_id, contents, names, parsed_metadata)
+            ids = upload_documents(
+                client, st.session_state.datastore_id, contents, names, parsed_metadata
+            )
             if ids:
                 st.success(f"Uploaded {len(ids)} document(s)")
-                wait_until_documents_ready(st.session_state.contextual_api_key, st.session_state.datastore_id, st.session_state.base_url)
+                wait_until_documents_ready(
+                    st.session_state.contextual_api_key,
+                    st.session_state.datastore_id,
+                    st.session_state.base_url,
+                )
                 st.info("Documents are ready.")
 
 with st.expander("3) Create or Select Agent", expanded=True):
     if not st.session_state.agent_id and st.session_state.datastore_id:
         agent_name = st.text_input("Agent Name", value="ContextualAI RAG Agent")
-        agent_desc = st.text_area("Agent Description", value="RAG agent over uploaded documents")
+        agent_desc = st.text_area(
+            "Agent Description", value="RAG agent over uploaded documents"
+        )
         if st.button("Create Agent"):
-            a_id = create_agent(client, agent_name, agent_desc, st.session_state.datastore_id)
+            a_id = create_agent(
+                client, agent_name, agent_desc, st.session_state.datastore_id
+            )
             if a_id:
                 st.session_state.agent_id = a_id
                 st.success(f"Created agent: {a_id}")
@@ -265,9 +313,15 @@ with st.expander("3) Create or Select Agent", expanded=True):
 
 with st.expander("4) Agent Settings (Optional)"):
     if st.session_state.agent_id:
-        system_prompt_val = st.text_area("System Prompt", value="", placeholder="Paste a new system prompt to update your agent")
+        system_prompt_val = st.text_area(
+            "System Prompt",
+            value="",
+            placeholder="Paste a new system prompt to update your agent",
+        )
         if st.button("Update System Prompt") and system_prompt_val.strip():
-            ok = update_agent_prompt(client, st.session_state.agent_id, system_prompt_val.strip())
+            ok = update_agent_prompt(
+                client, st.session_state.agent_id, system_prompt_val.strip()
+            )
             if ok:
                 st.success("System prompt updated.")
 
@@ -275,7 +329,7 @@ st.divider()
 
 for message in st.session_state.chat_history:
     with st.chat_message(message["role"]):
-        st.markdown(message["content"]) 
+        st.markdown(message["content"])
 
 query = st.chat_input("Ask a question about your documents")
 if query:
@@ -290,7 +344,9 @@ if query:
             st.session_state.last_raw_response = raw
             processed = post_process_answer(answer)
             st.markdown(processed)
-            st.session_state.chat_history.append({"role": "assistant", "content": processed})
+            st.session_state.chat_history.append(
+                {"role": "assistant", "content": processed}
+            )
     else:
         st.error("Please create or select an agent first.")
 
@@ -298,14 +354,27 @@ with st.expander("Debug & Evaluation", expanded=False):
     st.caption("Tools to inspect retrievals and evaluate answers")
     if st.session_state.agent_id:
         if st.checkbox("Show Retrieval Info", value=False):
-            show_retrieval_info(client, st.session_state.last_raw_response, st.session_state.agent_id)
+            show_retrieval_info(
+                client, st.session_state.last_raw_response, st.session_state.agent_id
+            )
         st.markdown("")
-        unit_test = st.text_area("LMUnit rubric / unit test", value="Does the response avoid unnecessary information?", height=80)
+        unit_test = st.text_area(
+            "LMUnit rubric / unit test",
+            value="Does the response avoid unnecessary information?",
+            height=80,
+        )
         if st.button("Evaluate Last Answer with LMUnit"):
             if st.session_state.last_user_query and st.session_state.chat_history:
-                last_assistant_msgs = [m for m in st.session_state.chat_history if m["role"] == "assistant"]
+                last_assistant_msgs = [
+                    m for m in st.session_state.chat_history if m["role"] == "assistant"
+                ]
                 if last_assistant_msgs:
-                    evaluate_with_lmunit(client, st.session_state.last_user_query, last_assistant_msgs[-1]["content"], unit_test)
+                    evaluate_with_lmunit(
+                        client,
+                        st.session_state.last_user_query,
+                        last_assistant_msgs[-1]["content"],
+                        unit_test,
+                    )
                 else:
                     st.info("No assistant response to evaluate yet.")
             else:
@@ -324,5 +393,3 @@ with st.sidebar:
         if st.button("Reset App"):
             st.session_state.clear()
             st.rerun()
-
-

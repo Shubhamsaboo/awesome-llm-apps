@@ -1,4 +1,4 @@
-from agents import Agent, Runner, handoff
+from agents import Agent, Runner
 from agents.extensions.handoff_prompt import RECOMMENDED_PROMPT_PREFIX
 import asyncio
 
@@ -13,11 +13,11 @@ billing_agent = Agent(
     - Refund processing
     
     Be helpful and provide specific billing assistance.
-    """
+    """,
 )
 
 technical_agent = Agent(
-    name="Technical Support Agent", 
+    name="Technical Support Agent",
     instructions=f"""{RECOMMENDED_PROMPT_PREFIX}
     You are a technical support specialist. Help customers with:
     - App crashes and technical issues
@@ -26,7 +26,7 @@ technical_agent = Agent(
     - Bug reports and technical questions
     
     Provide clear technical guidance and solutions.
-    """
+    """,
 )
 
 # Create triage agent with handoffs
@@ -47,31 +47,33 @@ root_agent = Agent(
     If the issue is clearly technical, transfer to Technical Support Agent.
     If you can handle it yourself (general questions), do so.
     """,
-    handoffs=[billing_agent, technical_agent]  # Creates handoff tools automatically
+    handoffs=[billing_agent, technical_agent],  # Creates handoff tools automatically
 )
+
 
 # Example usage
 async def main():
     print("🤝 OpenAI Agents SDK - Basic Handoffs")
     print("=" * 50)
-    
+
     # Test billing handoff
     print("=== Billing Handoff Example ===")
     result = await Runner.run(
         root_agent,
-        "Hi, I was charged twice for my subscription this month. Can you help me get a refund?"
+        "Hi, I was charged twice for my subscription this month. Can you help me get a refund?",
     )
     print(f"Response: {result.final_output}")
-    
+
     # Test technical handoff
     print("\n=== Technical Support Handoff Example ===")
     result = await Runner.run(
         root_agent,
-        "My app keeps crashing when I try to upload photos. This has been happening for 3 days."
+        "My app keeps crashing when I try to upload photos. This has been happening for 3 days.",
     )
     print(f"Response: {result.final_output}")
-    
+
     print("\n✅ Basic handoffs tutorial complete!")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

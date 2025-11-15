@@ -7,10 +7,9 @@ from agno.vectordb.lancedb import LanceDb, SearchType
 
 # Page configuration
 st.set_page_config(
-    page_title="Agentic RAG with Google's EmbeddingGemma",
-    page_icon="🔥",
-    layout="wide"
+    page_title="Agentic RAG with Google's EmbeddingGemma", page_icon="🔥", layout="wide"
 )
+
 
 @st.cache_resource
 def load_knowledge_base():
@@ -24,10 +23,11 @@ def load_knowledge_base():
     )
     return knowledge_base
 
+
 # Initialize URLs in session state
-if 'urls' not in st.session_state:
+if "urls" not in st.session_state:
     st.session_state.urls = []
-if 'urls_loaded' not in st.session_state:
+if "urls_loaded" not in st.session_state:
     st.session_state.urls_loaded = set()
 
 kb = load_knowledge_base()
@@ -98,7 +98,7 @@ This app demonstrates an agentic RAG system using local models via [Ollama](http
 Add PDF URLs in the sidebar to start and ask questions about the content.
     """
 )
-                
+
 query = st.text_input("Enter your question:")
 
 # Simple answer generation
@@ -107,7 +107,7 @@ if st.button("🚀 Get Answer", type="primary"):
         st.error("Please enter a question")
     else:
         st.markdown("### 💡 Answer")
-        
+
         with st.spinner("🔍 Searching knowledge and generating answer..."):
             try:
                 response = ""

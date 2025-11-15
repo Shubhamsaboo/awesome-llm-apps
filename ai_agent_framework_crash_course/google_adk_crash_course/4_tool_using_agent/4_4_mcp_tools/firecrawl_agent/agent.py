@@ -12,8 +12,8 @@ from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioServerParamet
 
 # Create the ADK agent with Firecrawl MCP tools
 root_agent = LlmAgent(
-    model='gemini-2.5-flash',
-    name='firecrawl_mcp_agent',
+    model="gemini-2.5-flash",
+    name="firecrawl_mcp_agent",
     instruction="""
     You are an advanced web scraping and research assistant powered by Firecrawl.
     
@@ -66,7 +66,7 @@ root_agent = LlmAgent(
     tools=[
         MCPToolset(
             connection_params=StdioServerParameters(
-                command='npx',
+                command="npx",
                 args=[
                     "-y",  # Auto-confirm npm package installation
                     "firecrawl-mcp",  # The Firecrawl MCP server package
@@ -75,7 +75,7 @@ root_agent = LlmAgent(
                     # Note: Users need to set FIRECRAWL_API_KEY in their environment
                     # or add it to their system environment variables
                     "FIRECRAWL_API_KEY": os.getenv("FIRECRAWL_API_KEY", "")
-                }
+                },
             ),
             # Optional: Filter which tools from the MCP server to expose
             # Uncomment the line below to limit to specific tools
@@ -85,7 +85,7 @@ root_agent = LlmAgent(
 )
 
 # Export the agent for use with ADK web
-__all__ = ['root_agent']
+__all__ = ["root_agent"]
 
 # Example usage in a script
 if __name__ == "__main__":
@@ -99,12 +99,12 @@ if __name__ == "__main__":
     print("- AI-powered structured data extraction")
     print("- Deep research with multi-source analysis")
     print("- LLMs.txt generation for domains")
-    
+
     print("\n🚀 To use this agent:")
     print("1. Set your Firecrawl API key: export FIRECRAWL_API_KEY=your_api_key")
     print("2. Run 'adk web' from the tutorials root directory")
     print("3. Select 'firecrawl_mcp_agent' from the dropdown")
-    
+
     print("\n💡 Example commands to try:")
     print("   - 'Scrape the homepage of https://example.com'")
     print("   - 'Find all blog post URLs on https://blog.example.com'")
@@ -112,8 +112,8 @@ if __name__ == "__main__":
     print("   - 'Extract product details from this e-commerce page: [URL]'")
     print("   - 'Perform deep research on sustainable energy technologies'")
     print("   - 'Crawl the documentation section of https://docs.example.com'")
-    
+
     print("\n⚠️  Important Setup:")
     print("- Requires Node.js for the Firecrawl MCP server")
     print("- Requires a valid Firecrawl API key (get one at https://firecrawl.dev)")
-    print("- Some operations may take time for large datasets") 
+    print("- Some operations may take time for large datasets")

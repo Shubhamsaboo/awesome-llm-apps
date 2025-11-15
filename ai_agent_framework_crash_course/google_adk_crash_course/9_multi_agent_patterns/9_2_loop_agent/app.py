@@ -30,7 +30,11 @@ topic = st.text_area(
 col_a, col_b = st.columns([1, 1])
 with col_a:
     target_iterations = st.number_input(
-        "Target iterations (early stop possible)", min_value=1, max_value=20, value=3, step=1
+        "Target iterations (early stop possible)",
+        min_value=1,
+        max_value=20,
+        value=3,
+        step=1,
     )
 with col_b:
     st.caption(
@@ -43,7 +47,9 @@ if st.button("Run Loop Refinement", type="primary"):
         with st.spinner("Working…"):
             try:
                 results = asyncio.run(
-                    iterate_spec_until_acceptance(user_id, topic, int(target_iterations))
+                    iterate_spec_until_acceptance(
+                        user_id, topic, int(target_iterations)
+                    )
                 )
                 st.success("Loop finished")
 
@@ -51,10 +57,12 @@ if st.button("Run Loop Refinement", type="primary"):
                 st.write(results.get("final_plan", ""))
 
                 st.subheader("Run Metadata")
-                st.write({
-                    "iterations": results.get("iterations"),
-                    "stopped_reason": results.get("stopped_reason"),
-                })
+                st.write(
+                    {
+                        "iterations": results.get("iterations"),
+                        "stopped_reason": results.get("stopped_reason"),
+                    }
+                )
             except Exception as e:
                 st.error(f"Error: {e}")
     else:
@@ -72,5 +80,3 @@ with st.sidebar:
         - The loop stops if `accepted` is True or the `target_iterations` is reached.
         """
     )
-
-

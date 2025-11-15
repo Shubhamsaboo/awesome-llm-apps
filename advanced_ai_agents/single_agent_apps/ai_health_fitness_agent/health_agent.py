@@ -7,10 +7,11 @@ st.set_page_config(
     page_title="AI Health & Fitness Planner",
     page_icon="🏋️‍♂️",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
-st.markdown("""
+st.markdown(
+    """
     <style>
     .main {
         padding: 2rem;
@@ -37,104 +38,136 @@ st.markdown("""
         font-weight: 600;
     }
     </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
+
 
 def display_dietary_plan(plan_content):
     with st.expander("📋 Your Personalized Dietary Plan", expanded=True):
         col1, col2 = st.columns([2, 1])
-        
+
         with col1:
             st.markdown("### 🎯 Why this plan works")
-            st.info(plan_content.get("why_this_plan_works", "Information not available"))
+            st.info(
+                plan_content.get("why_this_plan_works", "Information not available")
+            )
             st.markdown("### 🍽️ Meal Plan")
             st.write(plan_content.get("meal_plan", "Plan not available"))
-        
+
         with col2:
             st.markdown("### ⚠️ Important Considerations")
-            considerations = plan_content.get("important_considerations", "").split('\n')
+            considerations = plan_content.get("important_considerations", "").split(
+                "\n"
+            )
             for consideration in considerations:
                 if consideration.strip():
                     st.warning(consideration)
 
+
 def display_fitness_plan(plan_content):
     with st.expander("💪 Your Personalized Fitness Plan", expanded=True):
         col1, col2 = st.columns([2, 1])
-        
+
         with col1:
             st.markdown("### 🎯 Goals")
             st.success(plan_content.get("goals", "Goals not specified"))
             st.markdown("### 🏋️‍♂️ Exercise Routine")
             st.write(plan_content.get("routine", "Routine not available"))
-        
+
         with col2:
             st.markdown("### 💡 Pro Tips")
-            tips = plan_content.get("tips", "").split('\n')
+            tips = plan_content.get("tips", "").split("\n")
             for tip in tips:
                 if tip.strip():
                     st.info(tip)
 
+
 def main():
-    if 'dietary_plan' not in st.session_state:
+    if "dietary_plan" not in st.session_state:
         st.session_state.dietary_plan = {}
         st.session_state.fitness_plan = {}
         st.session_state.qa_pairs = []
         st.session_state.plans_generated = False
 
     st.title("🏋️‍♂️ AI Health & Fitness Planner")
-    st.markdown("""
+    st.markdown(
+        """
         <div style='background-color: #00008B; padding: 1rem; border-radius: 0.5rem; margin-bottom: 2rem;'>
         Get personalized dietary and fitness plans tailored to your goals and preferences.
         Our AI-powered system considers your unique profile to create the perfect plan for you.
         </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     with st.sidebar:
         st.header("🔑 API Configuration")
         gemini_api_key = st.text_input(
             "Gemini API Key",
             type="password",
-            help="Enter your Gemini API key to access the service"
+            help="Enter your Gemini API key to access the service",
         )
-        
+
         if not gemini_api_key:
             st.warning("⚠️ Please enter your Gemini API Key to proceed")
             st.markdown("[Get your API key here](https://aistudio.google.com/apikey)")
             return
-        
+
         st.success("API Key accepted!")
 
     if gemini_api_key:
         try:
-            gemini_model = Gemini(id="gemini-2.5-flash-preview-05-20", api_key=gemini_api_key)
+            gemini_model = Gemini(
+                id="gemini-2.5-flash-preview-05-20", api_key=gemini_api_key
+            )
         except Exception as e:
             st.error(f"❌ Error initializing Gemini model: {e}")
             return
 
         st.header("👤 Your Profile")
-        
+
         col1, col2 = st.columns(2)
-        
+
         with col1:
-            age = st.number_input("Age", min_value=10, max_value=100, step=1, help="Enter your age")
-            height = st.number_input("Height (cm)", min_value=100.0, max_value=250.0, step=0.1)
+            age = st.number_input(
+                "Age", min_value=10, max_value=100, step=1, help="Enter your age"
+            )
+            height = st.number_input(
+                "Height (cm)", min_value=100.0, max_value=250.0, step=0.1
+            )
             activity_level = st.selectbox(
                 "Activity Level",
-                options=["Sedentary", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"],
-                help="Choose your typical activity level"
+                options=[
+                    "Sedentary",
+                    "Lightly Active",
+                    "Moderately Active",
+                    "Very Active",
+                    "Extremely Active",
+                ],
+                help="Choose your typical activity level",
             )
             dietary_preferences = st.selectbox(
                 "Dietary Preferences",
                 options=["Vegetarian", "Keto", "Gluten Free", "Low Carb", "Dairy Free"],
-                help="Select your dietary preference"
+                help="Select your dietary preference",
             )
 
         with col2:
-            weight = st.number_input("Weight (kg)", min_value=20.0, max_value=300.0, step=0.1)
+            weight = st.number_input(
+                "Weight (kg)", min_value=20.0, max_value=300.0, step=0.1
+            )
             sex = st.selectbox("Sex", options=["Male", "Female", "Other"])
             fitness_goals = st.selectbox(
                 "Fitness Goals",
-                options=["Lose Weight", "Gain Muscle", "Endurance", "Stay Fit", "Strength Training"],
-                help="What do you want to achieve?"
+                options=[
+                    "Lose Weight",
+                    "Gain Muscle",
+                    "Endurance",
+                    "Stay Fit",
+                    "Strength Training",
+                ],
+                help="What do you want to achieve?",
             )
 
         if st.button("🎯 Generate My Personalized Plan", use_container_width=True):
@@ -149,7 +182,7 @@ def main():
                             "Suggest a detailed meal plan for the day, including breakfast, lunch, dinner, and snacks.",
                             "Provide a brief explanation of why the plan is suited to the user's goals.",
                             "Focus on clarity, coherence, and quality of the recommendations.",
-                        ]
+                        ],
                     )
 
                     fitness_agent = Agent(
@@ -161,7 +194,7 @@ def main():
                             "Include warm-up, main workout, and cool-down exercises.",
                             "Explain the benefits of each recommended exercise.",
                             "Ensure the plan is actionable and detailed.",
-                        ]
+                        ],
                     )
 
                     user_profile = f"""
@@ -183,7 +216,7 @@ def main():
                         - Electrolytes: Monitor sodium, potassium, and magnesium levels
                         - Fiber: Ensure adequate intake through vegetables and fruits
                         - Listen to your body: Adjust portion sizes as needed
-                        """
+                        """,
                     }
 
                     fitness_plan_response: RunOutput = fitness_agent.run(user_profile)
@@ -195,7 +228,7 @@ def main():
                         - Allow proper rest between workouts
                         - Focus on proper form
                         - Stay consistent with your routine
-                        """
+                        """,
                     }
 
                     st.session_state.dietary_plan = dietary_plan
@@ -223,23 +256,28 @@ def main():
                         full_context = f"{context}\nUser Question: {question_input}"
 
                         try:
-                            agent = Agent(model=gemini_model, debug_mode=True, markdown=True)
+                            agent = Agent(
+                                model=gemini_model, debug_mode=True, markdown=True
+                            )
                             run_response: RunOutput = agent.run(full_context)
 
-                            if hasattr(run_response, 'content'):
+                            if hasattr(run_response, "content"):
                                 answer = run_response.content
                             else:
                                 answer = "Sorry, I couldn't generate a response at this time."
 
                             st.session_state.qa_pairs.append((question_input, answer))
                         except Exception as e:
-                            st.error(f"❌ An error occurred while getting the answer: {e}")
+                            st.error(
+                                f"❌ An error occurred while getting the answer: {e}"
+                            )
 
             if st.session_state.qa_pairs:
                 st.header("💬 Q&A History")
                 for question, answer in st.session_state.qa_pairs:
                     st.markdown(f"**Q:** {question}")
                     st.markdown(f"**A:** {answer}")
+
 
 if __name__ == "__main__":
     main()

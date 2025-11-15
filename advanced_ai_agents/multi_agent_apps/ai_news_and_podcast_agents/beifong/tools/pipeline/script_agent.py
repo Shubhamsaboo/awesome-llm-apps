@@ -75,9 +75,9 @@ def format_search_results_for_podcast(
                 structured_content.append(
                     f"""
                                         SOURCE {idx + 1}:
-                                        Title: {search_result['title']}
-                                        URL: {search_result['url']}
-                                        Content: {search_result.get('full_text') or search_result.get('description', '')}
+                                        Title: {search_result["title"]}
+                                        URL: {search_result["url"]}
+                                        Content: {search_result.get("full_text") or search_result.get("description", "")}
                                         ---END OF SOURCE {idx + 1}---
                                         """.strip()
                 )

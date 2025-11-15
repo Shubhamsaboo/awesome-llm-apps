@@ -9,12 +9,14 @@ from agent import run_agent
 st.set_page_config(page_title="Google ADK Plugins Tutorial", page_icon="🔌")
 
 st.title("🔌 Google ADK Plugins Tutorial")
-st.markdown("Demonstrates plugins for cross-cutting concerns like logging and monitoring.")
+st.markdown(
+    "Demonstrates plugins for cross-cutting concerns like logging and monitoring."
+)
 
 test_scenarios = {
     "Normal Conversation": "Hello! How are you?",
     "Simple Calculation": "Calculate 15 + 27",
-    "Error Handling": "What is 10 divided by 0?"
+    "Error Handling": "What is 10 divided by 0?",
 }
 
 selected_scenario = st.selectbox("Choose a test scenario:", list(test_scenarios.keys()))

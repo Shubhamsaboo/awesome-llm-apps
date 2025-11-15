@@ -11,7 +11,9 @@ import os
 
 # Set up the Streamlit app
 st.title("Multi-Agent AI Researcher 🔍🤖")
-st.caption("This app allows you to research top stories and users on HackerNews and write blogs, reports and social posts.")
+st.caption(
+    "This app allows you to research top stories and users on HackerNews and write blogs, reports and social posts."
+)
 
 # Get OpenAI API key from user
 openai_api_key = st.text_input("OpenAI API Key", type="password")

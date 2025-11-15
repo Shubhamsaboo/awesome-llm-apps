@@ -4,7 +4,9 @@ from mem0 import Memory
 
 # Set up the Streamlit App
 st.title("AI Travel Agent with Memory 🧳")
-st.caption("Chat with a travel assistant who remembers your preferences and past interactions.")
+st.caption(
+    "Chat with a travel assistant who remembers your preferences and past interactions."
+)
 
 # Set the OpenAI API key
 openai_api_key = st.text_input("Enter OpenAI API Key", type="password")
@@ -20,7 +22,7 @@ if openai_api_key:
             "config": {
                 "host": "localhost",
                 "port": 6333,
-            }
+            },
         },
     }
     memory = Memory.from_config(config)
@@ -81,9 +83,12 @@ if openai_api_key:
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": "You are a travel assistant with access to past conversations."},
-                {"role": "user", "content": full_prompt}
-            ]
+                {
+                    "role": "system",
+                    "content": "You are a travel assistant with access to past conversations.",
+                },
+                {"role": "user", "content": full_prompt},
+            ],
         )
         answer = response.choices[0].message.content
 

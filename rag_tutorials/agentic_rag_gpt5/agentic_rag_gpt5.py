@@ -12,11 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Page configuration
-st.set_page_config(
-    page_title="Agentic RAG with GPT-5",
-    page_icon="🧠",
-    layout="wide"
-)
+st.set_page_config(page_title="Agentic RAG with GPT-5", page_icon="🧠", layout="wide")
 
 # Main title and description
 st.title("🧠 Agentic RAG with GPT-5")
@@ -31,13 +27,13 @@ Enter your OpenAI API key in the sidebar to get started!
 # Sidebar for API key and settings
 with st.sidebar:
     st.header("🔧 Configuration")
-    
+
     # OpenAI API Key
     openai_key = st.text_input(
         "OpenAI API Key",
         type="password",
         value=os.getenv("OPENAI_API_KEY", ""),
-        help="Get your key from https://platform.openai.com/"
+        help="Get your key from https://platform.openai.com/",
     )
 
     # Add URLs to knowledge base
@@ -45,9 +41,9 @@ with st.sidebar:
     new_url = st.text_input(
         "Add URL",
         placeholder="https://www.theunwindai.com/p/mcp-vs-a2a-complementing-or-supplementing",
-        help="Enter a URL to add to the knowledge base"
+        help="Enter a URL to add to the knowledge base",
     )
-    
+
     if st.button("➕ Add URL", type="primary"):
         if new_url:
             st.session_state.urls_to_add = new_url
@@ -58,9 +54,11 @@ with st.sidebar:
 # Check if API key is provided
 if openai_key:
     # Initialize URLs in session state
-    if 'knowledge_urls' not in st.session_state:
-        st.session_state.knowledge_urls = ["https://www.theunwindai.com/p/mcp-vs-a2a-complementing-or-supplementing"]  # Default URL
-    if 'urls_loaded' not in st.session_state:
+    if "knowledge_urls" not in st.session_state:
+        st.session_state.knowledge_urls = [
+            "https://www.theunwindai.com/p/mcp-vs-a2a-complementing-or-supplementing"
+        ]  # Default URL
+    if "urls_loaded" not in st.session_state:
         st.session_state.urls_loaded = set()
 
     # Initialize knowledge base (cached to avoid reloading)
@@ -72,9 +70,7 @@ if openai_key:
                 uri="tmp/lancedb",
                 table_name="agentic_rag_docs",
                 search_type=SearchType.vector,  # Use vector search
-                embedder=OpenAIEmbedder(
-                    api_key=openai_key
-                ),
+                embedder=OpenAIEmbedder(api_key=openai_key),
             ),
         )
         return kb
@@ -84,10 +80,7 @@ if openai_key:
     def load_agent(_kb: Knowledge) -> Agent:
         """Create an agent with reasoning capabilities"""
         return Agent(
-            model=OpenAIChat(
-                id="gpt-5",
-                api_key=openai_key
-            ),
+            model=OpenAIChat(id="gpt-5", api_key=openai_key),
             knowledge=_kb,
             search_knowledge=True,  # Enable knowledge search
             instructions=[
@@ -101,23 +94,23 @@ if openai_key:
 
     # Load knowledge and agent
     knowledge = load_knowledge()
-    
+
     # Load initial URLs if any (only load once per URL)
     for url in st.session_state.knowledge_urls:
         if url not in st.session_state.urls_loaded:
             knowledge.add_content(url=url)
             st.session_state.urls_loaded.add(url)
-    
+
     agent = load_agent(knowledge)
-    
+
     # Display current URLs in knowledge base
     if st.session_state.knowledge_urls:
         st.sidebar.subheader("📚 Current Knowledge Sources")
         for i, url in enumerate(st.session_state.knowledge_urls, 1):
             st.sidebar.markdown(f"{i}. {url}")
-    
+
     # Handle URL additions
-    if hasattr(st.session_state, 'urls_to_add') and st.session_state.urls_to_add:
+    if hasattr(st.session_state, "urls_to_add") and st.session_state.urls_to_add:
         new_url = st.session_state.urls_to_add
         if new_url not in st.session_state.knowledge_urls:
             st.session_state.knowledge_urls.append(new_url)
@@ -132,28 +125,32 @@ if openai_key:
     # Main query section
     st.divider()
     st.subheader("🤔 Ask a Question")
-    
+
     # Suggested prompts
     st.markdown("**Try these prompts:**")
     col1, col2, col3 = st.columns(3)
     with col1:
         if st.button("What is MCP?", use_container_width=True):
-            st.session_state.query = "What is MCP (Model Context Protocol) and how does it work?"
+            st.session_state.query = (
+                "What is MCP (Model Context Protocol) and how does it work?"
+            )
     with col2:
         if st.button("MCP vs A2A", use_container_width=True):
             st.session_state.query = "How do MCP and A2A protocols differ, and are they complementary or competing?"
     with col3:
         if st.button("Agent Communication", use_container_width=True):
             st.session_state.query = "How do MCP and A2A work together in AI agent systems for communication and tool access?"
-    
+
     # Query input
     query = st.text_area(
         "Your question:",
-        value=st.session_state.get("query", "What is the difference between MCP and A2A protocols?"),
+        value=st.session_state.get(
+            "query", "What is the difference between MCP and A2A protocols?"
+        ),
         height=100,
-        help="Ask anything about the loaded knowledge sources"
+        help="Ask anything about the loaded knowledge sources",
     )
-    
+
     # Run button
     if st.button("🚀 Get Answer", type="primary"):
         if query:
@@ -161,10 +158,10 @@ if openai_key:
             st.markdown("### 💡 Answer")
             answer_container = st.container()
             answer_placeholder = answer_container.empty()
-            
+
             # Variables to accumulate content
             answer_text = ""
-            
+
             # Stream the agent's response
             with st.spinner("🔍 Searching and generating answer..."):
                 for chunk in agent.run(
@@ -172,12 +169,13 @@ if openai_key:
                     stream=True,  # Enable streaming
                 ):
                     # Update answer display - show content from streaming chunks
-                    if hasattr(chunk, 'content') and chunk.content and isinstance(chunk.content, str):
+                    if (
+                        hasattr(chunk, "content")
+                        and chunk.content
+                        and isinstance(chunk.content, str)
+                    ):
                         answer_text += chunk.content
-                        answer_placeholder.markdown(
-                            answer_text, 
-                            unsafe_allow_html=True
-                        )
+                        answer_placeholder.markdown(answer_text, unsafe_allow_html=True)
         else:
             st.error("Please enter a question")
 

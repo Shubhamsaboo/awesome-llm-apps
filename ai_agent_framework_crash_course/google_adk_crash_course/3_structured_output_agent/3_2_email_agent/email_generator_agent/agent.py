@@ -1,15 +1,17 @@
 from google.adk.agents import LlmAgent
 from pydantic import BaseModel, Field
 
+
 class EmailContent(BaseModel):
     """Schema for email content with subject and body."""
-    
+
     subject: str = Field(
         description="The subject line of the email. Should be concise and descriptive."
     )
     body: str = Field(
         description="The main content of the email. Should be well-formatted with proper greeting, paragraphs, and signature."
     )
+
 
 root_agent = LlmAgent(
     name="email_generator_agent",
@@ -25,5 +27,5 @@ root_agent = LlmAgent(
     Format your response as valid JSON only.
     """,
     output_schema=EmailContent,  # This is where the magic happens
-    output_key="generated_email"  
+    output_key="generated_email",
 )

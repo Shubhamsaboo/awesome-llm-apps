@@ -14,7 +14,7 @@ if openai_access_token:
         "Select the model",
         ["gpt-4o", "gpt-5"],
         index=0,
-    )    
+    )
     graph_config = {
         "llm": {
             "api_key": openai_access_token,
@@ -25,12 +25,10 @@ if openai_access_token:
     url = st.text_input("Enter the URL of the website you want to scrape")
     # Get the user prompt
     user_prompt = st.text_input("What you want the AI agent to scrae from the website?")
-    
+
     # Create a SmartScraperGraph object
     smart_scraper_graph = SmartScraperGraph(
-        prompt=user_prompt,
-        source=url,
-        config=graph_config
+        prompt=user_prompt, source=url, config=graph_config
     )
     # Scrape the website
     if st.button("Scrape"):

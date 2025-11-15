@@ -11,9 +11,7 @@ collection_name = "thai-recipe-index"
 
 # Set up Qdrant as the vector database with the embedder
 vector_db = Qdrant(
-    collection=collection_name,
-    url="http://localhost:6333/",
-    embedder=OllamaEmbedder()
+    collection=collection_name, url="http://localhost:6333/", embedder=OllamaEmbedder()
 )
 
 # Define the knowledge base

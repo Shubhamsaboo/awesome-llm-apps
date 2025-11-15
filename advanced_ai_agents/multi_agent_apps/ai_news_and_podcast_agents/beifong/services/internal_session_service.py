@@ -141,7 +141,7 @@ class SessionService:
                 has_next = page < total_pages
                 has_prev = page > 1
                 return {
-                    "items": sessions,  
+                    "items": sessions,
                     "total": total_count,
                     "page": page,
                     "per_page": per_page,

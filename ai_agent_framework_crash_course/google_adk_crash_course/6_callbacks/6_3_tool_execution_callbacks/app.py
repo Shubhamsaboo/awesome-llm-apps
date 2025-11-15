@@ -4,17 +4,11 @@ Streamlit App for Tool Execution Callbacks Demo
 """
 
 import streamlit as st
-import sys
-import os
 import asyncio
 from agent import run_agent
 
 # Page configuration
-st.set_page_config(
-    page_title="Tool Execution Callbacks",
-    page_icon="🔧",
-    layout="wide"
-)
+st.set_page_config(page_title="Tool Execution Callbacks", page_icon="🔧", layout="wide")
 
 # Title and description
 st.title("🔧 Tool Execution Callbacks Demo")
@@ -39,7 +33,7 @@ with st.sidebar:
     - Calculates and displays execution duration  
     - Handles errors (e.g., division by zero)
     """)
-    
+
     st.markdown("---")
     st.markdown("### 🧮 Available Tools")
     st.markdown("""
@@ -68,13 +62,13 @@ if prompt := st.chat_input("Ask me to calculate something..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
-    
+
     # Get agent response
     with st.chat_message("assistant"):
         with st.spinner("🔧 Tool is executing..."):
             response = asyncio.run(run_agent(prompt))
             st.markdown(response)
-    
+
     # Add assistant response to chat
     st.session_state.messages.append({"role": "assistant", "content": response})
 
@@ -144,4 +138,4 @@ st.markdown("""
 
 # Footer
 st.markdown("---")
-st.markdown("*Watch the console output to see tool execution callbacks in action!*") 
+st.markdown("*Watch the console output to see tool execution callbacks in action!*")

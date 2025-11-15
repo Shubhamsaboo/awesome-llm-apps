@@ -4,16 +4,12 @@ Streamlit App for LLM Interaction Callbacks Demo
 """
 
 import streamlit as st
-import sys
-import os
 import asyncio
 from agent import run_agent
 
 # Page configuration
 st.set_page_config(
-    page_title="LLM Interaction Callbacks",
-    page_icon="🤖",
-    layout="wide"
+    page_title="LLM Interaction Callbacks", page_icon="🤖", layout="wide"
 )
 
 # Title and description
@@ -56,13 +52,13 @@ if prompt := st.chat_input("Ask me something..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
-    
+
     # Get agent response
     with st.chat_message("assistant"):
         with st.spinner("🤖 LLM is processing..."):
             response = asyncio.run(run_agent(prompt))
             st.markdown(response)
-    
+
     # Add assistant response to chat
     st.session_state.messages.append({"role": "assistant", "content": response})
 
@@ -78,7 +74,9 @@ with col1:
             st.markdown("Explain quantum computing in simple terms")
         with st.chat_message("assistant"):
             with st.spinner("🤖 LLM is processing..."):
-                response = asyncio.run(run_agent("Explain quantum computing in simple terms"))
+                response = asyncio.run(
+                    run_agent("Explain quantum computing in simple terms")
+                )
                 st.markdown(response)
 
 with col2:
@@ -96,7 +94,9 @@ with col3:
             st.markdown("What are the benefits of renewable energy?")
         with st.chat_message("assistant"):
             with st.spinner("🤖 LLM is processing..."):
-                response = asyncio.run(run_agent("What are the benefits of renewable energy?"))
+                response = asyncio.run(
+                    run_agent("What are the benefits of renewable energy?")
+                )
                 st.markdown(response)
 
 # Clear chat button
@@ -124,4 +124,4 @@ st.markdown("""
 
 # Footer
 st.markdown("---")
-st.markdown("*Watch the console output to see LLM interaction callbacks in action!*") 
+st.markdown("*Watch the console output to see LLM interaction callbacks in action!*")

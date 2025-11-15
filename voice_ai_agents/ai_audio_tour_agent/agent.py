@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from agents import Agent, WebSearchTool
 from agents.model_settings import ModelSettings
 
-ARCHITECTURE_AGENT_INSTRUCTIONS = ("""
+ARCHITECTURE_AGENT_INSTRUCTIONS = """
 You are the Architecture agent for a self-guided audio tour system. Given a location and the areas of interest of user, your role is to:
 1. Describe architectural styles, notable buildings, urban planning, and design elements
 2. Provide technical insights balanced with accessible explanations
@@ -17,10 +17,12 @@ NOTE: Given a location, use web search to retrieve up‑to‑date context and ar
 NOTE: Do not add any Links or Hyperlinks in your answer or never cite any source
 
 Help users see and appreciate architectural details they might otherwise miss. Make it as detailed and elaborative as possible
-""")
+"""
+
 
 class Architecture(BaseModel):
     output: str
+
 
 architecture_agent = Agent(
     name="ArchitectureAgent",
@@ -28,10 +30,10 @@ architecture_agent = Agent(
     model="gpt-4o-mini",
     tools=[WebSearchTool()],
     model_settings=ModelSettings(tool_choice="required"),
-    output_type=Architecture
+    output_type=Architecture,
 )
 
-CULINARY_AGENT_INSTRUCTIONS = ("""
+CULINARY_AGENT_INSTRUCTIONS = """
 You are the Culinary agent for a self-guided audio tour system. Given a location and the areas of interest of user, your role is to:
 1. Highlight local food specialties, restaurants, markets, and culinary traditions in the user's location
 2. Explain the historical and cultural significance of local dishes and ingredients
@@ -46,7 +48,8 @@ NOTE: Given a location, use web search to retrieve up‑to‑date context and cu
 NOTE: Do not add any Links or Hyperlinks in your answer or never cite any source
 
 Make your descriptions vivid and appetizing. Include practical information like operating hours when relevant. Make it as detailed and elaborative as possible
-""")
+"""
+
 
 class Culinary(BaseModel):
     output: str
@@ -58,10 +61,10 @@ culinary_agent = Agent(
     model="gpt-4o-mini",
     tools=[WebSearchTool()],
     model_settings=ModelSettings(tool_choice="required"),
-    output_type=Culinary
+    output_type=Culinary,
 )
 
-CULTURE_AGENT_INSTRUCTIONS = ("""
+CULTURE_AGENT_INSTRUCTIONS = """
 You are the Culture agent for a self-guided audio tour system. Given a location and the areas of interest of user, your role is to:
 1. Provide information about local traditions, customs, arts, music, and cultural practices
 2. Highlight cultural venues and events relevant to the user's interests
@@ -76,10 +79,12 @@ NOTE: Given a location, use web search to retrieve up‑to‑date context and al
 NOTE: Do not add any Links or Hyperlinks in your answer or never cite any source
 
 Focus on authentic cultural insights that help users appreciate local ways of life. Make it as detailed and elaborative as possible
-""")
+"""
+
 
 class Culture(BaseModel):
     output: str
+
 
 culture_agent = Agent(
     name="CulturalAgent",
@@ -87,10 +92,10 @@ culture_agent = Agent(
     model="gpt-4o-mini",
     tools=[WebSearchTool()],
     model_settings=ModelSettings(tool_choice="required"),
-    output_type=Culture
+    output_type=Culture,
 )
 
-HISTORY_AGENT_INSTRUCTIONS = ("""
+HISTORY_AGENT_INSTRUCTIONS = """
 You are the History agent for a self-guided audio tour system. Given a location and the areas of interest of user, your role is to:
 1. Provide historically accurate information about landmarks, events, and people related to the user's location
 2. Prioritize the most significant historical aspects based on the user's time constraints
@@ -105,10 +110,12 @@ NOTE: Given a location, use web search to retrieve up‑to‑date context and hi
 NOTE: Do not add any Links or Hyperlinks in your answer or never cite any source
 
 Focus on making history come alive through engaging narratives. Keep descriptions concise but informative. Make it as detailed and elaborative as possible
-""")
+"""
+
 
 class History(BaseModel):
     output: str
+
 
 historical_agent = Agent(
     name="HistoricalAgent",
@@ -119,7 +126,7 @@ historical_agent = Agent(
     model_settings=ModelSettings(tool_choice="required"),
 )
 
-ORCHESTRATOR_INSTRUCTIONS = ("""
+ORCHESTRATOR_INSTRUCTIONS = """
 Your Role
 You are the Orchestrator Agent for a self-guided audio tour system. Your task is to assemble a comprehensive and engaging tour for a single location by integrating pre-timed content from four specialist agents (Architecture, History, Culinary, and Culture), while adding introduction and conclusion elements.
 
@@ -171,7 +178,7 @@ Ensure:
 - Content is free from redundancy
 - Total duration respects the time allocation plan
 - The entire output sounds like one cohesive guided experience
-""")
+"""
 
 
 class FinalTour(BaseModel):
@@ -183,10 +190,10 @@ class FinalTour(BaseModel):
 
     history: str
     """The Historical Content"""
-    
+
     culture: str
     """The Culture Content"""
-    
+
     culinary: str
     """The Culinary Content"""
 
@@ -201,7 +208,7 @@ orchestrator_agent = Agent(
     output_type=FinalTour,
 )
 
-PLANNER_INSTRUCTIONS = ("""
+PLANNER_INSTRUCTIONS = """
 
 Your Role
 You are the Planner Agent for a self-guided tour system. Your primary responsibility is to analyze the user's location, interests, and requested tour duration to create an optimal time allocation plan for content generation by specialist agents (Architecture, History, Culture, and Culinary).
@@ -286,7 +293,7 @@ Example:
 }         
 
 Make sure the time allocation adheres to the interests, and the interested section is allocated more time than others.  
-""")
+"""
 
 
 class Planner(BaseModel):

@@ -1,5 +1,3 @@
-import os
-import asyncio
 import inspect
 from typing import AsyncGenerator, Dict, Any
 
@@ -41,18 +39,16 @@ plan_refiner = LlmAgent(
 # Sub-agent 2: Progress tracker increments iteration counter
 # ------------------------------------------------------------
 class IncrementIteration(BaseAgent):
-    async def _run_async_impl(self, ctx: InvocationContext) -> AsyncGenerator[Event, None]:
+    async def _run_async_impl(
+        self, ctx: InvocationContext
+    ) -> AsyncGenerator[Event, None]:
         current_iteration = int(ctx.session.state.get("iteration", 0)) + 1
         ctx.session.state["iteration"] = current_iteration
         yield Event(
             author=self.name,
             content=types.Content(
                 role="model",
-                parts=[
-                    types.Part(
-                        text=f"Iteration advanced to {current_iteration}"
-                    )
-                ],
+                parts=[types.Part(text=f"Iteration advanced to {current_iteration}")],
             ),
         )
 
@@ -62,7 +58,9 @@ class IncrementIteration(BaseAgent):
 # - Stops if iteration >= target_iterations OR session flag 'accepted' is True
 # ------------------------------------------------------------
 class CheckCompletion(BaseAgent):
-    async def _run_async_impl(self, ctx: InvocationContext) -> AsyncGenerator[Event, None]:
+    async def _run_async_impl(
+        self, ctx: InvocationContext
+    ) -> AsyncGenerator[Event, None]:
         target_iterations = int(ctx.session.state.get("target_iterations", 3))
         current_iteration = int(ctx.session.state.get("iteration", 0))
         accepted = bool(ctx.session.state.get("accepted", False))
@@ -139,24 +137,28 @@ async def iterate_spec_until_acceptance(
         return await value if inspect.isawaitable(value) else value
 
     # Create or get session (support both sync/async services)
-    session = await _maybe_await(session_service.get_session(
-        app_name="loop_refinement_app",
-        user_id=user_id,
-        session_id=session_id,
-    ))
-    if not session:
-        session = await _maybe_await(session_service.create_session(
+    session = await _maybe_await(
+        session_service.get_session(
             app_name="loop_refinement_app",
             user_id=user_id,
             session_id=session_id,
-            state={
-                "topic": topic,
-                "iteration": 0,
-                "target_iterations": int(target_iterations),
-                # Optionally, an external process or UI could set this to True to stop early
-                "accepted": False,
-            },
-        ))
+        )
+    )
+    if not session:
+        session = await _maybe_await(
+            session_service.create_session(
+                app_name="loop_refinement_app",
+                user_id=user_id,
+                session_id=session_id,
+                state={
+                    "topic": topic,
+                    "iteration": 0,
+                    "target_iterations": int(target_iterations),
+                    # Optionally, an external process or UI could set this to True to stop early
+                    "accepted": False,
+                },
+            )
+        )
     else:
         # Refresh topic/target if user re-runs on UI
         if hasattr(session, "state") and isinstance(session.state, dict):
@@ -168,18 +170,16 @@ async def iterate_spec_until_acceptance(
         role="user",
         parts=[
             types.Part(
-                text=(
-                    "Topic: "
-                    + topic
-                    + "\nPlease produce or refine a concise plan."
-                )
+                text=("Topic: " + topic + "\nPlease produce or refine a concise plan.")
             )
         ],
     )
 
     final_text = ""
     last_plan_text = ""
-    stream = runner.run_async(user_id=user_id, session_id=session_id, new_message=user_content)
+    stream = runner.run_async(
+        user_id=user_id, session_id=session_id, new_message=user_content
+    )
     # Support both async generators and plain iterables
     if inspect.isasyncgen(stream):
         async for event in stream:
@@ -216,7 +216,7 @@ async def iterate_spec_until_acceptance(
     return {
         "final_plan": last_plan_text or final_text,
         "iterations": current_iteration,
-        "stopped_reason": "accepted" if accepted else ("target_iterations" if reached else "max_iterations_or_other"),
+        "stopped_reason": "accepted"
+        if accepted
+        else ("target_iterations" if reached else "max_iterations_or_other"),
     }
-
-

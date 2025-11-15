@@ -5,7 +5,6 @@ from models.travel_plan import TravelPlanAgentRequest, TravelPlanResponse
 from models.plan_task import TaskStatus
 from services.plan_service import generate_travel_plan
 from repository.plan_task_repository import create_plan_task, update_task_status
-from typing import List
 
 router = APIRouter(prefix="/api/plan", tags=["Travel Plan"])
 

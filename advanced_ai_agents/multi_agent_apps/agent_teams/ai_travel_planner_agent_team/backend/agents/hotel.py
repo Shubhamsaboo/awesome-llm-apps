@@ -2,7 +2,6 @@ from agno.agent import Agent
 from tools.kayak_hotel import kayak_hotel_url_generator
 from tools.scrape import scrape_website
 from config.llm import model
-from models.hotel import HotelResult, HotelResults
 
 hotel_search_agent = Agent(
     name="Hotel Search Assistant",

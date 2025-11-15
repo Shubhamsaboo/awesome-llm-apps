@@ -3,7 +3,6 @@ import logging
 import inspect
 from typing import Dict, Any, Callable
 from loguru import logger
-from pathlib import Path
 
 # Create logs directory if it doesn't exist
 # LOGS_DIR = Path("logs")

@@ -25,8 +25,8 @@ with open(sample_file_path, "w") as f:
 
 # Create the ADK agent with MCP filesystem tools
 root_agent = LlmAgent(
-    model='gemini-2.5-flash',
-    name='filesystem_mcp_agent',
+    model="gemini-2.5-flash",
+    name="filesystem_mcp_agent",
     instruction=f"""
     You are a helpful filesystem assistant that can help users manage their files.
     
@@ -45,7 +45,7 @@ root_agent = LlmAgent(
     tools=[
         MCPToolset(
             connection_params=StdioServerParameters(
-                command='npx',
+                command="npx",
                 args=[
                     "-y",  # Auto-confirm npm package installation
                     "@modelcontextprotocol/server-filesystem",
@@ -59,11 +59,11 @@ root_agent = LlmAgent(
 )
 
 # Export the agent for use with ADK web
-__all__ = ['root_agent']
+__all__ = ["root_agent"]
 
 # Example usage in a script
 if __name__ == "__main__":
-    print(f"Filesystem MCP Agent initialized!")
+    print("Filesystem MCP Agent initialized!")
     print(f"Demo folder: {DEMO_FOLDER}")
     print(f"Sample file created at: {sample_file_path}")
     print("\nTo use this agent:")
@@ -73,4 +73,4 @@ if __name__ == "__main__":
     print("   - 'List files in the current directory'")
     print("   - 'Read the contents of sample.txt'")
     print("   - 'Create a new file called hello.txt with the content Hello World!'")
-    print("   - 'Show me all text files in the directory'") 
+    print("   - 'Show me all text files in the directory'")

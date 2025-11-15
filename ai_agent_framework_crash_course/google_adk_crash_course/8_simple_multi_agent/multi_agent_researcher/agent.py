@@ -1,4 +1,3 @@
-import os
 from dotenv import load_dotenv
 from google.adk.agents import LlmAgent
 from google.adk.tools.agent_tool import AgentTool
@@ -22,7 +21,7 @@ research_agent = LlmAgent(
         "Keep your research factual, well-organized, and comprehensive. "
         "Use the google_search tool to find current information when needed."
     ),
-    tools=[google_search]
+    tools=[google_search],
 )
 
 summarizer_agent = LlmAgent(
@@ -86,5 +85,5 @@ root_agent = LlmAgent(
         "Coordinate your team effectively to deliver high-quality, comprehensive research."
     ),
     sub_agents=[summarizer_agent, critic_agent],
-    tools=[AgentTool(research_agent)]
+    tools=[AgentTool(research_agent)],
 )

@@ -1,18 +1,20 @@
 import streamlit as st
 from sidebar import render_sidebar
 
+
 def render_page_config():
     # Set page configuration
     st.set_page_config(
-        page_icon="🎙️", 
-        page_title="AI Speech Trainer", 
+        page_icon="🎙️",
+        page_title="AI Speech Trainer",
         initial_sidebar_state="auto",
-        layout="wide")
+        layout="wide",
+    )
 
     # Load external CSS
     with open("style.css") as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-    
+
     # Sidebar
     render_sidebar()
 
@@ -24,7 +26,7 @@ def render_page_config():
             <span>Your personal coach for public speaking</span>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     # Horizontal line

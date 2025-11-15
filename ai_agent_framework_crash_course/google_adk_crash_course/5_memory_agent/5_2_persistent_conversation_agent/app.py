@@ -1,13 +1,15 @@
 import streamlit as st
 import asyncio
-from agent import chat, session_service
+from agent import chat
 
 # Page configuration
 st.set_page_config(page_title="Persistent Agent", page_icon="🗄️")
 
 # Title
 st.title("🗄️ Persistent Conversation Agent")
-st.markdown("Simple demo of `DatabaseSessionService` - agent remembers conversations across program restarts using SQLite database.")
+st.markdown(
+    "Simple demo of `DatabaseSessionService` - agent remembers conversations across program restarts using SQLite database."
+)
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -52,7 +54,7 @@ with st.sidebar:
     
     **Database**: Check `sessions.db` file in project directory
     """)
-    
+
     st.markdown("---")
     st.markdown("### 🗄️ Database Info")
     st.markdown("""
@@ -60,4 +62,4 @@ with st.sidebar:
     **Type:** SQLite database
     **Persistence:** Survives restarts
     **Location:** Project directory
-    """) 
+    """)

@@ -67,7 +67,6 @@ class DatabaseService:
             raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 
-
 sources_db = DatabaseService(db_name="sources_db")
 tracking_db = DatabaseService(db_name="tracking_db")
 podcasts_db = DatabaseService(db_name="podcasts_db")

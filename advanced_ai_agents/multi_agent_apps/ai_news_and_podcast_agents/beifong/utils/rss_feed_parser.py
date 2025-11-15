@@ -7,11 +7,7 @@ from typing import List, Dict, Any, Optional
 def get_hash(entries: List[Dict[str, str]]) -> str:
     texts = ""
     for entry in entries:
-        texts += (
-            str(entry.get("id", ""))
-            + str(entry.get("title", ""))
-            + str(entry.get("published_date", ""))
-        )
+        texts += str(entry.get("id", "")) + str(entry.get("title", "")) + str(entry.get("published_date", ""))
     return hashlib.md5(texts.encode()).hexdigest()
 
 
@@ -19,13 +15,7 @@ def parse_feed_entries(entries: List[Dict[str, Any]]) -> List[Dict[str, str]]:
     parsed_entries = []
     for entry in entries:
         content = entry.get("content") or entry.get("description") or ""
-        published = (
-            entry.get("published")
-            or entry.get("updated")
-            or entry.get("pubDate")
-            or entry.get("created")
-            or datetime.now().isoformat()
-        )
+        published = entry.get("published") or entry.get("updated") or entry.get("pubDate") or entry.get("created") or datetime.now().isoformat()
         entry_id = entry.get("id") or entry.get("link", "")
         link = entry.get("link", "")
         summary = entry.get("summary", "")
@@ -47,9 +37,7 @@ def is_rss_feed(feed_data: Any) -> bool:
     return feed_data.bozo and hasattr(feed_data, "bozo_exception")
 
 
-def get_feed_data(
-    feed_url: str, etag: Optional[str] = None, modified: Optional[Any] = None
-) -> Dict[str, Any]:
+def get_feed_data(feed_url: str, etag: Optional[str] = None, modified: Optional[Any] = None) -> Dict[str, Any]:
     feed_data = feedparser.parse(feed_url, etag=etag, modified=modified)
     if is_rss_feed(feed_data):
         return {

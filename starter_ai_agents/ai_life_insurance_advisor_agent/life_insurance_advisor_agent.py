@@ -53,6 +53,7 @@ with st.sidebar:
 # Helper functions
 # -----------------------------------------------------------------------------
 
+
 def safe_number(value: Any) -> float:
     """Best-effort conversion to float for agent outputs."""
     if value is None:
@@ -123,7 +124,9 @@ def parse_percentage(value: Any, fallback: float = 0.02) -> float:
     return fallback
 
 
-def compute_local_breakdown(profile: Dict[str, Any], real_rate: float) -> Dict[str, float]:
+def compute_local_breakdown(
+    profile: Dict[str, Any], real_rate: float
+) -> Dict[str, float]:
     """Replicate the coverage math locally so we can show it to the user."""
     income = safe_number(profile.get("annual_income"))
     years = max(0, int(profile.get("income_replacement_years", 0) or 0))
@@ -307,8 +310,13 @@ def render_recommendations(result: Dict[str, Any], profile: Dict[str, Any]) -> N
                 format_currency(local_breakdown["income"], coverage_currency),
                 f"{local_breakdown['years']} years",
                 format_currency(local_breakdown["debt"], coverage_currency),
-                format_currency(safe_number(profile.get("available_savings")), coverage_currency),
-                format_currency(safe_number(profile.get("existing_life_insurance")), coverage_currency),
+                format_currency(
+                    safe_number(profile.get("available_savings")), coverage_currency
+                ),
+                format_currency(
+                    safe_number(profile.get("existing_life_insurance")),
+                    coverage_currency,
+                ),
                 f"{real_rate * 100:.2f}%",
             ],
         }
@@ -317,12 +325,26 @@ def render_recommendations(result: Dict[str, Any], profile: Dict[str, Any]) -> N
     st.subheader("Step-by-step Coverage Math")
     step_rows = [
         ("Annuity factor", f"{local_breakdown['annuity_factor']:.3f}"),
-        ("Discounted income replacement", format_currency(local_breakdown["discounted_income"], coverage_currency)),
-        ("+ Outstanding debt", format_currency(local_breakdown["debt"], coverage_currency)),
-        ("- Assets & existing cover", format_currency(local_breakdown["assets_offset"], coverage_currency)),
-        ("= Formula estimate", format_currency(local_breakdown["recommended"], coverage_currency)),
+        (
+            "Discounted income replacement",
+            format_currency(local_breakdown["discounted_income"], coverage_currency),
+        ),
+        (
+            "+ Outstanding debt",
+            format_currency(local_breakdown["debt"], coverage_currency),
+        ),
+        (
+            "- Assets & existing cover",
+            format_currency(local_breakdown["assets_offset"], coverage_currency),
+        ),
+        (
+            "= Formula estimate",
+            format_currency(local_breakdown["recommended"], coverage_currency),
+        ),
     ]
-    step_rows.append(("= Agent recommendation", format_currency(coverage_amount, coverage_currency)))
+    step_rows.append(
+        ("= Agent recommendation", format_currency(coverage_amount, coverage_currency))
+    )
 
     st.table({"Step": [s for s, _ in step_rows], "Amount": [a for _, a in step_rows]})
 
@@ -399,7 +421,9 @@ if submitted:
 
     parsed = extract_json(response.content if response else "")
     if not parsed:
-        st.error("The agent returned an unexpected response. Enable debug below to inspect raw output.")
+        st.error(
+            "The agent returned an unexpected response. Enable debug below to inspect raw output."
+        )
         with st.expander("Raw agent output"):
             st.write(response.content if response else "<empty>")
     else:

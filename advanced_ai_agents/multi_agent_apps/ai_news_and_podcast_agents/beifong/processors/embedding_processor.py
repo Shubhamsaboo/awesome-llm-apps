@@ -9,6 +9,7 @@ from utils.load_api_keys import load_api_key
 
 EMBEDDING_MODEL = "text-embedding-3-small"
 
+
 def create_embedding_table(tracking_db_path):
     with db_connection(tracking_db_path) as conn:
         cursor = conn.cursor()
@@ -107,6 +108,7 @@ def prepare_article_text(article):
 def store_embedding(tracking_db_path, article_id, embedding, model):
     from datetime import datetime
     import sqlite3
+
     embedding_blob = np.array(embedding, dtype=np.float32).tobytes()
     query = """
     INSERT INTO article_embeddings 

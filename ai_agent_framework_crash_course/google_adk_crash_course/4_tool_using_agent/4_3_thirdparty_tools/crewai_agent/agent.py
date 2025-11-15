@@ -1,10 +1,6 @@
 from google.adk.agents import LlmAgent
 from google.adk.tools.crewai_tool import CrewaiTool
-from crewai_tools import (
-    ScrapeWebsiteTool,
-    DirectorySearchTool,
-    FileReadTool
-)
+from crewai_tools import ScrapeWebsiteTool, DirectorySearchTool, FileReadTool
 
 scrape_website_tool = CrewaiTool(
     name="scrape_website",
@@ -23,7 +19,7 @@ scrape_website_tool = CrewaiTool(
                 ),
             ),
         )
-    )
+    ),
 )
 
 directory_search_tool = CrewaiTool(
@@ -43,7 +39,7 @@ directory_search_tool = CrewaiTool(
                 ),
             ),
         )
-    )
+    ),
 )
 
 file_read_tool = CrewaiTool(
@@ -63,7 +59,7 @@ file_read_tool = CrewaiTool(
                 ),
             ),
         )
-    )
+    ),
 )
 
 # Create an agent with CrewAI tools
@@ -119,9 +115,5 @@ root_agent = LlmAgent(
     Always provide helpful, accurate information and explain your process clearly.
     Be respectful of website policies and handle sensitive information appropriately.
     """,
-    tools=[
-        scrape_website_tool,
-        directory_search_tool,
-        file_read_tool
-    ]
-) 
+    tools=[scrape_website_tool, directory_search_tool, file_read_tool],
+)

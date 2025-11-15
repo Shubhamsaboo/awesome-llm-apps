@@ -3,6 +3,7 @@ from enum import Enum
 from agents import Agent
 from pydantic import BaseModel, Field
 
+
 class Sentiment(str, Enum):
     VERY_POSITIVE = "very_positive"
     POSITIVE = "positive"
@@ -10,14 +11,24 @@ class Sentiment(str, Enum):
     NEGATIVE = "negative"
     VERY_NEGATIVE = "very_negative"
 
+
 class ProductReview(BaseModel):
-    product_name: Optional[str] = Field(description="Product name if mentioned", default=None)
+    product_name: Optional[str] = Field(
+        description="Product name if mentioned", default=None
+    )
     rating: int = Field(description="Star rating (1-5)", ge=1, le=5)
     sentiment: Sentiment = Field(description="Overall sentiment of the review")
-    main_positives: List[str] = Field(description="Main positive points mentioned", default=[])
-    main_negatives: List[str] = Field(description="Main negative points mentioned", default=[])
-    would_recommend: Optional[bool] = Field(description="Whether reviewer would recommend", default=None)
+    main_positives: List[str] = Field(
+        description="Main positive points mentioned", default=[]
+    )
+    main_negatives: List[str] = Field(
+        description="Main negative points mentioned", default=[]
+    )
+    would_recommend: Optional[bool] = Field(
+        description="Whether reviewer would recommend", default=None
+    )
     summary: str = Field(description="Brief summary of the review")
+
 
 root_agent = Agent(
     name="Product Review Analyzer",
@@ -42,5 +53,5 @@ root_agent = Agent(
     
     IMPORTANT: Response must be valid JSON matching the ProductReview schema.
     """,
-    output_type=ProductReview
+    output_type=ProductReview,
 )

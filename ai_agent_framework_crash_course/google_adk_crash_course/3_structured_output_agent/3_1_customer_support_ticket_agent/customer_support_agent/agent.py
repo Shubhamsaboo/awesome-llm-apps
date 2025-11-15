@@ -3,11 +3,13 @@ from enum import Enum
 from google.adk.agents import LlmAgent
 from pydantic import BaseModel, Field
 
+
 class Priority(str, Enum):
     LOW = "low"
-    MEDIUM = "medium" 
+    MEDIUM = "medium"
     HIGH = "high"
     CRITICAL = "critical"
+
 
 class SupportTicket(BaseModel):
     title: str = Field(description="A concise summary of the issue")
@@ -16,11 +18,12 @@ class SupportTicket(BaseModel):
     category: str = Field(description="The department this ticket belongs to")
     steps_to_reproduce: Optional[List[str]] = Field(
         description="Steps to reproduce the issue (for technical problems)",
-        default=None
+        default=None,
     )
     estimated_resolution_time: str = Field(
         description="Estimated time to resolve this issue"
     )
+
 
 root_agent = LlmAgent(
     name="customer_support_agent",
@@ -42,5 +45,5 @@ root_agent = LlmAgent(
     Format your response as valid JSON only.
     """,
     output_schema=SupportTicket,
-    output_key="support_ticket"
-) 
+    output_key="support_ticket",
+)

@@ -13,12 +13,16 @@ from rag.query_router import answer_math_question
 st.set_page_config(page_title="Math Agent 🧮", layout="wide")
 st.title("🧠 Math Tutor Agent Dashboard")
 
-tab1, tab2, tab3 = st.tabs(["📘 Ask a Question", "📁 View Feedback", "📊 Benchmark Results"])
+tab1, tab2, tab3 = st.tabs(
+    ["📘 Ask a Question", "📁 View Feedback", "📊 Benchmark Results"]
+)
 
 # ---------------- TAB 1: Ask a Question ---------------- #
 with tab1:
     st.subheader("📘 Ask a Math Question")
-    st.markdown("Enter any math question below. The agent will try to explain it step-by-step.")
+    st.markdown(
+        "Enter any math question below. The agent will try to explain it step-by-step."
+    )
 
     if "last_question" not in st.session_state:
         st.session_state["last_question"] = ""
@@ -58,7 +62,7 @@ with tab1:
                 log_entry = {
                     "question": st.session_state["last_question"],
                     "answer": st.session_state["last_answer"],
-                    "feedback": feedback
+                    "feedback": feedback,
                 }
 
                 try:
@@ -102,7 +106,12 @@ with tab3:
 
     st.caption(f"📘 Benchmarking from {total_math} math questions")
 
-    num_questions = st.slider("Select number of math questions to benchmark", min_value=3, max_value=total_math, value=10)
+    num_questions = st.slider(
+        "Select number of math questions to benchmark",
+        min_value=3,
+        max_value=total_math,
+        value=10,
+    )
 
     if st.button("▶️ Run Benchmark Now"):
         with st.spinner(f"Benchmarking {num_questions} math questions..."):
@@ -117,4 +126,9 @@ with tab3:
             st.success(f"✅ Done! Accuracy: {accuracy:.2f}%")
             st.metric("Accuracy", f"{accuracy:.2f}%")
             st.dataframe(df_result)
-            st.download_button("Download Results", data=df_result.to_csv(index=False), file_name=result_path, mime="text/csv")
+            st.download_button(
+                "Download Results",
+                data=df_result.to_csv(index=False),
+                file_name=result_path,
+                mime="text/csv",
+            )

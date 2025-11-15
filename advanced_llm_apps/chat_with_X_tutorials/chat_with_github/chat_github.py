@@ -6,9 +6,9 @@ import os
 
 loader = GithubLoader(
     config={
-        "token":"Your GitHub Token",
-        }
-    )
+        "token": "Your GitHub Token",
+    }
+)
 
 # Create Streamlit app
 st.title("Chat with GitHub Repository 💬")
@@ -26,7 +26,9 @@ if openai_access_token:
     git_repo = st.text_input("Enter the GitHub Repo", type="default")
     if git_repo:
         # Add the repo to the knowledge base
-        app.add("repo:" + git_repo + " " + "type:repo", data_type="github", loader=loader)
+        app.add(
+            "repo:" + git_repo + " " + "type:repo", data_type="github", loader=loader
+        )
         st.success(f"Added {git_repo} to knowledge base!")
         # Ask a question about the Github Repo
         prompt = st.text_input("Ask any question about the GitHub Repo")

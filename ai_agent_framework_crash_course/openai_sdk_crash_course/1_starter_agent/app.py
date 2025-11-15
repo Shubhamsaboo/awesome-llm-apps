@@ -15,11 +15,7 @@ from agents import Agent, Runner
 load_dotenv()
 
 # Page configuration
-st.set_page_config(
-    page_title="Personal Assistant Agent",
-    page_icon="🎯",
-    layout="wide"
-)
+st.set_page_config(page_title="Personal Assistant Agent", page_icon="🎯", layout="wide")
 
 # Title and description
 st.title("🎯 Personal Assistant Agent")
@@ -27,8 +23,11 @@ st.markdown("**Tutorial 1**: Your first OpenAI agent with different execution me
 
 # Check API key
 if not os.getenv("OPENAI_API_KEY"):
-    st.error("❌ OPENAI_API_KEY not found. Please create a .env file with your OpenAI API key.")
+    st.error(
+        "❌ OPENAI_API_KEY not found. Please create a .env file with your OpenAI API key."
+    )
     st.stop()
+
 
 # Create the agent
 @st.cache_resource
@@ -51,27 +50,33 @@ def create_agent():
         - Maintain a positive and supportive tone
         
         Keep responses concise but informative.
-        """
+        """,
     )
+
 
 agent = create_agent()
 
 # Sidebar with execution method selection
 st.sidebar.title("Execution Methods")
 execution_method = st.sidebar.selectbox(
-    "Choose execution method:",
-    ["Synchronous", "Asynchronous", "Streaming"]
+    "Choose execution method:", ["Synchronous", "Asynchronous", "Streaming"]
 )
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("### About Execution Methods")
 
 if execution_method == "Synchronous":
-    st.sidebar.info("**Synchronous**: Blocks until response is complete. Simple and straightforward.")
+    st.sidebar.info(
+        "**Synchronous**: Blocks until response is complete. Simple and straightforward."
+    )
 elif execution_method == "Asynchronous":
-    st.sidebar.info("**Asynchronous**: Non-blocking execution. Good for concurrent operations.")
+    st.sidebar.info(
+        "**Asynchronous**: Non-blocking execution. Good for concurrent operations."
+    )
 else:
-    st.sidebar.info("**Streaming**: Real-time response streaming. Great for long responses.")
+    st.sidebar.info(
+        "**Streaming**: Real-time response streaming. Great for long responses."
+    )
 
 # Main chat interface
 st.markdown("### Chat Interface")
@@ -91,7 +96,7 @@ if prompt := st.chat_input("Ask your personal assistant anything..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
-    
+
     # Generate assistant response
     with st.chat_message("assistant"):
         try:
@@ -100,39 +105,42 @@ if prompt := st.chat_input("Ask your personal assistant anything..."):
                     result = Runner.run_sync(agent, prompt)
                     response = result.final_output
                     st.markdown(response)
-            
+
             elif execution_method == "Asynchronous":
                 with st.spinner("Processing asynchronously..."):
+
                     async def get_async_response():
                         result = await Runner.run(agent, prompt)
                         return result.final_output
-                    
+
                     response = asyncio.run(get_async_response())
                     st.markdown(response)
-            
+
             else:  # Streaming
                 response_placeholder = st.empty()
                 response_text = ""
-                
+
                 async def stream_response():
                     full_response = ""
                     async for event in Runner.run_streamed(agent, prompt):
-                        if hasattr(event, 'content') and event.content:
+                        if hasattr(event, "content") and event.content:
                             full_response += event.content
                             response_placeholder.markdown(full_response + "▌")
-                    
+
                     response_placeholder.markdown(full_response)
                     return full_response
-                
+
                 response = asyncio.run(stream_response())
-            
+
             # Add assistant response to chat history
             st.session_state.messages.append({"role": "assistant", "content": response})
-            
+
         except Exception as e:
             error_msg = f"❌ Error: {str(e)}"
             st.error(error_msg)
-            st.session_state.messages.append({"role": "assistant", "content": error_msg})
+            st.session_state.messages.append(
+                {"role": "assistant", "content": error_msg}
+            )
 
 # Clear chat button
 if st.sidebar.button("Clear Chat History"):
@@ -148,7 +156,7 @@ example_prompts = [
     "Explain quantum computing in simple terms",
     "Write a short poem about technology",
     "How can I improve my focus and concentration?",
-    "What's the difference between AI and machine learning?"
+    "What's the difference between AI and machine learning?",
 ]
 
 for prompt in example_prompts:

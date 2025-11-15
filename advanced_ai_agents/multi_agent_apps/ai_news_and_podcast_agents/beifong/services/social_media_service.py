@@ -2,7 +2,7 @@ import json
 from typing import List, Optional, Dict, Any
 from fastapi import HTTPException
 from services.db_service import social_media_db
-from models.social_media_schemas import PaginatedPosts, Post
+from models.social_media_schemas import PaginatedPosts
 from datetime import datetime, timedelta
 
 
@@ -171,7 +171,7 @@ class SocialMediaService:
             raise HTTPException(status_code=500, detail=f"Error fetching sentiments: {str(e)}")
 
     async def get_top_users(
-        self, 
+        self,
         platform: Optional[str] = None,
         limit: int = 10,
         date_from: Optional[str] = None,
@@ -204,7 +204,7 @@ class SocialMediaService:
                 params.append(date_from)
             if date_to:
                 query_parts.append("AND datetime(post_timestamp) <= datetime(?)")
-                params.append(date_to) 
+                params.append(date_to)
             query = " ".join(query_parts)
             result = await social_media_db.execute_query(query, tuple(params), fetch=True)
             category_counts = {}
@@ -219,7 +219,9 @@ class SocialMediaService:
                                 category_counts[category] = 1
                     except json.JSONDecodeError:
                         pass
-            return [{"category": category, "post_count": count} for category, count in sorted(category_counts.items(), key=lambda x: x[1], reverse=True)]
+            return [
+                {"category": category, "post_count": count} for category, count in sorted(category_counts.items(), key=lambda x: x[1], reverse=True)
+            ]
         except Exception as e:
             if isinstance(e, HTTPException):
                 raise e
@@ -329,12 +331,7 @@ class SocialMediaService:
                 raise e
             raise HTTPException(status_code=500, detail=f"Error fetching category sentiment: {str(e)}")
 
-    async def get_trending_topics(
-        self, 
-        date_from: Optional[str] = None,
-        date_to: Optional[str] = None,
-        limit: int = 10
-    ) -> List[Dict[str, Any]]:
+    async def get_trending_topics(self, date_from: Optional[str] = None, date_to: Optional[str] = None, limit: int = 10) -> List[Dict[str, Any]]:
         """Get trending topics with sentiment breakdown."""
         try:
             query_parts = [
@@ -356,7 +353,7 @@ class SocialMediaService:
                 params.append(date_from)
             if date_to:
                 query_parts.append("AND datetime(post_timestamp) <= datetime(?)")
-                params.append(date_to)  
+                params.append(date_to)
             query_parts.append(
                 """
                 GROUP BY 
@@ -394,10 +391,7 @@ class SocialMediaService:
             raise HTTPException(status_code=500, detail=f"Error fetching trending topics: {str(e)}")
 
     async def get_sentiment_over_time(
-        self, 
-        date_from: Optional[str] = None,
-        date_to: Optional[str] = None,
-        platform: Optional[str] = None
+        self, date_from: Optional[str] = None, date_to: Optional[str] = None, platform: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """Get sentiment trends over time."""
         try:
@@ -463,11 +457,7 @@ class SocialMediaService:
             raise HTTPException(status_code=500, detail=f"Error fetching sentiment over time: {str(e)}")
 
     async def get_influential_posts(
-        self, 
-        sentiment: Optional[str] = None,
-        limit: int = 5,
-        date_from: Optional[str] = None,
-        date_to: Optional[str] = None
+        self, sentiment: Optional[str] = None, limit: int = 5, date_from: Optional[str] = None, date_to: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """Get most influential posts by engagement, optionally filtered by sentiment."""
         try:
@@ -485,7 +475,7 @@ class SocialMediaService:
             params = []
             if sentiment:
                 query_parts.append("AND sentiment = ?")
-                params.append(sentiment)  
+                params.append(sentiment)
             if date_from:
                 query_parts.append("AND datetime(post_timestamp) >= datetime(?)")
                 params.append(date_from)
@@ -528,11 +518,7 @@ class SocialMediaService:
                 raise e
             raise HTTPException(status_code=500, detail=f"Error fetching influential posts: {str(e)}")
 
-    async def get_engagement_stats(
-        self,
-        date_from: Optional[str] = None,
-        date_to: Optional[str] = None
-    ) -> Dict[str, Any]:
+    async def get_engagement_stats(self, date_from: Optional[str] = None, date_to: Optional[str] = None) -> Dict[str, Any]:
         """Get overall engagement statistics."""
         try:
             query_parts = [
@@ -582,16 +568,8 @@ class SocialMediaService:
                 platform_query_parts.append("AND datetime(post_timestamp) >= datetime(?)")
             if date_to:
                 platform_query_parts.append("AND datetime(post_timestamp) <= datetime(?)")
-            platform_query_parts.extend([
-                "GROUP BY platform",
-                "ORDER BY post_count DESC",
-                "LIMIT 10"
-            ])
-            platforms = await social_media_db.execute_query(
-                " ".join(platform_query_parts), 
-                tuple(params), 
-                fetch=True
-            )
+            platform_query_parts.extend(["GROUP BY platform", "ORDER BY post_count DESC", "LIMIT 10"])
+            platforms = await social_media_db.execute_query(" ".join(platform_query_parts), tuple(params), fetch=True)
             result_dict["platforms"] = platforms
             return result_dict
         except Exception as e:

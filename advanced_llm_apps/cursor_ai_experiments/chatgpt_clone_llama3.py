@@ -27,14 +27,18 @@ if prompt := st.chat_input("What's on your mind?"):
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         full_response = ""
-        for response in client.chat(model="llama3.1:latest", messages=st.session_state.messages, stream=True):
-            full_response += response['message']['content']
+        for response in client.chat(
+            model="llama3.1:latest", messages=st.session_state.messages, stream=True
+        ):
+            full_response += response["message"]["content"]
             message_placeholder.markdown(full_response + "▌")
         message_placeholder.markdown(full_response)
     st.session_state.messages.append({"role": "assistant", "content": full_response})
 
 # Add a sidebar with information
 st.sidebar.title("About")
-st.sidebar.info("This is a local ChatGPT clone using Ollama's llama3.1:latest model and Streamlit.")
+st.sidebar.info(
+    "This is a local ChatGPT clone using Ollama's llama3.1:latest model and Streamlit."
+)
 st.sidebar.markdown("---")
 st.sidebar.markdown("Made with ❤️ by Your Name")

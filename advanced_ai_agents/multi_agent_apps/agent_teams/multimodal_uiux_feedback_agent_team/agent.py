@@ -459,5 +459,3 @@ Be a smart router - prioritize image analysis!
 
 
 __all__ = ["root_agent"]
-
-

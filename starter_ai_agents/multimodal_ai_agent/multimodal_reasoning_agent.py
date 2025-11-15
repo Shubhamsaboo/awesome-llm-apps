@@ -6,6 +6,7 @@ from agno.models.google import Gemini
 import tempfile
 import os
 
+
 def main():
     # Streamlit app title
     st.title("Multimodal Reasoning AI Agent 🧠")
@@ -31,8 +32,7 @@ def main():
 
     # Set up the reasoning agent
     agent = Agent(
-        model=Gemini(id="gemini-2.5-pro", api_key=gemini_api_key), 
-        markdown=True
+        model=Gemini(id="gemini-2.5-pro", api_key=gemini_api_key), markdown=True
     )
 
     # File uploader for image
@@ -41,7 +41,7 @@ def main():
     if uploaded_file is not None:
         try:
             # Save uploaded file to temporary file
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as tmp_file:
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_file:
                 tmp_file.write(uploaded_file.getvalue())
                 temp_path = tmp_file.name
 
@@ -49,17 +49,17 @@ def main():
             st.image(uploaded_file, caption="Uploaded Image", use_container_width=True)
 
             # Input for dynamic task
-            task_input = st.text_area(
-                "Enter your task/question for the AI Agent:"
-            )
+            task_input = st.text_area("Enter your task/question for the AI Agent:")
 
             # Button to process the image and task
             if st.button("Analyze Image") and task_input:
                 with st.spinner("AI is thinking... 🤖"):
                     try:
                         # Call the agent with the dynamic task and image path
-                        response: RunOutput = agent.run(task_input, images=[Image(filepath=temp_path)])
-                        
+                        response: RunOutput = agent.run(
+                            task_input, images=[Image(filepath=temp_path)]
+                        )
+
                         # Display the response from the model
                         st.markdown("### AI Response:")
                         st.markdown(response.content)
@@ -72,6 +72,7 @@ def main():
 
         except Exception as e:
             st.error(f"An error occurred while processing the image: {str(e)}")
+
 
 if __name__ == "__main__":
     main()

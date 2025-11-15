@@ -35,7 +35,7 @@ def crawl_x_profile(profile_url, db_file="x_posts.db"):
                         try:
                             show_more.click()
                             time.sleep(1)
-                        except Exception as e:
+                        except Exception:
                             pass
 
                     tweet_html = article.evaluate("(element) => element.outerHTML")

@@ -48,7 +48,7 @@ class PlaywrightScraper:
         results = []
         try:
             for i, url in enumerate(urls):
-                print(f"Scraping {i+1}/{len(urls)}")
+                print(f"Scraping {i + 1}/{len(urls)}")
                 result = self._scrape_single_url(page, url)
                 results.append(result)
                 if i < len(urls) - 1:
@@ -139,8 +139,4 @@ class PlaywrightScraper:
 
 def create_browser_crawler(headless=True, timeout=20000, fresh_context_per_url=False):
     """Factory function to create a new PlaywrightScraper instance."""
-    return PlaywrightScraper(
-        headless=headless,
-        timeout=timeout,
-        fresh_context_per_url=fresh_context_per_url
-    )
+    return PlaywrightScraper(headless=headless, timeout=timeout, fresh_context_per_url=fresh_context_per_url)

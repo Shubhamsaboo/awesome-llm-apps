@@ -3,6 +3,7 @@ import random
 from google.adk.agents import Agent
 from google.adk.models.lite_llm import LiteLlm
 
+
 def get_fun_fact():
     """Return a random fun fact"""
     facts = [
@@ -17,10 +18,11 @@ def get_fun_fact():
     ]
     return random.choice(facts)
 
+
 # Anthropic model via OpenRouter
 model = LiteLlm(
     model="openrouter/anthropic/claude-sonnet-4-20250514",
-    api_key=os.getenv("OPENROUTER_API_KEY")
+    api_key=os.getenv("OPENROUTER_API_KEY"),
 )
 
 root_agent = Agent(
@@ -34,4 +36,4 @@ root_agent = Agent(
     Always mention that you're powered by Anthropic Claude when introducing yourself.
     """,
     tools=[get_fun_fact],
-) 
+)

@@ -28,8 +28,12 @@ class HeadingItem(BaseModel):
 
 
 class LinkCounts(BaseModel):
-    internal: Optional[int] = Field(None, description="Number of internal links on the page.")
-    external: Optional[int] = Field(None, description="Number of external links on the page.")
+    internal: Optional[int] = Field(
+        None, description="Number of internal links on the page."
+    )
+    external: Optional[int] = Field(
+        None, description="Number of external links on the page."
+    )
     broken: Optional[int] = Field(None, description="Number of broken links detected.")
     notes: Optional[str] = Field(
         None, description="Additional qualitative observations about linking."
@@ -79,7 +83,9 @@ class TargetKeywords(BaseModel):
 
 
 class PageAuditOutput(BaseModel):
-    audit_results: AuditResults = Field(..., description="Structured on-page audit findings.")
+    audit_results: AuditResults = Field(
+        ..., description="Structured on-page audit findings."
+    )
     target_keywords: TargetKeywords = Field(
         ..., description="Keyword focus derived from page content."
     )
@@ -124,10 +130,16 @@ class SerpAnalysis(BaseModel):
 
 class OptimizationRecommendation(BaseModel):
     priority: str = Field(..., description="Priority level (P0, P1, P2).")
-    area: str = Field(..., description="Optimization focus area (content, technical, UX, etc.).")
+    area: str = Field(
+        ..., description="Optimization focus area (content, technical, UX, etc.)."
+    )
     recommendation: str = Field(..., description="Recommended action.")
-    rationale: str = Field(..., description="Why this change matters, referencing audit/SERP data.")
-    expected_impact: str = Field(..., description="Anticipated impact on SEO or user metrics.")
+    rationale: str = Field(
+        ..., description="Why this change matters, referencing audit/SERP data."
+    )
+    expected_impact: str = Field(
+        ..., description="Anticipated impact on SEO or user metrics."
+    )
     effort: str = Field(..., description="Relative effort required (low/medium/high).")
 
 
@@ -138,17 +150,15 @@ class OptimizationRecommendation(BaseModel):
 # Firecrawl MCP Toolset - connects to Firecrawl's MCP server for web scraping
 firecrawl_toolset = MCPToolset(
     connection_params=StdioServerParameters(
-        command='npx',
+        command="npx",
         args=[
             "-y",  # Auto-confirm npm package installation
             "firecrawl-mcp",  # The Firecrawl MCP server package
         ],
-        env={
-            "FIRECRAWL_API_KEY": os.getenv("FIRECRAWL_API_KEY", "")
-        }
+        env={"FIRECRAWL_API_KEY": os.getenv("FIRECRAWL_API_KEY", "")},
     ),
     # Filter to use only the scrape tool for this agent
-    tool_filter=['firecrawl_scrape']
+    tool_filter=["firecrawl_scrape"],
 )
 
 

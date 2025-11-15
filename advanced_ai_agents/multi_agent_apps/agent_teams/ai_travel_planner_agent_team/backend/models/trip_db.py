@@ -1,6 +1,4 @@
-from sqlalchemy import Column, String, TIMESTAMP, ForeignKey, Text, DateTime
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, String, Text, DateTime
 from datetime import datetime, timezone
 from typing import Optional
 from cuid2 import Cuid

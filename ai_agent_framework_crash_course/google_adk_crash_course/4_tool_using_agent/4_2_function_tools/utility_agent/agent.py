@@ -7,7 +7,7 @@ from .tools import (
     hash_text,
     encode_decode_base64,
     validate_url,
-    format_json
+    format_json,
 )
 
 # Create a utility agent with various utility tools
@@ -101,6 +101,6 @@ root_agent = LlmAgent(
         hash_text,
         encode_decode_base64,
         validate_url,
-        format_json
-    ]
-) 
+        format_json,
+    ],
+)

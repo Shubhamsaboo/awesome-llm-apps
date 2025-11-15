@@ -1,5 +1,3 @@
-from agno.models.google import Gemini
-from agno.models.openai import OpenAIChat
 from agno.models.openrouter import OpenRouter
 
 # model = Gemini(id="gemini-2.0-flash-001", temperature=0.1)

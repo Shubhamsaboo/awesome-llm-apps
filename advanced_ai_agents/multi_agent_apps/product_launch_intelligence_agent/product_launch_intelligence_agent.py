@@ -10,10 +10,10 @@ import os
 
 # ---------------- Page Config ----------------
 st.set_page_config(
-    page_title="AI Product Intelligence Agent", 
-    page_icon="🚀", 
+    page_title="AI Product Intelligence Agent",
+    page_icon="🚀",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
 # ---------------- Environment & Agent ----------------
@@ -23,16 +23,16 @@ load_dotenv()
 st.sidebar.header("🔑 API Configuration")
 with st.sidebar.container():
     openai_key = st.text_input(
-        "OpenAI API Key", 
-        type="password", 
+        "OpenAI API Key",
+        type="password",
         value=os.getenv("OPENAI_API_KEY", ""),
-        help="Required for AI agent functionality"
+        help="Required for AI agent functionality",
     )
     firecrawl_key = st.text_input(
-        "Firecrawl API Key", 
-        type="password", 
+        "Firecrawl API Key",
+        type="password",
         value=os.getenv("FIRECRAWL_API_KEY", ""),
-        help="Required for web search and crawling"
+        help="Required for web search and crawling",
     )
 
 # Set environment variables
@@ -63,7 +63,7 @@ if openai_key and firecrawl_key:
         exponential_backoff=True,
         delay_between_retries=2,
     )
-    
+
     # Agent 2: Market Sentiment Specialist
     sentiment_analyst = Agent(
         name="Market Sentiment Specialist",
@@ -85,10 +85,10 @@ if openai_key and firecrawl_key:
         exponential_backoff=True,
         delay_between_retries=2,
     )
-    
+
     # Agent 3: Launch Metrics Specialist
     metrics_analyst = Agent(
-        name="Launch Metrics Specialist", 
+        name="Launch Metrics Specialist",
         description=dedent("""
             You are a product launch performance analyst who specializes in tracking and analyzing launch KPIs.
             Your focus areas include:
@@ -121,7 +121,7 @@ if openai_key and firecrawl_key:
             "3. For launch metrics: Use the Launch Metrics Specialist to track KPIs, adoption rates, press coverage, and performance indicators",
             "Always provide evidence-based insights with specific examples and data points",
             "Structure responses with clear sections and actionable recommendations",
-            "Include sources section with all URLs crawled or searched"
+            "Include sources section with all URLs crawled or searched",
         ],
         markdown=True,
         debug_mode=True,
@@ -130,6 +130,7 @@ if openai_key and firecrawl_key:
 else:
     product_intelligence_team = None
     st.warning("⚠️ Please enter both API keys in the sidebar to use the application.")
+
 
 # Helper to craft competitor-focused launch report for product managers
 def expand_competitor_report(bullet_text: str, competitor: str) -> str:
@@ -158,6 +159,7 @@ def expand_competitor_report(bullet_text: str, competitor: str) -> str:
     resp: RunOutput = product_intelligence_team.run(prompt)
     return resp.content if hasattr(resp, "content") else str(resp)
 
+
 # Helper to craft market sentiment report
 def expand_sentiment_report(bullet_text: str, product: str) -> str:
     if not product_intelligence_team:
@@ -176,6 +178,7 @@ def expand_sentiment_report(bullet_text: str, product: str) -> str:
     )
     resp: RunOutput = product_intelligence_team.run(prompt)
     return resp.content if hasattr(resp, "content") else str(resp)
+
 
 # Helper to craft launch metrics report
 def expand_metrics_report(bullet_text: str, launch: str) -> str:
@@ -198,6 +201,7 @@ def expand_metrics_report(bullet_text: str, launch: str) -> str:
     resp: RunOutput = product_intelligence_team.run(prompt)
     return resp.content if hasattr(resp, "content") else str(resp)
 
+
 # ---------------- UI ----------------
 st.title("🚀 AI Product Launch Intelligence Agent")
 st.markdown("*AI-powered insights for GTM, Product Marketing & Growth Teams*")
@@ -213,7 +217,7 @@ with st.container():
             label="Company Name",
             placeholder="Enter company name (e.g., OpenAI, Tesla, Spotify)",
             help="This company will be analyzed by the coordinated team of specialized agents",
-            label_visibility="collapsed"
+            label_visibility="collapsed",
         )
     with col2:
         if company_name:
@@ -222,11 +226,9 @@ with st.container():
 st.divider()
 
 # Create tabs for analysis types
-analysis_tabs = st.tabs([
-    "🔍 Competitor Analysis", 
-    "💬 Market Sentiment", 
-    "📈 Launch Metrics"
-])
+analysis_tabs = st.tabs(
+    ["🔍 Competitor Analysis", "💬 Market Sentiment", "📈 Launch Metrics"]
+)
 
 # Store separate responses for each agent
 if "competitor_response" not in st.session_state:
@@ -240,7 +242,7 @@ if "metrics_response" not in st.session_state:
 with analysis_tabs[0]:
     with st.container():
         st.markdown("### 🔍 Competitor Launch Analysis")
-        
+
         with st.expander("ℹ️ About this Agent", expanded=False):
             st.markdown("""
             **Product Launch Analyst** - Strategic GTM Expert
@@ -251,29 +253,31 @@ with analysis_tabs[0]:
             - Strengths & weaknesses identification
             - Strategic recommendations
             """)
-        
+
         if company_name:
             col1, col2 = st.columns([2, 1])
-            
+
             with col1:
                 analyze_btn = st.button(
-                    "🚀 Analyze Competitor Strategy", 
-                    key="competitor_btn", 
+                    "🚀 Analyze Competitor Strategy",
+                    key="competitor_btn",
                     type="primary",
-                    use_container_width=True
+                    use_container_width=True,
                 )
-            
+
             with col2:
                 if st.session_state.competitor_response:
                     st.success("✅ Analysis Complete")
                 else:
                     st.info("⏳ Ready to analyze")
-            
+
             if analyze_btn:
                 if not product_intelligence_team:
                     st.error("⚠️ Please enter both API keys in the sidebar first.")
                 else:
-                    with st.spinner("🔍 Product Intelligence Team analyzing competitive strategy..."):
+                    with st.spinner(
+                        "🔍 Product Intelligence Team analyzing competitive strategy..."
+                    ):
                         try:
                             bullets: RunOutput = product_intelligence_team.run(
                                 f"Generate up to 16 evidence-based insight bullets about {company_name}'s most recent product launches.\n"
@@ -282,15 +286,17 @@ with analysis_tabs[0]:
                                 f"• Follow the tag with a concise statement (max 30 words) referencing concrete observations: messaging, differentiation, pricing, channel selection, timing, engagement metrics, or customer feedback."
                             )
                             long_text = expand_competitor_report(
-                                bullets.content if hasattr(bullets, "content") else str(bullets),
-                                company_name
+                                bullets.content
+                                if hasattr(bullets, "content")
+                                else str(bullets),
+                                company_name,
                             )
                             st.session_state.competitor_response = long_text
                             st.success("✅ Competitor analysis ready")
                             st.rerun()
                         except Exception as e:
                             st.error(f"❌ Error: {e}")
-            
+
             # Display results
             if st.session_state.competitor_response:
                 st.divider()
@@ -304,7 +310,7 @@ with analysis_tabs[0]:
 with analysis_tabs[1]:
     with st.container():
         st.markdown("### 💬 Market Sentiment Analysis")
-        
+
         with st.expander("ℹ️ About this Agent", expanded=False):
             st.markdown("""
             **Market Sentiment Specialist** - Consumer Perception Expert
@@ -315,44 +321,48 @@ with analysis_tabs[1]:
             - Brand perception monitoring
             - Review pattern identification
             """)
-        
+
         if company_name:
             col1, col2 = st.columns([2, 1])
-            
+
             with col1:
                 sentiment_btn = st.button(
-                    "📊 Analyze Market Sentiment", 
-                    key="sentiment_btn", 
+                    "📊 Analyze Market Sentiment",
+                    key="sentiment_btn",
                     type="primary",
-                    use_container_width=True
+                    use_container_width=True,
                 )
-            
+
             with col2:
                 if st.session_state.sentiment_response:
                     st.success("✅ Analysis Complete")
                 else:
                     st.info("⏳ Ready to analyze")
-            
+
             if sentiment_btn:
                 if not product_intelligence_team:
                     st.error("⚠️ Please enter both API keys in the sidebar first.")
                 else:
-                    with st.spinner("💬 Product Intelligence Team analyzing market sentiment..."):
+                    with st.spinner(
+                        "💬 Product Intelligence Team analyzing market sentiment..."
+                    ):
                         try:
                             bullets: RunOutput = product_intelligence_team.run(
                                 f"Summarize market sentiment for {company_name} in <=10 bullets. "
                                 f"Cover top positive & negative themes with source mentions (G2, Reddit, Twitter, customer reviews)."
                             )
                             long_text = expand_sentiment_report(
-                                bullets.content if hasattr(bullets, "content") else str(bullets),
-                                company_name
+                                bullets.content
+                                if hasattr(bullets, "content")
+                                else str(bullets),
+                                company_name,
                             )
                             st.session_state.sentiment_response = long_text
                             st.success("✅ Sentiment analysis ready")
                             st.rerun()
                         except Exception as e:
                             st.error(f"❌ Error: {e}")
-            
+
             # Display results
             if st.session_state.sentiment_response:
                 st.divider()
@@ -366,7 +376,7 @@ with analysis_tabs[1]:
 with analysis_tabs[2]:
     with st.container():
         st.markdown("### 📈 Launch Performance Metrics")
-        
+
         with st.expander("ℹ️ About this Agent", expanded=False):
             st.markdown("""
             **Launch Metrics Specialist** - Performance Analytics Expert
@@ -377,44 +387,48 @@ with analysis_tabs[2]:
             - Market penetration evaluation
             - Press coverage monitoring
             """)
-        
+
         if company_name:
             col1, col2 = st.columns([2, 1])
-            
+
             with col1:
                 metrics_btn = st.button(
-                    "📊 Analyze Launch Metrics", 
-                    key="metrics_btn", 
+                    "📊 Analyze Launch Metrics",
+                    key="metrics_btn",
                     type="primary",
-                    use_container_width=True
+                    use_container_width=True,
                 )
-            
+
             with col2:
                 if st.session_state.metrics_response:
                     st.success("✅ Analysis Complete")
                 else:
                     st.info("⏳ Ready to analyze")
-            
+
             if metrics_btn:
                 if not product_intelligence_team:
                     st.error("⚠️ Please enter both API keys in the sidebar first.")
                 else:
-                    with st.spinner("📈 Product Intelligence Team analyzing launch metrics..."):
+                    with st.spinner(
+                        "📈 Product Intelligence Team analyzing launch metrics..."
+                    ):
                         try:
                             bullets: RunOutput = product_intelligence_team.run(
                                 f"List (max 10 bullets) the most important publicly available KPIs & qualitative signals for {company_name}'s recent product launches. "
                                 f"Include engagement stats, press coverage, adoption metrics, and market traction data if available."
                             )
                             long_text = expand_metrics_report(
-                                bullets.content if hasattr(bullets, "content") else str(bullets),
-                                company_name
+                                bullets.content
+                                if hasattr(bullets, "content")
+                                else str(bullets),
+                                company_name,
                             )
                             st.session_state.metrics_response = long_text
                             st.success("✅ Metrics analysis ready")
                             st.rerun()
                         except Exception as e:
                             st.error(f"❌ Error: {e}")
-            
+
             # Display results
             if st.session_state.metrics_response:
                 st.divider()
@@ -438,13 +452,13 @@ st.sidebar.divider()
 # Multi-agent system info
 with st.sidebar.container():
     st.markdown("### 🎯 Coordinated Team")
-    
+
     agents_info = [
         ("🔍", "Product Launch Analyst", "Strategic GTM expert"),
         ("💬", "Market Sentiment Specialist", "Consumer perception expert"),
-        ("📈", "Launch Metrics Specialist", "Performance analytics expert")
+        ("📈", "Launch Metrics Specialist", "Performance analytics expert"),
     ]
-    
+
     for icon, name, desc in agents_info:
         with st.container():
             st.markdown(f"**{icon} {name}**")
@@ -457,13 +471,13 @@ if company_name:
     with st.sidebar.container():
         st.markdown("### 📊 Analysis Status")
         st.markdown(f"**Company:** {company_name}")
-        
+
         status_items = [
             ("🔍", "Competitor Analysis", st.session_state.competitor_response),
             ("💬", "Sentiment Analysis", st.session_state.sentiment_response),
-            ("📈", "Metrics Analysis", st.session_state.metrics_response)
+            ("📈", "Metrics Analysis", st.session_state.metrics_response),
         ]
-        
+
         for icon, name, status in status_items:
             if status:
                 st.success(f"{icon} {name} ✓")

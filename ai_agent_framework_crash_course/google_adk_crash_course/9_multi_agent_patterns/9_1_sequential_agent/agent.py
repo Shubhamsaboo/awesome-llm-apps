@@ -1,5 +1,3 @@
-import os
-import asyncio
 import inspect
 from dotenv import load_dotenv
 from google.adk.agents import LlmAgent, SequentialAgent
@@ -26,7 +24,7 @@ search_agent = LlmAgent(
         "5. Provide comprehensive, up-to-date market analysis\n\n"
         "Always use web search to get the most current information available."
     ),
-    tools=[google_search]
+    tools=[google_search],
 )
 
 # --- Simple Sub-agents ---
@@ -43,7 +41,7 @@ market_researcher = LlmAgent(
         "5. Synthesize search results into comprehensive market analysis\n\n"
         "Provide a comprehensive analysis in clear, structured format based on current web research."
     ),
-    tools=[AgentTool(search_agent)]
+    tools=[AgentTool(search_agent)],
 )
 
 swot_analyzer = LlmAgent(
@@ -57,7 +55,7 @@ swot_analyzer = LlmAgent(
         "3. Identify external opportunities in the market\n"
         "4. Evaluate external threats and challenges\n\n"
         "Provide a clear SWOT analysis with actionable insights."
-    )
+    ),
 )
 
 strategy_formulator = LlmAgent(
@@ -71,7 +69,7 @@ strategy_formulator = LlmAgent(
         "3. Recommend realistic timeline for implementation\n"
         "4. Define success metrics and KPIs to track\n\n"
         "Provide a clear strategic plan with actionable steps."
-    )
+    ),
 )
 
 implementation_planner = LlmAgent(
@@ -85,7 +83,7 @@ implementation_planner = LlmAgent(
         "3. Develop risk mitigation strategies\n"
         "4. Provide final recommendations with confidence level\n\n"
         "Create a practical implementation roadmap."
-    )
+    ),
 )
 
 # --- Sequential Agent (Pure Sequential Pattern) ---
@@ -93,11 +91,11 @@ business_intelligence_team = SequentialAgent(
     name="business_intelligence_team",
     description="Sequentially processes business intelligence through research, analysis, strategy, and planning",
     sub_agents=[
-        market_researcher,      # Step 1: Market research (with search capabilities)
-        swot_analyzer,          # Step 2: SWOT analysis
-        strategy_formulator,    # Step 3: Strategy development
-        implementation_planner  # Step 4: Implementation planning
-    ]
+        market_researcher,  # Step 1: Market research (with search capabilities)
+        swot_analyzer,  # Step 2: SWOT analysis
+        strategy_formulator,  # Step 3: Strategy development
+        implementation_planner,  # Step 4: Implementation planning
+    ],
 )
 
 # --- Runner Setup for Execution ---
@@ -105,43 +103,46 @@ session_service = InMemorySessionService()
 runner = Runner(
     agent=business_intelligence_team,
     app_name="business_intelligence",
-    session_service=session_service
+    session_service=session_service,
 )
+
 
 # --- Simple Execution Function ---
 async def analyze_business_intelligence(user_id: str, business_topic: str) -> str:
     """Process business intelligence through the sequential pipeline"""
     session_id = f"bi_session_{user_id}"
-    
+
     # Support both sync and async session service
     async def _maybe_await(value):
         return await value if inspect.isawaitable(value) else value
 
-    session = await _maybe_await(session_service.get_session(
-        app_name="business_intelligence",
-        user_id=user_id,
-        session_id=session_id
-    ))
+    session = await _maybe_await(
+        session_service.get_session(
+            app_name="business_intelligence", user_id=user_id, session_id=session_id
+        )
+    )
     if not session:
-        session = await _maybe_await(session_service.create_session(
-            app_name="business_intelligence",
-            user_id=user_id,
-            session_id=session_id,
-            state={"business_topic": business_topic, "conversation_history": []}
-        ))
-    
+        session = await _maybe_await(
+            session_service.create_session(
+                app_name="business_intelligence",
+                user_id=user_id,
+                session_id=session_id,
+                state={"business_topic": business_topic, "conversation_history": []},
+            )
+        )
+
     # Create user content
     user_content = types.Content(
-        role='user',
-        parts=[types.Part(text=f"Please analyze this business topic: {business_topic}")]
+        role="user",
+        parts=[
+            types.Part(text=f"Please analyze this business topic: {business_topic}")
+        ],
     )
-    
+
     # Run the sequential pipeline (support async or sync stream)
     response_text = ""
     stream = runner.run_async(
-        user_id=user_id,
-        session_id=session_id,
-        new_message=user_content
+        user_id=user_id, session_id=session_id, new_message=user_content
     )
     if inspect.isasyncgen(stream):
         async for event in stream:
@@ -153,5 +154,5 @@ async def analyze_business_intelligence(user_id: str, business_topic: str) -> st
             if getattr(event, "is_final_response", lambda: False)():
                 if event.content and event.content.parts:
                     response_text = event.content.parts[0].text
-    
+
     return response_text

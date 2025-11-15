@@ -1,6 +1,5 @@
 from agno.agent import Agent
 from agno.tools.exa import ExaTools
-from agno.tools.firecrawl import FirecrawlTools
 from config.llm import model
 
 destination_agent = Agent(

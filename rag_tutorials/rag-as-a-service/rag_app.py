@@ -5,6 +5,7 @@ import time
 from typing import List, Dict, Optional
 from urllib.parse import urlparse
 
+
 class RAGPipeline:
     def __init__(self, ragie_api_key: str, anthropic_api_key: str):
         """
@@ -13,62 +14,57 @@ class RAGPipeline:
         self.ragie_api_key = ragie_api_key
         self.anthropic_api_key = anthropic_api_key
         self.anthropic_client = Anthropic(api_key=anthropic_api_key)
-        
+
         # API endpoints
         self.RAGIE_UPLOAD_URL = "https://api.ragie.ai/documents/url"
         self.RAGIE_RETRIEVAL_URL = "https://api.ragie.ai/retrievals"
-    
-    def upload_document(self, url: str, name: Optional[str] = None, mode: str = "fast") -> Dict:
+
+    def upload_document(
+        self, url: str, name: Optional[str] = None, mode: str = "fast"
+    ) -> Dict:
         """
         Upload a document to Ragie from a URL.
         """
         if not name:
-            name = urlparse(url).path.split('/')[-1] or "document"
-            
-        payload = {
-            "mode": mode,
-            "name": name,
-            "url": url
-        }
-        
+            name = urlparse(url).path.split("/")[-1] or "document"
+
+        payload = {"mode": mode, "name": name, "url": url}
+
         headers = {
             "accept": "application/json",
             "content-type": "application/json",
-            "authorization": f"Bearer {self.ragie_api_key}"
+            "authorization": f"Bearer {self.ragie_api_key}",
         }
-        
+
         response = requests.post(self.RAGIE_UPLOAD_URL, json=payload, headers=headers)
-        
+
         if not response.ok:
-            raise Exception(f"Document upload failed: {response.status_code} {response.reason}")
-            
+            raise Exception(
+                f"Document upload failed: {response.status_code} {response.reason}"
+            )
+
         return response.json()
-    
+
     def retrieve_chunks(self, query: str, scope: str = "tutorial") -> List[str]:
         """
         Retrieve relevant chunks from Ragie for a given query.
         """
         headers = {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.ragie_api_key}"
+            "Authorization": f"Bearer {self.ragie_api_key}",
         }
-        
-        payload = {
-            "query": query,
-            "filters": {
-                "scope": scope
-            }
-        }
-        
+
+        payload = {"query": query, "filters": {"scope": scope}}
+
         response = requests.post(
-            self.RAGIE_RETRIEVAL_URL,
-            headers=headers,
-            json=payload
+            self.RAGIE_RETRIEVAL_URL, headers=headers, json=payload
         )
-        
+
         if not response.ok:
-            raise Exception(f"Retrieval failed: {response.status_code} {response.reason}")
-            
+            raise Exception(
+                f"Retrieval failed: {response.status_code} {response.reason}"
+            )
+
         data = response.json()
         return [chunk["text"] for chunk in data["scored_chunks"]]
 
@@ -86,14 +82,9 @@ class RAGPipeline:
             model="claude-sonnet-4-5",
             max_tokens=1024,
             system=system_prompt,
-            messages=[
-                {
-                    "role": "user",
-                    "content": query
-                }
-            ]
+            messages=[{"role": "user", "content": query}],
         )
-        
+
         return message.content[0].text
 
     def process_query(self, query: str, scope: str = "tutorial") -> str:
@@ -101,36 +92,42 @@ class RAGPipeline:
         Process a query through the complete RAG pipeline.
         """
         chunks = self.retrieve_chunks(query, scope)
-        
+
         if not chunks:
             return "No relevant information found for your query."
-        
+
         system_prompt = self.create_system_prompt(chunks)
         return self.generate_response(system_prompt, query)
 
+
 def initialize_session_state():
     """Initialize session state variables."""
-    if 'pipeline' not in st.session_state:
+    if "pipeline" not in st.session_state:
         st.session_state.pipeline = None
-    if 'document_uploaded' not in st.session_state:
+    if "document_uploaded" not in st.session_state:
         st.session_state.document_uploaded = False
-    if 'api_keys_submitted' not in st.session_state:
+    if "api_keys_submitted" not in st.session_state:
         st.session_state.api_keys_submitted = False
+
 
 def main():
     st.set_page_config(page_title="RAG-as-a-Service", layout="wide")
     initialize_session_state()
-    
+
     st.title(":linked_paperclips: RAG-as-a-Service")
-    
+
     # API Keys Section
-    with st.expander("🔑 API Keys Configuration", expanded=not st.session_state.api_keys_submitted):
+    with st.expander(
+        "🔑 API Keys Configuration", expanded=not st.session_state.api_keys_submitted
+    ):
         col1, col2 = st.columns(2)
         with col1:
             ragie_key = st.text_input("Ragie API Key", type="password", key="ragie_key")
         with col2:
-            anthropic_key = st.text_input("Anthropic API Key", type="password", key="anthropic_key")
-        
+            anthropic_key = st.text_input(
+                "Anthropic API Key", type="password", key="anthropic_key"
+            )
+
         if st.button("Submit API Keys"):
             if ragie_key and anthropic_key:
                 try:
@@ -141,17 +138,17 @@ def main():
                     st.error(f"Error configuring API keys: {str(e)}")
             else:
                 st.error("Please provide both API keys.")
-    
+
     # Document Upload Section
     if st.session_state.api_keys_submitted:
         st.markdown("### 📄 Document Upload")
         doc_url = st.text_input("Enter document URL")
         doc_name = st.text_input("Document name (optional)")
-        
+
         col1, col2 = st.columns([1, 3])
         with col1:
             upload_mode = st.selectbox("Upload mode", ["fast", "accurate"])
-        
+
         if st.button("Upload Document"):
             if doc_url:
                 try:
@@ -159,7 +156,7 @@ def main():
                         st.session_state.pipeline.upload_document(
                             url=doc_url,
                             name=doc_name if doc_name else None,
-                            mode=upload_mode
+                            mode=upload_mode,
                         )
                         time.sleep(5)  # Wait for indexing
                         st.session_state.document_uploaded = True
@@ -168,12 +165,12 @@ def main():
                     st.error(f"Error uploading document: {str(e)}")
             else:
                 st.error("Please provide a document URL.")
-    
+
     # Query Section
     if st.session_state.document_uploaded:
         st.markdown("### 🔍 Query Document")
         query = st.text_input("Enter your query")
-        
+
         if st.button("Generate Response"):
             if query:
                 try:
@@ -185,6 +182,7 @@ def main():
                     st.error(f"Error generating response: {str(e)}")
             else:
                 st.error("Please enter a query.")
+
 
 if __name__ == "__main__":
     main()

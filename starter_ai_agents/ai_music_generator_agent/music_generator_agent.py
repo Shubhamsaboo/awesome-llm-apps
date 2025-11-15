@@ -12,11 +12,17 @@ import streamlit as st
 st.sidebar.title("API Key Configuration")
 
 openai_api_key = st.sidebar.text_input("Enter your OpenAI API Key", type="password")
-models_lab_api_key = st.sidebar.text_input("Enter your ModelsLab API Key", type="password")
+models_lab_api_key = st.sidebar.text_input(
+    "Enter your ModelsLab API Key", type="password"
+)
 
 # Streamlit App UI
 st.title("🎶 ModelsLab Music Generator")
-prompt = st.text_area("Enter a music generation prompt:", "Generate a 30 second classical music piece", height=100)
+prompt = st.text_area(
+    "Enter a music generation prompt:",
+    "Generate a 30 second classical music piece",
+    height=100,
+)
 
 # Initialize agent only if both API keys are provided
 if openai_api_key and models_lab_api_key:
@@ -25,7 +31,13 @@ if openai_api_key and models_lab_api_key:
         agent_id="ml_music_agent",
         model=OpenAIChat(id="gpt-4o", api_key=openai_api_key),
         show_tool_calls=True,
-        tools=[ModelsLabTools(api_key=models_lab_api_key, wait_for_completion=True, file_type=FileType.MP3)],
+        tools=[
+            ModelsLabTools(
+                api_key=models_lab_api_key,
+                wait_for_completion=True,
+                file_type=FileType.MP3,
+            )
+        ],
         description="You are an AI agent that can generate music using the ModelsLabs API.",
         instructions=[
             "When generating music, use the `generate_media` tool with detailed prompts that specify:",
@@ -57,13 +69,17 @@ if openai_api_key and models_lab_api_key:
 
                         # 🛡️ Validate response
                         if not response.ok:
-                            st.error(f"Failed to download audio. Status code: {response.status_code}")
+                            st.error(
+                                f"Failed to download audio. Status code: {response.status_code}"
+                            )
                             st.stop()
 
                         content_type = response.headers.get("Content-Type", "")
                         if "audio" not in content_type:
                             st.error(f"Invalid file type returned: {content_type}")
-                            st.write("🔍 Debug: Downloaded content was not an audio file.")
+                            st.write(
+                                "🔍 Debug: Downloaded content was not an audio file."
+                            )
                             st.write("🔗 URL:", url)
                             st.stop()
 
@@ -81,7 +97,7 @@ if openai_api_key and models_lab_api_key:
                             label="Download Music",
                             data=audio_bytes,
                             file_name="generated_music.mp3",
-                            mime="audio/mp3"
+                            mime="audio/mp3",
                         )
                     else:
                         st.error("No audio generated. Please try again.")
@@ -91,4 +107,6 @@ if openai_api_key and models_lab_api_key:
                     logger.error(f"Streamlit app error: {e}")
 
 else:
-    st.sidebar.warning("Please enter both the OpenAI and ModelsLab API keys to use the app.")
+    st.sidebar.warning(
+        "Please enter both the OpenAI and ModelsLab API keys to use the app."
+    )

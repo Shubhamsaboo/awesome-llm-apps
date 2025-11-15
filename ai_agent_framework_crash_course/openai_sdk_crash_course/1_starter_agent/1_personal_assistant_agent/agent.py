@@ -1,5 +1,4 @@
 from agents import Agent, Runner
-import asyncio
 
 # Create an agent for demonstrating different execution methods
 root_agent = Agent(
@@ -20,24 +19,29 @@ root_agent = Agent(
     - Maintain a positive and supportive tone
     
     Keep responses concise but informative.
-    """
+    """,
 )
 
-# Example usage patterns 
+
+# Example usage patterns
 def sync_example():
     """Synchronous execution example"""
     result = Runner.run_sync(root_agent, "Hello, how does sync execution work?")
     return result.final_output
+
 
 async def async_example():
     """Asynchronous execution example"""
     result = await Runner.run(root_agent, "Hello, how does async execution work?")
     return result.final_output
 
+
 async def streaming_example():
     """Streaming execution example"""
     response_text = ""
-    async for event in Runner.run_streamed(root_agent, "Tell me about streaming execution"):
-        if hasattr(event, 'content') and event.content:
+    async for event in Runner.run_streamed(
+        root_agent, "Tell me about streaming execution"
+    ):
+        if hasattr(event, "content") and event.content:
             response_text += event.content
     return response_text

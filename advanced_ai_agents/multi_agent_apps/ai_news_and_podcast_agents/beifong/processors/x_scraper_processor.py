@@ -1,4 +1,3 @@
-
 import sys
 from datetime import datetime
 from db.config import get_social_media_db_path

@@ -33,5 +33,5 @@ root_agent = LlmAgent(
     Always prioritize accuracy and recency of information. If search results are 
     conflicting, present multiple perspectives and mention the discrepancy.
     """,
-    tools=[google_search]
-) 
+    tools=[google_search],
+)

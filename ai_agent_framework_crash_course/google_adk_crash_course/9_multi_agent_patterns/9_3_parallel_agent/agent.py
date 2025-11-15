@@ -50,7 +50,11 @@ market_snapshot_team = ParallelAgent(
 
 # Runner and session service
 session_service = InMemorySessionService()
-runner = Runner(agent=market_snapshot_team, app_name="parallel_snapshot_app", session_service=session_service)
+runner = Runner(
+    agent=market_snapshot_team,
+    app_name="parallel_snapshot_app",
+    session_service=session_service,
+)
 
 
 async def gather_market_snapshot(user_id: str, topic: str) -> Dict[str, Any]:
@@ -83,16 +87,24 @@ async def gather_market_snapshot(user_id: str, topic: str) -> Dict[str, Any]:
 
     user_content = types.Content(
         role="user",
-        parts=[types.Part(text=f"Topic: {topic}. Provide a concise snapshot per agent focus.")],
+        parts=[
+            types.Part(
+                text=f"Topic: {topic}. Provide a concise snapshot per agent focus."
+            )
+        ],
     )
 
     # Collect last text emitted per agent
     last_text_by_agent: Dict[str, str] = {}
 
-    stream = runner.run_async(user_id=user_id, session_id=session_id, new_message=user_content)
+    stream = runner.run_async(
+        user_id=user_id, session_id=session_id, new_message=user_content
+    )
     if inspect.isasyncgen(stream):
         async for event in stream:
-            if getattr(event, "content", None) and getattr(event.content, "parts", None):
+            if getattr(event, "content", None) and getattr(
+                event.content, "parts", None
+            ):
                 for part in event.content.parts:
                     if hasattr(part, "text") and part.text:
                         author = getattr(event, "author", "")
@@ -100,7 +112,9 @@ async def gather_market_snapshot(user_id: str, topic: str) -> Dict[str, Any]:
                             last_text_by_agent[author] = part.text
     else:
         for event in stream:
-            if getattr(event, "content", None) and getattr(event.content, "parts", None):
+            if getattr(event, "content", None) and getattr(
+                event.content, "parts", None
+            ):
                 for part in event.content.parts:
                     if hasattr(part, "text") and part.text:
                         author = getattr(event, "author", "")
@@ -112,5 +126,3 @@ async def gather_market_snapshot(user_id: str, topic: str) -> Dict[str, Any]:
         "competitors": last_text_by_agent.get(competitor_intel_agent.name, ""),
         "funding_news": last_text_by_agent.get(funding_news_agent.name, ""),
     }
-
-

@@ -41,24 +41,27 @@ if together_api_key:
 
     async def main():
         results = await asyncio.gather(*[run_llm(model) for model in reference_models])
-        
+
         # Display individual model responses
         st.subheader("Individual Model Responses:")
         for model, response in results:
             with st.expander(f"Response from {model}"):
                 st.write(response)
-        
+
         # Aggregate responses
         st.subheader("Aggregated Response:")
         finalStream = client.chat.completions.create(
             model=aggregator_model,
             messages=[
                 {"role": "system", "content": aggregator_system_prompt},
-                {"role": "user", "content": ",".join(response for _, response in results)},
+                {
+                    "role": "user",
+                    "content": ",".join(response for _, response in results),
+                },
             ],
             stream=True,
         )
-        
+
         # Display aggregated response
         response_container = st.empty()
         full_response = ""

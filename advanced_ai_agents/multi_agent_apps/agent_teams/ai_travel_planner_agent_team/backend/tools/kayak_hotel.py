@@ -1,16 +1,18 @@
 from config.logger import logger_hook
-from typing import Optional
 from agno.tools import tool
 from models.hotel import HotelSearchRequest
 from loguru import logger
 
-@tool(
-    name="kayak_hotel_url_generator",
-    show_result=True,
-    tool_hooks=[logger_hook]
-)
+
+@tool(name="kayak_hotel_url_generator", show_result=True, tool_hooks=[logger_hook])
 def kayak_hotel_url_generator(
-    destination: str, check_in: str, check_out: str, adults: int = 1, children: int = 0, rooms: int = 1, sort: str = "recommended"
+    destination: str,
+    check_in: str,
+    check_out: str,
+    adults: int = 1,
+    children: int = 0,
+    rooms: int = 1,
+    sort: str = "recommended",
 ) -> str:
     """
     Generates a Kayak URL for hotels in the specified destination between check_in and check_out dates.
@@ -31,7 +33,8 @@ def kayak_hotel_url_generator(
         adults=adults,
         children=children,
         rooms=rooms,
-        sort=sort)
+        sort=sort,
+    )
 
     logger.info(f"Request: {request}")
 
@@ -43,7 +46,6 @@ def kayak_hotel_url_generator(
 
     if rooms > 1:
         URL += f"/{rooms}rooms"
-
 
     URL += "?currency=USD"
     if sort.lower() == "price":

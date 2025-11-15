@@ -12,7 +12,7 @@ from scipy import signal
 
 PODCASTS_FOLDER = "podcasts"
 PODCAST_AUDIO_FOLDER = os.path.join(PODCASTS_FOLDER, "audio")
-PODCAST_MUSIC_FOLDER = os.path.join('static', "musics")
+PODCAST_MUSIC_FOLDER = os.path.join("static", "musics")
 OPENAI_VOICES = {1: "alloy", 2: "echo", 3: "fable", 4: "onyx", 5: "nova", 6: "shimmer"}
 DEFAULT_VOICE_MAP = {1: "alloy", 2: "nova"}
 TTS_MODEL = "gpt-4o-mini-tts"

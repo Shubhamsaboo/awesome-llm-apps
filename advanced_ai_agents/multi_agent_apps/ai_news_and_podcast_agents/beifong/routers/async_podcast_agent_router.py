@@ -28,7 +28,7 @@ class ChatResponse(BaseModel):
 
 class StatusRequest(BaseModel):
     session_id: str
-    task_id: Optional[str] = None  
+    task_id: Optional[str] = None
 
 
 @router.post("/session")
@@ -65,6 +65,7 @@ async def get_session_history(session_id: str):
 async def delete_session(session_id: str):
     """Delete a podcast session and all its data"""
     return await podcast_agent_service.delete_session(session_id)
+
 
 @router.get("/languages")
 async def get_supported_languages():

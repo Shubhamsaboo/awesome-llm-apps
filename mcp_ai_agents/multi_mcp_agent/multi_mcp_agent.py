@@ -2,7 +2,7 @@ import asyncio
 import os
 import uuid
 from textwrap import dedent
-from agno.agent import Agent 
+from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 from agno.tools.mcp import MultiMCPTools
 from agno.db.sqlite import SqliteDb
@@ -15,58 +15,61 @@ GITHUB_TOKEN = os.getenv("GITHUB_PERSONAL_ACCESS_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")
 
+
 async def main():
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("           🚀 Multi-MCP Intelligent Assistant 🚀")
-    print("="*60)
+    print("=" * 60)
     print("🔗 Connected Services: GitHub • Perplexity • Calendar")
     print("💡 Powered by OpenAI GPT-4o with Advanced Tool Integration")
-    print("="*60 + "\n")
-    
+    print("=" * 60 + "\n")
+
     # Validate required environment variables
     required_vars = {
         "GITHUB_PERSONAL_ACCESS_TOKEN": GITHUB_TOKEN,
         "OPENAI_API_KEY": OPENAI_API_KEY,
         "PERPLEXITY_API_KEY": PERPLEXITY_API_KEY,
     }
-    
+
     missing_vars = [name for name, value in required_vars.items() if not value]
     if missing_vars:
         print("❌ ERROR: Missing required environment variables:")
         for var in missing_vars:
             print(f"   • {var}")
-        print("\nPlease check your .env file and ensure all required variables are set.")
+        print(
+            "\nPlease check your .env file and ensure all required variables are set."
+        )
         return
-    
+
     # Generate unique user and session IDs for this terminal session
     user_id = f"user_{uuid.uuid4().hex[:8]}"
     session_id = f"session_{uuid.uuid4().hex[:8]}"
     print(f"👤 User ID: {user_id}")
     print(f"🔑 Session ID: {session_id}")
-    
+
     print("\n🔌 Initializing MCP server connections...\n")
-    
+
     # Set up environment variables for MCP servers
     env = {
         **os.environ,
         "GITHUB_PERSONAL_ACCESS_TOKEN": GITHUB_TOKEN,
-        "PERPLEXITY_API_KEY": PERPLEXITY_API_KEY
+        "PERPLEXITY_API_KEY": PERPLEXITY_API_KEY,
     }
 
     mcp_servers = [
         "npx -y @modelcontextprotocol/server-github",
         "npx -y @chatmcp/server-perplexity-ask",
         "npx @gongrzhe/server-calendar-autoauth-mcp",
-        "npx @gongrzhe/server-gmail-autoauth-mcp"
+        "npx @gongrzhe/server-gmail-autoauth-mcp",
     ]
-    
+
     # Setup database for memory
     db = SqliteDb(db_file="tmp/multi_mcp_agent.db")
-    
+
     # Start the MCP Tools session
     async with MultiMCPTools(mcp_servers, env=env) as mcp_tools:
         print("✅ Successfully connected to all MCP servers!")
-        
+
         # Create the agent with comprehensive instructions
         agent = Agent(
             name="MultiMCPAgent",
@@ -131,18 +134,18 @@ async def main():
             add_history_to_context=True,
             num_history_runs=10,  # Increased for better context retention
         )
-        
-        print("\n" + "🎉 " + "="*54 + " 🎉")
+
+        print("\n" + "🎉 " + "=" * 54 + " 🎉")
         print("   Multi-MCP Assistant is READY! Let's get productive!")
-        print("🎉 " + "="*54 + " 🎉\n")
-        
+        print("🎉 " + "=" * 54 + " 🎉\n")
+
         print("💡 Try these example commands:")
         print("   • 'Show my recent GitHub repositories'")
         print("   • 'Search for the latest AI developments'")
         print("   • 'Schedule a meeting for next week'")
-        
+
         print("⚡ Type 'exit', 'quit', or 'bye' to end the session\n")
-        
+
         # Start interactive CLI session
         await agent.acli_app(
             user_id=user_id,
@@ -151,8 +154,9 @@ async def main():
             emoji="🤖",
             stream=True,
             markdown=True,
-            exit_on=["exit", "quit", "bye", "goodbye"]
+            exit_on=["exit", "quit", "bye", "goodbye"],
         )
+
 
 if __name__ == "__main__":
     asyncio.run(main())

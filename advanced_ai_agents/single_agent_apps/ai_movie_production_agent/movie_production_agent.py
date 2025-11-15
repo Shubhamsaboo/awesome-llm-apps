@@ -9,12 +9,18 @@ from textwrap import dedent
 
 # Set up the Streamlit app
 st.title("AI Movie Production Agent 🎬")
-st.caption("Bring your movie ideas to life with the teams of script writing and casting AI agents")
+st.caption(
+    "Bring your movie ideas to life with the teams of script writing and casting AI agents"
+)
 
 # Get Google API key from user
-google_api_key = st.text_input("Enter Google API Key to access Gemini 2.5 Flash", type="password")
+google_api_key = st.text_input(
+    "Enter Google API Key to access Gemini 2.5 Flash", type="password"
+)
 # Get SerpAPI key from the user
-serp_api_key = st.text_input("Enter Serp API Key for Search functionality", type="password")
+serp_api_key = st.text_input(
+    "Enter Serp API Key for Search functionality", type="password"
+)
 
 if google_api_key and serp_api_key:
     script_writer = Agent(
@@ -67,10 +73,14 @@ if google_api_key and serp_api_key:
 
     # Input field for the report query
     movie_idea = st.text_area("Describe your movie idea in a few sentences:")
-    genre = st.selectbox("Select the movie genre:", 
-                         ["Action", "Comedy", "Drama", "Sci-Fi", "Horror", "Romance", "Thriller"])
-    target_audience = st.selectbox("Select the target audience:", 
-                                   ["General", "Children", "Teenagers", "Adults", "Mature"])
+    genre = st.selectbox(
+        "Select the movie genre:",
+        ["Action", "Comedy", "Drama", "Sci-Fi", "Horror", "Romance", "Thriller"],
+    )
+    target_audience = st.selectbox(
+        "Select the target audience:",
+        ["General", "Children", "Teenagers", "Adults", "Mature"],
+    )
     estimated_runtime = st.slider("Estimated runtime (in minutes):", 60, 180, 120)
 
     # Process the movie concept

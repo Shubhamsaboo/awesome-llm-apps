@@ -5,7 +5,9 @@ from agno.models.openai import OpenAIChat
 from agno.tools.yfinance import YFinanceTools
 
 st.title("AI Investment Agent 📈🤖")
-st.caption("This app allows you to compare the performance of two stocks and generate detailed reports.")
+st.caption(
+    "This app allows you to compare the performance of two stocks and generate detailed reports."
+)
 
 openai_api_key = st.text_input("OpenAI API Key", type="password")
 
@@ -13,7 +15,9 @@ if openai_api_key:
     assistant = Agent(
         model=OpenAIChat(id="gpt-4o", api_key=openai_api_key),
         tools=[
-            YFinanceTools(stock_price=True, analyst_recommendations=True, stock_fundamentals=True)
+            YFinanceTools(
+                stock_price=True, analyst_recommendations=True, stock_fundamentals=True
+            )
         ],
         debug_mode=True,
         description="You are an investment analyst that researches stock prices, analyst recommendations, and stock fundamentals.",

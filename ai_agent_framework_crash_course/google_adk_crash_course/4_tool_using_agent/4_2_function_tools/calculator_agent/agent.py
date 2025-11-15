@@ -5,7 +5,7 @@ from .tools import (
     calculate_compound_interest,
     calculate_percentage,
     calculate_statistics,
-    round_number
+    round_number,
 )
 
 # Create a calculator agent with custom function tools
@@ -72,6 +72,6 @@ root_agent = LlmAgent(
         calculate_compound_interest,
         calculate_percentage,
         calculate_statistics,
-        round_number
-    ]
-) 
+        round_number,
+    ],
+)

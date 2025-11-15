@@ -7,7 +7,9 @@ from agno.tools.newspaper4k import Newspaper4kTools
 
 # Setting up Streamlit app
 st.title("AI Startup Trend Analysis Agent 📈")
-st.caption("Get the latest trend analysis and startup opportunities based on your topic of interest in a click!.")
+st.caption(
+    "Get the latest trend analysis and startup opportunities based on your topic of interest in a click!."
+)
 
 topic = st.text_input("Enter the area of interest for your Startup:")
 google_api_key = st.sidebar.text_input("Enter Google API Key", type="password")
@@ -33,7 +35,9 @@ if st.button("Generate Analysis"):
                 )
 
                 # Define Summary Writer Agent
-                news_tool = Newspaper4kTools(enable_read_article=True, include_summary=True)
+                news_tool = Newspaper4kTools(
+                    enable_read_article=True, include_summary=True
+                )
                 summary_writer = Agent(
                     name="Summary Writer",
                     role="Summarizes collected news articles",
@@ -54,15 +58,21 @@ if st.button("Generate Analysis"):
 
                 # Executing the workflow
                 # Step 1: Collect news
-                news_response: RunOutput = news_collector.run(f"Collect recent news on {topic}")
+                news_response: RunOutput = news_collector.run(
+                    f"Collect recent news on {topic}"
+                )
                 articles = news_response.content
 
                 # Step 2: Summarize articles
-                summary_response: RunOutput = summary_writer.run(f"Summarize the following articles:\n{articles}")
+                summary_response: RunOutput = summary_writer.run(
+                    f"Summarize the following articles:\n{articles}"
+                )
                 summaries = summary_response.content
 
                 # Step 3: Analyze trends
-                trend_response: RunOutput = trend_analyzer.run(f"Analyze trends from the following summaries:\n{summaries}")
+                trend_response: RunOutput = trend_analyzer.run(
+                    f"Analyze trends from the following summaries:\n{summaries}"
+                )
                 analysis = trend_response.content
 
                 # Display results - if incase you want to use this furthur, you can uncomment the below 2 lines to get the summaries too!

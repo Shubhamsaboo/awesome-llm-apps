@@ -67,7 +67,7 @@ def setup_session_multi(TARGET_SITES):
                 while True:
                     pages[0].wait_for_timeout(1000)
             except KeyboardInterrupt:
-                print(f"\n🔑 Sessions saved for all {len(TARGET_SITES)} sites! " "You can now run monitoring tasks with these sessions.")
+                print(f"\n🔑 Sessions saved for all {len(TARGET_SITES)} sites! You can now run monitoring tasks with these sessions.")
         finally:
             browser_context.close()
 

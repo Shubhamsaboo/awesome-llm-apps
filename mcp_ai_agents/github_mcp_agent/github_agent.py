@@ -10,46 +10,58 @@ from mcp import StdioServerParameters
 st.set_page_config(page_title="🐙 GitHub MCP Agent", page_icon="🐙", layout="wide")
 
 st.markdown("<h1 class='main-header'>🐙 GitHub MCP Agent</h1>", unsafe_allow_html=True)
-st.markdown("Explore GitHub repositories with natural language using the Model Context Protocol")
+st.markdown(
+    "Explore GitHub repositories with natural language using the Model Context Protocol"
+)
 
 with st.sidebar:
     st.header("🔑 Authentication")
-    
-    openai_key = st.text_input("OpenAI API Key", type="password",
-                              help="Required for the AI agent to interpret queries and format results")
+
+    openai_key = st.text_input(
+        "OpenAI API Key",
+        type="password",
+        help="Required for the AI agent to interpret queries and format results",
+    )
     if openai_key:
         os.environ["OPENAI_API_KEY"] = openai_key
-    
-    github_token = st.text_input("GitHub Token", type="password", 
-                                help="Create a token with repo scope at github.com/settings/tokens")
+
+    github_token = st.text_input(
+        "GitHub Token",
+        type="password",
+        help="Create a token with repo scope at github.com/settings/tokens",
+    )
     if github_token:
         os.environ["GITHUB_TOKEN"] = github_token
-    
+
     st.markdown("---")
     st.markdown("### Example Queries")
-    
+
     st.markdown("**Issues**")
     st.markdown("- Show me issues by label")
     st.markdown("- What issues are being actively discussed?")
-    
+
     st.markdown("**Pull Requests**")
     st.markdown("- What PRs need review?")
     st.markdown("- Show me recent merged PRs")
-    
+
     st.markdown("**Repository**")
     st.markdown("- Show repository health metrics")
     st.markdown("- Show repository activity patterns")
-    
+
     st.markdown("---")
-    st.caption("Note: Always specify the repository in your query if not already selected in the main input.")
+    st.caption(
+        "Note: Always specify the repository in your query if not already selected in the main input."
+    )
 
 col1, col2 = st.columns([3, 1])
 with col1:
-    repo = st.text_input("Repository", value="Shubhamsaboo/awesome-llm-apps", help="Format: owner/repo")
+    repo = st.text_input(
+        "Repository", value="Shubhamsaboo/awesome-llm-apps", help="Format: owner/repo"
+    )
 with col2:
-    query_type = st.selectbox("Query Type", [
-        "Issues", "Pull Requests", "Repository Activity", "Custom"
-    ])
+    query_type = st.selectbox(
+        "Query Type", ["Issues", "Pull Requests", "Repository Activity", "Custom"]
+    )
 
 if query_type == "Issues":
     query_template = f"Find issues labeled as bugs in {repo}"
@@ -60,32 +72,40 @@ elif query_type == "Repository Activity":
 else:
     query_template = ""
 
-query = st.text_area("Your Query", value=query_template, 
-                     placeholder="What would you like to know about this repository?")
+query = st.text_area(
+    "Your Query",
+    value=query_template,
+    placeholder="What would you like to know about this repository?",
+)
+
 
 async def run_github_agent(message):
     if not os.getenv("GITHUB_TOKEN"):
         return "Error: GitHub token not provided"
-    
+
     if not os.getenv("OPENAI_API_KEY"):
         return "Error: OpenAI API key not provided"
-    
+
     try:
         server_params = StdioServerParameters(
             command="docker",
             args=[
-                "run", "-i", "--rm",
-                "-e", "GITHUB_PERSONAL_ACCESS_TOKEN",
-                "-e", "GITHUB_TOOLSETS",
-                "ghcr.io/github/github-mcp-server"
+                "run",
+                "-i",
+                "--rm",
+                "-e",
+                "GITHUB_PERSONAL_ACCESS_TOKEN",
+                "-e",
+                "GITHUB_TOOLSETS",
+                "ghcr.io/github/github-mcp-server",
             ],
             env={
                 **os.environ,
-                "GITHUB_PERSONAL_ACCESS_TOKEN": os.getenv('GITHUB_TOKEN'),
-                "GITHUB_TOOLSETS": "repos,issues,pull_requests"
-            }
+                "GITHUB_PERSONAL_ACCESS_TOKEN": os.getenv("GITHUB_TOKEN"),
+                "GITHUB_TOOLSETS": "repos,issues,pull_requests",
+            },
         )
-        
+
         async with MCPTools(server_params=server_params) as mcp_tools:
             agent = Agent(
                 tools=[mcp_tools],
@@ -99,14 +119,17 @@ async def run_github_agent(message):
                 """),
                 markdown=True,
             )
-            
-            response: RunOutput = await asyncio.wait_for(agent.arun(message), timeout=120.0)
+
+            response: RunOutput = await asyncio.wait_for(
+                agent.arun(message), timeout=120.0
+            )
             return response.content
-                
+
     except asyncio.TimeoutError:
         return "Error: Request timed out after 120 seconds"
     except Exception as e:
         return f"Error: {str(e)}"
+
 
 if st.button("🚀 Run Query", type="primary", use_container_width=True):
     if not openai_key:
@@ -121,13 +144,13 @@ if st.button("🚀 Run Query", type="primary", use_container_width=True):
                 full_query = f"{query} in {repo}"
             else:
                 full_query = query
-                
+
             result = asyncio.run(run_github_agent(full_query))
-        
+
         st.markdown("### Results")
         st.markdown(result)
 
-if 'result' not in locals():
+if "result" not in locals():
     st.markdown(
         """<div class='info-box'>
         <h4>How to use this app:</h4>
@@ -145,6 +168,6 @@ if 'result' not in locals():
             <li>Results are formatted in readable markdown with insights and links</li>
             <li>Queries work best when focused on specific aspects like issues, PRs, or repository info</li>
         </ul>
-        </div>""", 
-        unsafe_allow_html=True
+        </div>""",
+        unsafe_allow_html=True,
     )

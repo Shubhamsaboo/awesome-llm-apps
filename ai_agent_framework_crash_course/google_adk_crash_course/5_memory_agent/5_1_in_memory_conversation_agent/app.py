@@ -7,7 +7,9 @@ st.set_page_config(page_title="In-Memory Agent", page_icon="🧠")
 
 # Title
 st.title("🧠 In-Memory Conversation Agent")
-st.markdown("Simple demo of `InMemorySessionService` - agent remembers conversations within a session.")
+st.markdown(
+    "Simple demo of `InMemorySessionService` - agent remembers conversations within a session."
+)
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -24,13 +26,13 @@ if prompt := st.chat_input("Say something..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
-    
+
     # Get response
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
             response = asyncio.run(chat("demo_user", prompt))
             st.markdown(response)
-    
+
     # Add assistant response
     st.session_state.messages.append({"role": "assistant", "content": response})
 
@@ -49,4 +51,4 @@ with st.sidebar:
     4. **Temporary**: Lost when app restarts
     
     **Test**: Tell it your name, then ask "What's my name?"
-    """) 
+    """)

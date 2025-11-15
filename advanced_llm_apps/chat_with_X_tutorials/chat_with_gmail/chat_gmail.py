@@ -2,15 +2,24 @@ import tempfile
 import streamlit as st
 from embedchain import App
 
+
 # Define the embedchain_bot function
 def embedchain_bot(db_path, api_key):
     return App.from_config(
         config={
-            "llm": {"provider": "openai", "config": {"model": "gpt-4-turbo", "temperature": 0.5, "api_key": api_key}},
+            "llm": {
+                "provider": "openai",
+                "config": {
+                    "model": "gpt-4-turbo",
+                    "temperature": 0.5,
+                    "api_key": api_key,
+                },
+            },
             "vectordb": {"provider": "chroma", "config": {"dir": db_path}},
             "embedder": {"provider": "openai", "config": {"api_key": api_key}},
         }
     )
+
 
 # Create Streamlit app
 st.title("Chat with your Gmail Inbox 📧")
@@ -29,7 +38,7 @@ if openai_access_token:
     # Create an instance of Embedchain App
     app = embedchain_bot(db_path, openai_access_token)
     app.add(gmail_filter, data_type="gmail")
-    st.success(f"Added emails from Inbox to the knowledge base!")
+    st.success("Added emails from Inbox to the knowledge base!")
 
     # Ask a question about the emails
     prompt = st.text_input("Ask any question about your emails")

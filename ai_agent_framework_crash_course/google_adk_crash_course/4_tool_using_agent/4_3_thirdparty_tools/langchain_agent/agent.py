@@ -53,5 +53,5 @@ root_agent = LlmAgent(
     
     Always provide helpful, accurate information and explain your research process.
     """,
-    tools=[search_tool, wiki_tool]
+    tools=[search_tool, wiki_tool],
 )

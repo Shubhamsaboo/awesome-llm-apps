@@ -1,8 +1,10 @@
 import streamlit as st
 import asyncio
-from agent import market_snapshot_team, gather_market_snapshot
+from agent import gather_market_snapshot
 
-st.set_page_config(page_title="Parallel Agent Demo", page_icon=":fast_forward:", layout="wide")
+st.set_page_config(
+    page_title="Parallel Agent Demo", page_icon=":fast_forward:", layout="wide"
+)
 
 st.title("⚡ Market Snapshot (Parallel Agents)")
 st.markdown(
@@ -59,4 +61,3 @@ with st.sidebar:
         - This pattern is ideal for fan-out data gathering before synthesis
         """
     )
-

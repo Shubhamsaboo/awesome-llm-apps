@@ -54,8 +54,8 @@ def crawl_urls_batch(search_results):
             continue
         if not search_result.get("is_scrapping_required", True):
             continue
-        if not search_result.get('original_url'):
-            search_result['original_url'] = search_result['url']
+        if not search_result.get("original_url"):
+            search_result["original_url"] = search_result["url"]
         url = search_result["url"]
         if url not in url_to_search_results:
             url_to_search_results[url] = []

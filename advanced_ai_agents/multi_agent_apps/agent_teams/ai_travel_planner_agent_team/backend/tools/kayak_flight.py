@@ -4,13 +4,17 @@ from agno.tools import tool
 from models.flight import FlightSearchRequest
 from loguru import logger
 
-@tool(
-    name="kayak_flight_url_generator",
-    show_result=True,
-    tool_hooks=[logger_hook]
-)
+
+@tool(name="kayak_flight_url_generator", show_result=True, tool_hooks=[logger_hook])
 def kayak_flight_url_generator(
-    departure: str, destination: str, date: str, return_date: Optional[str] = None, adults: int = 1, children: int = 0, cabin_class: Optional[str] = None, sort: str = "best"
+    departure: str,
+    destination: str,
+    date: str,
+    return_date: Optional[str] = None,
+    adults: int = 1,
+    children: int = 0,
+    cabin_class: Optional[str] = None,
+    sort: str = "best",
 ) -> str:
     """
     Generates a Kayak URL for flights between departure and destination on the specified date.
@@ -33,7 +37,8 @@ def kayak_flight_url_generator(
         adults=adults,
         children=children,
         cabin_class=cabin_class,
-        sort=sort)
+        sort=sort,
+    )
 
     logger.info(f"Request: {request}")
 
@@ -45,10 +50,9 @@ def kayak_flight_url_generator(
         URL += f"/{cabin_class.lower()}"
     URL += f"/{adults}adults"
     if children > 0:
-        URL += f"/children"
+        URL += "/children"
         for _ in range(children):
             URL += "-11"
-
 
     URL += "?currency=USD"
     if sort.lower() == "cheapest":

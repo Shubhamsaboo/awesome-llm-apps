@@ -10,7 +10,9 @@ from agno.models.ollama import Ollama
 
 # Set up the Streamlit app
 st.title("Multi-Agent AI Researcher using Llama-3 🔍🤖")
-st.caption("This app allows you to research top stories and users on HackerNews and write blogs, reports and social posts.")
+st.caption(
+    "This app allows you to research top stories and users on HackerNews and write blogs, reports and social posts."
+)
 
 # Create the specialized agents
 hn_researcher = Agent(

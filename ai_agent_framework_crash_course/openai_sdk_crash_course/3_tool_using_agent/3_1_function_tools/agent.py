@@ -20,5 +20,5 @@ root_agent = Agent(
     
     Always use the provided tools rather than doing calculations yourself.
     """,
-    tools=[add_numbers, multiply_numbers, get_weather, convert_temperature]
+    tools=[add_numbers, multiply_numbers, get_weather, convert_temperature],
 )

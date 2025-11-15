@@ -1,7 +1,6 @@
-from firecrawl import FirecrawlApp, ScrapeOptions
+from firecrawl import FirecrawlApp
 import os
 from agno.tools import tool
-from loguru import logger
 from config.logger import logger_hook
 
 app = FirecrawlApp(api_key=os.getenv("FIRECRAWL_API_KEY"))

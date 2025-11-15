@@ -103,9 +103,11 @@ class PodcastAgentService:
             webm_files = glob.glob(os.path.join(recordings_dir, "*.webm"))
             if webm_files:
                 browser_recording_path = webm_files[0]
-                if (os.path.exists(browser_recording_path) and 
-                    os.path.getsize(browser_recording_path) > 8192 and 
-                    os.access(browser_recording_path, os.R_OK)):
+                if (
+                    os.path.exists(browser_recording_path)
+                    and os.path.getsize(browser_recording_path) > 8192
+                    and os.access(browser_recording_path, os.R_OK)
+                ):
                     return browser_recording_path
             return None
         except Exception as _:

@@ -74,9 +74,9 @@ def format_search_results_for_podcast(
                 structured_content.append(
                     f"""
                                         SOURCE {idx + 1}:
-                                        Title: {search_result['title']}
-                                        URL: {search_result['url']}
-                                        Content: {search_result.get('full_text') or search_result.get('description', '')}
+                                        Title: {search_result["title"]}
+                                        URL: {search_result["url"]}
+                                        Content: {search_result.get("full_text") or search_result.get("description", "")}
                                         ---END OF SOURCE {idx + 1}---
                                         """.strip()
                 )
@@ -102,10 +102,11 @@ def podcast_script_agent_run(
         Response status
     """
     from services.internal_session_service import SessionService
+
     session_id = agent.session_id
     session = SessionService.get_session(session_id)
     session_state = session["state"]
-    
+
     print("Podcast Script Agent Input:", query)
     content_texts, sources = format_search_results_for_podcast(session_state.get("search_results", []))
     if not content_texts:
@@ -127,7 +128,7 @@ def podcast_script_agent_run(
     response_dict = response_dict["content"]
     response_dict["sources"] = sources
     session_state["generated_script"] = response_dict
-    session_state['stage'] = 'script'
+    session_state["stage"] = "script"
     SessionService.save_session(session_id, session_state)
 
     if not session_state["generated_script"] and not session_state["generated_script"].get("sections"):

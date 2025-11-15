@@ -13,6 +13,7 @@ This app uses a local LLM via **Ollama**.
 3. Upload a Resume + Job Description to get a fit score and suggestions.
 """)
 
+
 # Helper: Extract text from PDF
 def extract_pdf_text(file):
     text = ""
@@ -20,6 +21,7 @@ def extract_pdf_text(file):
         for page in doc:
             text += page.get_text()
     return text
+
 
 # File uploaders
 resume_file = st.file_uploader("Upload Resume (PDF/TXT)", type=["pdf", "txt"])
@@ -84,5 +86,5 @@ if "resume_match" in st.session_state:
         "💾 Download Match Report",
         st.session_state["resume_match"],
         file_name="resume_match_report.md",
-        mime="text/markdown"
+        mime="text/markdown",
     )

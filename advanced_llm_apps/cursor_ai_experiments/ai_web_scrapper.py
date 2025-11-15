@@ -26,9 +26,7 @@ if st.button("Scrape"):
     if prompt and source_url and api_key:
         # Create the SmartScraperGraph instance
         smart_scraper_graph = SmartScraperGraph(
-            prompt=prompt,
-            source=source_url,
-            config=graph_config
+            prompt=prompt, source=source_url, config=graph_config
         )
 
         # Run the pipeline

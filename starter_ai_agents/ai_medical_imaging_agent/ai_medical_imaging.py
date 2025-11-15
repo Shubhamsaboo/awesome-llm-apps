@@ -1,4 +1,3 @@
-import os
 from PIL import Image as PILImage
 from agno.agent import Agent
 from agno.models.google import Gemini
@@ -12,12 +11,9 @@ if "GOOGLE_API_KEY" not in st.session_state:
 
 with st.sidebar:
     st.title("ℹ️ Configuration")
-    
+
     if not st.session_state.GOOGLE_API_KEY:
-        api_key = st.text_input(
-            "Enter your Google API Key:",
-            type="password"
-        )
+        api_key = st.text_input("Enter your Google API Key:", type="password")
         st.caption(
             "Get your API key from [Google AI Studio]"
             "(https://aistudio.google.com/apikey) 🔑"
@@ -31,7 +27,7 @@ with st.sidebar:
         if st.button("🔄 Reset API Key"):
             st.session_state.GOOGLE_API_KEY = None
             st.rerun()
-    
+
     st.info(
         "This tool provides AI-powered analysis of medical imaging data using "
         "advanced computer vision and radiological expertise."
@@ -42,14 +38,15 @@ with st.sidebar:
         "Do not make medical decisions based solely on this analysis."
     )
 
-medical_agent = Agent(
-    model=Gemini(
-        id="gemini-2.5-pro",
-        api_key=st.session_state.GOOGLE_API_KEY
-    ),
-    tools=[DuckDuckGoTools()],
-    markdown=True
-) if st.session_state.GOOGLE_API_KEY else None
+medical_agent = (
+    Agent(
+        model=Gemini(id="gemini-2.5-pro", api_key=st.session_state.GOOGLE_API_KEY),
+        tools=[DuckDuckGoTools()],
+        markdown=True,
+    )
+    if st.session_state.GOOGLE_API_KEY
+    else None
+)
 
 if not medical_agent:
     st.warning("Please configure your API key in the sidebar to continue")
@@ -105,7 +102,7 @@ with upload_container:
     uploaded_file = st.file_uploader(
         "Upload Medical Image",
         type=["jpg", "jpeg", "png", "dicom"],
-        help="Supported formats: JPG, JPEG, PNG, DICOM"
+        help="Supported formats: JPG, JPEG, PNG, DICOM",
     )
 
 if uploaded_file is not None:
@@ -118,29 +115,27 @@ if uploaded_file is not None:
             new_width = 500
             new_height = int(new_width / aspect_ratio)
             resized_image = image.resize((new_width, new_height))
-            
+
             st.image(
                 resized_image,
                 caption="Uploaded Medical Image",
-                use_container_width=True
+                use_container_width=True,
             )
-            
+
             analyze_button = st.button(
-                "🔍 Analyze Image",
-                type="primary",
-                use_container_width=True
+                "🔍 Analyze Image", type="primary", use_container_width=True
             )
-    
+
     with analysis_container:
         if analyze_button:
             with st.spinner("🔄 Analyzing image... Please wait."):
                 try:
                     temp_path = "temp_resized_image.png"
                     resized_image.save(temp_path)
-                    
+
                     # Create AgnoImage object
                     agno_image = AgnoImage(filepath=temp_path)
-                    
+
                     # Run analysis
                     response: RunOutput = medical_agent.run(query, images=[agno_image])
                     st.markdown("### 📋 Analysis Results")

@@ -126,13 +126,13 @@ class PodcastService:
                 except json.JSONDecodeError:
                     sources = []
             podcast["sources"] = sources
-            
+
             try:
                 banner_images = json.loads(podcast.get("banner_images", "[]"))
             except json.JSONDecodeError:
                 banner_images = []
             podcast["banner_images"] = banner_images
-            
+
             return podcast
         except Exception as e:
             if isinstance(e, HTTPException):
@@ -209,7 +209,7 @@ class PodcastService:
                 if engine not in tts_engines:
                     tts_engines.append(engine)
             return sorted(tts_engines)
-        except Exception as e:
+        except Exception:
             return ["elevenlabs", "openai", "kokoro"]
 
     async def create_podcast(

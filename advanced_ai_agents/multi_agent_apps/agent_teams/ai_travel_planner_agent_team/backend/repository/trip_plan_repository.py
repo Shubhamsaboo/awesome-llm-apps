@@ -2,7 +2,6 @@ from datetime import datetime, timezone
 from typing import Optional, List
 
 from sqlalchemy import select, delete
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.trip_db import TripPlanStatus, TripPlanOutput
 from services.db_service import get_db_session

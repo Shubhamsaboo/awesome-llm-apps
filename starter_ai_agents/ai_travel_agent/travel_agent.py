@@ -9,68 +9,75 @@ from icalendar import Calendar, Event
 from datetime import datetime, timedelta
 
 
-def generate_ics_content(plan_text:str, start_date: datetime = None) -> bytes:
+def generate_ics_content(plan_text: str, start_date: datetime = None) -> bytes:
     """
-        Generate an ICS calendar file from a travel itinerary text.
+    Generate an ICS calendar file from a travel itinerary text.
 
-        Args:
-            plan_text: The travel itinerary text
-            start_date: Optional start date for the itinerary (defaults to today)
+    Args:
+        plan_text: The travel itinerary text
+        start_date: Optional start date for the itinerary (defaults to today)
 
-        Returns:
-            bytes: The ICS file content as bytes
-        """
+    Returns:
+        bytes: The ICS file content as bytes
+    """
     cal = Calendar()
-    cal.add('prodid','-//AI Travel Planner//github.com//' )
-    cal.add('version', '2.0')
+    cal.add("prodid", "-//AI Travel Planner//github.com//")
+    cal.add("version", "2.0")
 
     if start_date is None:
         start_date = datetime.today()
 
     # Split the plan into days
-    day_pattern = re.compile(r'Day (\d+)[:\s]+(.*?)(?=Day \d+|$)', re.DOTALL)
+    day_pattern = re.compile(r"Day (\d+)[:\s]+(.*?)(?=Day \d+|$)", re.DOTALL)
     days = day_pattern.findall(plan_text)
 
-    if not days: # If no day pattern found, create a single all-day event with the entire content
+    if (
+        not days
+    ):  # If no day pattern found, create a single all-day event with the entire content
         event = Event()
-        event.add('summary', "Travel Itinerary")
-        event.add('description', plan_text)
-        event.add('dtstart', start_date.date())
-        event.add('dtend', start_date.date())
+        event.add("summary", "Travel Itinerary")
+        event.add("description", plan_text)
+        event.add("dtstart", start_date.date())
+        event.add("dtend", start_date.date())
         event.add("dtstamp", datetime.now())
-        cal.add_component(event)  
+        cal.add_component(event)
     else:
         # Process each day
         for day_num, day_content in days:
             day_num = int(day_num)
             current_date = start_date + timedelta(days=day_num - 1)
-            
+
             # Create a single event for the entire day
             event = Event()
-            event.add('summary', f"Day {day_num} Itinerary")
-            event.add('description', day_content.strip())
-            
+            event.add("summary", f"Day {day_num} Itinerary")
+            event.add("description", day_content.strip())
+
             # Make it an all-day event
-            event.add('dtstart', current_date.date())
-            event.add('dtend', current_date.date())
+            event.add("dtstart", current_date.date())
+            event.add("dtend", current_date.date())
             event.add("dtstamp", datetime.now())
             cal.add_component(event)
 
     return cal.to_ical()
 
+
 # Set up the Streamlit app
 st.title("AI Travel Planner ")
-st.caption("Plan your next adventure with AI Travel Planner by researching and planning a personalized itinerary on autopilot using GPT-4o")
+st.caption(
+    "Plan your next adventure with AI Travel Planner by researching and planning a personalized itinerary on autopilot using GPT-4o"
+)
 
 # Initialize session state to store the generated itinerary
-if 'itinerary' not in st.session_state:
+if "itinerary" not in st.session_state:
     st.session_state.itinerary = None
 
 # Get OpenAI API key from user
 openai_api_key = st.text_input("Enter OpenAI API Key to access GPT-4o", type="password")
 
 # Get SerpAPI key from the user
-serp_api_key = st.text_input("Enter Serp API Key for Search functionality", type="password")
+serp_api_key = st.text_input(
+    "Enter Serp API Key for Search functionality", type="password"
+)
 
 if openai_api_key and serp_api_key:
     researcher = Agent(
@@ -116,7 +123,9 @@ if openai_api_key and serp_api_key:
 
     # Input fields for the user's destination and the number of days they want to travel for
     destination = st.text_input("Where do you want to go?")
-    num_days = st.number_input("How many days do you want to travel for?", min_value=1, max_value=30, value=7)
+    num_days = st.number_input(
+        "How many days do you want to travel for?", min_value=1, max_value=30, value=7
+    )
 
     col1, col2 = st.columns(2)
 
@@ -124,11 +133,13 @@ if openai_api_key and serp_api_key:
         if st.button("Generate Itinerary"):
             with st.spinner("Researching your destination..."):
                 # First get research results
-                research_results: RunOutput = researcher.run(f"Research {destination} for a {num_days} day trip", stream=False)
+                research_results: RunOutput = researcher.run(
+                    f"Research {destination} for a {num_days} day trip", stream=False
+                )
 
                 # Show research progress
                 st.write(" Research completed")
-                
+
             with st.spinner("Creating your personalized itinerary..."):
                 # Pass research results to planner
                 prompt = f"""
@@ -142,17 +153,17 @@ if openai_api_key and serp_api_key:
                 # Store the response in session state
                 st.session_state.itinerary = response.content
                 st.write(response.content)
-    
+
     # Only show download button if there's an itinerary
     with col2:
         if st.session_state.itinerary:
             # Generate the ICS file
             ics_content = generate_ics_content(st.session_state.itinerary)
-            
+
             # Provide the file for download
             st.download_button(
                 label="Download Itinerary as Calendar (.ics)",
                 data=ics_content,
                 file_name="travel_itinerary.ics",
-                mime="text/calendar"
+                mime="text/calendar",
             )

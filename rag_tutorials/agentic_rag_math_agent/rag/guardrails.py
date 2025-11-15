@@ -11,6 +11,7 @@ print("🔐 Loaded OPENAI_API_KEY:", "✅ Found" if OPENAI_API_KEY else "❌ Mis
 lm = dspy.LM(model="gpt-4o", api_key=OPENAI_API_KEY)
 dspy.configure(lm=lm)
 
+
 # ✅ Signature for Input Guard
 class ClassifyMath(dspy.Signature):
     """
@@ -19,9 +20,11 @@ class ClassifyMath(dspy.Signature):
 
     Return only 'Yes' or 'No' as your final verdict.
     """
-    question: str = dspy.InputField()
-    verdict: str = dspy.OutputField(desc="Respond with 'Yes' if the question is related to mathematics, 'No' otherwise.")
 
+    question: str = dspy.InputField()
+    verdict: str = dspy.OutputField(
+        desc="Respond with 'Yes' if the question is related to mathematics, 'No' otherwise."
+    )
 
 
 # ✅ Input Validator
@@ -43,44 +46,104 @@ class InputValidator(dspy.Module):
                 {"question": "What is the Fibonacci sequence?", "verdict": "Yes"},
                 {"question": "can you tell me about rhombus?", "verdict": "Yes"},
                 {"question": "what is a circle?", "verdict": "Yes"},
-                {"question": "What is the formula for the area of a circle?", "verdict": "Yes"},
-                {"question": "What is the formula for the circumference of a circle?", "verdict": "Yes"},
-                {"question": "What is the formula for the volume of a cone?", "verdict": "Yes"},
-                {"question": "What is the formula for the area of a parallelogram?", "verdict": "Yes"},
-                {"question": "What is the formula for the area of a trapezoid?", "verdict": "Yes"},
-                {"question": "What is the formula for the surface area of a cube?", "verdict": "Yes"},
+                {
+                    "question": "What is the formula for the area of a circle?",
+                    "verdict": "Yes",
+                },
+                {
+                    "question": "What is the formula for the circumference of a circle?",
+                    "verdict": "Yes",
+                },
+                {
+                    "question": "What is the formula for the volume of a cone?",
+                    "verdict": "Yes",
+                },
+                {
+                    "question": "What is the formula for the area of a parallelogram?",
+                    "verdict": "Yes",
+                },
+                {
+                    "question": "What is the formula for the area of a trapezoid?",
+                    "verdict": "Yes",
+                },
+                {
+                    "question": "What is the formula for the surface area of a cube?",
+                    "verdict": "Yes",
+                },
                 {"question": "What is the area of parallelogram?", "verdict": "Yes"},
                 {"question": "What is a square?", "verdict": "Yes"},
                 {"question": "Explain rectangle?", "verdict": "Yes"},
                 {"question": "can you tell me about pentagon?", "verdict": "Yes"},
-                {"question": "What is the formula for the volume of a sphere?", "verdict": "Yes"},
-                {"question": "What is the difference between a mean and median?", "verdict": "Yes"},
-                {"question": "What is the formula for the area of a triangle?", "verdict": "Yes"},
-                {"question": "What is the difference between a permutation and a combination?", "verdict": "Yes"},
-                {"question": "What is the formula for the slope of a line?", "verdict": "Yes"},
-                {"question": "What is the difference between a rational and irrational number?", "verdict": "Yes"},
-                {"question": "What is the formula for the area of a rectangle?", "verdict": "Yes"},
-                {"question": "What is the formula for the volume of a cylinder?", "verdict": "Yes"},
-                {"question": "What is the formula for the area of a trapezoid?", "verdict": "Yes"},
-                {"question": "What is the formula for the surface area of a sphere?", "verdict": "Yes"},
-                {"question": "What is the formula for the surface area of a cylinder?", "verdict": "Yes"},
+                {
+                    "question": "What is the formula for the volume of a sphere?",
+                    "verdict": "Yes",
+                },
+                {
+                    "question": "What is the difference between a mean and median?",
+                    "verdict": "Yes",
+                },
+                {
+                    "question": "What is the formula for the area of a triangle?",
+                    "verdict": "Yes",
+                },
+                {
+                    "question": "What is the difference between a permutation and a combination?",
+                    "verdict": "Yes",
+                },
+                {
+                    "question": "What is the formula for the slope of a line?",
+                    "verdict": "Yes",
+                },
+                {
+                    "question": "What is the difference between a rational and irrational number?",
+                    "verdict": "Yes",
+                },
+                {
+                    "question": "What is the formula for the area of a rectangle?",
+                    "verdict": "Yes",
+                },
+                {
+                    "question": "What is the formula for the volume of a cylinder?",
+                    "verdict": "Yes",
+                },
+                {
+                    "question": "What is the formula for the area of a trapezoid?",
+                    "verdict": "Yes",
+                },
+                {
+                    "question": "What is the formula for the surface area of a sphere?",
+                    "verdict": "Yes",
+                },
+                {
+                    "question": "What is the formula for the surface area of a cylinder?",
+                    "verdict": "Yes",
+                },
                 {"question": "What is the integral of sin(x)?", "verdict": "Yes"},
-                {"question": "What is the difference between mean and median?", "verdict": "Yes"},
-                {"question": "What is the formula for the circumference of a circle?", "verdict": "Yes"},
-                {"question": "What is the quadratic formula?", "verdict": "Yes"},   
+                {
+                    "question": "What is the difference between mean and median?",
+                    "verdict": "Yes",
+                },
+                {
+                    "question": "What is the formula for the circumference of a circle?",
+                    "verdict": "Yes",
+                },
+                {"question": "What is the quadratic formula?", "verdict": "Yes"},
                 {"question": "Tell me a good movie to watch.", "verdict": "No"},
                 {"question": "What is AI?", "verdict": "No"},
-            ]
+            ],
         )
+
     def forward(self, question):
         response = self.classifier(question=question)
         print("🧠 InputValidator Response:", response.verdict)
         return response.verdict.lower().strip() == "yes"
 
+
 # ✅ Output Validator (no change unless needed)
 class OutputValidator(dspy.Module):
     class ValidateAnswer(dspy.Signature):
         """Check if the answer is correct, step-by-step, and relevant to the question."""
+
         question = dspy.InputField(desc="The original math question.")
         answer = dspy.InputField(desc="The model-generated answer.")
         verdict = dspy.OutputField(desc="Answer only 'Yes' or 'No'")
@@ -90,12 +153,10 @@ class OutputValidator(dspy.Module):
         self.validate_answer = dspy.Predict(self.ValidateAnswer)
 
     def forward(self, question, answer):
-        response = self.validate_answer(
-            question=question,
-            answer=answer
-        )
+        response = self.validate_answer(question=question, answer=answer)
         print("🧠 OutputValidator Response:", response.verdict)
         return response.verdict.lower().strip() == "yes"
+
 
 # Initialize validators
 input_validator = InputValidator()

@@ -33,34 +33,40 @@ max_turns_input = st.sidebar.number_input(
     min_value=1,
     max_value=1000,
     value=st.session_state.max_turns,
-    step=1
+    step=1,
 )
 
 if max_turns_input:
     st.session_state.max_turns = max_turns_input
-    st.sidebar.success(f"Max turns of total chess moves set to {st.session_state.max_turns}!")
+    st.sidebar.success(
+        f"Max turns of total chess moves set to {st.session_state.max_turns}!"
+    )
 
 st.title("Chess with AutoGen Agents")
+
 
 def available_moves() -> str:
     available_moves = [str(move) for move in st.session_state.board.legal_moves]
     return "Available moves are: " + ",".join(available_moves)
+
 
 def execute_move(move: str) -> str:
     try:
         chess_move = chess.Move.from_uci(move)
         if chess_move not in st.session_state.board.legal_moves:
             return f"Invalid move: {move}. Please call available_moves() to see valid moves."
-        
+
         # Update board state
         st.session_state.board.push(chess_move)
         st.session_state.made_move = True
 
         # Generate and store board visualization
-        board_svg = chess.svg.board(st.session_state.board,
-                                  arrows=[(chess_move.from_square, chess_move.to_square)],
-                                  fill={chess_move.from_square: "gray"},
-                                  size=400)
+        board_svg = chess.svg.board(
+            st.session_state.board,
+            arrows=[(chess_move.from_square, chess_move.to_square)],
+            fill={chess_move.from_square: "gray"},
+            size=400,
+        )
         st.session_state.board_svg = board_svg
         st.session_state.move_history.append(board_svg)
 
@@ -68,14 +74,18 @@ def execute_move(move: str) -> str:
         moved_piece = st.session_state.board.piece_at(chess_move.to_square)
         piece_unicode = moved_piece.unicode_symbol()
         piece_type_name = chess.piece_name(moved_piece.piece_type)
-        piece_name = piece_type_name.capitalize() if piece_unicode.isupper() else piece_type_name
-        
+        piece_name = (
+            piece_type_name.capitalize() if piece_unicode.isupper() else piece_type_name
+        )
+
         # Generate move description
         from_square = chess.SQUARE_NAMES[chess_move.from_square]
         to_square = chess.SQUARE_NAMES[chess_move.to_square]
-        move_desc = f"Moved {piece_name} ({piece_unicode}) from {from_square} to {to_square}."
+        move_desc = (
+            f"Moved {piece_name} ({piece_unicode}) from {from_square} to {to_square}."
+        )
         if st.session_state.board.is_checkmate():
-            winner = 'White' if st.session_state.board.turn == chess.BLACK else 'Black'
+            winner = "White" if st.session_state.board.turn == chess.BLACK else "Black"
             move_desc += f"\nCheckmate! {winner} wins!"
         elif st.session_state.board.is_stalemate():
             move_desc += "\nGame ended in stalemate!"
@@ -88,12 +98,14 @@ def execute_move(move: str) -> str:
     except ValueError:
         return f"Invalid move format: {move}. Please use UCI format (e.g., 'e2e4')."
 
+
 def check_made_move(msg):
     if st.session_state.made_move:
         st.session_state.made_move = False
         return True
     else:
         return False
+
 
 if st.session_state.openai_api_key:
     try:
@@ -112,7 +124,7 @@ if st.session_state.openai_api_key:
         ]
 
         agent_white = ConversableAgent(
-            name="Agent_White",  
+            name="Agent_White",
             system_message="You are a professional chess player and you play as white. "
             "First call available_moves() first, to get list of legal available moves. "
             "Then call execute_move(move) to make a move.",
@@ -120,7 +132,7 @@ if st.session_state.openai_api_key:
         )
 
         agent_black = ConversableAgent(
-            name="Agent_Black",  
+            name="Agent_Black",
             system_message="You are a professional chess player and you play as black. "
             "First call available_moves() first, to get list of legal available moves. "
             "Then call execute_move(move) to make a move.",
@@ -128,7 +140,7 @@ if st.session_state.openai_api_key:
         )
 
         game_master = ConversableAgent(
-            name="Game_Master",  
+            name="Game_Master",
             llm_config=False,
             is_termination_msg=check_made_move,
             default_auto_reply="Please make a move.",
@@ -209,17 +221,23 @@ The game is managed by a **Game Master** that:
             st.session_state.board.reset()
             st.session_state.made_move = False
             st.session_state.move_history = []
-            st.session_state.board_svg = chess.svg.board(st.session_state.board, size=300)
-            st.info("The AI agents will now play against each other. Each agent will analyze the board, " 
-                   "request legal moves from the Game Master (proxy agent), and make strategic decisions.")
-            st.success("You can view the interaction between the agents in the terminal output, after the turns between agents end, you get view all the chess board moves displayed below!")
+            st.session_state.board_svg = chess.svg.board(
+                st.session_state.board, size=300
+            )
+            st.info(
+                "The AI agents will now play against each other. Each agent will analyze the board, "
+                "request legal moves from the Game Master (proxy agent), and make strategic decisions."
+            )
+            st.success(
+                "You can view the interaction between the agents in the terminal output, after the turns between agents end, you get view all the chess board moves displayed below!"
+            )
             st.write("Game started! White's turn.")
 
             chat_result = agent_black.initiate_chat(
-                recipient=agent_white, 
+                recipient=agent_white,
                 message="Let's play chess! You go first, its your move.",
                 max_turns=st.session_state.max_turns,
-                summary_method="reflection_with_llm"
+                summary_method="reflection_with_llm",
             )
             st.markdown(chat_result.summary)
 
@@ -231,7 +249,7 @@ The game is managed by a **Game Master** that:
                     move_by = "Agent White"  # Even-indexed moves are by White
                 else:
                     move_by = "Agent Black"  # Odd-indexed moves are by Black
-                
+
                 st.write(f"Move {i + 1} by {move_by}")
                 st.image(move_svg)
 

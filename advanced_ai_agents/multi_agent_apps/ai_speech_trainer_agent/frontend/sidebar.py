@@ -1,6 +1,7 @@
 # Sidebar with About section
 import streamlit as st
 
+
 def render_sidebar():
     st.sidebar.header("About")
     st.sidebar.info(
@@ -21,4 +22,4 @@ def render_sidebar():
         
         - Get personalized suggestions to enhance your performance.
         """
-    ) 
+    )

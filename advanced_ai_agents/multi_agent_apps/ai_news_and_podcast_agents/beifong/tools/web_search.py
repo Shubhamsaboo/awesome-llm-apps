@@ -47,7 +47,10 @@ def run_browser_search(agent: Agent, instruction: str) -> str:
 
         headless = True
         browser_profile = BrowserProfile(
-            user_data_dir=USER_DATA_DIR, headless=headless, viewport={"width": 1280, "height": 800}, record_video_dir=recordings_dir,
+            user_data_dir=USER_DATA_DIR,
+            headless=headless,
+            viewport={"width": 1280, "height": 800},
+            record_video_dir=recordings_dir,
             downloads_path="podcasts/browseruse_downloads",
         )
 
