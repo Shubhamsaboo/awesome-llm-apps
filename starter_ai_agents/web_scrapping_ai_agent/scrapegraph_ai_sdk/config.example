@@ -1,7 +1,0 @@
-# ScrapeGraph AI Configuration Example
-# Copy this to .env and add your API key
-
-SGAI_API_KEY=your-api-key-here
-
-# Get your API key at: https://scrapegraphai.com
-

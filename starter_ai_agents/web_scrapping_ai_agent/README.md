@@ -247,24 +247,3 @@ request_id = client.smartcrawler(
 - ✅ You prefer managed service
 
 **💡 Pro Tip**: Start with the local version to learn, then switch to SDK for production!
-
----
-
-## 🔗 Resources
-
-- **ScrapeGraph AI Website**: https://scrapegraphai.com
-- **GitHub Repository**: https://github.com/ScrapeGraphAI/scrapegraph-sdk
-- **Documentation**: https://docs.scrapegraphai.com
-- **Get API Key**: https://scrapegraphai.com
-
----
-
-## 💬 Support
-
-- 📧 Email: support@scrapegraphai.com
-- 💻 GitHub Issues
-- 🌟 Star the repo if you find it useful!
-
----
-
-Made with ❤️ by the ScrapeGraph AI team
