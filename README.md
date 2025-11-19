@@ -77,12 +77,12 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
       </a>
     </td>
     <td align="center">
-      <a href="https://dimension.dev/" target="_blank" rel="noopener" title="Dimensions">
-        <img src="docs/banner/sponsors/dimensions.png" alt="Dimensions" width="500">
+      <a href="https://dimension.dev/" target="_blank" rel="noopener" title="Dimension AI">
+        <img src="docs/banner/sponsors/dimensions.png" alt="Dimension AI" width="500">
       </a>
       <br>
       <a href="https://dimension.dev/" target="_blank" rel="noopener" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
-        Dimensions
+        Dimension AI
       </a>
     </td>
   </tr>
