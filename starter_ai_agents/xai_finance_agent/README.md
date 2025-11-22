@@ -20,7 +20,7 @@ cd awesome-llm-apps/ai_agent_tutorials/xai_finance_agent
 2. Install the required dependencies:
 
 ```bash
-cd awesome-llm-apps/ai_agent_tutorials/xai_finance_agent
+cd awesome-llm-apps/starter_ai_agents/xai_finance_agent
 pip install -r requirements.txt
 ```
 
