@@ -5,7 +5,7 @@ from agent import iterate_spec_until_acceptance
 
 st.set_page_config(page_title="Loop Agent Demo", page_icon=":repeat:", layout="wide")
 
-st.title("🔁 Iterative Plan Refiner (Loop Agent)")
+st.title("🔁 Iterative Plan Refiner with Gemini 3 Pro(Loop Agent)")
 st.markdown(
     """
 This demo runs a LoopAgent that repeatedly executes sub-agents to iteratively refine a plan.

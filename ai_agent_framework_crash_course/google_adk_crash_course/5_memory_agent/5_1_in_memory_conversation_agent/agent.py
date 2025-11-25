@@ -14,7 +14,7 @@ load_dotenv()
 session_service = InMemorySessionService()
 agent = LlmAgent(
     name="memory_agent",
-    model="gemini-2.5-flash",
+    model="gemini-3-pro-preview",
     description="A simple agent that remembers conversations",
     instruction="You are a helpful assistant. Remember what users tell you and reference it in future conversations."
 )

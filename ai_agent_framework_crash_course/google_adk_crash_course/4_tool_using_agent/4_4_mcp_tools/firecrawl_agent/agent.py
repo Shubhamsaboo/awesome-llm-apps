@@ -12,7 +12,7 @@ from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioServerParamet
 
 # Create the ADK agent with Firecrawl MCP tools
 root_agent = LlmAgent(
-    model='gemini-2.5-flash',
+    model='gemini-3-pro-preview',
     name='firecrawl_mcp_agent',
     instruction="""
     You are an advanced web scraping and research assistant powered by Firecrawl.

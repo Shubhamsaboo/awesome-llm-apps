@@ -77,7 +77,7 @@ def after_tool_callback(tool: BaseTool, args: Dict[str, Any], tool_context: Tool
 # --- 2. Setup Agent with Tool Callbacks ---
 llm_agent_with_tool_callbacks = LlmAgent(
     name="tool_execution_demo_agent",
-    model="gemini-2.5-flash",
+    model="gemini-3-pro-preview",
     instruction="You are a helpful assistant with calculator tools. When users ask for calculations, use the calculator_tool with appropriate parameters and provide clear explanations of the results.",
     description="An LLM agent demonstrating tool execution callbacks for monitoring",
     tools=[calculator_function_tool],

@@ -4,7 +4,7 @@ from google.adk.tools import google_search
 # Create a web search agent using Google ADK's built-in Search Tool
 root_agent = LlmAgent(
     name="search_agent",
-    model="gemini-2.0-flash",
+    model="gemini-3-pro-preview",
     description="A research agent that can search the web for real-time information",
     instruction="""
     You are a research assistant with access to real-time web search capabilities.

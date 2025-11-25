@@ -1,16 +1,11 @@
-import os
-from dotenv import load_dotenv
 from google.adk.agents import LlmAgent
 from google.adk.tools.agent_tool import AgentTool
 from google.adk.tools import google_search
 
-# Load environment variables
-load_dotenv()
-
 # --- Sub-agents ---
 research_agent = LlmAgent(
     name="research_agent",
-    model="gemini-2.0-flash",
+    model="gemini-3-pro-preview",
     description="Finds key information and outlines for a given topic.",
     instruction=(
         "You are a focused research specialist. Given a user topic or goal, "
@@ -27,7 +22,7 @@ research_agent = LlmAgent(
 
 summarizer_agent = LlmAgent(
     name="summarizer_agent",
-    model="gemini-2.5-flash",
+    model="gemini-3-pro-preview",
     description="Summarizes research findings clearly and concisely.",
     instruction=(
         "You are a skilled summarizer. Given research findings, create:\n"
@@ -42,7 +37,7 @@ summarizer_agent = LlmAgent(
 
 critic_agent = LlmAgent(
     name="critic_agent",
-    model="gemini-2.5-flash",
+    model="gemini-3-pro-preview",
     description="Provides constructive critique and improvement suggestions.",
     instruction=(
         "You are a thoughtful analyst and critic. Given research and summaries, provide:\n"
@@ -58,7 +53,7 @@ critic_agent = LlmAgent(
 # --- Coordinator (root) agent ---
 root_agent = LlmAgent(
     name="multi_agent_researcher",
-    model="gemini-2.5-flash",
+    model="gemini-3-pro-preview",
     description="Advanced multi-agent research coordinator that orchestrates research, analysis, and critique.",
     instruction=(
         "You are an advanced research coordinator managing a team of specialized agents.\n\n"
