@@ -13,7 +13,7 @@ scrape_website_tool = CrewaiTool(
         config=dict(
             llm=dict(
                 provider="google",
-                config=dict(model="gemini-2.5-flash"),
+                config=dict(model="gemini-3-pro-preview"),
             ),
             embedder=dict(
                 provider="google",
@@ -33,7 +33,7 @@ directory_search_tool = CrewaiTool(
         config=dict(
             llm=dict(
                 provider="google",
-                config=dict(model="gemini-2.5-flash"),
+                config=dict(model="gemini-3-pro-preview"),
             ),
             embedder=dict(
                 provider="google",
@@ -53,7 +53,7 @@ file_read_tool = CrewaiTool(
         config=dict(
             llm=dict(
                 provider="google",
-                config=dict(model="gemini-2.5-flash"),
+                config=dict(model="gemini-3-pro-preview"),
             ),
             embedder=dict(
                 provider="google",
@@ -69,7 +69,7 @@ file_read_tool = CrewaiTool(
 # Create an agent with CrewAI tools
 root_agent = LlmAgent(
     name="crewai_agent",
-    model="gemini-2.5-flash",
+    model="gemini-3-pro-preview",
     description="A versatile agent that uses CrewAI tools for web scraping, file operations, and content analysis",
     instruction="""
     You are a versatile assistant with access to powerful CrewAI tools for web scraping, 

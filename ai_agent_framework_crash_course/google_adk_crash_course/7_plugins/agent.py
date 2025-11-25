@@ -65,7 +65,7 @@ async def calculator_tool(tool_context: ToolContext, operation: str, a: float, b
 # AGENT AND RUNNER SETUP
 # ============================================================================
 # Create agent with the calculator tool
-agent = LlmAgent(name="plugin_demo_agent", model="gemini-2.0-flash", 
+agent = LlmAgent(name="plugin_demo_agent", model="gemini-3-pro-preview", 
                 instruction="You are a helpful assistant that can perform calculations. Use the calculator_tool when needed.",
                 tools=[calculator_tool])
 
