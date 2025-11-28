@@ -1,4 +1,5 @@
 ## 🖇️ RAG-as-a-Service with Claude 3.5 Sonnet
+
 Build and deploy a production-ready Retrieval-Augmented Generation (RAG) service using Claude 3.5 Sonnet and Ragie.ai. This implementation allows you to create a document querying system with a user-friendly Streamlit interface in less than 50 lines of Python code.
 
 ### Features

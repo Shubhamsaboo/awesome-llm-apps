@@ -1,5 +1,8 @@
 # 📠 RAG Agent with Database Routing
 
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-a-rag-agent-with-database-routing) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 A Streamlit application that demonstrates an advanced implementation of RAG Agent with intelligent query routing. The system combines multiple specialized databases with smart fallback mechanisms to ensure reliable and accurate responses to user queries.
 
 ## Features
