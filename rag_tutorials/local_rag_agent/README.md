@@ -1,4 +1,8 @@
 ## 🦙 Local RAG Agent with Llama 3.2
+
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-a-local-rag-agent) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 This application implements a Retrieval-Augmented Generation (RAG) system using Llama 3.2 via Ollama, with Qdrant as the vector database. Built with Agno v2.0.
 
 

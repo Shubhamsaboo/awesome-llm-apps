@@ -1,5 +1,8 @@
 # 👨‍🏫 AI Teaching Agent Team
 
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-an-ai-teaching-agent-team) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 A Streamlit application that brings together a team of specialized AI teaching agents who collaborate like a professional teaching faculty. Each agent acts as a specialized educator: a curriculum designer, learning path expert, resource librarian, and practice instructor - working together to create a complete educational experience through Google Docs.
 
 ## 🪄 Meet your AI Teaching Agent Team 

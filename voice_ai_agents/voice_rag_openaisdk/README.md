@@ -1,5 +1,8 @@
 ## 🎙️ Voice RAG with OpenAI SDK
 
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-a-voice-rag-agent) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 This script demonstrates how to build a voice-enabled Retrieval-Augmented Generation (RAG) system using OpenAI's SDK and Streamlit. The application allows users to upload PDF documents, ask questions, and receive both text and voice responses using OpenAI's text-to-speech capabilities.
 
 ### Features

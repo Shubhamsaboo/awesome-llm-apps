@@ -1,5 +1,7 @@
-
 # 💔 Breakup Recovery Agent Team
+
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-an-ai-breakup-recovery-agent-team-f29b) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
 
 This is an AI-powered application designed to help users emotionally recover from breakups by providing support, guidance, and emotional outlet messages from a team of specialized AI agents. The app is built using **Streamlit** and **Agno**, leveraging **Gemini 2.0 Flash (Google Vision Model)   **.
 

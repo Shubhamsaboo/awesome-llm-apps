@@ -1,4 +1,5 @@
 ## 📊 AI Finance Agent with xAI Grok
+
 This application creates a financial analysis agent powered by xAI's Grok model, combining real-time stock data with web search capabilities. It provides structured financial insights through an interactive playground interface.
 
 ### Features

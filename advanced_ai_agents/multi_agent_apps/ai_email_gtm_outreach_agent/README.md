@@ -1,5 +1,8 @@
 ### AI Email GTM Outreach Agent
 
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-an-ai-email-gtm-outreach-agent-team) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 An end-to-end, multi-agent Streamlit app that automates B2B outreach using GPT-5 and Exa. It discovers relevant companies, finds the right contacts (Founder's Office, GTM/Sales leadership, Partnerships/BD, Product Marketing), researches website + Reddit insights, and drafts tailored emails in your selected style.
 
 ## Features

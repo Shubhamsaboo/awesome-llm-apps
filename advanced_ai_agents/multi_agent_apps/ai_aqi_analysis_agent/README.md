@@ -1,5 +1,9 @@
 # 🌍 AQI Analysis Agent
 
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-an-aqi-analysis-agent) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
+
 The AQI Analysis Agent is a powerful air quality monitoring and health recommendation tool powered by Firecrawl and Agno's AI Agent framework. This app helps users make informed decisions about outdoor activities by analyzing real-time air quality data and providing personalized health recommendations.
 
 ## Features

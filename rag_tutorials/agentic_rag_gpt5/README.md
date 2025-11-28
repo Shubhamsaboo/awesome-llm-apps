@@ -1,5 +1,8 @@
 # 🧠 Agentic RAG with GPT-5
 
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-agentic-rag-with-openai-gpt-5) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 An agentic RAG application built with the Agno framework, featuring GPT-5 and LanceDB for efficient knowledge retrieval and question answering.
 
 ## ✨ Features
