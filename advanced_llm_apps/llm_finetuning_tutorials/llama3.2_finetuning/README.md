@@ -1,5 +1,8 @@
 ## 🦙 Finetune Llama 3.2 in 30 Lines of Python
 
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/fine-tune-llama-3-2-for-free-in-30-lines-of-python-code) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 This script demonstrates how to finetune the Llama 3.2 model using the [Unsloth](https://unsloth.ai/) library, which makes the process easy and fast. You can run this example to finetune Llama 3.1 1B and 3B models for free in Google Colab.
 
 ### Features
