@@ -1,5 +1,8 @@
 ## 📨 Chat with Gmail Inbox 
 
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-rag-app-to-chat-with-your-gmail-inbox) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 LLM app with RAG to chat with Gmail in just 30 lines of Python Code. The app uses Retrieval Augmented Generation (RAG) to provide accurate answers to questions based on the content of your Gmail Inbox.
 
 ### Features
