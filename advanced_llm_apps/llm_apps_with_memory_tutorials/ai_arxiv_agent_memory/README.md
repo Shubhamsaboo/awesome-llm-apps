@@ -1,4 +1,8 @@
 ## 📚 AI Research Agent with Memory
+
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-ai-research-agent-with-memory-to-search-academic-papers) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 This Streamlit app implements an AI-powered research assistant that helps users search for academic papers on arXiv while maintaining a memory of user interests and past interactions. It utilizes OpenAI's GPT-4o-mini model for processing search results, MultiOn for web browsing, and Mem0 with Qdrant for maintaining user context.
 
 ### Features

@@ -2,6 +2,9 @@
 
 A comprehensive tutorial series for learning Google's Agent Development Kit (ADK) from basics to advanced concepts. This crash course is designed to take you from zero to hero in building AI agents with Google ADK.
 
+> **📌 Note: This course has been updated for the new Gemini 3 Pro model!**  
+> All tutorials in this course use the **Gemini 3 Pro** model (e.g., `gemini-3-pro-preview`). 
+
 ## 📚 What is Google ADK?
 
 Google ADK (Agent Development Kit) is a flexible and modular framework for **developing and deploying AI agents**. It's optimized for Gemini and the Google ecosystem but is **model-agnostic** and **deployment-agnostic**, making it compatible with other frameworks.

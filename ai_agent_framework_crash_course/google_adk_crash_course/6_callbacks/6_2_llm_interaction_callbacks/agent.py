@@ -91,7 +91,7 @@ def after_model_callback(callback_context: CallbackContext, llm_response) -> Opt
 # Create agent with LLM callbacks
 root_agent = LlmAgent(
     name="llm_monitor_agent",
-    model="gemini-2.5-flash",
+    model="gemini-3-pro-preview",
     description="Agent with LLM interaction monitoring",
     instruction="""
     You are a helpful assistant with LLM monitoring.

@@ -1,4 +1,8 @@
 ## 📝 AI Meeting Preparation Agent
+
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-multi-agent-ai-meeting-preparation-assistant) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 This Streamlit application leverages multiple AI agents to create comprehensive meeting preparation materials. It uses OpenAI's GPT-4, Anthropic's Claude, and the Serper API for web searches to generate context analysis, industry insights, meeting strategies, and executive briefings.
 
 ### Features

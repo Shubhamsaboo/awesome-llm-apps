@@ -1,5 +1,8 @@
 ## 📽️ Chat with YouTube Videos 
 
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-an-llm-app-with-rag-to-chat-with-youtube-videos) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 LLM app with RAG to chat with YouTube Videos with OpenAI's gpt-4o, mem0/embedchain as memory and the youtube-transcript-api. The app uses Retrieval Augmented Generation (RAG) to provide accurate answers to questions based on the content of the uploaded video.
 
 ### Features

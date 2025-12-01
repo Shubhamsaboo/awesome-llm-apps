@@ -15,7 +15,7 @@ load_dotenv()
 # --- Search Agent (Wrapped as AgentTool) ---
 search_agent = LlmAgent(
     name="search_agent",
-    model="gemini-2.0-flash",
+    model="gemini-3-pro-preview",
     description="Conducts web search for current market information and competitive analysis",
     instruction=(
         "You are a web search specialist. When given a business topic:\n"
@@ -32,7 +32,7 @@ search_agent = LlmAgent(
 # --- Simple Sub-agents ---
 market_researcher = LlmAgent(
     name="market_researcher",
-    model="gemini-2.5-flash",
+    model="gemini-3-pro-preview",
     description="Conducts market research and competitive analysis using search capabilities",
     instruction=(
         "You are a market research specialist. Given a business topic:\n"
@@ -48,7 +48,7 @@ market_researcher = LlmAgent(
 
 swot_analyzer = LlmAgent(
     name="swot_analyzer",
-    model="gemini-2.5-flash",
+    model="gemini-3-pro-preview",
     description="Performs SWOT analysis based on market research",
     instruction=(
         "You are a strategic analyst. Given market research findings:\n"
@@ -62,7 +62,7 @@ swot_analyzer = LlmAgent(
 
 strategy_formulator = LlmAgent(
     name="strategy_formulator",
-    model="gemini-2.5-flash",
+    model="gemini-3-pro-preview",
     description="Develops strategic objectives and action plans",
     instruction=(
         "You are a strategic planner. Given SWOT analysis results:\n"
@@ -76,7 +76,7 @@ strategy_formulator = LlmAgent(
 
 implementation_planner = LlmAgent(
     name="implementation_planner",
-    model="gemini-2.5-flash",
+    model="gemini-3-pro-preview",
     description="Creates detailed implementation roadmap",
     instruction=(
         "You are an implementation specialist. Given the strategy plan:\n"

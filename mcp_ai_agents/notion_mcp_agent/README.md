@@ -1,5 +1,8 @@
 # 📑 Notion MCP Agent
 
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-a-terminal-based-notion-agent-with-mcp) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 A terminal-based Notion Agent for interacting with your Notion pages using natural language through the Notion MCP (Model Context Protocol) server.
 
 ## Features

@@ -1,4 +1,8 @@
 ## 🛒 AI Customer Support Agent with Memory
+
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-an-ai-customer-support-agent-with-memory) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 This Streamlit app implements an AI-powered customer support agent for synthetic data generated using GPT-4o. The agent uses OpenAI's GPT-4o model and maintains a memory of past interactions using the Mem0 library with Qdrant as the vector store.
 
 ### Features

@@ -1,5 +1,8 @@
 # Deep Research Agent with OpenAI Agents SDK and Firecrawl
 
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-a-deep-research-agent-with-openai-agents-sdk-and-firecrawl) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 A powerful research assistant that leverages OpenAI's Agents SDK and Firecrawl's deep research capabilities to perform comprehensive web research on any topic and any question.
 
 ## Features

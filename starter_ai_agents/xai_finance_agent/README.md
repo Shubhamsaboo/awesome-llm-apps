@@ -1,4 +1,5 @@
 ## 📊 AI Finance Agent with xAI Grok
+
 This application creates a financial analysis agent powered by xAI's Grok model, combining real-time stock data with web search capabilities. It provides structured financial insights through an interactive playground interface.
 
 ### Features
@@ -20,7 +21,7 @@ cd awesome-llm-apps/ai_agent_tutorials/xai_finance_agent
 2. Install the required dependencies:
 
 ```bash
-cd awesome-llm-apps/ai_agent_tutorials/xai_finance_agent
+cd awesome-llm-apps/starter_ai_agents/xai_finance_agent
 pip install -r requirements.txt
 ```
 

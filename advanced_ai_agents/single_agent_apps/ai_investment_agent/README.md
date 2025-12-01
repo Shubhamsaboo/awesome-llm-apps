@@ -1,4 +1,8 @@
 ## 📈 AI Investment Agent
+
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-ai-investment-agent-with-gpt-4o) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 This Streamlit app is an AI-powered investment agent built with Agno's AI Agent framework that compares the performance of two stocks and generates detailed reports. By using GPT-4o with Yahoo Finance data, this app provides valuable insights to help you make informed investment decisions.
 
 ### Features

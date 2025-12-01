@@ -1,5 +1,8 @@
 # 🚀 AI Product Launch Intelligence Agent
 
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-a-multi-agent-product-launch-intelligence-app) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 A **streamlined intelligence hub** for Go-To-Market (GTM) & Product-Marketing teams.  
 Built with **Streamlit + Agno (GPT-4o) + Firecrawl**, the app turns scattered public-web data into concise, actionable launch insights.
 

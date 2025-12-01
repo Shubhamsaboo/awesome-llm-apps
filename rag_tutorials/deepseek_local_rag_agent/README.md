@@ -1,5 +1,8 @@
 # 🐋 Deepseek Local RAG Reasoning Agent 
 
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-a-local-rag-reasoning-agent-with-deepseek-r1) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 A powerful reasoning agent that combines local Deepseek models with RAG capabilities. Built using Deepseek (via Ollama), Snowflake for embeddings, Qdrant for vector storage, and Agno for agent orchestration, this application offers both simple local chat and advanced RAG-enhanced interactions with comprehensive document processing and web search capabilities.
 
 ## Features

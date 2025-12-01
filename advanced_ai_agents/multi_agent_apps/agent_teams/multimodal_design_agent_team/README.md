@@ -1,5 +1,8 @@
 # Multimodal AI Design Agent Team
 
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-a-multimodal-ai-agent-design-team) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 A Streamlit application that provides comprehensive design analysis using a team of specialized AI agents powered by Google's Gemini model. 
 
 This application leverages multiple specialized AI agents to provide comprehensive analysis of UI/UX designs of your product and your competitors, combining visual understanding, user experience evaluation, and market research insights.

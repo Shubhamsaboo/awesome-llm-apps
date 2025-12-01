@@ -1,5 +1,8 @@
 # AI Health & Fitness Planner Agent 🏋️‍♂️
 
+### 🎓 FREE Step-by-Step Tutorial 
+**👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-a-personal-health-and-fitness-ai-agent-using-google-gemini) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
+
 The **AI Health & Fitness Planner** is a personalized health and fitness Agent powered by Agno AI Agent framework. This app generates tailored dietary and fitness plans based on user inputs such as age, weight, height, activity level, dietary preferences, and fitness goals.
 
 ## Features
