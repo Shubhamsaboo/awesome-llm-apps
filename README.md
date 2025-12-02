@@ -148,6 +148,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 *   [🗣️ AI Audio Tour Agent](voice_ai_agents/ai_audio_tour_agent/)
 *   [📞 Customer Support Voice Agent](voice_ai_agents/customer_support_voice_agent/)
+*   [🎙️ Sayna](https://github.com/SaynaAI/sayna) - Open-source voice infrastructure for AI agents with real-time STT/TTS streaming, multi-provider support, and SIP telephony integration
 *   [🔊 Voice RAG Agent (OpenAI SDK)](voice_ai_agents/voice_rag_openaisdk/)
 
 
