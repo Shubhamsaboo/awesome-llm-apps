@@ -48,12 +48,12 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 <table align="center" cellpadding="16" cellspacing="12">
   <tr>
     <td align="center">
-      <a href="https://dimension.dev/" target="_blank" rel="noopener" title="Dimension AI">
-        <img src="docs/banner/sponsors/dimensions.png" alt="Dimension AI" width="500">
+      <a href="https://tsdb.co/shubham-gh" target="_blank" rel="noopener" title="Tiger Data">
+        <img src="docs/banner/sponsors/tigerdata.png" alt="Tiger Data" width="500">
       </a>
       <br>
-      <a href="https://dimension.dev/" target="_blank" rel="noopener" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
-        Dimension AI
+      <a href="https://tsdb.co/shubham-gh" target="_blank" rel="noopener" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
+        Tiger Data MCP
       </a>
     </td>
     <td align="center">
