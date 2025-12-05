@@ -222,6 +222,13 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
   - Multi‑agent patterns; agent handoffs
   - Swarm orchestration; routing logic
 
+ 🕸️ [Mastra AI Crash Course](https://mastra.ai/course)
+  - Create AI apps and workflows with any LLM 
+  - Craft orchestration and routing logic with code or visually
+  - Equip agents with tools, memory, and MCP
+  - Delivered entirely inside your agentic code editor
+  
+
 ## 🚀 Getting Started
 
 1. **Clone the repository** 
