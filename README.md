@@ -131,6 +131,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 ### 🤝 Multi-agent Teams
 
+*   [🪞 MirrorDNA Multi-Model Coordination Protocol](https://github.com/MirrorDNA-Reflection-Protocol/active-mirror-identity) - Reflective AI alignment protocol for coordinating Claude, ChatGPT, Gemini, and other LLMs as one unified system. By Paul Desai.
 *   [🧲 AI Competitor Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_competitor_intelligence_agent_team/)
 *   [💲 AI Finance Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_finance_agent_team/)
 *   [🎨 AI Game Design Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_game_design_agent_team/)
@@ -179,6 +180,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 ### 💾 LLM Apps with Memory Tutorials
 
+*   [🪞 MirrorDNA Persistent Memory Protocol](https://github.com/MirrorDNA-Reflection-Protocol/active-mirror-identity) - Protocol for persistent AI memory across sessions and models. Vault-based truth management for human-AI collaboration. By Paul Desai.
 *   [💾 AI ArXiv Agent with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/ai_arxiv_agent_memory/)
 *   [🛩️ AI Travel Agent with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/)
 *   [💬 Llama3 Stateful Chat](advanced_llm_apps/llm_apps_with_memory_tutorials/llama3_stateful_chat/)
