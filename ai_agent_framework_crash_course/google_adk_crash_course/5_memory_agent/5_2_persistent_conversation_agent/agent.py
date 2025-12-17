@@ -17,7 +17,7 @@ session_service = DatabaseSessionService(
 # Create a simple agent with persistent memory
 agent = LlmAgent(
     name="persistent_agent",
-    model="gemini-3-pro-preview",
+    model="gemini-3-flash-preview",
     description="A simple agent that remembers conversations in a database",
     instruction="You are a helpful assistant. Remember what users tell you and reference it in future conversations. Your memory persists across program restarts."
 )

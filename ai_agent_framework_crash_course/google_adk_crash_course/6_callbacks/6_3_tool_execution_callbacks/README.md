@@ -196,7 +196,7 @@ calculator_function_tool = FunctionTool(func=calculator_tool)
 
 agent = LlmAgent(
     name="multi_tool_agent",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     tools=[calculator_function_tool, weather_function_tool],
     before_tool_callback=before_tool_callback,
     after_tool_callback=after_tool_callback

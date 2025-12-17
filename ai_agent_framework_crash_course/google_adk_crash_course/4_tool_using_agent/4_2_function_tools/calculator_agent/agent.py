@@ -11,7 +11,7 @@ from .tools import (
 # Create a calculator agent with custom function tools
 root_agent = LlmAgent(
     name="calculator_agent",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     description="A comprehensive calculator agent with mathematical and statistical capabilities",
     instruction="""
     You are a smart calculator assistant with access to various mathematical tools.

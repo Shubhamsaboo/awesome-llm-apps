@@ -13,7 +13,7 @@ from .tools import (
 # Create a utility agent with various utility tools
 root_agent = LlmAgent(
     name="utility_agent",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     description="A comprehensive utility agent with text processing, date/time, and data formatting capabilities",
     instruction="""
     You are a utility assistant with access to various utility tools for text processing, 

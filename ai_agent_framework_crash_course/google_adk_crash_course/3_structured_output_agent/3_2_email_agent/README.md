@@ -1,6 +1,6 @@
 # 📧 Email Generation Agent with Structured Output
 
-A tutorial demonstrating how to implement structured output using Google's ADK (Agent Development Kit) framework. This example uses an email generator agent to show how to create type-safe, structured responses with Pydantic schemas and Gemini 2.5 Flash model.
+A tutorial demonstrating how to implement structured output using Google's ADK (Agent Development Kit) framework. This example uses an email generator agent to show how to create type-safe, structured responses with Pydantic schemas and Gemini 3 Flash model.
 
 ## Tutorial Features
 
@@ -56,7 +56,7 @@ A tutorial demonstrating how to implement structured output using Google's ADK (
 
 This tutorial demonstrates structured output implementation in Google ADK:
 
-1. **Agent Definition**: Learn how to create a `LlmAgent` with Gemini 2.5 Flash
+1. **Agent Definition**: Learn how to create a `LlmAgent` with Gemini 3 Flash
 2. **Output Schema**: Understand how to use Pydantic models for structured responses
 3. **Instructions**: See how to write clear prompts for structured output
 4. **Structured Response**: Learn how to handle JSON responses with defined schemas
@@ -76,7 +76,7 @@ This tutorial demonstrates structured output implementation in Google ADK:
 This tutorial shows how Google ADK handles structured output:
 
 1. **Input Processing**: Takes natural language requests and processes them through the agent
-2. **Content Generation**: Uses Gemini 2.5 Flash to generate content based on instructions
+2. **Content Generation**: Uses Gemini 3 Flash to generate content based on instructions
 3. **Output Structuring**: Automatically formats responses according to the Pydantic schema
 4. **Response Validation**: Ensures the output matches the defined structure and types
 

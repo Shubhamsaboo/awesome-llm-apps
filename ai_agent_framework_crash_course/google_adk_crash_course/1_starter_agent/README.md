@@ -29,7 +29,7 @@ from google.adk.agents import LlmAgent
 
 ### 2. **Essential Parameters**
 - `name`: Unique identifier for your agent
-- `model`: The AI model to use (e.g., "gemini-2.0-flash")
+- `model`: The AI model to use (e.g., "gemini-3-flash-preview")
 - `description`: What your agent does
 - `instruction`: How your agent should behave
 

@@ -149,7 +149,7 @@ scrape_tool = CrewaiTool(
         config=dict(
             llm=dict(
                 provider="google",  # Use Google instead of default OpenAI
-                config=dict(model="gemini-2.5-flash"),
+                config=dict(model="gemini-3-flash-preview"),
             ),
         )
     )
@@ -163,7 +163,7 @@ search_tool = CrewaiTool(
         config=dict(
             llm=dict(
                 provider="google",
-                config=dict(model="gemini-2.5-flash"),
+                config=dict(model="gemini-3-flash-preview"),
             ),
             embedder=dict(
                 provider="google",
@@ -231,7 +231,7 @@ tool = ScrapeWebsiteTool(
     config=dict(
         llm=dict(
             provider="google",
-            config=dict(model="gemini-2.5-flash"),
+            config=dict(model="gemini-3-flash-preview"),
         ),
         embedder=dict(
             provider="google",
@@ -248,7 +248,7 @@ tool = DirectorySearchTool(
     config=dict(
         llm=dict(
             provider="google",
-            config=dict(model="gemini-2.5-flash"),
+            config=dict(model="gemini-3-flash-preview"),
         ),
         embedder=dict(
             provider="google",

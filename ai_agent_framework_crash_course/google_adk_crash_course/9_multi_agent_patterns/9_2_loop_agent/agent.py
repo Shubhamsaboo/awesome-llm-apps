@@ -22,7 +22,7 @@ load_dotenv()
 # ------------------------------------------------------------
 plan_refiner = LlmAgent(
     name="plan_refiner",
-    model="gemini-3-pro-preview",
+    model="gemini-3-flash-preview",
     description="Iteratively refines a brief product/launch plan given topic and prior context",
     instruction=(
         "You are an iterative planner. On each turn:\n"

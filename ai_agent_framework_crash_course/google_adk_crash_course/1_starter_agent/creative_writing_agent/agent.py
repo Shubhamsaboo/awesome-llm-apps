@@ -3,7 +3,7 @@ from google.adk.agents import LlmAgent
 # Create a creative writing agent
 root_agent = LlmAgent(
     name="creative_writing_agent",
-    model="gemini-3-pro-preview",
+    model="gemini-3-flash-preview",
     description="A creative writing assistant that helps with stories, poems, and creative content",
     instruction="""
     You are a creative writing assistant.

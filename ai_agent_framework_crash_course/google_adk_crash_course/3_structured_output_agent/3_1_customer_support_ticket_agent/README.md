@@ -1,6 +1,6 @@
 # 🎫 Customer Support Ticketing Agent with Structured Output
 
-A tutorial demonstrating how to implement a structured customer support ticketing system using Google's ADK (Agent Development Kit) framework. This example shows how to create type-safe, structured support tickets with priority levels, categories, and resolution estimates using Pydantic schemas and Gemini 2.0 Flash model.
+A tutorial demonstrating how to implement a structured customer support ticketing system using Google's ADK (Agent Development Kit) framework. This example shows how to create type-safe, structured support tickets with priority levels, categories, and resolution estimates using Pydantic schemas and Gemini 3 Flash model.
 
 ## Tutorial Features
 

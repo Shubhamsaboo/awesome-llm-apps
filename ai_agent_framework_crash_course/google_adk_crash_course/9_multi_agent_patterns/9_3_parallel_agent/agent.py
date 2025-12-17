@@ -11,7 +11,7 @@ load_dotenv()
 # Child agents write to distinct keys in session.state for UI consumption
 market_trends_agent = LlmAgent(
     name="market_trends_agent",
-    model="gemini-3-pro-preview",
+    model="gemini-3-flash-preview",
     description="Summarizes recent market trends for the topic",
     instruction=(
         "Summarize 3-5 recent market trends for the topic in session.state['topic'].\n"
@@ -21,7 +21,7 @@ market_trends_agent = LlmAgent(
 
 competitor_intel_agent = LlmAgent(
     name="competitor_intel_agent",
-    model="gemini-3-pro-preview",
+    model="gemini-3-flash-preview",
     description="Identifies key competitors and positioning",
     instruction=(
         "List 3-5 notable competitors for session.state['topic'] and describe their positioning briefly."
@@ -30,7 +30,7 @@ competitor_intel_agent = LlmAgent(
 
 funding_news_agent = LlmAgent(
     name="funding_news_agent",
-    model="gemini-3-pro-preview",
+    model="gemini-3-flash-preview",
     description="Reports funding/partnership news",
     instruction=(
         "Provide a short digest (bulleted) of recent funding or partnership news related to session.state['topic']."

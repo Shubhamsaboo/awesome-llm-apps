@@ -25,7 +25,7 @@ with open(sample_file_path, "w") as f:
 
 # Create the ADK agent with MCP filesystem tools
 root_agent = LlmAgent(
-    model='gemini-3-pro-preview',
+    model='gemini-3-flash-preview',
     name='filesystem_mcp_agent',
     instruction=f"""
     You are a helpful filesystem assistant that can help users manage their files.

@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/google/adk-python/refs/heads/main/src/google/adk/agents/config_schemas/AgentConfig.json
 name: web_research_coordinator
-model: gemini-2.5-flash
+model: gemini-3-flash-preview
 description: 'A coordinator agent that manages web research using Firecrawl for scraping and two specialized sub-agents for research and summarization.'
 instruction: |
   You are a web research coordinator agent. Your job is to:

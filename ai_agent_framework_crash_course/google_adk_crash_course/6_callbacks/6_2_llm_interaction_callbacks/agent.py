@@ -78,7 +78,7 @@ def after_model_callback(callback_context: CallbackContext, llm_response) -> Opt
     print(f"⏱️ Duration: {duration_seconds:.2f}s")
     print(f"🔢 Tokens: {tokens}")
     
-    # Calculate estimated cost for Gemini 2.5 Flash
+    # Calculate estimated cost for Gemini 3 Flash
     # Pricing: $2.50 per 1M output tokens (including thinking tokens)
     cost_per_1k_output = 0.0025  # $2.50 per 1M = $0.0025 per 1K
     estimated_cost = (tokens / 1000) * cost_per_1k_output
@@ -91,7 +91,7 @@ def after_model_callback(callback_context: CallbackContext, llm_response) -> Opt
 # Create agent with LLM callbacks
 root_agent = LlmAgent(
     name="llm_monitor_agent",
-    model="gemini-3-pro-preview",
+    model="gemini-3-flash-preview",
     description="Agent with LLM interaction monitoring",
     instruction="""
     You are a helpful assistant with LLM monitoring.
