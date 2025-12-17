@@ -4,7 +4,7 @@ from google.adk.code_executors import BuiltInCodeExecutor
 # Create a code execution agent using Google ADK's built-in Code Execution Tool
 root_agent = LlmAgent(
     name="code_exec_agent",
-    model="gemini-3-pro-preview",
+    model="gemini-3-flash-preview",
     description="A computational agent that can execute Python code safely",
     instruction="""
     You are a computational assistant with the ability to execute Python code safely.

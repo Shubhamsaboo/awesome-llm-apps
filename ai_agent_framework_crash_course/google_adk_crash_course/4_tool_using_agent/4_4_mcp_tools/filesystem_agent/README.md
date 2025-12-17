@@ -90,7 +90,7 @@ Successfully created notes.txt with the content "Meeting notes for today".
 ### Agent Definition
 ```python
 root_agent = LlmAgent(
-    model='gemini-3-pro-preview',
+    model='gemini-3-flash-preview',
     name='filesystem_mcp_agent',
     instruction="""
     You are a helpful filesystem assistant that can help users manage their files.

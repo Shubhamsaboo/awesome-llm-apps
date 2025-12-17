@@ -111,11 +111,11 @@ st.markdown("""
 **Check your console/terminal** to see the LLM interaction output:
 
 ```
-🤖 LLM Request to gemini-2.5-flash
+🤖 LLM Request to gemini-3-flash-preview
 ⏰ Request time: 10:30:15
 📋 Agent: llm_monitor_agent
 
-📝 LLM Response from gemini-2.5-flash
+📝 LLM Response from gemini-3-flash-preview
 ⏱️ Duration: 1.45s
 🔢 Tokens: 156
 💰 Estimated cost: $0.0004

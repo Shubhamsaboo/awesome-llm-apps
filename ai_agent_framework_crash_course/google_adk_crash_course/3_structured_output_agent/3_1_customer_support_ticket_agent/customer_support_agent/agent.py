@@ -24,7 +24,7 @@ class SupportTicket(BaseModel):
 
 root_agent = LlmAgent(
     name="customer_support_agent",
-    model="gemini-3-pro-preview",
+    model="gemini-3-flash-preview",
     description="Creates structured support tickets from user reports",
     instruction="""
     You are a support ticket creation assistant.

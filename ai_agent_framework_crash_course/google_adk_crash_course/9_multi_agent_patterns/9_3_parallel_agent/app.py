@@ -4,7 +4,7 @@ from agent import market_snapshot_team, gather_market_snapshot
 
 st.set_page_config(page_title="Parallel Agent Demo", page_icon=":fast_forward:", layout="wide")
 
-st.title("⚡ Market Snapshot with Gemini 3 Pro(Parallel Agents)")
+st.title("⚡ Market Snapshot with Gemini 3 Flash(Parallel Agents)")
 st.markdown(
     """
 This demo runs multiple research agents in parallel using a ParallelAgent:

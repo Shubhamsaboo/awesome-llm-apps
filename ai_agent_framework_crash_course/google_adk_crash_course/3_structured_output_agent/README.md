@@ -80,7 +80,7 @@ class TicketInfo(BaseModel):
 
 agent = Agent(
     name="support_agent",
-    model="gemini-2.0-flash",
+    model="gemini-3-flash-preview",
     instruction="Extract ticket information...",
     response_format=TicketInfo,  # This ensures structured output!
 )

@@ -10,7 +10,7 @@ wiki_tool = LangchainTool(WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper()))
 # Create an agent with LangChain tools
 root_agent = LlmAgent(
     name="langchain_agent",
-    model="gemini-3-pro-preview",
+    model="gemini-3-flash-preview",
     description="A research agent that uses LangChain tools for web search and Wikipedia queries",
     instruction="""
     You are a research assistant with access to powerful LangChain tools.

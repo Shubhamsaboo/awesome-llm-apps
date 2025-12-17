@@ -136,7 +136,7 @@ toolset = MCPToolset(
 
 # Create agent with MCP tools
 agent = LlmAgent(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     name='mcp_agent',
     instruction='Use MCP tools to help users',
     tools=[toolset]

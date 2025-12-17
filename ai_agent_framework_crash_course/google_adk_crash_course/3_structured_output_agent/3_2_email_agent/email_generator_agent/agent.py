@@ -13,7 +13,7 @@ class EmailContent(BaseModel):
 
 root_agent = LlmAgent(
     name="email_generator_agent",
-    model="gemini-3-pro-preview",
+    model="gemini-3-flash-preview",
     description="Professional email generator that creates structured email content",
     instruction="""
     You are a professional email writing assistant. 

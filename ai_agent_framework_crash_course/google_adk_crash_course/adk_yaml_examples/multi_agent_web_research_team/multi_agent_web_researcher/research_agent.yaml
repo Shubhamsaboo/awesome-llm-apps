@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/google/adk-python/refs/heads/main/src/google/adk/agents/config_schemas/AgentConfig.json
 name: research_agent
-model: gemini-2.5-flash
+model: gemini-3-flash-preview
 description: 'Specialized agent for analyzing web content and extracting insights, patterns, and key information.'
 instruction: |
   You are a research analysis agent with access to Firecrawl web scraping tools. Your job is to:

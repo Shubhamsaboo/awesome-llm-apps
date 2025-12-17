@@ -80,7 +80,7 @@ User Message
     ▼
 ┌─────────────────┐
 │ LLM API Call    │ ← Actual request to Gemini
-│ (Gemini 2.5)    │
+│ (Gemini 3 Flash)    │
 └─────────────────┘
     │
     ▼
@@ -137,11 +137,11 @@ The agent is configured with both callbacks:
 ### **Example Output Format**
 
 ```
-🤖 LLM Request to gemini-2.5-flash
+🤖 LLM Request to gemini-3-flash-preview
 ⏰ Request time: 19:15:30
 📋 Agent: llm_monitor_agent
 
-📝 LLM Response from gemini-2.5-flash
+📝 LLM Response from gemini-3-flash-preview
 ⏱️ Duration: 1.45s
 🔢 Tokens: 156
 💰 Estimated cost: $0.0004

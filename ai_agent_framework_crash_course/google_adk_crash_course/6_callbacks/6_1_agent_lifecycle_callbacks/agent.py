@@ -53,7 +53,7 @@ def after_agent_callback(callback_context: CallbackContext) -> Optional[types.Co
 # --- 2. Setup Agent with Callbacks ---
 llm_agent_with_callbacks = LlmAgent(
     name="agent_lifecycle_demo_agent",
-    model="gemini-3-pro-preview",
+    model="gemini-3-flash-preview",
     instruction="You are a helpful assistant. Respond to user questions clearly and concisely.",
     description="An LLM agent demonstrating lifecycle callbacks for monitoring",
     before_agent_callback=before_agent_callback,
