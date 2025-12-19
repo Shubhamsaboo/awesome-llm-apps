@@ -41,4 +41,4 @@ git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 4. Review the recommended coverage, rationale, and suggested insurers. Raw agent output is available in an expander for debugging.
 
 ## Disclaimer
-This project is for educational and prototyping purposes only and does **not** provide licensed financial advice. Always validate the output with a qualified professional and confirm details directly with insurance providers.
+This project is for educational and prototyping purposes only and does **NOT** provide licensed financial advice. Always validate the output with a qualified professional and confirm details directly with insurance providers.
