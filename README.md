@@ -57,12 +57,12 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
       </a>
     </td>
     <td align="center">
-      <a href="https://github.com/GibsonAI/Memori" target="_blank" rel="noopener" title="Memori">
-        <img src="docs/banner/sponsors/memorilabs.png" alt="Memori" width="500">
+      <a href="https://github.com/speechmatics/speechmatics-academy" target="_blank" rel="noopener" title="Speechmatics">
+        <img src="docs/banner/sponsors/speechmatics.png" alt="Speechmatics" width="500">
       </a>
       <br>
-      <a href="https://github.com/GibsonAI/Memori" target="_blank" rel="noopener" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
-        Memori
+      <a href="https://github.com/speechmatics/speechmatics-academy" target="_blank" rel="noopener" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
+        Speechmatics
       </a>
     </td>
   </tr>
