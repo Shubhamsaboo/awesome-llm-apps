@@ -149,7 +149,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [🗣️ AI Audio Tour Agent](voice_ai_agents/ai_audio_tour_agent/)
 *   [📞 Customer Support Voice Agent](voice_ai_agents/customer_support_voice_agent/)
 *   [🔊 Voice RAG Agent (OpenAI SDK)](voice_ai_agents/voice_rag_openaisdk/)
-
+*   [🎙️ OpenSource Voice Dictation Agent (like Wispr Flow](https://github.com/akshayaggarwal99/jarvis-ai-assistant)
 
 ### <img src="https://cdn.simpleicons.org/modelcontextprotocol"  alt="mcp logo" width="25" height="20"> MCP AI Agents 
 
