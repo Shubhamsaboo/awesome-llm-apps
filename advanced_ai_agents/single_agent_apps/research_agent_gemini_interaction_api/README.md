@@ -1,6 +1,6 @@
-# 🔬 AI Research Planner & Executor with Gemini Interactions API
+# 🔬 AI Research Planner & Executor Agent with Gemini Interactions API
 
-A streamlined multi-phase research assistant built with **Google's Gemini Interactions API** that demonstrates stateful conversations, model mixing, background execution, and automatic infographic generation.
+A streamlined multi-phase research agent built with **Google's Gemini Interactions API** that demonstrates stateful conversations, model mixing, background execution, and automatic infographic generation.
 
 ## 🌟 Features
 
