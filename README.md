@@ -200,6 +200,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 ### 🎯 LLM Optimization Tools
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30-60% using TOON format
+*   [🛡️ LocalMod - Prompt Injection & Content Safety](https://github.com/KOKOSde/localmod) - Self-hosted content moderation API with prompt injection detection, toxicity filtering, and PII detection for LLM applications. Runs 100% offline.
 
 ### 🔧 LLM Fine-tuning Tutorials
 
