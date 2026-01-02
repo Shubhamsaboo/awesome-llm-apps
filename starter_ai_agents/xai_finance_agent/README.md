@@ -4,7 +4,7 @@ This application creates a financial analysis agent powered by xAI's Grok model,
 
 ### Features
 
-- Powered by xAI's Grok-beta model
+- Powered by xAI's Grok-4 Fast model
 - Real-time stock data analysis via YFinance
 - Web search capabilities through DuckDuckGo
 - Formatted output with tables for financial data
@@ -39,3 +39,12 @@ python xai_finance_agent.py
 ```
 
 5. Open your web browser and navigate to the URL provided in the console output to interact with the AI financial agent through the playground interface.
+
+6. Connecting Your AgentOS
+
+To manage, monitor, and interact with your financial agent through the AgentOS Control Plane (from your browser), you need to connect your running AgentOS instance:
+
+**Step-by-step guide:**
+
+- Visit the official documentation: [Connecting Your OS](https://docs.agno.com/agent-os/connecting-your-os)
+- Follow the steps in the guide to register your local AgentOS and establish the connection.

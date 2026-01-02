@@ -8,8 +8,8 @@ from agno.os import AgentOS
 # create the AI finance agent
 agent = Agent(
     name="xAI Finance Agent",
-    model = xAI(id="grok-beta"),
-    tools=[DuckDuckGoTools(), YFinanceTools(stock_price=True, analyst_recommendations=True, stock_fundamentals=True)],
+    model = xAI(id="grok-4-1-fast"),
+    tools=[DuckDuckGoTools(), YFinanceTools()],
     instructions = ["Always use tables to display financial/numerical data. For text data use bullet points and small paragrpahs."],
     debug_mode = True,
     markdown = True,

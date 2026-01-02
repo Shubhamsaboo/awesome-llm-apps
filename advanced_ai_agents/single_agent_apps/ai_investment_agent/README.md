@@ -3,12 +3,13 @@
 ### 🎓 FREE Step-by-Step Tutorial 
 **👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-ai-investment-agent-with-gpt-4o) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
 
-This Streamlit app is an AI-powered investment agent built with Agno's AI Agent framework that compares the performance of two stocks and generates detailed reports. By using GPT-4o with Yahoo Finance data, this app provides valuable insights to help you make informed investment decisions.
+This AI-powered investment agent is built with Agno's AgentOS framework that analyzes stocks and generates detailed investment reports. By using GPT-5.2 with Yahoo Finance data, this app provides valuable insights to help you make informed investment decisions.
 
 ### Features
 - Compare the performance of two stocks
 - Retrieve comprehensive company information
 - Get the latest company news and analyst recommendations
+- Beautiful web UI powered by AgentOS
 
 ### How to get Started?
 
@@ -25,21 +26,24 @@ pip install -r requirements.txt
 ```
 3. Get your OpenAI API Key
 
-- Sign up for an [OpenAI account](https://platform.openai.com/) (or the LLM provider of your choice) and obtain your API key.
-
-4. Run the Streamlit App
+- Sign up for an [OpenAI account](https://platform.openai.com/) and obtain your API key.
+- Export your API key:
 ```bash
-streamlit run investment_agent.py
+export OPENAI_API_KEY="your-api-key-here"
 ```
 
-### How it Works?
+4. Run the AgentOS App
+```bash
+python investment_agent.py
+```
 
-- Upon running the app, you will be prompted to enter your OpenAI API key. This key is used to authenticate and access the OpenAI language model.
-- Once you provide a valid API key, an instance of the Assistant class is created. This assistant utilizes the GPT-4o language model from OpenAI and the YFinanceTools for accessing stock data.
-- Enter the stock symbols of the two companies you want to compare in the provided text input fields.
-- The assistant will perform the following steps:
-    - Retrieve real-time stock prices and historical data using YFinanceTools
-    - Fetch the latest company news and analyst recommendations
-    - Gather comprehensive company information
-    - Generate a detailed comparison report using the GPT-4 language model
-- The generated report will be displayed in the app, providing you with valuable insights and analysis to guide your investment decisions.
+5. Open your web browser and navigate to the URL provided in the console output to interact with the AI investment agent through the playground interface.
+
+6. Connecting Your AgentOS
+
+To manage, monitor, and interact with your financial agent through the AgentOS Control Plane (from your browser), you need to connect your running AgentOS instance:
+
+**Step-by-step guide:**
+
+- Visit the official documentation: [Connecting Your OS](https://docs.agno.com/agent-os/connecting-your-os)
+- Follow the steps in the guide to register your local AgentOS and establish the connection.
