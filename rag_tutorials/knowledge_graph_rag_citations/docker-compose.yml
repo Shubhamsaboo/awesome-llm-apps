@@ -9,7 +9,7 @@ services:
       - "7687:7687"  # Bolt
     environment:
       - NEO4J_AUTH=neo4j/password
-      - NEO4J_PLUGINS=["apoc"]
+      - NEO4J_PLUGINS='["apoc"]'
     volumes:
       - neo4j_data:/data
     healthcheck:
