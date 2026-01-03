@@ -47,7 +47,7 @@ Traditional vector-based RAG finds similar text chunks, but struggles with:
 
 ```bash
 # Clone and navigate
-cd knowledge_graph_rag_with_citations
+cd knowledge_graph_rag_citations
 
 # Install dependencies
 pip install -r requirements.txt

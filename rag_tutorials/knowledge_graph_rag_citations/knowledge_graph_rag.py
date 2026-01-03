@@ -11,11 +11,18 @@ This example uses Ollama for local LLM inference and Neo4j for the knowledge gra
 
 import streamlit as st
 import ollama
+from ollama import Client as OllamaClient
 from neo4j import GraphDatabase
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Tuple
+import re
+import os
 from dataclasses import dataclass
 import json
 import hashlib
+
+# Configure Ollama host from environment (for Docker)
+OLLAMA_HOST = os.environ.get('OLLAMA_HOST', 'http://localhost:11434')
+ollama_client = OllamaClient(host=OLLAMA_HOST)
 
 
 # ============================================================================
@@ -123,7 +130,7 @@ class KnowledgeGraphManager:
             result = session.run(
                 f"""
                 MATCH path = (start:Entity)-[*1..{hops}]-(related:Entity)
-                WHERE start.name CONTAINS $name OR start.description CONTAINS $name
+                WHERE toLower(start.name) CONTAINS toLower($name) OR toLower(start.description) CONTAINS toLower($name)
                 RETURN related.name as name,
                        related.description as description,
                        related.source_doc as source,
@@ -131,7 +138,7 @@ class KnowledgeGraphManager:
                        [r in relationships(path) | r.description] as path_descriptions
                 LIMIT 20
                 """,
-                name=entity_name
+                name=entity_name, hops=hops
             )
             return [dict(record) for record in result]
     
@@ -160,7 +167,7 @@ class KnowledgeGraphManager:
 # LLM-based Entity Extraction
 # ============================================================================
 
-def extract_entities_with_llm(text: str, source_doc: str, model: str = "llama3.2") -> tuple[List[Entity], List[Relationship]]:
+def extract_entities_with_llm(text: str, source_doc: str, model: str = "llama3.2") -> Tuple[List[Entity], List[Relationship]]:
     """Use LLM to extract entities and relationships from text."""
     
     extraction_prompt = f"""Analyze the following text and extract:
@@ -193,7 +200,7 @@ Respond in JSON format:
 """
     
     try:
-        response = ollama.chat(
+        response = ollama_client.chat(
             model=model,
             messages=[{"role": "user", "content": extraction_prompt}],
             format="json"
@@ -306,7 +313,7 @@ Provide a comprehensive answer with inline citations [1], [2], etc. for each cla
 """
     
     try:
-        response = ollama.chat(
+        response = ollama_client.chat(
             model=model,
             messages=[{"role": "user", "content": answer_prompt}]
         )
@@ -314,7 +321,6 @@ Provide a comprehensive answer with inline citations [1], [2], etc. for each cla
         reasoning_trace.append("✅ Generated answer with citations")
         
         # Step 5: Extract and verify citations
-        import re
         citation_refs = re.findall(r'\[(\d+)\]', answer)
         
         for ref in set(citation_refs):
