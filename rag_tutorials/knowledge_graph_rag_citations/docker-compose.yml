@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  neo4j:
+    image: neo4j:latest
+    container_name: kg-rag-neo4j
+    ports:
+      - "7474:7474"  # Browser
+      - "7687:7687"  # Bolt
+    environment:
+      - NEO4J_AUTH=neo4j/password
+      - NEO4J_PLUGINS=["apoc"]
+    volumes:
+      - neo4j_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7474"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Ollama container (optional - can use local installation instead)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: kg-rag-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    # Pull the model on startup
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        /bin/ollama serve &
+        sleep 5
+        /bin/ollama pull llama3.2
+        wait
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kg-rag-app
+    ports:
+      - "8501:8501"
+    environment:
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=password
+      - OLLAMA_HOST=http://ollama:11434
+    depends_on:
+      neo4j:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+
+volumes:
+  neo4j_data:
+  ollama_data:
