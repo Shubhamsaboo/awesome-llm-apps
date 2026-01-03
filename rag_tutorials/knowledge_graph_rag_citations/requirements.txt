@@ -1,0 +1,3 @@
+streamlit>=1.28.0
+ollama>=0.1.0
+neo4j>=5.0.0
