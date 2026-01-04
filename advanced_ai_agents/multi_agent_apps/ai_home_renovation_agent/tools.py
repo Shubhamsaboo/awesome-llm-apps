@@ -110,7 +110,7 @@ class GenerateRenovationRenderingInput(BaseModel):
 
 
 class EditRenovationRenderingInput(BaseModel):
-    artifact_filename: str = Field(..., description="The filename of the rendering artifact to edit.")
+    artifact_filename: str = Field(default=None, description="The filename of the rendering artifact to edit. If not provided, uses the last generated rendering.")
     prompt: str = Field(..., description="The prompt describing the desired changes (e.g., 'make cabinets darker', 'add pendant lights', 'change floor to hardwood').")
     asset_name: str = Field(default=None, description="Optional: specify asset name for the new version (defaults to incrementing current asset).")
     reference_image_filename: str = Field(default=None, description="Optional: filename of a reference image to guide the edit. Use 'latest' for most recent upload.")
@@ -124,7 +124,7 @@ async def generate_renovation_rendering(tool_context: ToolContext, inputs: Gener
     """
     Generates a photorealistic rendering of a renovated space based on the design plan.
     
-    This tool uses Gemini 2.5 Flash's image generation capabilities to create visual 
+    This tool uses Gemini 3 Pro's image generation capabilities to create visual 
     representations of renovation plans. It can optionally use current room photos 
     and inspiration images as references.
     """
@@ -134,7 +134,10 @@ async def generate_renovation_rendering(tool_context: ToolContext, inputs: Gener
     logger.info("Starting renovation rendering generation")
     try:
         client = genai.Client()
-        inputs = GenerateRenovationRenderingInput(**inputs)
+        
+        # Handle inputs that might come as dict instead of Pydantic model
+        if isinstance(inputs, dict):
+            inputs = GenerateRenovationRenderingInput(**inputs)
         
         # Handle reference images (current room photo or inspiration)
         reference_images = []
@@ -163,31 +166,40 @@ async def generate_renovation_rendering(tool_context: ToolContext, inputs: Gener
         
         Original description: {inputs.prompt}
         
+        **CRITICAL REQUIREMENT - PRESERVE EXACT LAYOUT:**
+        The generated image MUST maintain the EXACT same room layout, structure, and spatial arrangement described in the prompt:
+        - Keep all windows, doors, skylights in their exact positions
+        - Keep all cabinets, counters, appliances in their exact positions
+        - Keep the same room dimensions and proportions
+        - Keep the same camera angle/perspective
+        - ONLY change surface finishes: paint colors, cabinet colors, countertop materials, flooring, backsplash, hardware, and decorative elements
+        - DO NOT move, add, or remove any structural elements or major fixtures
+        
         Enhance this to be a professional interior photography prompt that includes:
-        - Specific camera angle (wide-angle, eye-level perspective)
-        - Exact colors and materials mentioned
-        - Realistic lighting (natural light from windows, fixture types)
-        - Spatial layout and dimensions
-        - Texture and finish details
+        - Specific camera angle (match original photo perspective if described)
+        - Exact colors and materials mentioned (apply to existing surfaces)
+        - Realistic lighting (natural light from existing windows, fixture types)
+        - Maintain existing spatial layout and dimensions
+        - Texture and finish details for the new materials
         - Professional interior design photography quality
         
         Aspect ratio: {inputs.aspect_ratio}
         """
         
         if reference_images:
-            base_rewrite_prompt += "\nUse the provided reference image(s) as inspiration for style, layout, or visual elements."
+            base_rewrite_prompt += "\n\n**Reference Image Layout:** The reference image shows the EXACT layout that must be preserved. Match the camera angle, room structure, window/door positions, and furniture/appliance placement EXACTLY. Only change the surface finishes and colors."
         
-        base_rewrite_prompt += "\n\n**Important:** Output your prompt as a single detailed paragraph optimized for photorealistic interior rendering."
+        base_rewrite_prompt += "\n\n**Important:** Output your prompt as a single detailed paragraph optimized for photorealistic interior rendering. Emphasize that the layout must remain unchanged."
         
         # Get enhanced prompt
         rewritten_prompt_response = client.models.generate_content(
-            model="gemini-2.5-flash", 
+            model="gemini-3-flash-preview", 
             contents=base_rewrite_prompt
         )
         rewritten_prompt = rewritten_prompt_response.text
         logger.info(f"Enhanced prompt: {rewritten_prompt}")
 
-        model = "gemini-2.5-flash-image"
+        model = "gemini-3-pro-image-preview"
         
         # Build content parts
         content_parts = [types.Part.from_text(text=rewritten_prompt)]
@@ -229,6 +241,7 @@ async def generate_renovation_rendering(tool_context: ToolContext, inputs: Gener
                 inline_data = chunk.candidates[0].content.parts[0].inline_data
                 
                 # Create a Part object from the inline data
+                # The inline_data already contains the mime_type from the API response
                 image_part = types.Part(inline_data=inline_data)
                 
                 try:
@@ -247,7 +260,7 @@ async def generate_renovation_rendering(tool_context: ToolContext, inputs: Gener
                     
                     logger.info(f"Saved rendering as artifact '{artifact_filename}' (version {version})")
                     
-                    return f"✅ Renovation rendering generated successfully!\n\nSaved as: **{artifact_filename}** (version {version} of {inputs.asset_name})\n\nThis photorealistic rendering shows your renovated space based on the design plan."
+                    return f"✅ Renovation rendering generated successfully!\n\nThe rendering has been saved and is available in the artifacts panel. Artifact name: {inputs.asset_name} (version {version}).\n\nNote: The image is stored as an artifact and can be accessed through the session artifacts, not as a direct image link."
                     
                 except Exception as e:
                     logger.error(f"Error saving artifact: {e}")
@@ -282,14 +295,25 @@ async def edit_renovation_rendering(tool_context: ToolContext, inputs: EditRenov
 
     try:
         client = genai.Client()
-        inputs = EditRenovationRenderingInput(**inputs)
+        
+        # Handle inputs that might come as dict instead of Pydantic model
+        if isinstance(inputs, dict):
+            inputs = EditRenovationRenderingInput(**inputs)
+        
+        # Get artifact_filename from session state if not provided
+        artifact_filename = inputs.artifact_filename
+        if not artifact_filename:
+            artifact_filename = tool_context.state.get("last_generated_rendering")
+            if not artifact_filename:
+                return "❌ No artifact_filename provided and no previous rendering found in session. Please generate a rendering first or specify the artifact filename."
+            logger.info(f"Using last generated rendering from session: {artifact_filename}")
         
         # Load the existing rendering
-        logger.info(f"Loading artifact: {inputs.artifact_filename}")
+        logger.info(f"Loading artifact: {artifact_filename}")
         try:
-            loaded_image_part = await tool_context.load_artifact(inputs.artifact_filename)
+            loaded_image_part = await tool_context.load_artifact(artifact_filename)
             if not loaded_image_part:
-                return f"❌ Could not find rendering artifact: {inputs.artifact_filename}"
+                return f"❌ Could not find rendering artifact: {artifact_filename}"
         except Exception as e:
             logger.error(f"Error loading artifact: {e}")
             return f"Error loading rendering artifact: {e}"
@@ -307,7 +331,7 @@ async def edit_renovation_rendering(tool_context: ToolContext, inputs: EditRenov
                 if reference_image_part:
                     logger.info(f"Using reference image for editing: {ref_filename}")
 
-        model = "gemini-2.5-flash-image"
+        model = "gemini-3-pro-image-preview"
 
         # Build content parts
         content_parts = [loaded_image_part, types.Part.from_text(text=inputs.prompt)]
@@ -337,7 +361,7 @@ async def edit_renovation_rendering(tool_context: ToolContext, inputs: EditRenov
                 asset_name = current_asset_name
             else:
                 # Extract from filename
-                base_name = inputs.artifact_filename.split('_v')[0] if '_v' in inputs.artifact_filename else "renovation_rendering"
+                base_name = artifact_filename.split('_v')[0] if '_v' in artifact_filename else "renovation_rendering"
                 asset_name = base_name
         
         version = get_next_version_number(tool_context, asset_name)
@@ -361,6 +385,7 @@ async def edit_renovation_rendering(tool_context: ToolContext, inputs: EditRenov
                 inline_data = chunk.candidates[0].content.parts[0].inline_data
                 
                 # Create a Part object from the inline data
+                # The inline_data already contains the mime_type from the API response
                 edited_image_part = types.Part(inline_data=inline_data)
                 
                 try:
@@ -379,7 +404,7 @@ async def edit_renovation_rendering(tool_context: ToolContext, inputs: EditRenov
                     
                     logger.info(f"Saved edited rendering as artifact '{edited_artifact_filename}' (version {version})")
                     
-                    return f"✅ Rendering edited successfully!\n\nSaved as: **{edited_artifact_filename}** (version {version} of {asset_name})\n\nThe rendering has been updated based on your feedback."
+                    return f"✅ Rendering edited successfully!\n\nThe updated rendering has been saved and is available in the artifacts panel. Artifact name: {asset_name} (version {version}).\n\nNote: The image is stored as an artifact and can be accessed through the session artifacts, not as a direct image link."
                     
                 except Exception as e:
                     logger.error(f"Error saving edited artifact: {e}")
