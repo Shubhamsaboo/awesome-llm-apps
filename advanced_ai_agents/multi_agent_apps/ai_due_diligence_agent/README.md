@@ -47,24 +47,14 @@ adk web
 ```
 
 ### 4. Try It
-Open `http://localhost:8000` and try:
-- *"Analyze https://agno.com for Series A investment"*
-- *"Due diligence on Lovable - the AI app builder"*
-- *"Evaluate Cursor IDE at https://cursor.com"*
-
-## Example Prompts
-
 Works with company names, URLs, or both:
 
-| Input Type | Prompt |
-|------------|--------|
-| URL only | "Analyze https://agno.com for investment" |
-| Name only | "Due diligence on Lovable AI" |
-| Both | "Evaluate Cursor IDE at https://cursor.com" |
-| Early-stage | "Research https://v0.dev - Vercel's AI tool" |
-| Unknown startup | "Check out this startup: https://replit.com" |
+Open `http://localhost:8000` and try:
+- *"Analyze https://agno.com for Series A investment of $30-50M"*
+- *"Research Genspark AI for its next funding round"*
+- *"Analyze Lovable for Series C funding opportunities"*
+- *"Research emergent.sh for Series B funding in the $40-60M range"*
 
----
 
 ## Pipeline Architecture
 
