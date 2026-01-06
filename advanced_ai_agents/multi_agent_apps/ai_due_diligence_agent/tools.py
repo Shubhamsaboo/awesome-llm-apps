@@ -7,7 +7,7 @@ import logging
 import io
 from pathlib import Path
 from datetime import datetime
-from google.adk.tools import ToolContext
+from google.adk.tools.tool_context import ToolContext
 from google.genai import types, Client
 
 logger = logging.getLogger("DueDiligencePipeline")

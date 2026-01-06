@@ -3,7 +3,7 @@ import asyncio
 import inspect
 from dotenv import load_dotenv
 from google.adk.agents import LlmAgent, SequentialAgent
-from google.adk.tools import google_search
+from google.adk.tools.google_search_tool import google_search
 from google.adk.tools.agent_tool import AgentTool
 from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner

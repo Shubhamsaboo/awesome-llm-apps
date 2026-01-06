@@ -1,5 +1,5 @@
 from google.adk.agents import LlmAgent
-from google.adk.tools import google_search
+from google.adk.tools.google_search_tool import google_search
 
 # Create a web search agent using Google ADK's built-in Search Tool
 root_agent = LlmAgent(

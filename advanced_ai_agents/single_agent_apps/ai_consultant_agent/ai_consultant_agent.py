@@ -7,7 +7,7 @@ import os
 
 # Google ADK imports
 from google.adk.agents import LlmAgent
-from google.adk.tools import google_search
+from google.adk.tools.google_search_tool import google_search
 from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
 

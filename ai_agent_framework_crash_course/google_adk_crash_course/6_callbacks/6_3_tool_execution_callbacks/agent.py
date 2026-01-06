@@ -5,7 +5,8 @@ from datetime import datetime
 from typing import Optional, Dict, Any
 from google.adk.agents import LlmAgent
 from google.adk.runners import InMemoryRunner
-from google.adk.tools import BaseTool, FunctionTool
+from google.adk.tools.function_tool import FunctionTool
+from google.adk.tools.base_tool import BaseTool
 from google.adk.tools.tool_context import ToolContext
 from google.genai import types
 from dotenv import load_dotenv
