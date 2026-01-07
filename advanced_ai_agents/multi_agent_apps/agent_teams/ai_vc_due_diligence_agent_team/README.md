@@ -1,4 +1,4 @@
-# 📊 AI Due Diligence Agent
+# 📊 AI VC Due Diligence Agent Team
 
 A multi-agent AI pipeline for startup investment analysis, built with [Google ADK](https://google.github.io/adk-docs/), Gemini 3 Pro, Gemini 3 Flash and Nano Banana Pro.
 
@@ -30,7 +30,7 @@ Given a startup name or URL, the pipeline automatically:
 ### 1. Clone & Navigate
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-cd awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_due_diligence_agent
+cd awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_vc_due_diligence_agent_team
 ```
 
 ### 2. Set Environment
