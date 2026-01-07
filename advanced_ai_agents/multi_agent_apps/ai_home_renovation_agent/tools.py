@@ -2,7 +2,7 @@ import os
 import logging
 from google import genai
 from google.genai import types
-from google.adk.tools import ToolContext
+from google.adk.tools.tool_context import ToolContext
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 

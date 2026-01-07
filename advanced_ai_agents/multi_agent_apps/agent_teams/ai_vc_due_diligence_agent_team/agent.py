@@ -11,7 +11,7 @@ Pattern Reference: https://google.github.io/adk-docs/agents/multi-agents/#sequen
 """
 
 from google.adk.agents import LlmAgent, SequentialAgent
-from google.adk.tools import google_search
+from google.adk.tools.google_search_tool import google_search
 from google.adk.code_executors import BuiltInCodeExecutor
 from .tools import generate_html_report, generate_infographic, generate_financial_chart
 
