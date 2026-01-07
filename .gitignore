@@ -1,0 +1,8 @@
+node_modules
+.venv
+__pycache__
+.next
+**/lib/generated/prisma/
+.env
+.DS_Store
+.adk
