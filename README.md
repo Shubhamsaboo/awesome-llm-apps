@@ -253,3 +253,8 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 [![Star History Chart](https://api.star-history.com/svg?repos=Shubhamsaboo/awesome-llm-apps&type=Date)](https://star-history.com/#Shubhamsaboo/awesome-llm-apps&Date)
 
 🌟 **Don’t miss out on future updates! Star the repo now and be the first to know about new and exciting LLM apps with RAG and AI Agents.**
+### 📀 RAG (Retrieval Augmented Generation)
+
+*   [🔥 Agentic RAG with Embedding Gemma](rag_tutorials/agentic_rag_embedding_gemma)
+...
+**[🖼️ Vision RAG](rag_tutorials/vision_rag/)[💰 RAG Finance Chatbot](https://github.com/codeanuj2528/RAG_finance_chatbot) – A finance-focused Retrieval-Augmented Generation chatbot that answers financial queries using domain-specific documents, embeddings, and LLMs**
