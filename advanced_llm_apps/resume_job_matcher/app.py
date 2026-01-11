@@ -9,7 +9,11 @@ st.title("📄 Resume & Job Matcher")
 st.sidebar.info("""
 This app uses a local LLM via **Ollama**.
 1. Install Ollama: https://ollama.ai
-2. Run a model (e.g., `ollama run llama3`).
+2. Verify the ollama CLI works, by running the below commands in your terminal:
+    2.1. Start the Ollama server: `ollama serve` on separate terminal.
+    2.2. Run a model (e.g., `ollama pull llama3`).
+    2.3. Verify local LLM llama is listed using `ollama list`.
+    2.4. Run the streamlit run app.py command to start this app in another terminal.
 3. Upload a Resume + Job Description to get a fit score and suggestions.
 """)
 
@@ -21,23 +25,24 @@ def extract_pdf_text(file):
             text += page.get_text()
     return text
 
+def get_text_from_file(file_name) -> str:
+    if file_name.type == "application/pdf":
+        file_text = extract_pdf_text(file_name)
+    else:
+        file_text = file_name.read().decode("utf-8")
+    return file_text
+
 # File uploaders
 resume_file = st.file_uploader("Upload Resume (PDF/TXT)", type=["pdf", "txt"])
 job_file = st.file_uploader("Upload Job Description (PDF/TXT)", type=["pdf", "txt"])
 
 if st.button("🔍 Match Resume with Job Description"):
     if resume_file and job_file:
-        # Extract Resume text
-        if resume_file.type == "application/pdf":
-            resume_text = extract_pdf_text(resume_file)
-        else:
-            resume_text = resume_file.read().decode("utf-8")
-
-        # Extract Job text
-        if job_file.type == "application/pdf":
-            job_text = extract_pdf_text(job_file)
-        else:
-            job_text = job_file.read().decode("utf-8")
+    # Extract Resume text
+        resume_text = get_text_from_file(resume_file)
+        # Extract Job Description text
+        job_text = get_text_from_file(job_file)
+    
 
         # Prompt
         prompt = f"""
