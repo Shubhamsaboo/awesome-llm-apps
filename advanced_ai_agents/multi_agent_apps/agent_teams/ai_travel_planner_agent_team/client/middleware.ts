@@ -4,11 +4,11 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export async function middleware(request: NextRequest) {
   // If BASE_URL is not set, use the request URL's origin
-  const baseUrl = BASE_URL || new URL(request.url).origin;
+  const resolvedBaseUrl = BASE_URL || new URL(request.url).origin;
 
-  console.log("Host: ", baseUrl);
+  console.log("Host: ", resolvedBaseUrl);
 
-  const url = `${baseUrl}/api/auth/get-session`;
+  const url = `${resolvedBaseUrl}/api/auth/get-session`;
 
   console.log("URL: ", url);
 
