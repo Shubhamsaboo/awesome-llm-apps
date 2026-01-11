@@ -147,7 +147,7 @@ Citations:
 ## 🏗️ Architecture
 
 ```
-knowledge_graph_rag_with_citations/
+knowledge_graph_rag_citations/
 ├── knowledge_graph_rag.py   # Main Streamlit application
 ├── requirements.txt         # Python dependencies
 └── README.md               # This file
