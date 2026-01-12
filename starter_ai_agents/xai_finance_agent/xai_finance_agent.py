@@ -10,7 +10,7 @@ agent = Agent(
     name="xAI Finance Agent",
     model = xAI(id="grok-4-1-fast"),
     tools=[DuckDuckGoTools(), YFinanceTools()],
-    instructions = ["Always use tables to display financial/numerical data. For text data use bullet points and small paragrpahs."],
+    instructions = ["Always use tables to display financial/numerical data. For text data use bullet points and small paragraphs."],
     debug_mode = True,
     markdown = True,
     )
