@@ -9,7 +9,7 @@ This application leverages multiple specialized AI agents to provide comprehensi
 
 ## Features
 
-- **Specialized Legal AI Agent Team**
+- **Specialized Design AI Agent Team**
 
    - 🎨 **Visual Design Agent**: Evaluates design elements, patterns, color schemes, typography, and visual hierarchy
    - 🔄 **UX Analysis Agent**: Assesses user flows, interaction patterns, usability, and accessibility
