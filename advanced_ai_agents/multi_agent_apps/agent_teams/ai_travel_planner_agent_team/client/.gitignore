@@ -1,0 +1,11 @@
+node_modules
+.next
+.env*.local
+lib/generated/
+*.log
+.DS_Store
+*.pem
+.vscode
+.idea
+.vercel
+*.tsbuildinfo

@@ -1,5 +1,25 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Setup
+
+1. **Install dependencies:**
+   ```bash
+   pnpm install
+   ```
+
+2. **Configure environment:**
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Update `.env.local` with your database credentials if needed.
+
+3. **Setup database:**
+   ```bash
+   pnpm prisma generate
+   pnpm prisma db push
+   ```
+
 ## Getting Started
 
 First, run the development server:
