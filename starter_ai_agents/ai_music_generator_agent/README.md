@@ -23,7 +23,7 @@ This is a Streamlit-based application that allows users to generate music using 
 1. Clone this repository:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps
-   cd ai_agent_tutorials/ai_models_lab_music_generator_agent
+   cd starter_ai_agents/ai_models_lab_music_generator_agent
    ```
 
 2. Install the required Python packages:
