@@ -280,7 +280,7 @@ runner = Runner(
 )
 
 if __name__ == "__main__":
-    print("🤖 AI Consultant Agent with Google ADK")
+    print("AI Consultant Agent with Google ADK")
     print("=====================================")
     print()
     print("This agent provides comprehensive business consultation including:")
@@ -300,9 +300,9 @@ if __name__ == "__main__":
     print('• "Should I expand my retail business to e-commerce?"')
     print('• "What are the market opportunities in the healthcare tech space?"')
     print()
-    print("📊 Use the Eval tab in ADK web to save and evaluate consultation sessions!")
+    print("Use the Eval tab in ADK web to save and evaluate consultation sessions!")
     print()
-    print(f"✅ Agent '{APP_NAME}' initialized successfully!")
+    print(f"Agent '{APP_NAME}' initialized successfully!")
     print(f"   Model: {MODEL_ID}")
     print(f"   Tools: {len(consultant_tools)} available")
     print(f"   Session Service: {type(session_service).__name__}")
