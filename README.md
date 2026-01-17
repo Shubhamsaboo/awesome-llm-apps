@@ -125,6 +125,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [🧬 AI Self-Evolving Agent](advanced_ai_agents/multi_agent_apps/ai_Self-Evolving_agent/)
 *   [👨🏻‍💼 AI Sales Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_sales_intelligence_agent_team)
 *   [🎧 AI Social Media News and Podcast Agent](advanced_ai_agents/multi_agent_apps/ai_news_and_podcast_agents/)
+*   [🔎 IntellyWeave - OSINT Intelligence Platform](https://github.com/vericle/intellyweave) - Multi-agent platform with GLiNER entity extraction, knowledge graph, Mapbox 3D geospatial mapping (heatmaps, routes), network visualization, and 6-phase intelligence orchestration ([Live Demo](https://app.supademo.com/embed/cmizklvt10rwr14g48e8zgl73))
 
 ### 🎮 Autonomous Game Playing Agents
 
@@ -252,4 +253,4 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Shubhamsaboo/awesome-llm-apps&type=Date)](https://star-history.com/#Shubhamsaboo/awesome-llm-apps&Date)
 
-🌟 **Don’t miss out on future updates! Star the repo now and be the first to know about new and exciting LLM apps with RAG and AI Agents.**
+🌟 **Don't miss out on future updates! Star the repo now and be the first to know about new and exciting LLM apps with RAG and AI Agents.**
