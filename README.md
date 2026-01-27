@@ -203,6 +203,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 ### 🎯 LLM Optimization Tools
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30-60% using TOON format
+*   [💰 Claude API Cost Optimization](https://github.com/sstklen/claude-api-cost-optimization) - Save 50-90% on Claude API costs with Batch API, Prompt Caching, and Extended Thinking
 
 ### 🔧 LLM Fine-tuning Tutorials
 
