@@ -70,9 +70,9 @@ if openai_api_key:
         relevant_memories = memory.search(query=prompt, user_id=user_id)
         context = "Relevant past information:\n"
         if relevant_memories and "results" in relevant_memories:
-            for memory in relevant_memories["results"]:
-                if "memory" in memory:
-                    context += f"- {memory['memory']}\n"
+            for mem in relevant_memories["results"]:
+                if "memory" in mem:
+                    context += f"- {mem['memory']}\n"
 
         # Prepare the full prompt
         full_prompt = f"{context}\nHuman: {prompt}\nAI:"
