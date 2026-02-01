@@ -10,7 +10,7 @@ Pattern Reference: https://google.github.io/adk-docs/agents/multi-agents/#coordi
 """
 
 from google.adk.agents import LlmAgent, SequentialAgent
-from google.adk.tools import google_search
+from google.adk.tools import GoogleSearchTool
 from google.adk.tools.agent_tool import AgentTool
 from .tools import (
     generate_renovation_rendering,
@@ -21,15 +21,20 @@ from .tools import (
 
 
 # ============================================================================
-# Helper Tool Agent (wraps google_search)
+# Helper Tool Agent (wraps GoogleSearchTool)
 # ============================================================================
+
+# Use bypass_multi_tools_limit=True to allow GoogleSearchTool in nested agent setups
+google_search_tool = GoogleSearchTool(bypass_multi_tools_limit=True)
 
 search_agent = LlmAgent(
     name="SearchAgent",
     model="gemini-3-flash-preview",
     description="Searches for renovation costs, contractors, materials, and design trends",
-    instruction="Use google_search to find current renovation information, costs, materials, and trends. Be concise and cite sources.",
-    tools=[google_search],
+    instruction="""You are a search specialist. When asked to find information about renovation costs, 
+contractors, materials, or design trends, the search capability is automatically enabled. 
+Simply respond with the information you find. Be concise and cite sources when available.""",
+    tools=[google_search_tool],
 )
 
 
