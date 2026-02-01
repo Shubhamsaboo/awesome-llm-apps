@@ -23,7 +23,7 @@ finance_agent = Agent(
     name="Finance Agent",
     role="Get financial data",
     model=OpenAIChat(id="gpt-4o"),
-    tools=[YFinanceTools(stock_price=True, analyst_recommendations=True, company_info=True, company_news=True)],
+    tools=[YFinanceTools(include_tools=["get_current_stock_price", "get_analyst_recommendations", "get_company_info", "get_company_news"])],
     instructions=["Always use tables to display data"],
     db=db,
     add_history_to_context=True,
@@ -38,7 +38,7 @@ agent_team = Team(
     markdown=True,
 )
 
-agent_os = AgentOS(agents=[agent_team])
+agent_os = AgentOS(teams=[agent_team])
 app = agent_os.get_app()
 
 if __name__ == "__main__":
