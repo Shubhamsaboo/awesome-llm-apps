@@ -305,18 +305,59 @@ async def edit_renovation_rendering(tool_context: ToolContext, inputs: EditRenov
         if not artifact_filename:
             artifact_filename = tool_context.state.get("last_generated_rendering")
             if not artifact_filename:
-                return "❌ No artifact_filename provided and no previous rendering found in session. Please generate a rendering first or specify the artifact filename."
+                return "❌ No artifact_filename provided and no previous rendering found in session. Please generate a rendering first using generate_renovation_rendering."
             logger.info(f"Using last generated rendering from session: {artifact_filename}")
+        
+        # Validate filename format - check for common hallucination patterns
+        if "_v0." in artifact_filename:
+            # Version 0 doesn't exist - the first version is always v1
+            logger.warning(f"Invalid version v0 detected in filename: {artifact_filename}")
+            corrected_filename = artifact_filename.replace("_v0.", "_v1.")
+            logger.info(f"Attempting corrected filename: {corrected_filename}")
+            artifact_filename = corrected_filename
         
         # Load the existing rendering
         logger.info(f"Loading artifact: {artifact_filename}")
+        loaded_image_part = None
         try:
             loaded_image_part = await tool_context.load_artifact(artifact_filename)
-            if not loaded_image_part:
-                return f"❌ Could not find rendering artifact: {artifact_filename}"
         except Exception as e:
             logger.error(f"Error loading artifact: {e}")
-            return f"Error loading rendering artifact: {e}"
+        
+        # If loading failed, try to find the most recent version of this asset
+        if not loaded_image_part:
+            # Extract base asset name and try to find any existing version
+            base_name = artifact_filename.split('_v')[0] if '_v' in artifact_filename else artifact_filename.replace('.png', '')
+            asset_filenames = tool_context.state.get("asset_filenames", {})
+            
+            # Check if we have any version of this asset
+            if base_name in asset_filenames:
+                fallback_filename = asset_filenames[base_name]
+                logger.info(f"Attempting fallback to known artifact: {fallback_filename}")
+                try:
+                    loaded_image_part = await tool_context.load_artifact(fallback_filename)
+                    if loaded_image_part:
+                        artifact_filename = fallback_filename
+                        logger.info(f"Successfully loaded fallback artifact: {fallback_filename}")
+                except Exception as e:
+                    logger.error(f"Fallback load also failed: {e}")
+            
+            # Last resort: try the last generated rendering
+            if not loaded_image_part:
+                last_rendering = tool_context.state.get("last_generated_rendering")
+                if last_rendering and last_rendering != artifact_filename:
+                    logger.info(f"Attempting last resort fallback to: {last_rendering}")
+                    try:
+                        loaded_image_part = await tool_context.load_artifact(last_rendering)
+                        if loaded_image_part:
+                            artifact_filename = last_rendering
+                            logger.info(f"Successfully loaded last resort artifact: {last_rendering}")
+                    except Exception as e:
+                        logger.error(f"Last resort load also failed: {e}")
+        
+        if not loaded_image_part:
+            available_renderings = get_asset_versions_info(tool_context)
+            return f"❌ Could not find rendering artifact: {inputs.artifact_filename}\n\n{available_renderings}\n\nPlease use one of the available artifact filenames, or generate a new rendering first."
 
         # Handle reference image if specified
         reference_image_part = None
