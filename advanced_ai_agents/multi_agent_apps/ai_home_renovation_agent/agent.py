@@ -10,7 +10,7 @@ Pattern Reference: https://google.github.io/adk-docs/agents/multi-agents/#coordi
 """
 
 from google.adk.agents import LlmAgent, SequentialAgent
-from google.adk.tools import GoogleSearchTool
+from google.adk.tools import google_search
 from google.adk.tools.agent_tool import AgentTool
 from .tools import (
     generate_renovation_rendering,
@@ -21,20 +21,20 @@ from .tools import (
 
 
 # ============================================================================
-# Helper Tool Agent (wraps GoogleSearchTool)
+# Helper Tool Agent (wraps google_search)
 # ============================================================================
 
-# Use bypass_multi_tools_limit=True to allow GoogleSearchTool in nested agent setups
-google_search_tool = GoogleSearchTool(bypass_multi_tools_limit=True)
+# google_search is a pre-built tool function that allows the agent to perform Google searches
+# Note: google_search can only be used by itself within an agent instance (single tool limitation)
 
 search_agent = LlmAgent(
     name="SearchAgent",
-    model="gemini-3-flash-preview",
+    model="gemini-3-flash-preview",  # google_search requires Gemini 2.0+ models
     description="Searches for renovation costs, contractors, materials, and design trends",
     instruction="""You are a search specialist. When asked to find information about renovation costs, 
 contractors, materials, or design trends, the search capability is automatically enabled. 
 Simply respond with the information you find. Be concise and cite sources when available.""",
-    tools=[google_search_tool],
+    tools=[google_search],
 )
 
 
@@ -388,41 +388,53 @@ Create CLEAN, SCANNABLE final plan.
 
 Use **generate_renovation_rendering** tool to CREATE a photorealistic rendering:
 
-Build an EXTREMELY DETAILED prompt that incorporates:
-- **From Visual Assessor**: Room type, current condition analysis, desired style
-- **From Design Planner**: Exact colors (with codes/names), specific materials, layout details, lighting fixtures, flooring type, all key features
+Build an ULTRA-DETAILED prompt using the **SLC Formula** (Subject, Lighting, Camera):
 
-**Prompt Structure:**
-"Professional interior photography of a renovated [room_type]. 
+**From Visual Assessor & Design Planner, extract:**
+- Room type, current layout details, desired style
+- Exact colors with codes/names, specific materials, finishes
+- Layout preservation requirements, lighting fixtures, all key features
 
-**CRITICAL - PRESERVE EXACT LAYOUT**: The room must maintain the EXACT same layout, structure, and spatial arrangement as the original photo:
-- Same window positions and sizes
-- Same door locations
-- Same cabinet configuration and placement
-- Same appliance positions (stove, sink, refrigerator in same spots)
-- Same architectural features (skylights, alcoves, etc.)
-- Same room dimensions and proportions
-- Same camera angle/perspective as the original photo
+**Prompt Structure using SLC Formula:**
 
-ONLY change the surface finishes, colors, materials, and decorative elements - NOT the structure or layout.
+"[CAMERA SPECS FIRST] Shot on professional DSLR, 8K resolution, HDR, ultra high definition, architectural photography, wide-angle lens from [specific angle matching original photo], sharp focus throughout, professional interior design photography quality.
 
-Design Specifications (changes to apply to the EXISTING layout):
-- Style: [exact style from design plan]
-- Cabinet Color: [specific color names with codes - e.g., 'Benjamin Moore Simply White OC-117' - apply to EXISTING cabinets in their current positions]
-- Wall Color: [specific paint color]
-- Countertops: [material and color - apply to EXISTING counter layout]
-- Flooring: [type and color - same floor area]
-- Backsplash: [pattern and material - same wall areas]
-- Hardware: [handles, pulls - replace on existing cabinets]
-- Lighting: [specific fixtures - same positions or clearly specified additions]
-- Appliances: [keep existing OR specify replacements in SAME locations]
-- Key Features: [all important elements]
+[SUBJECT - ULTRA DETAILED] A renovated [room_type] featuring [exact style, e.g., 'modern farmhouse' or 'contemporary minimalist']. 
 
-Camera: Match the EXACT camera angle from the original photo
-Quality: Photorealistic, 8K, professional interior design magazine, natural lighting"
+**CRITICAL - PRESERVE EXACT LAYOUT**: Maintain the EXACT same layout as original:
+- [List specific window positions, e.g., 'large window on left wall above sink']
+- [Door locations, e.g., 'doorway on right side']
+- [Cabinet configuration, e.g., 'L-shaped upper and lower cabinets along back and left walls']
+- [Appliance positions, e.g., 'stove centered on back wall, refrigerator on right']
+- [Sink location, counter layout, special features like skylights]
+- Same room dimensions and camera angle as original
+
+**Surface Finish Details (ONLY changes - be VERY specific with textures):**
+- Cabinets: [e.g., 'smooth matte Benjamin Moore Simply White OC-117 shaker-style cabinets with subtle panel details']
+- Countertops: [e.g., 'honed Carrara marble with delicate grey veining and soft matte finish']
+- Flooring: [e.g., 'wide-plank white oak with natural grain variation and satin finish']
+- Backsplash: [e.g., 'classic white subway tile in herringbone pattern with light grey grout']
+- Hardware: [e.g., 'brushed nickel cabinet pulls and handles with modern cylindrical design']
+- Walls: [specific paint color]
+- Lighting: [e.g., 'modern pendant lights with clear glass shades, warm LED under-cabinet lighting']
+- Appliances: [e.g., 'stainless steel appliances in SAME positions']
+- Decorative elements: [e.g., 'fresh flowers in white vase, wooden cutting board']
+
+[LIGHTING - CREATE ATMOSPHERE] Soft morning sunlight streaming through windows creating gentle shadows, warm LED under-cabinet lighting adding ambient glow, natural diffused light highlighting the [material] countertops, subtle shadows adding depth and dimension, highlights on polished surfaces, clean and inviting atmosphere with even illumination.
+
+Style: Photorealistic, magazine quality, architectural digest aesthetic, modern luxury feel."
+
+**Key Requirements:**
+- Start with camera/technical specs (8K, HDR, professional DSLR)
+- Use rich, descriptive adjectives for materials (smooth, honed, brushed, wide-plank, etc.)
+- Specify exact lighting conditions (soft morning light, warm LED, diffused natural light)
+- Include texture details (grain, veining, panel details, finish type)
+- Mention atmosphere (clean, inviting, modern luxury)
+- Emphasize layout preservation
+- Use professional photography terms
 
 Parameters:
-- prompt: [your ultra-detailed prompt above]
+- prompt: [your ultra-detailed SLC-formatted prompt above]
 - aspect_ratio: "16:9"
 - asset_name: "[room_type]_[style_keyword]_renovation" (e.g., "kitchen_modern_farmhouse_renovation")
 
@@ -435,7 +447,7 @@ Briefly describe (2-3 sentences) key features visible in the rendering and how i
 - Simply mention that the rendering has been generated and saved as an artifact
 - The user can view the artifact through the artifacts panel
 
-**Note**: Image editing from uploaded photos has limitations in ADK Web. We generate fresh renderings based on detailed descriptions from the analysis.
+**Note**: The enhanced SLC formula (Subject, Lighting, Camera) creates professional-grade photorealistic renderings.
 """,
     tools=[generate_renovation_rendering, edit_renovation_rendering, list_renovation_renderings],
 )

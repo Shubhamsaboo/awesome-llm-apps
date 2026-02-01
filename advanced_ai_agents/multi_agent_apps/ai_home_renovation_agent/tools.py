@@ -160,9 +160,9 @@ async def generate_renovation_rendering(tool_context: ToolContext, inputs: Gener
                     reference_images.append(inspiration_part)
                     logger.info(f"Using inspiration image: {insp_filename}")
         
-        # Build the enhanced prompt
+        # Build the enhanced prompt using SLC formula (Subject, Lighting, Camera)
         base_rewrite_prompt = f"""
-        Create a highly detailed, photorealistic prompt for generating an interior design image.
+        Create an ultra-detailed, photorealistic prompt for generating a professional interior design photograph.
         
         Original description: {inputs.prompt}
         
@@ -175,25 +175,44 @@ async def generate_renovation_rendering(tool_context: ToolContext, inputs: Gener
         - ONLY change surface finishes: paint colors, cabinet colors, countertop materials, flooring, backsplash, hardware, and decorative elements
         - DO NOT move, add, or remove any structural elements or major fixtures
         
-        Enhance this to be a professional interior photography prompt that includes:
-        - Specific camera angle (match original photo perspective if described)
-        - Exact colors and materials mentioned (apply to existing surfaces)
-        - Realistic lighting (natural light from existing windows, fixture types)
-        - Maintain existing spatial layout and dimensions
-        - Texture and finish details for the new materials
-        - Professional interior design photography quality
+        **Use the SLC Formula for Photorealism:**
         
-        Aspect ratio: {inputs.aspect_ratio}
+        1. **SUBJECT (S)** - Be highly specific about details and textures:
+           - Describe exact materials with rich adjectives (e.g., "smooth matte white shaker-style cabinets", "honed Carrara marble countertops with subtle grey veining")
+           - Include texture details (e.g., "brushed nickel hardware", "wide-plank oak flooring with natural grain")
+           - Specify finishes precisely (e.g., "satin finish", "polished", "matte", "textured")
+        
+        2. **LIGHTING (L)** - Describe lighting conditions that create mood and realism:
+           - Natural light sources (e.g., "soft morning sunlight streaming through windows", "golden hour warm glow")
+           - Artificial lighting (e.g., "warm LED under-cabinet lighting", "pendant lights casting gentle shadows")
+           - Light quality (e.g., "diffused natural light", "dramatic side lighting", "even ambient illumination")
+           - Shadows and highlights (e.g., "subtle shadows adding depth", "highlights on polished surfaces")
+        
+        3. **CAMERA (C)** - Include professional photography specifications:
+           - Camera type: "shot on professional DSLR" or "architectural photography camera"
+           - Resolution: "8K resolution", "ultra high definition", "HDR"
+           - Perspective: specific angle (e.g., "wide-angle lens from doorway", "eye-level perspective", "slightly elevated view")
+           - Depth of field: "sharp focus throughout" or "shallow depth of field with background blur"
+           - Quality keywords: "professional interior design photography", "magazine quality", "architectural digest style"
+        
+        **Additional Requirements:**
+        - Maintain existing spatial layout and dimensions exactly as described
+        - Include specific color names and codes when mentioned
+        - Add atmospheric details (e.g., "clean, inviting atmosphere", "modern luxury feel")
+        - Specify the aspect ratio: {inputs.aspect_ratio}
+        
+        **Output Format:** Create a single, flowing paragraph that reads like a professional photography brief. 
+        Start with the camera/technical specs, then describe the subject with rich detail, then lighting conditions.
+        Include keywords: "photorealistic", "8K", "HDR", "professional interior photography", "architectural photography".
+        Emphasize that the layout must remain unchanged - only surface finishes are modified.
         """
         
         if reference_images:
-            base_rewrite_prompt += "\n\n**Reference Image Layout:** The reference image shows the EXACT layout that must be preserved. Match the camera angle, room structure, window/door positions, and furniture/appliance placement EXACTLY. Only change the surface finishes and colors."
-        
-        base_rewrite_prompt += "\n\n**Important:** Output your prompt as a single detailed paragraph optimized for photorealistic interior rendering. Emphasize that the layout must remain unchanged."
+            base_rewrite_prompt += "\n\n**Reference Image Layout:** The reference image shows the EXACT layout that must be preserved. Match the camera angle, room structure, window/door positions, and furniture/appliance placement EXACTLY. Only change the surface finishes and colors. Analyze the lighting in the reference image and replicate it."
         
         # Get enhanced prompt
         rewritten_prompt_response = client.models.generate_content(
-            model="gemini-3-flash-preview", 
+            model="gemini-3-pro-preview", 
             contents=base_rewrite_prompt
         )
         rewritten_prompt = rewritten_prompt_response.text
