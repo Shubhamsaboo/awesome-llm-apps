@@ -75,7 +75,7 @@ from openai import OpenAI
 client = OpenAI()
 
 # Load skill from file
-with open('agent_skills/coding/python_expert.md', 'r') as f:
+with open('awesome_agent_skills/coding/python_expert.md', 'r') as f:
     skill_content = f.read()
 
 response = client.chat.completions.create(
@@ -94,7 +94,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 
 # Load skill
-with open('agent_skills/research/deep_research.md', 'r') as f:
+with open('awesome_agent_skills/research/deep_research.md', 'r') as f:
     system_prompt = f.read()
 
 prompt = ChatPromptTemplate.from_messages([
@@ -112,7 +112,7 @@ Add skills to your project configuration:
 
 **Cursor** (`.cursorrules`):
 ```
-Include the content from agent_skills/coding/python_expert.md
+Include the content from awesome_agent_skills/coding/python_expert.md
 ```
 
 **Claude Projects**:
