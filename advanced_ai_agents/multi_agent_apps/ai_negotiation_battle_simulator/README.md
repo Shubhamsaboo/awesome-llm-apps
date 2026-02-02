@@ -1,234 +1,219 @@
 # 🎮 AI Negotiation Battle Simulator
 
-### A Real-Time Agent vs Agent Showdown!
+### A Real-Time Agent vs Agent Showdown with AG-UI!
 
-Watch two AI agents battle it out in an epic used car negotiation! One agent desperately wants that sweet 2019 Honda Civic, the other is determined to squeeze every last dollar. Who will crack first? 🚗💰
+Watch two AI agents battle it out in an epic used car negotiation! Built with **Google ADK** for the backend agents and **AG-UI + CopilotKit** for a jaw-dropping reactive frontend.
+
+![Negotiation Battle](https://img.shields.io/badge/ADK-Agent%20Development%20Kit-blue)
+![AG-UI](https://img.shields.io/badge/AG--UI-Protocol-green)
+![CopilotKit](https://img.shields.io/badge/CopilotKit-Frontend-purple)
 
 ## ✨ Features
 
-- **🤖 Dual AI Agents**: Buyer vs Seller with distinct personalities and strategies
-- **🔄 A2A Protocol Ready**: Demonstrates Google's Agent-to-Agent protocol for cross-agent communication
-- **📊 Live Negotiation Tracking**: Watch offers, counteroffers, and dramatic moments unfold
-- **🎭 Configurable Personalities**: From "Desperate First-Time Buyer" to "Ruthless Used Car Dealer"
-- **🎬 Dramatic Scenarios**: Pre-built scenarios with backstories and stakes
+- **🤖 Dual AI Agents**: Buyer vs Seller with distinct personalities and negotiation strategies
+- **🔄 AG-UI Protocol**: Real-time streaming of agent actions, tool calls, and state changes
+- **💅 Jaw-Dropping UI**: Animated battle arena with live negotiation timeline
+- **🎭 8 Unique Personalities**: 4 buyers + 4 sellers with different negotiation styles
+- **📊 Generative UI**: Custom React components render tool calls in real-time
+- **🔗 Shared State**: Agent state syncs bidirectionally with the frontend
 
 ## 🏗️ Architecture
 
 ```
-┌─────────────────────────────────────────────────┐
-│                 Streamlit UI                     │
-│    Buyer Panel  │  Timeline  │  Seller Panel    │
-└────────┬────────────────────────────┬───────────┘
-         │                            │
-         ▼                            ▼
-┌─────────────────┐          ┌─────────────────┐
-│   Buyer Agent   │◄────────►│  Seller Agent   │
-│   (Google ADK)  │  A2A/    │  (Google ADK)   │
-│                 │  Direct  │                 │
-│ • Budget: $12k  │          │ • Min: $14k     │
-│ • Strategy: 🎯  │          │ • Strategy: 💰  │
-└─────────────────┘          └─────────────────┘
-         │                            │
-         └──────────┬─────────────────┘
-                    ▼
-         ┌─────────────────┐
-         │   Orchestrator  │
-         │  (Manages Flow) │
-         └─────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                    Next.js + CopilotKit Frontend                │
+│   ┌─────────────┐    ┌──────────────┐    ┌─────────────┐       │
+│   │ Battle Arena│    │  VS Display  │    │Chat Sidebar │       │
+│   │   Timeline  │    │ Buyer/Seller │    │ (AG-UI)     │       │
+│   └──────┬──────┘    └──────────────┘    └──────┬──────┘       │
+└──────────┼────────────────────────────────────────┼─────────────┘
+           │              AG-UI Events              │
+           └────────────────────┬───────────────────┘
+                                │
+                    ┌───────────▼───────────┐
+                    │   CopilotKit Runtime  │
+                    │   (/api/copilotkit)   │
+                    └───────────┬───────────┘
+                                │ HTTP/SSE
+                    ┌───────────▼───────────┐
+                    │    FastAPI + AG-UI    │
+                    │    ADK Middleware     │
+                    └───────────┬───────────┘
+                                │
+                    ┌───────────▼───────────┐
+                    │  ADK Negotiation Agent │
+                    │  (Battle Master)       │
+                    │                        │
+                    │  Tools:                │
+                    │  • configure_negotiation│
+                    │  • start_negotiation   │
+                    │  • buyer_make_offer    │
+                    │  • seller_respond      │
+                    └────────────────────────┘
 ```
 
 ## 🚀 Quick Start
 
+### Prerequisites
+
+- Python 3.11+
+- Node.js 18+
+- Google AI API Key ([Get one here](https://aistudio.google.com/))
+
 ### 1. Clone and Navigate
+
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd advanced_ai_agents/multi_agent_apps/ai_negotiation_battle_simulator
 ```
 
-### 2. Install Dependencies
+### 2. Set Up Backend
+
 ```bash
+cd backend
 pip install -r requirements.txt
+
+# Create .env file
+echo "GOOGLE_API_KEY=your_api_key_here" > .env
+
+# Start the backend
+python agent.py
 ```
 
-### 3. Set Up Environment
-Create a `.env` file:
+The backend will start on `http://localhost:8000`
+
+### 3. Set Up Frontend
+
 ```bash
-GOOGLE_API_KEY=your_google_ai_studio_key_here
+cd frontend
+npm install
+
+# Start the frontend
+npm run dev
 ```
 
-Get your API key from [Google AI Studio](https://aistudio.google.com/)
+The frontend will start on `http://localhost:3000`
 
-### 4. Run the Battle!
-```bash
-streamlit run negotiation_app.py
-```
+### 4. Start Negotiating! 🎮
 
-## 🎭 The Scenario: "The Craigslist Showdown"
+Open `http://localhost:3000` and tell the Battle Master:
+- "Start a negotiation for a used car"
+- "Show me available scenarios"
+- "Use Desperate Dan as buyer and Shark Steve as seller"
 
-**THE CAR**: 2019 Honda Civic EX, 45,000 miles, one owner, minor scratch on bumper
+## 🎭 Personalities
 
-**THE BUYER** 🎯: 
-- Recently graduated, needs reliable car for new job
-- Has exactly $12,500 saved (with $500 emergency buffer)
-- Found 3 similar cars online priced $13,000-$16,000
-- *Secret*: Job starts Monday. Desperately needs a car.
+### Buyers
+| Personality | Emoji | Style |
+|-------------|-------|-------|
+| Desperate Dan | 😰 | Needs car TODAY, weak poker face |
+| Analytical Alex | 🧮 | Cites every data point, very logical |
+| Cool-Hand Casey | 😎 | Master of the walkaway bluff |
+| Fair-Deal Fran | 🤝 | Just wants a win-win |
 
-**THE SELLER** 💰:
-- Upgrading to an SUV, needs to sell the Civic first
-- Paid $22,000 new, KBB says $14,500 private party
-- Has one other interested buyer coming tomorrow
-- *Secret*: The other buyer is flaky and might not show.
-
-**THE STAKES**: Both have secrets. Both have pressure. Only one deal can be made.
-
-## ⚙️ Configuration Options
-
-### Negotiation Settings
-
-| Setting | Options | Description |
-|---------|---------|-------------|
-| **Buyer Strategy** | Aggressive, Balanced, Patient | How pushy the buyer is |
-| **Seller Strategy** | Firm, Flexible, Desperate | How willing to negotiate |
-| **Max Rounds** | 3-15 | How many back-and-forths before walkaway |
-| **Initial Offer** | % of asking | Where buyer starts |
-| **Drama Level** | 🎭 to 🎭🎭🎭 | How theatrical the agents get |
-
-### Preset Personalities
-
-**Buyers:**
-- 😰 *Desperate Dan* - Needs car TODAY, weak poker face
-- 🧮 *Analytical Alex* - Cites every data point, very logical  
-- 😎 *Cool-Hand Casey* - Master of the walkaway bluff
-- 🤝 *Fair-Deal Fran* - Just wants a win-win
-
-**Sellers:**
-- 🦈 *Shark Steve* - Never drops more than 5%, take it or leave it
-- 📊 *By-The-Book Beth* - Goes strictly by KBB, reasonable but firm
-- 😅 *Motivated Mike* - Really needs to sell, more flexible
-- 🎭 *Drama Queen Diana* - Everything is "my final offer" (it's not)
+### Sellers
+| Personality | Emoji | Style |
+|-------------|-------|-------|
+| Shark Steve | 🦈 | Never drops more than 5% |
+| By-The-Book Beth | 📊 | Goes strictly by KBB |
+| Motivated Mike | 😅 | Really needs to sell |
+| Drama Queen Diana | 🎭 | Everything is "final offer" |
 
 ## 📁 Project Structure
 
 ```
 ai_negotiation_battle_simulator/
-├── README.md               # This file
-├── requirements.txt        # Dependencies
-├── .env.example           # Environment template
-├── negotiation_app.py     # Main Streamlit application
-├── agents/
-│   ├── __init__.py
-│   ├── buyer_agent.py     # Buyer agent with negotiation tools
-│   ├── seller_agent.py    # Seller agent with pricing tools
-│   └── orchestrator.py    # Manages negotiation flow
-├── config/
-│   ├── __init__.py
-│   ├── personalities.py   # Agent personality presets
-│   └── scenarios.py       # Negotiation scenarios
-└── utils/
-    ├── __init__.py
-    └── negotiation_state.py  # State management
+├── README.md
+├── .env.example
+│
+├── backend/                    # Python ADK + AG-UI
+│   ├── agent.py               # Main agent with tools
+│   ├── requirements.txt
+│   ├── config/
+│   │   ├── personalities.py   # 8 unique personalities
+│   │   └── scenarios.py       # 3 negotiation scenarios
+│   └── agents/
+│       ├── buyer_agent.py
+│       ├── seller_agent.py
+│       └── orchestrator.py
+│
+└── frontend/                   # Next.js + CopilotKit
+    ├── package.json
+    ├── src/
+    │   └── app/
+    │       ├── layout.tsx     # CopilotKit provider
+    │       ├── page.tsx       # Battle Arena UI
+    │       ├── globals.css    # Battle animations
+    │       └── api/
+    │           └── copilotkit/
+    │               └── route.ts  # CopilotKit runtime
+    └── tailwind.config.js
 ```
 
-## 🔄 A2A Protocol Mode (Advanced)
-
-For true cross-process agent communication, you can run agents as separate A2A servers:
-
-### Terminal 1: Start Seller Agent
-```bash
-python -m agents.seller_agent --port 8001
-```
-
-### Terminal 2: Start Buyer Agent  
-```bash
-python -m agents.buyer_agent --port 8002
-```
-
-### Terminal 3: Run Orchestrator
-```bash
-python -m agents.orchestrator --buyer-url http://localhost:8002 --seller-url http://localhost:8001
-```
-
-## 🎬 Sample Negotiation
+## 🎬 Sample Battle
 
 ```
-🚗 NEGOTIATION BEGINS: 2019 Honda Civic EX
+🔔 NEGOTIATION BEGINS: 2019 Honda Civic EX
 
 📋 ASKING PRICE: $15,500
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🎯 BUYER (Round 1):
-"I've done my research - KBB shows similar Civics at $13,500. 
-Given the scratch on the bumper and the 45k miles, I'm prepared 
-to offer $11,500 cash today."
+😎 COOL-HAND CASEY (Round 1):
+"I've seen similar Civics go for less. $11,500 seems fair 
+given the market. Cash in hand today."
 
-💰 SELLER (Round 1):
-"I appreciate the offer, but this Civic has been meticulously 
-maintained. Single owner, all service records. That KBB price 
-is for good condition - this is excellent. I could come down 
-to $15,000."
+🦈 SHARK STEVE (Round 1):
+"$15,000. This car is pristine. I've got two other 
+interested buyers coming this weekend."
 
-🎯 BUYER (Round 2):
-"Look, I can see it's been well cared for, and I want to make 
-this work. But $15k is still above market. I can stretch to 
-$12,500 - that's my absolute max as a recent grad."
+😎 COOL-HAND CASEY (Round 2):
+"$12,500 is my limit. Take it or I walk."
 
-💰 SELLER (Round 2):
-*pauses* "I've got another buyer coming tomorrow who seemed 
-very interested... but I'd rather close this today. $14,000 
-and it's yours."
+🦈 SHARK STEVE (Round 2):
+*considers* "$14,000. Final offer."
 
-🎯 BUYER (Round 3):
-"I hear you on the other buyer. Let me be straight with you - 
-I start a new job Monday and I really need reliable transport. 
-$13,000 and I'll throw in taking it as-is, no inspection."
+😎 COOL-HAND CASEY (Round 3):
+"$13,000. Meet me in the middle."
 
-💰 SELLER (Round 3):
-*considers* "You seem like someone who'll take care of her. 
-$13,500, I'll include the winter floor mats I was going to keep, 
-and we have a deal."
+🦈 SHARK STEVE (Round 3):
+"...$13,500 and you've got a deal."
 
-🎯 BUYER (Round 4):
-"$13,250 - right in the middle. Final offer. I've got cash ready."
+😎 COOL-HAND CASEY (Round 4):
+"$13,250. Final answer."
 
-💰 SELLER (Round 4):
-"...You drive a hard bargain. Deal. 🤝"
+🦈 SHARK STEVE (Round 4):
+"Deal. 🤝"
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-✅ DEAL CLOSED AT $13,250
-
-📊 RESULTS:
-• Buyer saved: $2,250 (14.5% off asking)
-• Seller achieved: $13,250 (91% of asking, above KBB)
-• Rounds: 4
-• Winner: BOTH (True win-win! 🎉)
+✅ DEAL CLOSED AT $13,250 🎉
+   Buyer saved: $2,250 (14.5% off asking)
 ```
 
 ## 🧠 How It Works
 
-1. **Scenario Loading**: The negotiation context (car details, buyer/seller situations) is loaded
-2. **Agent Initialization**: Both agents receive their private information and strategies
-3. **Turn-Based Negotiation**: 
-   - Buyer makes offer with reasoning
-   - Seller evaluates and responds
-   - Process repeats until deal or walkaway
-4. **State Tracking**: All offers, counteroffers, and reasoning are logged
-5. **Outcome Determination**: Deal, walkaway, or max rounds reached
+1. **User Request**: You tell the Battle Master what kind of negotiation to run
+2. **Configuration**: The agent sets up the scenario and personalities
+3. **Tool Calls**: The agent alternates between `buyer_make_offer` and `seller_respond` tools
+4. **AG-UI Streaming**: Each tool call streams to the frontend via AG-UI protocol
+5. **Generative UI**: Custom React components render each offer/response beautifully
+6. **Shared State**: The negotiation timeline updates in real-time
+7. **Outcome**: Deal or no-deal is celebrated with animations!
+
+## 📚 Learn More
+
+- [Google ADK Documentation](https://google.github.io/adk-docs/)
+- [AG-UI Protocol Docs](https://docs.ag-ui.com/)
+- [CopilotKit Documentation](https://docs.copilotkit.ai/)
 
 ## 🤝 Contributing
 
 Feel free to add:
 - New negotiation scenarios (salary, apartment, contracts)
 - Additional personality types
-- Enhanced UI visualizations
-- Cross-framework agent support (LangChain, CrewAI)
-
-## 📚 Learn More
-
-- [Google ADK Documentation](https://google.github.io/adk-docs/)
-- [A2A Protocol Specification](https://a2a-protocol.org/)
-- [AG-UI Protocol](https://docs.ag-ui.com/)
+- More dramatic UI effects
+- Cross-framework agents (LangChain, CrewAI via A2A)
 
 ---
 

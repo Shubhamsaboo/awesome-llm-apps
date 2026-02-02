@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 15, 23, 42;
+  --background-end-rgb: 30, 41, 59;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      135deg,
+      rgb(var(--background-start-rgb)),
+      rgb(var(--background-end-rgb))
+    );
+  min-height: 100vh;
+}
+
+/* Battle Arena Styles */
+.battle-arena {
+  background: radial-gradient(ellipse at center, rgba(255,215,0,0.1) 0%, transparent 70%);
+}
+
+.buyer-glow {
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+}
+
+.seller-glow {
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+}
+
+.offer-pulse {
+  animation: offerPulse 2s ease-in-out infinite;
+}
+
+@keyframes offerPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+/* VS Badge */
+.vs-badge {
+  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Deal Animation */
+.deal-celebration {
+  animation: celebrate 0.5s ease-out;
+}
+
+@keyframes celebrate {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Negotiation Timeline */
+.timeline-connector {
+  background: linear-gradient(180deg, #3b82f6 0%, #ffd700 50%, #ef4444 100%);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.5);
+}
