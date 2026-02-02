@@ -9,10 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ag-ui/client": "^0.0.43",
     "@copilotkit/react-core": "^1.8.0",
     "@copilotkit/react-ui": "^1.8.0",
     "@copilotkit/runtime": "^1.8.0",
-    "@ag-ui/client": "^0.1.0",
     "next": "^15.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

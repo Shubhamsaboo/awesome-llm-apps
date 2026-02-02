@@ -8,6 +8,8 @@ Watch two AI agents battle it out in an epic used car negotiation! Built with **
 ![AG-UI](https://img.shields.io/badge/AG--UI-Protocol-green)
 ![CopilotKit](https://img.shields.io/badge/CopilotKit-Frontend-purple)
 
+![App Screenshot](screenshots/01_home.png)
+
 ## ✨ Features
 
 - **🤖 Dual AI Agents**: Buyer vs Seller with distinct personalities and negotiation strategies
