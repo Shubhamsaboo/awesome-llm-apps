@@ -10,6 +10,10 @@ Watch two AI agents battle it out in an epic used car negotiation! Built with **
 
 ![App Screenshot](screenshots/01_home.png)
 
+### 🎬 See It In Action
+
+![Demo](screenshots/demo.gif)
+
 ## ✨ Features
 
 - **🤖 Dual AI Agents**: Buyer vs Seller with distinct personalities and negotiation strategies
