@@ -204,6 +204,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30-60% using TOON format
 *   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50-90% through intelligent context compression for AI agents (includes persistent memory & MCP support)
+*   [🔐 AgentMesh](https://github.com/imran-siddique/agent-mesh) - Trust layer for multi-agent systems with identity, delegation chains, and compliance automation (SOC2, HIPAA, EU AI Act)
 
 ### 🔧 LLM Fine-tuning Tutorials
 
