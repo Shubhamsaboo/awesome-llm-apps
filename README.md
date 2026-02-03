@@ -202,6 +202,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 ### 🎯 LLM Optimization Tools
 
+*   [⚗️ Git-Alchemist](https://github.com/abduznik/Git-Alchemist) - Unified AI stack to optimize GitHub repository metadata and automate project scaffolding with multi-model fallback.
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30-60% using TOON format
 *   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50-90% through intelligent context compression for AI agents (includes persistent memory & MCP support)
 
