@@ -36,6 +36,7 @@ A curated collection of awesome LLM apps built with RAG and AI agents. This repo
   - [Multi-agent Teams](#-multi-agent-teams)
   - [Voice AI Agents](#-voice-ai-agents)
   - [MCP AI Agents](#-mcp-ai-agents)
+  - [MCP Exercises](#mcp-exercises---build-your-own-mcp-servers)
   - [RAG Tutorials](#rag-retrieval-augmented-generation)
   - [Chat with X Tutorials](#-chat-with-x-tutorials)
   - [LLM Apps with Memory](#-llm-apps-with-memory-tutorials)
@@ -150,6 +151,18 @@ Star this repo and subscribe to [Unwind AI](https://www.theunwindai.com) for lat
 | [MCP Browser Agent](mcp_ai_agents/browser_mcp_agent/) | Browser automation with Model Context Protocol |
 | [MCP GitHub Agent](mcp_ai_agents/github_mcp_agent/) | GitHub integration with Model Context Protocol |
 
+### MCP Exercises - Build Your Own MCP Servers
+
+A hands-on tutorial and reference implementations for building Model Context Protocol servers from scratch. [Full guide here.](mcp_exercises/)
+
+| Project | Description | Concepts |
+|---------|-------------|----------|
+| [Weather MCP Server](mcp_exercises/01_weather_mcp_server/) | Weather lookup using Open-Meteo API | Async tools, API integration |
+| [Calculator MCP Server](mcp_exercises/02_calculator_mcp_server/) | Scientific calculator with history | Tools, Resources, state management |
+| [File Search MCP Server](mcp_exercises/03_file_search_mcp_server/) | Search and read local files | File I/O, path safety, prompts |
+| [Notes MCP Server](mcp_exercises/04_notes_mcp_server/) | Notes & todo CRUD management | Full CRUD, persistent storage |
+| [MCP Client Example](mcp_exercises/05_mcp_client_example/) | Python client for any MCP server | Client SDK, tool discovery |
+
 ### RAG (Retrieval Augmented Generation)
 
 | Project | Description |
@@ -250,6 +263,7 @@ awesome-llm-apps/
 │   └── cursor_ai_experiments/      # Experimental Cursor AI projects
 ├── voice_ai_agents/                # 3 voice-based AI applications
 ├── mcp_ai_agents/                  # 2 Model Context Protocol agents
+├── mcp_exercises/                  # MCP tutorial with 4 reference servers + client
 ├── docs/                           # Documentation assets and banners
 └── LICENSE                         # Apache License 2.0
 ```
