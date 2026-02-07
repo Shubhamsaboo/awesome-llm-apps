@@ -1,0 +1,223 @@
+{
+  "name": "AgroDrone Content Factory",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger-1",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 1"
+            }
+          ]
+        }
+      },
+      "id": "cron-1",
+      "name": "Weekly Schedule (Mon 9AM)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [220, 500]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "topic",
+              "value": "Vorteile der Drohnen-Pflanzenschutz für deutsche Landwirte im Vergleich zu traditionellen Sprühmethoden"
+            },
+            {
+              "name": "content_type",
+              "value": "blog_post"
+            },
+            {
+              "name": "service_focus",
+              "value": "pflanzenschutz"
+            },
+            {
+              "name": "language",
+              "value": "german"
+            },
+            {
+              "name": "target_keywords",
+              "value": "Drohne Pflanzenschutz, Agrardrohne, Präzisionslandwirtschaft"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-params-1",
+      "name": "Set Content Parameters",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [480, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ topic: $json.topic, content_type: $json.content_type, service_focus: $json.service_focus, language: $json.language, target_keywords: $json.target_keywords }) }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "http-generate-1",
+      "name": "Generate Content (API)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [740, 400]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-1",
+              "leftValue": "={{ $json.content }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "isNotEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-success-1",
+      "name": "Content Generated?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1000, 400]
+    },
+    {
+      "parameters": {
+        "operation": "toFile",
+        "fileName": "={{ 'agrodrone_' + $json.content_type.replace(/ /g, '_').toLowerCase() + '_' + new Date().toISOString().slice(0,10) + '.md' }}",
+        "options": {}
+      },
+      "id": "file-1",
+      "name": "Save as Markdown",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [1260, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "content@agrodroneeurope.com",
+        "toEmail": "team@agrodroneeurope.com",
+        "subject": "={{ '[Content Factory] New ' + $json.content_type + ': ' + $json.topic.substring(0, 60) }}",
+        "text": "={{ $json.content }}",
+        "options": {}
+      },
+      "id": "email-1",
+      "name": "Send Email Notification",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1260, 500]
+    },
+    {
+      "parameters": {
+        "content": "### Error: Content generation failed\nCheck API server logs and retry.",
+        "height": 80,
+        "width": 260
+      },
+      "id": "note-error-1",
+      "name": "Error Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1260, 680]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Content Parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Weekly Schedule (Mon 9AM)": {
+      "main": [
+        [
+          {
+            "node": "Set Content Parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Content Parameters": {
+      "main": [
+        [
+          {
+            "node": "Generate Content (API)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Content (API)": {
+      "main": [
+        [
+          {
+            "node": "Content Generated?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Generated?": {
+      "main": [
+        [
+          {
+            "node": "Save as Markdown",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Email Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "content",
+      "id": "1"
+    },
+    {
+      "name": "agrodrone",
+      "id": "2"
+    }
+  ]
+}
