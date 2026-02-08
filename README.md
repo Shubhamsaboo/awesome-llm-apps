@@ -189,6 +189,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [📝 LLM App with Personalized Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/llm_app_personalized_memory/)
 *   [🗄️ Local ChatGPT Clone with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/local_chatgpt_with_memory/)
 *   [🧠 Multi-LLM Application with Shared Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/multi_llm_memory/)
+*  [🤝 Multi-Agent App with Shared Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/multi_agent_shared_memory/)
 
 
 ### 💬 Chat with X Tutorials
