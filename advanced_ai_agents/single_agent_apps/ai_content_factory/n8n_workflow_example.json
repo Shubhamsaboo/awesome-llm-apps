@@ -1,312 +1,280 @@
 {
-  "name": "AgroDrone Content Factory - Full Pipeline",
+  "name": "AgroDrone Content Factory v2 — Full Pipeline with Review",
   "nodes": [
+    {
+      "parameters": {
+        "content": "## AgroDrone Content Factory v2\n\n**Full pipeline with human-in-the-loop review:**\n\n1. Fetch RSS News → Queue for review\n2. Human approves/rejects news\n3. Generate content + DALL-E image\n4. Human approves/rejects content\n5. Publish to website\n6. Generate social media (posts + voiceover + video)\n7. Human approves/rejects social posts\n8. Post to social media\n\n**API Base:** http://localhost:8000\n**Swagger:** http://localhost:8000/docs",
+        "height": 300,
+        "width": 420
+      },
+      "id": "note-main",
+      "name": "Pipeline Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [80, 40]
+    },
+
     {
       "parameters": {},
       "id": "trigger-manual",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
-      "position": [220, 300]
+      "position": [80, 500]
     },
     {
       "parameters": {
-        "rule": {
-          "interval": [
-            {
-              "field": "cronExpression",
-              "expression": "0 9 * * 1"
-            }
+        "rule": { "interval": [{ "field": "cronExpression", "expression": "0 8 * * 1,3,5" }] }
+      },
+      "id": "cron-fetch",
+      "name": "Schedule (Mon/Wed/Fri 8AM)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [80, 700]
+    },
+
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/news/fetch",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"category\": null, \"max_age_days\": 3, \"max_items_per_feed\": 5, \"auto_queue\": true}",
+        "options": { "timeout": 60000 }
+      },
+      "id": "fetch-news",
+      "name": "1. Fetch RSS → Queue",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [360, 600]
+    },
+
+    {
+      "parameters": {
+        "content": "## STEP 2: Human Review (News)\n\nOption A: Use n8n **Wait** node + webhook to pause for approval\nOption B: Poll `/queue/news?status=pending` on a schedule\nOption C: Send email/Slack with approve/reject links\n\nBelow uses a webhook-based approach.",
+        "height": 140,
+        "width": 380
+      },
+      "id": "note-review",
+      "name": "Review Instructions",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [580, 400]
+    },
+
+    {
+      "parameters": {
+        "url": "http://localhost:8000/queue/news",
+        "options": { "timeout": 10000 }
+      },
+      "id": "get-pending-news",
+      "name": "2a. Get Pending News",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [620, 600]
+    },
+
+    {
+      "parameters": {
+        "formTitle": "AgroDrone - News Review",
+        "formDescription": "Review fetched news items. Approve items to generate content.",
+        "formFields": {
+          "values": [
+            { "fieldLabel": "News ID", "fieldType": "number", "requiredField": true },
+            { "fieldLabel": "Decision", "fieldType": "dropdown", "fieldOptions": { "values": [{ "option": "approved" }, { "option": "rejected" }] }, "requiredField": true },
+            { "fieldLabel": "Notes", "fieldType": "text" }
           ]
         }
       },
-      "id": "cron-weekly",
-      "name": "Weekly Schedule (Mon 9AM)",
-      "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.2,
-      "position": [220, 500]
+      "id": "review-form",
+      "name": "2b. Review Form (Wait)",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [620, 820]
     },
+
     {
       "parameters": {
         "method": "POST",
-        "url": "http://localhost:8000/news",
+        "url": "={{ 'http://localhost:8000/queue/news/' + $json['News ID'] + '/review' }}",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "{\"category\": null, \"max_age_days\": 7, \"max_items_per_feed\": 5}",
-        "options": {
-          "timeout": 60000
-        }
+        "jsonBody": "={{ JSON.stringify({ status: $json.Decision, reviewer_notes: $json.Notes || '' }) }}",
+        "options": { "timeout": 10000 }
       },
-      "id": "fetch-news",
-      "name": "1. Fetch RSS News",
+      "id": "submit-review",
+      "name": "2c. Submit Review",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [500, 400]
+      "position": [900, 820]
     },
+
     {
       "parameters": {
         "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict"
-          },
-          "conditions": [
-            {
-              "id": "has-news",
-              "leftValue": "={{ $json.count }}",
-              "rightValue": "0",
-              "operator": {
-                "type": "number",
-                "operation": "gt"
-              }
-            }
-          ],
+          "conditions": [{ "id": "approved", "leftValue": "={{ $json.status }}", "rightValue": "approved", "operator": { "type": "string", "operation": "equals" } }],
           "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "if-has-news",
-      "name": "Has News?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [720, 400]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "http://localhost:8000/suggest-topics",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "{\"category\": null, \"max_age_days\": 7, \"num_suggestions\": 3, \"language\": \"german\"}",
-        "options": {
-          "timeout": 120000
         }
       },
-      "id": "suggest-topics",
-      "name": "2. AI Suggest Topics",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [960, 300]
+      "id": "if-approved-news",
+      "name": "Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1140, 820]
     },
-    {
-      "parameters": {
-        "fieldToSplitOut": "suggestions",
-        "options": {}
-      },
-      "id": "split-topics",
-      "name": "Split Topics",
-      "type": "n8n-nodes-base.splitOut",
-      "typeVersion": 1,
-      "position": [1180, 300]
-    },
+
     {
       "parameters": {
         "method": "POST",
         "url": "http://localhost:8000/generate",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ topic: $json.topic, content_type: $json.content_type === 'Blog Post (SEO-optimized)' ? 'blog_post' : $json.content_type === 'Landing Page Copy' ? 'landing_page' : $json.content_type === 'Service Description' ? 'service_description' : $json.content_type === 'Social Media Post Pack' ? 'social_media' : $json.content_type === 'Case Study' ? 'case_study' : 'faq', service_focus: $json.service_focus.includes('Pflanzenschutz') ? 'pflanzenschutz' : $json.service_focus.includes('Aussaat') ? 'aussaat' : $json.service_focus.includes('NDVI') ? 'ndvi' : $json.service_focus.includes('Dachreinigung') ? 'dachreinigung' : 'general', language: 'german', target_keywords: $json.target_keywords }) }}",
-        "options": {
-          "timeout": 300000
-        }
+        "jsonBody": "={{ JSON.stringify({ topic: $json.title, content_type: 'blog_post', service_focus: 'general', language: 'german', news_id: $json.id, generate_image: true }) }}",
+        "options": { "timeout": 300000 }
       },
       "id": "generate-content",
-      "name": "3. Generate Content",
+      "name": "3. Generate Content + Image",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1420, 300]
+      "position": [1400, 720]
     },
+
     {
       "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict"
-          },
-          "conditions": [
-            {
-              "id": "has-content",
-              "leftValue": "={{ $json.content }}",
-              "rightValue": "",
-              "operator": {
-                "type": "string",
-                "operation": "isNotEmpty"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
+        "content": "## STEP 4: Human Review (Content)\n\nSame pattern: form/webhook for content approval.\nContent includes: article markdown + DALL-E image URL.",
+        "height": 100,
+        "width": 360
       },
-      "id": "if-content-ok",
-      "name": "Content OK?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [1660, 300]
-    },
-    {
-      "parameters": {
-        "operation": "toFile",
-        "fileName": "={{ 'agrodrone_' + $json.content_type.replace(/ /g, '_').toLowerCase() + '_' + new Date().toISOString().slice(0,10) + '_' + $runIndex + '.md' }}",
-        "options": {}
-      },
-      "id": "save-file",
-      "name": "Save as Markdown",
-      "type": "n8n-nodes-base.convertToFile",
-      "typeVersion": 1.1,
-      "position": [1900, 200]
-    },
-    {
-      "parameters": {
-        "fromEmail": "content@agrodroneeurope.com",
-        "toEmail": "team@agrodroneeurope.com",
-        "subject": "={{ '[Content Factory] ' + $json.content_type + ': ' + $json.topic.substring(0, 60) }}",
-        "text": "={{ 'Topic: ' + $json.topic + '\\n\\nService: ' + $json.service_focus + '\\n\\n---\\n\\n' + $json.content }}",
-        "options": {}
-      },
-      "id": "send-email",
-      "name": "Email to Team",
-      "type": "n8n-nodes-base.emailSend",
-      "typeVersion": 2.1,
-      "position": [1900, 400]
-    },
-    {
-      "parameters": {
-        "content": "### AgroDrone Content Factory - Full Autonomous Pipeline\n\n**Flow:** RSS Feeds → AI Topic Suggestions → Content Generation → Delivery\n\n**Schedule:** Every Monday at 9:00 AM\n\n**Customize:**\n- Change `category` in step 1 to filter feeds (crop_protection, drone_regulation, etc.)\n- Change `num_suggestions` in step 2 for more/fewer topics\n- Add WordPress, Google Drive, Slack nodes after step 3",
-        "height": 200,
-        "width": 400
-      },
-      "id": "note-info",
-      "name": "Info",
+      "id": "note-content-review",
+      "name": "Content Review Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [220, 100]
+      "position": [1640, 540]
     },
+
     {
       "parameters": {
-        "content": "### No news found\nCheck if RSS feeds are reachable.\nTry increasing max_age_days.",
-        "height": 80,
-        "width": 280
+        "url": "={{ 'http://localhost:8000/queue/content?status=pending' }}",
+        "options": { "timeout": 10000 }
       },
-      "id": "note-no-news",
-      "name": "No News Note",
+      "id": "get-pending-content",
+      "name": "4a. Get Pending Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1680, 720]
+    },
+
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://localhost:8000/queue/content/' + $json.content_id + '/review' }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"status\": \"approved\", \"reviewer_notes\": \"\"}",
+        "options": { "timeout": 10000 }
+      },
+      "id": "approve-content",
+      "name": "4b. Approve Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1960, 620]
+    },
+
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://localhost:8000/queue/content/' + $json.content_id + '/publish' }}",
+        "options": { "timeout": 10000 }
+      },
+      "id": "publish-content",
+      "name": "5. Publish to Website",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2240, 520]
+    },
+
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/social/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ content_id: $json.id, generate_image: true, generate_voiceover: true, generate_video: false, voice: 'nova', language: 'german' }) }}",
+        "options": { "timeout": 300000 }
+      },
+      "id": "generate-social",
+      "name": "6. Generate Social Media",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2240, 720]
+    },
+
+    {
+      "parameters": {
+        "url": "={{ 'http://localhost:8000/queue/social?status=pending&content_id=' + $json.content_id }}",
+        "options": { "timeout": 10000 }
+      },
+      "id": "get-pending-social",
+      "name": "7a. Get Pending Social Posts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2520, 720]
+    },
+
+    {
+      "parameters": {
+        "content": "## STEP 8: Post to Social Media\n\nAfter approval, connect platform-specific nodes:\n- **LinkedIn** → n8n LinkedIn node\n- **Instagram** → Meta Graph API\n- **Facebook** → n8n Facebook node\n- **TikTok** → TikTok API (HTTP Request)\n\nUse the `post_text`, `image_url`, and `video_url` fields from the queue.",
+        "height": 180,
+        "width": 380
+      },
+      "id": "note-posting",
+      "name": "Posting Instructions",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [960, 500]
+      "position": [2780, 560]
     }
   ],
   "connections": {
     "Manual Trigger": {
+      "main": [[ { "node": "1. Fetch RSS → Queue", "type": "main", "index": 0 } ]]
+    },
+    "Schedule (Mon/Wed/Fri 8AM)": {
+      "main": [[ { "node": "1. Fetch RSS → Queue", "type": "main", "index": 0 } ]]
+    },
+    "1. Fetch RSS → Queue": {
+      "main": [[ { "node": "2a. Get Pending News", "type": "main", "index": 0 } ]]
+    },
+    "2b. Review Form (Wait)": {
+      "main": [[ { "node": "2c. Submit Review", "type": "main", "index": 0 } ]]
+    },
+    "2c. Submit Review": {
+      "main": [[ { "node": "Approved?", "type": "main", "index": 0 } ]]
+    },
+    "Approved?": {
+      "main": [
+        [ { "node": "3. Generate Content + Image", "type": "main", "index": 0 } ]
+      ]
+    },
+    "3. Generate Content + Image": {
+      "main": [[ { "node": "4a. Get Pending Content", "type": "main", "index": 0 } ]]
+    },
+    "4b. Approve Content": {
       "main": [
         [
-          {
-            "node": "1. Fetch RSS News",
-            "type": "main",
-            "index": 0
-          }
+          { "node": "5. Publish to Website", "type": "main", "index": 0 },
+          { "node": "6. Generate Social Media", "type": "main", "index": 0 }
         ]
       ]
     },
-    "Weekly Schedule (Mon 9AM)": {
-      "main": [
-        [
-          {
-            "node": "1. Fetch RSS News",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "1. Fetch RSS News": {
-      "main": [
-        [
-          {
-            "node": "Has News?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Has News?": {
-      "main": [
-        [
-          {
-            "node": "2. AI Suggest Topics",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "2. AI Suggest Topics": {
-      "main": [
-        [
-          {
-            "node": "Split Topics",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Split Topics": {
-      "main": [
-        [
-          {
-            "node": "3. Generate Content",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "3. Generate Content": {
-      "main": [
-        [
-          {
-            "node": "Content OK?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Content OK?": {
-      "main": [
-        [
-          {
-            "node": "Save as Markdown",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Email to Team",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "6. Generate Social Media": {
+      "main": [[ { "node": "7a. Get Pending Social Posts", "type": "main", "index": 0 } ]]
     }
   },
-  "settings": {
-    "executionOrder": "v1"
-  },
+  "settings": { "executionOrder": "v1" },
   "tags": [
-    {
-      "name": "content",
-      "id": "1"
-    },
-    {
-      "name": "agrodrone",
-      "id": "2"
-    },
-    {
-      "name": "rss",
-      "id": "3"
-    }
+    { "name": "content", "id": "1" },
+    { "name": "agrodrone", "id": "2" },
+    { "name": "review", "id": "3" },
+    { "name": "social-media", "id": "4" }
   ]
 }
