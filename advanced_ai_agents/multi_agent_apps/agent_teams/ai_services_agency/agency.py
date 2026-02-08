@@ -1,9 +1,13 @@
-from typing import List, Literal, Dict, Optional
-from agency_swarm import Agent, Agency, set_openai_key, BaseTool
-from pydantic import Field, BaseModel
+import os
+from typing import Literal
+
+from agency_swarm import Agent, Agency, BaseTool, ModelSettings
+from pydantic import Field
 import streamlit as st
 
 class AnalyzeProjectRequirements(BaseTool):
+    """Analyze project requirements and feasibility."""
+
     project_name: str = Field(..., description="Name of the project")
     project_description: str = Field(..., description="Project description and goals")
     project_type: Literal["Web Application", "Mobile App", "API Development", 
@@ -19,7 +23,10 @@ class AnalyzeProjectRequirements(BaseTool):
 
     def run(self) -> str:
         """Analyzes project and stores results in shared state"""
-        if self._shared_state.get("project_analysis", None) is not None:
+        if self.context is None:
+            raise RuntimeError("Tool context is not available.")
+
+        if self.context.get("project_analysis", None) is not None:
             raise ValueError("Project analysis already exists. Please proceed with technical specification.")
         
         analysis = {
@@ -31,10 +38,12 @@ class AnalyzeProjectRequirements(BaseTool):
             "requirements": ["Scalable architecture", "Security", "API integration"]
         }
         
-        self._shared_state.set("project_analysis", analysis)
+        self.context.set("project_analysis", analysis)
         return "Project analysis completed. Please proceed with technical specification."
 
 class CreateTechnicalSpecification(BaseTool):
+    """Create a technical specification based on project analysis."""
+
     architecture_type: Literal["monolithic", "microservices", "serverless", "hybrid"] = Field(
         ..., 
         description="Proposed architecture type"
@@ -55,7 +64,10 @@ class CreateTechnicalSpecification(BaseTool):
 
     def run(self) -> str:
         """Creates technical specification based on analysis"""
-        project_analysis = self._shared_state.get("project_analysis", None)
+        if self.context is None:
+            raise RuntimeError("Tool context is not available.")
+
+        project_analysis = self.context.get("project_analysis", None)
         if project_analysis is None:
             raise ValueError("Please analyze project requirements first using AnalyzeProjectRequirements tool.")
         
@@ -66,7 +78,7 @@ class CreateTechnicalSpecification(BaseTool):
             "scalability": self.scalability_requirements
         }
         
-        self._shared_state.set("technical_specification", spec)
+        self.context.set("technical_specification", spec)
         return f"Technical specification created for {project_analysis['name']}."
 
 def init_session_state() -> None:
@@ -99,9 +111,8 @@ def main() -> None:
             st.markdown("[Get your API key here](https://platform.openai.com/api-keys)")
             return
         
-    # Initialize agents with the provided API key
-    set_openai_key(st.session_state.api_key)
-    api_headers = {"Authorization": f"Bearer {st.session_state.api_key}"}
+    # Agency Swarm v1 uses standard OPENAI_API_KEY resolution.
+    os.environ["OPENAI_API_KEY"] = st.session_state.api_key
     
     # Project Input Form
     with st.form("project_form"):
@@ -149,9 +160,6 @@ def main() -> None:
         
         if submitted and project_name and project_description:
             try:
-                # Set OpenAI key
-                set_openai_key(st.session_state.api_key)
-                
                 # Create agents
                 ceo = Agent(
                     name="Project Director",
@@ -170,9 +178,7 @@ def main() -> None:
                     3. Review the analysis results and provide strategic recommendations.
                     """,
                     tools=[AnalyzeProjectRequirements],
-                    api_headers=api_headers,
-                    temperature=0.7,
-                    max_prompt_tokens=25000
+                    model_settings=ModelSettings(temperature=0.7, max_tokens=25000),
                 )
 
                 cto = Agent(
@@ -191,9 +197,7 @@ def main() -> None:
                     3. Review the technical specification and provide additional recommendations.
                     """,
                     tools=[CreateTechnicalSpecification],
-                    api_headers=api_headers,
-                    temperature=0.5,
-                    max_prompt_tokens=25000
+                    model_settings=ModelSettings(temperature=0.5, max_tokens=25000),
                 )
 
                 product_manager = Agent(
@@ -203,9 +207,7 @@ def main() -> None:
                     - Manage project scope and timeline giving the roadmap of the project
                     - Define product requirements and you should give potential products and features that can be built for the startup
                     """,
-                    api_headers=api_headers,
-                    temperature=0.4,
-                    max_prompt_tokens=25000
+                    model_settings=ModelSettings(temperature=0.4, max_tokens=25000),
                 )
 
                 developer = Agent(
@@ -216,9 +218,7 @@ def main() -> None:
                     - Provide effort estimates
                     - Review technical feasibility
                     """,
-                    api_headers=api_headers,
-                    temperature=0.3,
-                    max_prompt_tokens=25000
+                    model_settings=ModelSettings(temperature=0.3, max_tokens=25000),
                 )
 
                 client_manager = Agent(
@@ -229,25 +229,26 @@ def main() -> None:
                     - Manage expectations
                     - Handle feedback
                     """,
-                    api_headers=api_headers,
-                    temperature=0.6,
-                    max_prompt_tokens=25000
+                    model_settings=ModelSettings(temperature=0.6, max_tokens=25000),
                 )
 
                 # Create agency
                 agency = Agency(
-                    [
-                        ceo, cto, product_manager, developer, client_manager,
-                        [ceo, cto],
-                        [ceo, product_manager],
-                        [ceo, developer],
-                        [ceo, client_manager],
-                        [cto, developer],
-                        [product_manager, developer],
-                        [product_manager, client_manager]
+                    ceo,
+                    cto,
+                    product_manager,
+                    developer,
+                    client_manager,
+                    communication_flows=[
+                        (ceo, cto),
+                        (ceo, product_manager),
+                        (ceo, developer),
+                        (ceo, client_manager),
+                        (cto, developer),
+                        (product_manager, developer),
+                        (product_manager, client_manager),
                     ],
-                    async_mode='threading',
-                    shared_files='shared_files'
+                    shared_files_folder="shared_files",
                 )
                 
                 # Prepare project info
@@ -266,8 +267,9 @@ def main() -> None:
                 # Create tabs and run analysis
                 with st.spinner("AI Services Agency is analyzing your project..."):
                     try:
-                        # Get analysis from each agent using agency.get_completion()
-                        ceo_response = agency.get_completion(
+                        # Get analysis from each agent using get_response_sync.
+                        ceo_response = str(
+                            agency.get_response_sync(
                             message=f"""Analyze this project using the AnalyzeProjectRequirements tool:
                             Project Name: {project_name}
                             Project Description: {project_description}
@@ -276,9 +278,11 @@ def main() -> None:
                             
                             Use these exact values with the tool and wait for the analysis results.""",
                             recipient_agent=ceo
+                            ).final_output
                         )
                         
-                        cto_response = agency.get_completion(
+                        cto_response = str(
+                            agency.get_response_sync(
                             message=f"""Review the project analysis and create technical specifications using the CreateTechnicalSpecification tool.
                             Choose the most appropriate:
                             - architecture_type (monolithic/microservices/serverless/hybrid)
@@ -287,24 +291,31 @@ def main() -> None:
                             
                             Base your choices on the project requirements and analysis.""",
                             recipient_agent=cto
+                            ).final_output
                         )
                         
-                        pm_response = agency.get_completion(
+                        pm_response = str(
+                            agency.get_response_sync(
                             message=f"Analyze project management aspects: {str(project_info)}",
                             recipient_agent=product_manager,
                             additional_instructions="Focus on product-market fit and roadmap development, and coordinate with technical and marketing teams."
+                            ).final_output
                         )
 
-                        developer_response = agency.get_completion(
+                        developer_response = str(
+                            agency.get_response_sync(
                             message=f"Analyze technical implementation based on CTO's specifications: {str(project_info)}",
                             recipient_agent=developer,
                             additional_instructions="Provide technical implementation details, optimal tech stack you would be using including the costs of cloud services (if any) and feasibility feedback, and coordinate with product manager and CTO to build the required products for the startup."
+                            ).final_output
                         )
                         
-                        client_response = agency.get_completion(
+                        client_response = str(
+                            agency.get_response_sync(
                             message=f"Analyze client success aspects: {str(project_info)}",
                             recipient_agent=client_manager,
                             additional_instructions="Provide detailed go-to-market strategy and customer acquisition plan, and coordinate with product manager."
+                            ).final_output
                         )
                         
                         # Create tabs for different analyses
