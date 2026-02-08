@@ -46,16 +46,16 @@ Watch two AI agents battle it out in an epic used car negotiation! Built with **
                     │    ADK Middleware     │
                     └───────────┬───────────┘
                                 │
-                    ┌───────────▼───────────┐
-                    │  ADK Negotiation Agent │
-                    │  (Battle Master)       │
-                    │                        │
-                    │  Tools:                │
+                    ┌───────────▼─────────────┐
+                    │  ADK Negotiation Agent  │
+                    │  (Battle Master)        │
+                    │                         │
+                    │  Tools:                 │
                     │  • configure_negotiation│
-                    │  • start_negotiation   │
-                    │  • buyer_make_offer    │
-                    │  • seller_respond      │
-                    └────────────────────────┘
+                    │  • start_negotiation    │
+                    │  • buyer_make_offer     │
+                    │  • seller_respond       │
+                    └─────────────────────────┘
 ```
 
 ## 🚀 Quick Start

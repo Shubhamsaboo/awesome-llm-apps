@@ -1,82 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Warm Editorial Palette - Stone & Paper */
 :root {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 15, 23, 42;
-  --background-end-rgb: 30, 41, 59;
+  /* Core Colors */
+  --bg-app: #FAF8F5;
+  /* Warm cream paper background */
+  --bg-card: #FFFFFF;
+  /* Clean white card surface */
+  --bg-subtle: #F3F0EB;
+  /* Subtle separation background */
+
+  --text-primary: #1C1917;
+  /* Warm black (Stone 900) */
+  --text-secondary: #44403C;
+  /* Dark stone (Stone 700) */
+  --text-tertiary: #78716C;
+  /* Medium stone (Stone 500) */
+
+  --border-light: #E7E5E4;
+  /* Light stone border */
+  --border-medium: #D6D3D1;
+  /* Medium stone border */
+
+  /* Accents - Muted & Sophisticated */
+  --accent-gold: #D97706;
+  /* Editorial Gold */
+  --accent-emerald: #059669;
+  /* Editorial Green */
+  --accent-rose: #E11D48;
+  /* Editorial Rose */
 }
 
+/* Base Styles */
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      135deg,
-      rgb(var(--background-start-rgb)),
-      rgb(var(--background-end-rgb))
-    );
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
 
-/* Battle Arena Styles */
-.battle-arena {
-  background: radial-gradient(ellipse at center, rgba(255,215,0,0.1) 0%, transparent 70%);
+/* Typography Utilities */
+.font-serif {
+  font-family: 'Playfair Display', serif;
 }
 
-.buyer-glow {
-  box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+.font-sans {
+  font-family: 'Inter', sans-serif;
 }
 
-.seller-glow {
-  box-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+/* Component Utilities */
+@layer components {
+
+  /* Minimal Editorial Card */
+  .editorial-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-light);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    @apply rounded-xl transition-all duration-300;
+  }
+
+  .editorial-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+
+  /* Chat Bubble Base */
+  .chat-bubble {
+    @apply flex items-start gap-4 max-w-2xl p-4 rounded-2xl relative mb-2;
+  }
+
+  .chat-bubble.buyer {
+    @apply ml-auto bg-white border border-stone-200 text-stone-900 rounded-tr-sm;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  .chat-bubble.seller {
+    @apply mr-auto bg-stone-50 border border-stone-200 text-stone-900 rounded-tl-sm;
+  }
 }
 
-.offer-pulse {
-  animation: offerPulse 2s ease-in-out infinite;
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@keyframes offerPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-}
-
-/* VS Badge */
-.vs-badge {
-  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-}
-
-/* Deal Animation */
-.deal-celebration {
-  animation: celebrate 0.5s ease-out;
-}
-
-@keyframes celebrate {
-  0% { transform: scale(0.8); opacity: 0; }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-/* Negotiation Timeline */
-.timeline-connector {
-  background: linear-gradient(180deg, #3b82f6 0%, #ffd700 50%, #ef4444 100%);
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.1);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.3);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,0.5);
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
 }
