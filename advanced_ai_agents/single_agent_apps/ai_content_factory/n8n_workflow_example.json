@@ -1,9 +1,9 @@
 {
-  "name": "AgroDrone Content Factory",
+  "name": "AgroDrone Content Factory - Full Pipeline",
   "nodes": [
     {
       "parameters": {},
-      "id": "trigger-1",
+      "id": "trigger-manual",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -20,7 +20,7 @@
           ]
         }
       },
-      "id": "cron-1",
+      "id": "cron-weekly",
       "name": "Weekly Schedule (Mon 9AM)",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
@@ -28,54 +28,20 @@
     },
     {
       "parameters": {
-        "values": {
-          "string": [
-            {
-              "name": "topic",
-              "value": "Vorteile der Drohnen-Pflanzenschutz für deutsche Landwirte im Vergleich zu traditionellen Sprühmethoden"
-            },
-            {
-              "name": "content_type",
-              "value": "blog_post"
-            },
-            {
-              "name": "service_focus",
-              "value": "pflanzenschutz"
-            },
-            {
-              "name": "language",
-              "value": "german"
-            },
-            {
-              "name": "target_keywords",
-              "value": "Drohne Pflanzenschutz, Agrardrohne, Präzisionslandwirtschaft"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "set-params-1",
-      "name": "Set Content Parameters",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [480, 400]
-    },
-    {
-      "parameters": {
         "method": "POST",
-        "url": "http://localhost:8000/generate",
+        "url": "http://localhost:8000/news",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ topic: $json.topic, content_type: $json.content_type, service_focus: $json.service_focus, language: $json.language, target_keywords: $json.target_keywords }) }}",
+        "jsonBody": "{\"category\": null, \"max_age_days\": 7, \"max_items_per_feed\": 5}",
         "options": {
-          "timeout": 300000
+          "timeout": 60000
         }
       },
-      "id": "http-generate-1",
-      "name": "Generate Content (API)",
+      "id": "fetch-news",
+      "name": "1. Fetch RSS News",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [740, 400]
+      "position": [500, 400]
     },
     {
       "parameters": {
@@ -87,7 +53,81 @@
           },
           "conditions": [
             {
-              "id": "condition-1",
+              "id": "has-news",
+              "leftValue": "={{ $json.count }}",
+              "rightValue": "0",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-has-news",
+      "name": "Has News?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [720, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/suggest-topics",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"category\": null, \"max_age_days\": 7, \"num_suggestions\": 3, \"language\": \"german\"}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "suggest-topics",
+      "name": "2. AI Suggest Topics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [960, 300]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "suggestions",
+        "options": {}
+      },
+      "id": "split-topics",
+      "name": "Split Topics",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [1180, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ topic: $json.topic, content_type: $json.content_type === 'Blog Post (SEO-optimized)' ? 'blog_post' : $json.content_type === 'Landing Page Copy' ? 'landing_page' : $json.content_type === 'Service Description' ? 'service_description' : $json.content_type === 'Social Media Post Pack' ? 'social_media' : $json.content_type === 'Case Study' ? 'case_study' : 'faq', service_focus: $json.service_focus.includes('Pflanzenschutz') ? 'pflanzenschutz' : $json.service_focus.includes('Aussaat') ? 'aussaat' : $json.service_focus.includes('NDVI') ? 'ndvi' : $json.service_focus.includes('Dachreinigung') ? 'dachreinigung' : 'general', language: 'german', target_keywords: $json.target_keywords }) }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "generate-content",
+      "name": "3. Generate Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1420, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-content",
               "leftValue": "={{ $json.content }}",
               "rightValue": "",
               "operator": {
@@ -100,49 +140,61 @@
         },
         "options": {}
       },
-      "id": "if-success-1",
-      "name": "Content Generated?",
+      "id": "if-content-ok",
+      "name": "Content OK?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [1000, 400]
+      "position": [1660, 300]
     },
     {
       "parameters": {
         "operation": "toFile",
-        "fileName": "={{ 'agrodrone_' + $json.content_type.replace(/ /g, '_').toLowerCase() + '_' + new Date().toISOString().slice(0,10) + '.md' }}",
+        "fileName": "={{ 'agrodrone_' + $json.content_type.replace(/ /g, '_').toLowerCase() + '_' + new Date().toISOString().slice(0,10) + '_' + $runIndex + '.md' }}",
         "options": {}
       },
-      "id": "file-1",
+      "id": "save-file",
       "name": "Save as Markdown",
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
-      "position": [1260, 300]
+      "position": [1900, 200]
     },
     {
       "parameters": {
         "fromEmail": "content@agrodroneeurope.com",
         "toEmail": "team@agrodroneeurope.com",
-        "subject": "={{ '[Content Factory] New ' + $json.content_type + ': ' + $json.topic.substring(0, 60) }}",
-        "text": "={{ $json.content }}",
+        "subject": "={{ '[Content Factory] ' + $json.content_type + ': ' + $json.topic.substring(0, 60) }}",
+        "text": "={{ 'Topic: ' + $json.topic + '\\n\\nService: ' + $json.service_focus + '\\n\\n---\\n\\n' + $json.content }}",
         "options": {}
       },
-      "id": "email-1",
-      "name": "Send Email Notification",
+      "id": "send-email",
+      "name": "Email to Team",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
-      "position": [1260, 500]
+      "position": [1900, 400]
     },
     {
       "parameters": {
-        "content": "### Error: Content generation failed\nCheck API server logs and retry.",
-        "height": 80,
-        "width": 260
+        "content": "### AgroDrone Content Factory - Full Autonomous Pipeline\n\n**Flow:** RSS Feeds → AI Topic Suggestions → Content Generation → Delivery\n\n**Schedule:** Every Monday at 9:00 AM\n\n**Customize:**\n- Change `category` in step 1 to filter feeds (crop_protection, drone_regulation, etc.)\n- Change `num_suggestions` in step 2 for more/fewer topics\n- Add WordPress, Google Drive, Slack nodes after step 3",
+        "height": 200,
+        "width": 400
       },
-      "id": "note-error-1",
-      "name": "Error Note",
+      "id": "note-info",
+      "name": "Info",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1260, 680]
+      "position": [220, 100]
+    },
+    {
+      "parameters": {
+        "content": "### No news found\nCheck if RSS feeds are reachable.\nTry increasing max_age_days.",
+        "height": 80,
+        "width": 280
+      },
+      "id": "note-no-news",
+      "name": "No News Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [960, 500]
     }
   ],
   "connections": {
@@ -150,7 +202,7 @@
       "main": [
         [
           {
-            "node": "Set Content Parameters",
+            "node": "1. Fetch RSS News",
             "type": "main",
             "index": 0
           }
@@ -161,36 +213,69 @@
       "main": [
         [
           {
-            "node": "Set Content Parameters",
+            "node": "1. Fetch RSS News",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Set Content Parameters": {
+    "1. Fetch RSS News": {
       "main": [
         [
           {
-            "node": "Generate Content (API)",
+            "node": "Has News?",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Generate Content (API)": {
+    "Has News?": {
       "main": [
         [
           {
-            "node": "Content Generated?",
+            "node": "2. AI Suggest Topics",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Content Generated?": {
+    "2. AI Suggest Topics": {
+      "main": [
+        [
+          {
+            "node": "Split Topics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Topics": {
+      "main": [
+        [
+          {
+            "node": "3. Generate Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. Generate Content": {
+      "main": [
+        [
+          {
+            "node": "Content OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content OK?": {
       "main": [
         [
           {
@@ -199,7 +284,7 @@
             "index": 0
           },
           {
-            "node": "Send Email Notification",
+            "node": "Email to Team",
             "type": "main",
             "index": 0
           }
@@ -218,6 +303,10 @@
     {
       "name": "agrodrone",
       "id": "2"
+    },
+    {
+      "name": "rss",
+      "id": "3"
     }
   ]
 }

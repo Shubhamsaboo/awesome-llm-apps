@@ -6,3 +6,4 @@ lxml_html_clean
 streamlit
 fastapi
 uvicorn
+feedparser

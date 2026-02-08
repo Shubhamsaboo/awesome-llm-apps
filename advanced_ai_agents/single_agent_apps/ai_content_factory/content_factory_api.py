@@ -11,6 +11,9 @@ from agno.tools.serpapi import SerpApiTools
 from agno.tools.newspaper4k import Newspaper4kTools
 from agno.models.openai import OpenAIChat
 
+from news_fetcher import fetch_news, suggest_topics, fetch_and_suggest, NewsItem
+from rss_feeds import RSS_FEEDS, AGRODRONE_CATEGORIES
+
 app = FastAPI(
     title="AgroDrone Europe - Content Factory API",
     description="API for generating SEO-optimized content for agrodroneeurope.com. Designed for n8n integration.",
@@ -201,3 +204,79 @@ def list_services():
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+# ── RSS News & Topic Suggestion Endpoints ──────────────────────────────
+
+
+class NewsRequest(BaseModel):
+    category: Optional[str] = Field(
+        None,
+        description="Filter by category: crop_protection, seeding, ndvi_monitoring, "
+        "drone_regulation, drones_general, policy. None = all feeds.",
+    )
+    max_age_days: int = Field(7, description="Only return articles from the last N days")
+    max_items_per_feed: int = Field(10, description="Max articles per RSS feed")
+
+
+class TopicRequest(BaseModel):
+    category: Optional[str] = Field(None, description="RSS category filter")
+    max_age_days: int = Field(7, description="News recency window in days")
+    num_suggestions: int = Field(5, description="Number of topic suggestions")
+    language: Language = Language.german
+    openai_api_key: Optional[str] = Field(
+        None, description="OpenAI API key. Falls back to OPENAI_API_KEY env var."
+    )
+
+
+@app.post("/news")
+def get_news(req: NewsRequest):
+    """Fetch recent news from configured RSS feeds.
+
+    Use this in n8n to monitor industry news.
+    Returns a list of recent articles sorted by date.
+    """
+    items = fetch_news(
+        category=req.category,
+        max_age_days=req.max_age_days,
+        max_items_per_feed=req.max_items_per_feed,
+    )
+    return {"count": len(items), "articles": [item.model_dump() for item in items]}
+
+
+@app.post("/suggest-topics")
+def get_topic_suggestions(req: TopicRequest):
+    """Fetch news and suggest content topics using AI.
+
+    Full pipeline: RSS feeds -> news digest -> AI topic planner -> suggestions.
+    Each suggestion includes topic, content_type, service_focus, keywords, and reasoning.
+    Use this in n8n to auto-generate a content plan, then feed each suggestion into /generate.
+    """
+    openai_key = req.openai_api_key or os.getenv("OPENAI_API_KEY")
+    if not openai_key:
+        raise HTTPException(status_code=400, detail="OpenAI API key is required")
+
+    news, plan = fetch_and_suggest(
+        openai_api_key=openai_key,
+        category=req.category,
+        max_age_days=req.max_age_days,
+        num_suggestions=req.num_suggestions,
+        language=req.language.value,
+    )
+
+    return {
+        "news_count": len(news),
+        "suggestions": plan.suggestions if hasattr(plan, "suggestions") else plan,
+    }
+
+
+@app.get("/feeds")
+def list_feeds():
+    """List all configured RSS feeds."""
+    return RSS_FEEDS
+
+
+@app.get("/feed-categories")
+def list_feed_categories():
+    """List available feed category groups for filtering."""
+    return AGRODRONE_CATEGORIES
