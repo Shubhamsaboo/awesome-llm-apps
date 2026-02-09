@@ -73,9 +73,10 @@ scores them for relevance, identifies potential risks, and synthesizes a final i
 st.sidebar.header("⚙️ Pipeline Configuration")
 
 # API Key
-api_key = st.sidebar.text_input("OpenAI API Key (optional)", type="password", help="If not provided, agents will use fallback heuristic logic.")
+api_key = st.sidebar.text_input("Gemini API Key (optional)", type="password", help="Provide a Google Gemini API key. If not provided, agents will use fallback heuristic logic.")
 if api_key:
-    os.environ["OPENAI_API_KEY"] = api_key
+    # Agno's GoogleGemini looks for GOOGLE_API_KEY
+    os.environ["GOOGLE_API_KEY"] = api_key
 
 # Source Selection
 sources = st.sidebar.multiselect(

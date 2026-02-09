@@ -7,7 +7,7 @@ a comprehensive, actionable intelligence summary for developers.
 
 from typing import Dict, Any, List
 from agno.agent import Agent
-from agno.models.openai import OpenAIChat
+from agno.models.google import Gemini
 
 
 class SynthesisAgent:
@@ -21,17 +21,17 @@ class SynthesisAgent:
     - Produce actionable recommendations
     """
     
-    def __init__(self, model_id: str = "gpt-4o-mini"):
+    def __init__(self, model_id: str = "gemini-1.5-flash"):
         """
         Initialize the Synthesis Agent.
         
         Args:
-            model_id: OpenAI model to use for synthesis.
+            model_id: Model ID to use for synthesis.
         """
         self.model_id = model_id
         self.agent = Agent(
             name="Intelligence Synthesizer",
-            model=OpenAIChat(id=model_id),
+            model=Gemini(id=model_id),
             role="Synthesizes technical signals into actionable intelligence digests",
             instructions=[
                 "Combine relevance scores and risk assessments.",

@@ -3,3 +3,4 @@ httpx
 openai
 feedparser
 streamlit>=1.30
+google-generativeai
