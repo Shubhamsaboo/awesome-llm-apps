@@ -18,10 +18,10 @@ Watch two AI agents battle it out in an epic used car negotiation! Built with **
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                    Next.js + CopilotKit Frontend                │
-│   ┌─────────────┐    ┌──────────────┐    ┌─────────────┐       │
-│   │ Battle Arena│    │  VS Display  │    │Chat Sidebar │       │
-│   │   Timeline  │    │ Buyer/Seller │    │ (AG-UI)     │       │
-│   └──────┬──────┘    └──────────────┘    └──────┬──────┘       │
+│   ┌─────────────┐    ┌──────────────┐    ┌─────────────┐        │
+│   │ Battle Arena│    │  VS Display  │    │Chat Sidebar │        │
+│   │   Timeline  │    │ Buyer/Seller │    │ (AG-UI)     │        │
+│   └──────┬──────┘    └──────────────┘    └──────┬──────┘        │
 └──────────┼────────────────────────────────────────┼─────────────┘
            │              AG-UI Events              │
            └────────────────────┬───────────────────┘
