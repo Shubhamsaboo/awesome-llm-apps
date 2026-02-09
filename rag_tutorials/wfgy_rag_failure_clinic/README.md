@@ -27,9 +27,9 @@ It is a compact **clinic app** that demonstrates a pattern you can adapt in your
 
 This tutorial expects the following files in `rag_tutorials/wfgy_rag_failure_clinic`:
 
-- `README.md` ← this file
-- `wfgy_rag_failure_clinic.py` ← minimal interactive CLI / Colab-friendly script
-- `requirements.txt` ← Python dependencies
+- `README.md` ← this file  
+- `wfgy_rag_failure_clinic.py` ← minimal interactive CLI / Colab-friendly script  
+- `requirements.txt` ← Python dependencies  
 
 You do **not** need to copy any WFGY content into this repo.  
 The script loads it directly from the public WFGY GitHub repo:
@@ -61,7 +61,7 @@ cd rag_tutorials/wfgy_rag_failure_clinic
 pip install -r requirements.txt
 ````
 
-Example `requirements.txt`:
+Minimal `requirements.txt`:
 
 ```text
 openai>=1.6.0
@@ -75,6 +75,8 @@ export OPENAI_API_KEY="sk-..."
 # optional, if you use a custom endpoint
 # export OPENAI_BASE_URL="https://your-proxy.example.com/v1"
 ```
+
+> Tip: If you prefer Colab, you can also copy the entire `wfgy_rag_failure_clinic.py` file into a single Colab cell and run it there. The script is Colab-friendly out of the box.
 
 ---
 
@@ -172,16 +174,16 @@ $ python wfgy_rag_failure_clinic.py
 Loaded WFGY assets. Ready to debug.
 
 Choose an example or paste your own:
-  [1] Example 1 — retrieval hallucination (No.1 style)
-  [2] Example 2 — bootstrap ordering / infra race (No.14 style)
-  [3] Example 3 — secrets / config drift (No.16 style)
+  [1] Example 1 - retrieval hallucination (No.1 style)
+  [2] Example 2 - bootstrap ordering / infra race (No.14 style)
+  [3] Example 3 - secrets / config drift (No.16 style)
   [p] Paste my own RAG / LLM bug
 Your choice: 1
 
 Running diagnosis with model: gpt-4o ...
 
-Primary Problem Map match: No.1 — hallucination & chunk drift
-Secondary candidate: No.8 — debugging is a black box
+Primary Problem Map match: No.1 - hallucination & chunk drift
+Secondary candidate: No.8 - debugging is a black box
 
 Why:
 - Retrieved chunks explicitly say only cards and PayPal are supported.
@@ -443,6 +445,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 ```
 
 ---
@@ -455,3 +458,4 @@ if __name__ == "__main__":
   to demonstrate how a **failure taxonomy** can be plugged into an LLM debugging tool.
 
 You are free to adapt this pattern to your own taxonomies, evaluation suites, or internal incident post-mortems.
+
