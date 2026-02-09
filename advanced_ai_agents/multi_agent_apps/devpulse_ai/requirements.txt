@@ -2,3 +2,4 @@ agno
 httpx
 openai
 feedparser
+streamlit>=1.30
