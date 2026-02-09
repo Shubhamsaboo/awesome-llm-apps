@@ -59,7 +59,7 @@ From the root of the `awesome-llm-apps` repo:
 ```bash
 cd rag_tutorials/wfgy_rag_failure_clinic
 pip install -r requirements.txt
-````
+```
 
 Minimal `requirements.txt`:
 
