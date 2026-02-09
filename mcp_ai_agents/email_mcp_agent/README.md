@@ -55,7 +55,7 @@ In the main text area, ask the agent to provision an inbox:
 Create an inbox named "Support Bot" with username "support". Tell me the inbox id and email address.
 ```
 
-The agent uses the NornWeave MCP tool `create_inbox` and returns the new address (e.g. `support@your-nornweave-domain`). **Note the inbox id** (e.g. `ibx_...`) — you'll use it in every step below.
+The agent uses the NornWeave MCP tool `create_inbox` and returns the new address (e.g. `support@mail.yourdomain.com` — the domain comes from `EMAIL_DOMAIN` in your `.env`). **Note the inbox id** (e.g. `ibx_...`) — you'll use it in every step below.
 
 ### Step 4: Seed the inbox with test tickets
 
