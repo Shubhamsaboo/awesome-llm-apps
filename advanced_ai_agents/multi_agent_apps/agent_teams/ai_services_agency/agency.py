@@ -23,9 +23,6 @@ class AnalyzeProjectRequirements(BaseTool):
 
     def run(self) -> str:
         """Analyzes project and stores results in shared state"""
-        if self.context is None:
-            raise RuntimeError("Tool context is not available.")
-
         if self.context.get("project_analysis", None) is not None:
             raise ValueError("Project analysis already exists. Please proceed with technical specification.")
         
@@ -64,9 +61,6 @@ class CreateTechnicalSpecification(BaseTool):
 
     def run(self) -> str:
         """Creates technical specification based on analysis"""
-        if self.context is None:
-            raise RuntimeError("Tool context is not available.")
-
         project_analysis = self.context.get("project_analysis", None)
         if project_analysis is None:
             raise ValueError("Please analyze project requirements first using AnalyzeProjectRequirements tool.")
@@ -248,7 +242,6 @@ def main() -> None:
                         (product_manager, developer),
                         (product_manager, client_manager),
                     ],
-                    shared_files_folder="shared_files",
                 )
                 
                 # Prepare project info
