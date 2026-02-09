@@ -34,9 +34,9 @@ This tutorial expects the following files in `rag_tutorials/wfgy_rag_failure_cli
 You do **not** need to copy any WFGY content into this repo.  
 The script loads it directly from the public WFGY GitHub repo:
 
-- WFGY main repo: <https://github.com/onestardao/WFGY>  
-- WFGY Problem Map: <https://github.com/onestardao/WFGY/tree/main/ProblemMap#readme>  
-- TXTOS prompt file: <https://github.com/onestardao/WFGY/blob/main/OS/TXTOS.txt>
+- WFGY main repo: [github.com/onestardao/WFGY](https://github.com/onestardao/WFGY)  
+- WFGY Problem Map: [ProblemMap / README](https://github.com/onestardao/WFGY/tree/main/ProblemMap#readme)  
+- TXTOS prompt file: [OS / TXTOS.txt](https://github.com/onestardao/WFGY/blob/main/OS/TXTOS.txt)
 
 All WFGY assets are released under the MIT License.
 
@@ -111,9 +111,8 @@ In this tutorial the three built-in examples are mapped as follows:
 * Example 2 → **No.14** bootstrap ordering.
 * Example 3 → **No.16** pre-deploy collapse and config drift.
 
-For deeper recovery plans and checklists, open the full Problem Map:
-
-* [https://github.com/onestardao/WFGY/tree/main/ProblemMap](https://github.com/onestardao/WFGY/tree/main/ProblemMap#readme)
+For deeper recovery plans and checklists, open the full
+[WFGY Problem Map overview](https://github.com/onestardao/WFGY/tree/main/ProblemMap#readme).
 
 ---
 
