@@ -4,16 +4,6 @@
 
 Watch two AI agents battle it out in an epic used car negotiation! Built with **Google ADK** for the backend agents and **AG-UI + CopilotKit** for a jaw-dropping reactive frontend.
 
-![Negotiation Battle](https://img.shields.io/badge/ADK-Agent%20Development%20Kit-blue)
-![AG-UI](https://img.shields.io/badge/AG--UI-Protocol-green)
-![CopilotKit](https://img.shields.io/badge/CopilotKit-Frontend-purple)
-
-![App Screenshot](screenshots/01_home.png)
-
-### 🎬 See It In Action
-
-![Demo](screenshots/demo.gif)
-
 ## ✨ Features
 
 - **🤖 Dual AI Agents**: Buyer vs Seller with distinct personalities and negotiation strategies
