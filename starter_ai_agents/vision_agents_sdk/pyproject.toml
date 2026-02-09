@@ -1,0 +1,9 @@
+[project]
+name = "vision_agent"
+version = "0.0.0"
+requires-python = ">=3.13"
+
+# Dependencies that the example actually uses
+dependencies = [
+    "vision-agents[deepgram,elevenlabs,gemini,getstream]>=0.3.4",
+]
