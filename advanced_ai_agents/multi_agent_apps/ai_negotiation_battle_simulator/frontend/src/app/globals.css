@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Warm Editorial Palette - Stone & Paper */
+:root {
+  /* Core Colors */
+  --bg-app: #FAF8F5;
+  /* Warm cream paper background */
+  --bg-card: #FFFFFF;
+  /* Clean white card surface */
+  --bg-subtle: #F3F0EB;
+  /* Subtle separation background */
+
+  --text-primary: #1C1917;
+  /* Warm black (Stone 900) */
+  --text-secondary: #44403C;
+  /* Dark stone (Stone 700) */
+  --text-tertiary: #78716C;
+  /* Medium stone (Stone 500) */
+
+  --border-light: #E7E5E4;
+  /* Light stone border */
+  --border-medium: #D6D3D1;
+  /* Medium stone border */
+
+  /* Accents - Muted & Sophisticated */
+  --accent-gold: #D97706;
+  /* Editorial Gold */
+  --accent-emerald: #059669;
+  /* Editorial Green */
+  --accent-rose: #E11D48;
+  /* Editorial Rose */
+}
+
+/* Base Styles */
+body {
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Typography Utilities */
+.font-serif {
+  font-family: 'Playfair Display', serif;
+}
+
+.font-sans {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Component Utilities */
+@layer components {
+
+  /* Minimal Editorial Card */
+  .editorial-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-light);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    @apply rounded-xl transition-all duration-300;
+  }
+
+  .editorial-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+
+  /* Chat Bubble Base */
+  .chat-bubble {
+    @apply flex items-start gap-4 max-w-2xl p-4 rounded-2xl relative mb-2;
+  }
+
+  .chat-bubble.buyer {
+    @apply ml-auto bg-white border border-stone-200 text-stone-900 rounded-tr-sm;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  .chat-bubble.seller {
+    @apply mr-auto bg-stone-50 border border-stone-200 text-stone-900 rounded-tl-sm;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
