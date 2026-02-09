@@ -13,7 +13,10 @@ Requirements:
 """
 
 import os
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
+
+# Reduced default signal count for faster demo execution
+DEFAULT_SIGNAL_LIMIT = 8
 
 # Import adapters
 from adapters.github import fetch_github_trending
@@ -31,32 +34,36 @@ from agents import (
 )
 
 
-def collect_signals() -> List[Dict[str, Any]]:
+def collect_signals(limit: Optional[int] = None) -> List[Dict[str, Any]]:
     """
     Collect signals from all configured sources.
     
+    Args:
+        limit: Maximum signals to fetch per source. Defaults to DEFAULT_SIGNAL_LIMIT.
+        
     Returns:
         Combined list of signals from all adapters.
     """
-    print("\n📡 [1/4] Collecting Signals...")
+    fetch_limit = limit if limit is not None else DEFAULT_SIGNAL_LIMIT
+    print(f"\n📡 [1/4] Collecting Signals (limit: {fetch_limit} per source)...")
     
     signals = []
     
     # Fetch from each source
     print("  → Fetching GitHub trending repos...")
-    signals.extend(fetch_github_trending(limit=5))
+    signals.extend(fetch_github_trending(limit=fetch_limit))
     
     print("  → Fetching ArXiv papers...")
-    signals.extend(fetch_arxiv_papers(limit=5))
+    signals.extend(fetch_arxiv_papers(limit=fetch_limit))
     
     print("  → Fetching HackerNews stories...")
-    signals.extend(fetch_hackernews_stories(limit=5))
+    signals.extend(fetch_hackernews_stories(limit=fetch_limit))
     
     print("  → Fetching Medium blogs...")
-    signals.extend(fetch_medium_blogs(limit=3))
+    signals.extend(fetch_medium_blogs(limit=min(fetch_limit, 3))) # Medium feeds are usually denser
     
     print("  → Fetching HuggingFace models...")
-    signals.extend(fetch_huggingface_models(limit=5))
+    signals.extend(fetch_huggingface_models(limit=fetch_limit))
     
     print(f"  ✓ Collected {len(signals)} raw signals")
     return signals

@@ -87,6 +87,22 @@ python verify.py
 python main.py
 ```
 
+### Streamlit Demo
+
+A modern, interactive dashboard is included to visualize the multi-agent pipeline:
+
+1. Launch the app:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+2. Configure sources and signal counts in the sidebar.
+2. Provide an OpenAI API key (optional) to use full LLM intelligence.
+3. View real-time progress as agents collaborate.
+
+> **Note**: The default configuration is optimized for fast demo runs.
+
 ### Verification Script
 
 The `verify.py` script tests the entire pipeline using **mock data only** - no network calls or API keys required:
@@ -129,7 +145,8 @@ devpulse_ai/
 │   └── synthesis_agent.py
 ├── workflows/
 │   └── signal-intelligence-pipeline.json
-├── main.py             # Full pipeline demo
+├── main.py             # Full pipeline demo (CLI)
+├── streamlit_app.py    # Interactive dashboard (UI)
 ├── verify.py           # Mock data verification
 ├── requirements.txt
 └── README.md
