@@ -69,10 +69,10 @@ cd advanced_ai_agents/multi_agent_apps/devpulse_ai
 pip install -r requirements.txt
 ```
 
-1. Set your OpenAI API key (optional for live mode)
+1. Set your Gemini API key (optional for live mode)
 
 ```bash
-export OPENAI_API_KEY=your_api_key
+export GOOGLE_API_KEY=your_api_key
 ```
 
 1. Run the verification script (no API key needed)
@@ -97,8 +97,8 @@ A modern, interactive dashboard is included to visualize the multi-agent pipelin
 streamlit run streamlit_app.py
 ```
 
-2. Configure sources and signal counts in the sidebar.
-2. Provide an OpenAI API key (optional) to use full LLM intelligence.
+1. Configure sources and signal counts in the sidebar.
+2. Provide a Gemini API key (optional) to use full LLM intelligence.
 3. View real-time progress as agents collaborate.
 
 > **Note**: The default configuration is optimized for fast demo runs.
@@ -163,5 +163,5 @@ devpulse_ai/
 ### Built With
 
 - [Agno](https://github.com/agno-agi/agno) - Multi-agent framework
-- [OpenAI GPT-4o-mini](https://openai.com/) - LLM backbone
+- [Google Gemini 1.5 Flash](https://ai.google.dev/) - LLM backbone
 - [httpx](https://www.python-httpx.org/) - Async HTTP client

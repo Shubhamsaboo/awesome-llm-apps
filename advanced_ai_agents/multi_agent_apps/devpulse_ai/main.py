@@ -84,8 +84,8 @@ def run_pipeline():
     print("=" * 60)
     
     # Check for API key
-    if not os.environ.get("OPENAI_API_KEY"):
-        print("\n⚠️  Warning: OPENAI_API_KEY not set.")
+    if not os.environ.get("GOOGLE_API_KEY") and not os.environ.get("GEMINI_API_KEY"):
+        print("\n⚠️  Warning: GOOGLE_API_KEY not set.")
         print("   LLM-based agents will use fallback heuristics.\n")
     
     # Stage 1: Collection

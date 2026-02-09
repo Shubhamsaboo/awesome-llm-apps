@@ -9,7 +9,7 @@ This agent analyzes signals for potential risks including:
 
 from typing import Dict, Any, List
 from agno.agent import Agent
-from agno.models.openai import OpenAIChat
+from agno.models.google import Gemini
 
 
 class RiskAgent:
@@ -25,17 +25,17 @@ class RiskAgent:
     
     RISK_LEVELS = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
     
-    def __init__(self, model_id: str = "gpt-4o-mini"):
+    def __init__(self, model_id: str = "gemini-1.5-flash"):
         """
         Initialize the Risk Agent.
         
         Args:
-            model_id: OpenAI model to use for risk assessment.
+            model_id: Model ID to use for risk assessment.
         """
         self.model_id = model_id
         self.agent = Agent(
             name="Risk Assessor",
-            model=OpenAIChat(id=model_id),
+            model=Gemini(id=model_id),
             role="Assesses security and breaking change risks in technical signals",
             instructions=[
                 "Analyze signals for security vulnerabilities.",

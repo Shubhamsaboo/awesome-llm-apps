@@ -7,7 +7,7 @@ based on its relevance to AI/ML developers and engineers.
 
 from typing import Dict, Any, Optional
 from agno.agent import Agent
-from agno.models.openai import OpenAIChat
+from agno.models.google import Gemini
 
 
 class RelevanceAgent:
@@ -20,17 +20,17 @@ class RelevanceAgent:
     - Prioritize actionable, timely content
     """
     
-    def __init__(self, model_id: str = "gpt-4o-mini"):
+    def __init__(self, model_id: str = "gemini-1.5-flash"):
         """
         Initialize the Relevance Agent.
         
         Args:
-            model_id: OpenAI model to use for scoring.
+            model_id: Model ID to use for scoring.
         """
         self.model_id = model_id
         self.agent = Agent(
             name="Relevance Scorer",
-            model=OpenAIChat(id=model_id),
+            model=Gemini(id=model_id),
             role="Scores technical signals based on developer relevance",
             instructions=[
                 "Score each signal from 0-100 based on relevance.",
