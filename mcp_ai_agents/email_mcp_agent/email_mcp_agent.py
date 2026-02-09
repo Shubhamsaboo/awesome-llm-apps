@@ -181,8 +181,10 @@ if "result" not in dir():
 
 ### Quick start
 
-1. **Run NornWeave** — `pip install nornweave[mcp]`, create a `.env` with `EMAIL_DOMAIN=mail.yourdomain.com`, then `nornweave api`.
-2. **Follow the sidebar** — The prompts walk you through a full support-agent loop: create inbox → seed tickets → triage → search → attachments → escalate → batch-process → wait for reply.
-3. **See the README** for the complete step-by-step tutorial with explanations.
+1. **Install NornWeave** — `pip install nornweave[mcp]`
+2. **Configure your email domain** — Create a `.env` with `EMAIL_DOMAIN=mail.yourdomain.com` (your provider's domain). Without this, inbox creation will fail.
+3. **Start the API server** — `nornweave api` (SQLite default, no DB setup needed). Available at `http://localhost:8000`.
+4. **Follow the sidebar** — The prompts walk you through a full support-agent loop: create inbox → seed tickets → triage → search → attachments → escalate → batch-process → wait for reply.
+5. **See the README** for the complete step-by-step tutorial with explanations.
 """
     )

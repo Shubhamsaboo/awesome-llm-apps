@@ -28,14 +28,30 @@ This app focuses on the **support inbox** scenario — a complete flow from crea
 
 ### Step 1: Run NornWeave
 
-NornWeave is the email backend: it gives the agent stateful inboxes, threading, and search. Run it locally (SQLite, no DB setup):
+NornWeave is the email backend: it gives the agent stateful inboxes, threading, and search.
+
+**Install from PyPI** (with MCP support):
 
 ```bash
 pip install nornweave[mcp]
+```
+
+**Configure your email domain** — create a `.env` file in the directory where you'll run the server:
+
+```bash
+# .env — minimum configuration for inbox creation
+EMAIL_DOMAIN=mail.yourdomain.com   # your email provider's domain
+```
+
+> **Tip:** The domain depends on your provider (e.g. `mail.yourdomain.com` for Mailgun, `yourdomain.resend.app` for Resend). Without `EMAIL_DOMAIN`, inbox creation will fail. See [Configuration](https://nornweave.datacovey.com/docs/getting-started/configuration/) for all available settings.
+
+**Start the API server** (SQLite is the default — no database setup required):
+
+```bash
 nornweave api
 ```
 
-Default URL: `http://localhost:8000`. For production, see [NornWeave docs](https://github.com/DataCovey/nornweave) (PostgreSQL, Docker).
+The API will be available at `http://localhost:8000`. Data is stored in `./nornweave.db`. For production, see [NornWeave docs](https://github.com/DataCovey/nornweave) (PostgreSQL, Docker).
 
 ### Step 2: Install and run the agent app
 
