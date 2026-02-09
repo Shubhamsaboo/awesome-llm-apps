@@ -181,7 +181,7 @@ if "result" not in dir():
 
 ### Quick start
 
-1. **Run NornWeave** — `pip install nornweave[mcp]` then `nornweave api` (SQLite, zero setup).
+1. **Run NornWeave** — `pip install nornweave[mcp]`, create a `.env` with `EMAIL_DOMAIN=mail.yourdomain.com`, then `nornweave api`.
 2. **Follow the sidebar** — The prompts walk you through a full support-agent loop: create inbox → seed tickets → triage → search → attachments → escalate → batch-process → wait for reply.
 3. **See the README** for the complete step-by-step tutorial with explanations.
 """
