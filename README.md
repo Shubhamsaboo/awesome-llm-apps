@@ -48,6 +48,15 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 <table align="center" cellpadding="16" cellspacing="12">
   <tr>
     <td align="center">
+      <a href="https://bit.ly/4ci0r4v" target="_blank" rel="noopener" title="TinyFish">
+        <img src="docs/banner/sponsors/tinyfish.png" alt="TinyFish" width="500">
+      </a>
+      <br>
+      <a href="https://bit.ly/4ci0r4v" target="_blank" rel="noopener" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
+        TinyFish
+      </a>
+    </td>
+    <td align="center">
       <a href="https://tsdb.co/shubham-gh" target="_blank" rel="noopener" title="Tiger Data">
         <img src="docs/banner/sponsors/tigerdata.png" alt="Tiger Data" width="500">
       </a>
@@ -56,6 +65,8 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
         Tiger Data MCP
       </a>
     </td>
+  </tr>
+  <tr>
     <td align="center">
       <a href="https://github.com/speechmatics/speechmatics-academy" target="_blank" rel="noopener" title="Speechmatics">
         <img src="docs/banner/sponsors/speechmatics.png" alt="Speechmatics" width="500">
@@ -63,17 +74,6 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
       <br>
       <a href="https://github.com/speechmatics/speechmatics-academy" target="_blank" rel="noopener" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
         Speechmatics
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
-      <a href="https://okara.ai/?utm_source=oss&utm_medium=sponsorship&utm_campaign=awesome-llm-apps" title="Okara">
-        <img src="docs/banner/sponsors/okara.png" alt="Okara" width="500">
-      </a>
-      <br>
-      <a href="https://okara.ai/?utm_source=oss&utm_medium=sponsorship&utm_campaign=awesome-llm-apps" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
-        Okara AI
       </a>
     </td>
     <td align="center">
