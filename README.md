@@ -48,11 +48,11 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 <table align="center" cellpadding="16" cellspacing="12">
   <tr>
     <td align="center">
-      <a href="https://bit.ly/4ci0r4v" target="_blank" rel="noopener" title="TinyFish">
+      <a href="https://github.com/tinyfish-io/tinyfish-cookbook" target="_blank" rel="noopener" title="TinyFish">
         <img src="docs/banner/sponsors/tinyfish.png" alt="TinyFish" width="500">
       </a>
       <br>
-      <a href="https://bit.ly/4ci0r4v" target="_blank" rel="noopener" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
+      <a href="https://github.com/tinyfish-io/tinyfish-cookbook" target="_blank" rel="noopener" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
         TinyFish
       </a>
     </td>
