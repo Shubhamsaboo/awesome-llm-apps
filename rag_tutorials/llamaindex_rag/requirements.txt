@@ -1,0 +1,22 @@
+# Core LlamaIndex
+llama-index
+
+# Vector Store
+llama-index-vector-stores-qdrant
+qdrant-client
+
+# Embeddings
+llama-index-embeddings-huggingface
+
+# LLM (Groq)
+llama-index-llms-groq
+groq
+
+# Environment variables
+python-dotenv
+
+# Document parsing support (recommended)
+pypdf
+python-docx
+beautifulsoup4
+lxml
