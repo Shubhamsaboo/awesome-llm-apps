@@ -1,0 +1,5 @@
+telnyx>=2.1.0
+openai>=1.0.0
+fastapi>=0.100.0
+uvicorn>=0.23.0
+python-dotenv>=1.0.0
