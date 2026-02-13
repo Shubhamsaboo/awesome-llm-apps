@@ -1,0 +1,3 @@
+ag2[openai]>=0.11.0
+streamlit>=1.33.0
+pypdf>=4.2.0
