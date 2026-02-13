@@ -1,0 +1,5 @@
+agno
+openai
+mcp
+streamlit
+nornweave[mcp]
