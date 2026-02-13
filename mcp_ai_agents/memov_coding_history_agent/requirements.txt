@@ -1,0 +1,6 @@
+agno>=2.2.10
+mcp>=1.0.0
+openai>=1.0.0
+streamlit>=1.28.0
+python-dotenv>=1.0.0
+uv>=0.1.0
