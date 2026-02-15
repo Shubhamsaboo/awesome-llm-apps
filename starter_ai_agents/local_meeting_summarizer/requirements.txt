@@ -1,0 +1,3 @@
+streamlit>=1.40.0
+openai-whisper>=20240930
+requests>=2.31.0
