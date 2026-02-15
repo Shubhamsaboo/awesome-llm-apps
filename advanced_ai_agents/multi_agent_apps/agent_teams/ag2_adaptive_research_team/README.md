@@ -48,5 +48,5 @@ These are optional and not required to run this example.
 
 ## Notes
 
-- Web fallback uses the SearxNG public instance at `https://searxng.site/search`.
-- Default model is set to `gpt-5-nano`, following AG2 documentation examples.
+- Default model used is `gpt-5-nano`. You can change it in the sidebar before running a query.
+- Web fallback uses the SearxNG public instance at `https://searxng.site/search`. This instance may be rate-limited.
