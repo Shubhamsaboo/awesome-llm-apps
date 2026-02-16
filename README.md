@@ -132,6 +132,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [🎮 AI 3D Pygame Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_3dpygame_r1/)
 *   [♜ AI Chess Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_chess_agent/)
 *   [🎲 AI Tic-Tac-Toe Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_tic_tac_toe_agent/)
+*   [🐺 Wolfcha - AI Werewolf Game](https://github.com/oil-oil/wolfcha) - AI-powered Werewolf social deduction game where multiple top LLMs (DeepSeek, Qwen, Gemini) compete in logical deduction and verbal sparring.
 
 ### 🤝 Multi-agent Teams
 
