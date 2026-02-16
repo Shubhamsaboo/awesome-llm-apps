@@ -135,6 +135,8 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 ### 🤝 Multi-agent Teams
 
+- [Orchard Kit](https://github.com/OrchardHarmonics/orchard-kit) — Alignment, safety & cognitive architecture for autonomous AI agents. Six modules: membrane security, epistemic tagger, self-audit, beacon, cognitive architecture, collective cognition. Zero dependencies.
+
 *   [🧲 AI Competitor Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_competitor_intelligence_agent_team/)
 *   [💲 AI Finance Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_finance_agent_team/)
 *   [🎨 AI Game Design Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_game_design_agent_team/)
