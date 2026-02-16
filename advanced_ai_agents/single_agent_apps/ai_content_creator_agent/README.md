@@ -130,3 +130,6 @@ ai_content_creator_agent/
 
 Images and videos used to create content in this app are obtained from [Pexels](https://www.pexels.com/). For full terms, attribution guidelines, and usage restrictions, see the [Pexels License](https://www.pexels.com/license/).
 
+### Image and Video Creation Disclaimer
+
+This tutorial is provided as-is. The contributor(s) disclaim any responsibility for images or videos produced by this app. Users assume full responsibility for ensuring their use of any output complies with applicable laws and third-party terms. See the main repository for license details.
