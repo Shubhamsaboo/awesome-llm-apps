@@ -132,4 +132,8 @@ Images and videos used to create content in this app are obtained from [Pexels](
 
 ### Image and Video Creation Disclaimer
 
-This tutorial is provided as-is. The contributor(s) disclaim any responsibility for images or videos produced by this app. Users assume full responsibility for ensuring their use of any output complies with applicable laws and third-party terms. See the main repository for license details.
+This tutorial is provided as-is. The contributor(s) disclaim any responsibility for images or videos produced by this app. Users assume full responsibility for ensuring their use of any output complies with applicable laws and third-party terms. 
+
+### License
+
+Please check the main repository for license details.
