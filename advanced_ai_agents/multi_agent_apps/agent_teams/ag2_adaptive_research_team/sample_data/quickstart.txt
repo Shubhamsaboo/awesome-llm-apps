@@ -1,5 +1,0 @@
-AG2 Adaptive Research Team Sample Notes
-
-This folder can hold local documents that the app can search. Try asking:
-- "What does this sample note describe?"
-- "Summarize the purpose of the AG2 Adaptive Research Team sample docs."
