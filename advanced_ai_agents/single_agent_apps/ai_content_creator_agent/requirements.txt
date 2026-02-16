@@ -1,0 +1,7 @@
+requests
+pyttsx3
+moviepy
+streamlit
+langchain
+langchain-core
+langchain-openai
