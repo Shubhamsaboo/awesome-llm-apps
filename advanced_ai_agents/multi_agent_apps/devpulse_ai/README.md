@@ -1,115 +1,104 @@
-## 🧠 DevPulseAI - Multi-Agent Signal Intelligence Pipeline
+# 🧠 DevPulseAI — Multi-Agent Signal Intelligence
 
-A reference implementation demonstrating a **multi-agent system** for aggregating, analyzing, and synthesizing technical signals from multiple developer-focused sources.
+A reference implementation demonstrating how to build a **multi-agent pipeline** that aggregates technical signals from multiple sources, scores them for relevance, assesses risks, and synthesizes an actionable intelligence digest.
 
-### Features
+> **Design Philosophy:** Agents are used **only where reasoning is required.** Deterministic operations (collection, normalization, deduplication) are implemented as plain utilities — not agents.
 
-- **Multi-Source Signal Collection** - Aggregates data from GitHub, ArXiv, HackerNews, Medium, and HuggingFace
-- **LLM-Powered Analysis** - Four specialized agents working in concert
-- **Structured Intelligence Output** - Prioritized digest with actionable recommendations
+---
 
-### Architecture
+## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Signal Intelligence Pipeline                  │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐         │
-│  │ GitHub │ │ ArXiv  │ │  HN    │ │ Medium │ │   HF   │ ← Data  │
-│  └───┬────┘ └───┬────┘ └───┬────┘ └───┬────┘ └───┬────┘         │
-│      └──────────┴──────────┼──────────┴──────────┘               │
-│       │             │             │                              │
-│       └─────────────┼─────────────┘                              │
-│                     ▼                                            │
-│           ┌─────────────────┐                                    │
-│           │ Signal Collector│   ← Agent 1: Ingestion            │
-│           └────────┬────────┘                                    │
-│                    ▼                                             │
-│           ┌─────────────────┐                                    │
-│           │ Relevance Agent │   ← Agent 2: Scoring (0-100)      │
-│           └────────┬────────┘                                    │
-│                    ▼                                             │
-│           ┌─────────────────┐                                    │
-│           │   Risk Agent    │   ← Agent 3: Security Assessment  │
-│           └────────┬────────┘                                    │
-│                    ▼                                             │
-│           ┌─────────────────┐                                    │
-│           │ Synthesis Agent │   ← Agent 4: Final Digest         │
-│           └────────┬────────┘                                    │
-│                    ▼                                             │
-│           ┌─────────────────┐                                    │
-│           │ Intelligence    │   ← Prioritized Output            │
-│           │ Digest          │                                    │
-│           └─────────────────┘                                    │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│                    DATA SOURCES                         │
+│  GitHub · ArXiv · HackerNews · Medium · HuggingFace     │
+└──────────────────────┬──────────────────────────────────┘
+                       │ raw signals
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  SignalCollector (UTILITY — no LLM)                      │
+│  • Normalizes to unified schema                          │
+│  • Deduplicates via source:id composite key              │
+│  • Filters incomplete signals                            │
+└──────────────────────┬───────────────────────────────────┘
+                       │ normalized signals
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  RelevanceAgent (AGENT — gpt-4.1-mini)                   │
+│  • Scores each signal 0–100 for developer relevance      │
+│  • Considers: novelty, impact, actionability, timeliness  │
+│  • Falls back to heuristics if no API key                 │
+└──────────────────────┬───────────────────────────────────┘
+                       │ scored signals
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  RiskAgent (AGENT — gpt-4.1-mini)                        │
+│  • Assesses security vulnerabilities                      │
+│  • Flags breaking changes and deprecations                │
+│  • Rates risk: LOW / MEDIUM / HIGH / CRITICAL             │
+└──────────────────────┬───────────────────────────────────┘
+                       │ risk-assessed signals
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  SynthesisAgent (AGENT — gpt-4.1)                        │
+│  • Cross-references relevance + risk data                 │
+│  • Produces executive summary                             │
+│  • Generates actionable recommendations                   │
+└──────────────────────┬───────────────────────────────────┘
+                       │
+                       ▼
+              📄 Intelligence Digest
 ```
 
-### Agent Responsibilities
+---
 
-| Agent | Role | Output |
-|-------|------|--------|
-| **SignalCollectorAgent** | Aggregates & normalizes signals | Unified signal list |
-| **RelevanceAgent** | Scores developer relevance (0-100) | Score + reasoning |
-| **RiskAgent** | Identifies security/breaking changes | Risk level + concerns |
-| **SynthesisAgent** | Produces final intelligence digest | Prioritized recommendations |
+## Why Signal Collection Is Not an Agent
 
-### How to Get Started
+This is an **intentional, opinionated design choice** — not a shortcut.
 
-1. Clone the repository
+Signal collection involves:
+
+- Fetching data from HTTP APIs (deterministic)
+- Normalizing fields to a unified schema (mechanical transformation)
+- Deduplicating by composite key (hash comparison)
+
+**None of these tasks require reasoning, judgment, or language understanding.**
+
+Wrapping collection in an `Agent` class would be _decorative_ — it would have an LLM import that never gets called. This misleads readers into thinking an LLM is necessary, when the actual logic is a `for` loop with a `set()`.
+
+> **Rule of thumb:** If you can write the logic as a pure function with no ambiguity, it's a utility. If the output depends on understanding context, making judgment calls, or generating natural language, it's an agent.
+
+---
+
+## Agent Roles & Model Selection
+
+| Component | Type | Model | Why This Model |
+|---|---|---|---|
+| `SignalCollector` | **Utility** | _none_ | Deterministic — no reasoning required |
+| `RelevanceAgent` | **Agent** | `gpt-4.1-mini` | Classification task — fast, cheap, high-volume |
+| `RiskAgent` | **Agent** | `gpt-4.1-mini` | Structured analysis — careful but not expensive |
+| `SynthesisAgent` | **Agent** | `gpt-4.1` | Cross-referencing & summarization — needs strongest reasoning |
+
+**Single provider by default (OpenAI)** to reduce onboarding friction. Override per-agent via environment variables:
 
 ```bash
-git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
+export MODEL_RELEVANCE=gpt-4.1-nano    # cheaper, faster
+export MODEL_RISK=o4-mini               # deeper reasoning for risk
+export MODEL_SYNTHESIS=gpt-4.1          # default, strongest
+```
+
+---
+
+## How to Run
+
+### Quick Verification (No API Key Required)
+
+```bash
 cd advanced_ai_agents/multi_agent_apps/devpulse_ai
-```
-
-1. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-1. Set your Gemini API key (optional for live mode)
-
-```bash
-export GOOGLE_API_KEY=your_api_key
-```
-
-1. Run the verification script (no API key needed)
-
-```bash
 python verify.py
 ```
 
-1. Run the full pipeline (requires API key for LLM agents)
-
-```bash
-python main.py
-```
-
-### Streamlit Demo
-
-A modern, interactive dashboard is included to visualize the multi-agent pipeline:
-
-1. Launch the app:
-
-```bash
-streamlit run streamlit_app.py
-```
-
-1. Configure sources and signal counts in the sidebar.
-2. Provide a Gemini API key (optional) to use full LLM intelligence.
-3. View real-time progress as agents collaborate.
-
-> **Note**: The default configuration is optimized for fast demo runs.
-
-### Verification Script
-
-The `verify.py` script tests the entire pipeline using **mock data only** - no network calls or API keys required:
-
-```bash
-python verify.py
-```
+This runs the full pipeline with mock data in **<1 second**. No network calls, no API keys.
 
 Expected output:
 
@@ -117,51 +106,90 @@ Expected output:
 [OK] DevPulseAI reference pipeline executed successfully
 ```
 
-### Optional: n8n Automation
+### Full Pipeline (With API Key)
 
-An n8n workflow is included for those who want to automate the pipeline:
+```bash
+pip install -r requirements.txt
+export OPENAI_API_KEY=sk-...
+python main.py
+```
 
-- **Location**: `workflows/signal-intelligence-pipeline.json`
-- **Import**: n8n → Settings → Import from File
-- **Requires**: n8n instance + configured credentials
+Without an API key, agents automatically fall back to heuristic scoring.
 
-This is entirely optional - the Python implementation works standalone.
+### Streamlit Dashboard
 
-### Directory Structure
+```bash
+streamlit run streamlit_app.py
+```
+
+---
+
+## Project Structure
 
 ```
 devpulse_ai/
-├── adapters/
-│   ├── github.py       # GitHub trending repos
-│   ├── arxiv.py        # AI/ML research papers
-│   ├── hackernews.py   # Tech news stories
-│   ├── medium.py       # Tech blog RSS feeds
-│   └── huggingface.py  # HuggingFace models
 ├── agents/
-│   ├── __init__.py
-│   ├── signal_collector.py
-│   ├── relevance_agent.py
-│   ├── risk_agent.py
-│   └── synthesis_agent.py
+│   ├── __init__.py              # Package exports + design docs
+│   ├── signal_collector.py      # UTILITY — normalize & dedup
+│   ├── relevance_agent.py       # AGENT  — score relevance (gpt-4.1-mini)
+│   ├── risk_agent.py            # AGENT  — assess risks (gpt-4.1-mini)
+│   └── synthesis_agent.py       # AGENT  — produce digest (gpt-4.1)
+├── adapters/
+│   ├── github.py                # GitHub trending repos
+│   ├── arxiv.py                 # ArXiv recent papers
+│   ├── hackernews.py            # HackerNews top stories
+│   ├── medium.py                # Medium AI/ML blogs
+│   └── huggingface.py           # HuggingFace trending models
 ├── workflows/
 │   └── signal-intelligence-pipeline.json
-├── main.py             # Full pipeline demo (CLI)
-├── streamlit_app.py    # Interactive dashboard (UI)
-├── verify.py           # Mock data verification
-├── requirements.txt
-└── README.md
+├── main.py                      # Full pipeline runner
+├── verify.py                    # Mock-data verification (<1s)
+├── streamlit_app.py             # Interactive dashboard
+└── requirements.txt             # Minimal deps (single provider)
 ```
 
-### How It Works
+---
 
-1. **Signal Collection**: Adapters fetch data from GitHub, ArXiv, HackerNews, Medium, and HuggingFace
-2. **Normalization**: SignalCollectorAgent unifies signals to a common schema
-3. **Relevance Scoring**: RelevanceAgent rates each signal 0-100 for developer relevance
-4. **Risk Assessment**: RiskAgent flags security issues and breaking changes
-5. **Synthesis**: SynthesisAgent produces a prioritized intelligence digest
+## Optional Extensions (Advanced Users)
 
-### Built With
+These are **not required** for the reference implementation, but show how the architecture extends:
 
-- [Agno](https://github.com/agno-agi/agno) - Multi-agent framework
-- [Google Gemini 1.5 Flash](https://ai.google.dev/) - LLM backbone
-- [httpx](https://www.python-httpx.org/) - Async HTTP client
+1. **Multi-provider models** — Swap `RelevanceAgent` to use Anthropic Claude or Google Gemini by updating the model config. The `agno` framework supports multiple providers.
+
+2. **Vector search** — Add a Pinecone or Qdrant adapter to store and retrieve signals semantically for long-term pattern detection.
+
+3. **Streaming digests** — Use WebSocket streaming from `SynthesisAgent` for real-time intelligence feeds.
+
+4. **Custom adapters** — Add new signal sources by implementing a `fetch_*` function that returns `List[Dict]` with the standard schema (`id`, `source`, `title`, `description`, `url`, `metadata`).
+
+5. **Feedback loop** — Store user feedback (👍/👎) in Supabase and use it to fine-tune relevance scoring over time.
+
+---
+
+## Dependencies
+
+```
+agno              # Agent framework
+openai            # LLM provider (single default)
+httpx             # HTTP client for adapters
+feedparser        # RSS/Atom parsing for Medium
+streamlit>=1.30   # Interactive dashboard
+```
+
+No `google-generativeai` required. Gemini is an optional extension if users want multi-provider support — install `google-genai` (not the deprecated `google-generativeai`) separately.
+
+---
+
+## Design Tradeoffs
+
+| Decision | Tradeoff | Why |
+|---|---|---|
+| Single provider default | Less flexibility | Reduces onboarding from 2+ keys to 1 |
+| Signal collection as utility | Less "agentic" demo | Honest architecture — agents where reasoning exists |
+| Heuristic fallbacks | Lower quality without API key | Pipeline always works, even for evaluation |
+| 5 signals per source default | Less data | Keeps demo fast (<10s with API, <1s mock) |
+| No async in agents | Less throughput | Simpler code, clearer educational value |
+
+---
+
+_Built as a reference implementation for [awesome-llm-apps](https://github.com/Shubhamsaboo/awesome-llm-apps)._
