@@ -18,7 +18,9 @@ with st.sidebar:
     api_key = st.text_input("OpenAI API Key", type="password")
     model = st.text_input("Model", value=DEFAULT_MODEL)
     web_enabled = st.toggle("Enable Web Fallback", value=True)
-    st.markdown("Web fallback uses SearxNG.")
+    st.markdown(
+        "Web fallback uses a public SearxNG instance, which may be rate-limited."
+    )
 
 st.subheader("1. Upload Local Documents")
 files = st.file_uploader(
