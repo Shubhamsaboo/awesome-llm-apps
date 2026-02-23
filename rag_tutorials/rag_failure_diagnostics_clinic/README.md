@@ -166,14 +166,3 @@ Some ideas for extending this pattern:
 * Emit a richer JSON schema (severity, owners, suspected components).
 * Plug the reports into an evaluation dashboard or incident tracker.
 
----
-
-## Optional further reading
-
-If you want to see an example of an open source checklist that catalogues RAG failure modes,
-one external project you can look at is:
-
-- https://github.com/onestardao/WFGY/blob/main/ProblemMap/README.md
-
-This tutorial is independent of that project.  
-The link is only for readers who want additional material.
