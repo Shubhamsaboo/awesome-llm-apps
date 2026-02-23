@@ -180,7 +180,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [⛓️ Basic RAG Chain](rag_tutorials/rag_chain/)
 *   [📠 RAG with Database Routing](rag_tutorials/rag_database_routing/)
 *   [🖼️ Vision RAG](rag_tutorials/vision_rag/)
-*   [🩺RAG Failure Diagnostics Clinic](rag_tutorials/rag_failure_diagnostics_clinic/)
+*   [🩺 RAG Failure Diagnostics Clinic](rag_tutorials/rag_failure_diagnostics_clinic/)
 
 ### 💾 LLM Apps with Memory Tutorials
 
