@@ -29,7 +29,7 @@
 
 # 🌟 Awesome LLM Apps
 
-A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agent Teams, MCP, Voice Agents, and more.** This repository features LLM apps that use models from <img src="https://cdn.simpleicons.org/openai"  alt="openai logo" width="25" height="15">**OpenAI** , <img src="https://cdn.simpleicons.org/anthropic"  alt="anthropic logo" width="25" height="15">**Anthropic**, <img src="https://cdn.simpleicons.org/googlegemini"  alt="google logo" width="25" height="18">**Google**, <img src="https://cdn.simpleicons.org/x"  alt="X logo" width="25" height="15">**xAI** and open-source models like <img src="https://cdn.simpleicons.org/alibabacloud"  alt="alibaba logo" width="25" height="15">**Qwen** or  <img src="https://cdn.simpleicons.org/meta"  alt="meta logo" width="25" height="15">**Llama** that you can run locally on your computer.
+A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agent Teams, MCP, Voice Agents, and more.** This repository features LLM apps that use models from <img src="https://cdn.jsdelivr.net/npm/simple-icons@15/icons/openai.svg"  alt="openai logo" width="25" height="15">**OpenAI** , <img src="https://cdn.simpleicons.org/anthropic"  alt="anthropic logo" width="25" height="15">**Anthropic**, <img src="https://cdn.simpleicons.org/googlegemini"  alt="google logo" width="25" height="18">**Google**, <img src="https://cdn.simpleicons.org/x"  alt="X logo" width="25" height="15">**xAI** and open-source models like <img src="https://cdn.simpleicons.org/alibabacloud"  alt="alibaba logo" width="25" height="15">**Qwen** or  <img src="https://cdn.simpleicons.org/meta"  alt="meta logo" width="25" height="15">**Llama** that you can run locally on your computer.
 
 <p align="center">
   <a href="https://trendshift.io/repositories/9876" target="_blank">
@@ -48,6 +48,15 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 <table align="center" cellpadding="16" cellspacing="12">
   <tr>
     <td align="center">
+      <a href="https://github.com/tinyfish-io/tinyfish-cookbook" target="_blank" rel="noopener" title="TinyFish">
+        <img src="docs/banner/sponsors/tinyfish.png" alt="TinyFish" width="500">
+      </a>
+      <br>
+      <a href="https://github.com/tinyfish-io/tinyfish-cookbook" target="_blank" rel="noopener" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
+        TinyFish
+      </a>
+    </td>
+    <td align="center">
       <a href="https://tsdb.co/shubham-gh" target="_blank" rel="noopener" title="Tiger Data">
         <img src="docs/banner/sponsors/tigerdata.png" alt="Tiger Data" width="500">
       </a>
@@ -56,6 +65,8 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
         Tiger Data MCP
       </a>
     </td>
+  </tr>
+  <tr>
     <td align="center">
       <a href="https://github.com/speechmatics/speechmatics-academy" target="_blank" rel="noopener" title="Speechmatics">
         <img src="docs/banner/sponsors/speechmatics.png" alt="Speechmatics" width="500">
@@ -63,17 +74,6 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
       <br>
       <a href="https://github.com/speechmatics/speechmatics-academy" target="_blank" rel="noopener" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
         Speechmatics
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
-      <a href="https://okara.ai/?utm_source=oss&utm_medium=sponsorship&utm_campaign=awesome-llm-apps" title="Okara">
-        <img src="docs/banner/sponsors/okara.png" alt="Okara" width="500">
-      </a>
-      <br>
-      <a href="https://okara.ai/?utm_source=oss&utm_medium=sponsorship&utm_campaign=awesome-llm-apps" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
-        Okara AI
       </a>
     </td>
     <td align="center">
@@ -138,6 +138,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [🧲 AI Competitor Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_competitor_intelligence_agent_team/)
 *   [💲 AI Finance Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_finance_agent_team/)
 *   [🎨 AI Game Design Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_game_design_agent_team/)
+*   [🧭 AG2 Adaptive Research Team](advanced_ai_agents/multi_agent_apps/agent_teams/ag2_adaptive_research_team/)
 *   [👨‍⚖️ AI Legal Agent Team (Cloud & Local)](advanced_ai_agents/multi_agent_apps/agent_teams/ai_legal_agent_team/)
 *   [💼 AI Recruitment Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_recruitment_agent_team/)
 *   [🏠 AI Real Estate Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_real_estate_agent_team)
@@ -181,6 +182,8 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [📠 RAG with Database Routing](rag_tutorials/rag_database_routing/)
 *   [🖼️ Vision RAG](rag_tutorials/vision_rag/)
 *   [🩺 RAG Failure Diagnostics Clinic](rag_tutorials/rag_failure_diagnostics_clinic/)
+*   [🕸️ Knowledge Graph RAG with Citations](rag_tutorials/knowledge_graph_rag_citations/)
+
 
 ### 💾 LLM Apps with Memory Tutorials
 
@@ -221,7 +224,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
   - Memory; callbacks; Plugins
   - Simple multi‑agent; Multi‑agent patterns
 
-<img src="https://cdn.simpleicons.org/openai"  alt="openai logo" width="25" height="15"> [OpenAI Agents SDK Crash Course](ai_agent_framework_crash_course/openai_sdk_crash_course/)
+<img src="https://cdn.jsdelivr.net/npm/simple-icons@15/icons/openai.svg"  alt="openai logo" width="25" height="15"> [OpenAI Agents SDK Crash Course](ai_agent_framework_crash_course/openai_sdk_crash_course/)
   - Starter agent; function calling; structured outputs
   - Tools: built‑in, function, third‑party integrations
   - Memory; callbacks; evaluation
