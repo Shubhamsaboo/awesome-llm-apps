@@ -1,0 +1,18 @@
+execution_engine: asyncio
+logger:
+  transports: [console, file]
+  level: debug
+  progress_display: true
+  path_settings:
+    path_pattern: "logs/mcp-agent-{unique_id}.jsonl"
+    unique_id: "timestamp"
+    timestamp_format: "%Y%m%d_%H%M%S"
+
+mcp:
+  servers:
+    bgpt:
+      command: "npx"
+      args: ["mcp-remote", "https://bgpt.pro/mcp/sse"]
+
+openai:
+  default_model: "gpt-4o-mini"
