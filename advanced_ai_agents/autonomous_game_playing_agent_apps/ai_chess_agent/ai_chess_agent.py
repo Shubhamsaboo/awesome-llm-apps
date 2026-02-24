@@ -240,7 +240,7 @@ The game is managed by a **Game Master** that:
             st.session_state.made_move = False
             st.session_state.move_history = []
             st.session_state.board_svg = None
-            st.write("Game reset! Click 'Start Game' to begin a new game.")
+            st.write("Game reset! Click 'Start Game' to begin a new game and start enjoying.")
 
     except Exception as e:
         st.error(f"An error occurred: {e}. Please check your API key and try again.")
