@@ -229,6 +229,9 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
   - Multi‑agent patterns; agent handoffs
   - Swarm orchestration; routing logic
 
+### 📱 Mobile LLM Apps
+
+*   [📱 Off Grid - On-Device AI Suite for iOS & Android](https://github.com/alichherawalla/off-grid-mobile) - Open-source React Native app running LLMs, vision models, and Stable Diffusion entirely on-device with no cloud dependency
 ## 🚀 Getting Started
 
 1. **Clone the repository** 
