@@ -1,0 +1,8 @@
+# DevPulseAI Dependencies
+# Single provider (OpenAI) by default — no multi-provider setup required.
+
+agno
+openai
+httpx
+feedparser
+streamlit>=1.30

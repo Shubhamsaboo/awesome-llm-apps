@@ -1,0 +1,254 @@
+{
+    "name": "Signal Intelligence Ingestion Pipeline",
+    "description": "Optional n8n workflow for automating the DevPulseAI signal intelligence pipeline. Import into n8n to schedule daily digest generation.",
+    "nodes": [
+        {
+            "parameters": {},
+            "id": "trigger-cron",
+            "name": "Daily Trigger",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1.1,
+            "position": [
+                0,
+                300
+            ],
+            "notes": "Triggers the pipeline daily at configured time"
+        },
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "trigger-pulse",
+                "responseMode": "responseNode"
+            },
+            "id": "webhook-trigger",
+            "name": "Webhook Trigger",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                0,
+                500
+            ],
+            "webhookId": "devpulse-trigger",
+            "notes": "Manual trigger via POST request"
+        },
+        {
+            "parameters": {
+                "url": "https://api.github.com/search/repositories?q=stars:>1000&sort=stars&order=desc&per_page=10",
+                "options": {
+                    "response": {
+                        "response": {
+                            "responseFormat": "json"
+                        }
+                    }
+                }
+            },
+            "id": "github-adapter",
+            "name": "GitHub Trending Repos",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                400,
+                100
+            ],
+            "notes": "Fetches trending GitHub repositories"
+        },
+        {
+            "parameters": {
+                "url": "http://export.arxiv.org/api/query?search_query=cat:cs.AI+OR+cat:cs.LG&sortBy=submittedDate&sortOrder=descending&max_results=10"
+            },
+            "id": "arxiv-adapter",
+            "name": "ArXiv Papers",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                400,
+                400
+            ],
+            "notes": "Fetches latest AI/ML research papers"
+        },
+        {
+            "parameters": {
+                "url": "https://hn.algolia.com/api/v1/search_by_date?query=AI&tags=story&hitsPerPage=10"
+            },
+            "id": "hackernews-adapter",
+            "name": "HackerNews Top Stories",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                400,
+                550
+            ],
+            "notes": "Fetches top HackerNews stories"
+        },
+        {
+            "parameters": {
+                "mode": "multiplex"
+            },
+            "id": "merge-signals",
+            "name": "Aggregate Signals",
+            "type": "n8n-nodes-base.merge",
+            "typeVersion": 3,
+            "position": [
+                650,
+                400
+            ],
+            "notes": "Combines all signal sources into unified stream"
+        },
+        {
+            "parameters": {
+                "resource": "chat",
+                "model": "gpt-4o-mini",
+                "prompt": {
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "You are a Relevance Scoring Agent. Score the following content from 0-100 based on its relevance to AI/ML developers. Return ONLY a JSON object: {\"score\": <number>, \"reason\": \"<1 sentence>\"}"
+                        },
+                        {
+                            "role": "user",
+                            "content": "Title: {{ $json.title }}\nDescription: {{ $json.description }}"
+                        }
+                    ]
+                },
+                "options": {
+                    "temperature": 0.1,
+                    "maxOutputTokens": 100
+                }
+            },
+            "id": "relevance-agent",
+            "name": "Relevance Agent",
+            "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+            "typeVersion": 1,
+            "position": [
+                1100,
+                400
+            ],
+            "notes": "Scores content 0-100 based on developer relevance"
+        },
+        {
+            "parameters": {
+                "resource": "chat",
+                "model": "gpt-4o-mini",
+                "prompt": {
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "You are a Risk Assessment Agent. Analyze for: breaking changes, security vulnerabilities, or deprecations. Return ONLY a JSON object: {\"risk_level\": \"HIGH|MEDIUM|LOW\", \"concerns\": [\"<list>\"]}"
+                        },
+                        {
+                            "role": "user",
+                            "content": "Title: {{ $json.title }}\nDescription: {{ $json.description }}"
+                        }
+                    ]
+                },
+                "options": {
+                    "temperature": 0.1,
+                    "maxOutputTokens": 150
+                }
+            },
+            "id": "risk-agent",
+            "name": "Risk Agent",
+            "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+            "typeVersion": 1,
+            "position": [
+                1100,
+                600
+            ],
+            "notes": "Flags breaking changes and security vulnerabilities"
+        }
+    ],
+    "connections": {
+        "Daily Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "GitHub Trending Repos",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Webhook Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "GitHub Trending Repos",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "GitHub Trending Repos": {
+            "main": [
+                [
+                    {
+                        "node": "Aggregate Signals",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "ArXiv Papers": {
+            "main": [
+                [
+                    {
+                        "node": "Aggregate Signals",
+                        "type": "main",
+                        "index": 1
+                    }
+                ]
+            ]
+        },
+        "HackerNews Top Stories": {
+            "main": [
+                [
+                    {
+                        "node": "Aggregate Signals",
+                        "type": "main",
+                        "index": 2
+                    }
+                ]
+            ]
+        },
+        "Aggregate Signals": {
+            "main": [
+                [
+                    {
+                        "node": "Relevance Agent",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Risk Agent",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "tags": [
+        {
+            "name": "signal-intelligence"
+        },
+        {
+            "name": "automation"
+        },
+        {
+            "name": "developer-tools"
+        },
+        {
+            "name": "ai-agents"
+        }
+    ],
+    "meta": {
+        "templateCredsSetupCompleted": false,
+        "instanceId": "devpulse-reference"
+    }
+}
