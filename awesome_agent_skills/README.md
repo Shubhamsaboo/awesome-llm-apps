@@ -61,6 +61,19 @@ Each skill contains:
 | [meeting-notes](meeting-notes/) | Structured meeting summaries with action items |
 | [decision-helper](decision-helper/) | Structured decision-making frameworks |
 
+### 🏭 Operations (by [Evos](https://github.com/ai-evos/agent-skills))
+
+| Skill | Description |
+|-------|-------------|
+| [logistics-exception-management](logistics-exception-management/) | Freight exceptions, shipment delays, damage claims, and carrier disputes |
+| [carrier-relationship-management](carrier-relationship-management/) | Carrier selection, rate negotiation, scorecarding, and portfolio strategy |
+| [customs-trade-compliance](customs-trade-compliance/) | HS classification, trade documentation, duty optimization, and sanctions screening |
+| [inventory-demand-planning](inventory-demand-planning/) | Demand forecasting, safety stock optimization, and promotional planning |
+| [returns-reverse-logistics](returns-reverse-logistics/) | Returns processing, disposition decisions, fraud detection, and vendor recovery |
+| [production-scheduling](production-scheduling/) | Finite capacity scheduling, changeover optimization, and disruption response |
+| [quality-nonconformance](quality-nonconformance/) | NCR lifecycle, root cause analysis, CAPA management, and SPC interpretation |
+| [energy-procurement](energy-procurement/) | Energy pricing, procurement strategies, demand charge management, and renewables |
+
 ## Installation
 
 ### Using npx (Recommended)
