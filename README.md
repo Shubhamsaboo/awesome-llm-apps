@@ -184,6 +184,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [🖼️ Vision RAG](rag_tutorials/vision_rag/)
 *   [🩺 RAG Failure Diagnostics Clinic](rag_tutorials/rag_failure_diagnostics_clinic/)
 *   [🕸️ Knowledge Graph RAG with Citations](rag_tutorials/knowledge_graph_rag_citations/)
+*   [🔍 Code-Graph-RAG](https://github.com/vitali87/code-graph-rag) — Knowledge graph RAG for multi-language codebases using Tree-sitter and Memgraph, with MCP server integration
 
 
 ### 💾 LLM Apps with Memory Tutorials
