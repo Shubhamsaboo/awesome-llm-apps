@@ -104,7 +104,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [✨ Gemini Multimodal Agent](starter_ai_agents/gemini_multimodal_agent_demo/)
 *   [🔄 Mixture of Agents](starter_ai_agents/mixture_of_agents/)
 *   [📊 xAI Finance Agent](starter_ai_agents/xai_finance_agent/)
-*   [🔍 OpenAI Research Agent](starter_ai_agents/opeani_research_agent/)
+*   [🔍 OpenAI Research Agent](starter_ai_agents/openai_research_agent/)
 *   [🕸️ Web Scraping AI Agent (Local & Cloud SDK)](starter_ai_agents/web_scrapping_ai_agent/)
 
 ### 🚀 Advanced AI Agents
