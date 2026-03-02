@@ -127,6 +127,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [👨🏻‍💼 AI Sales Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_sales_intelligence_agent_team)
 *   [🎧 AI Social Media News and Podcast Agent](advanced_ai_agents/multi_agent_apps/ai_news_and_podcast_agents/)
 *   [🌐 Openwork - Open Browser Automation Agent](https://github.com/accomplish-ai/openwork)
+*   [🔗 Agent Gateway — Unified API for 37+ AI Agent Infrastructure Services](https://agent-gateway-kappa.vercel.app) — One API key for memory, wallets, scheduling, code execution, webhooks, file storage, DeFi and more. Machine-readable via agent.json and llms.txt. 200 free credits, no signup.
 
 ### 🎮 Autonomous Game Playing Agents
 
