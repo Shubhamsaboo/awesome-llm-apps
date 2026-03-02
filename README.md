@@ -157,12 +157,13 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [🔊 Voice RAG Agent (OpenAI SDK)](voice_ai_agents/voice_rag_openaisdk/)
 *   [🎙️ OpenSource Voice Dictation Agent (like Wispr Flow](https://github.com/akshayaggarwal99/jarvis-ai-assistant)
 
-### <img src="https://cdn.simpleicons.org/modelcontextprotocol"  alt="mcp logo" width="25" height="20"> MCP AI Agents 
+### <img src="https://cdn.simpleicons.org/modelcontextprotocol"  alt="mcp logo" width="25" height="20"> MCP AI Agents
 
 *   [♾️ Browser MCP Agent](mcp_ai_agents/browser_mcp_agent/)
 *   [🐙 GitHub MCP Agent](mcp_ai_agents/github_mcp_agent/)
-*   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent) 
+*   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent)
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team)
+*   [🔗 SkillBoss MCP Gateway](https://github.com/heeyo-life/skillboss-mcp) - One API key for 100+ AI services (Claude, GPT, Gemini, DeepSeek, image/video gen, voice, and more). OpenAI-compatible. [Website](https://skillboss.co)
 
 ### 📀 RAG (Retrieval Augmented Generation)
 *   [🔥 Agentic RAG with Embedding Gemma](rag_tutorials/agentic_rag_embedding_gemma)
