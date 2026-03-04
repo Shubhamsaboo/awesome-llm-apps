@@ -232,6 +232,11 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
   - Multi‑agent patterns; agent handoffs
   - Swarm orchestration; routing logic
 
+### 🛠️ AI Developer Tools & Infrastructure
+*   [🔐 AgentVault](https://agentvault.com/) - Open-source registry and exchange for AI agents with standardized API schemas
+*   [👨‍💻 2ndCTO](https://2ndcto.com/) - AI-powered technical co-pilot for architecture decisions and code reviews
+*   [🧠 Mnemo](https://github.com/openclaw/mnemo) - Persistent memory layer for AI agents with cross-session context retention
+
 ## 🚀 Getting Started
 
 1. **Clone the repository** 
