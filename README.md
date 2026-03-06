@@ -136,6 +136,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 ### 🤝 Multi-agent Teams
 
+*   [🧠 TRINITY — Cognitive AI Operating System](https://github.com/rsv413-EG/trinity) — Seven specialized agents (ARCHITECT, CORE, FAULT, SCOUT, KEEPER, FORGE, HERALD) running as a unified team on your own hardware. Self-hosted on Raspberry Pi + local GPU. Full memory architecture, code review pipeline, Ralph Loop iterative builds, and Sentry auto-fix pipeline. Built on OpenClaw.
 *   [🧲 AI Competitor Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_competitor_intelligence_agent_team/)
 *   [💲 AI Finance Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_finance_agent_team/)
 *   [🎨 AI Game Design Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_game_design_agent_team/)
