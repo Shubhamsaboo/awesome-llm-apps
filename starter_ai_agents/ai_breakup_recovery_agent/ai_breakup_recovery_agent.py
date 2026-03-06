@@ -1,7 +1,7 @@
-from agno.agent import Agent
-from agno.models.google import Gemini
-from agno.media import Image as AgnoImage
-from agno.tools.duckduckgo import DuckDuckGoTools
+from agno.agent import Agent  # type: ignore
+from agno.models.google import Gemini  # type: ignore
+from agno.media import Image as AgnoImage  # type: ignore
+from agno.tools.duckduckgo import DuckDuckGoTools  # type: ignore
 import streamlit as st
 from typing import List, Optional
 import logging
