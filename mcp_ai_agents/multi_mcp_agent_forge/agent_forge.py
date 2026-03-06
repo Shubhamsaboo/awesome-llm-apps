@@ -8,12 +8,15 @@ Inspired by: https://github.com/WeberG619/cadre-ai
 """
 
 import asyncio
+import json
 import os
+from contextlib import AsyncExitStack
 from dataclasses import dataclass, field
-from typing import Optional
 
 import streamlit as st
 from anthropic import Anthropic
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
 
 st.set_page_config(
     page_title="Agent Forge - Multi-MCP Agents",
@@ -45,7 +48,8 @@ AGENTS = {
             "- Performance issues\n"
             "- Security vulnerabilities\n"
             "- Readability and maintainability\n\n"
-            "Be specific. Reference line numbers. Suggest fixes with code."
+            "Be specific. Reference line numbers. Suggest fixes with code.\n"
+            "Use the available tools to read files and fetch repository data."
         ),
         mcp_servers=[
             {"name": "github", "command": "npx", "args": ["-y", "@modelcontextprotocol/server-github"]},
@@ -65,7 +69,8 @@ AGENTS = {
             "- Authentication and authorization flaws\n"
             "- Insecure dependencies\n\n"
             "Rate each finding: Critical / High / Medium / Low.\n"
-            "Provide remediation steps for each issue."
+            "Provide remediation steps for each issue.\n"
+            "Use the available tools to fetch content and inspect repositories."
         ),
         mcp_servers=[
             {"name": "github", "command": "npx", "args": ["-y", "@modelcontextprotocol/server-github"]},
@@ -82,7 +87,8 @@ AGENTS = {
             "- Synthesize information from multiple sources\n"
             "- Provide citations and references\n"
             "- Summarize findings clearly\n\n"
-            "Always cite your sources. Distinguish facts from opinions."
+            "Always cite your sources. Distinguish facts from opinions.\n"
+            "Use the available tools to fetch web pages and save research notes."
         ),
         mcp_servers=[
             {"name": "fetch", "command": "npx", "args": ["-y", "@modelcontextprotocol/server-fetch"]},
@@ -102,7 +108,8 @@ AGENTS = {
             "- Clash detection and coordination\n"
             "- Detail library management\n\n"
             "When working with Revit, use the MCP bridge for direct model access.\n"
-            "Reference AIA standards for document organization."
+            "Reference AIA standards for document organization.\n"
+            "Use the available tools to read and write project files."
         ),
         mcp_servers=[
             {"name": "filesystem", "command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "/tmp"]},
@@ -131,18 +138,138 @@ def classify_query(query: str) -> str:
     return "researcher"
 
 
-def run_agent(client: Anthropic, agent: Agent, query: str, history: list) -> str:
-    """Run a query through a specific agent using Claude."""
+def mcp_tool_to_anthropic(tool) -> dict:
+    """Convert an MCP tool definition to Anthropic's tool format."""
+    return {
+        "name": tool.name,
+        "description": tool.description or "",
+        "input_schema": tool.inputSchema,
+    }
+
+
+async def connect_mcp_servers(agent: Agent) -> tuple[AsyncExitStack, list[dict], dict[str, ClientSession]]:
+    """Spawn MCP servers and collect their tools.
+
+    Returns (exit_stack, tools_list, session_map) where session_map maps
+    tool_name -> session for dispatching tool calls.
+    """
+    stack = AsyncExitStack()
+    await stack.__aenter__()
+
+    all_tools = []
+    session_map = {}
+
+    for srv_config in agent.mcp_servers:
+        env = {**os.environ}
+        if "env" in srv_config:
+            env.update(srv_config["env"])
+
+        params = StdioServerParameters(
+            command=srv_config["command"],
+            args=srv_config.get("args", []),
+            env=env,
+        )
+
+        stdio_transport = await stack.enter_async_context(stdio_client(params))
+        read_stream, write_stream = stdio_transport
+        session = await stack.enter_async_context(ClientSession(read_stream, write_stream))
+        await session.initialize()
+
+        result = await session.list_tools()
+        for tool in result.tools:
+            all_tools.append(mcp_tool_to_anthropic(tool))
+            session_map[tool.name] = session
+
+    return stack, all_tools, session_map
+
+
+async def run_agent_async(client: Anthropic, agent: Agent, query: str, history: list) -> str:
+    """Run a query through a specific agent with real MCP tool connections."""
     messages = history + [{"role": "user", "content": query}]
 
-    response = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=4096,
-        system=agent.system_prompt,
-        messages=messages,
-    )
+    if not agent.mcp_servers:
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=4096,
+            system=agent.system_prompt,
+            messages=messages,
+        )
+        return response.content[0].text
 
-    return response.content[0].text
+    stack, tools, session_map = await connect_mcp_servers(agent)
+
+    try:
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=4096,
+            system=agent.system_prompt,
+            messages=messages,
+            tools=tools,
+        )
+
+        # Agentic loop: handle tool calls until we get a final text response
+        while response.stop_reason == "tool_use":
+            tool_use_blocks = [b for b in response.content if b.type == "tool_use"]
+            tool_results = []
+
+            for tool_use in tool_use_blocks:
+                session = session_map.get(tool_use.name)
+                if session is None:
+                    tool_results.append({
+                        "type": "tool_result",
+                        "tool_use_id": tool_use.id,
+                        "content": f"Error: Unknown tool '{tool_use.name}'",
+                        "is_error": True,
+                    })
+                    continue
+
+                try:
+                    result = await session.call_tool(tool_use.name, tool_use.input)
+                    result_text = ""
+                    for content in result.content:
+                        if hasattr(content, "text"):
+                            result_text += content.text
+                        else:
+                            result_text += str(content)
+                    tool_results.append({
+                        "type": "tool_result",
+                        "tool_use_id": tool_use.id,
+                        "content": result_text,
+                    })
+                except Exception as e:
+                    tool_results.append({
+                        "type": "tool_result",
+                        "tool_use_id": tool_use.id,
+                        "content": f"Error calling tool: {e}",
+                        "is_error": True,
+                    })
+
+            messages.append({"role": "assistant", "content": response.content})
+            messages.append({"role": "user", "content": tool_results})
+
+            response = client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=4096,
+                system=agent.system_prompt,
+                messages=messages,
+                tools=tools,
+            )
+
+        # Extract final text
+        text_blocks = [b.text for b in response.content if hasattr(b, "text")]
+        return "\n".join(text_blocks) if text_blocks else "No response generated."
+
+    finally:
+        await stack.aclose()
+
+
+def run_agent(client: Anthropic, agent: Agent, query: str, history: list) -> str:
+    """Sync wrapper around the async agent runner."""
+    loop = asyncio.new_event_loop()
+    try:
+        return loop.run_until_complete(run_agent_async(client, agent, query, history))
+    finally:
+        loop.close()
 
 
 def main():
@@ -216,9 +343,11 @@ def main():
         # Show routing info
         with st.chat_message("assistant", avatar=agent.icon):
             st.caption(f"Routed to **{agent.icon} {agent.name}**")
+            tools_info = ", ".join(s["name"] for s in agent.mcp_servers)
+            st.caption(f"MCP servers: {tools_info}" if tools_info else "No MCP servers")
 
             client = Anthropic(api_key=api_key)
-            with st.spinner(f"{agent.name} is thinking..."):
+            with st.spinner(f"{agent.name} is connecting to MCP servers..."):
                 response = run_agent(
                     client, agent, prompt,
                     st.session_state.histories[agent_id],
