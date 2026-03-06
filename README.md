@@ -29,7 +29,16 @@
 
 # 🌟 Awesome LLM Apps
 
-A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agent Teams, MCP, Voice Agents, and more.** This repository features LLM apps that use models from <img src="https://cdn.jsdelivr.net/npm/simple-icons@15/icons/openai.svg"  alt="openai logo" width="25" height="15">**OpenAI** , <img src="https://cdn.simpleicons.org/anthropic"  alt="anthropic logo" width="25" height="15">**Anthropic**, <img src="https://cdn.simpleicons.org/googlegemini"  alt="google logo" width="25" height="18">**Google**, <img src="https://cdn.simpleicons.org/x"  alt="X logo" width="25" height="15">**xAI** and open-source models like <img src="https://cdn.simpleicons.org/alibabacloud"  alt="alibaba logo" width="25" height="15">**Qwen** or  <img src="https://cdn.simpleicons.org/meta"  alt="meta logo" width="25" height="15">**Llama** that you can run locally on your computer.
+# 🌟 Awesome LLM Apps
+
+A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agent Teams, MCP, Voice Agents, and more.** This repository features LLM apps that use models from 
+<img src="https://cdn.jsdelivr.net/npm/simple-icons@15/icons/openai.svg"  alt="OpenAI logo" width="25" height="15"> **OpenAI**, 
+<img src="https://cdn.simple-icons.org/anthropic"  alt="Anthropic logo" width="25" height="15"> **Anthropic**, 
+<img src="https://cdn.simple-icons.org/googlegemini"  alt="Google Gemini logo" width="25" height="18"> **Google**, 
+<img src="https://cdn.simple-icons.org/x"  alt="XAI logo" width="25" height="15"> **XAI** 
+and open-source models like 
+<img src="https://cdn.simpleicons.org/alibabacloud"  alt="Alibaba Qwen logo" width="25" height="15"> **Qwen** or  
+<img src="https://cdn.simpleicons.org/meta"  alt="Meta Llama logo" width="25" height="15"> **Llama** that you can run locally on your computer.
 
 <p align="center">
   <a href="https://trendshift.io/repositories/9876" target="_blank">
