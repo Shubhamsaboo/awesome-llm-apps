@@ -1,0 +1,4 @@
+streamlit>=1.28.0
+anthropic>=0.40.0
+mcp>=0.1.0
+pydantic>=2.0.0
