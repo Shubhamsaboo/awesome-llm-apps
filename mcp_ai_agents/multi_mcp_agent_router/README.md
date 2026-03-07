@@ -1,8 +1,8 @@
-# Multi-MCP Agent Forge
+# Multi-MCP Agent Router
 
 A Streamlit app that demonstrates the **multi-agent + MCP** pattern: specialized AI agents that each connect to different MCP servers to handle domain-specific tasks.
 
-Instead of one agent with all tools, Agent Forge routes your request to a **specialist** — a code reviewer, security auditor, researcher, or BIM engineer — each with access to only the MCP tools they need.
+Instead of one agent with all tools, The router sends your request to a **specialist** — a code reviewer, security auditor, researcher, or BIM engineer — each with access to only the MCP tools they need.
 
 ## Features
 
