@@ -210,6 +210,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30-60% using TOON format
 *   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50-90% through intelligent context compression for AI agents (includes persistent memory & MCP support)
+*   [🛡️ AIR Blackbox - EU AI Act Compliance Scanner](https://github.com/air-blackbox/air-compliance-checker) - Open-source CLI scanner that checks Python AI agent code against EU AI Act technical requirements (Arts. 9–15). 6 compliance checks covering risk management, data governance, transparency, logging, human oversight, and robustness.
 
 ### 🔧 LLM Fine-tuning Tutorials
 
