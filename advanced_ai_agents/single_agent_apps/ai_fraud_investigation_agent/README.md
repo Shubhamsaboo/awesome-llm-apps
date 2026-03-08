@@ -34,7 +34,7 @@ pip install -r requirements.txt
 
 - Sign up at [openrouter.ai](https://openrouter.ai) and create an API key
 - The free tier is sufficient for demo investigations
-- Default model: `anthropic/claude-sonnet-4-20250514`
+- Default model: `anthropic/claude-sonnet-4.6`
 
 4. Get your Google Maps API Key *(optional — skips visual analysis if omitted)*
 
