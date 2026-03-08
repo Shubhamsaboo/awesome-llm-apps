@@ -2,7 +2,7 @@
 
 An AI-powered autonomous fraud investigation agent that cross-references childcare provider licensing records against physical building data to detect anomalies. The agent uses public data — Cook County property records, Illinois DCFS licensing, Google Maps, and the Secretary of State — to find facilities where the physical evidence doesn't match the paperwork.
 
-> **Built on [Surelock Homes](https://github.com/osobodev/Surelock-Homes)** — an open-source autonomous fraud investigation system.
+> **Built on [Surelock Homes](https://github.com/oso95/Surelock-Homes)** — an open-source autonomous fraud investigation system.
 
 ### Features
 
@@ -84,4 +84,19 @@ All findings are investigative leads, not legal conclusions. The agent uses lang
 
 ### Geographic Scope
 
-This demo covers **Illinois only**, defaulting to Cook County (Chicago) for property data. The full [Surelock Homes](https://github.com/osobodev/Surelock-Homes) system supports Minnesota and additional Illinois counties with a FastAPI backend, streaming dashboard, and offline mode.
+This demo covers **Cook County, Illinois only**. Property data is sourced from the Cook County Assessor's open data, so the ZIP code selector is limited to 10 high-density Chicago neighborhoods known for concentrations of subsidized childcare providers:
+
+| ZIP | Neighborhood |
+|-----|-------------|
+| 60623 | Little Village / North Lawndale |
+| 60629 | Chicago Lawn |
+| 60644 | Austin |
+| 60621 | Englewood |
+| 60628 | Roseland |
+| 60619 | Chatham / Auburn Gresham |
+| 60636 | West Englewood |
+| 60612 | Near West Side |
+| 60620 | Auburn Gresham |
+| 60624 | Garfield Park |
+
+The full [Surelock Homes](https://github.com/oso95/Surelock-Homes) system supports Minnesota and additional Illinois counties with a FastAPI backend, streaming dashboard, and offline mode.

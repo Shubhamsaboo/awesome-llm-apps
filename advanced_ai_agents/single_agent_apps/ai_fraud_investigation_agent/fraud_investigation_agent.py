@@ -25,7 +25,7 @@ from bs4 import BeautifulSoup
 
 # ── Constants ──────────────────────────────────────────────────────────────────
 
-MAX_PROVIDER_CAP = 10   # cap providers per ZIP for demo
+MAX_PROVIDER_CAP = 100  # upper safety cap to avoid runaway loops
 TOOL_TIMEOUT = 10       # seconds per HTTP request (Google, Socrata)
 DCFS_TIMEOUT = 30       # IL DCFS is a slow government site
 
@@ -248,7 +248,7 @@ def search_childcare_providers(zip_code: str, state: str = "IL") -> str:
             "zip_code": zip_code,
             "total_found": len(providers),
             "providers_returned": len(capped),
-            "note": f"Capped at {MAX_PROVIDER_CAP} for demo. Full Surelock investigates all." if len(providers) > MAX_PROVIDER_CAP else "",
+            "note": f"Showing {len(capped)} of {len(providers)} providers." if len(providers) > MAX_PROVIDER_CAP else "",
             "providers": capped,
         })
 
@@ -778,22 +778,30 @@ with st.sidebar:
         options=[
             "anthropic/claude-sonnet-4.6",
             "anthropic/claude-opus-4.6",
+            "google/gemini-3.1-flash-lite-preview",
+            "openai/gpt-5.4",
             "openai/gpt-4o",
         ],
         index=0,
         help="Claude Sonnet is a good balance of speed and quality",
     )
-    zip_code = st.text_input(
-        "ZIP Code (Illinois)",
-        value="60612",
-        help="5-digit Illinois ZIP code to investigate",
-    )
-    max_providers = st.slider(
-        "Max Providers to Investigate",
-        min_value=3,
-        max_value=MAX_PROVIDER_CAP,
-        value=5,
-        help="Fewer providers = faster investigation",
+    _COOK_COUNTY_ZIPS = [
+        "60623",  # Little Village / North Lawndale
+        "60629",  # Chicago Lawn
+        "60644",  # Austin
+        "60621",  # Englewood
+        "60628",  # Roseland
+        "60619",  # Chatham / Auburn Gresham
+        "60636",  # West Englewood
+        "60612",  # Near West Side
+        "60620",  # Auburn Gresham
+        "60624",  # Garfield Park
+    ]
+    zip_code = st.selectbox(
+        "ZIP Code (Cook County, IL)",
+        options=_COOK_COUNTY_ZIPS,
+        index=_COOK_COUNTY_ZIPS.index("60623"),
+        help="Property data is available for Cook County ZIPs only",
     )
 
     investigate_btn = st.button(
@@ -805,7 +813,7 @@ with st.sidebar:
 
     st.divider()
     st.markdown(
-        "**About:** This is a demo of [Surelock Homes](https://github.com/osobodev/Surelock-Homes), "
+        "**About:** This is a demo of [Surelock Homes](https://github.com/oso95/Surelock-Homes), "
         "an open-source autonomous fraud investigation system for subsidized childcare."
     )
     st.markdown(
@@ -851,7 +859,7 @@ elif investigate_btn and openrouter_key:
     st.session_state["google_maps_api_key"] = google_key or ""
 
     query = (
-        f"Investigate the first {max_providers} licensed childcare providers "
+        f"Investigate all licensed childcare providers "
         f"in ZIP code {zip_code} in Illinois. "
         f"For each provider: get property data, calculate max legal capacity, "
         f"check Google Places and Street View, and look for anomalies. "
@@ -860,7 +868,7 @@ elif investigate_btn and openrouter_key:
     )
 
     st.markdown(f"### Investigation: ZIP {zip_code}")
-    st.markdown(f"*Model: `{model_id}` · Max providers: {max_providers}*")
+    st.markdown(f"*Model: `{model_id}`*")
     st.divider()
 
     # Build agent
@@ -878,7 +886,7 @@ elif investigate_btn and openrouter_key:
             ],
             description=_build_system_prompt(),
             instructions=[
-                f"Investigate the {max_providers} providers returned for ZIP {zip_code}.",
+                f"Investigate all providers returned for ZIP {zip_code}.",
                 "For each Day Care Center with high capacity: deep investigation — property data, capacity calc, street view, places info.",
                 "For Day Care Homes (small capacity): quick triage — note capacity vs legal limit.",
                 "Cross-reference business registrations when owner names appear across multiple providers.",
@@ -887,7 +895,6 @@ elif investigate_btn and openrouter_key:
                 "End with a summary of flagged providers and pattern findings.",
             ],
             markdown=True,
-            show_tool_calls=True,
             compress_tool_results=True,  # Auto-compresses large tool responses to prevent context overflow
         )
     except Exception as exc:
