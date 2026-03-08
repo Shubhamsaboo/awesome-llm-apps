@@ -766,8 +766,8 @@ with st.sidebar:
     model_id = st.selectbox(
         "Model",
         options=[
-            "anthropic/claude-sonnet-4-20250514",
-            "anthropic/claude-opus-4-6-20250514",
+            "anthropic/claude-sonnet-4.6",
+            "anthropic/claude-opus-4.6",
             "openai/gpt-4o",
         ],
         index=0,
@@ -837,8 +837,8 @@ if not investigate_btn:
         """)
 
 elif investigate_btn and openrouter_key:
-    # Thread API keys to tool functions
-    _config["google_maps_api_key"] = google_key or ""
+    # Thread API keys to tool functions via session state (read by _google_key())
+    st.session_state["google_maps_api_key"] = google_key or ""
 
     query = (
         f"Investigate the first {max_providers} licensed childcare providers "
@@ -885,19 +885,22 @@ elif investigate_btn and openrouter_key:
 
     # Stream the investigation
     narration_area = st.empty()
-    full_text = ""
+    parts: list = []
 
     try:
         with st.spinner("Investigation in progress..."):
             for chunk in agent.run(query, stream=True):
-                if chunk.content:
-                    full_text += chunk.content
-                    narration_area.markdown(full_text)
+                content = getattr(chunk, "content", None)
+                if content:
+                    parts.append(content)
+                    narration_area.markdown("".join(parts))
+        full_text = "".join(parts)
 
         st.success("Investigation complete.")
 
     except Exception as exc:
         st.error(f"Investigation error: {exc}")
-        if full_text:
+        partial = "".join(parts)
+        if partial:
             st.markdown("**Partial results:**")
-            st.markdown(full_text)
+            st.markdown(partial)
