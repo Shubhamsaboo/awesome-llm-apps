@@ -1,0 +1,5 @@
+agno
+openai
+streamlit
+requests
+beautifulsoup4
