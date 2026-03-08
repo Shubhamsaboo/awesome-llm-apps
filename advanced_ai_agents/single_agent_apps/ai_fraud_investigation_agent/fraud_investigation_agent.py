@@ -9,7 +9,6 @@ Usage:
 
 from __future__ import annotations
 
-import base64
 import csv
 import io
 import json
@@ -494,7 +493,7 @@ def geocode_address(address: str) -> str:
 def get_street_view(address: str) -> str:
     """Capture Google Street View images of a location (4 angles: N/E/S/W).
 
-    Returns image metadata and base64-encoded JPEG images for visual analysis.
+    Returns image metadata. Images are stored in Streamlit session state and displayed after the investigation.
 
     Args:
         address: Street address to photograph
