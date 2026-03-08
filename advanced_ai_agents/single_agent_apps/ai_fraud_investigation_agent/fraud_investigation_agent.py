@@ -889,6 +889,7 @@ elif investigate_btn and openrouter_key:
             ],
             markdown=True,
             show_tool_calls=True,
+            compress_tool_results=True,  # Auto-compresses large tool responses to prevent context overflow
         )
     except Exception as exc:
         st.error(f"Failed to initialize agent: {exc}")
