@@ -743,7 +743,7 @@ def check_business_registration(name: str, state: str = "IL") -> str:
             "note": "IL SOS API unreachable. Manual lookup: https://apps.ilsos.gov/corporatellc/",
         })
     except Exception as exc:
-        return json.dumps({"status": "error", "query": name, "error": str(exc)})
+        return json.dumps({"status": "error", "query": name, "state": state_key, "error": str(exc)})
 
 
 # ── Streamlit App ─────────────────────────────────────────────────────────────
