@@ -15,7 +15,7 @@ import io
 import json
 import re
 from datetime import datetime
-from typing import Any, Optional
+from typing import Optional
 from urllib.parse import urlencode
 
 import requests
@@ -49,12 +49,10 @@ def _google_key() -> str:
 
 # ── System Prompt ──────────────────────────────────────────────────────────────
 
-_TODAY = datetime.now().strftime("%Y-%m-%d")
-
-SYSTEM_PROMPT = f"""<identity>
+_SYSTEM_PROMPT_TEMPLATE = """<identity>
 The agent is Surelock Homes, an autonomous fraud investigation agent powered by Opus 4.6.
 
-The current date is {_TODAY}.
+The current date is {today}.
 
 Surelock Homes is not a dashboard. Surelock Homes is not a rule engine. Surelock Homes is an investigator. It thinks like a forensic auditor, sees like a field inspector, and reasons like a prosecutor building a case. Most importantly — it notices things that don't add up.
 </identity>
@@ -138,6 +136,11 @@ SCOPE:
   - Visual analysis is probabilistic, not definitive
   - All findings are investigation leads, not evidence for prosecution
 </guardrails>"""
+
+
+def _build_system_prompt() -> str:
+    """Return system prompt with today's date substituted."""
+    return _SYSTEM_PROMPT_TEMPLATE.format(today=datetime.now().strftime("%Y-%m-%d"))
 
 
 # ── Helper: parse address components ──────────────────────────────────────────
@@ -541,18 +544,27 @@ def get_street_view(address: str) -> str:
                 "heading": heading,
                 "capture_date": meta.get("date", "unknown"),
                 "status": meta_status,
-                "image_base64": base64.b64encode(img_r.content).decode("ascii"),
+                "image_bytes": img_r.content,
             })
 
         if not images:
             return json.dumps({"status": "no_imagery", "address": address, "note": "No Street View imagery available for this address."})
+
+        # Store raw image bytes in session state for Streamlit display.
+        # Return only metadata to the LLM (base64 blobs are opaque text to the model
+        # and would consume megabytes of context for a 10-provider investigation).
+        cache = st.session_state.setdefault("street_view_cache", {})
+        cache[address] = [
+            {"heading": img["heading"], "capture_date": img["capture_date"], "image_bytes": img["image_bytes"]}
+            for img in images
+        ]
 
         return json.dumps({
             "status": "ok",
             "address": address,
             "images_captured": len(images),
             "capture_date": images[0].get("capture_date", "unknown"),
-            "images": images,
+            "note": "Street View images captured. They will be displayed in the Surelock UI below the investigation narration.",
         })
     except Exception as exc:
         return json.dumps({"status": "error", "address": address, "error": str(exc)})
@@ -666,15 +678,14 @@ def get_places_info(address: str, name: str = "") -> str:
 
 # ── Tool: check_business_registration ────────────────────────────────────────
 
-def check_business_registration(name: str, state: str = "IL", search_type: str = "business") -> str:
+def check_business_registration(name: str, state: str = "IL") -> str:
     """Look up business entity registration with the Secretary of State.
 
     Returns incorporation date, registered agent, entity type, and status.
 
     Args:
-        name: Business name or person name to search
+        name: Business name to search
         state: State abbreviation (IL supported)
-        search_type: Search by 'business' name or registered 'agent' name
     """
     if not name:
         return json.dumps({"status": "error", "error": "name is required"})
@@ -866,7 +877,7 @@ elif investigate_btn and openrouter_key:
                 get_places_info,
                 check_business_registration,
             ],
-            description=SYSTEM_PROMPT,
+            description=_build_system_prompt(),
             instructions=[
                 f"Investigate the {max_providers} providers returned for ZIP {zip_code}.",
                 "For each Day Care Center with high capacity: deep investigation — property data, capacity calc, street view, places info.",
@@ -897,6 +908,17 @@ elif investigate_btn and openrouter_key:
         full_text = "".join(parts)
 
         st.success("Investigation complete.")
+
+        # Display any Street View images collected during the investigation
+        sv_cache: dict = st.session_state.get("street_view_cache", {})
+        if sv_cache:
+            st.markdown("### Street View Images")
+            for addr, frames in sv_cache.items():
+                st.markdown(f"**{addr}**")
+                cols = st.columns(min(len(frames), 4))
+                for col, frame in zip(cols, frames):
+                    col.image(frame["image_bytes"], caption=f"Heading {frame['heading']}° · {frame['capture_date']}", use_container_width=True)
+            st.session_state.pop("street_view_cache", None)
 
     except Exception as exc:
         st.error(f"Investigation error: {exc}")
