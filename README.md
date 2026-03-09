@@ -261,3 +261,4 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 [![Star History Chart](https://api.star-history.com/svg?repos=Shubhamsaboo/awesome-llm-apps&type=Date)](https://star-history.com/#Shubhamsaboo/awesome-llm-apps&Date)
 
 🌟 **Don’t miss out on future updates! Star the repo now and be the first to know about new and exciting LLM apps with RAG and AI Agents.**
+- [agent101](https://agent101.ventify.ai) - Open directory of 500+ tools for AI agents. 15 categories, structured metadata (auth, free tier, actions, example calls), MCP server, JSON API.
