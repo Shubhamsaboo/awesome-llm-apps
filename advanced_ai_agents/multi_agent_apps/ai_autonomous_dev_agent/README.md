@@ -21,6 +21,8 @@ GitHub Issue (labeled "pilot")
 
 **Navigator** reads your codebase context and plans the approach. **Executor** implements using Claude Code. **Self-Reviewer** validates the changes. **Quality gates** run your tests and linter, retrying on failure.
 
+<img width="1758" height="1124" alt="Pilot dashboard and GitHub integration" src="https://github.com/user-attachments/assets/faaff57a-a23e-4cee-a08a-b9fa08ae135d" />
+
 ## Features
 
 - **Ticket-to-PR pipeline** — Label a GitHub issue `pilot`, get a PR back in minutes
