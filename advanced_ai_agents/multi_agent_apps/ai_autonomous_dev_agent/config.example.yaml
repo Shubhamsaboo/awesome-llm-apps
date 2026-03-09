@@ -1,0 +1,39 @@
+# Minimal Pilot config for GitHub issue polling
+# Copy to ~/.pilot/config.yaml and fill in your tokens
+#
+# Full reference: https://pilot.quantflow.studio/features/configuration
+
+version: "1.0"
+
+adapters:
+  github:
+    enabled: true
+    token: "${GITHUB_TOKEN}"
+    repo: "owner/repo"              # Your repository
+    pilot_label: "pilot"            # Issues with this label get executed
+    polling:
+      enabled: true
+      interval: 30s
+
+orchestrator:
+  model: "claude-sonnet-4-6"        # Default model (cost-effective)
+  max_concurrent: 1                 # Parallel tasks (increase for multiple repos)
+  execution:
+    mode: sequential
+    wait_for_merge: true
+
+executor:
+  type: "claude-code"
+  auto_create_pr: true
+
+# Autopilot — CI monitoring + auto-merge
+autopilot:
+  enabled: true
+  default_environment: "dev"        # dev=fast, stage=CI-gated, prod=approval
+  auto_merge: true
+  merge_method: "squash"
+
+projects:
+  - name: "my-project"
+    path: "/workspace/my-project"   # Path where your repo is checked out
+    default_branch: "main"

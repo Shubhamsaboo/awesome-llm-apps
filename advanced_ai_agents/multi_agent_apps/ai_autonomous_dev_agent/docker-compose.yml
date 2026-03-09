@@ -1,0 +1,23 @@
+services:
+  pilot:
+    image: ghcr.io/alekspetrov/pilot:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - pilot-data:/home/pilot/.pilot/data
+      - ./config.example.yaml:/home/pilot/.pilot/config.yaml:ro
+      - /path/to/your/repo:/workspace/my-project
+    environment:
+      - ANTHROPIC_API_KEY
+      - GITHUB_TOKEN
+    command: ["start", "--github", "--dashboard"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:9090/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+
+volumes:
+  pilot-data:
