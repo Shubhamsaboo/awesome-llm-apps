@@ -210,6 +210,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30-60% using TOON format
 *   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50-90% through intelligent context compression for AI agents (includes persistent memory & MCP support)
+*   [🔥 tokenspy — LLM Cost Profiler & Observability](https://github.com/pinakimishra95/tokenspy) - cProfile for LLMs: identifies which function burns your AI budget via flame graph, plus structured tracing, evaluations, prompt versioning, and live dashboard — no cloud, no proxy, `pip install tokenspy`
 
 ### 🔧 LLM Fine-tuning Tutorials
 
