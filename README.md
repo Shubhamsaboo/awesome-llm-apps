@@ -127,6 +127,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [👨🏻‍💼 AI Sales Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_sales_intelligence_agent_team)
 *   [🎧 AI Social Media News and Podcast Agent](advanced_ai_agents/multi_agent_apps/ai_news_and_podcast_agents/)
 *   [🌐 Openwork - Open Browser Automation Agent](https://github.com/accomplish-ai/openwork)
+*   [🔍 Lumen - Vision-First Browser Agent](https://github.com/omxyz/lumen) - Screenshot → model → action loop over CDP with self-healing deterministic replay and multi-provider support.
 
 ### 🎮 Autonomous Game Playing Agents
 
