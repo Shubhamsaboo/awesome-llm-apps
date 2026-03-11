@@ -160,9 +160,9 @@ async def generate_renovation_rendering(tool_context: ToolContext, inputs: Gener
                     reference_images.append(inspiration_part)
                     logger.info(f"Using inspiration image: {insp_filename}")
         
-        # Build the enhanced prompt
+        # Build the enhanced prompt using SLC formula (Subject, Lighting, Camera)
         base_rewrite_prompt = f"""
-        Create a highly detailed, photorealistic prompt for generating an interior design image.
+        Create an ultra-detailed, photorealistic prompt for generating a professional interior design photograph.
         
         Original description: {inputs.prompt}
         
@@ -175,25 +175,44 @@ async def generate_renovation_rendering(tool_context: ToolContext, inputs: Gener
         - ONLY change surface finishes: paint colors, cabinet colors, countertop materials, flooring, backsplash, hardware, and decorative elements
         - DO NOT move, add, or remove any structural elements or major fixtures
         
-        Enhance this to be a professional interior photography prompt that includes:
-        - Specific camera angle (match original photo perspective if described)
-        - Exact colors and materials mentioned (apply to existing surfaces)
-        - Realistic lighting (natural light from existing windows, fixture types)
-        - Maintain existing spatial layout and dimensions
-        - Texture and finish details for the new materials
-        - Professional interior design photography quality
+        **Use the SLC Formula for Photorealism:**
         
-        Aspect ratio: {inputs.aspect_ratio}
+        1. **SUBJECT (S)** - Be highly specific about details and textures:
+           - Describe exact materials with rich adjectives (e.g., "smooth matte white shaker-style cabinets", "honed Carrara marble countertops with subtle grey veining")
+           - Include texture details (e.g., "brushed nickel hardware", "wide-plank oak flooring with natural grain")
+           - Specify finishes precisely (e.g., "satin finish", "polished", "matte", "textured")
+        
+        2. **LIGHTING (L)** - Describe lighting conditions that create mood and realism:
+           - Natural light sources (e.g., "soft morning sunlight streaming through windows", "golden hour warm glow")
+           - Artificial lighting (e.g., "warm LED under-cabinet lighting", "pendant lights casting gentle shadows")
+           - Light quality (e.g., "diffused natural light", "dramatic side lighting", "even ambient illumination")
+           - Shadows and highlights (e.g., "subtle shadows adding depth", "highlights on polished surfaces")
+        
+        3. **CAMERA (C)** - Include professional photography specifications:
+           - Camera type: "shot on professional DSLR" or "architectural photography camera"
+           - Resolution: "8K resolution", "ultra high definition", "HDR"
+           - Perspective: specific angle (e.g., "wide-angle lens from doorway", "eye-level perspective", "slightly elevated view")
+           - Depth of field: "sharp focus throughout" or "shallow depth of field with background blur"
+           - Quality keywords: "professional interior design photography", "magazine quality", "architectural digest style"
+        
+        **Additional Requirements:**
+        - Maintain existing spatial layout and dimensions exactly as described
+        - Include specific color names and codes when mentioned
+        - Add atmospheric details (e.g., "clean, inviting atmosphere", "modern luxury feel")
+        - Specify the aspect ratio: {inputs.aspect_ratio}
+        
+        **Output Format:** Create a single, flowing paragraph that reads like a professional photography brief. 
+        Start with the camera/technical specs, then describe the subject with rich detail, then lighting conditions.
+        Include keywords: "photorealistic", "8K", "HDR", "professional interior photography", "architectural photography".
+        Emphasize that the layout must remain unchanged - only surface finishes are modified.
         """
         
         if reference_images:
-            base_rewrite_prompt += "\n\n**Reference Image Layout:** The reference image shows the EXACT layout that must be preserved. Match the camera angle, room structure, window/door positions, and furniture/appliance placement EXACTLY. Only change the surface finishes and colors."
-        
-        base_rewrite_prompt += "\n\n**Important:** Output your prompt as a single detailed paragraph optimized for photorealistic interior rendering. Emphasize that the layout must remain unchanged."
+            base_rewrite_prompt += "\n\n**Reference Image Layout:** The reference image shows the EXACT layout that must be preserved. Match the camera angle, room structure, window/door positions, and furniture/appliance placement EXACTLY. Only change the surface finishes and colors. Analyze the lighting in the reference image and replicate it."
         
         # Get enhanced prompt
         rewritten_prompt_response = client.models.generate_content(
-            model="gemini-3-flash-preview", 
+            model="gemini-3-pro-preview", 
             contents=base_rewrite_prompt
         )
         rewritten_prompt = rewritten_prompt_response.text
@@ -305,18 +324,59 @@ async def edit_renovation_rendering(tool_context: ToolContext, inputs: EditRenov
         if not artifact_filename:
             artifact_filename = tool_context.state.get("last_generated_rendering")
             if not artifact_filename:
-                return "❌ No artifact_filename provided and no previous rendering found in session. Please generate a rendering first or specify the artifact filename."
+                return "❌ No artifact_filename provided and no previous rendering found in session. Please generate a rendering first using generate_renovation_rendering."
             logger.info(f"Using last generated rendering from session: {artifact_filename}")
+        
+        # Validate filename format - check for common hallucination patterns
+        if "_v0." in artifact_filename:
+            # Version 0 doesn't exist - the first version is always v1
+            logger.warning(f"Invalid version v0 detected in filename: {artifact_filename}")
+            corrected_filename = artifact_filename.replace("_v0.", "_v1.")
+            logger.info(f"Attempting corrected filename: {corrected_filename}")
+            artifact_filename = corrected_filename
         
         # Load the existing rendering
         logger.info(f"Loading artifact: {artifact_filename}")
+        loaded_image_part = None
         try:
             loaded_image_part = await tool_context.load_artifact(artifact_filename)
-            if not loaded_image_part:
-                return f"❌ Could not find rendering artifact: {artifact_filename}"
         except Exception as e:
             logger.error(f"Error loading artifact: {e}")
-            return f"Error loading rendering artifact: {e}"
+        
+        # If loading failed, try to find the most recent version of this asset
+        if not loaded_image_part:
+            # Extract base asset name and try to find any existing version
+            base_name = artifact_filename.split('_v')[0] if '_v' in artifact_filename else artifact_filename.replace('.png', '')
+            asset_filenames = tool_context.state.get("asset_filenames", {})
+            
+            # Check if we have any version of this asset
+            if base_name in asset_filenames:
+                fallback_filename = asset_filenames[base_name]
+                logger.info(f"Attempting fallback to known artifact: {fallback_filename}")
+                try:
+                    loaded_image_part = await tool_context.load_artifact(fallback_filename)
+                    if loaded_image_part:
+                        artifact_filename = fallback_filename
+                        logger.info(f"Successfully loaded fallback artifact: {fallback_filename}")
+                except Exception as e:
+                    logger.error(f"Fallback load also failed: {e}")
+            
+            # Last resort: try the last generated rendering
+            if not loaded_image_part:
+                last_rendering = tool_context.state.get("last_generated_rendering")
+                if last_rendering and last_rendering != artifact_filename:
+                    logger.info(f"Attempting last resort fallback to: {last_rendering}")
+                    try:
+                        loaded_image_part = await tool_context.load_artifact(last_rendering)
+                        if loaded_image_part:
+                            artifact_filename = last_rendering
+                            logger.info(f"Successfully loaded last resort artifact: {last_rendering}")
+                    except Exception as e:
+                        logger.error(f"Last resort load also failed: {e}")
+        
+        if not loaded_image_part:
+            available_renderings = get_asset_versions_info(tool_context)
+            return f"❌ Could not find rendering artifact: {inputs.artifact_filename}\n\n{available_renderings}\n\nPlease use one of the available artifact filenames, or generate a new rendering first."
 
         # Handle reference image if specified
         reference_image_part = None
