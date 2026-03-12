@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+backend/venv/
+backend/chroma_video_db/
+backend/chroma_db/
+backend/frames/
+backend/uploads/
+
+# Node
+frontend/node_modules/
+frontend/.next/
+
+# Env
+.env
+.env.local
+*.env.local
+
+# Old/unused
+backend/agents.py
+backend/knowledge_store.py
+frontend/public/file.svg
+frontend/public/globe.svg
+frontend/public/next.svg
+frontend/public/vercel.svg
+frontend/public/window.svg

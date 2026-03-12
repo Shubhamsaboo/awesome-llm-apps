@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+:root {
+  --accent: #a855f7;
+  --accent-dim: #7c3aed;
+  --accent-glow: rgba(168, 85, 247, 0.15);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #27272a transparent;
+}
+
+body {
+  background: #09090b;
+}
+
+/* Glass panels */
+.glass {
+  background: rgba(24, 24, 27, 0.6);
+  backdrop-filter: blur(20px) saturate(1.2);
+  border: 1px solid rgba(63, 63, 70, 0.4);
+}
+
+.glass-subtle {
+  background: rgba(24, 24, 27, 0.3);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(63, 63, 70, 0.25);
+}
+
+/* Score bar gradient */
+.score-bar {
+  background: linear-gradient(90deg, #7c3aed, #a855f7, #c084fc);
+}
+
+/* Accent glow */
+.glow-accent {
+  box-shadow: 0 0 20px var(--accent-glow), 0 0 60px rgba(168, 85, 247, 0.05);
+}
+
+/* Drop zone pulse */
+@keyframes drop-pulse {
+  0%, 100% { border-color: rgba(168, 85, 247, 0.3); }
+  50% { border-color: rgba(168, 85, 247, 0.7); }
+}
+
+.drop-zone-active {
+  animation: drop-pulse 1.5s ease-in-out infinite;
+}
+
+/* Fade up for results */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.35s ease-out both;
+}
+
+/* Shimmer for loading */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(168, 85, 247, 0.06) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+}
+
+/* Smooth video transition */
+video {
+  transition: opacity 0.3s ease;
+}
+
+/* Custom focus ring */
+input:focus, button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.4);
+}
+
+/* Result card hover lift */
+.result-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.result-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border-color: rgba(168, 85, 247, 0.4);
+}
