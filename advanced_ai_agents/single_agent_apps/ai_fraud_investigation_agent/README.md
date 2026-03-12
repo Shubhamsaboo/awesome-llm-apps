@@ -2,8 +2,6 @@
 
 An AI-powered autonomous fraud investigation agent that cross-references childcare provider licensing records against physical building data to detect anomalies. The agent uses public data — Cook County property records, Illinois DCFS licensing, Google Maps, and the Secretary of State — to find facilities where the physical evidence doesn't match the paperwork.
 
-> **Built on [Surelock Homes](https://github.com/oso95/Surelock-Homes)** — an open-source autonomous fraud investigation system.
-
 ### Features
 
 - Searches Illinois DCFS licensing database for providers by ZIP code
