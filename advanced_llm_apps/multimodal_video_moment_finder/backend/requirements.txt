@@ -1,0 +1,7 @@
+fastapi>=0.115.0
+uvicorn>=0.30.0
+google-genai>=1.0.0
+google-adk>=1.0.0
+chromadb>=0.5.0
+python-multipart>=0.0.7
+Pillow>=10.0.0
