@@ -1,5 +1,9 @@
 # 🎬 Multimodal Video Moment Finder
 
+<p align="center">
+  <img src="assets/hero_banner.png" alt="Multimodal Video Moment Finder" width="700">
+</p>
+
 Find any moment in a video using images or text. Drop a screenshot to find where it appears, or describe a scene in words. Pure visual matching, zero transcription.
 
 Powered by **Gemini Embedding 2** for native cross-modal search.
@@ -98,32 +102,9 @@ Frontend runs on `http://localhost:3000`.
 
 ## Architecture
 
-```
-Video Upload
-    |
-    v
-ffmpeg (1fps) -> Frame JPEGs
-    |
-    v
-Gemini Embedding 2 (batch, 6/request)
-    |
-    v
-ChromaDB (cosine similarity)
-
-Query (image or text)
-    |
-    v
-Gemini Embedding 2
-    |
-    v
-ChromaDB search -> Top K frames
-    |
-    v
-Gemini 3 Flash (describe top 3)
-    |
-    v
-Results with timestamps
-```
+<p align="center">
+  <img src="assets/architecture_diagram.png" alt="Architecture Diagram" width="600">
+</p>
 
 ## Key Insight
 
