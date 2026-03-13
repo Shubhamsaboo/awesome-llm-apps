@@ -151,7 +151,7 @@ if "openai_api_key" in st.session_state and "firecrawl_api_key" in st.session_st
                 }
 
                 try:
-                    response = requests.post(perplexity_url, json=payload, headers=headers)
+                    response = requests.post(perplexity_url, json=payload, headers=headers, timeout=10.0)
                     response.raise_for_status()
                     urls = response.json()['choices'][0]['message']['content'].strip().split('\n')
                     return [url.strip() for url in urls if url.strip()]

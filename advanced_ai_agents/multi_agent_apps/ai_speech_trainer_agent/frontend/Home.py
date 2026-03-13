@@ -103,7 +103,7 @@ with col1:
                 with st.spinner("Analyzing video..."):
                     st.warning("⚠️ This process may take some time, so please be patient and wait for the analysis to complete.")
                     API_URL = "http://localhost:8000/analyze"
-                    response = requests.post(API_URL, json={"video_url": st.session_state.video_path})
+                    response = requests.post(API_URL, json={"video_url": st.session_state.video_path}, timeout=10.0)
                     
                     if response.status_code == 200:
                         st.success("Video analysis completed successfully.")

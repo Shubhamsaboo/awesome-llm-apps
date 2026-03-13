@@ -29,7 +29,7 @@ def wikipedia_search(agent: Agent, query: str, srlimit: int = 5) -> str:
             "srlimit": srlimit,
             "utf8": 1,
         }
-        search_response = requests.get(search_url, params=search_params)
+        search_response = requests.get(search_url, params=search_params, timeout=10.0)
         search_data = search_response.json()
         if (
             "query" not in search_data

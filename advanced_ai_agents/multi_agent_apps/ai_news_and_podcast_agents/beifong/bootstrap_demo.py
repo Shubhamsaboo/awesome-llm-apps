@@ -23,7 +23,7 @@ def download_file(url, dest_path):
     """stream-download a file from url to dest_path with progress bar."""
     print("↓ downloading demo content...")
     
-    response = requests.get(url, stream=True)
+    response = requests.get(url, stream=True, timeout=10.0)
     response.raise_for_status()
     
     
