@@ -29,7 +29,7 @@
 
 # 🌟 Awesome LLM Apps
 
-A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agent Teams, MCP, Voice Agents, and more.** This repository features LLM apps that use models from <img src="https://cdn.jsdelivr.net/npm/simple-icons@15/icons/openai.svg"  alt="openai logo" width="25" height="15">**OpenAI** , <img src="https://cdn.simpleicons.org/anthropic"  alt="anthropic logo" width="25" height="15">**Anthropic**, <img src="https://cdn.simpleicons.org/googlegemini"  alt="google logo" width="25" height="18">**Google**, <img src="https://cdn.simpleicons.org/x"  alt="X logo" width="25" height="15">**xAI** and open-source models like <img src="https://cdn.simpleicons.org/alibabacloud"  alt="alibaba logo" width="25" height="15">**Qwen** or  <img src="https://cdn.simpleicons.org/meta"  alt="meta logo" width="25" height="15">**Llama** that you can run locally on your computer.
+A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agent Teams, MCP, Voice Agents, and more.** This repository features LLM apps that use models from <img src="https://cdn.jsdelivr.net/npm/simple-icons@15/icons/openai.svg"  alt="openai logo" width="25" height="15">**OpenAI** , <img src="https://cdn.simpleicons.org/anthropic"  alt="anthropic logo" width="25" height="15">**Anthropic**, <img src="https://cdn.simpleicons.org/googlegemini"  alt="google logo" width="25" height="18">**Google**, <img src="https://cdn.simpleicons.org/x"  alt="X logo" width="25" height="15">**xAI** and open-source models like <img src="https://cdn.simpleicons.org/alibabacloud"  alt="alibaba logo" width="25" height="15">**Qwen**, <img src="https://cdn.simpleicons.org/meta"  alt="meta logo" width="25" height="15">**Llama** that you can run locally on your computer, and **MiniMax**.
 
 <p align="center">
   <a href="https://trendshift.io/repositories/9876" target="_blank">
@@ -103,6 +103,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [🛫 AI Travel Agent (Local & Cloud)](starter_ai_agents/ai_travel_agent/)
 *   [✨ Gemini Multimodal Agent](starter_ai_agents/gemini_multimodal_agent_demo/)
 *   [🔄 Mixture of Agents](starter_ai_agents/mixture_of_agents/)
+*   [🔍 MiniMax Research Agent](starter_ai_agents/minimax_research_agent/)
 *   [📊 xAI Finance Agent](starter_ai_agents/xai_finance_agent/)
 *   [🔍 OpenAI Research Agent](starter_ai_agents/openai_research_agent/)
 *   [🕸️ Web Scraping AI Agent (Local & Cloud SDK)](starter_ai_agents/web_scraping_ai_agent/)
