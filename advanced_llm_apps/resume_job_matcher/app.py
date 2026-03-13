@@ -66,6 +66,7 @@ if st.button("🔍 Match Resume with Job Description"):
                 response = requests.post(
                     "http://localhost:11434/api/generate",
                     json={"model": "llama3", "prompt": prompt, "stream": False},
+                    timeout=10.0,
                 )
                 data = response.json()
                 output = data.get("response", "⚠️ No response from model.")

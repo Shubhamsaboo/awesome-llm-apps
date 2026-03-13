@@ -48,9 +48,11 @@ def text_to_speech_elevenlabs(
     client: ElevenLabs,
     text: str,
     speaker_id: int,
-    voice_map={1: "Rachel", 2: "Adam"},
+    voice_map=None,
     model_id: str = TEXT_TO_SPEECH_MODEL,
 ) -> Optional[Tuple[np.ndarray, int]]:
+    if voice_map is None:
+        voice_map = {}
     if not text.strip():
         return None
     voice_name_or_id = voice_map.get(speaker_id)
@@ -131,9 +133,11 @@ def create_podcast(
     sampling_rate: int = 24_000,
     lang_code: str = "en",
     elevenlabs_model: str = "eleven_multilingual_v2",
-    voice_map: dict = {1: "Rachel", 2: "Adam"},
+    voice_map: dict = None,
     api_key: str = None,
 ) -> str:
+    if voice_map is None:
+        voice_map = {}
     if not api_key:
         print("Warning: Using hardcoded API key")
     try:

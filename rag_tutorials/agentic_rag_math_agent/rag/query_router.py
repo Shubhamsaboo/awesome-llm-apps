@@ -58,7 +58,7 @@ def query_web(question: str):
         "include_answer": True,
         "include_raw_content": False
     }
-    response = requests.post(url, json=payload, headers=headers)
+    response = requests.post(url, json=payload, headers=headers, timeout=10.0)
     data = response.json()
     return data.get("answer", "No answer found.")
 

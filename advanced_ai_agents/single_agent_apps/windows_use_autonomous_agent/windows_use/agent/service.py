@@ -34,7 +34,11 @@ class Agent:
     Returns:
         Agent
     '''
-    def __init__(self,instructions:list[str]=[],additional_tools:list[BaseTool]=[], llm: BaseChatModel=None,max_steps:int=100,use_vision:bool=False):
+    def __init__(self,instructions:list[str]=None,additional_tools:list[BaseTool]=None, llm: BaseChatModel=None,max_steps:int=100,use_vision:bool=False):
+        if instructions is None:
+            instructions = []
+        if additional_tools is None:
+            additional_tools = []
         self.name='Windows Use'
         self.description='An agent that can interact with GUI elements on Windows' 
         self.registry = Registry([

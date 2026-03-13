@@ -53,7 +53,7 @@ if openai_api_key and models_lab_api_key:
                         os.makedirs(save_dir, exist_ok=True)
 
                         url = music.audio[0].url
-                        response = requests.get(url)
+                        response = requests.get(url, timeout=10.0)
 
                         # 🛡️ Validate response
                         if not response.ok:

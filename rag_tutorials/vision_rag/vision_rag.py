@@ -249,7 +249,7 @@ def download_and_embed_sample_images(_cohere_client) -> tuple[list[str], np.ndar
                 # Download the image
                 if not os.path.exists(img_path):
                     try:
-                        response = requests.get(url)
+                        response = requests.get(url, timeout=10.0)
                         response.raise_for_status()
                         with open(img_path, "wb") as fOut:
                             fOut.write(response.content)

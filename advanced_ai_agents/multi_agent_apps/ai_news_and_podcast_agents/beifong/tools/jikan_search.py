@@ -47,10 +47,10 @@ def jikan_search(agent: Agent, query: str) -> str:
 def _search_anime(query: str) -> List[Dict[str, Any]]:
     try:
         search_url = f"https://api.jikan.moe/v4/anime?q={query}&sfw=true&order_by=popularity&sort=asc&limit=10"
-        response = requests.get(search_url)
+        response = requests.get(search_url, timeout=10.0)
         if response.status_code == 429:
             time.sleep(0.5)
-            response = requests.get(search_url)
+            response = requests.get(search_url, timeout=10.0)
         if response.status_code != 200:
             return []
         data = response.json()
@@ -64,10 +64,10 @@ def _search_anime(query: str) -> List[Dict[str, Any]]:
 def _get_anime_details(anime_id: int) -> Optional[Dict[str, Any]]:
     try:
         details_url = f"https://api.jikan.moe/v4/anime/{anime_id}/full"
-        details_response = requests.get(details_url)
+        details_response = requests.get(details_url, timeout=10.0)
         if details_response.status_code == 429:
             time.sleep(0.5)
-            details_response = requests.get(details_url)
+            details_response = requests.get(details_url, timeout=10.0)
         if details_response.status_code != 200:
             return None
         details_data = details_response.json()
@@ -82,10 +82,10 @@ def _get_anime_details(anime_id: int) -> Optional[Dict[str, Any]]:
 def _get_anime_recommendations(anime_id: int) -> List[Dict[str, Any]]:
     try:
         recs_url = f"https://api.jikan.moe/v4/anime/{anime_id}/recommendations"
-        recs_response = requests.get(recs_url)
+        recs_response = requests.get(recs_url, timeout=10.0)
         if recs_response.status_code == 429:
             time.sleep(0.5)
-            recs_response = requests.get(recs_url)
+            recs_response = requests.get(recs_url, timeout=10.0)
         if recs_response.status_code != 200:
             return []
         recs_data = recs_response.json()

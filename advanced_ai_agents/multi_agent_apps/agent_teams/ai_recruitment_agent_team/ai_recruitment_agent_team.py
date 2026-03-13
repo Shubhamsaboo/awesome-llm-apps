@@ -33,7 +33,7 @@ class CustomZoomTool(ZoomTool):
         data = {"grant_type": "account_credentials", "account_id": self.account_id}
 
         try:
-            response = requests.post(self.token_url, headers=headers, data=data, auth=(self.client_id, self.client_secret))
+            response = requests.post(self.token_url, headers=headers, data=data, auth=(self.client_id, self.client_secret), timeout=10.0)
             response.raise_for_status()
 
             token_info = response.json()

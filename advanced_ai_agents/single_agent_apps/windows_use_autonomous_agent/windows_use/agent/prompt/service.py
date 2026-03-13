@@ -12,7 +12,9 @@ import platform
 
 class Prompt:
     @staticmethod
-    def system_prompt(tools_prompt:str,max_steps:int,instructions: list[str]=[]) -> str:
+    def system_prompt(tools_prompt:str,max_steps:int,instructions: list[str]=None) -> str:
+        if instructions is None:
+            instructions = []
         width, height = pg.size()
         template =PromptTemplate.from_file(files('windows_use.agent.prompt').joinpath('system.md'))
         return template.format(**{
