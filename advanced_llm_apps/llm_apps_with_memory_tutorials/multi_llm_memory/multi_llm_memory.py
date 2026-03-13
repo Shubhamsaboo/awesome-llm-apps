@@ -9,6 +9,7 @@ st.caption("LLM App with a personalized memory layer that remembers each user's 
 
 openai_api_key = st.text_input("Enter OpenAI API Key", type="password")
 anthropic_api_key = st.text_input("Enter Anthropic API Key", type="password")
+minimax_api_key = st.text_input("Enter MiniMax API Key (optional)", type="password")
 
 if openai_api_key and anthropic_api_key:
     os.environ["ANTHROPIC_API_KEY"] = anthropic_api_key
@@ -27,10 +28,15 @@ if openai_api_key and anthropic_api_key:
     memory = Memory.from_config(config)
 
     user_id = st.sidebar.text_input("Enter your Username")
-    llm_choice = st.sidebar.radio("Select LLM", ('OpenAI GPT-4o', 'Claude Sonnet 3.5'))
+    llm_options = ['OpenAI GPT-4o', 'Claude Sonnet 3.5']
+    if minimax_api_key:
+        llm_options.append('MiniMax M2.5')
+    llm_choice = st.sidebar.radio("Select LLM", llm_options)
 
     if llm_choice == 'OpenAI GPT-4o':
         client = OpenAI(api_key=openai_api_key)
+    elif llm_choice == 'MiniMax M2.5':
+        client = OpenAI(api_key=minimax_api_key, base_url="https://api.minimax.io/v1")
     elif llm_choice == 'Claude Sonnet 3.5':
         config = {
             "llm": {
@@ -60,6 +66,15 @@ if openai_api_key and anthropic_api_key:
             if llm_choice == 'OpenAI GPT-4o':
                 response = client.chat.completions.create(
                     model="gpt-4o",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful assistant with access to past conversations."},
+                        {"role": "user", "content": full_prompt}
+                    ]
+                )
+                answer = response.choices[0].message.content
+            elif llm_choice == 'MiniMax M2.5':
+                response = client.chat.completions.create(
+                    model="MiniMax-M2.5",
                     messages=[
                         {"role": "system", "content": "You are a helpful assistant with access to past conversations."},
                         {"role": "user", "content": full_prompt}
