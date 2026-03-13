@@ -189,6 +189,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 ### 💾 LLM Apps with Memory Tutorials
 
+- [ODEI World Model](https://github.com/odei-ai/memory) - Production constitutional knowledge graph for AI agents. Neo4j-backed world model with 91 nodes across 6 semantic domains (Foundation, Vision, Strategy, Tactics, Execution, Track). 7-layer constitutional guardrails, ERC-8004 multi-chain identity. API: api.odei.ai. Deployed as Virtuals ACP Agent #3082.
 *   [💾 AI ArXiv Agent with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/ai_arxiv_agent_memory/)
 *   [🛩️ AI Travel Agent with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/)
 *   [💬 Llama3 Stateful Chat](advanced_llm_apps/llm_apps_with_memory_tutorials/llama3_stateful_chat/)
