@@ -156,6 +156,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [📞 Customer Support Voice Agent](voice_ai_agents/customer_support_voice_agent/)
 *   [🔊 Voice RAG Agent (OpenAI SDK)](voice_ai_agents/voice_rag_openaisdk/)
 *   [🎙️ OpenSource Voice Dictation Agent (like Wispr Flow](https://github.com/akshayaggarwal99/jarvis-ai-assistant)
+*   [📱 Voice AI SDR Agent - Automated Sales Calls](https://github.com/Rajathbharadwaj/voice-agent) - Production-ready voice AI agent for automated sales calls built with LangGraph, Twilio, and OpenAI.
 
 ### <img src="https://cdn.simpleicons.org/modelcontextprotocol"  alt="mcp logo" width="25" height="20"> MCP AI Agents 
 
@@ -164,6 +165,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent) 
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team)
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/)
+*   [🧩 LangGraph Patterns MCP Server](https://github.com/Rajathbharadwaj/langgraph-patterns-mcp) - MCP server providing LangGraph agent patterns and code snippets for Claude Desktop, Cursor, or any MCP client.
 
 ### 📀 RAG (Retrieval Augmented Generation)
 *   [🔥 Agentic RAG with Embedding Gemma](rag_tutorials/agentic_rag_embedding_gemma)
