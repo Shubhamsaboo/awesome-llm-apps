@@ -210,6 +210,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30-60% using TOON format
 *   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50-90% through intelligent context compression for AI agents (includes persistent memory & MCP support)
+*   [💰 shekel - Runtime Budget Guardrails](https://github.com/arieradle/shekel/blob/main/examples/nested_research_agent.py) - Hard spending limits for AI agents. Prevents runaway LLM costs from retries, tool loops, and long-running agents with a single `with budget(max_usd=5.00):` wrapper. See also: [LangGraph demo](https://github.com/arieradle/shekel/blob/main/examples/langgraph_demo.py). Supports OpenAI, Anthropic, Gemini, LangChain, LangGraph, CrewAI, AutoGen, LlamaIndex, MCP, and more.
 
 ### 🔧 LLM Fine-tuning Tutorials
 
