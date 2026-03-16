@@ -195,6 +195,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [📝 LLM App with Personalized Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/llm_app_personalized_memory/)
 *   [🗄️ Local ChatGPT Clone with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/local_chatgpt_with_memory/)
 *   [🧠 Multi-LLM Application with Shared Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/multi_llm_memory/)
+*   [🧠 widemem-ai — Open-source AI Memory Layer](https://github.com/remete618/widemem-ai) - AI memory layer with importance scoring, temporal decay, hierarchical memory, and YMYL prioritization.
 
 
 ### 💬 Chat with X Tutorials
