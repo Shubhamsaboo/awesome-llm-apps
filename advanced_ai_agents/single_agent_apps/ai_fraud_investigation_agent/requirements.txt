@@ -1,0 +1,6 @@
+agno>=2.5.9
+openai>=2.23.0
+streamlit>=1.54.0
+requests>=2.32.5
+beautifulsoup4>=4.14.3
+
