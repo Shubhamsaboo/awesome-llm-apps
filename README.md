@@ -165,6 +165,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team)
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/)
 
+*   [🛠️ Arch Tools MCP](https://archtools.dev) — 61 production-ready AI tools (code analysis, web scraping, image gen, NLP, crypto, search) via MCP protocol with x402 USDC micropayments
 ### 📀 RAG (Retrieval Augmented Generation)
 *   [🔥 Agentic RAG with Embedding Gemma](rag_tutorials/agentic_rag_embedding_gemma)
 *   [🧐 Agentic RAG with Reasoning](rag_tutorials/agentic_rag_with_reasoning/)
