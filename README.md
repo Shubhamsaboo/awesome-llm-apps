@@ -161,6 +161,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 ### <img src="https://cdn.simpleicons.org/modelcontextprotocol"  alt="mcp logo" width="25" height="20"> MCP AI Agents 
 
 *   [♾️ Browser MCP Agent](mcp_ai_agents/browser_mcp_agent/)
+*   **[Free Web Search Ultimate](https://github.com/wd041216-bit/free-web-search-ultimate)** - Zero-cost, privacy-first universal web search MCP server. Enforces a Search-First paradigm — instructs LLMs to retrieve real-time web information before answering factual questions, eliminating hallucinations. Supports text, news, images, books, and videos via DuckDuckGo. No API key required. Install: `pip install free-web-search-ultimate`
 *   [🐙 GitHub MCP Agent](mcp_ai_agents/github_mcp_agent/)
 *   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent) 
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team)
