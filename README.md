@@ -120,6 +120,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [📈 AI Investment Agent](advanced_ai_agents/single_agent_apps/ai_investment_agent/)
 *   [🏋️‍♂️ AI Health & Fitness Agent](advanced_ai_agents/single_agent_apps/ai_health_fitness_agent/)
 *   [🚀 AI Product Launch Intelligence Agent](advanced_ai_agents/multi_agent_apps/product_launch_intelligence_agent)
+*   [🔍 AI Fraud Investigation Agent](advanced_ai_agents/single_agent_apps/ai_fraud_investigation_agent/)
 *   [🗞️ AI Journalist Agent](advanced_ai_agents/single_agent_apps/ai_journalist_agent/)
 *   [🧠 AI Mental Wellbeing Agent](advanced_ai_agents/multi_agent_apps/ai_mental_wellbeing_agent/)
 *   [📑 AI Meeting Agent](advanced_ai_agents/single_agent_apps/ai_meeting_agent/)
