@@ -2,7 +2,7 @@
 
 A Streamlit application that demonstrates how to build a **Search-First LLM Agent** using the Model Context Protocol (MCP). It uses DuckDuckGo for free, real-time web searches and beautifulsoup4 for webpage content extraction, requiring **zero API keys** for the search functionality.
 
-**✨ Powered by [free-web-search-ultimate](https://github.com/wd041216-bit/free-web-search-ultimate) MCP Server**
+**✨ Powered by [free-web-search-ultimate](https://github.com/wd041216-bit/free-web-search-ultimate) MCP Server** [![free-web-search-ultimate MCP server](https://glama.ai/mcp/servers/wd041216-bit/free-web-search-ultimate/badges/score.svg)](https://glama.ai/mcp/servers/wd041216-bit/free-web-search-ultimate)
 
 ## Features
 
