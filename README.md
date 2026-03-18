@@ -196,6 +196,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [📝 LLM App with Personalized Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/llm_app_personalized_memory/)
 *   [🗄️ Local ChatGPT Clone with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/local_chatgpt_with_memory/)
 *   [🧠 Multi-LLM Application with Shared Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/multi_llm_memory/)
+*   [🧠 Engram-AI — Experience-driven memory for AI agents](https://github.com/kajaha06251020/Engram-AI) - Records actions, contexts, outcomes, and valence (−1.0 to +1.0). Experiences crystallize into skills, skills evolve into agent config (CLAUDE.md). Claude Code hooks + 10-tool MCP server. No API key required for core features. `pip install engram-forge`
 
 
 ### 💬 Chat with X Tutorials
