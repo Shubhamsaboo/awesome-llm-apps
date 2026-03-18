@@ -166,6 +166,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/)
 
 ### 📀 RAG (Retrieval Augmented Generation)
+*   [🏛️ Agentic Legal RAG with Citations](rag_tutorials/agentic_legal_rag_citations/)
 *   [🔥 Agentic RAG with Embedding Gemma](rag_tutorials/agentic_rag_embedding_gemma)
 *   [🧐 Agentic RAG with Reasoning](rag_tutorials/agentic_rag_with_reasoning/)
 *   [📰 AI Blog Search (RAG)](rag_tutorials/ai_blog_search/)
