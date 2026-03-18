@@ -30,12 +30,12 @@ if openai_api_key and anthropic_api_key:
     user_id = st.sidebar.text_input("Enter your Username")
     llm_options = ['OpenAI GPT-4o', 'Claude Sonnet 3.5']
     if minimax_api_key:
-        llm_options.append('MiniMax M2.5')
+        llm_options.append('MiniMax M2.7')
     llm_choice = st.sidebar.radio("Select LLM", llm_options)
 
     if llm_choice == 'OpenAI GPT-4o':
         client = OpenAI(api_key=openai_api_key)
-    elif llm_choice == 'MiniMax M2.5':
+    elif llm_choice == 'MiniMax M2.7':
         client = OpenAI(api_key=minimax_api_key, base_url="https://api.minimax.io/v1")
     elif llm_choice == 'Claude Sonnet 3.5':
         config = {
@@ -72,9 +72,9 @@ if openai_api_key and anthropic_api_key:
                     ]
                 )
                 answer = response.choices[0].message.content
-            elif llm_choice == 'MiniMax M2.5':
+            elif llm_choice == 'MiniMax M2.7':
                 response = client.chat.completions.create(
-                    model="MiniMax-M2.5",
+                    model="MiniMax-M2.7",
                     messages=[
                         {"role": "system", "content": "You are a helpful assistant with access to past conversations."},
                         {"role": "user", "content": full_prompt}
