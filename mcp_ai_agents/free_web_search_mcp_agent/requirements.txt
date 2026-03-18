@@ -1,0 +1,5 @@
+streamlit==1.32.0
+agno==0.1.5
+mcp==1.0.0
+duckduckgo-search==5.3.0
+beautifulsoup4==4.12.3
