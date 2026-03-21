@@ -148,6 +148,10 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [🎨 🍌 Multimodal UI/UX Feedback Agent Team with Nano Banana](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_uiux_feedback_agent_team/)
 *   [🌏 AI Travel Planner Agent Team](/advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/)
 
+### 🤖 Agent Template Collections
+
+*   [🔧 OpenClaw Agent Templates](https://github.com/mergisi/awesome-openclaw-agents) - 177 production-ready OpenClaw agent configurations. Each template is a SOUL.md file defining identity, rules, tools, and integrations for autonomous AI agents. Covers 24 categories including Marketing, DevOps, Finance, Healthcare, Legal, and HR.
+
 ### 🗣️ Voice AI Agents
 
 *   [🗣️ AI Audio Tour Agent](voice_ai_agents/ai_audio_tour_agent/)
