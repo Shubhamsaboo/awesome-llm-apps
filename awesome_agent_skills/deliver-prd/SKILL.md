@@ -149,6 +149,108 @@ Use this skill when:
 - [ ] [Question 2] — Owner: [Name]
 ```
 
+## Worked Example
+
+```markdown
+## PRD: One-Click Reorder
+
+**Problem**: Returning customers who purchase the same items regularly must re-navigate the catalog, re-add items, and re-enter preferences each time — adding 3-5 minutes of friction to repeat purchases.
+**Solution**: A "Reorder" button on past orders that pre-fills the cart with previous items, quantities, and saved preferences.
+**Target Users**: Returning customers with 2+ past orders (38% of active customer base)
+
+---
+
+## Goals & Success Metrics
+
+| Metric | Current Baseline | Target | Timeline |
+|--------|-----------------|--------|----------|
+| Repeat purchase conversion rate | 22% | 35% | 60 days post-launch |
+| Time-to-checkout for repeat orders | 4.2 min | <1 min | 60 days post-launch |
+| Customer satisfaction (repeat buyers) | 3.8/5 | 4.2/5 | 90 days post-launch |
+
+**Non-Goals**:
+- Subscription/auto-reorder functionality (future consideration)
+- Reorder across different delivery addresses in a single flow
+
+---
+
+## User Stories
+
+| ID | User Story | Priority |
+|----|-----------|----------|
+| US-1 | As a returning customer, I want to reorder my last purchase with one click so I don't have to rebuild my cart manually | P0 |
+| US-2 | As a returning customer, I want to edit quantities before confirming a reorder so I can adjust for this week's needs | P0 |
+| US-3 | As a returning customer, I want to see my 5 most recent orders so I can pick which one to reorder | P1 |
+| US-4 | As a returning customer, I want to be notified if a previously ordered item is unavailable so I can substitute before checkout | P1 |
+
+---
+
+## Scope
+
+**In Scope**:
+- "Reorder" button on order history and order confirmation pages
+- Pre-filled cart with item availability checking
+- Quantity editing before checkout
+- Handling of unavailable items (notify + suggest removal)
+
+**Out of Scope**:
+- Subscription or scheduled reorders
+- Reorder from multiple past orders combined into one cart
+- Personalized reorder suggestions based on purchase patterns
+
+**Future Considerations**:
+- Scheduled reorders — dependent on subscription infrastructure (Q3 roadmap)
+- Smart substitutions for out-of-stock items — requires ML recommendation engine
+
+---
+
+## Functional Requirements
+
+### Cart Pre-fill
+- FR-1: System shall populate cart with all items from the selected past order at their original quantities
+- FR-2: System shall check real-time inventory for each item and flag unavailable products before checkout
+- FR-3: User shall be able to modify quantities or remove items from the pre-filled cart before confirming
+
+### Order History Integration
+- FR-4: "Reorder" button shall appear on the 5 most recent completed orders
+- FR-5: Reorder shall preserve item-level preferences (size, color, customizations) from the original order
+
+---
+
+## Technical Considerations
+
+- **Constraints**: Must work within existing cart API — no new microservice for v1
+- **Integration Points**: Inventory service (real-time stock check), Order History API, Cart API
+- **Data Requirements**: No new data storage; reads from existing order history records
+
+---
+
+## Dependencies & Risks
+
+| Dependency/Risk | Type | Owner | Impact | Mitigation |
+|----------------|------|-------|--------|------------|
+| Inventory API latency under load | Risk | Platform team | Med | Cache stock status with 5-min TTL |
+| Discontinued SKUs in old orders | Risk | Catalog team | Low | Show "unavailable" badge, allow partial reorder |
+
+---
+
+## Timeline & Milestones
+
+| Milestone | Description | Target Date |
+|-----------|-------------|-------------|
+| Design review | UX mocks approved | Week 2 |
+| API contract | Cart pre-fill endpoint finalized | Week 3 |
+| Beta launch | Internal dogfood with employees | Week 5 |
+| GA launch | Full rollout to returning customers | Week 7 |
+
+---
+
+## Open Questions
+
+- [ ] Should reorder preserve the original delivery address or default to the current saved address? — Owner: Product
+- [ ] How do we handle price changes between original order and reorder? — Owner: Product + Legal
+```
+
 ## Quality Guidelines
 
 - Problem and "why now" are clearly articulated
@@ -158,7 +260,3 @@ Use this skill when:
 - Technical considerations are surfaced without over-specifying
 - Dependencies and risks are documented with owners
 - Document is readable in under 15 minutes
-
----
-
-*Created for product specification and engineering handoff — from [pm-skills](https://github.com/product-on-purpose/pm-skills), a library of 24 product management agent skills*

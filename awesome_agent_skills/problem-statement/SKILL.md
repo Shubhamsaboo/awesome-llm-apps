@@ -105,6 +105,57 @@ Use this skill when:
 - [ ] [Question 3]
 ```
 
+## Worked Example
+
+```markdown
+## Problem Statement: Mobile Checkout Abandonment
+
+### Problem Summary
+Mobile shoppers on our e-commerce platform abandon their carts at checkout 68% of the time — 23 percentage points higher than desktop. Users report confusion around shipping options, unexpected costs appearing late in the flow, and difficulty entering payment information on small screens. This gap represents significant lost revenue from our fastest-growing traffic segment.
+
+---
+
+### User Impact
+
+**Who is affected?** Mobile shoppers who add items to cart and begin checkout (approximately 42,000 sessions/month)
+
+**How are they affected?** Users encounter a 5-step checkout flow that requires manual address entry, presents shipping costs only at step 4, and lacks mobile-optimized payment options (e.g., Apple Pay, Google Pay). Session recordings show repeated form errors, back-navigation, and eventual abandonment.
+
+**Scale of impact**: 42,000 mobile checkout sessions/month with a 68% abandonment rate vs. 45% on desktop — an estimated 9,660 lost conversions/month
+
+---
+
+### Business Context
+
+**Strategic Alignment**: Mobile traffic now represents 61% of all sessions (up from 48% last year). Improving mobile conversion directly supports the company's channel growth strategy.
+**Business Impact**: At an average order value of $73, the 23-point mobile gap represents approximately $706K/month in unrealized revenue.
+**Why Now?**: Mobile traffic share is accelerating. Every quarter we delay, the revenue impact grows. Competitors launched streamlined mobile checkout in Q3, and we're seeing increased bounce rates from price-comparison shoppers.
+
+---
+
+### Success Criteria
+
+| Metric | Current Baseline | Target | Timeline |
+|--------|-----------------|--------|----------|
+| Mobile checkout completion rate | 32% | 45% | 90 days post-launch |
+| Mobile cart-to-purchase conversion | 12% | 18% | 90 days post-launch |
+| Customer support tickets (checkout) | 340/month | Maintain or reduce | Ongoing |
+
+---
+
+### Constraints & Considerations
+- Payment provider contract limits which express checkout options we can integrate before Q3
+- Regulatory requirement to display total cost including tax before payment step (no hiding fees)
+- Engineering capacity: mobile team has 2 sprints available in the next quarter
+
+---
+
+### Open Questions
+- [ ] Do users abandon due to unexpected shipping costs, form friction, or both? (Need funnel analysis by step)
+- [ ] What express payment methods does our payment provider currently support?
+- [ ] Are there legal requirements around address verification that prevent auto-fill?
+```
+
 ## Problem Framing Tips
 
 - **Describe the "what" without prescribing the "how"** — solutions come later
@@ -112,7 +163,3 @@ Use this skill when:
 - **Be specific about users** — "all users" is rarely the right framing
 - **Explain why now** — urgency and timing matter for prioritization
 - **Capture unknowns honestly** — open questions are a sign of rigor, not weakness
-
----
-
-*Created for problem framing and initiative scoping — from [pm-skills](https://github.com/product-on-purpose/pm-skills), a library of 24 product management agent skills*
