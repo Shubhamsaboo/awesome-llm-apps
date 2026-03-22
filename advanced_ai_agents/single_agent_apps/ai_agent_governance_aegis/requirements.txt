@@ -1,0 +1,2 @@
+agent-aegis>=0.1.6
+streamlit>=1.30.0
