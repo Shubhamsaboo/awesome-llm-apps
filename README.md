@@ -128,6 +128,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [👨🏻‍💼 AI Sales Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_sales_intelligence_agent_team)
 *   [🎧 AI Social Media News and Podcast Agent](advanced_ai_agents/multi_agent_apps/ai_news_and_podcast_agents/)
 *   [🌐 Openwork - Open Browser Automation Agent](https://github.com/accomplish-ai/openwork)
+*   [👻 GhostClaw - Bare-Metal Telegram AI Agent](advanced_ai_agents/multi_agent_apps/ghostclaw_telegram_agent/)
 
 ### 🎮 Autonomous Game Playing Agents
 
@@ -261,4 +262,4 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Shubhamsaboo/awesome-llm-apps&type=Date)](https://star-history.com/#Shubhamsaboo/awesome-llm-apps&Date)
 
-🌟 **Don’t miss out on future updates! Star the repo now and be the first to know about new and exciting LLM apps with RAG and AI Agents.**
+🌟 **Don't miss out on future updates! Star the repo now and be the first to know about new and exciting LLM apps with RAG and AI Agents.**
