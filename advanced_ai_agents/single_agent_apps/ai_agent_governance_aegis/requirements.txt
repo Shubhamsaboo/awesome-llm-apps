@@ -1,0 +1,4 @@
+agent-aegis>=0.1.6
+openai>=1.0.0
+pyyaml>=6.0
+streamlit>=1.30.0
