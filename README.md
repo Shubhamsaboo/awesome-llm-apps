@@ -165,6 +165,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent) 
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team)
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/)
+*   [🤖 BotVa - Multi-Bot Telegram Platform](https://github.com/cohe4ko/BotVa)
 
 ### 📀 RAG (Retrieval Augmented Generation)
 *   [🔥 Agentic RAG with Embedding Gemma](rag_tutorials/agentic_rag_embedding_gemma)
