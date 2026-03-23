@@ -1,0 +1,5 @@
+streamlit>=1.32.0
+openai>=1.0.0
+tavily-python>=0.3.0
+lightrag-hku>=1.0.0
+python-dotenv>=1.0.0
