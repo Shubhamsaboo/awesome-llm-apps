@@ -150,6 +150,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [✨ Multimodal Design Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_design_agent_team/)
 *   [🎨 🍌 Multimodal UI/UX Feedback Agent Team with Nano Banana](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_uiux_feedback_agent_team/)
 *   [🌏 AI Travel Planner Agent Team](/advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/)
+*   [🖥️ Agent Mesh Mission Control](https://github.com/iriseye931-ai/mission-control-dashboard) - Real-time WebSocket dashboard for monitoring multi-agent AI systems. Live agent status, streaming logs, cron progress, and memory activity for Claude Code + Hermes + OpenClaw meshes. React 19 + FastAPI.
 
 ### 🗣️ Voice AI Agents
 
