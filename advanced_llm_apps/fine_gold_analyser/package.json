@@ -1,0 +1,12 @@
+{
+  "name": "fine-gold-analyser",
+  "version": "2.1.0",
+  "description": "UAE gold compliance analysis tool powered by Claude, with Asana and Notion integration",
+  "scripts": {
+    "start": "live-server --port=8080 --no-browser --host=0.0.0.0",
+    "dev": "live-server --port=8080"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}

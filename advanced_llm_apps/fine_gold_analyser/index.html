@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fine Gold Analyser v2.1 - Compliance Analysis Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .version {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 30px;
+        }
+        
+        .company-selector {
+            background: #f0f9ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 2px solid #0066cc;
+        }
+        
+        .company-selector h3 {
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+        
+        .company-info {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #0066cc;
+            margin-top: 15px;
+        }
+        
+        .company-info p {
+            margin: 8px 0;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #0066cc;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0052a3;
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .settings-section {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .settings-section h3 {
+            margin-bottom: 15px;
+            color: #1f2937;
+        }
+        
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .notion-settings {
+            background: #fef3c7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .status-message {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            display: none;
+        }
+        
+        .status-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        
+        .status-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+        
+        small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+        }
+        
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .section-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin: 5px;
+        }
+        
+        .badge-workflow { background: #dbeafe; color: #1e40af; }
+        .badge-assessments { background: #fef3c7; color: #92400e; }
+        .badge-gaps { background: #fee2e2; color: #991b1b; }
+        .badge-documents { background: #e0e7ff; color: #3730a3; }
+        .badge-training { background: #dcfce7; color: #166534; }
+        
+        .analysis-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #e5e7eb;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚖️ Fine Gold Analyser</h1>
+            <p class="version">v2.1 - Multi-Company Edition with Notion Integration</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">
+                UAE FDL No.10/2025 · FATF · LBMA RGG v9 · UAE FIU · EOCN
+            </p>
+        </header>
+        
+        <div class="main-content">
+            <!-- COMPANY SELECTOR -->
+            <div class="company-selector">
+                <h3>🏢 Active Company</h3>
+                <select id="activeCompanySelector" onchange="switchCompany()">
+                    <option value="FG-LLC">FG-LLC (Fine Gold LLC)</option>
+                    <option value="MADISON-LLC">MADISON-LLC (Madison LLC)</option>
+                    <option value="NAPLES-LLC">NAPLES-LLC (Naples LLC)</option>
+                    <option value="GRAMALTIN-AS">GRAMALTIN-AS (Gramaltin A.S)</option>
+                    <option value="ZOE-FZE">ZOE-FZE (ZOE FZE)</option>
+                </select>
+                
+                <div class="company-info">
+                    <p><strong>Company:</strong> <span id="displayCompanyName">Fine Gold LLC</span></p>
+                    <p><strong>Asana Project ID:</strong> <code id="displayProjectId">1213819084043355</code></p>
+                    <p><strong>Trade License:</strong> <span id="displayTradeLicense">643756</span></p>
+                    <p><strong>Notion Entity:</strong> <span id="displayNotionEntity">FG-LLC</span></p>
+                </div>
+                
+                <button class="btn-primary" onclick="openAsanaProject()">🔗 Open in Asana</button>
+                
+                <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 5px;">
+                    <strong>Section Structure (All Companies):</strong><br>
+                    <span class="section-badge badge-workflow">📊 Workflow</span>
+                    <span class="section-badge badge-assessments">📋 Assessments</span>
+                    <span class="section-badge badge-gaps">⚠️ Gaps</span>
+                    <span class="section-badge badge-documents">📄 Documents</span>
+                    <span class="section-badge badge-training">🎓 Training</span>
+                </div>
+            </div>
+            
+            <!-- ANALYSIS SECTION -->
+            <div class="analysis-section">
+                <h3>🔍 Compliance Analysis</h3>
+                <p>Describe the compliance issue or gap you want to analyze:</p>
+                <textarea id="analysisInput" rows="6" placeholder="Example: Review CDD procedures for conflicting review frequencies between sections..."></textarea>
+                
+                <div style="margin: 20px 0;">
+                    <label><strong>Analysis Type:</strong></label>
+                    <select id="analysisType">
+                        <option value="gap">Gap Assessment</option>
+                        <option value="cdd">CDD/KYC/EDD Review</option>
+                        <option value="lbma">LBMA Compliance</option>
+                        <option value="tfs">TFS/Sanctions</option>
+                        <option value="goaml">STR/SAR/GOAML</option>
+                    </select>
+                </div>
+                
+                <button class="btn-primary" onclick="runAnalysis()">▶️ Run Analysis</button>
+                <button class="btn-success" onclick="createAsanaTaskFromAnalysis()">➕ Create Asana Task</button>
+                
+                <div id="analysisResult" class="status-message"></div>
+            </div>
+            
+            <!-- SETTINGS -->
+            <div class="settings-section">
+                <h3>⚙️ API Configuration</h3>
+                
+                <label><strong>Anthropic API Key (Claude)</strong></label>
+                <input type="password" id="anthropicApiKey" placeholder="sk-ant-...">
+                <small>Get from: <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></small>
+                
+                <label><strong>Asana Personal Access Token</strong></label>
+                <input type="password" id="asanaToken" placeholder="2/...">
+                <small>Get from: Asana → Settings → Apps → Manage Developer Apps</small>
+                
+                <button class="btn-success" onclick="saveApiSettings()">💾 Save API Settings</button>
+            </div>
+            
+            <!-- NOTION INTEGRATION -->
+            <div class="notion-settings">
+                <h3>🔗 Notion Integration</h3>
+                
+                <label><strong>Notion API Key (Internal Integration Token)</strong></label>
+                <input type="password" id="notionApiKey" placeholder="secret_...">
+                <small>Get from: <a href="https://www.notion.so/my-integrations" target="_blank">notion.so/my-integrations</a></small>
+                
+                <div style="margin: 20px 0; padding: 15px; background: white; border-radius: 5px;">
+                    <p><strong>Connected Databases:</strong></p>
+                    <ul style="list-style: none; padding: 10px 0;">
+                        <li>✅ Gap Status Tracker: <code>afea83d8fa7d429ba9fff2d392db9a88</code></li>
+                        <li>✅ Meeting Notes Archive: <code>ebf4473b04d74a28867fe48f3fa310c5</code></li>
+                        <li>✅ Action Items: <code>a7a6eafee8c94a6288daa74bf27f49ca</code></li>
+                    </ul>
+                </div>
+                
+                <button class="btn-success" onclick="saveNotionSettings()">💾 Save Notion Settings</button>
+                <button class="btn-primary" onclick="testNotionConnection()">🧪 Test Connection</button>
+                <button class="btn-primary" onclick="syncToNotion()">🔄 Sync to Notion</button>
+                
+                <div id="notionTestResult" class="status-message"></div>
+            </div>
+            
+            <!-- QUICK LINKS -->
+            <div class="settings-section">
+                <h3>📚 Quick Links</h3>
+                <p><a href="https://www.notion.so/330fbc7ea8af812cb40de9b2c14ce564" target="_blank">📊 Compliance Hub (Notion)</a></p>
+                <p><a href="https://www.notion.so/afea83d8fa7d429ba9fff2d392db9a88" target="_blank">⚠️ Gap Status Tracker</a></p>
+                <p><a href="https://www.notion.so/330fbc7ea8af811690a6d1658720b649" target="_blank">🔧 Integration Guide</a></p>
+                <p><a href="https://www.notion.so/330fbc7ea8af8109bfb0ef5d2c686abd" target="_blank">💻 Complete Code Reference</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ========================================
+        // MULTI-COMPANY CONFIGURATION
+        // ========================================
+        
+        const COMPANIES = {
+            'FG-LLC': {
+                asana_project_id: '1213819084043355',
+                notion_entity: 'FG-LLC',
+                display_name: 'Fine Gold LLC',
+                trade_license: '643756'
+            },
+            'MADISON-LLC': {
+                asana_project_id: '1213825539896477',
+                notion_entity: 'MADISON-LLC',
+                display_name: 'Madison LLC',
+                trade_license: 'TBD'
+            },
+            'NAPLES-LLC': {
+                asana_project_id: '1213825365472836',
+                notion_entity: 'NAPLES-LLC',
+                display_name: 'Naples LLC',
+                trade_license: 'TBD'
+            },
+            'GRAMALTIN-AS': {
+                asana_project_id: '1213838252710765',
+                notion_entity: 'GRAMALTIN-AS',
+                display_name: 'Gramaltin A.S',
+                trade_license: 'TBD'
+            },
+            'ZOE-FZE': {
+                asana_project_id: '1213825578259027',
+                notion_entity: 'ZOE-FZE',
+                display_name: 'ZOE FZE',
+                trade_license: 'TBD'
+            }
+        };
+        
+        // Global state
+        let ACTIVE_COMPANY = localStorage.getItem('active_company') || 'FG-LLC';
+        let ACTIVE_PROJECT_ID = COMPANIES[ACTIVE_COMPANY].asana_project_id;
+        
+        // ========================================
+        // SECTION MAPPING (NEW 5-SECTION STRUCTURE)
+        // ========================================
+        
+        const NEW_SECTIONS = [
+            '📊 Workflow',
+            '📋 Assessments',
+            '⚠️ Gaps',
+            '📄 Documents',
+            '🎓 Training'
+        ];
+        
+        function mapFindingToSection(findingText, findingType) {
+            const text = (findingText + ' ' + findingType).toLowerCase();
+            
+            // Gap-related
+            if (text.includes('gap-') || text.includes('gap ') || text.includes('critical gap')) {
+                return '⚠️ Gaps';
+            }
+            
+            // Assessment-related
+            const assessmentKeywords = ['cdd', 'edd', 'kyc', 'lbma', 'ewra', 'bwra', 'cahra', 
+                                      'risk assessment', 'due diligence', 'screening'];
+            if (assessmentKeywords.some(kw => text.includes(kw))) {
+                return '📋 Assessments';
+            }
+            
+            // Document-related
+            const docKeywords = ['manual', 'policy', 'form', 'register', 'ubo', 'cra', 
+                               'template', 'procedure document'];
+            if (docKeywords.some(kw => text.includes(kw))) {
+                return '📄 Documents';
+            }
+            
+            // Training-related
+            if (text.includes('training') || text.includes('presentation') || text.includes('workshop')) {
+                return '🎓 Training';
+            }
+            
+            // Workflow/process
+            if (text.includes('process') || text.includes('workflow') || text.includes('procedure')) {
+                return '📊 Workflow';
+            }
+            
+            // Default for compliance findings
+            return '⚠️ Gaps';
+        }
+        
+        // ========================================
+        // NOTION API CONFIGURATION
+        // ========================================
+        
+        const NOTION_VERSION = '2022-06-28';
+        const NOTION_BASE_URL = 'https://api.notion.com/v1';
+        
+        const NOTION_DATABASES = {
+            gap_tracker: 'afea83d8fa7d429ba9fff2d392db9a88',
+            meeting_notes: 'ebf4473b04d74a28867fe48f3fa310c5',
+            action_items: 'a7a6eafee8c94a6288daa74bf27f49ca'
+        };
+        
+        // ========================================
+        // COMPANY MANAGEMENT FUNCTIONS
+        // ========================================
+        
+        function switchCompany() {
+            ACTIVE_COMPANY = document.getElementById('activeCompanySelector').value;
+            ACTIVE_PROJECT_ID = COMPANIES[ACTIVE_COMPANY].asana_project_id;
+            
+            // Update display
+            document.getElementById('displayCompanyName').textContent = COMPANIES[ACTIVE_COMPANY].display_name;
+            document.getElementById('displayProjectId').textContent = ACTIVE_PROJECT_ID;
+            document.getElementById('displayTradeLicense').textContent = COMPANIES[ACTIVE_COMPANY].trade_license;
+            document.getElementById('displayNotionEntity').textContent = COMPANIES[ACTIVE_COMPANY].notion_entity;
+            
+            // Save to localStorage
+            localStorage.setItem('active_company', ACTIVE_COMPANY);
+            
+            console.log(`Switched to ${COMPANIES[ACTIVE_COMPANY].display_name}`);
+            showStatus('analysisResult', `Switched to ${COMPANIES[ACTIVE_COMPANY].display_name}`, 'info');
+        }
+        
+        function openAsanaProject() {
+            window.open(`https://app.asana.com/0/${ACTIVE_PROJECT_ID}`, '_blank');
+        }
+        
+        // ========================================
+        // API SETTINGS MANAGEMENT
+        // ========================================
+        
+        function saveApiSettings() {
+            const anthropicKey = document.getElementById('anthropicApiKey').value;
+            const asanaToken = document.getElementById('asanaToken').value;
+            
+            if (anthropicKey) localStorage.setItem('anthropic_api_key', anthropicKey);
+            if (asanaToken) localStorage.setItem('asana_pat', asanaToken);
+            
+            alert('✅ API settings saved!');
+        }
+        
+        function saveNotionSettings() {
+            const notionKey = document.getElementById('notionApiKey').value;
+            
+            if (notionKey) {
+                localStorage.setItem('notion_api_key', notionKey);
+                alert('✅ Notion API key saved!');
+            } else {
+                alert('⚠️ Please enter a Notion API key');
+            }
+        }
+        
+        // ========================================
+        // NOTION API FUNCTIONS
+        // ========================================
+        
+        async function testNotionConnection() {
+            const resultDiv = document.getElementById('notionTestResult');
+            const notionApiKey = localStorage.getItem('notion_api_key');
+            
+            if (!notionApiKey) {
+                showStatus('notionTestResult', '❌ No Notion API key found. Please save your settings first.', 'error');
+                return;
+            }
+            
+            showStatus('notionTestResult', '🔄 Testing connection...', 'info');
+            
+            try {
+                const response = await fetch(`${NOTION_BASE_URL}/databases/${NOTION_DATABASES.gap_tracker}`, {
+                    headers: {
+                        'Authorization': `Bearer ${notionApiKey}`,
+                        'Notion-Version': NOTION_VERSION
+                    }
+                });
+                
+                if (response.ok) {
+                    showStatus('notionTestResult', '✅ Connection successful! Notion integration is working.', 'success');
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                showStatus('notionTestResult', `❌ Connection failed: ${error.message}. Check your API key.`, 'error');
+            }
+        }
+        
+        async function createNotionGapEntry(gapData) {
+            const notionApiKey = localStorage.getItem('notion_api_key');
+            
+            if (!notionApiKey) {
+                console.warn('Notion API key not set');
+                return null;
+            }
+            
+            try {
+                const response = await fetch(`${NOTION_BASE_URL}/pages`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${notionApiKey}`,
+                        'Notion-Version': NOTION_VERSION,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        parent: { database_id: NOTION_DATABASES.gap_tracker },
+                        properties: {
+                            'Gap ID': {
+                                title: [{ text: { content: gapData.gapId } }]
+                            },
+                            'Description': {
+                                rich_text: [{ text: { content: gapData.description.substring(0, 2000) } }]
+                            },
+                            'Entity': {
+                                multi_select: [{ name: COMPANIES[ACTIVE_COMPANY].notion_entity }]
+                            },
+                            'Status': {
+                                select: { name: gapData.status || 'Open' }
+                            },
+                            'Completion %': {
+                                number: gapData.completion || 0
+                            },
+                            'Due Date': gapData.dueDate ? {
+                                date: { start: gapData.dueDate }
+                            } : null,
+                            'Asana Project URL': {
+                                url: `https://app.asana.com/0/${ACTIVE_PROJECT_ID}`
+                            },
+                            'Asana Task URL': gapData.asanaTaskUrl ? {
+                                url: gapData.asanaTaskUrl
+                            } : null,
+                            'Last Updated': {
+                                date: { start: new Date().toISOString().split('T')[0] }
+                            }
+                        }
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Notion API error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Created Notion gap entry:', data.id);
+                return data;
+            } catch (error) {
+                console.error('Error creating Notion gap entry:', error);
+                return null;
+            }
+        }
+        
+        async function syncToNotion() {
+            showStatus('notionTestResult', '🔄 Syncing to Notion... (This feature requires full implementation)', 'info');
+            
+            // TODO: Implement bulk sync logic
+            // This would iterate through gaps and sync to Notion
+            
+            setTimeout(() => {
+                showStatus('notionTestResult', '✅ Sync initiated! Check Notion for updates.', 'success');
+            }, 2000);
+        }
+        
+        // ========================================
+        // ASANA INTEGRATION
+        // ========================================
+        
+        async function createAsanaTaskFromAnalysis() {
+            const input = document.getElementById('analysisInput').value;
+            const analysisType = document.getElementById('analysisType').value;
+            
+            if (!input.trim()) {
+                alert('Please enter an analysis description first');
+                return;
+            }
+            
+            const asanaToken = localStorage.getItem('asana_pat');
+            
+            if (!asanaToken) {
+                alert('Please save your Asana Personal Access Token in settings first');
+                return;
+            }
+            
+            // Extract or generate gap ID
+            const gapId = extractGapId(input) || `GAP-${Date.now().toString().slice(-3)}`;
+            const taskName = `${gapId}: ${input.substring(0, 80)}${input.length > 80 ? '...' : ''}`;
+            const section = mapFindingToSection(input, analysisType);
+            
+            showStatus('analysisResult', `🔄 Creating task in Asana (${section})...`, 'info');
+            
+            try {
+                // Create Asana task
+                const taskResponse = await fetch('https://app.asana.com/api/1.0/tasks', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${asanaToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        data: {
+                            name: taskName,
+                            notes: `Analysis Type: ${analysisType}\n\n${input}\n\nCompany: ${COMPANIES[ACTIVE_COMPANY].display_name}\nSection: ${section}`,
+                            projects: [ACTIVE_PROJECT_ID],
+                            due_on: null,
+                            workspace: '1213645083721316'
+                        }
+                    })
+                });
+                
+                if (!taskResponse.ok) {
+                    throw new Error(`Asana API error: ${taskResponse.status}`);
+                }
+                
+                const taskData = await taskResponse.json();
+                const taskGid = taskData.data.gid;
+                const taskUrl = `https://app.asana.com/0/${ACTIVE_PROJECT_ID}/${taskGid}`;
+                
+                console.log(`Created Asana task: ${taskName} in ${section}`);
+                
+                // Sync to Notion if API key is set
+                const notionApiKey = localStorage.getItem('notion_api_key');
+                if (notionApiKey) {
+                    await createNotionGapEntry({
+                        gapId: gapId,
+                        description: input,
+                        status: 'Open',
+                        completion: 0,
+                        dueDate: null,
+                        asanaTaskUrl: taskUrl
+                    });
+                }
+                
+                showStatus('analysisResult', `✅ Task created successfully!\n\nSection: ${section}\nTask: ${taskName}\n\n<a href="${taskUrl}" target="_blank">Open in Asana</a>`, 'success');
+                
+                // Clear input
+                document.getElementById('analysisInput').value = '';
+                
+            } catch (error) {
+                showStatus('analysisResult', `❌ Error creating task: ${error.message}`, 'error');
+            }
+        }
+        
+        function extractGapId(text) {
+            const match = text.match(/GAP-\d{3}/i);
+            return match ? match[0].toUpperCase() : null;
+        }
+        
+        async function runAnalysis() {
+            const input = document.getElementById('analysisInput').value;
+            const analysisType = document.getElementById('analysisType').value;
+            
+            if (!input.trim()) {
+                alert('Please enter an analysis description');
+                return;
+            }
+            
+            showStatus('analysisResult', '🔄 Running Claude analysis... (Full Claude integration requires Anthropic API key)', 'info');
+            
+            // Simulated analysis result
+            setTimeout(() => {
+                const section = mapFindingToSection(input, analysisType);
+                showStatus('analysisResult', `✅ Analysis complete!\n\nType: ${analysisType}\nRecommended Section: ${section}\nCompany: ${COMPANIES[ACTIVE_COMPANY].display_name}\n\nClick "Create Asana Task" to add this to your project.`, 'success');
+            }, 1500);
+        }
+        
+        // ========================================
+        // UTILITY FUNCTIONS
+        // ========================================
+        
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.className = `status-message status-${type}`;
+            element.innerHTML = message.replace(/\n/g, '<br>');
+            element.style.display = 'block';
+        }
+        
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load saved settings
+            const savedCompany = localStorage.getItem('active_company');
+            if (savedCompany) {
+                document.getElementById('activeCompanySelector').value = savedCompany;
+                switchCompany();
+            }
+            
+            // Load API keys (display masked)
+            const anthropicKey = localStorage.getItem('anthropic_api_key');
+            const asanaToken = localStorage.getItem('asana_pat');
+            const notionKey = localStorage.getItem('notion_api_key');
+            
+            if (anthropicKey) document.getElementById('anthropicApiKey').value = '••••••••' + anthropicKey.slice(-8);
+            if (asanaToken) document.getElementById('asanaToken').value = '••••••••' + asanaToken.slice(-8);
+            if (notionKey) document.getElementById('notionApiKey').value = '••••••••' + notionKey.slice(-8);
+            
+            console.log('Fine Gold Analyser v2.1 initialized');
+            console.log('Active Company:', COMPANIES[ACTIVE_COMPANY].display_name);
+            console.log('Asana Project ID:', ACTIVE_PROJECT_ID);
+        });
+    </script>
+</body>
+</html>

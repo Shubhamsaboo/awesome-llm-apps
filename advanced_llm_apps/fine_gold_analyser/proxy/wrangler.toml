@@ -1,0 +1,7 @@
+name = "fgl-proxy"
+main = "worker.js"
+compatibility_date = "2024-09-23"
+
+# No routes needed — the Worker URL is pasted directly into the app's
+# Proxy URL setting. Example URL after deploy:
+#   https://fgl-proxy.<your-subdomain>.workers.dev
