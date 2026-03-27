@@ -165,6 +165,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent) 
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team)
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/)
+*   [💰 OIXA Protocol MCP Agent](https://oixa.io) - Connect AI agents to an economic marketplace on Base Mainnet. Post tasks, bid in reverse auctions, receive USDC payments automatically. Live MCP server with 16 tools. [github](https://github.com/ivoshemi-sys/oixa-protocol) | `pip install oixa-protocol`
 
 ### 📀 RAG (Retrieval Augmented Generation)
 *   [🔥 Agentic RAG with Embedding Gemma](rag_tutorials/agentic_rag_embedding_gemma)
