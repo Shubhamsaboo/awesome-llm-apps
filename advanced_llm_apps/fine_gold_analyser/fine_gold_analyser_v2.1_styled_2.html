@@ -226,7 +226,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.6}
       <div class="logo-text">Compliance Tasks - Compliance Analyser</div>
     </div>
     <div class="subtitle">UAE FDL No.10/2025 · FATF · UAE FIU · OECD · EOCN · MoE · LBMA RGG v9</div>
-    <div class="version-badge">v2.2 · Asana · Notion · Slack · ClickUp · OpenAI · PDF Export</div>
+    <div class="version-badge">v2.3 · Asana · Notion · Slack · ClickUp · OpenAI · Gemini · Google Drive · PDF Export</div>
     <div style="display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:12px">
       <span class="live-pill" id="activeCompanyBadge"><span class="live-dot"></span><span id="activeCompanyName">Company 1</span></span>
       <select id="activeCompanySelect" style="max-width:240px;height:36px" onchange="switchActiveCompany(this.value)"></select>
@@ -260,6 +260,21 @@ textarea{resize:vertical;min-height:100px;line-height:1.6}
       <span class="lbl">OpenAI API Key <span style="color:var(--muted);font-weight:400;font-size:11px">(optional — alternative AI provider)</span></span>
       <input type="password" id="openaiKey" placeholder="sk-..." />
       <div class="token-note">Get from: platform.openai.com → API Keys. When set, you can switch between Claude and GPT-4 in Settings.</div>
+    </div>
+    <div class="card">
+      <span class="lbl">Google Gemini API Key <span style="color:var(--muted);font-weight:400;font-size:11px">(optional — alternative AI provider)</span></span>
+      <input type="password" id="geminiKey" placeholder="AIza..." />
+      <div class="token-note">Get from: aistudio.google.com → Get API Key. Enables Gemini as a third AI provider option.</div>
+    </div>
+    <div class="card">
+      <span class="lbl">Google Drive Client ID <span style="color:var(--muted);font-weight:400;font-size:11px">(optional — save reports to Google Drive)</span></span>
+      <input type="text" id="gdriveClientId" placeholder="123456789-abc.apps.googleusercontent.com" />
+      <div class="token-note">Get from: console.cloud.google.com → APIs & Services → Credentials → OAuth 2.0 Client ID. Enable the Google Drive API first.</div>
+    </div>
+    <div class="card">
+      <span class="lbl">Google Drive Folder ID <span style="color:var(--muted);font-weight:400;font-size:11px">(optional)</span></span>
+      <input type="text" id="gdriveFolderId" placeholder="1ABC...xyz" />
+      <div class="token-note">Open your Google Drive folder → copy the ID from the URL (the string after /folders/).</div>
     </div>
     <div class="card">
       <span class="lbl">Notion Integration Token <span style="color:var(--muted);font-weight:400;font-size:11px">(optional — save reports to Notion)</span></span>
@@ -309,6 +324,13 @@ textarea{resize:vertical;min-height:100px;line-height:1.6}
       <div class="tab" onclick="switchTab('ops')">🛡️ Compliance Ops</div>
       <div class="tab" onclick="switchTab('companies')">🏢 Companies</div>
       <div class="tab" onclick="switchTab('training')">🎓 Employee Training</div>
+      <div class="tab" onclick="switchTab('screening')">🔍 Screening</div>
+      <div class="tab" onclick="switchTab('onboarding')">👤 Onboarding</div>
+      <div class="tab" onclick="switchTab('incidents')">⚠️ Incidents</div>
+      <div class="tab" onclick="switchTab('dashboard')">📊 Dashboard</div>
+      <div class="tab" onclick="switchTab('calendar')">📅 Calendar</div>
+      <div class="tab" onclick="switchTab('vault')">🔒 Vault</div>
+      <div class="tab" onclick="switchTab('gdrive')">📁 Drive</div>
       <div class="tab" onclick="switchTab('settings')">⚙️ Settings</div>
     </div>
 
@@ -377,6 +399,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.6}
             <button class="btn btn-sm" onclick="shareToNotion()" title="Save to Notion">📓 Notion</button>
             <button class="btn btn-sm" onclick="shareToSlack()" title="Send to Slack">💬 Slack</button>
             <button class="btn btn-sm" onclick="shareToClickUp()" title="Create ClickUp tasks">✅ ClickUp</button>
+            <button class="btn btn-sm" onclick="shareAnalysisToGDrive()" title="Save to Google Drive">📁 Drive</button>
             <button class="btn btn-sm" onclick="resetAnalysis()">New Analysis</button>
           </div>
         </div>
@@ -875,12 +898,270 @@ textarea{resize:vertical;min-height:100px;line-height:1.6}
     </div>
 
     <!-- SETTINGS TAB -->
+    <!-- SCREENING TAB (Sanctions + PEP) -->
+    <div id="tab-screening" class="tab-content">
+      <div class="card">
+        <div class="top-bar" style="margin-bottom:10px">
+          <span class="sec-title" style="margin:0;border:none;padding:0">Sanctions & PEP Screening</span>
+          <div style="display:flex;gap:8px"><button class="btn btn-sm" onclick="loadScreeningHistory()">History</button></div>
+        </div>
+        <div class="row row-2" style="margin-bottom:12px">
+          <div><span class="lbl">Entity Name</span><input type="text" id="screenName" placeholder="Full name of person or company" /></div>
+          <div><span class="lbl">Entity Type</span><select id="screenType"><option value="person">Person</option><option value="company">Company</option></select></div>
+        </div>
+        <div class="row row-2" style="margin-bottom:12px">
+          <div><span class="lbl">Country</span><input type="text" id="screenCountry" placeholder="e.g. UAE, Iran, Russia" /></div>
+          <div><span class="lbl">ID / Passport Number (optional)</span><input type="text" id="screenId" placeholder="Document number" /></div>
+        </div>
+        <div class="row row-2" style="margin-bottom:12px">
+          <div><label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px"><input type="checkbox" id="screenSanctions" checked style="width:auto" />Sanctions Lists (UN, OFAC, EU, UK, UAE)</label></div>
+          <div><label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px"><input type="checkbox" id="screenPEP" checked style="width:auto" />PEP Check</label></div>
+        </div>
+        <button class="btn btn-gold" onclick="runScreening()">Run Screening</button>
+        <div id="screeningStatus" class="status" style="margin-top:12px"><div class="spinner"></div><span id="screeningStatusText">Screening...</span></div>
+      </div>
+      <div id="screeningResults" style="display:none">
+        <div class="card" id="screeningResultsContent"></div>
+      </div>
+      <div class="card">
+        <span class="sec-title">Screening History</span>
+        <div id="screeningHistoryList"><p style="font-size:13px;color:var(--muted)">No screenings recorded yet.</p></div>
+      </div>
+    </div>
+
+    <!-- ONBOARDING TAB (KYC/CDD Wizard + Risk Scoring) -->
+    <div id="tab-onboarding" class="tab-content">
+      <div class="card">
+        <div class="top-bar" style="margin-bottom:10px">
+          <span class="sec-title" style="margin:0;border:none;padding:0">Customer Onboarding — CDD/EDD Wizard</span>
+          <button class="btn btn-sm" onclick="resetOnboarding()">New Onboarding</button>
+        </div>
+        <div id="onboardingWizard">
+          <div class="row row-2" style="margin-bottom:12px">
+            <div><span class="lbl">Customer / Entity Name</span><input type="text" id="obName" placeholder="Full legal name" /></div>
+            <div><span class="lbl">Entity Type</span><select id="obType"><option value="individual">Individual</option><option value="corporate">Corporate / LLC</option><option value="trust">Trust / Foundation</option></select></div>
+          </div>
+          <div class="row row-2" style="margin-bottom:12px">
+            <div><span class="lbl">Country of Incorporation / Nationality</span><input type="text" id="obCountry" placeholder="e.g. UAE" /></div>
+            <div><span class="lbl">Business Activity</span><input type="text" id="obActivity" placeholder="e.g. Gold trading, Jewellery retail" /></div>
+          </div>
+          <div class="row row-2" style="margin-bottom:12px">
+            <div><span class="lbl">Expected Annual Turnover (USD)</span><input type="number" id="obTurnover" placeholder="500000" /></div>
+            <div><span class="lbl">Source of Funds</span><input type="text" id="obSourceFunds" placeholder="e.g. Trading revenue, Inheritance" /></div>
+          </div>
+          <div class="row row-2" style="margin-bottom:12px">
+            <div><label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px"><input type="checkbox" id="obPEP" style="width:auto" />Is PEP or PEP-related?</label></div>
+            <div><label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px"><input type="checkbox" id="obCAHRA" style="width:auto" />CAHRA / High-risk jurisdiction?</label></div>
+          </div>
+          <span class="sec-title" style="margin-top:16px">Document Checklist</span>
+          <div class="row" style="margin-bottom:12px">
+            <div id="docChecklist" style="display:flex;flex-direction:column;gap:8px">
+              <label style="display:flex;align-items:center;gap:10px;font-size:13px"><input type="checkbox" class="ob-doc" data-doc="passport" style="width:auto" />Passport / Emirates ID</label>
+              <label style="display:flex;align-items:center;gap:10px;font-size:13px"><input type="checkbox" class="ob-doc" data-doc="trade_license" style="width:auto" />Trade License</label>
+              <label style="display:flex;align-items:center;gap:10px;font-size:13px"><input type="checkbox" class="ob-doc" data-doc="moa" style="width:auto" />Memorandum of Association</label>
+              <label style="display:flex;align-items:center;gap:10px;font-size:13px"><input type="checkbox" class="ob-doc" data-doc="ubo" style="width:auto" />UBO Declaration</label>
+              <label style="display:flex;align-items:center;gap:10px;font-size:13px"><input type="checkbox" class="ob-doc" data-doc="bank_ref" style="width:auto" />Bank Reference Letter</label>
+              <label style="display:flex;align-items:center;gap:10px;font-size:13px"><input type="checkbox" class="ob-doc" data-doc="source_wealth" style="width:auto" />Source of Wealth Declaration</label>
+              <label style="display:flex;align-items:center;gap:10px;font-size:13px"><input type="checkbox" class="ob-doc" data-doc="sanctions_clear" style="width:auto" />Sanctions Screening Clear</label>
+            </div>
+          </div>
+          <div class="row row-2" style="margin-bottom:12px">
+            <div><span class="lbl">Risk Rating Override</span><select id="obRiskOverride"><option value="auto">Auto-calculate</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="prohibited">Prohibited</option></select></div>
+            <div><span class="lbl">Onboarding Officer</span><input type="text" id="obOfficer" placeholder="Name" /></div>
+          </div>
+          <div class="row" style="margin-bottom:12px"><div><span class="lbl">Notes</span><textarea id="obNotes" placeholder="Additional due diligence notes..." style="min-height:60px"></textarea></div></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-gold" onclick="calculateRiskScore()">Calculate Risk Score</button>
+            <button class="btn btn-sm btn-green" onclick="completeOnboarding()">Complete & Save Onboarding</button>
+            <button class="btn btn-sm" onclick="generateSTR()">Generate STR Draft</button>
+          </div>
+        </div>
+        <div id="riskScoreResult" style="display:none;margin-top:16px"></div>
+      </div>
+      <div class="card">
+        <span class="sec-title">Onboarded Customers</span>
+        <div id="onboardingList"><p style="font-size:13px;color:var(--muted)">No customers onboarded yet.</p></div>
+      </div>
+    </div>
+
+    <!-- INCIDENTS TAB (Incident Register + Whistleblower + STR) -->
+    <div id="tab-incidents" class="tab-content">
+      <div class="card">
+        <div class="top-bar" style="margin-bottom:10px">
+          <span class="sec-title" style="margin:0;border:none;padding:0">Incident Register</span>
+          <button class="btn btn-sm btn-green" onclick="showNewIncidentForm()">+ New Incident</button>
+        </div>
+        <div id="newIncidentForm" style="display:none;margin-bottom:16px;padding:16px;background:var(--surface2);border-radius:12px">
+          <div class="row row-2" style="margin-bottom:12px">
+            <div><span class="lbl">Incident Title</span><input type="text" id="incTitle" placeholder="Brief description" /></div>
+            <div><span class="lbl">Incident Type</span><select id="incType"><option value="breach">Compliance Breach</option><option value="suspicious">Suspicious Activity</option><option value="fraud">Fraud</option><option value="data_breach">Data Breach</option><option value="sanctions_hit">Sanctions Hit</option><option value="regulatory">Regulatory Notice</option><option value="whistleblower">Whistleblower Report</option><option value="other">Other</option></select></div>
+          </div>
+          <div class="row row-2" style="margin-bottom:12px">
+            <div><span class="lbl">Severity</span><select id="incSeverity"><option value="critical">Critical</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></div>
+            <div><span class="lbl">Date Discovered</span><input type="date" id="incDate" /></div>
+          </div>
+          <div class="row" style="margin-bottom:12px"><div><span class="lbl">Description</span><textarea id="incDescription" placeholder="Full description of the incident..." style="min-height:80px"></textarea></div></div>
+          <div class="row row-2" style="margin-bottom:12px">
+            <div><span class="lbl">Affected Entities</span><input type="text" id="incEntities" placeholder="Names of affected parties" /></div>
+            <div><span class="lbl">Reported By</span><input type="text" id="incReporter" placeholder="Name (or 'Anonymous')" /></div>
+          </div>
+          <div class="row" style="margin-bottom:12px"><div><span class="lbl">Remediation Actions</span><textarea id="incRemediation" placeholder="Actions taken or planned..." style="min-height:60px"></textarea></div></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-gold" onclick="saveIncident()">Save Incident</button>
+            <button class="btn btn-sm" onclick="hideNewIncidentForm()">Cancel</button>
+            <button class="btn btn-sm" onclick="generateSTRFromIncident()">Auto-Generate STR</button>
+          </div>
+        </div>
+        <div id="incidentsList"></div>
+      </div>
+      <div class="card">
+        <div class="top-bar" style="margin-bottom:10px">
+          <span class="sec-title" style="margin:0;border:none;padding:0">Whistleblower Channel</span>
+        </div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Anonymous reporting form. Reports are saved locally with no identifying information.</p>
+        <div class="row" style="margin-bottom:12px"><div><span class="lbl">Report Details</span><textarea id="wbReport" placeholder="Describe the concern anonymously..." style="min-height:80px"></textarea></div></div>
+        <div class="row row-2" style="margin-bottom:12px">
+          <div><span class="lbl">Category</span><select id="wbCategory"><option value="fraud">Fraud</option><option value="bribery">Bribery/Corruption</option><option value="aml">AML Violation</option><option value="sanctions">Sanctions Breach</option><option value="misconduct">Staff Misconduct</option><option value="other">Other</option></select></div>
+          <div><span class="lbl">Urgency</span><select id="wbUrgency"><option value="high">High — Immediate attention</option><option value="medium">Medium</option><option value="low">Low — For awareness</option></select></div>
+        </div>
+        <button class="btn btn-gold" onclick="submitWhistleblower()">Submit Anonymously</button>
+      </div>
+      <div class="card">
+        <div class="top-bar" style="margin-bottom:10px">
+          <span class="sec-title" style="margin:0;border:none;padding:0">STR / SAR Generator</span>
+        </div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px">AI-assisted Suspicious Transaction Report drafting for UAE FIU (goAML) filing.</p>
+        <div class="row row-2" style="margin-bottom:12px">
+          <div><span class="lbl">Subject Name</span><input type="text" id="strSubject" placeholder="Full name" /></div>
+          <div><span class="lbl">Transaction Amount (USD)</span><input type="number" id="strAmount" placeholder="50000" /></div>
+        </div>
+        <div class="row" style="margin-bottom:12px"><div><span class="lbl">Suspicious Indicators</span><textarea id="strIndicators" placeholder="Describe what triggered suspicion..." style="min-height:60px"></textarea></div></div>
+        <button class="btn btn-gold" onclick="generateSTRDraft()">Generate STR Draft</button>
+        <div id="strDraftResult" style="display:none;margin-top:12px"></div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD TAB -->
+    <div id="tab-dashboard" class="tab-content">
+      <div class="card">
+        <div class="top-bar" style="margin-bottom:10px">
+          <span class="sec-title" style="margin:0;border:none;padding:0">Compliance Dashboard</span>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-sm" onclick="refreshDashboard()">Refresh</button>
+            <button class="btn btn-sm btn-green" onclick="exportBoardReport()">Export Board Report</button>
+          </div>
+        </div>
+      </div>
+      <div class="metrics" id="dashboardMetrics" style="grid-template-columns:repeat(5,1fr)">
+        <div class="metric m-c"><div class="metric-num" id="dashOpenGaps">0</div><div class="metric-lbl">Open Gaps</div></div>
+        <div class="metric m-h"><div class="metric-num" id="dashOverdueTasks">0</div><div class="metric-lbl">Overdue Tasks</div></div>
+        <div class="metric m-m"><div class="metric-num" id="dashPendingReviews">0</div><div class="metric-lbl">Pending Reviews</div></div>
+        <div class="metric"><div class="metric-num" style="color:var(--gold)" id="dashScreenings">0</div><div class="metric-lbl">Screenings (30d)</div></div>
+        <div class="metric m-ok"><div class="metric-num" id="dashRiskScore">—</div><div class="metric-lbl">Avg Risk Score</div></div>
+      </div>
+      <div class="card">
+        <span class="sec-title">Risk Heat Map</span>
+        <div id="riskHeatMap" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+          <div style="background:var(--red-dim);border:1px solid rgba(217,79,79,0.3);border-radius:10px;padding:12px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--red)" id="heatCritical">0</div><div style="font-size:10px;color:var(--muted);margin-top:4px">CRITICAL RISK</div></div>
+          <div style="background:var(--amber-dim);border:1px solid rgba(232,160,48,0.3);border-radius:10px;padding:12px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--amber)" id="heatHigh">0</div><div style="font-size:10px;color:var(--muted);margin-top:4px">HIGH RISK</div></div>
+          <div style="background:var(--blue-dim);border:1px solid rgba(74,143,193,0.3);border-radius:10px;padding:12px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--blue)" id="heatMedium">0</div><div style="font-size:10px;color:var(--muted);margin-top:4px">MEDIUM RISK</div></div>
+          <div style="background:var(--green-dim);border:1px solid rgba(61,168,118,0.3);border-radius:10px;padding:12px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--green)" id="heatLow">0</div><div style="font-size:10px;color:var(--muted);margin-top:4px">LOW RISK</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="sec-title">Audit Trail (Recent Activity)</span>
+        <div id="auditTrailList" style="max-height:400px;overflow-y:auto"><p style="font-size:13px;color:var(--muted)">No activity recorded yet.</p></div>
+      </div>
+      <div class="card">
+        <span class="sec-title">Board / MLRO Report Summary</span>
+        <div id="boardReportPreview" style="font-size:13px;color:var(--muted)">Click "Export Board Report" to generate.</div>
+      </div>
+    </div>
+
+    <!-- CALENDAR TAB -->
+    <div id="tab-calendar" class="tab-content">
+      <div class="card">
+        <div class="top-bar" style="margin-bottom:10px">
+          <span class="sec-title" style="margin:0;border:none;padding:0">Regulatory Calendar</span>
+          <button class="btn btn-sm btn-green" onclick="showNewDeadlineForm()">+ Add Deadline</button>
+        </div>
+        <div id="newDeadlineForm" style="display:none;margin-bottom:16px;padding:16px;background:var(--surface2);border-radius:12px">
+          <div class="row row-2" style="margin-bottom:12px">
+            <div><span class="lbl">Deadline Title</span><input type="text" id="calTitle" placeholder="e.g. FATF Mutual Evaluation" /></div>
+            <div><span class="lbl">Due Date</span><input type="date" id="calDate" /></div>
+          </div>
+          <div class="row row-2" style="margin-bottom:12px">
+            <div><span class="lbl">Category</span><select id="calCategory"><option value="regulatory">Regulatory Filing</option><option value="license">License Renewal</option><option value="audit">Audit</option><option value="training">Training</option><option value="review">Policy Review</option><option value="fatf">FATF</option><option value="other">Other</option></select></div>
+            <div><span class="lbl">Remind Days Before</span><input type="number" id="calRemind" value="7" /></div>
+          </div>
+          <div class="row" style="margin-bottom:12px"><div><span class="lbl">Notes</span><input type="text" id="calNotes" placeholder="Additional details" /></div></div>
+          <div style="display:flex;gap:8px"><button class="btn btn-gold" onclick="saveDeadline()">Save Deadline</button><button class="btn btn-sm" onclick="hideNewDeadlineForm()">Cancel</button></div>
+        </div>
+        <div id="deadlinesList"></div>
+      </div>
+      <div class="card">
+        <span class="sec-title">Pre-loaded UAE Compliance Calendar</span>
+        <div id="preloadedCalendar" style="display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+    </div>
+
+    <!-- VAULT TAB -->
+    <div id="tab-vault" class="tab-content">
+      <div class="card">
+        <div class="top-bar" style="margin-bottom:10px">
+          <span class="sec-title" style="margin:0;border:none;padding:0">Document Vault</span>
+          <button class="btn btn-sm btn-green" onclick="showNewVaultDoc()">+ Add Document</button>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Store references to compliance documents, policies, certificates and licenses. Documents are tagged for easy retrieval.</p>
+        <div id="newVaultForm" style="display:none;margin-bottom:16px;padding:16px;background:var(--surface2);border-radius:12px">
+          <div class="row row-2" style="margin-bottom:12px">
+            <div><span class="lbl">Document Name</span><input type="text" id="vaultName" placeholder="e.g. AML Policy v3.2" /></div>
+            <div><span class="lbl">Category</span><select id="vaultCategory"><option value="policy">Policy</option><option value="procedure">Procedure</option><option value="certificate">Certificate</option><option value="license">License</option><option value="kyc">KYC Document</option><option value="audit">Audit Report</option><option value="training">Training Record</option><option value="correspondence">Regulatory Correspondence</option><option value="other">Other</option></select></div>
+          </div>
+          <div class="row row-2" style="margin-bottom:12px">
+            <div><span class="lbl">Link / URL</span><input type="url" id="vaultUrl" placeholder="https://..." /></div>
+            <div><span class="lbl">Expiry Date (if applicable)</span><input type="date" id="vaultExpiry" /></div>
+          </div>
+          <div class="row row-2" style="margin-bottom:12px">
+            <div><span class="lbl">Tags</span><input type="text" id="vaultTags" placeholder="aml, fatf, kyc (comma separated)" /></div>
+            <div><span class="lbl">Version</span><input type="text" id="vaultVersion" placeholder="v1.0" /></div>
+          </div>
+          <div class="row" style="margin-bottom:12px"><div><span class="lbl">Notes</span><input type="text" id="vaultNotes" placeholder="Brief description" /></div></div>
+          <div style="display:flex;gap:8px"><button class="btn btn-gold" onclick="saveVaultDoc()">Save Document</button><button class="btn btn-sm" onclick="hideNewVaultDoc()">Cancel</button></div>
+        </div>
+        <div style="margin-bottom:12px"><input type="text" id="vaultSearch" placeholder="Search documents by name, tag, or category..." oninput="filterVaultDocs()" /></div>
+        <div id="vaultDocsList"></div>
+      </div>
+      <div class="card">
+        <span class="sec-title">Vendor Due Diligence</span>
+        <div id="vendorDDList"><p style="font-size:13px;color:var(--muted)">No vendor assessments recorded. Add a document with category "KYC Document" to track vendor due diligence.</p></div>
+      </div>
+    </div>
+
+    <div id="tab-gdrive" class="tab-content">
+      <div class="card">
+        <div class="top-bar" style="margin-bottom:10px">
+          <span class="sec-title" style="margin:0;border:none;padding:0">Google Drive</span>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-sm" onclick="refreshGDriveFileList()">Refresh</button>
+            <button class="btn btn-sm btn-green" onclick="uploadAnalysisHistoryToGDrive()">Upload Analysis History</button>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px">View and manage compliance documents stored in your connected Google Drive folder. Connect via Settings tab.</p>
+        <div id="gdriveConnectionStatus" style="margin-bottom:12px;padding:10px;background:var(--surface2);border-radius:8px;font-size:12px"></div>
+        <div id="gdriveFileList"><p style="font-size:13px;color:var(--muted)">Connect Google Drive in Settings to browse files.</p></div>
+      </div>
+    </div>
+
     <div id="tab-settings" class="tab-content">
       <div class="card">
         <span class="lbl">API Keys & Integrations</span>
         <div class="row" style="margin-bottom:12px"><div><span class="lbl">Anthropic API Key</span><input type="password" id="anthropicKey2" placeholder="sk-ant-..." /></div></div>
         <div class="row" style="margin-bottom:12px"><div><span class="lbl">OpenAI API Key</span><input type="password" id="openaiKey2" placeholder="sk-..." /></div></div>
-        <div class="row" style="margin-bottom:12px"><div><span class="lbl">AI Provider</span><select id="aiProvider2"><option value="claude">Claude (Anthropic)</option><option value="openai">GPT-4 (OpenAI)</option></select></div></div>
+        <div class="row" style="margin-bottom:12px"><div><span class="lbl">Gemini API Key</span><input type="password" id="geminiKey2" placeholder="AIza..." /></div></div>
+        <div class="row" style="margin-bottom:12px"><div><span class="lbl">AI Provider</span><select id="aiProvider2"><option value="claude">Claude (Anthropic)</option><option value="openai">GPT-4 (OpenAI)</option><option value="gemini">Gemini (Google)</option></select></div></div>
+        <div class="row row-2" style="margin-bottom:12px"><div><span class="lbl">Google Drive Client ID</span><input type="text" id="gdriveClientId2" placeholder="123456789-abc.apps.googleusercontent.com" /></div><div><span class="lbl">Google Drive Folder ID</span><input type="text" id="gdriveFolderId2" placeholder="1ABC...xyz" /></div></div>
+        <div class="row row-2" style="margin-bottom:12px"><div><button class="btn btn-sm" onclick="connectGoogleDrive()" style="margin-top:0">Connect Google Drive</button></div><div id="gdriveStatus" style="font-size:12px;color:var(--muted);padding-top:4px"></div></div>
         <div class="row" style="margin-bottom:12px"><div><span class="lbl">Asana Personal Access Token</span><input type="password" id="asanaToken2" placeholder="1/xxxxxxxx..." /></div></div>
         <div class="row" style="margin-bottom:12px"><div><span class="lbl">Notion Integration Token</span><input type="password" id="notionToken2" placeholder="ntn_..." /></div></div>
         <div class="row row-2" style="margin-bottom:12px"><div><span class="lbl">Notion Database ID</span><input type="text" id="notionDbId2" placeholder="xxxxxxxx-xxxx-..." /></div><div><button class="btn btn-sm" onclick="testNotionConnection()" style="margin-top:22px">Test Notion</button></div></div>
@@ -949,7 +1230,11 @@ let NOTION_DB_ID = '';
 let SLACK_WEBHOOK = '';
 let CLICKUP_TOKEN = '';
 let CLICKUP_LIST_ID = '';
-let AI_PROVIDER = 'claude'; // 'claude' or 'openai'
+let GEMINI_KEY = '';
+let GDRIVE_CLIENT_ID = '';
+let GDRIVE_FOLDER_ID = '';
+let gdriveAccessToken = '';
+let AI_PROVIDER = 'claude'; // 'claude', 'openai', or 'gemini'
 let lastResult = null;
 let lastQuery = '';
 let lastArea = '';
@@ -1308,7 +1593,7 @@ function clearAppData() {
 // ======= SETUP =======
 function persistKeys() {
   if (!REMEMBER_KEYS) {
-    localStorage.setItem(KEYS_STORAGE, JSON.stringify({ proxyUrl: PROXY_URL, aiProvider: AI_PROVIDER, notionDbId: NOTION_DB_ID, clickupListId: CLICKUP_LIST_ID, slackWebhook: SLACK_WEBHOOK, rememberKeys: false }));
+    localStorage.setItem(KEYS_STORAGE, JSON.stringify({ proxyUrl: PROXY_URL, aiProvider: AI_PROVIDER, notionDbId: NOTION_DB_ID, clickupListId: CLICKUP_LIST_ID, slackWebhook: SLACK_WEBHOOK, gdriveFolderId: GDRIVE_FOLDER_ID, gdriveClientId: GDRIVE_CLIENT_ID, rememberKeys: false }));
     return;
   }
 
@@ -1323,6 +1608,9 @@ function persistKeys() {
     slackWebhook: SLACK_WEBHOOK,
     clickupToken: CLICKUP_TOKEN,
     clickupListId: CLICKUP_LIST_ID,
+    geminiKey: GEMINI_KEY,
+    gdriveClientId: GDRIVE_CLIENT_ID,
+    gdriveFolderId: GDRIVE_FOLDER_ID,
     aiProvider: AI_PROVIDER,
     rememberKeys: REMEMBER_KEYS
   }));
@@ -1362,6 +1650,9 @@ function hydrateKeys() {
   SLACK_WEBHOOK = (saved.slackWebhook || '').trim();
   CLICKUP_TOKEN = (saved.clickupToken || '').trim();
   CLICKUP_LIST_ID = (saved.clickupListId || '').trim();
+  GEMINI_KEY = (saved.geminiKey || '').trim();
+  GDRIVE_CLIENT_ID = (saved.gdriveClientId || '').trim();
+  GDRIVE_FOLDER_ID = (saved.gdriveFolderId || '').trim();
   AI_PROVIDER = saved.aiProvider || 'claude';
 
   const fieldMap = {
@@ -1375,6 +1666,9 @@ function hydrateKeys() {
     slackWebhook: SLACK_WEBHOOK, slackWebhook2: SLACK_WEBHOOK,
     clickupToken: CLICKUP_TOKEN, clickupToken2: CLICKUP_TOKEN,
     clickupListId: CLICKUP_LIST_ID, clickupListId2: CLICKUP_LIST_ID,
+    geminiKey: GEMINI_KEY, geminiKey2: GEMINI_KEY,
+    gdriveClientId: GDRIVE_CLIENT_ID, gdriveClientId2: GDRIVE_CLIENT_ID,
+    gdriveFolderId: GDRIVE_FOLDER_ID, gdriveFolderId2: GDRIVE_FOLDER_ID,
   };
   for (const [id, val] of Object.entries(fieldMap)) {
     const el = document.getElementById(id);
@@ -1408,9 +1702,13 @@ function saveSetup() {
   SLACK_WEBHOOK = document.getElementById('slackWebhook')?.value.trim() || '';
   CLICKUP_TOKEN = document.getElementById('clickupToken')?.value.trim() || '';
   CLICKUP_LIST_ID = document.getElementById('clickupListId')?.value.trim() || '';
+  GEMINI_KEY = document.getElementById('geminiKey')?.value.trim() || '';
+  GDRIVE_CLIENT_ID = document.getElementById('gdriveClientId')?.value.trim() || '';
+  GDRIVE_FOLDER_ID = document.getElementById('gdriveFolderId')?.value.trim() || '';
   REMEMBER_KEYS = !!document.getElementById('rememberKeys')?.checked;
-  if (!ANTHROPIC_KEY && !OPENAI_KEY && !PROXY_URL) { toast('An AI API key (Anthropic or OpenAI) or Proxy URL is required','error'); return; }
-  if (OPENAI_KEY && !ANTHROPIC_KEY && !PROXY_URL) AI_PROVIDER = 'openai';
+  if (!ANTHROPIC_KEY && !OPENAI_KEY && !GEMINI_KEY && !PROXY_URL) { toast('An AI API key (Anthropic, OpenAI, or Gemini) or Proxy URL is required','error'); return; }
+  if (OPENAI_KEY && !ANTHROPIC_KEY && !PROXY_URL && !GEMINI_KEY) AI_PROVIDER = 'openai';
+  if (GEMINI_KEY && !ANTHROPIC_KEY && !OPENAI_KEY && !PROXY_URL) AI_PROVIDER = 'gemini';
   persistKeys();
   openMainPanel();
   startAsanaAutoRefresh();
@@ -1426,6 +1724,9 @@ function updateKeys() {
   if (document.getElementById('slackWebhook2')?.value.trim()) SLACK_WEBHOOK = document.getElementById('slackWebhook2').value.trim();
   if (document.getElementById('clickupToken2')?.value.trim()) CLICKUP_TOKEN = document.getElementById('clickupToken2').value.trim();
   if (document.getElementById('clickupListId2')?.value.trim()) CLICKUP_LIST_ID = document.getElementById('clickupListId2').value.trim();
+  if (document.getElementById('geminiKey2')?.value.trim()) GEMINI_KEY = document.getElementById('geminiKey2').value.trim();
+  if (document.getElementById('gdriveClientId2')?.value.trim()) GDRIVE_CLIENT_ID = document.getElementById('gdriveClientId2').value.trim();
+  if (document.getElementById('gdriveFolderId2')?.value.trim()) GDRIVE_FOLDER_ID = document.getElementById('gdriveFolderId2').value.trim();
   if (document.getElementById('schedEmail2').value.trim()) SCHEDULE_EMAIL = document.getElementById('schedEmail2').value.trim();
   if (document.getElementById('proxyUrl2')?.value.trim()) PROXY_URL = normaliseProxyUrl(document.getElementById('proxyUrl2').value);
   AI_PROVIDER = document.getElementById('aiProvider2')?.value || AI_PROVIDER;
@@ -1436,7 +1737,8 @@ function updateKeys() {
   const syncMap = {
     anthropicKey: ANTHROPIC_KEY, asanaToken: ASANA_TOKEN, scheduleEmail: SCHEDULE_EMAIL,
     proxyUrl: PROXY_URL, openaiKey: OPENAI_KEY, notionToken: NOTION_TOKEN,
-    notionDbId: NOTION_DB_ID, slackWebhook: SLACK_WEBHOOK, clickupToken: CLICKUP_TOKEN, clickupListId: CLICKUP_LIST_ID
+    notionDbId: NOTION_DB_ID, slackWebhook: SLACK_WEBHOOK, clickupToken: CLICKUP_TOKEN, clickupListId: CLICKUP_LIST_ID,
+    geminiKey: GEMINI_KEY, gdriveClientId: GDRIVE_CLIENT_ID, gdriveFolderId: GDRIVE_FOLDER_ID
   };
   for (const [id, val] of Object.entries(syncMap)) {
     const el = document.getElementById(id);
@@ -1452,6 +1754,7 @@ function updateKeys() {
 function initialiseApp() {
   ensureAsanaSyncStateShape();
   hydrateKeys();
+  handleGDriveCallback();
   renderCompanySelectors();
   renderTrainingSubjectOptions();
   const r1 = document.getElementById('rememberKeys');
@@ -1476,19 +1779,24 @@ function initialiseApp() {
 
 // ======= TABS =======
 function switchTab(name) {
-  const names = ['analyse','shipments','asana','evidence','schedule','drive','gaps','ops','companies','training','settings'];
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', names[i]===name));
+  document.querySelectorAll('.tab').forEach(t => {
+    const tabName = t.getAttribute('onclick')?.match(/switchTab\('(\w+)'\)/)?.[1];
+    t.classList.toggle('active', tabName === name);
+  });
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
+  const tabEl = document.getElementById('tab-'+name);
+  if (tabEl) tabEl.classList.add('active');
   if (name==='drive') renderDrive();
   if (name==='asana') loadAsanaTasks();
-  if (name==='shipments') renderShipments();
-  if (name==='shipments') refreshMetalsPrices(false);
+  if (name==='shipments') { renderShipments(); refreshMetalsPrices(false); }
   if (name==='evidence') renderEvidence();
   if (name==='schedule') { renderSchedules(); renderHistory(); }
   if (name==='ops' && typeof renderComplianceOps === 'function') renderComplianceOps();
   if (name==='companies') renderCompaniesTab();
   if (name==='training') renderEmployeeTraining();
+  if (name==='gdrive') refreshGDriveFileList();
+  if (name==='dashboard' && typeof refreshDashboard === 'function') refreshDashboard();
+  if (name==='calendar' && typeof renderPreloadedCalendar === 'function') renderPreloadedCalendar();
 }
 
 function persistEmployeeTraining() {
@@ -3098,7 +3406,7 @@ async function runAnalysis(queryOverride, areaOverride) {
   const query = queryOverride || document.getElementById('queryInput').value.trim();
   const area = areaOverride || document.getElementById('areaSelect').value;
   if (!query) { document.getElementById('queryInput').focus(); return; }
-  if (!ANTHROPIC_KEY && !OPENAI_KEY && !PROXY_URL) { toast('An AI API key (Anthropic or OpenAI) or Proxy URL required. Check Settings.','error'); return; }
+  if (!ANTHROPIC_KEY && !OPENAI_KEY && !GEMINI_KEY && !PROXY_URL) { toast('An AI API key (Anthropic, OpenAI, or Gemini) or Proxy URL required. Check Settings.','error'); return; }
 
   const btn = document.getElementById('analyseBtn');
   if (btn) btn.disabled = true;
@@ -3718,11 +4026,164 @@ async function callOpenAI(body) {
   return { content: [{ type: 'text', text }] };
 }
 
+async function callGemini(body) {
+  const contents = [];
+  if (body.system) contents.push({ role: 'user', parts: [{ text: `[System instruction] ${body.system}` }] });
+  if (body.messages) {
+    for (const m of body.messages) {
+      contents.push({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] });
+    }
+  }
+  const geminiBody = {
+    contents,
+    generationConfig: {
+      maxOutputTokens: body.max_tokens || 4096,
+      temperature: body.temperature !== undefined ? body.temperature : 0.2,
+    }
+  };
+
+  let r;
+  if (PROXY_URL) {
+    try {
+      r = await fetch(`${PROXY_URL}/gemini`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(geminiBody)
+      });
+    } catch (e) {
+      if (!GEMINI_KEY) throw e;
+      r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(geminiBody)
+      });
+    }
+  } else {
+    r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(geminiBody)
+    });
+  }
+
+  if (!r.ok) {
+    let errDetail = '';
+    try { const ej = await r.json(); errDetail = ej?.error?.message || JSON.stringify(ej); } catch (_) {}
+    throw new Error(`Gemini API ${r.status}: ${errDetail || r.statusText}`);
+  }
+
+  const data = await r.json();
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  return { content: [{ type: 'text', text }] };
+}
+
 async function callAI(body) {
+  if (AI_PROVIDER === 'gemini' && (GEMINI_KEY || PROXY_URL)) {
+    return callGemini(body);
+  }
   if (AI_PROVIDER === 'openai' && (OPENAI_KEY || PROXY_URL)) {
     return callOpenAI(body);
   }
   return callAnthropic(body);
+}
+
+// ======= GOOGLE DRIVE INTEGRATION =======
+function connectGoogleDrive() {
+  if (!GDRIVE_CLIENT_ID) { toast('Google Drive Client ID not configured', 'error'); return; }
+  const redirectUri = window.location.origin + window.location.pathname;
+  const scope = 'https://www.googleapis.com/auth/drive.file';
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(GDRIVE_CLIENT_ID)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scope)}`;
+  window.location.href = authUrl;
+}
+
+function handleGDriveCallback() {
+  const hash = window.location.hash;
+  if (!hash.includes('access_token')) return;
+  const params = new URLSearchParams(hash.substring(1));
+  gdriveAccessToken = params.get('access_token') || '';
+  if (gdriveAccessToken) {
+    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    const statusEl = document.getElementById('gdriveStatus');
+    if (statusEl) statusEl.textContent = 'Connected to Google Drive';
+    toast('Google Drive connected!', 'success');
+    logAudit('Google Drive connected', 'OAuth token obtained');
+  }
+}
+
+async function uploadToGDrive(fileName, content, mimeType = 'text/plain') {
+  if (!gdriveAccessToken) { toast('Google Drive not connected. Click "Connect Google Drive" in Settings.', 'error'); return null; }
+  const metadata = { name: fileName, mimeType };
+  if (GDRIVE_FOLDER_ID) metadata.parents = [GDRIVE_FOLDER_ID];
+
+  const boundary = '-------fgl_boundary';
+  const body = `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}\r\n--${boundary}\r\nContent-Type: ${mimeType}\r\n\r\n${content}\r\n--${boundary}--`;
+
+  const r = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${gdriveAccessToken}`,
+      'Content-Type': `multipart/related; boundary=${boundary}`,
+    },
+    body
+  });
+  if (!r.ok) {
+    const err = await r.text();
+    toast(`Google Drive upload failed: ${r.status}`, 'error');
+    throw new Error(`GDrive ${r.status}: ${err}`);
+  }
+  const data = await r.json();
+  toast(`Saved to Google Drive: ${fileName}`, 'success');
+  logAudit('Google Drive upload', `File: ${fileName}, ID: ${data.id}`);
+  return data;
+}
+
+async function listGDriveFiles() {
+  if (!gdriveAccessToken) { toast('Google Drive not connected', 'error'); return []; }
+  let query = "mimeType != 'application/vnd.google-apps.folder' and trashed = false";
+  if (GDRIVE_FOLDER_ID) query += ` and '${GDRIVE_FOLDER_ID}' in parents`;
+  const r = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=files(id,name,mimeType,modifiedTime,webViewLink)&orderBy=modifiedTime desc&pageSize=50`, {
+    headers: { 'Authorization': `Bearer ${gdriveAccessToken}` }
+  });
+  if (!r.ok) { toast('Failed to list Drive files', 'error'); return []; }
+  const data = await r.json();
+  return data.files || [];
+}
+
+async function shareAnalysisToGDrive() {
+  if (!lastResult) { toast('No analysis to save', 'error'); return; }
+  const text = lastResult.content?.[0]?.text || JSON.stringify(lastResult);
+  const fileName = `FGL_Analysis_${lastArea || 'report'}_${new Date().toISOString().slice(0,10)}.txt`;
+  const content = `Fine Gold Analyser Report\nDate: ${new Date().toISOString()}\nQuery: ${lastQuery}\nArea: ${lastArea}\n\n${text}`;
+  await uploadToGDrive(fileName, content, 'text/plain');
+}
+
+async function refreshGDriveFileList() {
+  const statusEl = document.getElementById('gdriveConnectionStatus');
+  const listEl = document.getElementById('gdriveFileList');
+  if (!gdriveAccessToken) {
+    if (statusEl) statusEl.innerHTML = '<span style="color:var(--red)">Not connected.</span> Go to Settings and click "Connect Google Drive".';
+    return;
+  }
+  if (statusEl) statusEl.innerHTML = '<span style="color:var(--green)">Connected</span>' + (GDRIVE_FOLDER_ID ? ` · Folder: ${GDRIVE_FOLDER_ID}` : ' · Root folder');
+  if (listEl) listEl.innerHTML = '<p style="color:var(--muted);font-size:12px">Loading...</p>';
+  try {
+    const files = await listGDriveFiles();
+    if (!files.length) { listEl.innerHTML = '<p style="color:var(--muted);font-size:13px">No files found in this folder.</p>'; return; }
+    listEl.innerHTML = '<table style="width:100%;font-size:12px;border-collapse:collapse">' +
+      '<tr style="border-bottom:1px solid var(--border)"><th style="text-align:left;padding:6px">Name</th><th style="text-align:left;padding:6px">Modified</th><th style="padding:6px">Link</th></tr>' +
+      files.map(f => `<tr style="border-bottom:1px solid var(--border)"><td style="padding:6px">${f.name}</td><td style="padding:6px;color:var(--muted)">${new Date(f.modifiedTime).toLocaleDateString()}</td><td style="padding:6px;text-align:center">${f.webViewLink ? `<a href="${f.webViewLink}" target="_blank" style="color:var(--gold)">Open</a>` : '-'}</td></tr>`).join('') +
+      '</table>';
+  } catch (e) { listEl.innerHTML = `<p style="color:var(--red);font-size:12px">Error: ${e.message}</p>`; }
+}
+
+async function uploadAnalysisHistoryToGDrive() {
+  if (!gdriveAccessToken) { toast('Google Drive not connected', 'error'); return; }
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem('fgl_history') || '[]'); } catch (_) {}
+  if (!history.length) { toast('No analysis history to upload', 'error'); return; }
+  const content = history.map((h, i) => `--- Analysis ${i + 1} ---\nDate: ${h.date || 'N/A'}\nQuery: ${h.query || 'N/A'}\nArea: ${h.area || 'N/A'}\nResult: ${h.result || 'N/A'}\n`).join('\n');
+  const fileName = `FGL_Analysis_History_${new Date().toISOString().slice(0,10)}.txt`;
+  await uploadToGDrive(fileName, content, 'text/plain');
 }
 
 // ======= NOTION INTEGRATION =======
@@ -3898,7 +4359,447 @@ async function createClickUpTasksFromFindings(findings) {
   toast(`${created} ClickUp tasks created from findings`, 'success');
 }
 
+// ======= SCREENING (Sanctions + PEP) =======
+const SCREENING_STORAGE = 'fgl_screenings';
+
+async function runScreening() {
+  const name = document.getElementById('screenName').value.trim();
+  if (!name) { toast('Enter entity name','error'); return; }
+  const type = document.getElementById('screenType').value;
+  const country = document.getElementById('screenCountry').value.trim();
+  const idNum = document.getElementById('screenId').value.trim();
+  const checkSanctions = document.getElementById('screenSanctions').checked;
+  const checkPEP = document.getElementById('screenPEP').checked;
+
+  const sb = document.getElementById('screeningStatus'); sb.style.display = 'flex';
+  document.getElementById('screeningStatusText').textContent = 'Running screening checks...';
+
+  const prompt = `You are a compliance screening expert. Screen the following entity against sanctions lists and PEP databases.
+
+Entity: ${name}
+Type: ${type}
+Country: ${country || 'Not specified'}
+ID: ${idNum || 'Not provided'}
+Check Sanctions: ${checkSanctions}
+Check PEP: ${checkPEP}
+
+Return JSON: {"result":"CLEAR|MATCH|POTENTIAL_MATCH","risk_level":"LOW|MEDIUM|HIGH|CRITICAL","sanctions_hits":[{"list":"UN|OFAC|EU|UK|UAE","match_type":"exact|partial|alias","details":"..."}],"pep_hits":[{"category":"PEP|RCA|Close Associate","position":"...","country":"..."}],"risk_factors":["..."],"recommended_actions":["..."],"summary":"..."}`;
+
+  try {
+    const data = await callAI({ model:'claude-sonnet-4-6', max_tokens:1200, temperature:0, system:'You are a sanctions and PEP screening specialist. Return only valid JSON.', messages:[{role:'user',content:prompt}] });
+    const raw = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    const result = JSON.parse(raw.replace(/```json?\n?/g,'').replace(/```/g,'').trim());
+
+    const record = { id:Date.now(), name, type, country, date:new Date().toISOString(), result };
+    const history = safeLocalParse(SCREENING_STORAGE, []);
+    history.unshift(record);
+    localStorage.setItem(SCREENING_STORAGE, JSON.stringify(history.slice(0,200)));
+    logAudit('screening', `Screened ${name}: ${result.result}`);
+
+    renderScreeningResult(result, name);
+    loadScreeningHistory();
+    sb.style.display='none';
+
+    if (result.result !== 'CLEAR') sendSlackAlert('Screening Alert', `${name} flagged as ${result.result} — ${result.summary}`);
+  } catch(e) {
+    sb.style.display='none';
+    toast(`Screening error: ${e.message}`,'error');
+  }
+}
+
+function renderScreeningResult(result, name) {
+  const el = document.getElementById('screeningResults');
+  const cls = result.result==='CLEAR'?'f-ok':result.result==='MATCH'?'f-critical':'f-high';
+  const badge = result.result==='CLEAR'?'b-ok':result.result==='MATCH'?'b-c':'b-h';
+  el.style.display='block';
+  el.querySelector('#screeningResultsContent').innerHTML = `
+    <div class="finding ${cls}" style="animation:none;opacity:1">
+      <div class="f-head"><div class="f-head-left"><span class="badge ${badge}">${result.result}</span><span class="f-title">${name}</span></div><span class="badge" style="background:var(--surface2)">${result.risk_level} RISK</span></div>
+      <div class="f-body">${result.summary||''}</div>
+      ${(result.sanctions_hits||[]).length?`<div class="rec" style="margin-top:8px"><strong>Sanctions Hits:</strong> ${result.sanctions_hits.map(h=>`${h.list} (${h.match_type}): ${h.details}`).join('; ')}</div>`:''}
+      ${(result.pep_hits||[]).length?`<div class="rec" style="margin-top:8px"><strong>PEP Hits:</strong> ${result.pep_hits.map(h=>`${h.category}: ${h.position} (${h.country})`).join('; ')}</div>`:''}
+      ${(result.risk_factors||[]).length?`<div class="rec" style="margin-top:8px"><strong>Risk Factors:</strong> ${result.risk_factors.join(', ')}</div>`:''}
+      ${(result.recommended_actions||[]).length?`<div class="rec" style="margin-top:8px"><strong>Actions:</strong> ${result.recommended_actions.join('; ')}</div>`:''}
+    </div>`;
+}
+
+function loadScreeningHistory() {
+  const history = safeLocalParse(SCREENING_STORAGE, []);
+  const el = document.getElementById('screeningHistoryList');
+  if (!history.length) { el.innerHTML='<p style="font-size:13px;color:var(--muted)">No screenings yet.</p>'; return; }
+  el.innerHTML = history.slice(0,50).map(h=>{
+    const r = h.result||{};
+    const cls = r.result==='CLEAR'?'b-ok':r.result==='MATCH'?'b-c':'b-h';
+    return `<div class="asana-item"><div><div class="asana-name">${h.name}</div><div class="asana-meta">${h.type} | ${h.country||'—'} | ${new Date(h.date).toLocaleDateString()}</div></div><span class="badge ${cls}">${r.result||'—'}</span></div>`;
+  }).join('');
+}
+
+// ======= ONBOARDING (CDD/EDD + Risk Scoring) =======
+const ONBOARDING_STORAGE = 'fgl_onboarding';
+
+function calculateRiskScore() {
+  const country = document.getElementById('obCountry').value.trim().toLowerCase();
+  const isPEP = document.getElementById('obPEP').checked;
+  const isCAHRA = document.getElementById('obCAHRA').checked;
+  const turnover = parseFloat(document.getElementById('obTurnover').value)||0;
+  const override = document.getElementById('obRiskOverride').value;
+
+  let score = 0;
+  const factors = [];
+
+  const highRiskCountries = ['iran','north korea','dprk','syria','yemen','myanmar','afghanistan','libya','iraq','sudan','somalia','south sudan','congo','mali','central african republic'];
+  if (highRiskCountries.some(c=>country.includes(c))) { score+=40; factors.push('High-risk country'); }
+  if (isPEP) { score+=30; factors.push('PEP/PEP-related'); }
+  if (isCAHRA) { score+=25; factors.push('CAHRA jurisdiction'); }
+  if (turnover>1000000) { score+=15; factors.push('High turnover (>$1M)'); }
+  if (turnover>5000000) { score+=10; factors.push('Very high turnover (>$5M)'); }
+
+  const docs = document.querySelectorAll('.ob-doc');
+  let docsCollected = 0;
+  docs.forEach(d=>{ if(d.checked) docsCollected++; });
+  if (docsCollected < 4) { score+=15; factors.push(`Incomplete documentation (${docsCollected}/${docs.length})`); }
+
+  let level = score>=60?'CRITICAL':score>=40?'HIGH':score>=20?'MEDIUM':'LOW';
+  if (override!=='auto') level = override.toUpperCase();
+
+  const cls = level==='CRITICAL'||level==='PROHIBITED'?'f-critical':level==='HIGH'?'f-high':level==='MEDIUM'?'f-medium':'f-ok';
+  const badge = level==='CRITICAL'||level==='PROHIBITED'?'b-c':level==='HIGH'?'b-h':level==='MEDIUM'?'b-m':'b-ok';
+  const edd = level==='HIGH'||level==='CRITICAL'?'<div class="rec" style="margin-top:8px"><strong>EDD Required:</strong> Enhanced Due Diligence must be performed. Senior management approval needed.</div>':'';
+
+  document.getElementById('riskScoreResult').style.display='block';
+  document.getElementById('riskScoreResult').innerHTML = `
+    <div class="finding ${cls}" style="animation:none;opacity:1">
+      <div class="f-head"><div class="f-head-left"><span class="badge ${badge}">RISK: ${level}</span><span class="f-title">Score: ${score}/100</span></div></div>
+      <div class="f-body"><strong>Risk Factors:</strong> ${factors.length?factors.join(', '):'No elevated risk factors identified'}</div>
+      <div class="f-body" style="margin-top:6px"><strong>CDD Level:</strong> ${level==='LOW'?'Simplified':'Standard'} Due Diligence ${level==='HIGH'||level==='CRITICAL'?'+ Enhanced Due Diligence':''}${level==='CRITICAL'?' + Senior Management Approval':''}</div>
+      ${edd}
+    </div>`;
+  return { score, level, factors };
+}
+
+function completeOnboarding() {
+  const name = document.getElementById('obName').value.trim();
+  if (!name) { toast('Enter customer name','error'); return; }
+  const risk = calculateRiskScore();
+  const docs = []; document.querySelectorAll('.ob-doc').forEach(d=>{ if(d.checked) docs.push(d.dataset.doc); });
+
+  const record = {
+    id: Date.now(), name, type: document.getElementById('obType').value,
+    country: document.getElementById('obCountry').value.trim(),
+    activity: document.getElementById('obActivity').value.trim(),
+    turnover: document.getElementById('obTurnover').value,
+    sourceFunds: document.getElementById('obSourceFunds').value.trim(),
+    isPEP: document.getElementById('obPEP').checked,
+    isCAHRA: document.getElementById('obCAHRA').checked,
+    officer: document.getElementById('obOfficer').value.trim(),
+    notes: document.getElementById('obNotes').value.trim(),
+    docs, risk, date: new Date().toISOString(), status: 'active'
+  };
+
+  const list = safeLocalParse(ONBOARDING_STORAGE, []);
+  list.unshift(record);
+  localStorage.setItem(ONBOARDING_STORAGE, JSON.stringify(list));
+  logAudit('onboarding', `Onboarded ${name} — Risk: ${risk.level}`);
+  renderOnboardingList();
+  toast(`${name} onboarded — ${risk.level} risk`,'success');
+}
+
+function renderOnboardingList() {
+  const list = safeLocalParse(ONBOARDING_STORAGE, []);
+  const el = document.getElementById('onboardingList');
+  if (!list.length) { el.innerHTML='<p style="font-size:13px;color:var(--muted)">No customers onboarded yet.</p>'; return; }
+  el.innerHTML = list.map(c=>{
+    const badge = c.risk.level==='CRITICAL'?'b-c':c.risk.level==='HIGH'?'b-h':c.risk.level==='MEDIUM'?'b-m':'b-ok';
+    return `<div class="asana-item"><div><div class="asana-name">${c.name}</div><div class="asana-meta">${c.type} | ${c.country} | ${new Date(c.date).toLocaleDateString()} | Score: ${c.risk.score}</div></div><span class="badge ${badge}">${c.risk.level}</span></div>`;
+  }).join('');
+}
+
+function resetOnboarding() {
+  ['obName','obCountry','obActivity','obTurnover','obSourceFunds','obOfficer','obNotes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('obPEP').checked=false; document.getElementById('obCAHRA').checked=false;
+  document.querySelectorAll('.ob-doc').forEach(d=>d.checked=false);
+  document.getElementById('riskScoreResult').style.display='none';
+}
+
+// ======= STR GENERATOR =======
+async function generateSTRDraft() {
+  const subject = document.getElementById('strSubject').value.trim();
+  const amount = document.getElementById('strAmount').value;
+  const indicators = document.getElementById('strIndicators').value.trim();
+  if (!subject||!indicators) { toast('Fill in subject and indicators','error'); return; }
+
+  try {
+    const data = await callAI({ model:'claude-sonnet-4-6', max_tokens:2000, temperature:0,
+      system:'You are a UAE AML compliance expert. Draft a Suspicious Transaction Report (STR) for goAML filing. Include all required fields: reporter info placeholders, subject details, transaction details, grounds for suspicion, and recommended actions. Format as a professional report.',
+      messages:[{role:'user',content:`Draft STR for:\nSubject: ${subject}\nAmount: USD ${amount||'Unknown'}\nSuspicious Indicators: ${indicators}`}]
+    });
+    const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    document.getElementById('strDraftResult').style.display='block';
+    document.getElementById('strDraftResult').innerHTML = `<div class="summary-box" style="white-space:pre-wrap;font-size:12px">${text}</div><div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-sm btn-green" onclick="copySTR()">Copy STR</button><button class="btn btn-sm" onclick="shareToSlack()">Send to Slack</button></div>`;
+    logAudit('str', `STR drafted for ${subject}`);
+  } catch(e) { toast(`STR error: ${e.message}`,'error'); }
+}
+function copySTR() { const t=document.querySelector('#strDraftResult .summary-box'); if(t){navigator.clipboard.writeText(t.textContent);toast('STR copied','success');} }
+function generateSTR() { switchTab('incidents'); document.getElementById('strSubject').focus(); }
+function generateSTRFromIncident() {
+  document.getElementById('strSubject').value = document.getElementById('incTitle').value;
+  document.getElementById('strIndicators').value = document.getElementById('incDescription').value;
+  document.getElementById('strSubject').scrollIntoView({behavior:'smooth'});
+}
+
+// ======= INCIDENTS =======
+const INCIDENTS_STORAGE = 'fgl_incidents';
+function showNewIncidentForm() { document.getElementById('newIncidentForm').style.display='block'; document.getElementById('incDate').value=new Date().toISOString().split('T')[0]; }
+function hideNewIncidentForm() { document.getElementById('newIncidentForm').style.display='none'; }
+
+function saveIncident() {
+  const title = document.getElementById('incTitle').value.trim();
+  if (!title) { toast('Enter incident title','error'); return; }
+  const incident = {
+    id:Date.now(), title, type:document.getElementById('incType').value,
+    severity:document.getElementById('incSeverity').value, date:document.getElementById('incDate').value,
+    description:document.getElementById('incDescription').value.trim(),
+    entities:document.getElementById('incEntities').value.trim(),
+    reporter:document.getElementById('incReporter').value.trim(),
+    remediation:document.getElementById('incRemediation').value.trim(),
+    status:'open', createdAt:new Date().toISOString()
+  };
+  const list = safeLocalParse(INCIDENTS_STORAGE, []);
+  list.unshift(incident);
+  localStorage.setItem(INCIDENTS_STORAGE, JSON.stringify(list));
+  logAudit('incident', `Incident logged: ${title} (${incident.severity})`);
+  renderIncidents();
+  hideNewIncidentForm();
+  toast('Incident saved','success');
+  sendSlackAlert('Incident Logged', `[${incident.severity.toUpperCase()}] ${title}: ${incident.description.slice(0,200)}`);
+}
+
+function renderIncidents() {
+  const list = safeLocalParse(INCIDENTS_STORAGE, []);
+  const el = document.getElementById('incidentsList');
+  if (!list.length) { el.innerHTML='<p style="font-size:13px;color:var(--muted)">No incidents recorded.</p>'; return; }
+  el.innerHTML = list.map(i=>{
+    const badge = i.severity==='critical'?'b-c':i.severity==='high'?'b-h':i.severity==='medium'?'b-m':'b-ok';
+    const statusBadge = i.status==='open'?'s-overdue':'s-ok';
+    return `<div class="asana-item"><div><div class="asana-name">${i.title}</div><div class="asana-meta">${i.type} | ${i.date} | ${i.reporter||'Unknown'}</div></div><div style="display:flex;gap:6px"><span class="badge ${badge}">${i.severity.toUpperCase()}</span><span class="asana-status ${statusBadge}">${i.status}</span><button class="btn btn-sm" onclick="closeIncident(${i.id})" style="padding:3px 8px;font-size:10px">${i.status==='open'?'Close':'Reopen'}</button></div></div>`;
+  }).join('');
+}
+
+function closeIncident(id) {
+  const list = safeLocalParse(INCIDENTS_STORAGE, []);
+  const i = list.find(x=>x.id===id);
+  if (i) { i.status = i.status==='open'?'closed':'open'; localStorage.setItem(INCIDENTS_STORAGE, JSON.stringify(list)); renderIncidents(); logAudit('incident',`Incident ${i.status}: ${i.title}`); }
+}
+
+function submitWhistleblower() {
+  const report = document.getElementById('wbReport').value.trim();
+  if (!report) { toast('Enter report details','error'); return; }
+  const incident = {
+    id:Date.now(), title:'Whistleblower Report', type:'whistleblower',
+    severity:document.getElementById('wbUrgency').value==='high'?'high':'medium',
+    date:new Date().toISOString().split('T')[0], description:report,
+    entities:'', reporter:'Anonymous', remediation:'',
+    category:document.getElementById('wbCategory').value, status:'open', createdAt:new Date().toISOString()
+  };
+  const list = safeLocalParse(INCIDENTS_STORAGE, []);
+  list.unshift(incident);
+  localStorage.setItem(INCIDENTS_STORAGE, JSON.stringify(list));
+  logAudit('whistleblower', 'Anonymous report submitted');
+  document.getElementById('wbReport').value='';
+  renderIncidents();
+  toast('Whistleblower report submitted anonymously','success');
+  sendSlackAlert('Whistleblower Report', `Category: ${incident.category} | Urgency: ${document.getElementById('wbUrgency').value}`);
+}
+
+// ======= DASHBOARD =======
+const AUDIT_STORAGE = 'fgl_audit_trail';
+function logAudit(action, detail) {
+  const trail = safeLocalParse(AUDIT_STORAGE, []);
+  trail.unshift({ ts:new Date().toISOString(), action, detail, user:'Current User' });
+  localStorage.setItem(AUDIT_STORAGE, JSON.stringify(trail.slice(0,500)));
+}
+
+function refreshDashboard() {
+  const gaps = safeLocalParse('fgl_gaps_v2', []);
+  const incidents = safeLocalParse(INCIDENTS_STORAGE, []);
+  const screenings = safeLocalParse(SCREENING_STORAGE, []);
+  const customers = safeLocalParse(ONBOARDING_STORAGE, []);
+  const deadlines = safeLocalParse(CALENDAR_STORAGE, []);
+
+  const openGaps = gaps.filter(g=>g.status!=='closed'&&g.status!=='resolved').length;
+  const openIncidents = incidents.filter(i=>i.status==='open').length;
+  const now = new Date();
+  const thirtyDaysAgo = new Date(now-30*24*60*60*1000);
+  const recentScreenings = screenings.filter(s=>new Date(s.date)>thirtyDaysAgo).length;
+
+  document.getElementById('dashOpenGaps').textContent = openGaps;
+  document.getElementById('dashOverdueTasks').textContent = openIncidents;
+  document.getElementById('dashPendingReviews').textContent = deadlines.filter(d=>new Date(d.date)<=new Date(now.getTime()+7*24*60*60*1000)&&!d.completed).length;
+  document.getElementById('dashScreenings').textContent = recentScreenings;
+
+  const avgRisk = customers.length ? Math.round(customers.reduce((s,c)=>s+(c.risk?.score||0),0)/customers.length) : 0;
+  document.getElementById('dashRiskScore').textContent = customers.length ? avgRisk+'/100' : '—';
+
+  let crit=0,high=0,med=0,low=0;
+  customers.forEach(c=>{ const l=c.risk?.level||'LOW'; if(l==='CRITICAL')crit++;else if(l==='HIGH')high++;else if(l==='MEDIUM')med++;else low++; });
+  document.getElementById('heatCritical').textContent=crit;
+  document.getElementById('heatHigh').textContent=high;
+  document.getElementById('heatMedium').textContent=med;
+  document.getElementById('heatLow').textContent=low;
+
+  const trail = safeLocalParse(AUDIT_STORAGE, []);
+  const trailEl = document.getElementById('auditTrailList');
+  trailEl.innerHTML = trail.length ? trail.slice(0,50).map(t=>`<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:12px"><span style="color:var(--gold);font-family:'DM Mono',monospace">${new Date(t.ts).toLocaleString()}</span> <span style="color:var(--muted)">[${t.action}]</span> ${t.detail}</div>`).join('') : '<p style="font-size:13px;color:var(--muted)">No activity yet.</p>';
+}
+
+async function exportBoardReport() {
+  const gaps = safeLocalParse('fgl_gaps_v2', []);
+  const incidents = safeLocalParse(INCIDENTS_STORAGE, []);
+  const screenings = safeLocalParse(SCREENING_STORAGE, []);
+  const customers = safeLocalParse(ONBOARDING_STORAGE, []);
+
+  try {
+    const data = await callAI({ model:'claude-sonnet-4-6', max_tokens:2000, temperature:0,
+      system:'You are a MLRO writing a board compliance report. Be concise, professional, structured.',
+      messages:[{role:'user',content:`Generate a Board/MLRO Compliance Report based on:\nOpen Gaps: ${gaps.filter(g=>g.status!=='closed').length}\nTotal Incidents: ${incidents.length} (Open: ${incidents.filter(i=>i.status==='open').length})\nScreenings (30d): ${screenings.length}\nCustomers Onboarded: ${customers.length}\nHigh Risk Customers: ${customers.filter(c=>c.risk?.level==='HIGH'||c.risk?.level==='CRITICAL').length}\n\nIncident Summary: ${incidents.slice(0,5).map(i=>`${i.severity}: ${i.title}`).join('; ')}`}]
+    });
+    const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    document.getElementById('boardReportPreview').innerHTML = `<div class="summary-box" style="white-space:pre-wrap;font-size:12px">${text}</div><div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-sm btn-green" onclick="navigator.clipboard.writeText(document.querySelector('#boardReportPreview .summary-box').textContent);toast('Copied','success')">Copy Report</button><button class="btn btn-sm" onclick="shareToSlack()">Send to Slack</button></div>`;
+    logAudit('board_report', 'Board report generated');
+  } catch(e) { toast(`Report error: ${e.message}`,'error'); }
+}
+
+// ======= REGULATORY CALENDAR =======
+const CALENDAR_STORAGE = 'fgl_calendar';
+const UAE_CALENDAR = [
+  {title:'UAE Central Bank AML/CFT Annual Return',category:'regulatory',month:3,day:31,recurring:true},
+  {title:'goAML System — Annual STR Review',category:'regulatory',month:1,day:31,recurring:true},
+  {title:'LBMA Responsible Gold Guidance — Annual Report',category:'audit',month:6,day:30,recurring:true},
+  {title:'Trade License Renewal',category:'license',month:12,day:31,recurring:true},
+  {title:'AML/CFT Policy Annual Review',category:'review',month:1,day:1,recurring:true},
+  {title:'Employee AML Training — Annual',category:'training',month:3,day:1,recurring:true},
+  {title:'FATF Grey List Review',category:'fatf',month:6,day:1,recurring:true},
+  {title:'Risk Assessment Update — Bi-Annual',category:'review',month:6,day:30,recurring:true},
+  {title:'Independent AML Audit',category:'audit',month:12,day:1,recurring:true},
+  {title:'Sanctions List Update Check',category:'regulatory',month:0,day:0,recurring:false,note:'Monthly'},
+  {title:'Transaction Monitoring Review',category:'review',month:0,day:0,recurring:false,note:'Quarterly'},
+  {title:'UBO Verification Refresh',category:'review',month:0,day:0,recurring:false,note:'Annual for all active customers'},
+];
+
+function showNewDeadlineForm() { document.getElementById('newDeadlineForm').style.display='block'; }
+function hideNewDeadlineForm() { document.getElementById('newDeadlineForm').style.display='none'; }
+
+function saveDeadline() {
+  const title = document.getElementById('calTitle').value.trim();
+  const date = document.getElementById('calDate').value;
+  if (!title||!date) { toast('Fill in title and date','error'); return; }
+  const dl = {
+    id:Date.now(), title, date, category:document.getElementById('calCategory').value,
+    remind:parseInt(document.getElementById('calRemind').value)||7,
+    notes:document.getElementById('calNotes').value.trim(), completed:false
+  };
+  const list = safeLocalParse(CALENDAR_STORAGE, []);
+  list.push(dl);
+  list.sort((a,b)=>new Date(a.date)-new Date(b.date));
+  localStorage.setItem(CALENDAR_STORAGE, JSON.stringify(list));
+  renderDeadlines();
+  hideNewDeadlineForm();
+  logAudit('calendar', `Deadline added: ${title} (${date})`);
+  toast('Deadline saved','success');
+}
+
+function renderDeadlines() {
+  const list = safeLocalParse(CALENDAR_STORAGE, []);
+  const el = document.getElementById('deadlinesList');
+  const now = new Date(); now.setHours(0,0,0,0);
+  if (!list.length) { el.innerHTML='<p style="font-size:13px;color:var(--muted)">No deadlines set. Add one above or use the pre-loaded UAE calendar.</p>'; return; }
+  el.innerHTML = list.map(d=>{
+    const due = new Date(d.date);
+    const diff = Math.ceil((due-now)/(1000*60*60*24));
+    const status = d.completed?'s-ok':diff<0?'s-overdue':diff<=7?'s-due':'s-ok';
+    const label = d.completed?'DONE':diff<0?`${-diff}d OVERDUE`:diff===0?'TODAY':`${diff}d left`;
+    return `<div class="asana-item"><div><div class="asana-name">${d.title}</div><div class="asana-meta">${d.category} | ${d.date} ${d.notes?'| '+d.notes:''}</div></div><div style="display:flex;gap:6px"><span class="asana-status ${status}">${label}</span><button class="btn btn-sm" onclick="toggleDeadline(${d.id})" style="padding:3px 8px;font-size:10px">${d.completed?'Undo':'Done'}</button></div></div>`;
+  }).join('');
+}
+
+function toggleDeadline(id) {
+  const list = safeLocalParse(CALENDAR_STORAGE, []);
+  const d = list.find(x=>x.id===id);
+  if(d) { d.completed=!d.completed; localStorage.setItem(CALENDAR_STORAGE, JSON.stringify(list)); renderDeadlines(); }
+}
+
+function renderPreloadedCalendar() {
+  document.getElementById('preloadedCalendar').innerHTML = UAE_CALENDAR.map(c=>
+    `<div class="asana-item"><div><div class="asana-name">${c.title}</div><div class="asana-meta">${c.category} ${c.recurring?'| Recurring':''}${c.note?' | '+c.note:''}</div></div><button class="btn btn-sm" onclick="addPreloadedDeadline('${c.title.replace(/'/g,"\\'")}','${c.category}')" style="padding:3px 8px;font-size:10px">+ Add</button></div>`
+  ).join('');
+}
+
+function addPreloadedDeadline(title, category) {
+  const year = new Date().getFullYear();
+  document.getElementById('calTitle').value = title;
+  document.getElementById('calCategory').value = category;
+  document.getElementById('calDate').value = `${year}-12-31`;
+  showNewDeadlineForm();
+  toast('Edit the date and save','info');
+}
+
+// ======= DOCUMENT VAULT =======
+const VAULT_STORAGE = 'fgl_vault';
+function showNewVaultDoc() { document.getElementById('newVaultForm').style.display='block'; }
+function hideNewVaultDoc() { document.getElementById('newVaultForm').style.display='none'; }
+
+function saveVaultDoc() {
+  const name = document.getElementById('vaultName').value.trim();
+  if (!name) { toast('Enter document name','error'); return; }
+  const doc = {
+    id:Date.now(), name, category:document.getElementById('vaultCategory').value,
+    url:document.getElementById('vaultUrl').value.trim(),
+    expiry:document.getElementById('vaultExpiry').value,
+    tags:(document.getElementById('vaultTags').value||'').split(',').map(t=>t.trim()).filter(Boolean),
+    version:document.getElementById('vaultVersion').value.trim(),
+    notes:document.getElementById('vaultNotes').value.trim(),
+    addedAt:new Date().toISOString()
+  };
+  const list = safeLocalParse(VAULT_STORAGE, []);
+  list.unshift(doc);
+  localStorage.setItem(VAULT_STORAGE, JSON.stringify(list));
+  renderVaultDocs();
+  hideNewVaultDoc();
+  logAudit('vault', `Document added: ${name}`);
+  toast('Document saved','success');
+}
+
+function renderVaultDocs(filter='') {
+  const list = safeLocalParse(VAULT_STORAGE, []);
+  const el = document.getElementById('vaultDocsList');
+  const filtered = filter ? list.filter(d=>d.name.toLowerCase().includes(filter)||d.tags.some(t=>t.toLowerCase().includes(filter))||d.category.includes(filter)) : list;
+  if (!filtered.length) { el.innerHTML='<p style="font-size:13px;color:var(--muted)">No documents stored.</p>'; return; }
+  const now = new Date();
+  el.innerHTML = filtered.map(d=>{
+    const expiring = d.expiry && new Date(d.expiry) < new Date(now.getTime()+30*24*60*60*1000);
+    const expired = d.expiry && new Date(d.expiry) < now;
+    const status = expired?'s-overdue':expiring?'s-due':'s-ok';
+    const label = expired?'EXPIRED':expiring?'EXPIRING SOON':d.expiry?'Valid':'—';
+    return `<div class="asana-item"><div><div class="asana-name">${d.url?`<a href="${d.url}" target="_blank" style="color:var(--gold)">${d.name}</a>`:d.name} <span style="color:var(--muted);font-size:10px">${d.version||''}</span></div><div class="asana-meta">${d.category} ${d.tags.length?'| '+d.tags.join(', '):''}${d.expiry?' | Exp: '+d.expiry:''}</div></div><div style="display:flex;gap:6px"><span class="asana-status ${status}">${label}</span><button class="btn btn-sm btn-red" onclick="deleteVaultDoc(${d.id})" style="padding:3px 8px;font-size:10px">Del</button></div></div>`;
+  }).join('');
+}
+
+function filterVaultDocs() { renderVaultDocs(document.getElementById('vaultSearch').value.toLowerCase().trim()); }
+function deleteVaultDoc(id) { const list=safeLocalParse(VAULT_STORAGE,[]).filter(d=>d.id!==id); localStorage.setItem(VAULT_STORAGE,JSON.stringify(list)); renderVaultDocs(); }
+
+// ======= INIT NEW FEATURES =======
+function initNewFeatures() {
+  loadScreeningHistory();
+  renderOnboardingList();
+  renderIncidents();
+  renderDeadlines();
+  renderPreloadedCalendar();
+  renderVaultDocs();
+  refreshDashboard();
+}
+
 initialiseApp();
+initNewFeatures();
 </script>
 <script>
 (function () {

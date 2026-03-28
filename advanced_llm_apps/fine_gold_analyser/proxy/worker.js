@@ -1,9 +1,10 @@
 /**
- * Fine Gold Analyser — Cloudflare Worker API Proxy v2.2
+ * Fine Gold Analyser — Cloudflare Worker API Proxy v2.3
  *
  * Routes:
  *   POST /anthropic            → https://api.anthropic.com/v1/messages
  *   POST /openai               → https://api.openai.com/v1/chat/completions
+ *   POST /gemini               → https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
  *   GET|POST|PUT /asana/*      → https://app.asana.com/api/1.0/*
  *   GET|POST /notion/*         → https://api.notion.com/v1/*
  *   POST /slack                → Slack Incoming Webhook
@@ -15,6 +16,7 @@
  *
  * Optional Worker secrets:
  *   OPENAI_KEY      — OpenAI API key (sk-...)
+ *   GEMINI_KEY      — Google Gemini API key (AIza...)
  *   NOTION_TOKEN    — Notion integration token (ntn_...)
  *   CLICKUP_TOKEN   — ClickUp API token (pk_...)
  */
@@ -84,6 +86,20 @@ export default {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${env.OPENAI_KEY}`,
         },
+        body,
+      });
+      return new Response(await upstream.text(), { status: upstream.status, headers: jsonHeaders });
+    }
+
+    // ── Gemini proxy ──────────────────────────────────────────────────────────
+    if (path === '/gemini') {
+      if (request.method !== 'POST') {
+        return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers: jsonHeaders });
+      }
+      const body = await request.text();
+      const upstream = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${env.GEMINI_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body,
       });
       return new Response(await upstream.text(), { status: upstream.status, headers: jsonHeaders });
