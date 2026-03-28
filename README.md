@@ -210,7 +210,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 ### 🎯 LLM Optimization Tools
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30-60% using TOON format
-*   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50-90% through intelligent context compression for AI agents (includes persistent memory & MCP support)
+*   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50-90% format 
 
 ### 🔧 LLM Fine-tuning Tutorials
 
@@ -233,6 +233,10 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
   - Memory; callbacks; evaluation
   - Multi‑agent patterns; agent handoffs
   - Swarm orchestration; routing logic
+
+### 🧩 Awesome Agent Skills
+
+*   [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
 
 ## 🚀 Getting Started
 

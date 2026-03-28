@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  /* Dark mode (default) */
+  html.dark body {
+    background-color: #09090b;
+    color: #fafafa;
+  }
+
+  /* Light mode */
+  html.light body {
+    background-color: #fafafa;
+    color: #18181b;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  /* Scrollbar - dark */
+  html.dark ::-webkit-scrollbar {
+    width: 10px;
+  }
+  html.dark ::-webkit-scrollbar-track {
+    background: #18181b;
+  }
+  html.dark ::-webkit-scrollbar-thumb {
+    background: #27272a;
+    border-radius: 5px;
+  }
+  html.dark ::-webkit-scrollbar-thumb:hover {
+    background: #3f3f46;
+  }
+
+  /* Scrollbar - light */
+  html.light ::-webkit-scrollbar {
+    width: 10px;
+  }
+  html.light ::-webkit-scrollbar-track {
+    background: #f4f4f5;
+  }
+  html.light ::-webkit-scrollbar-thumb {
+    background: #d4d4d8;
+    border-radius: 5px;
+  }
+  html.light ::-webkit-scrollbar-thumb:hover {
+    background: #a1a1aa;
+  }
+}
+
+@layer utilities {
+  /* Glass effect - dark */
+  html.dark .glass {
+    background: rgba(24, 24, 27, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(63, 63, 70, 0.4);
+  }
+
+  /* Glass effect - light */
+  html.light .glass {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(228, 228, 231, 0.8);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .gradient-text {
+    background: linear-gradient(to right, #8b5cf6, #a855f7);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .gradient-bg {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7);
+  }
+
+  .shimmer {
+    animation: shimmer 2s infinite;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .pulse-ring {
+    animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-ring {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.05); }
+  }
+
+  /* Light mode overrides for common component patterns */
+  html.light .bg-zinc-900 { background-color: #ffffff !important; }
+  html.light .bg-zinc-800 { background-color: #f4f4f5 !important; }
+  html.light .bg-zinc-700 { background-color: #e4e4e7 !important; }
+  html.light .border-zinc-800 { border-color: #e4e4e7 !important; }
+  html.light .border-zinc-700 { border-color: #d4d4d8 !important; }
+  html.light .text-zinc-400 { color: #71717a !important; }
+  html.light .text-zinc-500 { color: #52525b !important; }
+  html.light .text-white { color: #18181b !important; }
+  html.light .text-zinc-300 { color: #3f3f46 !important; }
+  html.light .text-zinc-200 { color: #27272a !important; }
+  html.light .hover\:bg-zinc-700:hover { background-color: #e4e4e7 !important; }
+  html.light .hover\:bg-zinc-800:hover { background-color: #f4f4f5 !important; }
+  html.light .hover\:border-zinc-700:hover { border-color: #d4d4d8 !important; }
+  html.light .focus\:border-violet-500:focus { border-color: #8b5cf6 !important; }
+  html.light input, html.light textarea {
+    color: #18181b !important;
+  }
+  html.light input::placeholder, html.light textarea::placeholder {
+    color: #a1a1aa !important;
+  }
+
+  /* Recharts overrides for light mode */
+  html.light .recharts-cartesian-grid line {
+    stroke: #e4e4e7 !important;
+  }
+  html.light .recharts-text {
+    fill: #52525b !important;
+  }
+}
