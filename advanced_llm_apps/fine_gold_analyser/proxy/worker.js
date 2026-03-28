@@ -13,14 +13,19 @@
  * configured GitHub Pages URL are accepted.
  */
 
-const ALLOWED_ORIGIN = 'https://trex051192.github.io';
+const ALLOWED_ORIGINS = [
+  'https://trex051192.github.io',
+  'https://compliancetool.com',
+  'https://www.compliancetool.com',
+];
 
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin') || '';
+    const matchedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : '';
 
     const corsHeaders = {
-      'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
+      'Access-Control-Allow-Origin': matchedOrigin || ALLOWED_ORIGINS[0],
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
       'Access-Control-Max-Age': '86400',
@@ -31,8 +36,8 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders });
     }
 
-    // ── Origin guard — reject everything except the allowed GitHub Pages site ─
-    if (origin !== ALLOWED_ORIGIN) {
+    // ── Origin guard — reject everything except the allowed sites ─────────────
+    if (!matchedOrigin) {
       return new Response(JSON.stringify({ error: 'Forbidden' }), {
         status: 403,
         headers: { 'Content-Type': 'application/json' },

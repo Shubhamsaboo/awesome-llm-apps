@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Compliance Tasks - Compliance Analyser v2</title>
+<title>Compliance Tasks - Compliance Analyser v2.1</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
@@ -226,7 +226,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.6}
       <div class="logo-text">Compliance Tasks - Compliance Analyser</div>
     </div>
     <div class="subtitle">UAE FDL No.10/2025 · FATF · UAE FIU · OECD · EOCN · MoE · LBMA RGG v9</div>
-    <div class="version-badge">v2.0 · Asana Write-Back · PDF Export · Scheduled Analysis · Evidence Tracker</div>
+    <div class="version-badge">v2.1 · Asana Write-Back · PDF Export · Scheduled Analysis · Evidence Tracker</div>
     <div style="display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:12px">
       <span class="live-pill" id="activeCompanyBadge"><span class="live-dot"></span><span id="activeCompanyName">Company 1</span></span>
       <select id="activeCompanySelect" style="max-width:240px;height:36px" onchange="switchActiveCompany(this.value)"></select>
@@ -1140,6 +1140,7 @@ employeeTraining = normalizeEmployeeTrainingRecords(employeeTraining);
 
 function loadScopedCompanyState() {
   shipments = safeScopedParse(SHIPMENTS_STORAGE, []);
+  window.shipments = shipments;
 }
 
 function persistAsanaSyncState() {
@@ -2450,6 +2451,7 @@ async function addShipment() {
   } else {
     shipments.unshift(shipment);
   }
+  window.shipments = shipments;
   setScopedJson(SHIPMENTS_STORAGE, shipments);
   renderShipments();
   cancelShipmentEdit();
@@ -2491,6 +2493,7 @@ async function deleteShipment(id) {
   toDelete.syncMessage = syncIssues.join(' | ');
 
   shipments = shipments.filter(s => s.id !== id);
+  window.shipments = shipments;
   setScopedJson(SHIPMENTS_STORAGE, shipments);
   renderShipments();
   setAsanaModuleSync('shipments', {
@@ -2506,6 +2509,7 @@ async function deleteShipment(id) {
 function clearShipments() {
   if (!confirm('This will remove all shipment records. Continue?')) return;
   shipments = [];
+  window.shipments = shipments;
   setScopedJson(SHIPMENTS_STORAGE, shipments);
   cancelShipmentEdit();
   renderShipments();
@@ -2998,7 +3002,7 @@ async function repairAnalysisPayload(rawText) {
   const repairSystem = 'You repair malformed model output into strict JSON. Return only valid JSON, no markdown, no prose.';
   const repairUser = `Convert this content to valid JSON matching schema:\n{"summary":"string","metrics":{"critical":0,"high":0,"medium":0,"compliant":0},"findings":[{"severity":"CRITICAL|HIGH|MEDIUM|COMPLIANT","title":"string","body":"string","regulatory_ref":"string","recommendation":"string","asana_task_name":"string"}]}\n\nContent to repair:\n${rawText}`;
   const repaired = await callAnthropic({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
     max_tokens: 1400,
     temperature: 0,
     system: repairSystem,
@@ -3039,7 +3043,7 @@ async function runAnalysis(queryOverride, areaOverride) {
   document.getElementById('statusText').textContent = 'Running regulatory analysis...';
   try {
     const data = await callAnthropic({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1800,
       temperature: 0,
       system: buildSystemPrompt(area, asanaCtx),
@@ -3213,7 +3217,7 @@ function resetAnalysis() {
 let pendingTaskData = {};
 
 function prefillCreateTask(name, notes) {
-  if (!ASANA_TOKEN) { toast('Asana token required. Add it in Settings.','error'); return; }
+  if (!ASANA_TOKEN && !PROXY_URL) { toast('Asana token or Proxy URL required. Add it in Settings.','error'); return; }
   document.getElementById('newTaskName').value = name;
   document.getElementById('newTaskNotes').value = notes;
   const d = new Date(); d.setDate(d.getDate()+14);
