@@ -226,7 +226,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.6}
       <div class="logo-text">Compliance Tasks - Compliance Analyser</div>
     </div>
     <div class="subtitle">UAE FDL No.10/2025 · FATF · UAE FIU · OECD · EOCN · MoE · LBMA RGG v9</div>
-    <div class="version-badge">v2.1 · Asana Write-Back · PDF Export · Scheduled Analysis · Evidence Tracker</div>
+    <div class="version-badge">v2.2 · Asana · Notion · Slack · ClickUp · OpenAI · PDF Export</div>
     <div style="display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:12px">
       <span class="live-pill" id="activeCompanyBadge"><span class="live-dot"></span><span id="activeCompanyName">Company 1</span></span>
       <select id="activeCompanySelect" style="max-width:240px;height:36px" onchange="switchActiveCompany(this.value)"></select>
@@ -255,6 +255,36 @@ textarea{resize:vertical;min-height:100px;line-height:1.6}
       <span class="lbl">Proxy URL <span style="color:var(--muted);font-weight:400;font-size:11px">(optional — eliminates browser-side API keys)</span></span>
       <input type="url" id="proxyUrl" placeholder="https://fgl-proxy.youruser.workers.dev" />
       <div class="token-note">Deploy <code>proxy/worker.js</code> as a Cloudflare Worker, store your keys as Worker secrets, then paste the Worker URL here. See <code>proxy/README.md</code> for step-by-step instructions. When set, the Anthropic and Asana fields above can be left blank.</div>
+    </div>
+    <div class="card">
+      <span class="lbl">OpenAI API Key <span style="color:var(--muted);font-weight:400;font-size:11px">(optional — alternative AI provider)</span></span>
+      <input type="password" id="openaiKey" placeholder="sk-..." />
+      <div class="token-note">Get from: platform.openai.com → API Keys. When set, you can switch between Claude and GPT-4 in Settings.</div>
+    </div>
+    <div class="card">
+      <span class="lbl">Notion Integration Token <span style="color:var(--muted);font-weight:400;font-size:11px">(optional — save reports to Notion)</span></span>
+      <input type="password" id="notionToken" placeholder="ntn_..." />
+      <div class="token-note">Get from: notion.so/my-integrations → Create integration → Copy Internal Integration Token. Then share your database with the integration.</div>
+    </div>
+    <div class="card">
+      <span class="lbl">Notion Database ID <span style="color:var(--muted);font-weight:400;font-size:11px">(optional)</span></span>
+      <input type="text" id="notionDbId" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+      <div class="token-note">Open your Notion database → copy the ID from the URL (the 32-char string after the workspace name).</div>
+    </div>
+    <div class="card">
+      <span class="lbl">Slack Webhook URL <span style="color:var(--muted);font-weight:400;font-size:11px">(optional — send alerts to Slack)</span></span>
+      <input type="url" id="slackWebhook" placeholder="https://hooks.slack.com/services/T.../B.../..." />
+      <div class="token-note">Create at: api.slack.com → Your Apps → Incoming Webhooks → Add New Webhook to Workspace.</div>
+    </div>
+    <div class="card">
+      <span class="lbl">ClickUp API Token <span style="color:var(--muted);font-weight:400;font-size:11px">(optional — create compliance tasks)</span></span>
+      <input type="password" id="clickupToken" placeholder="pk_..." />
+      <div class="token-note">Get from: ClickUp → Settings → Apps → API Token.</div>
+    </div>
+    <div class="card">
+      <span class="lbl">ClickUp List ID <span style="color:var(--muted);font-weight:400;font-size:11px">(optional)</span></span>
+      <input type="text" id="clickupListId" placeholder="900123456789" />
+      <div class="token-note">Open your ClickUp list → click ••• → Copy Link → the number in the URL is your list ID.</div>
     </div>
     <div class="card" style="padding:1rem 1.2rem">
       <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--text)">
@@ -344,6 +374,9 @@ textarea{resize:vertical;min-height:100px;line-height:1.6}
             <button class="btn btn-sm btn-green" onclick="exportPDF()">⬇ Export PDF</button>
             <button class="btn btn-sm" onclick="copyReport()">Copy Text Report</button>
             <button class="btn btn-sm" onclick="saveToScheduleHistory()">Save to History</button>
+            <button class="btn btn-sm" onclick="shareToNotion()" title="Save to Notion">📓 Notion</button>
+            <button class="btn btn-sm" onclick="shareToSlack()" title="Send to Slack">💬 Slack</button>
+            <button class="btn btn-sm" onclick="shareToClickUp()" title="Create ClickUp tasks">✅ ClickUp</button>
             <button class="btn btn-sm" onclick="resetAnalysis()">New Analysis</button>
           </div>
         </div>
@@ -844,9 +877,15 @@ textarea{resize:vertical;min-height:100px;line-height:1.6}
     <!-- SETTINGS TAB -->
     <div id="tab-settings" class="tab-content">
       <div class="card">
-        <span class="lbl">API Keys</span>
+        <span class="lbl">API Keys & Integrations</span>
         <div class="row" style="margin-bottom:12px"><div><span class="lbl">Anthropic API Key</span><input type="password" id="anthropicKey2" placeholder="sk-ant-..." /></div></div>
+        <div class="row" style="margin-bottom:12px"><div><span class="lbl">OpenAI API Key</span><input type="password" id="openaiKey2" placeholder="sk-..." /></div></div>
+        <div class="row" style="margin-bottom:12px"><div><span class="lbl">AI Provider</span><select id="aiProvider2"><option value="claude">Claude (Anthropic)</option><option value="openai">GPT-4 (OpenAI)</option></select></div></div>
         <div class="row" style="margin-bottom:12px"><div><span class="lbl">Asana Personal Access Token</span><input type="password" id="asanaToken2" placeholder="1/xxxxxxxx..." /></div></div>
+        <div class="row" style="margin-bottom:12px"><div><span class="lbl">Notion Integration Token</span><input type="password" id="notionToken2" placeholder="ntn_..." /></div></div>
+        <div class="row row-2" style="margin-bottom:12px"><div><span class="lbl">Notion Database ID</span><input type="text" id="notionDbId2" placeholder="xxxxxxxx-xxxx-..." /></div><div><button class="btn btn-sm" onclick="testNotionConnection()" style="margin-top:22px">Test Notion</button></div></div>
+        <div class="row" style="margin-bottom:12px"><div><span class="lbl">Slack Webhook URL</span><input type="url" id="slackWebhook2" placeholder="https://hooks.slack.com/services/..." /></div></div>
+        <div class="row row-2" style="margin-bottom:12px"><div><span class="lbl">ClickUp API Token</span><input type="password" id="clickupToken2" placeholder="pk_..." /></div><div><span class="lbl">ClickUp List ID</span><input type="text" id="clickupListId2" placeholder="900123456789" /></div></div>
         <div class="row" style="margin-bottom:12px"><div><span class="lbl">Email for Scheduled Reports</span><input type="email" id="schedEmail2" placeholder="your@email.com" /></div></div>
         <div class="row" style="margin-bottom:12px"><div><span class="lbl">Proxy URL <span style="color:var(--muted);font-weight:400;font-size:11px">(optional)</span></span><input type="url" id="proxyUrl2" placeholder="https://fgl-proxy.youruser.workers.dev" /></div></div>
         <div class="row" style="margin-bottom:12px"><div><label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--text)"><input type="checkbox" id="rememberKeys2" style="width:auto" />Remember my keys on this browser</label></div></div>
@@ -904,6 +943,13 @@ let ANTHROPIC_KEY = '';
 let ASANA_TOKEN = '';
 let PROXY_URL = '';
 let SCHEDULE_EMAIL = '';
+let OPENAI_KEY = '';
+let NOTION_TOKEN = '';
+let NOTION_DB_ID = '';
+let SLACK_WEBHOOK = '';
+let CLICKUP_TOKEN = '';
+let CLICKUP_LIST_ID = '';
+let AI_PROVIDER = 'claude'; // 'claude' or 'openai'
 let lastResult = null;
 let lastQuery = '';
 let lastArea = '';
@@ -1262,8 +1308,7 @@ function clearAppData() {
 // ======= SETUP =======
 function persistKeys() {
   if (!REMEMBER_KEYS) {
-    // Always persist proxyUrl (not a secret — it's just a URL config).
-    localStorage.setItem(KEYS_STORAGE, JSON.stringify({ proxyUrl: PROXY_URL, rememberKeys: false }));
+    localStorage.setItem(KEYS_STORAGE, JSON.stringify({ proxyUrl: PROXY_URL, aiProvider: AI_PROVIDER, notionDbId: NOTION_DB_ID, clickupListId: CLICKUP_LIST_ID, slackWebhook: SLACK_WEBHOOK, rememberKeys: false }));
     return;
   }
 
@@ -1272,6 +1317,13 @@ function persistKeys() {
     asanaToken: ASANA_TOKEN,
     scheduleEmail: SCHEDULE_EMAIL,
     proxyUrl: PROXY_URL,
+    openaiKey: OPENAI_KEY,
+    notionToken: NOTION_TOKEN,
+    notionDbId: NOTION_DB_ID,
+    slackWebhook: SLACK_WEBHOOK,
+    clickupToken: CLICKUP_TOKEN,
+    clickupListId: CLICKUP_LIST_ID,
+    aiProvider: AI_PROVIDER,
     rememberKeys: REMEMBER_KEYS
   }));
 }
@@ -1304,23 +1356,32 @@ function hydrateKeys() {
   ASANA_TOKEN = (saved.asanaToken || '').trim();
   SCHEDULE_EMAIL = (saved.scheduleEmail || '').trim();
   PROXY_URL = normaliseProxyUrl(saved.proxyUrl || '');
+  OPENAI_KEY = (saved.openaiKey || '').trim();
+  NOTION_TOKEN = (saved.notionToken || '').trim();
+  NOTION_DB_ID = (saved.notionDbId || '').trim();
+  SLACK_WEBHOOK = (saved.slackWebhook || '').trim();
+  CLICKUP_TOKEN = (saved.clickupToken || '').trim();
+  CLICKUP_LIST_ID = (saved.clickupListId || '').trim();
+  AI_PROVIDER = saved.aiProvider || 'claude';
 
-  const a1 = document.getElementById('anthropicKey');
-  const a2 = document.getElementById('anthropicKey2');
-  const s1 = document.getElementById('asanaToken');
-  const s2 = document.getElementById('asanaToken2');
-  const e1 = document.getElementById('scheduleEmail');
-  const e2 = document.getElementById('schedEmail2');
-  const p1 = document.getElementById('proxyUrl');
-  const p2 = document.getElementById('proxyUrl2');
-  if (a1) a1.value = ANTHROPIC_KEY;
-  if (a2) a2.value = ANTHROPIC_KEY;
-  if (s1) s1.value = ASANA_TOKEN;
-  if (s2) s2.value = ASANA_TOKEN;
-  if (e1) e1.value = SCHEDULE_EMAIL;
-  if (e2) e2.value = SCHEDULE_EMAIL;
-  if (p1) p1.value = PROXY_URL;
-  if (p2) p2.value = PROXY_URL;
+  const fieldMap = {
+    anthropicKey: ANTHROPIC_KEY, anthropicKey2: ANTHROPIC_KEY,
+    asanaToken: ASANA_TOKEN, asanaToken2: ASANA_TOKEN,
+    scheduleEmail: SCHEDULE_EMAIL, schedEmail2: SCHEDULE_EMAIL,
+    proxyUrl: PROXY_URL, proxyUrl2: PROXY_URL,
+    openaiKey: OPENAI_KEY, openaiKey2: OPENAI_KEY,
+    notionToken: NOTION_TOKEN, notionToken2: NOTION_TOKEN,
+    notionDbId: NOTION_DB_ID, notionDbId2: NOTION_DB_ID,
+    slackWebhook: SLACK_WEBHOOK, slackWebhook2: SLACK_WEBHOOK,
+    clickupToken: CLICKUP_TOKEN, clickupToken2: CLICKUP_TOKEN,
+    clickupListId: CLICKUP_LIST_ID, clickupListId2: CLICKUP_LIST_ID,
+  };
+  for (const [id, val] of Object.entries(fieldMap)) {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  }
+  const providerEl = document.getElementById('aiProvider2');
+  if (providerEl) providerEl.value = AI_PROVIDER;
   syncRememberCheckboxes();
 }
 
@@ -1341,8 +1402,15 @@ function saveSetup() {
   ASANA_TOKEN = document.getElementById('asanaToken').value.trim();
   SCHEDULE_EMAIL = document.getElementById('scheduleEmail').value.trim();
   PROXY_URL = normaliseProxyUrl(document.getElementById('proxyUrl')?.value || '');
+  OPENAI_KEY = document.getElementById('openaiKey')?.value.trim() || '';
+  NOTION_TOKEN = document.getElementById('notionToken')?.value.trim() || '';
+  NOTION_DB_ID = document.getElementById('notionDbId')?.value.trim() || '';
+  SLACK_WEBHOOK = document.getElementById('slackWebhook')?.value.trim() || '';
+  CLICKUP_TOKEN = document.getElementById('clickupToken')?.value.trim() || '';
+  CLICKUP_LIST_ID = document.getElementById('clickupListId')?.value.trim() || '';
   REMEMBER_KEYS = !!document.getElementById('rememberKeys')?.checked;
-  if (!ANTHROPIC_KEY && !PROXY_URL) { toast('Anthropic API key or Proxy URL is required','error'); return; }
+  if (!ANTHROPIC_KEY && !OPENAI_KEY && !PROXY_URL) { toast('An AI API key (Anthropic or OpenAI) or Proxy URL is required','error'); return; }
+  if (OPENAI_KEY && !ANTHROPIC_KEY && !PROXY_URL) AI_PROVIDER = 'openai';
   persistKeys();
   openMainPanel();
   startAsanaAutoRefresh();
@@ -1351,20 +1419,29 @@ function saveSetup() {
 }
 function updateKeys() {
   if (document.getElementById('anthropicKey2').value.trim()) ANTHROPIC_KEY = document.getElementById('anthropicKey2').value.trim();
+  if (document.getElementById('openaiKey2')?.value.trim()) OPENAI_KEY = document.getElementById('openaiKey2').value.trim();
   if (document.getElementById('asanaToken2').value.trim()) ASANA_TOKEN = document.getElementById('asanaToken2').value.trim();
+  if (document.getElementById('notionToken2')?.value.trim()) NOTION_TOKEN = document.getElementById('notionToken2').value.trim();
+  if (document.getElementById('notionDbId2')?.value.trim()) NOTION_DB_ID = document.getElementById('notionDbId2').value.trim();
+  if (document.getElementById('slackWebhook2')?.value.trim()) SLACK_WEBHOOK = document.getElementById('slackWebhook2').value.trim();
+  if (document.getElementById('clickupToken2')?.value.trim()) CLICKUP_TOKEN = document.getElementById('clickupToken2').value.trim();
+  if (document.getElementById('clickupListId2')?.value.trim()) CLICKUP_LIST_ID = document.getElementById('clickupListId2').value.trim();
   if (document.getElementById('schedEmail2').value.trim()) SCHEDULE_EMAIL = document.getElementById('schedEmail2').value.trim();
   if (document.getElementById('proxyUrl2')?.value.trim()) PROXY_URL = normaliseProxyUrl(document.getElementById('proxyUrl2').value);
+  AI_PROVIDER = document.getElementById('aiProvider2')?.value || AI_PROVIDER;
   REMEMBER_KEYS = !!document.getElementById('rememberKeys2')?.checked;
   persistKeys();
 
-  const a1 = document.getElementById('anthropicKey');
-  const s1 = document.getElementById('asanaToken');
-  const e1 = document.getElementById('scheduleEmail');
-  const p1 = document.getElementById('proxyUrl');
-  if (a1) a1.value = ANTHROPIC_KEY;
-  if (s1) s1.value = ASANA_TOKEN;
-  if (e1) e1.value = SCHEDULE_EMAIL;
-  if (p1) p1.value = PROXY_URL;
+  // Sync setup panel fields
+  const syncMap = {
+    anthropicKey: ANTHROPIC_KEY, asanaToken: ASANA_TOKEN, scheduleEmail: SCHEDULE_EMAIL,
+    proxyUrl: PROXY_URL, openaiKey: OPENAI_KEY, notionToken: NOTION_TOKEN,
+    notionDbId: NOTION_DB_ID, slackWebhook: SLACK_WEBHOOK, clickupToken: CLICKUP_TOKEN, clickupListId: CLICKUP_LIST_ID
+  };
+  for (const [id, val] of Object.entries(syncMap)) {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  }
   syncRememberCheckboxes();
   startAsanaAutoRefresh();
   renderAsanaSyncOverview();
@@ -3021,7 +3098,7 @@ async function runAnalysis(queryOverride, areaOverride) {
   const query = queryOverride || document.getElementById('queryInput').value.trim();
   const area = areaOverride || document.getElementById('areaSelect').value;
   if (!query) { document.getElementById('queryInput').focus(); return; }
-  if (!ANTHROPIC_KEY && !PROXY_URL) { toast('Anthropic API key or Proxy URL required. Check Settings.','error'); return; }
+  if (!ANTHROPIC_KEY && !OPENAI_KEY && !PROXY_URL) { toast('An AI API key (Anthropic or OpenAI) or Proxy URL required. Check Settings.','error'); return; }
 
   const btn = document.getElementById('analyseBtn');
   if (btn) btn.disabled = true;
@@ -3042,7 +3119,7 @@ async function runAnalysis(queryOverride, areaOverride) {
 
   document.getElementById('statusText').textContent = 'Running regulatory analysis...';
   try {
-    const data = await callAnthropic({
+    const data = await callAI({
       model: 'claude-sonnet-4-6',
       max_tokens: 1800,
       temperature: 0,
@@ -3593,6 +3670,233 @@ function renderDrive() {
 
 // Close modal on overlay click
 document.getElementById('createTaskModal').addEventListener('click', function(e) { if(e.target===this) closeModal(); });
+
+// ======= OPENAI INTEGRATION =======
+async function callOpenAI(body) {
+  const openaiBody = {
+    model: 'gpt-4o',
+    messages: [],
+    max_tokens: body.max_tokens || 4096,
+    temperature: body.temperature !== undefined ? body.temperature : 0.2,
+  };
+  if (body.system) openaiBody.messages.push({ role: 'system', content: body.system });
+  if (body.messages) openaiBody.messages.push(...body.messages);
+
+  let r;
+  if (PROXY_URL) {
+    try {
+      r = await fetch(`${PROXY_URL}/openai`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(openaiBody)
+      });
+    } catch (e) {
+      if (!OPENAI_KEY) throw e;
+      r = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${OPENAI_KEY}` },
+        body: JSON.stringify(openaiBody)
+      });
+    }
+  } else {
+    r = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${OPENAI_KEY}` },
+      body: JSON.stringify(openaiBody)
+    });
+  }
+
+  if (!r.ok) {
+    let errDetail = '';
+    try { const ej = await r.json(); errDetail = ej?.error?.message || JSON.stringify(ej); } catch (_) {}
+    throw new Error(`OpenAI API ${r.status}: ${errDetail || r.statusText}`);
+  }
+
+  const data = await r.json();
+  // Convert OpenAI response to Anthropic-like format for compatibility
+  const text = data.choices?.[0]?.message?.content || '';
+  return { content: [{ type: 'text', text }] };
+}
+
+async function callAI(body) {
+  if (AI_PROVIDER === 'openai' && (OPENAI_KEY || PROXY_URL)) {
+    return callOpenAI(body);
+  }
+  return callAnthropic(body);
+}
+
+// ======= NOTION INTEGRATION =======
+async function notionFetch(path, method = 'POST', body = null) {
+  const url = PROXY_URL ? `${PROXY_URL}/notion${path}` : `https://api.notion.com/v1${path}`;
+  const headers = { 'Content-Type': 'application/json' };
+  if (!PROXY_URL) {
+    headers['Authorization'] = `Bearer ${NOTION_TOKEN}`;
+    headers['Notion-Version'] = '2022-06-28';
+  }
+  const opts = { method, headers };
+  if (body) opts.body = JSON.stringify(body);
+  return fetch(url, opts);
+}
+
+async function saveToNotion(analysisResult, query, area) {
+  if (!NOTION_TOKEN && !PROXY_URL) { toast('Notion token not configured', 'error'); return; }
+  if (!NOTION_DB_ID) { toast('Notion Database ID not set', 'error'); return; }
+
+  const findings = analysisResult.findings || [];
+  const critical = findings.filter(f => f.severity === 'CRITICAL').length;
+  const high = findings.filter(f => f.severity === 'HIGH').length;
+
+  const body = {
+    parent: { database_id: NOTION_DB_ID },
+    properties: {
+      'Title': { title: [{ text: { content: `Compliance Analysis: ${area}` } }] },
+      'Query': { rich_text: [{ text: { content: query.slice(0, 2000) } }] },
+      'Date': { date: { start: new Date().toISOString() } },
+      'Critical': { number: critical },
+      'High': { number: high },
+      'Status': { select: { name: critical > 0 ? 'Critical' : high > 0 ? 'Needs Attention' : 'Compliant' } },
+    },
+    children: [
+      { object: 'block', type: 'heading_2', heading_2: { rich_text: [{ text: { content: 'Summary' } }] } },
+      { object: 'block', type: 'paragraph', paragraph: { rich_text: [{ text: { content: (analysisResult.summary || '').slice(0, 2000) } }] } },
+      { object: 'block', type: 'heading_2', heading_2: { rich_text: [{ text: { content: 'Findings' } }] } },
+      ...findings.slice(0, 20).map(f => ({
+        object: 'block', type: 'callout', callout: {
+          icon: { emoji: f.severity === 'CRITICAL' ? '🔴' : f.severity === 'HIGH' ? '🟠' : f.severity === 'MEDIUM' ? '🔵' : '🟢' },
+          rich_text: [{ text: { content: `[${f.severity}] ${f.title}\n${f.body || ''}\n→ ${f.recommendation || ''}`.slice(0, 2000) } }]
+        }
+      }))
+    ]
+  };
+
+  try {
+    const r = await notionFetch('/pages', 'POST', body);
+    if (!r.ok) { const e = await r.text(); throw new Error(e); }
+    toast('Report saved to Notion', 'success');
+  } catch (e) {
+    toast(`Notion error: ${e.message}`, 'error');
+  }
+}
+
+async function testNotionConnection() {
+  if (!NOTION_TOKEN && !PROXY_URL) { toast('Set Notion token first', 'error'); return; }
+  if (!NOTION_DB_ID) { toast('Set Notion Database ID first', 'error'); return; }
+  try {
+    const r = await notionFetch(`/databases/${NOTION_DB_ID}`, 'GET');
+    if (!r.ok) throw new Error(`${r.status}`);
+    const d = await r.json();
+    toast(`Connected to Notion: ${d.title?.[0]?.plain_text || 'Database found'}`, 'success');
+  } catch (e) {
+    toast(`Notion connection failed: ${e.message}`, 'error');
+  }
+}
+
+// ======= SLACK INTEGRATION =======
+async function sendSlackMessage(text, blocks) {
+  const webhookUrl = PROXY_URL ? `${PROXY_URL}/slack` : SLACK_WEBHOOK;
+  if (!webhookUrl) { toast('Slack webhook not configured', 'error'); return; }
+
+  const payload = { text };
+  if (blocks) payload.blocks = blocks;
+
+  try {
+    const r = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(PROXY_URL ? { webhookUrl: SLACK_WEBHOOK, ...payload } : payload)
+    });
+    if (!r.ok) throw new Error(`${r.status}`);
+    toast('Sent to Slack', 'success');
+  } catch (e) {
+    toast(`Slack error: ${e.message}`, 'error');
+  }
+}
+
+async function sendAnalysisToSlack(analysisResult, query) {
+  if (!SLACK_WEBHOOK && !PROXY_URL) { toast('Slack webhook not configured', 'error'); return; }
+
+  const findings = analysisResult.findings || [];
+  const critical = findings.filter(f => f.severity === 'CRITICAL').length;
+  const high = findings.filter(f => f.severity === 'HIGH').length;
+  const medium = findings.filter(f => f.severity === 'MEDIUM').length;
+  const compliant = findings.filter(f => f.severity === 'COMPLIANT').length;
+
+  const emoji = critical > 0 ? '🔴' : high > 0 ? '🟠' : '🟢';
+  const text = `${emoji} *Compliance Analysis Complete*\n` +
+    `*Query:* ${query.slice(0, 200)}\n` +
+    `*Results:* ${critical} Critical | ${high} High | ${medium} Medium | ${compliant} Compliant\n` +
+    `*Summary:* ${(analysisResult.summary || '').slice(0, 500)}`;
+
+  await sendSlackMessage(text);
+}
+
+async function sendSlackAlert(title, message) {
+  if (!SLACK_WEBHOOK && !PROXY_URL) return;
+  await sendSlackMessage(`⚠️ *${title}*\n${message}`);
+}
+
+// ======= CLICKUP INTEGRATION =======
+async function clickupFetch(path, method = 'GET', body = null) {
+  const url = PROXY_URL ? `${PROXY_URL}/clickup${path}` : `https://api.clickup.com/api/v2${path}`;
+  const headers = { 'Content-Type': 'application/json' };
+  if (!PROXY_URL) headers['Authorization'] = CLICKUP_TOKEN;
+  const opts = { method, headers };
+  if (body) opts.body = JSON.stringify(body);
+  return fetch(url, opts);
+}
+
+async function createClickUpTask(name, description, priority = 3, dueDate = null) {
+  if (!CLICKUP_TOKEN && !PROXY_URL) { toast('ClickUp token not configured', 'error'); return; }
+  if (!CLICKUP_LIST_ID) { toast('ClickUp List ID not set', 'error'); return; }
+
+  const body = {
+    name,
+    description,
+    priority,
+    status: 'to do',
+  };
+  if (dueDate) body.due_date = new Date(dueDate).getTime();
+
+  try {
+    const r = await clickupFetch(`/list/${CLICKUP_LIST_ID}/task`, 'POST', body);
+    if (!r.ok) { const e = await r.text(); throw new Error(e); }
+    const data = await r.json();
+    toast(`ClickUp task created: ${data.name || name}`, 'success');
+    return data;
+  } catch (e) {
+    toast(`ClickUp error: ${e.message}`, 'error');
+  }
+}
+
+// Share buttons from results
+function shareToNotion() {
+  if (!lastResult) { toast('No analysis to save', 'error'); return; }
+  saveToNotion(lastResult, lastQuery, lastArea);
+}
+function shareToSlack() {
+  if (!lastResult) { toast('No analysis to share', 'error'); return; }
+  sendAnalysisToSlack(lastResult, lastQuery);
+}
+function shareToClickUp() {
+  if (!lastResult) { toast('No analysis to create tasks from', 'error'); return; }
+  createClickUpTasksFromFindings(lastResult.findings);
+}
+
+async function createClickUpTasksFromFindings(findings) {
+  if (!CLICKUP_TOKEN && !PROXY_URL) { toast('ClickUp not configured', 'error'); return; }
+  if (!CLICKUP_LIST_ID) { toast('ClickUp List ID not set', 'error'); return; }
+
+  let created = 0;
+  for (const f of (findings || []).filter(f => f.severity !== 'COMPLIANT')) {
+    const priority = f.severity === 'CRITICAL' ? 1 : f.severity === 'HIGH' ? 2 : 3;
+    const desc = `**Severity:** ${f.severity}\n**Finding:** ${f.body || ''}\n**Regulatory Ref:** ${f.regulatory_ref || ''}\n**Recommendation:** ${f.recommendation || ''}`;
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + (f.severity === 'CRITICAL' ? 3 : f.severity === 'HIGH' ? 7 : 14));
+    await createClickUpTask(`[${f.severity}] ${f.title}`, desc, priority, dueDate.toISOString());
+    created++;
+  }
+  toast(`${created} ClickUp tasks created from findings`, 'success');
+}
 
 initialiseApp();
 </script>

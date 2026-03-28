@@ -1,16 +1,22 @@
 /**
- * Fine Gold Analyser — Cloudflare Worker API Proxy
+ * Fine Gold Analyser — Cloudflare Worker API Proxy v2.2
  *
  * Routes:
  *   POST /anthropic            → https://api.anthropic.com/v1/messages
+ *   POST /openai               → https://api.openai.com/v1/chat/completions
  *   GET|POST|PUT /asana/*      → https://app.asana.com/api/1.0/*
+ *   GET|POST /notion/*         → https://api.notion.com/v1/*
+ *   POST /slack                → Slack Incoming Webhook
+ *   GET|POST /clickup/*        → https://api.clickup.com/api/v2/*
  *
- * Required Worker secrets (set via `wrangler secret put`):
- *   ANTHROPIC_KEY   — your Anthropic API key (sk-ant-...)
- *   ASANA_TOKEN     — your Asana personal access token (1/xxxxxxxx...)
+ * Required Worker secrets (set via `wrangler secret put` or Cloudflare dashboard):
+ *   ANTHROPIC_KEY   — Anthropic API key (sk-ant-...)
+ *   ASANA_TOKEN     — Asana personal access token (1/xxxxxxxx...)
  *
- * The Worker validates the Origin header so only requests from the
- * configured GitHub Pages URL are accepted.
+ * Optional Worker secrets:
+ *   OPENAI_KEY      — OpenAI API key (sk-...)
+ *   NOTION_TOKEN    — Notion integration token (ntn_...)
+ *   CLICKUP_TOKEN   — ClickUp API token (pk_...)
  */
 
 const ALLOWED_ORIGINS = [
@@ -36,7 +42,7 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders });
     }
 
-    // ── Origin guard — reject everything except the allowed sites ─────────────
+    // ── Origin guard ─────────────────────────────────────────────────────────
     if (!matchedOrigin) {
       return new Response(JSON.stringify({ error: 'Forbidden' }), {
         status: 403,
@@ -46,16 +52,13 @@ export default {
 
     const url = new URL(request.url);
     const path = url.pathname;
+    const jsonHeaders = { ...corsHeaders, 'Content-Type': 'application/json' };
 
     // ── Anthropic proxy ───────────────────────────────────────────────────────
     if (path === '/anthropic') {
       if (request.method !== 'POST') {
-        return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-          status: 405,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+        return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers: jsonHeaders });
       }
-
       const body = await request.text();
       const upstream = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -66,28 +69,33 @@ export default {
         },
         body,
       });
+      return new Response(await upstream.text(), { status: upstream.status, headers: jsonHeaders });
+    }
 
-      const upstreamBody = await upstream.text();
-      return new Response(upstreamBody, {
-        status: upstream.status,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    // ── OpenAI proxy ──────────────────────────────────────────────────────────
+    if (path === '/openai') {
+      if (request.method !== 'POST') {
+        return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers: jsonHeaders });
+      }
+      const body = await request.text();
+      const upstream = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${env.OPENAI_KEY}`,
+        },
+        body,
       });
+      return new Response(await upstream.text(), { status: upstream.status, headers: jsonHeaders });
     }
 
     // ── Asana proxy ───────────────────────────────────────────────────────────
-    // HTML calls /asana/<apiPath>  →  https://app.asana.com/api/1.0/<apiPath>
     if (path.startsWith('/asana/')) {
-      const asanaSubPath = path.slice('/asana'.length); // e.g. /tasks, /projects/123/tasks
+      const asanaSubPath = path.slice('/asana'.length);
       const asanaUrl = new URL('https://app.asana.com/api/1.0' + asanaSubPath);
-
-      // Forward query-string parameters (e.g. opt_fields, limit)
       url.searchParams.forEach((v, k) => asanaUrl.searchParams.set(k, v));
 
-      const reqHeaders = {
-        'Authorization': `Bearer ${env.ASANA_TOKEN}`,
-        'Accept': 'application/json',
-      };
-
+      const reqHeaders = { 'Authorization': `Bearer ${env.ASANA_TOKEN}`, 'Accept': 'application/json' };
       const fetchOpts = { method: request.method, headers: reqHeaders };
       if (request.method !== 'GET' && request.method !== 'HEAD') {
         reqHeaders['Content-Type'] = 'application/json';
@@ -95,16 +103,66 @@ export default {
       }
 
       const upstream = await fetch(asanaUrl.toString(), fetchOpts);
-      const upstreamBody = await upstream.text();
-      return new Response(upstreamBody, {
-        status: upstream.status,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return new Response(await upstream.text(), { status: upstream.status, headers: jsonHeaders });
     }
 
-    return new Response(JSON.stringify({ error: 'Not found' }), {
-      status: 404,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    // ── Notion proxy ──────────────────────────────────────────────────────────
+    if (path.startsWith('/notion/')) {
+      const notionSubPath = path.slice('/notion'.length);
+      const notionUrl = new URL('https://api.notion.com/v1' + notionSubPath);
+      url.searchParams.forEach((v, k) => notionUrl.searchParams.set(k, v));
+
+      const reqHeaders = {
+        'Authorization': `Bearer ${env.NOTION_TOKEN}`,
+        'Notion-Version': '2022-06-28',
+        'Accept': 'application/json',
+      };
+      const fetchOpts = { method: request.method, headers: reqHeaders };
+      if (request.method !== 'GET' && request.method !== 'HEAD') {
+        reqHeaders['Content-Type'] = 'application/json';
+        fetchOpts.body = await request.text();
+      }
+
+      const upstream = await fetch(notionUrl.toString(), fetchOpts);
+      return new Response(await upstream.text(), { status: upstream.status, headers: jsonHeaders });
+    }
+
+    // ── Slack proxy ───────────────────────────────────────────────────────────
+    if (path === '/slack') {
+      if (request.method !== 'POST') {
+        return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers: jsonHeaders });
+      }
+      const payload = await request.json();
+      const webhookUrl = payload.webhookUrl;
+      if (!webhookUrl || !webhookUrl.startsWith('https://hooks.slack.com/')) {
+        return new Response(JSON.stringify({ error: 'Invalid Slack webhook URL' }), { status: 400, headers: jsonHeaders });
+      }
+      const { webhookUrl: _, ...slackPayload } = payload;
+      const upstream = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(slackPayload),
+      });
+      return new Response(await upstream.text(), { status: upstream.status, headers: jsonHeaders });
+    }
+
+    // ── ClickUp proxy ─────────────────────────────────────────────────────────
+    if (path.startsWith('/clickup/')) {
+      const clickupSubPath = path.slice('/clickup'.length);
+      const clickupUrl = new URL('https://api.clickup.com/api/v2' + clickupSubPath);
+      url.searchParams.forEach((v, k) => clickupUrl.searchParams.set(k, v));
+
+      const reqHeaders = { 'Authorization': env.CLICKUP_TOKEN, 'Accept': 'application/json' };
+      const fetchOpts = { method: request.method, headers: reqHeaders };
+      if (request.method !== 'GET' && request.method !== 'HEAD') {
+        reqHeaders['Content-Type'] = 'application/json';
+        fetchOpts.body = await request.text();
+      }
+
+      const upstream = await fetch(clickupUrl.toString(), fetchOpts);
+      return new Response(await upstream.text(), { status: upstream.status, headers: jsonHeaders });
+    }
+
+    return new Response(JSON.stringify({ error: 'Not found' }), { status: 404, headers: jsonHeaders });
   },
 };
