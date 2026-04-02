@@ -210,7 +210,8 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 ### 🎯 LLM Optimization Tools
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30-60% using TOON format
-*   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50-90% format 
+*   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50-90% format
+*   [🛡️ VeroQ Shield](https://github.com/veroq-ai/shield) - Verify any LLM output in one function call. Extracts claims, fact-checks against live evidence, returns trust scores, corrections, and permanent verification receipts. Python and TypeScript SDKs.
 
 ### 🔧 LLM Fine-tuning Tutorials
 
