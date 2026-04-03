@@ -237,6 +237,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 ### 🧩 Awesome Agent Skills
 
 *   [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
+*   [SynapseAI](https://ddaekeu3-cyber.github.io/synapse-ai) - Community-sourced error solutions for AI agents. 1,200+ solutions across 16 categories. Stop wasting tokens on solved problems.
 
 ## 🚀 Getting Started
 
