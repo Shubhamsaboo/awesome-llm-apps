@@ -1,0 +1,2 @@
+figureout[openai]
+python-dotenv

@@ -1,0 +1,2027 @@
+[
+    {
+        "event_id": "1",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "2",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "3",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "4",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "5",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "6",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "7",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "8",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "9",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "10",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "11",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "12",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "13",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "14",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "15",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "16",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "17",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "18",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "19",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "20",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "21",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "22",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "23",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "24",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "25",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "26",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "27",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "28",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "29",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "30",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "31",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "32",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "33",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "34",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "35",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "36",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "37",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "38",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "39",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "40",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "41",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "42",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "43",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "44",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "45",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "46",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "47",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "48",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "49",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "50",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "51",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "52",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "53",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "54",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "55",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "56",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "57",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "58",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "59",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "60",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "61",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "62",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "63",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "64",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "65",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "66",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "67",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "68",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "69",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "70",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "71",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "72",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "73",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "74",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "75",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "76",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "77",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "78",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "79",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "80",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    },
+    {
+        "event_id": "81",
+        "fees": [
+            {
+                "type": "Service Fee",
+                "amount": "3%",
+                "description": "A 3% service fee applied to your cart total. This fee covers operational costs including ticket management, venue coordination, real-time availability updates, and dedicated customer support before and during your event experience."
+            },
+            {
+                "type": "Convenience Fee",
+                "amount": "$3.00",
+                "description": "A flat convenience fee of $3.00 per booking. This fee covers the cost of providing a seamless online booking experience, including secure payment processing, instant booking confirmation, digital ticket delivery, and booking reminder notifications."
+            },
+            {
+                "type": "Facility Fee",
+                "amount": "1%",
+                "description": "A 1% facility fee applied to your cart total, collected to support venue operations and infrastructure. This fee contributes to venue maintenance, safety upgrades, accessibility improvements, and the overall quality of the event environment."
+            },
+            {
+                "type": "Sales Tax",
+                "amount": "9%",
+                "description": "A 9% sales tax applied to your cart total as required by state and local tax laws. The rate is based on the venue location jurisdiction and covers all taxable items in your order. This amount is remitted directly to the appropriate government tax authority."
+            }
+        ]
+    }
+]
