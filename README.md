@@ -157,6 +157,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [📞 Customer Support Voice Agent](voice_ai_agents/customer_support_voice_agent/)
 *   [🔊 Voice RAG Agent (OpenAI SDK)](voice_ai_agents/voice_rag_openaisdk/)
 *   [🎙️ OpenSource Voice Dictation Agent (like Wispr Flow](https://github.com/akshayaggarwal99/jarvis-ai-assistant)
+*   [🖥️ DockWright - Native macOS AI Assistant](https://github.com/AdelElo13/DockWright-MacOS-Agent) - Native macOS desktop LLM app with screen awareness, voice control, 30 system tools, and 9 LLM providers. Built in Swift with zero dependencies.
 
 ### <img src="https://cdn.simpleicons.org/modelcontextprotocol"  alt="mcp logo" width="25" height="20"> MCP AI Agents 
 
