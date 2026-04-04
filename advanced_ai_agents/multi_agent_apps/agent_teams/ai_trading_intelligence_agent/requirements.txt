@@ -1,0 +1,5 @@
+anthropic
+yfinance
+pandas
+numpy
+streamlit
