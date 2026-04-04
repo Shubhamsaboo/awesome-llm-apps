@@ -237,6 +237,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 ### 🧩 Awesome Agent Skills
 
 *   [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
+*   [⏰ CueAPI - Agent Task Scheduling](https://github.com/cueapi/cueapi-core) - Open source scheduling API that gives AI agents reliable task execution with delivery confirmation and outcome tracking
 
 ## 🚀 Getting Started
 
