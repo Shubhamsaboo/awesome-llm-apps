@@ -207,6 +207,10 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [📝 Chat with Substack](advanced_llm_apps/chat_with_X_tutorials/chat_with_substack/)
 *   [📽️ Chat with YouTube Videos](advanced_llm_apps/chat_with_X_tutorials/chat_with_youtube_videos/)
 
+### 📊 LLM Benchmarking & Monitoring
+
+*   [📊 LLM Benchmark](https://github.com/chuangyiyongxian/llm-benchmark) - Self-hosted platform to benchmark, monitor, and compare LLM API providers (OpenAI, Anthropic, Gemini, OpenAI-compatible) with real-time metrics and 24h health dashboard. One-command Docker deploy.
+
 ### 🎯 LLM Optimization Tools
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30-60% using TOON format
