@@ -1,0 +1,128 @@
+[
+  {
+    "name": "VIP Lounge Access",
+    "category": "access",
+    "price": "75.00",
+    "description": "Exclusive access to the VIP lounge with premium seating, dedicated bar service, and private restrooms.",
+    "included_items": ["Dedicated lounge entry", "Premium seating area", "Dedicated bar service", "Private restrooms"]
+  },
+  {
+    "name": "Parking Pass",
+    "category": "access",
+    "price": "25.00",
+    "description": "Reserved parking spot in the venue's official parking facility, closest to the entrance.",
+    "included_items": ["Reserved parking spot", "In/out privileges", "24-hour security monitored lot"]
+  },
+  {
+    "name": "Meet & Greet",
+    "category": "access",
+    "price": "120.00",
+    "description": "Exclusive backstage meet and greet with the performer. Includes a photo opportunity and signed memorabilia.",
+    "included_items": ["Backstage access", "Photo opportunity", "Signed memorabilia", "Early venue entry"]
+  },
+  {
+    "name": "Cheeseburger",
+    "category": "food",
+    "price": "12.00",
+    "description": "Classic venue cheeseburger with lettuce, tomato, and house sauce. Served with fries.",
+    "included_items": ["Cheeseburger", "Side of fries"]
+  },
+  {
+    "name": "Cheese Platter",
+    "category": "food",
+    "price": "14.00",
+    "description": "Assorted artisan cheeses served with crackers, grapes, and honey.",
+    "included_items": ["Assorted artisan cheeses", "Crackers", "Grapes", "Honey"]
+  },
+  {
+    "name": "Chicken Wrap",
+    "category": "food",
+    "price": "11.00",
+    "description": "Grilled chicken wrap with fresh vegetables and house dressing.",
+    "included_items": ["Grilled chicken wrap", "Fresh vegetables", "House dressing"]
+  },
+  {
+    "name": "Fresh Fruit Bowl",
+    "category": "food",
+    "price": "9.00",
+    "description": "Seasonal fresh fruit bowl with a side of yogurt dip.",
+    "included_items": ["Seasonal fresh fruit", "Yogurt dip"]
+  },
+  {
+    "name": "Cookie Pack",
+    "category": "food",
+    "price": "5.00",
+    "description": "Pack of 4 freshly baked assorted cookies.",
+    "included_items": ["4 assorted cookies"]
+  },
+  {
+    "name": "Coffee",
+    "category": "beverage",
+    "price": "4.00",
+    "description": "Freshly brewed hot coffee. Choice of black, with milk, or with sugar.",
+    "included_items": ["Hot coffee", "Choice of milk or sugar"]
+  },
+  {
+    "name": "Orange Juice",
+    "category": "beverage",
+    "price": "5.00",
+    "description": "Fresh-squeezed orange juice served chilled.",
+    "included_items": ["Fresh-squeezed orange juice"]
+  },
+  {
+    "name": "Sparkling Water",
+    "category": "beverage",
+    "price": "3.00",
+    "description": "Premium sparkling mineral water, served chilled.",
+    "included_items": ["500ml sparkling mineral water"]
+  },
+  {
+    "name": "Red Wine",
+    "category": "beverage",
+    "price": "10.00",
+    "description": "House red wine by the glass. Full-bodied with hints of cherry and oak.",
+    "included_items": ["Glass of house red wine"]
+  },
+  {
+    "name": "Beer",
+    "category": "beverage",
+    "price": "8.00",
+    "description": "Ice-cold draft beer. Choice of lager or ale.",
+    "included_items": ["Pint of draft beer", "Choice of lager or ale"]
+  },
+  {
+    "name": "Whiskey",
+    "category": "beverage",
+    "price": "12.00",
+    "description": "Premium blended Scotch whisky served neat or on the rocks.",
+    "included_items": ["Double measure of Scotch whisky", "Choice of neat or on the rocks"]
+  },
+  {
+    "name": "Event T-Shirt",
+    "category": "merch",
+    "price": "35.00",
+    "description": "Official event T-shirt with exclusive event artwork. Available in S, M, L, XL.",
+    "included_items": ["Official event T-shirt", "Exclusive event artwork", "Sizes: S, M, L, XL"]
+  },
+  {
+    "name": "Poster",
+    "category": "merch",
+    "price": "15.00",
+    "description": "Limited edition A2 event poster, suitable for framing.",
+    "included_items": ["A2 limited edition poster", "Suitable for framing"]
+  },
+  {
+    "name": "Tote Bag",
+    "category": "merch",
+    "price": "20.00",
+    "description": "Canvas tote bag with official event branding. Eco-friendly and reusable.",
+    "included_items": ["Canvas tote bag", "Official event branding", "Eco-friendly material"]
+  },
+  {
+    "name": "Event Insurance",
+    "category": "insurance",
+    "price": "18.00",
+    "description": "Comprehensive event protection covering cancellations, postponements, and weather disruptions. Full ticket refund guaranteed.",
+    "included_items": ["Cancellation coverage", "Postponement coverage", "Weather disruption coverage", "Full ticket refund guarantee"]
+  }
+]

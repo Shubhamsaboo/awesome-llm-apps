@@ -1,0 +1,2 @@
+figureout[all]
+streamlit>=1.40.0

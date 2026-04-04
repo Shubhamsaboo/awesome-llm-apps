@@ -108,6 +108,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [🕸️ Web Scraping AI Agent (Local & Cloud SDK)](starter_ai_agents/web_scraping_ai_agent/)
 
 ### 🚀 Advanced AI Agents
+*   [🧩 FigureOut — Multi-LLM Orchestrator with MCP Tool Calling](https://github.com/balajeekalyan/figureout)
 *   [🏚️ 🍌 AI Home Renovation Agent with Nano Banana Pro](advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent)
 *   [🧠 DevPulse AI — Multi-Agent Signal Intelligence](advanced_ai_agents/multi_agent_apps/devpulse_ai/)
 *   [🔍 AI Deep Research Agent](advanced_ai_agents/single_agent_apps/ai_deep_research_agent/)
@@ -233,6 +234,14 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
   - Memory; callbacks; evaluation
   - Multi‑agent patterns; agent handoffs
   - Swarm orchestration; routing logic
+
+🧩 [FigureOut Crash Course](ai_agent_framework_crash_course/figureout_crash_course/)
+  - Starter agent; multi-provider (OpenAI, Claude, Gemini, Groq)
+  - Structured JSON output with per-role schemas
+  - MCP tool calling with FastMCP
+  - Automatic role classification and routing
+  - Parallel multi-role query handling
+  - In-memory caching (zero tokens on repeated queries)
 
 ### 🧩 Awesome Agent Skills
 

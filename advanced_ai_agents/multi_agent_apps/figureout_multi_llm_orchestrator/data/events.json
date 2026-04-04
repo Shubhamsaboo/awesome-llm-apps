@@ -1,0 +1,2407 @@
+[
+    {
+        "event_id": "1",
+        "name": "Zara Larsson",
+        "artist": "Zara Larsson",
+        "type": "Concert",
+        "genre": [
+            "R&B",
+            "Pop"
+        ],
+        "details": [
+            {
+                "date": "2026-04-04",
+                "city": "New York, NY",
+                "country": "USA",
+                "showtimes": [
+                    "19:00"
+                ]
+            },
+            {
+                "date": "2026-04-05",
+                "city": "Boston, MA",
+                "country": "USA",
+                "showtimes": [
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "2",
+        "name": "Dua Lipa",
+        "artist": "Dua Lipa",
+        "type": "Concert",
+        "genre": [
+            "Pop",
+            "Dance"
+        ],
+        "details": [
+            {
+                "date": "2026-04-10",
+                "city": "Los Angeles, CA",
+                "country": "USA",
+                "showtimes": [
+                    "20:00"
+                ]
+            },
+            {
+                "date": "2026-04-12",
+                "city": "San Francisco, CA",
+                "country": "USA",
+                "showtimes": [
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "3",
+        "name": "SZA",
+        "artist": "SZA",
+        "type": "Concert",
+        "genre": [
+            "R&B",
+            "Neo-Soul"
+        ],
+        "details": [
+            {
+                "date": "2026-04-15",
+                "city": "Atlanta, GA",
+                "country": "USA",
+                "showtimes": [
+                    "20:00"
+                ]
+            },
+            {
+                "date": "2026-04-17",
+                "city": "Miami, FL",
+                "country": "USA",
+                "showtimes": [
+                    "19:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "4",
+        "name": "The Weeknd",
+        "artist": "The Weeknd",
+        "type": "Concert",
+        "genre": [
+            "R&B",
+            "Pop"
+        ],
+        "details": [
+            {
+                "date": "2026-05-01",
+                "city": "Chicago, IL",
+                "country": "USA",
+                "showtimes": [
+                    "20:30"
+                ]
+            },
+            {
+                "date": "2026-05-03",
+                "city": "Detroit, MI",
+                "country": "USA",
+                "showtimes": [
+                    "20:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "5",
+        "name": "Tate McRae",
+        "artist": "Tate McRae",
+        "type": "Concert",
+        "genre": [
+            "Pop",
+            "Dance"
+        ],
+        "details": [
+            {
+                "date": "2026-04-20",
+                "city": "Toronto, ON",
+                "country": "Canada",
+                "showtimes": [
+                    "19:00"
+                ]
+            },
+            {
+                "date": "2026-04-22",
+                "city": "Montreal, QC",
+                "country": "Canada",
+                "showtimes": [
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "6",
+        "name": "Sabrina Carpenter",
+        "artist": "Sabrina Carpenter",
+        "type": "Concert",
+        "genre": [
+            "Pop"
+        ],
+        "details": [
+            {
+                "date": "2026-05-05",
+                "city": "Nashville, TN",
+                "country": "USA",
+                "showtimes": [
+                    "19:00"
+                ]
+            },
+            {
+                "date": "2026-05-07",
+                "city": "Austin, TX",
+                "country": "USA",
+                "showtimes": [
+                    "20:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "7",
+        "name": "Khalid",
+        "artist": "Khalid",
+        "type": "Concert",
+        "genre": [
+            "R&B",
+            "Pop"
+        ],
+        "details": [
+            {
+                "date": "2026-05-10",
+                "city": "Houston, TX",
+                "country": "USA",
+                "showtimes": [
+                    "19:30"
+                ]
+            },
+            {
+                "date": "2026-05-12",
+                "city": "Dallas, TX",
+                "country": "USA",
+                "showtimes": [
+                    "20:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "8",
+        "name": "Tyla",
+        "artist": "Tyla",
+        "type": "Concert",
+        "genre": [
+            "R&B",
+            "Afrobeats"
+        ],
+        "details": [
+            {
+                "date": "2026-05-15",
+                "city": "London",
+                "country": "UK",
+                "showtimes": [
+                    "19:00"
+                ]
+            },
+            {
+                "date": "2026-05-17",
+                "city": "Paris",
+                "country": "France",
+                "showtimes": [
+                    "20:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "9",
+        "name": "Benson Boone",
+        "artist": "Benson Boone",
+        "type": "Concert",
+        "genre": [
+            "Pop",
+            "Rock"
+        ],
+        "details": [
+            {
+                "date": "2026-04-25",
+                "city": "Seattle, WA",
+                "country": "USA",
+                "showtimes": [
+                    "19:00"
+                ]
+            },
+            {
+                "date": "2026-04-27",
+                "city": "Portland, OR",
+                "country": "USA",
+                "showtimes": [
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "10",
+        "name": "Jorja Smith",
+        "artist": "Jorja Smith",
+        "type": "Concert",
+        "genre": [
+            "R&B",
+            "Soul"
+        ],
+        "details": [
+            {
+                "date": "2026-05-20",
+                "city": "Manchester",
+                "country": "UK",
+                "showtimes": [
+                    "19:30"
+                ]
+            },
+            {
+                "date": "2026-05-22",
+                "city": "Birmingham",
+                "country": "UK",
+                "showtimes": [
+                    "20:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "11",
+        "name": "Daniel Caesar",
+        "artist": "Daniel Caesar",
+        "type": "Concert",
+        "genre": [
+            "R&B",
+            "Neo-Soul"
+        ],
+        "details": [
+            {
+                "date": "2026-05-25",
+                "city": "Philadelphia, PA",
+                "country": "USA",
+                "showtimes": [
+                    "20:00"
+                ]
+            },
+            {
+                "date": "2026-05-27",
+                "city": "Washington, DC",
+                "country": "USA",
+                "showtimes": [
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "12",
+        "name": "Ali Wong",
+        "artist": "Ali Wong",
+        "type": "Standup Comedy",
+        "genre": [
+            "Comedy"
+        ],
+        "details": [
+            {
+                "date": "2026-04-14",
+                "city": "Los Angeles, CA",
+                "country": "USA",
+                "showtimes": [
+                    "20:00"
+                ]
+            },
+            {
+                "date": "2026-04-16",
+                "city": "San Diego, CA",
+                "country": "USA",
+                "showtimes": [
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "13",
+        "name": "Hasan Minhaj",
+        "artist": "Hasan Minhaj",
+        "type": "Standup Comedy",
+        "genre": [
+            "Comedy"
+        ],
+        "details": [
+            {
+                "date": "2026-04-20",
+                "city": "New York, NY",
+                "country": "USA",
+                "showtimes": [
+                    "20:00"
+                ]
+            },
+            {
+                "date": "2026-04-22",
+                "city": "Chicago, IL",
+                "country": "USA",
+                "showtimes": [
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "14",
+        "name": "John Mulaney",
+        "artist": "John Mulaney",
+        "type": "Standup Comedy",
+        "genre": [
+            "Comedy"
+        ],
+        "details": [
+            {
+                "date": "2026-05-01",
+                "city": "Boston, MA",
+                "country": "USA",
+                "showtimes": [
+                    "20:00"
+                ]
+            },
+            {
+                "date": "2026-05-03",
+                "city": "Philadelphia, PA",
+                "country": "USA",
+                "showtimes": [
+                    "19:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "15",
+        "name": "Nate Bargatze",
+        "artist": "Nate Bargatze",
+        "type": "Standup Comedy",
+        "genre": [
+            "Comedy"
+        ],
+        "details": [
+            {
+                "date": "2026-05-06",
+                "city": "Nashville, TN",
+                "country": "USA",
+                "showtimes": [
+                    "19:30"
+                ]
+            },
+            {
+                "date": "2026-05-08",
+                "city": "Atlanta, GA",
+                "country": "USA",
+                "showtimes": [
+                    "20:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "16",
+        "name": "Trevor Noah",
+        "artist": "Trevor Noah",
+        "type": "Standup Comedy",
+        "genre": [
+            "Comedy"
+        ],
+        "details": [
+            {
+                "date": "2026-05-12",
+                "city": "London",
+                "country": "UK",
+                "showtimes": [
+                    "20:00"
+                ]
+            },
+            {
+                "date": "2026-05-14",
+                "city": "Amsterdam",
+                "country": "Netherlands",
+                "showtimes": [
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "17",
+        "name": "Matt Rife",
+        "artist": "Matt Rife",
+        "type": "Standup Comedy",
+        "genre": [
+            "Comedy"
+        ],
+        "details": [
+            {
+                "date": "2026-04-28",
+                "city": "Dallas, TX",
+                "country": "USA",
+                "showtimes": [
+                    "20:00"
+                ]
+            },
+            {
+                "date": "2026-05-02",
+                "city": "Houston, TX",
+                "country": "USA",
+                "showtimes": [
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "18",
+        "name": "Ronny Chieng",
+        "artist": "Ronny Chieng",
+        "type": "Standup Comedy",
+        "genre": [
+            "Comedy"
+        ],
+        "details": [
+            {
+                "date": "2026-05-18",
+                "city": "San Francisco, CA",
+                "country": "USA",
+                "showtimes": [
+                    "19:30"
+                ]
+            },
+            {
+                "date": "2026-05-20",
+                "city": "Seattle, WA",
+                "country": "USA",
+                "showtimes": [
+                    "20:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "19",
+        "name": "Taylor Tomlinson",
+        "artist": "Taylor Tomlinson",
+        "type": "Standup Comedy",
+        "genre": [
+            "Comedy"
+        ],
+        "details": [
+            {
+                "date": "2026-05-22",
+                "city": "Denver, CO",
+                "country": "USA",
+                "showtimes": [
+                    "19:00"
+                ]
+            },
+            {
+                "date": "2026-05-24",
+                "city": "Phoenix, AZ",
+                "country": "USA",
+                "showtimes": [
+                    "20:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "20",
+        "name": "Sam Morril",
+        "artist": "Sam Morril",
+        "type": "Standup Comedy",
+        "genre": [
+            "Comedy"
+        ],
+        "details": [
+            {
+                "date": "2026-06-01",
+                "city": "New York, NY",
+                "country": "USA",
+                "showtimes": [
+                    "20:30"
+                ]
+            },
+            {
+                "date": "2026-04-03",
+                "city": "Washington, DC",
+                "country": "USA",
+                "showtimes": [
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "21",
+        "name": "Nikki Glaser",
+        "artist": "Nikki Glaser",
+        "type": "Standup Comedy",
+        "genre": [
+            "Comedy"
+        ],
+        "details": [
+            {
+                "date": "2026-04-05",
+                "city": "Miami, FL",
+                "country": "USA",
+                "showtimes": [
+                    "20:00"
+                ]
+            },
+            {
+                "date": "2026-04-07",
+                "city": "Orlando, FL",
+                "country": "USA",
+                "showtimes": [
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "22",
+        "name": "NBA Finals Game 1",
+        "artist": "NBA",
+        "type": "Sports",
+        "genre": [
+            "Basketball"
+        ],
+        "details": [
+            {
+                "date": "2026-06-04",
+                "city": "Boston, MA",
+                "country": "USA",
+                "showtimes": [
+                    "20:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "23",
+        "name": "UEFA Champions League Final",
+        "artist": "UEFA",
+        "type": "Sports",
+        "genre": [
+            "Soccer"
+        ],
+        "details": [
+            {
+                "date": "2026-05-30",
+                "city": "Munich",
+                "country": "Germany",
+                "showtimes": [
+                    "21:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "24",
+        "name": "Wimbledon Men's Final",
+        "artist": "Wimbledon",
+        "type": "Sports",
+        "genre": [
+            "Tennis"
+        ],
+        "details": [
+            {
+                "date": "2026-07-12",
+                "city": "London",
+                "country": "UK",
+                "showtimes": [
+                    "14:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "25",
+        "name": "UFC 310",
+        "artist": "UFC",
+        "type": "Sports",
+        "genre": [
+            "MMA"
+        ],
+        "details": [
+            {
+                "date": "2026-05-28",
+                "city": "Las Vegas, NV",
+                "country": "USA",
+                "showtimes": [
+                    "22:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "26",
+        "name": "FIFA World Cup Qualifier: USA vs Mexico",
+        "artist": "FIFA",
+        "type": "Sports",
+        "genre": [
+            "Soccer"
+        ],
+        "details": [
+            {
+                "date": "2026-05-15",
+                "city": "Austin, TX",
+                "country": "USA",
+                "showtimes": [
+                    "19:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "27",
+        "name": "Formula 1 Miami Grand Prix",
+        "artist": "Formula 1",
+        "type": "Sports",
+        "genre": [
+            "Motorsport"
+        ],
+        "details": [
+            {
+                "date": "2026-05-03",
+                "city": "Miami, FL",
+                "country": "USA",
+                "showtimes": [
+                    "15:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "28",
+        "name": "MLB Opening Day: Yankees vs Red Sox",
+        "artist": "MLB",
+        "type": "Sports",
+        "genre": [
+            "Baseball"
+        ],
+        "details": [
+            {
+                "date": "2026-05-26",
+                "city": "New York, NY",
+                "country": "USA",
+                "showtimes": [
+                    "13:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "29",
+        "name": "NHL Stanley Cup Final Game 1",
+        "artist": "NHL",
+        "type": "Sports",
+        "genre": [
+            "Hockey"
+        ],
+        "details": [
+            {
+                "date": "2026-06-01",
+                "city": "Toronto, ON",
+                "country": "Canada",
+                "showtimes": [
+                    "20:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "30",
+        "name": "WrestleMania 42",
+        "artist": "WWE",
+        "type": "Sports",
+        "genre": [
+            "Wrestling"
+        ],
+        "details": [
+            {
+                "date": "2026-04-05",
+                "city": "Dallas, TX",
+                "country": "USA",
+                "showtimes": [
+                    "18:00"
+                ]
+            },
+            {
+                "date": "2026-04-06",
+                "city": "Dallas, TX",
+                "country": "USA",
+                "showtimes": [
+                    "18:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "31",
+        "name": "Boxing: Canelo vs Crawford",
+        "artist": "DAZN Boxing",
+        "type": "Sports",
+        "genre": [
+            "Boxing"
+        ],
+        "details": [
+            {
+                "date": "2026-05-16",
+                "city": "Las Vegas, NV",
+                "country": "USA",
+                "showtimes": [
+                    "21:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "32",
+        "name": "Hamilton",
+        "artist": "Lin-Manuel Miranda",
+        "type": "Theater",
+        "genre": [
+            "Musical"
+        ],
+        "details": [
+            {
+                "date": "2026-04-14",
+                "city": "New York, NY",
+                "country": "USA",
+                "showtimes": [
+                    "14:00",
+                    "20:00"
+                ]
+            },
+            {
+                "date": "2026-04-15",
+                "city": "New York, NY",
+                "country": "USA",
+                "showtimes": [
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "33",
+        "name": "The Phantom of the Opera",
+        "artist": "Andrew Lloyd Webber",
+        "type": "Theater",
+        "genre": [
+            "Musical"
+        ],
+        "details": [
+            {
+                "date": "2026-05-07",
+                "city": "London",
+                "country": "UK",
+                "showtimes": [
+                    "14:30",
+                    "19:30"
+                ]
+            },
+            {
+                "date": "2026-05-08",
+                "city": "London",
+                "country": "UK",
+                "showtimes": [
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "34",
+        "name": "Wicked",
+        "artist": "Stephen Schwartz",
+        "type": "Theater",
+        "genre": [
+            "Musical"
+        ],
+        "details": [
+            {
+                "date": "2026-04-10",
+                "city": "New York, NY",
+                "country": "USA",
+                "showtimes": [
+                    "14:00",
+                    "20:00"
+                ]
+            },
+            {
+                "date": "2026-04-12",
+                "city": "Chicago, IL",
+                "country": "USA",
+                "showtimes": [
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "35",
+        "name": "Death of a Salesman",
+        "artist": "Arthur Miller",
+        "type": "Theater",
+        "genre": [
+            "Drama"
+        ],
+        "details": [
+            {
+                "date": "2026-05-20",
+                "city": "New York, NY",
+                "country": "USA",
+                "showtimes": [
+                    "19:00"
+                ]
+            },
+            {
+                "date": "2026-05-22",
+                "city": "New York, NY",
+                "country": "USA",
+                "showtimes": [
+                    "14:00",
+                    "19:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "36",
+        "name": "Les MisÃ©rables",
+        "artist": "Claude-Michel SchÃ¶nberg",
+        "type": "Theater",
+        "genre": [
+            "Musical"
+        ],
+        "details": [
+            {
+                "date": "2026-05-01",
+                "city": "London",
+                "country": "UK",
+                "showtimes": [
+                    "14:30",
+                    "19:30"
+                ]
+            },
+            {
+                "date": "2026-05-03",
+                "city": "London",
+                "country": "UK",
+                "showtimes": [
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "37",
+        "name": "The Lion King",
+        "artist": "Elton John & Tim Rice",
+        "type": "Theater",
+        "genre": [
+            "Musical"
+        ],
+        "details": [
+            {
+                "date": "2026-04-18",
+                "city": "New York, NY",
+                "country": "USA",
+                "showtimes": [
+                    "13:00",
+                    "19:30"
+                ]
+            },
+            {
+                "date": "2026-04-20",
+                "city": "Los Angeles, CA",
+                "country": "USA",
+                "showtimes": [
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "38",
+        "name": "A Streetcar Named Desire",
+        "artist": "Tennessee Williams",
+        "type": "Theater",
+        "genre": [
+            "Drama"
+        ],
+        "details": [
+            {
+                "date": "2026-05-10",
+                "city": "Chicago, IL",
+                "country": "USA",
+                "showtimes": [
+                    "19:00"
+                ]
+            },
+            {
+                "date": "2026-05-12",
+                "city": "Chicago, IL",
+                "country": "USA",
+                "showtimes": [
+                    "14:00",
+                    "19:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "39",
+        "name": "Moulin Rouge! The Musical",
+        "artist": "Baz Luhrmann",
+        "type": "Theater",
+        "genre": [
+            "Musical"
+        ],
+        "details": [
+            {
+                "date": "2026-05-14",
+                "city": "New York, NY",
+                "country": "USA",
+                "showtimes": [
+                    "14:00",
+                    "20:00"
+                ]
+            },
+            {
+                "date": "2026-05-15",
+                "city": "New York, NY",
+                "country": "USA",
+                "showtimes": [
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "40",
+        "name": "Romeo and Juliet",
+        "artist": "William Shakespeare",
+        "type": "Theater",
+        "genre": [
+            "Drama"
+        ],
+        "details": [
+            {
+                "date": "2026-06-05",
+                "city": "London",
+                "country": "UK",
+                "showtimes": [
+                    "14:00",
+                    "19:30"
+                ]
+            },
+            {
+                "date": "2026-06-07",
+                "city": "Stratford-upon-Avon",
+                "country": "UK",
+                "showtimes": [
+                    "19:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "41",
+        "name": "Chicago",
+        "artist": "John Kander & Fred Ebb",
+        "type": "Theater",
+        "genre": [
+            "Musical"
+        ],
+        "details": [
+            {
+                "date": "2026-04-25",
+                "city": "New York, NY",
+                "country": "USA",
+                "showtimes": [
+                    "14:00",
+                    "20:00"
+                ]
+            },
+            {
+                "date": "2026-04-27",
+                "city": "Boston, MA",
+                "country": "USA",
+                "showtimes": [
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "42",
+        "name": "Coachella Valley Music and Arts Festival",
+        "artist": "Various Artists",
+        "type": "Music Festival",
+        "genre": [
+            "Pop",
+            "Hip-Hop",
+            "Electronic",
+            "Indie"
+        ],
+        "details": [
+            {
+                "date": "2026-04-10",
+                "city": "Indio, CA",
+                "country": "USA",
+                "showtimes": [
+                    "12:00"
+                ]
+            },
+            {
+                "date": "2026-04-11",
+                "city": "Indio, CA",
+                "country": "USA",
+                "showtimes": [
+                    "12:00"
+                ]
+            },
+            {
+                "date": "2026-04-12",
+                "city": "Indio, CA",
+                "country": "USA",
+                "showtimes": [
+                    "12:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "43",
+        "name": "Lollapalooza",
+        "artist": "Various Artists",
+        "type": "Music Festival",
+        "genre": [
+            "Rock",
+            "Pop",
+            "Hip-Hop",
+            "Electronic"
+        ],
+        "details": [
+            {
+                "date": "2026-07-30",
+                "city": "Chicago, IL",
+                "country": "USA",
+                "showtimes": [
+                    "11:00"
+                ]
+            },
+            {
+                "date": "2026-07-31",
+                "city": "Chicago, IL",
+                "country": "USA",
+                "showtimes": [
+                    "11:00"
+                ]
+            },
+            {
+                "date": "2026-08-01",
+                "city": "Chicago, IL",
+                "country": "USA",
+                "showtimes": [
+                    "11:00"
+                ]
+            },
+            {
+                "date": "2026-08-02",
+                "city": "Chicago, IL",
+                "country": "USA",
+                "showtimes": [
+                    "11:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "44",
+        "name": "Glastonbury Festival",
+        "artist": "Various Artists",
+        "type": "Music Festival",
+        "genre": [
+            "Rock",
+            "Pop",
+            "Folk",
+            "Electronic"
+        ],
+        "details": [
+            {
+                "date": "2026-06-24",
+                "city": "Pilton, Somerset",
+                "country": "UK",
+                "showtimes": [
+                    "10:00"
+                ]
+            },
+            {
+                "date": "2026-06-25",
+                "city": "Pilton, Somerset",
+                "country": "UK",
+                "showtimes": [
+                    "10:00"
+                ]
+            },
+            {
+                "date": "2026-06-26",
+                "city": "Pilton, Somerset",
+                "country": "UK",
+                "showtimes": [
+                    "10:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "45",
+        "name": "Tomorrowland",
+        "artist": "Various Artists",
+        "type": "Music Festival",
+        "genre": [
+            "Electronic",
+            "EDM",
+            "House",
+            "Techno"
+        ],
+        "details": [
+            {
+                "date": "2026-07-17",
+                "city": "Boom",
+                "country": "Belgium",
+                "showtimes": [
+                    "12:00"
+                ]
+            },
+            {
+                "date": "2026-07-18",
+                "city": "Boom",
+                "country": "Belgium",
+                "showtimes": [
+                    "12:00"
+                ]
+            },
+            {
+                "date": "2026-07-19",
+                "city": "Boom",
+                "country": "Belgium",
+                "showtimes": [
+                    "12:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "46",
+        "name": "Bonnaroo Music & Arts Festival",
+        "artist": "Various Artists",
+        "type": "Music Festival",
+        "genre": [
+            "Rock",
+            "Indie",
+            "Hip-Hop",
+            "Folk"
+        ],
+        "details": [
+            {
+                "date": "2026-06-11",
+                "city": "Manchester, TN",
+                "country": "USA",
+                "showtimes": [
+                    "11:00"
+                ]
+            },
+            {
+                "date": "2026-06-12",
+                "city": "Manchester, TN",
+                "country": "USA",
+                "showtimes": [
+                    "11:00"
+                ]
+            },
+            {
+                "date": "2026-06-13",
+                "city": "Manchester, TN",
+                "country": "USA",
+                "showtimes": [
+                    "11:00"
+                ]
+            },
+            {
+                "date": "2026-06-14",
+                "city": "Manchester, TN",
+                "country": "USA",
+                "showtimes": [
+                    "11:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "47",
+        "name": "Rolling Loud Miami",
+        "artist": "Various Artists",
+        "type": "Music Festival",
+        "genre": [
+            "Hip-Hop",
+            "Rap",
+            "Trap"
+        ],
+        "details": [
+            {
+                "date": "2026-07-10",
+                "city": "Miami, FL",
+                "country": "USA",
+                "showtimes": [
+                    "14:00"
+                ]
+            },
+            {
+                "date": "2026-07-11",
+                "city": "Miami, FL",
+                "country": "USA",
+                "showtimes": [
+                    "14:00"
+                ]
+            },
+            {
+                "date": "2026-07-12",
+                "city": "Miami, FL",
+                "country": "USA",
+                "showtimes": [
+                    "14:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "48",
+        "name": "Austin City Limits Music Festival",
+        "artist": "Various Artists",
+        "type": "Music Festival",
+        "genre": [
+            "Rock",
+            "Indie",
+            "Country",
+            "Pop"
+        ],
+        "details": [
+            {
+                "date": "2026-10-02",
+                "city": "Austin, TX",
+                "country": "USA",
+                "showtimes": [
+                    "11:00"
+                ]
+            },
+            {
+                "date": "2026-10-03",
+                "city": "Austin, TX",
+                "country": "USA",
+                "showtimes": [
+                    "11:00"
+                ]
+            },
+            {
+                "date": "2026-10-04",
+                "city": "Austin, TX",
+                "country": "USA",
+                "showtimes": [
+                    "11:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "49",
+        "name": "Primavera Sound",
+        "artist": "Various Artists",
+        "type": "Music Festival",
+        "genre": [
+            "Indie",
+            "Electronic",
+            "Pop",
+            "Rock"
+        ],
+        "details": [
+            {
+                "date": "2026-06-04",
+                "city": "Barcelona",
+                "country": "Spain",
+                "showtimes": [
+                    "16:00"
+                ]
+            },
+            {
+                "date": "2026-06-05",
+                "city": "Barcelona",
+                "country": "Spain",
+                "showtimes": [
+                    "16:00"
+                ]
+            },
+            {
+                "date": "2026-06-06",
+                "city": "Barcelona",
+                "country": "Spain",
+                "showtimes": [
+                    "16:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "50",
+        "name": "Electric Daisy Carnival",
+        "artist": "Various Artists",
+        "type": "Music Festival",
+        "genre": [
+            "EDM",
+            "House",
+            "Trance",
+            "Dubstep"
+        ],
+        "details": [
+            {
+                "date": "2026-05-15",
+                "city": "Las Vegas, NV",
+                "country": "USA",
+                "showtimes": [
+                    "19:00"
+                ]
+            },
+            {
+                "date": "2026-05-16",
+                "city": "Las Vegas, NV",
+                "country": "USA",
+                "showtimes": [
+                    "19:00"
+                ]
+            },
+            {
+                "date": "2026-05-17",
+                "city": "Las Vegas, NV",
+                "country": "USA",
+                "showtimes": [
+                    "19:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "51",
+        "name": "Afro Nation",
+        "artist": "Various Artists",
+        "type": "Music Festival",
+        "genre": [
+            "Afrobeats",
+            "Dancehall",
+            "R&B",
+            "Amapiano"
+        ],
+        "details": [
+            {
+                "date": "2026-06-27",
+                "city": "Lisbon",
+                "country": "Portugal",
+                "showtimes": [
+                    "14:00"
+                ]
+            },
+            {
+                "date": "2026-06-28",
+                "city": "Lisbon",
+                "country": "Portugal",
+                "showtimes": [
+                    "14:00"
+                ]
+            },
+            {
+                "date": "2026-06-29",
+                "city": "Lisbon",
+                "country": "Portugal",
+                "showtimes": [
+                    "14:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "52",
+        "name": "Disney on Ice: Frozen & Friends",
+        "artist": "Disney on Ice",
+        "type": "Family and Children",
+        "genre": [
+            "Ice Show",
+            "Musical"
+        ],
+        "details": [
+            {
+                "date": "2026-05-14",
+                "city": "New York, NY",
+                "country": "USA",
+                "showtimes": [
+                    "11:00",
+                    "15:00"
+                ]
+            },
+            {
+                "date": "2026-05-15",
+                "city": "New York, NY",
+                "country": "USA",
+                "showtimes": [
+                    "11:00",
+                    "15:00",
+                    "19:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "53",
+        "name": "PAW Patrol Live! The Great Pirate Adventure",
+        "artist": "PAW Patrol Live",
+        "type": "Family and Children",
+        "genre": [
+            "Live Show"
+        ],
+        "details": [
+            {
+                "date": "2026-04-04",
+                "city": "Chicago, IL",
+                "country": "USA",
+                "showtimes": [
+                    "10:00",
+                    "14:00"
+                ]
+            },
+            {
+                "date": "2026-04-05",
+                "city": "Chicago, IL",
+                "country": "USA",
+                "showtimes": [
+                    "10:00",
+                    "14:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "54",
+        "name": "Cirque du Soleil: KOOZA",
+        "artist": "Cirque du Soleil",
+        "type": "Family and Children",
+        "genre": [
+            "Circus",
+            "Acrobatics"
+        ],
+        "details": [
+            {
+                "date": "2026-05-08",
+                "city": "Los Angeles, CA",
+                "country": "USA",
+                "showtimes": [
+                    "14:00",
+                    "19:30"
+                ]
+            },
+            {
+                "date": "2026-05-10",
+                "city": "San Francisco, CA",
+                "country": "USA",
+                "showtimes": [
+                    "14:00",
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "55",
+        "name": "Sesame Street Live! Say Hello",
+        "artist": "Sesame Street Live",
+        "type": "Family and Children",
+        "genre": [
+            "Live Show",
+            "Educational"
+        ],
+        "details": [
+            {
+                "date": "2026-05-21",
+                "city": "Dallas, TX",
+                "country": "USA",
+                "showtimes": [
+                    "10:30",
+                    "14:00"
+                ]
+            },
+            {
+                "date": "2026-05-22",
+                "city": "Houston, TX",
+                "country": "USA",
+                "showtimes": [
+                    "10:30",
+                    "14:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "56",
+        "name": "Blue Man Group",
+        "artist": "Blue Man Group",
+        "type": "Family and Children",
+        "genre": [
+            "Performance Art",
+            "Comedy"
+        ],
+        "details": [
+            {
+                "date": "2026-04-18",
+                "city": "New York, NY",
+                "country": "USA",
+                "showtimes": [
+                    "14:00",
+                    "17:00",
+                    "20:00"
+                ]
+            },
+            {
+                "date": "2026-04-19",
+                "city": "New York, NY",
+                "country": "USA",
+                "showtimes": [
+                    "14:00",
+                    "17:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "57",
+        "name": "The Wiggles: Big Show Tour",
+        "artist": "The Wiggles",
+        "type": "Family and Children",
+        "genre": [
+            "Children's Music",
+            "Live Show"
+        ],
+        "details": [
+            {
+                "date": "2026-05-16",
+                "city": "Sydney",
+                "country": "Australia",
+                "showtimes": [
+                    "10:00",
+                    "13:00"
+                ]
+            },
+            {
+                "date": "2026-05-18",
+                "city": "Melbourne",
+                "country": "Australia",
+                "showtimes": [
+                    "10:00",
+                    "13:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "58",
+        "name": "Peppa Pig's Adventure",
+        "artist": "Peppa Pig Live",
+        "type": "Family and Children",
+        "genre": [
+            "Live Show"
+        ],
+        "details": [
+            {
+                "date": "2026-04-11",
+                "city": "London",
+                "country": "UK",
+                "showtimes": [
+                    "10:30",
+                    "14:00"
+                ]
+            },
+            {
+                "date": "2026-04-12",
+                "city": "Birmingham",
+                "country": "UK",
+                "showtimes": [
+                    "10:30",
+                    "14:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "59",
+        "name": "Harlem Globetrotters World Tour",
+        "artist": "Harlem Globetrotters",
+        "type": "Family and Children",
+        "genre": [
+            "Basketball",
+            "Entertainment"
+        ],
+        "details": [
+            {
+                "date": "2026-05-28",
+                "city": "Atlanta, GA",
+                "country": "USA",
+                "showtimes": [
+                    "13:00",
+                    "17:00"
+                ]
+            },
+            {
+                "date": "2026-05-29",
+                "city": "Orlando, FL",
+                "country": "USA",
+                "showtimes": [
+                    "13:00",
+                    "17:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "60",
+        "name": "LEGO Live: Build & Play Arena",
+        "artist": "LEGO Live",
+        "type": "Family and Children",
+        "genre": [
+            "Interactive",
+            "Exhibition"
+        ],
+        "details": [
+            {
+                "date": "2026-06-06",
+                "city": "Toronto, ON",
+                "country": "Canada",
+                "showtimes": [
+                    "10:00",
+                    "13:00",
+                    "16:00"
+                ]
+            },
+            {
+                "date": "2026-06-07",
+                "city": "Toronto, ON",
+                "country": "Canada",
+                "showtimes": [
+                    "10:00",
+                    "13:00",
+                    "16:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "61",
+        "name": "Marvel Universe Live!",
+        "artist": "Marvel Live",
+        "type": "Family and Children",
+        "genre": [
+            "Live Show",
+            "Action"
+        ],
+        "details": [
+            {
+                "date": "2026-05-23",
+                "city": "Philadelphia, PA",
+                "country": "USA",
+                "showtimes": [
+                    "11:00",
+                    "15:00",
+                    "19:00"
+                ]
+            },
+            {
+                "date": "2026-05-24",
+                "city": "Washington, DC",
+                "country": "USA",
+                "showtimes": [
+                    "11:00",
+                    "15:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "62",
+        "name": "The Midnight Cipher",
+        "artist": "Christopher Nolan",
+        "type": "Movie",
+        "genre": [
+            "Thriller",
+            "Sci-Fi"
+        ],
+        "details": [
+            {
+                "date": "2026-05-06",
+                "city": "New York, NY",
+                "country": "USA",
+                "showtimes": [
+                    "14:00",
+                    "17:30",
+                    "21:00"
+                ]
+            },
+            {
+                "date": "2026-05-06",
+                "city": "Los Angeles, CA",
+                "country": "USA",
+                "showtimes": [
+                    "13:00",
+                    "16:30",
+                    "20:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "63",
+        "name": "Echoes of the Heart",
+        "artist": "Greta Gerwig",
+        "type": "Movie",
+        "genre": [
+            "Romance",
+            "Drama"
+        ],
+        "details": [
+            {
+                "date": "2026-05-13",
+                "city": "Chicago, IL",
+                "country": "USA",
+                "showtimes": [
+                    "12:00",
+                    "15:30",
+                    "19:00"
+                ]
+            },
+            {
+                "date": "2026-05-13",
+                "city": "Austin, TX",
+                "country": "USA",
+                "showtimes": [
+                    "14:00",
+                    "18:00",
+                    "21:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "64",
+        "name": "Iron Vanguard",
+        "artist": "Russo Brothers",
+        "type": "Movie",
+        "genre": [
+            "Action",
+            "Sci-Fi"
+        ],
+        "details": [
+            {
+                "date": "2026-05-20",
+                "city": "Atlanta, GA",
+                "country": "USA",
+                "showtimes": [
+                    "11:00",
+                    "14:30",
+                    "18:00",
+                    "21:30"
+                ]
+            },
+            {
+                "date": "2026-05-20",
+                "city": "Houston, TX",
+                "country": "USA",
+                "showtimes": [
+                    "12:00",
+                    "15:30",
+                    "19:00",
+                    "22:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "65",
+        "name": "The Last Cartographer",
+        "artist": "Denis Villeneuve",
+        "type": "Movie",
+        "genre": [
+            "Adventure",
+            "Drama"
+        ],
+        "details": [
+            {
+                "date": "2026-04-03",
+                "city": "San Francisco, CA",
+                "country": "USA",
+                "showtimes": [
+                    "13:00",
+                    "16:30",
+                    "20:00"
+                ]
+            },
+            {
+                "date": "2026-04-03",
+                "city": "Seattle, WA",
+                "country": "USA",
+                "showtimes": [
+                    "14:00",
+                    "17:30",
+                    "21:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "66",
+        "name": "Laugh Track",
+        "artist": "Judd Apatow",
+        "type": "Movie",
+        "genre": [
+            "Comedy"
+        ],
+        "details": [
+            {
+                "date": "2026-04-10",
+                "city": "Miami, FL",
+                "country": "USA",
+                "showtimes": [
+                    "12:30",
+                    "15:00",
+                    "18:30",
+                    "21:00"
+                ]
+            },
+            {
+                "date": "2026-04-10",
+                "city": "Orlando, FL",
+                "country": "USA",
+                "showtimes": [
+                    "13:00",
+                    "16:00",
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "67",
+        "name": "Whispers in the Fog",
+        "artist": "Jordan Peele",
+        "type": "Movie",
+        "genre": [
+            "Horror",
+            "Thriller"
+        ],
+        "details": [
+            {
+                "date": "2026-04-17",
+                "city": "Boston, MA",
+                "country": "USA",
+                "showtimes": [
+                    "14:00",
+                    "17:00",
+                    "20:30"
+                ]
+            },
+            {
+                "date": "2026-04-17",
+                "city": "Philadelphia, PA",
+                "country": "USA",
+                "showtimes": [
+                    "13:30",
+                    "17:00",
+                    "21:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "68",
+        "name": "The Starling's Song",
+        "artist": "Pixar Animation",
+        "type": "Movie",
+        "genre": [
+            "Animation",
+            "Family"
+        ],
+        "details": [
+            {
+                "date": "2026-05-01",
+                "city": "Denver, CO",
+                "country": "USA",
+                "showtimes": [
+                    "10:30",
+                    "13:00",
+                    "15:30",
+                    "18:00"
+                ]
+            },
+            {
+                "date": "2026-05-01",
+                "city": "Phoenix, AZ",
+                "country": "USA",
+                "showtimes": [
+                    "11:00",
+                    "14:00",
+                    "17:00",
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "69",
+        "name": "Unwritten Rules",
+        "artist": "Spike Lee",
+        "type": "Movie",
+        "genre": [
+            "Drama",
+            "Crime"
+        ],
+        "details": [
+            {
+                "date": "2026-05-08",
+                "city": "Detroit, MI",
+                "country": "USA",
+                "showtimes": [
+                    "14:00",
+                    "17:30",
+                    "21:00"
+                ]
+            },
+            {
+                "date": "2026-05-08",
+                "city": "Washington, DC",
+                "country": "USA",
+                "showtimes": [
+                    "13:00",
+                    "16:30",
+                    "20:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "70",
+        "name": "Beyond the Reef",
+        "artist": "James Cameron",
+        "type": "Movie",
+        "genre": [
+            "Sci-Fi",
+            "Adventure"
+        ],
+        "details": [
+            {
+                "date": "2026-05-15",
+                "city": "Las Vegas, NV",
+                "country": "USA",
+                "showtimes": [
+                    "11:00",
+                    "14:30",
+                    "18:00",
+                    "21:30"
+                ]
+            },
+            {
+                "date": "2026-05-15",
+                "city": "San Diego, CA",
+                "country": "USA",
+                "showtimes": [
+                    "12:00",
+                    "15:30",
+                    "19:00",
+                    "22:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "71",
+        "name": "Paper Kingdoms",
+        "artist": "Wes Anderson",
+        "type": "Movie",
+        "genre": [
+            "Comedy",
+            "Drama"
+        ],
+        "details": [
+            {
+                "date": "2026-05-22",
+                "city": "Nashville, TN",
+                "country": "USA",
+                "showtimes": [
+                    "13:00",
+                    "16:00",
+                    "19:30"
+                ]
+            },
+            {
+                "date": "2026-05-22",
+                "city": "Portland, OR",
+                "country": "USA",
+                "showtimes": [
+                    "14:00",
+                    "17:30",
+                    "21:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "72",
+        "name": "The Glass Balcony",
+        "artist": "Sam Mendes",
+        "type": "Movie",
+        "genre": [
+            "Drama",
+            "Romance"
+        ],
+        "details": [
+            {
+                "date": "2026-05-06",
+                "city": "London",
+                "country": "UK",
+                "showtimes": [
+                    "13:00",
+                    "16:30",
+                    "20:00"
+                ]
+            },
+            {
+                "date": "2026-05-06",
+                "city": "Manchester",
+                "country": "UK",
+                "showtimes": [
+                    "14:00",
+                    "17:30",
+                    "21:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "73",
+        "name": "Hollow Crown",
+        "artist": "Ridley Scott",
+        "type": "Movie",
+        "genre": [
+            "Action",
+            "Historical"
+        ],
+        "details": [
+            {
+                "date": "2026-05-13",
+                "city": "Birmingham",
+                "country": "UK",
+                "showtimes": [
+                    "12:00",
+                    "15:30",
+                    "19:00",
+                    "22:00"
+                ]
+            },
+            {
+                "date": "2026-05-13",
+                "city": "Edinburgh",
+                "country": "UK",
+                "showtimes": [
+                    "13:00",
+                    "16:30",
+                    "20:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "74",
+        "name": "The Tinker's Daughter",
+        "artist": "Andrea Arnold",
+        "type": "Movie",
+        "genre": [
+            "Indie",
+            "Drama"
+        ],
+        "details": [
+            {
+                "date": "2026-05-20",
+                "city": "Bristol",
+                "country": "UK",
+                "showtimes": [
+                    "14:00",
+                    "17:00",
+                    "20:30"
+                ]
+            },
+            {
+                "date": "2026-05-20",
+                "city": "Glasgow",
+                "country": "UK",
+                "showtimes": [
+                    "13:30",
+                    "17:00",
+                    "21:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "75",
+        "name": "Beneath the Cobblestones",
+        "artist": "Edgar Wright",
+        "type": "Movie",
+        "genre": [
+            "Comedy",
+            "Thriller"
+        ],
+        "details": [
+            {
+                "date": "2026-04-03",
+                "city": "London",
+                "country": "UK",
+                "showtimes": [
+                    "11:00",
+                    "14:30",
+                    "18:00",
+                    "21:30"
+                ]
+            },
+            {
+                "date": "2026-04-03",
+                "city": "Leeds",
+                "country": "UK",
+                "showtimes": [
+                    "13:00",
+                    "16:30",
+                    "20:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "76",
+        "name": "The Keeper of Tides",
+        "artist": "Steve McQueen",
+        "type": "Movie",
+        "genre": [
+            "Drama",
+            "Mystery"
+        ],
+        "details": [
+            {
+                "date": "2026-04-10",
+                "city": "Liverpool",
+                "country": "UK",
+                "showtimes": [
+                    "14:00",
+                    "17:30",
+                    "21:00"
+                ]
+            },
+            {
+                "date": "2026-04-10",
+                "city": "Cardiff",
+                "country": "UK",
+                "showtimes": [
+                    "13:00",
+                    "16:00",
+                    "19:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "77",
+        "name": "Orbit",
+        "artist": "Alex Garland",
+        "type": "Movie",
+        "genre": [
+            "Sci-Fi",
+            "Horror"
+        ],
+        "details": [
+            {
+                "date": "2026-04-17",
+                "city": "Manchester",
+                "country": "UK",
+                "showtimes": [
+                    "14:30",
+                    "18:00",
+                    "21:30"
+                ]
+            },
+            {
+                "date": "2026-04-17",
+                "city": "Nottingham",
+                "country": "UK",
+                "showtimes": [
+                    "13:00",
+                    "16:30",
+                    "20:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "78",
+        "name": "The Chalk Garden",
+        "artist": "Emerald Fennell",
+        "type": "Movie",
+        "genre": [
+            "Thriller",
+            "Drama"
+        ],
+        "details": [
+            {
+                "date": "2026-05-01",
+                "city": "London",
+                "country": "UK",
+                "showtimes": [
+                    "12:00",
+                    "15:30",
+                    "19:00",
+                    "22:00"
+                ]
+            },
+            {
+                "date": "2026-05-01",
+                "city": "Oxford",
+                "country": "UK",
+                "showtimes": [
+                    "14:00",
+                    "17:30",
+                    "21:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "79",
+        "name": "Small Wonders",
+        "artist": "Aardman Animations",
+        "type": "Movie",
+        "genre": [
+            "Animation",
+            "Family"
+        ],
+        "details": [
+            {
+                "date": "2026-05-08",
+                "city": "Bristol",
+                "country": "UK",
+                "showtimes": [
+                    "10:00",
+                    "12:30",
+                    "15:00",
+                    "17:30"
+                ]
+            },
+            {
+                "date": "2026-05-08",
+                "city": "Brighton",
+                "country": "UK",
+                "showtimes": [
+                    "11:00",
+                    "13:30",
+                    "16:00",
+                    "18:30"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "80",
+        "name": "The Night Market",
+        "artist": "Guy Ritchie",
+        "type": "Movie",
+        "genre": [
+            "Action",
+            "Comedy"
+        ],
+        "details": [
+            {
+                "date": "2026-05-15",
+                "city": "London",
+                "country": "UK",
+                "showtimes": [
+                    "13:00",
+                    "16:30",
+                    "20:00",
+                    "22:30"
+                ]
+            },
+            {
+                "date": "2026-05-15",
+                "city": "Edinburgh",
+                "country": "UK",
+                "showtimes": [
+                    "14:00",
+                    "17:30",
+                    "21:00"
+                ]
+            }
+        ]
+    },
+    {
+        "event_id": "81",
+        "name": "Meadowlands",
+        "artist": "Sarah Gavron",
+        "type": "Movie",
+        "genre": [
+            "Documentary",
+            "Drama"
+        ],
+        "details": [
+            {
+                "date": "2026-05-22",
+                "city": "Cambridge",
+                "country": "UK",
+                "showtimes": [
+                    "14:00",
+                    "17:00",
+                    "20:00"
+                ]
+            },
+            {
+                "date": "2026-05-22",
+                "city": "Sheffield",
+                "country": "UK",
+                "showtimes": [
+                    "13:30",
+                    "16:30",
+                    "19:30"
+                ]
+            }
+        ]
+    }
+]

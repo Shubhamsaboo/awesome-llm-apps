@@ -1,0 +1,2 @@
+figureout[all]
+python-dotenv
