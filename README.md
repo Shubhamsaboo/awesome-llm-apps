@@ -171,6 +171,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [🧐 Agentic RAG with Reasoning](rag_tutorials/agentic_rag_with_reasoning/)
 *   [📰 AI Blog Search (RAG)](rag_tutorials/ai_blog_search/)
 *   [🔍 Autonomous RAG](rag_tutorials/autonomous_rag/)
+*   [🚀 LongTrainer](https://github.com/ENDEVSOLS/Long-Trainer) - A production-ready RAG framework built on top of LangChain that handles multi-bot isolation, memory, and streaming capacities.
 *   [🔄 Contextual AI RAG Agent](rag_tutorials/contextualai_rag_agent/)
 *   [🔄 Corrective RAG (CRAG)](rag_tutorials/corrective_rag/)
 *   [🐋 Deepseek Local RAG Agent](rag_tutorials/deepseek_local_rag_agent/)
