@@ -134,6 +134,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [🎮 AI 3D Pygame Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_3dpygame_r1/)
 *   [♜ AI Chess Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_chess_agent/)
 *   [🎲 AI Tic-Tac-Toe Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_tic_tac_toe_agent/)
+*   [🌍 AI Geopolitical Simulator — Multi-Agent Strait of Hormuz Crisis](https://github.com/Peakstone-Labs/hormuz-agent-sandbox)
 
 ### 🤝 Multi-agent Teams
 
