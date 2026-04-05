@@ -57,7 +57,7 @@ google-genai==1.3.0
     # via -r cookbook/examples/apps/tic_tac_toe/requirements.in
 groq==0.18.0
     # via -r cookbook/examples/apps/tic_tac_toe/requirements.in
-h11==0.14.0
+h11==0.16.0
     # via httpcore
 httpcore==1.0.7
     # via httpx
