@@ -92,6 +92,8 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 ### AI Agents
 
+- **Novel Writer Suite** — Zero-cost Chinese novel writing with OpenClaw. [900K+ chars, ¥0 API, 3 skills](https://github.com/Shine8592/novel-writer-skills)
+
 ### 🌱 Starter AI Agents
 
 *   [🎙️ AI Blog to Podcast Agent](starter_ai_agents/ai_blog_to_podcast_agent/)
