@@ -237,6 +237,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 ### 🧩 Awesome Agent Skills
 
 *   [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
+*   [🛒 RemoteOpenClaw](https://remoteopenclaw.com) - Open marketplace for AI skills and personas built on OpenClaw
 
 ## 🚀 Getting Started
 
