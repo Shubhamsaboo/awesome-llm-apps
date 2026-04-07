@@ -237,6 +237,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 ### 🧩 Awesome Agent Skills
 
 *   [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
+*   [🧘 Master-skill](https://github.com/xr843/Master-skill) - Chinese Buddhist master AI teaching personas with RAG-powered CBETA source citations. 8 pre-built masters across 7 Buddhist traditions, powered by FoJin's 500+ source corpus.
 
 ## 🚀 Getting Started
 
