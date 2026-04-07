@@ -128,6 +128,8 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [👨🏻‍💼 AI Sales Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_sales_intelligence_agent_team)
 *   [🎧 AI Social Media News and Podcast Agent](advanced_ai_agents/multi_agent_apps/ai_news_and_podcast_agents/)
 *   [🌐 Openwork - Open Browser Automation Agent](https://github.com/accomplish-ai/openwork)
+*   [📧 Overloop CLI - AI Outbound Sales Engine](https://github.com/sortlist/overloop-cli) - Source prospects from 450M+ contacts, launch email + LinkedIn campaigns, manage conversations. JSON output, agent-native. `npm i -g overloop-cli`
+*   [📡 Signals CLI - Intent Signal Monitoring](https://github.com/sortlist/signals-cli) - Monitor LinkedIn engagers, keyword posters, job changers, funding events. JSON output for agent pipelines. `npm i -g signals-sortlist-cli`
 
 ### 🎮 Autonomous Game Playing Agents
 
