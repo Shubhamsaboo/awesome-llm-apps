@@ -128,6 +128,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [👨🏻‍💼 AI Sales Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_sales_intelligence_agent_team)
 *   [🎧 AI Social Media News and Podcast Agent](advanced_ai_agents/multi_agent_apps/ai_news_and_podcast_agents/)
 *   [🌐 Openwork - Open Browser Automation Agent](https://github.com/accomplish-ai/openwork)
+*   [🥊 AI Trading Agent Evolution Arena](https://github.com/midnightnnn/llm_invest/)
 
 ### 🎮 Autonomous Game Playing Agents
 
@@ -150,7 +151,6 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [✨ Multimodal Design Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_design_agent_team/)
 *   [🎨 🍌 Multimodal UI/UX Feedback Agent Team with Nano Banana](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_uiux_feedback_agent_team/)
 *   [🌏 AI Travel Planner Agent Team](/advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/)
-*   [🥊 LLM Invest - Multi-LLM Trading Arena](https://github.com/midnightnnn/llm_invest/)
 
 ### 🗣️ Voice AI Agents
 
