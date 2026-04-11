@@ -1,0 +1,50 @@
+# OpenClaw Starter Agent
+
+An open-source local AI assistant that brings AI co-worker capabilities to developers.
+
+## Description
+
+OpenClaw is a powerful local AI assistant that runs entirely on your machine, keeping your data private while providing:
+
+- **Persistent Memory** - Remembers your preferences and past interactions across sessions
+- **Skill System** - Custom skill system for extensibility
+- **Deep System Integration** - File system, shell commands, browser automation, Git operations
+- **Feishu Integration** - Native integration with 飞书 for Chinese users
+
+## Use Cases
+
+- Code generation and debugging
+- Workflow automation
+- File processing and data analysis
+- Browser automation
+- Feishu messaging and calendar management
+
+## Tech Stack
+
+- TypeScript/Node.js
+- Multiple AI provider support (OpenAI, Anthropic, Google, etc.)
+
+## Getting Started
+
+```bash
+# Install
+npm install -g openclaw
+
+# Initialize
+openclaw init
+
+# Start
+openclaw start
+```
+
+## Resources
+
+- [Documentation](https://docs.openclaw.ai)
+- [GitHub](https://github.com/openclaw/openclaw)
+- [Discord](https://discord.gg/openclaw)
+
+## Similar Projects
+
+- Claude Code - Cloud-based AI coding assistant
+- Cursor - AI-enhanced IDE
+- Windsurf - Agent mode IDE
