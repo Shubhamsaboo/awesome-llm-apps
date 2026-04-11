@@ -167,6 +167,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/)
 
 ### 📀 RAG (Retrieval Augmented Generation)
+*   [🔒 FERPA-Compliant RAG Pipeline](rag_tutorials/ferpa_compliant_rag/) - Identity-scoped pre-filtering for regulated higher-education AI; two-layer enforcement + 34 CFR § 99.32 audit logging
 *   [🔥 Agentic RAG with Embedding Gemma](rag_tutorials/agentic_rag_embedding_gemma)
 *   [🧐 Agentic RAG with Reasoning](rag_tutorials/agentic_rag_with_reasoning/)
 *   [📰 AI Blog Search (RAG)](rag_tutorials/ai_blog_search/)
