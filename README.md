@@ -238,6 +238,10 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 *   [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
 
+### 🛒 Agent Marketplaces & Platforms
+
+*   [🔗 AgentForge Marketplace](https://github.com/doggychip/agentforge) - Unified API gateway for 300+ AI agents. One API key, REST + streaming, Stripe Connect payouts, self-hostable. React + Express + PostgreSQL (MIT).
+
 ## 🚀 Getting Started
 
 1. **Clone the repository** 
