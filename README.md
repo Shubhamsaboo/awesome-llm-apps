@@ -237,6 +237,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 ### 🧩 Awesome Agent Skills
 
 *   [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
+*   [🧬 Evolve Protocol](https://github.com/armorbreak001/evolve-protocol) - Universal 5-layer self-evolution framework for any AI agent (coding, content, operations, research). Autonomous decision-making, compression-proof memory, error pattern library, efficiency optimization, and safety guardrails. MIT-0 licensed.
 
 ## 🚀 Getting Started
 
