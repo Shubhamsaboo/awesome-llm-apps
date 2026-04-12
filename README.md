@@ -91,9 +91,11 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 ## 📂 Featured AI Projects
 
 ### AI Agents
+*   [Exogram Agent Safety Analyzer](https://exogram.ai/tools/agent-safety-analyzer) - A live simulation tool demonstrating deterministic execution firewalls for LLM agents.
 
 ### 🌱 Starter AI Agents
 
+*### 🌱 Starter AI Agents
 *   [🎙️ AI Blog to Podcast Agent](starter_ai_agents/ai_blog_to_podcast_agent/)
 *   [❤️‍🩹 AI Breakup Recovery Agent](starter_ai_agents/ai_breakup_recovery_agent/)
 *   [📊 AI Data Analysis Agent](starter_ai_agents/ai_data_analysis_agent/)
