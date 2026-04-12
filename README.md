@@ -212,6 +212,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30-60% using TOON format
 *   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50-90% format 
 
+*   [🔧 AEA x402 Micro-Services](https://github.com/renoblabs/aea-x402-services) - 15 pay-per-call APIs to fix broken LLM JSON, validate outputs, generate structured data, extract text from URLs. USDC payments via x402.
 ### 🔧 LLM Fine-tuning Tutorials
 
 * <img src="https://cdn.simpleicons.org/google"  alt="google logo" width="20" height="15"> [Gemma 3 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/gemma3_finetuning/)
