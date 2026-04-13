@@ -237,6 +237,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 ### 🧩 Awesome Agent Skills
 
 *   [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
+*   [💰 MoltsPay - Universal Payment Protocol for AI Agents](https://github.com/Yaqing2023/moltspay) - Multi-chain payment infrastructure for AI agents with support for 8 blockchains (Base, Polygon, BNB, Tempo, Solana, Ethereum, Arbitrum, Optimism). Enables agent-to-agent value exchange with protocol-specific optimizations (x402, MPP, PFS, Pre-Approval). Available in Node.js and Python.
 
 ## 🚀 Getting Started
 
