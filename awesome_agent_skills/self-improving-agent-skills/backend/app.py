@@ -1,8 +1,9 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List, Dict
+import time
 import uuid
 import zipfile
 import io
@@ -18,6 +19,15 @@ from adk_optimizer import SkillOptimizer
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+MAX_UPLOAD_SIZE = 10 * 1024 * 1024  # 10 MB total
+MAX_FILE_SIZE = 1 * 1024 * 1024     # 1 MB per file
+MAX_FILE_COUNT = 50
+SESSION_TTL = 3600  # 1 hour
+ALLOWED_EXTENSIONS = {
+    ".md", ".txt", ".json", ".yaml", ".yml", ".py", ".js", ".ts",
+    ".html", ".css", ".xml", ".toml", ".cfg", ".ini", ".sh",
+}
 
 app = FastAPI()
 
@@ -50,7 +60,7 @@ class RegenerateRequest(BaseModel):
 
 class StartRequest(BaseModel):
     gemini_api_key: str
-    max_rounds: Optional[int] = 20
+    max_rounds: Optional[int] = Field(default=20, gt=0, le=50)
 
 
 def parse_skill_frontmatter(content: str) -> dict:
@@ -95,8 +105,20 @@ def create_session_from_files(skill_files: dict, file_list: list) -> dict:
         "changelog": [],
         "current_skill_md": skill_md,
         "original_skill_md": skill_md,
+        "created_at": time.time(),
     }
     return {"session_id": session_id, "file_list": file_list, "metadata": metadata}
+
+
+def _is_allowed_file(name: str) -> bool:
+    """Check if file extension is in the allowed text-file list."""
+    _, ext = os.path.splitext(name)
+    return ext.lower() in ALLOWED_EXTENSIONS
+
+
+def _is_safe_path(name: str) -> bool:
+    """Reject path traversal attempts."""
+    return ".." not in name and not os.path.isabs(name)
 
 
 @app.post("/api/upload")
@@ -105,6 +127,8 @@ async def upload_skill(file: UploadFile = File(...)):
     if not file.filename.endswith(".zip"):
         raise HTTPException(status_code=400, detail="Only .zip files are accepted")
     content = await file.read()
+    if len(content) > MAX_UPLOAD_SIZE:
+        raise HTTPException(status_code=413, detail=f"Upload exceeds {MAX_UPLOAD_SIZE // (1024*1024)}MB limit")
     try:
         with zipfile.ZipFile(io.BytesIO(content)) as zf:
             skill_files = {}
@@ -112,8 +136,20 @@ async def upload_skill(file: UploadFile = File(...)):
             for name in zf.namelist():
                 if name.endswith("/") or name.startswith("__MACOSX") or "/.DS_Store" in name or name.endswith(".DS_Store"):
                     continue
-                file_content = zf.read(name).decode("utf-8", errors="ignore")
-                # Strip leading directory if all files share a common prefix
+                if not _is_safe_path(name):
+                    logger.warning(f"Skipping unsafe zip entry: {name}")
+                    continue
+                if not _is_allowed_file(name):
+                    logger.info(f"Skipping non-text file: {name}")
+                    continue
+                raw = zf.read(name)
+                if len(raw) > MAX_FILE_SIZE:
+                    logger.warning(f"Skipping oversized file: {name} ({len(raw)} bytes)")
+                    continue
+                if len(file_list) >= MAX_FILE_COUNT:
+                    logger.warning("Max file count reached, skipping remaining entries")
+                    break
+                file_content = raw.decode("utf-8", errors="ignore")
                 skill_files[name] = file_content
                 file_list.append(name)
 
@@ -130,19 +166,35 @@ async def upload_skill(file: UploadFile = File(...)):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+        logger.error(f"Upload error: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail="Error processing file")
 
 
 @app.post("/api/upload-files")
 async def upload_files(files: List[UploadFile] = File(...)):
     """Accept multiple files (folder upload via webkitdirectory)"""
+    if len(files) > MAX_FILE_COUNT:
+        raise HTTPException(status_code=413, detail=f"Too many files (max {MAX_FILE_COUNT})")
     skill_files = {}
     file_list = []
+    total_size = 0
     for f in files:
         if f.filename.startswith(".") or "/.DS_Store" in (f.filename or "") or "__MACOSX" in (f.filename or ""):
             continue
-        content = await f.read()
         name = f.filename or "unknown"
+        if not _is_safe_path(name):
+            logger.warning(f"Skipping unsafe path: {name}")
+            continue
+        if not _is_allowed_file(name):
+            logger.info(f"Skipping non-text file: {name}")
+            continue
+        content = await f.read()
+        total_size += len(content)
+        if total_size > MAX_UPLOAD_SIZE:
+            raise HTTPException(status_code=413, detail=f"Total upload exceeds {MAX_UPLOAD_SIZE // (1024*1024)}MB limit")
+        if len(content) > MAX_FILE_SIZE:
+            logger.warning(f"Skipping oversized file: {name} ({len(content)} bytes)")
+            continue
         skill_files[name] = content.decode("utf-8", errors="ignore")
         file_list.append(name)
 
@@ -170,7 +222,8 @@ async def analyze_skill(request: AnalyzeRequest):
         session["status"] = "analyzed"
         return {"scenarios": analysis["scenarios"], "evals": analysis["evals"]}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+        logger.error(f"Analysis error: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail="Analysis failed. Check your API key and try again.")
 
 
 @app.post("/api/regenerate")
@@ -409,8 +462,12 @@ async def list_examples():
 @app.post("/api/examples/{example_name}/load")
 async def load_example(example_name: str):
     """Load an example skill as if it were uploaded"""
-    examples_dir = os.path.join(os.path.dirname(__file__), "..", "example_skills")
-    skill_dir = os.path.join(examples_dir, example_name)
+    if not re.fullmatch(r"[a-zA-Z0-9_-]+", example_name):
+        raise HTTPException(status_code=400, detail="Invalid example name")
+    examples_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "example_skills"))
+    skill_dir = os.path.realpath(os.path.join(examples_dir, example_name))
+    if not skill_dir.startswith(examples_dir + os.sep):
+        raise HTTPException(status_code=400, detail="Invalid example name")
     if not os.path.isdir(skill_dir):
         raise HTTPException(status_code=404, detail="Example skill not found")
     skill_files = {}
@@ -444,6 +501,27 @@ async def get_status(session_id: str):
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
+
+async def _cleanup_expired_sessions():
+    """Periodically remove sessions older than SESSION_TTL."""
+    while True:
+        await asyncio.sleep(300)  # every 5 minutes
+        now = time.time()
+        expired = [
+            sid for sid, s in sessions.items()
+            if now - s.get("created_at", now) > SESSION_TTL
+            and s.get("status") not in ("running",)
+        ]
+        for sid in expired:
+            del sessions[sid]
+        if expired:
+            logger.info(f"Cleaned up {len(expired)} expired session(s)")
+
+
+@app.on_event("startup")
+async def startup():
+    asyncio.create_task(_cleanup_expired_sessions())
 
 
 if __name__ == "__main__":

@@ -44,7 +44,7 @@ export default function RunningStep({
 
   const startOptimization = async () => {
     setIsRunning(true);
-    const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8892";
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8891";
 
     try {
       // Start the optimization

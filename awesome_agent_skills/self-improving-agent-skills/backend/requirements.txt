@@ -1,6 +1,6 @@
-fastapi
-uvicorn[standard]
-google-genai
-google-adk
-python-multipart
-sse-starlette
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+google-genai>=1.0.0
+google-adk>=1.0.0
+pydantic>=2.0.0
+python-multipart>=0.0.18

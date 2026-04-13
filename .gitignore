@@ -2,3 +2,15 @@
 __pycache__/
 *.pyc
 *.pyo
+
+# Environment files
+.env
+.env.local
+
+# Virtual environments
+venv/
+.venv/
+
+# Node
+node_modules/
+.next/

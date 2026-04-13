@@ -1,26 +1,48 @@
 """Multi-Agent Skill Optimizer using Google ADK.
 
 3 ADK agents work together to improve agent skills:
-  Executor: runs the skill against test scenarios
+  Executor: runs the skill against test scenarios, scores outputs, analyzes skills
   Analyst: diagnoses why evals failed, picks a mutation strategy
   Mutator: makes one targeted fix per round
 """
 
 import json
-import re
-import uuid
-from typing import Callable, Optional
+import os
+from typing import Callable, List, Optional
 
-from google.adk import Agent
+from pydantic import BaseModel, Field
+
+from google.adk.agents import Agent
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
-from google import genai
 from google.genai import types
+
+
+# -- Pydantic schemas for structured agent output ----------------------------
+
+
+class FailureAnalysis(BaseModel):
+    diagnosis: str = Field(description="Root cause of failures")
+    mutation_strategy: str = Field(
+        description="One of: add_example, add_constraint, restructure, add_edge_case"
+    )
+    target_section: str = Field(description="Which part of the skill to change")
+    suggested_change: str = Field(description="What specific change to make")
+
+
+class SkillMutation(BaseModel):
+    description: str = Field(description="Short description of the change made")
+    reasoning: str = Field(description="Why this change should help")
+    new_skill_md: str = Field(description="The full updated SKILL.md content")
+
+
+# -- Optimizer ---------------------------------------------------------------
 
 
 class SkillOptimizer:
     def __init__(self, api_key: str, model: str = "gemini-3-flash-preview"):
-        self.client = genai.Client(api_key=api_key)
+        # ADK agents authenticate via this env var
+        os.environ["GOOGLE_API_KEY"] = api_key
         self.model = model
         self._session_service = InMemorySessionService()
         self._call_id = 0
@@ -29,9 +51,14 @@ class SkillOptimizer:
             name="executor",
             model=model,
             instruction=(
-                "You execute agent skills faithfully. Given a skill's instructions "
-                "and a user request, produce the output that skill would generate. "
-                "Follow the instructions exactly. No meta-commentary."
+                "You are a versatile skill execution agent. You have three modes:\n\n"
+                "1. EXECUTE MODE: Given a skill's instructions and a user request, "
+                "produce the output that skill would generate. Follow the instructions "
+                "exactly. No meta-commentary.\n\n"
+                "2. ANALYZE MODE: Given a skill definition, generate test scenarios "
+                "and evaluation criteria. Return valid JSON.\n\n"
+                "3. SCORE MODE: Given an output and evaluation criteria, score the "
+                "output against each criterion. Return valid JSON."
             ),
         )
         self.analyst = Agent(
@@ -40,22 +67,23 @@ class SkillOptimizer:
             instruction=(
                 "You diagnose why agent skill evaluations fail. "
                 "Given failed eval results, identify the root cause and suggest "
-                "a specific fix. Return valid JSON with keys: "
-                "diagnosis, mutation_strategy (add_example|add_constraint|restructure|add_edge_case), "
-                "target_section, suggested_change."
+                "a specific fix. Pick one mutation_strategy from: "
+                "add_example, add_constraint, restructure, or add_edge_case."
             ),
+            output_schema=FailureAnalysis,
         )
         self.mutator = Agent(
             name="mutator",
             model=model,
             instruction=(
                 "You edit agent skill files. Given a SKILL.md and a diagnosis, "
-                "make exactly ONE targeted change. Keep structure and frontmatter intact. "
-                "Return valid JSON with keys: description, reasoning, new_skill_md."
+                "make exactly ONE targeted change. Keep the YAML frontmatter and "
+                "overall structure intact. Return the complete updated SKILL.md."
             ),
+            output_schema=SkillMutation,
         )
 
-    # -- Agent runner helper --------------------------------------------------
+    # -- Agent runner helpers ------------------------------------------------
 
     async def _ask(self, agent: Agent, prompt: str) -> str:
         """Run an ADK agent with a prompt, return text response."""
@@ -79,32 +107,26 @@ class SkillOptimizer:
                         text += part.text
         return text
 
-    # -- Gemini direct call (for structured JSON) -----------------------------
-
-    async def _gen_json(self, prompt: str):
-        """Call Gemini directly for structured JSON output."""
-        resp = await self.client.aio.models.generate_content(
-            model=self.model,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json"
-            ),
-        )
-        return json.loads(resp.text)
-
-    # -- Parse JSON from agent text (agents don't guarantee pure JSON) --------
-
-    def _parse_json(self, text: str, fallback: dict) -> dict:
+    async def _ask_json(self, agent: Agent, prompt: str, fallback=None):
+        """Run an ADK agent and parse the JSON response."""
+        text = await self._ask(agent, prompt)
         try:
             return json.loads(text)
         except json.JSONDecodeError:
-            m = re.search(r"\{.*\}", text, re.DOTALL)
-            if m:
+            # Try raw_decode to handle extra data after valid JSON
+            decoder = json.JSONDecoder()
+            idx = text.find("{")
+            if idx == -1:
+                idx = text.find("[")
+            if idx != -1:
                 try:
-                    return json.loads(m.group(0))
+                    result, _ = decoder.raw_decode(text, idx)
+                    return result
                 except json.JSONDecodeError:
                     pass
-        return fallback
+            if fallback is not None:
+                return fallback
+            raise
 
     # -- Public API -----------------------------------------------------------
 
@@ -120,26 +142,21 @@ class SkillOptimizer:
                 f"## {k}\n{v}" for k, v in refs.items()
             )
 
-        prompt = f"""Analyze this agent skill and generate test scenarios with evaluation criteria.
-
-# SKILL.md
-{skill_md}
-{ref_text}
-
-Generate:
-1. 3-4 diverse test scenarios (realistic user inputs that test different aspects)
-2. 4-6 binary yes/no evaluation criteria
-
-Return JSON:
-{{
-  "scenarios": [
-    {{"id": 1, "name": "short name", "description": "short name", "input": "the user request to test"}}
-  ],
-  "evals": [
-    {{"id": 1, "name": "what to check", "criterion": "what to check", "question": "yes/no question about the output", "pass_condition": "what yes looks like", "fail_condition": "what no looks like"}}
-  ]
-}}"""
-        return await self._gen_json(prompt)
+        prompt = (
+            f"Analyze this agent skill and generate test scenarios "
+            f"with evaluation criteria.\n\n"
+            f"# SKILL.md\n{skill_md}\n{ref_text}\n\n"
+            f"Generate:\n"
+            f"1. 3-4 diverse test scenarios (realistic user inputs)\n"
+            f"2. 4-6 binary yes/no evaluation criteria\n\n"
+            f"Return JSON:\n"
+            f'{{"scenarios": [{{"id": 1, "name": "short name", "description": "short name", '
+            f'"input": "the user request to test"}}], '
+            f'"evals": [{{"id": 1, "name": "what to check", "criterion": "what to check", '
+            f'"question": "yes/no question about the output", '
+            f'"pass_condition": "what yes looks like", "fail_condition": "what no looks like"}}]}}'
+        )
+        return await self._ask_json(self.executor, prompt)
 
     async def optimize(
         self,
@@ -251,32 +268,31 @@ Return JSON:
     # -- Internal helpers -----------------------------------------------------
 
     async def _score_skill(self, skill_md, scenarios, evals):
-        """Run Executor on all scenarios, then score with Gemini."""
+        """Executor runs all scenarios, then scores outputs."""
         all_results = []
         total_passed = 0
         total_checks = 0
         per_eval = {e["id"]: {"passed": 0, "total": 0} for e in evals}
 
         for sc in scenarios:
-            # Executor runs the skill
+            # Executor runs the skill (free-form text)
             output = await self._ask(
                 self.executor,
                 f"Execute this skill:\n\n{skill_md}\n\nUser request:\n{sc['input']}",
             )
-            # Score with Gemini (structured JSON, not an agent)
-            scores = await self._gen_json(
-                f"""Evaluate this output against criteria. Return JSON array.
-
-Input: {sc['input']}
-Output: {output}
-
-Criteria:
-{json.dumps(evals, indent=2)}
-
-Return: [{{"eval_id": 1, "passed": true, "reason": "..."}}]"""
+            # Executor scores the output (JSON)
+            scoring = await self._ask_json(
+                self.executor,
+                (
+                    f"Evaluate this output against the criteria.\n\n"
+                    f"Input: {sc['input']}\n\n"
+                    f"Output: {output}\n\n"
+                    f"Criteria:\n{json.dumps(evals, indent=2)}\n\n"
+                    f"Return JSON: {{\"results\": [{{\"eval_id\": 1, \"passed\": true, \"reason\": \"...\"}}]}}"
+                ),
+                fallback={"results": []},
             )
-            if not isinstance(scores, list):
-                scores = scores.get("results", scores.get("evaluations", []))
+            scores = scoring.get("results", []) if isinstance(scoring, dict) else scoring
 
             for s in scores:
                 eid = s.get("eval_id")
@@ -304,40 +320,46 @@ Return: [{{"eval_id": 1, "passed": true, "reason": "..."}}]"""
         """Analyst agent diagnoses the worst failures."""
         failed = [d for d in details if not d.get("passed")]
         if not failed:
-            return {"diagnosis": "All passed", "mutation_strategy": "add_constraint",
-                    "target_section": "N/A", "suggested_change": "none"}
+            return {
+                "diagnosis": "All passed",
+                "mutation_strategy": "add_constraint",
+                "target_section": "N/A",
+                "suggested_change": "none",
+            }
 
-        prompt = (
-            f"Diagnose these failures and suggest ONE fix.\n\n"
-            f"Skill:\n{skill_md[:2000]}\n\n"
-            f"Failed evals:\n{json.dumps(failed[:5], indent=2)}\n\n"
-            f"Return JSON: {{diagnosis, mutation_strategy, target_section, suggested_change}}"
+        return await self._ask_json(
+            self.analyst,
+            (
+                f"Diagnose these failures and suggest ONE fix.\n\n"
+                f"Skill:\n{skill_md[:2000]}\n\n"
+                f"Failed evals:\n{json.dumps(failed[:5], indent=2)}"
+            ),
+            fallback={
+                "diagnosis": "Unable to diagnose",
+                "mutation_strategy": "add_constraint",
+                "target_section": "unknown",
+                "suggested_change": "unclear",
+            },
         )
-        text = await self._ask(self.analyst, prompt)
-        return self._parse_json(text, {
-            "diagnosis": text[:200],
-            "mutation_strategy": "add_constraint",
-            "target_section": "unknown",
-            "suggested_change": "unclear",
-        })
 
     async def _mutate_skill(self, skill_md, analysis):
         """Mutator agent makes one targeted change."""
-        prompt = (
-            f"Apply this fix to the skill. Make ONE change only.\n\n"
-            f"SKILL.md:\n{skill_md}\n\n"
-            f"Diagnosis: {analysis.get('diagnosis')}\n"
-            f"Strategy: {analysis.get('mutation_strategy')}\n"
-            f"Target: {analysis.get('target_section')}\n"
-            f"Change: {analysis.get('suggested_change')}\n\n"
-            f"Return JSON: {{description, reasoning, new_skill_md}}"
+        return await self._ask_json(
+            self.mutator,
+            (
+                f"Apply this fix to the skill. Make ONE change only.\n\n"
+                f"SKILL.md:\n{skill_md}\n\n"
+                f"Diagnosis: {analysis.get('diagnosis')}\n"
+                f"Strategy: {analysis.get('mutation_strategy')}\n"
+                f"Target: {analysis.get('target_section')}\n"
+                f"Change: {analysis.get('suggested_change')}"
+            ),
+            fallback={
+                "description": "Failed to parse mutation",
+                "reasoning": "",
+                "new_skill_md": skill_md,
+            },
         )
-        text = await self._ask(self.mutator, prompt)
-        return self._parse_json(text, {
-            "description": "Failed to parse mutation",
-            "reasoning": "",
-            "new_skill_md": skill_md,
-        })
 
     @staticmethod
     def _strategy_stats(mutation_log):
