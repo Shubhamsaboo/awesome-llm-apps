@@ -165,7 +165,8 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 ### 🎯 LLM Optimization Tools
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30-60% using TOON format
-*   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50-90% format 
+*   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50-90% format
+*   [📊 LLM Daily Review](https://tokenstree.eu) - Automated daily reviewer and scorer of LLM apps from Hacker News. Tests each tool in isolated Docker containers and scores across 11 criteria (novelty, UX, security, documentation, differentiation). Free, open source, no login required.
 
 ### 🔧 LLM Fine-tuning Tutorials
 
