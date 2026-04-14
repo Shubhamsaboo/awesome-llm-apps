@@ -237,6 +237,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 ### 🧩 Awesome Agent Skills
 
 *   [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
+*   [🎯 Operum - AI Development Team Templates](https://github.com/alprimak/purely-agent-orchestrator) - Production-tested CLAUDE.md templates for orchestrating 6 specialized AI agents (PM, Architect, Engineer, Tester, Marketing, Community) that coordinate autonomously via file-based IPC. Deploy a complete AI development team with GitHub integration.
 
 ## 🚀 Getting Started
 
