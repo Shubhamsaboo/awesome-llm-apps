@@ -66,8 +66,6 @@ def add_item(item: str, items: list[str] | None = None) -> list[str]:
     return items
 ```
 
-[➡️ Full details: correctness-mutable-defaults.md](rules/correctness-mutable-defaults.md)
-
 ---
 
 ### Proper Error Handling
@@ -97,8 +95,6 @@ except FileNotFoundError:
     logger.warning("Config file not found, using defaults")
     config = get_default_config()
 ```
-
-[➡️ Full details: correctness-error-handling.md](rules/correctness-error-handling.md)
 
 ---
 
@@ -137,8 +133,6 @@ def get_user(user_id: int) -> Optional[Dict[str, Any]]:
     """
     return users.get(user_id)
 ```
-
-[➡️ Full details: type-hints.md](rules/type-hints.md)
 
 ---
 
@@ -186,8 +180,6 @@ class Config:
     timeout: int = 30
 ```
 
-[➡️ Full details: type-dataclasses.md](rules/type-dataclasses.md)
-
 ---
 
 ## Performance
@@ -229,8 +221,6 @@ evens = [x for x in range(20) if x % 2 == 0]
 matrix = [[i * j for j in range(3)] for i in range(3)]
 ```
 
-[➡️ Full details: performance-comprehensions.md](rules/performance-comprehensions.md)
-
 ---
 
 ### Use Context Managers
@@ -262,8 +252,6 @@ with open('file.txt') as f:
 with open('input.txt') as infile, open('output.txt', 'w') as outfile:
     outfile.write(infile.read().upper())
 ```
-
-[➡️ Full details: performance-context-managers.md](rules/performance-context-managers.md)
 
 ---
 
@@ -306,8 +294,6 @@ class UserAccount:
 
 x = 1 + 2
 ```
-
-[➡️ Full details: style-pep8.md](rules/style-pep8.md)
 
 ---
 
@@ -363,8 +349,6 @@ def process_user_data(
     """
     ...
 ```
-
-[➡️ Full details: style-docstrings.md](rules/style-docstrings.md)
 
 ---
 
@@ -453,7 +437,6 @@ When reviewing Python code, structure your output as:
 
 ## References
 
-- Individual rule files in `rules/` directory
 - [PEP 8 - Style Guide for Python Code](https://peps.python.org/pep-0008/)
 - [PEP 257 - Docstring Conventions](https://peps.python.org/pep-0257/)
 - [PEP 484 - Type Hints](https://peps.python.org/pep-0484/)

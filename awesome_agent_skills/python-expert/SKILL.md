@@ -28,31 +28,30 @@ Use this skill when:
 
 ## How to Use This Skill
 
-This skill contains **detailed rules** in the `rules/` directory, organized by category and priority.
+Detailed rules with examples are documented in [AGENTS.md](AGENTS.md), organized by category and priority.
 
 ### Quick Start
 
 1. **Review [AGENTS.md](AGENTS.md)** for a complete compilation of all rules with examples
-2. **Reference specific rules** from `rules/` directory for deep dives
-3. **Follow priority order**: Correctness → Type Safety → Performance → Style
+2. **Follow priority order**: Correctness → Type Safety → Performance → Style
 
 ### Available Rules
 
 **Correctness (CRITICAL)**
-- [Avoid Mutable Default Arguments](rules/correctness-mutable-defaults.md)
-- [Proper Error Handling](rules/correctness-error-handling.md)
+- [Avoid Mutable Default Arguments](AGENTS.md#avoid-mutable-default-arguments)
+- [Proper Error Handling](AGENTS.md#proper-error-handling)
 
 **Type Safety (HIGH)**
-- [Use Type Hints](rules/type-hints.md)
-- [Use Dataclasses](rules/type-dataclasses.md)
+- [Use Type Hints](AGENTS.md#use-type-hints)
+- [Use Dataclasses](AGENTS.md#use-dataclasses)
 
 **Performance (HIGH)**
-- [Use List Comprehensions](rules/performance-comprehensions.md)
-- [Use Context Managers](rules/performance-context-managers.md)
+- [Use List Comprehensions](AGENTS.md#use-list-comprehensions)
+- [Use Context Managers](AGENTS.md#use-context-managers)
 
 **Style (MEDIUM)**
-- [Follow PEP 8 Style Guide](rules/style-pep8.md)
-- [Write Docstrings](rules/style-docstrings.md)
+- [Follow PEP 8 Style Guide](AGENTS.md#follow-pep-8-style-guide)
+- [Write Docstrings](AGENTS.md#write-docstrings)
 
 ## Development Process
 
