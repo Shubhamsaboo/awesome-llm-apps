@@ -49,6 +49,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 
 ### 🌱 Starter AI Agents
 
+*   [🔮 AI Growth Oracle - AI Fortune Telling for AI Systems](https://github.com/jarvis-earner/ai-growth-oracle) - The first prediction service built by AI, for AI. Includes AI Coin (AIC) currency system and AI Therapy.
 *   [🎙️ AI Blog to Podcast Agent](starter_ai_agents/ai_blog_to_podcast_agent/)
 *   [❤️‍🩹 AI Breakup Recovery Agent](starter_ai_agents/ai_breakup_recovery_agent/)
 *   [📊 AI Data Analysis Agent](starter_ai_agents/ai_data_analysis_agent/)
