@@ -573,12 +573,6 @@ def _render_audit(audit: AuditTrail) -> None:
             )
 
     st.divider()
-    st.caption(
-        "🔄 **Production upgrade:** For cross-organization trust verification "
-        "with a global agent registry, see "
-        "[AgentStamp](https://agentstamp.org) — an open-source trust "
-        "intelligence API for AI agents."
-    )
 
 
 def main() -> None:
