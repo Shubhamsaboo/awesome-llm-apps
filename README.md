@@ -105,6 +105,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 *   [✨ Multimodal Design Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_design_agent_team/)
 *   [🎨 🍌 Multimodal UI/UX Feedback Agent Team with Nano Banana](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_uiux_feedback_agent_team/)
 *   [🌏 AI Travel Planner Agent Team](/advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/)
+*   [🗄️ Cabinet Agent Workstation](https://github.com/8676311081/cabinet) — Self-hosted desktop app: kanban board + multi-agent execution + knowledge base auto-accumulation. Combines Cabinet KB with Multica task scheduler. ([DMG download](https://github.com/8676311081/cabinet/releases))
 
 ### 🗣️ Voice AI Agents
 
