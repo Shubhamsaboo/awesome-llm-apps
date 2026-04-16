@@ -35,8 +35,8 @@
 AI Agents · Multi-agent Teams · MCP Agents · RAG · Voice Agents · Agent Skills · Fine-tuning</p>
 
 <p>
-<strong>Free step-by-step tutorials on <a href="https://www.theunwindai.com">Unwind AI</a></strong><br/><br/>
-Works with Claude · Gemini · OpenAI · xAI · Qwen · Llama
+<strong>Free step-by-step tutorials on <a href="https://www.theunwindai.com">Unwind AI</a></strong><br/>
+<strong>Works with Claude · Gemini · OpenAI · xAI · Qwen · Llama</strong>
 </p>
 
 <p>
