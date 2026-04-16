@@ -35,8 +35,8 @@
 AI Agents · Multi-agent Teams · MCP Agents · RAG · Voice Agents · Agent Skills · Fine-tuning</p>
 
 <p>
-<strong>Free step-by-step tutorials on <a href="https://www.theunwindai.com">Unwind AI</a></strong><br/>
-Works with <img src="https://cdn.simpleicons.org/claude" alt="claude" width="18" height="12" style="display:inline;vertical-align:middle"> Claude · <img src="https://cdn.simpleicons.org/googlegemini" alt="gemini" width="18" height="14" style="display:inline;vertical-align:middle"> Gemini · <img src="https://cdn.jsdelivr.net/npm/simple-icons@15/icons/openai.svg" alt="openai" width="18" height="12" style="display:inline;vertical-align:middle"> OpenAI · <img src="https://cdn.simpleicons.org/x" alt="xai" width="18" height="12" style="display:inline;vertical-align:middle"> xAI · <img src="https://cdn.simpleicons.org/alibabacloud" alt="qwen" width="18" height="12" style="display:inline;vertical-align:middle"> Qwen · <img src="https://cdn.simpleicons.org/meta" alt="llama" width="18" height="12" style="display:inline;vertical-align:middle"> Llama
+<strong>Free step-by-step tutorials on <a href="https://www.theunwindai.com">Unwind AI</a></strong><br/><br/>
+Works with Claude · Gemini · OpenAI · xAI · Qwen · Llama
 </p>
 
 <p>
@@ -194,7 +194,7 @@ streamlit run travel_agent.py
 *   [🔊 Voice RAG Agent (OpenAI SDK)](voice_ai_agents/voice_rag_openaisdk/)
 *   [🎙️ OpenSource Voice Dictation Agent (Wispr Flow clone)](https://github.com/akshayaggarwal99/jarvis-ai-assistant) <sub>↗ external</sub>
 
-### <img src="https://cdn.simpleicons.org/modelcontextprotocol" alt="mcp logo" width="25" height="20"> MCP AI Agents
+### ♾️ MCP AI Agents
 *Agents that connect to external tools and data via Model Context Protocol.*
 
 *   [♾️ Browser MCP Agent](mcp_ai_agents/browser_mcp_agent/)
@@ -287,20 +287,20 @@ streamlit run travel_agent.py
 ### 🔧 LLM Fine-tuning Tutorials
 *End-to-end fine-tuning recipes for open-source models.*
 
-* <img src="https://cdn.simpleicons.org/google" alt="google logo" width="20" height="15"> [Gemma 3 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/gemma3_finetuning/)
-* <img src="https://cdn.simpleicons.org/meta" alt="meta logo" width="25" height="15"> [Llama 3.2 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/llama3.2_finetuning/)
+* [Gemma 3 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/gemma3_finetuning/)
+* [Llama 3.2 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/llama3.2_finetuning/)
 
 ### 🧑‍🏫 AI Agent Framework Crash Course
 *Deep-dive tutorials on the major agent frameworks.*
 
-<img src="https://cdn.simpleicons.org/google" alt="google logo" width="25" height="15"> [Google ADK Crash Course](ai_agent_framework_crash_course/google_adk_crash_course/)
+[Google ADK Crash Course](ai_agent_framework_crash_course/google_adk_crash_course/)
   - Starter agent; model‑agnostic (OpenAI, Claude)
   - Structured outputs (Pydantic)
   - Tools: built‑in, function, third‑party, MCP tools
   - Memory; callbacks; Plugins
   - Simple multi‑agent; Multi‑agent patterns
 
-<img src="https://cdn.jsdelivr.net/npm/simple-icons@15/icons/openai.svg" alt="openai logo" width="25" height="15"> [OpenAI Agents SDK Crash Course](ai_agent_framework_crash_course/openai_sdk_crash_course/)
+[OpenAI Agents SDK Crash Course](ai_agent_framework_crash_course/openai_sdk_crash_course/)
   - Starter agent; function calling; structured outputs
   - Tools: built‑in, function, third‑party integrations
   - Memory; callbacks; evaluation
