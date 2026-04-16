@@ -94,8 +94,7 @@ streamlit run travel_agent.py
 |---|---|---|
 | [🧠 DevPulse AI](advanced_ai_agents/multi_agent_apps/devpulse_ai/) | Multi-agent signal intelligence for dev teams | Multi-agent |
 | [🏠 Home Renovation Agent](advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent) | Photo → AI redesign with Nano Banana Pro | Vision + Multi-agent |
-| [🩺 RAG Failure Diagnostics Clinic](rag_tutorials/rag_failure_diagnostics_clinic/) | Diagnose & fix broken RAG pipelines | RAG + evals |
-| [🔍 AI Fraud Investigation Agent](advanced_ai_agents/single_agent_apps/ai_fraud_investigation_agent/) | Autonomous fraud investigator | Single-agent + tools |
+| [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) | Automatically optimize agent skills using Gemini and ADK | Agent Skills + ADK |
 
 > 📬 [Subscribe on Unwind AI](https://www.theunwindai.com) to get new template drops + tutorials in your inbox.
 
