@@ -8,4 +8,4 @@ sentence-transformers>=2.2.2
 agno
 langchain-openai==0.2.14
 langgraph==0.2.53
-duckduckgo-search==6.4.1
+duckduckgo-search>=6.4.2,<9
