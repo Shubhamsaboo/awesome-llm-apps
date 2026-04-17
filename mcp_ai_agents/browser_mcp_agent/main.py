@@ -88,9 +88,19 @@ async def setup_agent():
 
 # Main function to run agent
 async def run_mcp_agent(message):
-    if not os.getenv("OPENAI_API_KEY"):
-        return "Error: OpenAI API key not provided"
-    
+    # Credentials come from mcp_agent.secrets.yaml (api_key) and
+    # mcp_agent.config.yaml (base_url, default_model). Both OpenAI and any
+    # OpenAI-compatible server (e.g. Ollama at http://localhost:11434/v1)
+    # are supported via the same `openai:` config section — see README.
+    if not os.getenv("OPENAI_API_KEY") and not os.path.exists(
+        os.path.join(os.path.dirname(__file__), "mcp_agent.secrets.yaml")
+    ):
+        return (
+            "Error: no LLM credentials found. Either set OPENAI_API_KEY in "
+            "your environment, or create mcp_agent.secrets.yaml from the "
+            "provided example (works for OpenAI and local Ollama)."
+        )
+
     try:
         # Make sure agent is initialized
         error = await setup_agent()
