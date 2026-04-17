@@ -116,7 +116,7 @@ streamlit run travel_agent.py
 - [🎯 LLM Optimization Tools](#-llm-optimization-tools)
 - [🔧 LLM Fine-tuning Tutorials](#-llm-fine-tuning-tutorials)
 - [🧑‍🏫 AI Agent Framework Crash Courses](#-ai-agent-framework-crash-course)
-
+- [ZeroToken](https://www.zerotoken.dev) - A flat-rate API proxy for autonomous agents that prevents context bloat and eliminates variable token costs.
 </details>
 
 ## 📂 Featured AI Projects
