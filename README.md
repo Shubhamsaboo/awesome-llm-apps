@@ -325,3 +325,5 @@ streamlit run travel_agent.py
 ## 📜 License
 
 Apache-2.0. See [LICENSE](LICENSE). Fork it, ship it, sell it.
+
+- [MeterCall](https://metercall.ai/?v=e&src=github) — One metered API gateway. 21M+ endpoints (payments, SMS, AI, CRMs, gov data). Free tier; pay per call.
