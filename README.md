@@ -161,6 +161,7 @@ streamlit run travel_agent.py
 *   [🎧 AI Social Media News and Podcast Agent](advanced_ai_agents/multi_agent_apps/ai_news_and_podcast_agents/)
 *   [🌐 Openwork - Open Browser Automation Agent](https://github.com/accomplish-ai/openwork) <sub>↗ external</sub>
 *   [🛡️ Trust-Gated Multi-Agent Research Team](advanced_ai_agents/multi_agent_apps/trust_gated_agent_team/)
+*   [🖥️ Codex Infinity - Autonomous Coding Agent on Bare Metal VPS](https://codex-infinity.com) <sub>↗ external</sub>
 
 ### 🎮 Autonomous Game-Playing Agents
 *Agents that play games end-to-end - reasoning, strategy, and action.*
@@ -193,6 +194,8 @@ streamlit run travel_agent.py
 *   [📞 Customer Support Voice Agent](voice_ai_agents/customer_support_voice_agent/)
 *   [🔊 Voice RAG Agent (OpenAI SDK)](voice_ai_agents/voice_rag_openaisdk/)
 *   [🎙️ OpenSource Voice Dictation Agent (Wispr Flow clone)](https://github.com/akshayaggarwal99/jarvis-ai-assistant) <sub>↗ external</sub>
+*   [🎤 DictatorFlow - Voice Dictation & Voice-Command Editing](https://dictatorflow.com) <sub>↗ external</sub>
+*   [📞 Ring.nz - AI-Powered Voice Calls Platform](https://ring.nz) <sub>↗ external</sub>
 
 ### ♾️ MCP AI Agents
 *Agents that connect to external tools and data via Model Context Protocol.*
