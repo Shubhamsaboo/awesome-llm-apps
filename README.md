@@ -131,7 +131,7 @@ streamlit run travel_agent.py
 *   [😂 AI Meme Generator Agent (Browser)](starter_ai_agents/ai_meme_generator_agent_browseruse/)
 *   [🎵 AI Music Generator Agent](starter_ai_agents/ai_music_generator_agent/)
 *   [🛫 AI Travel Agent (Local & Cloud)](starter_ai_agents/ai_travel_agent/)
-*   [✨ Gemini Multimodal Agent](starter_ai_agents/gemini_multimodal_agent_demo/)
+*   [✨ Gemini Multimodal Agent: Technical Roadmap](https://interconnectd.com/forum/thread/150/gemini-multimodal-agent-guide-technical-roadmap-hotl-governance)
 *   [🔄 Mixture of Agents](starter_ai_agents/mixture_of_agents/)
 *   [📊 xAI Finance Agent](starter_ai_agents/xai_finance_agent/)
 *   [🔍 OpenAI Research Agent](starter_ai_agents/openai_research_agent/)
