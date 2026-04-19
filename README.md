@@ -95,6 +95,8 @@ streamlit run travel_agent.py
 | [🧠 DevPulse AI](advanced_ai_agents/multi_agent_apps/devpulse_ai/) | Multi-agent signal intelligence for dev teams | Multi-agent |
 | [🏠 Home Renovation Agent](advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent) | Photo → AI redesign with Nano Banana Pro | Vision + Multi-agent |
 | [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) | Automatically optimize agent skills using Gemini and ADK | Agent Skills + ADK |
+| [🤖 Agent Shadow Brain](https://github.com/theihtisham/agent-shadow-brain) | Self-evolving AI coding intelligence with genetic algorithm, PageRank graphs, swarm intelligence | AI Coding Agent |
+| [🛠️ Omni Skills Forge](https://github.com/theihtisham/omni-skills-forge) | 50,000+ curated AI agent skills for Claude Code, Cursor, Copilot, Cline | Agent Skills |
 
 > 📬 [Subscribe on Unwind AI](https://www.theunwindai.com) to get new template drops + tutorials in your inbox.
 
