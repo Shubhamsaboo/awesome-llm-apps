@@ -111,6 +111,7 @@ streamlit run travel_agent.py
 - [♾️ MCP AI Agents](#-mcp-ai-agents)
 - [📀 RAG Tutorials](#-rag-retrieval-augmented-generation)
 - [🧩 Awesome Agent Skills](#-awesome-agent-skills)
+- [EnigmAgent MCP](https://github.com/Agnuxo1/EnigmAgent/tree/main/platforms/mcp-server) - Encrypted local vault for AI agents. Resolve {{SECRET}} placeholders in prompts without exposing real values. AES-256-GCM + Argon2id. `enigmagent-mcp`
 - [💾 LLM Apps with Memory](#-llm-apps-with-memory-tutorials)
 - [💬 Chat with X Tutorials](#-chat-with-x-tutorials)
 - [🎯 LLM Optimization Tools](#-llm-optimization-tools)
