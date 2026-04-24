@@ -99,6 +99,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 ### 🗣️ Voice AI Agents
 
 *   [🗣️ AI Audio Tour Agent](voice_ai_agents/ai_audio_tour_agent/)
+*   [🌐 AnveVoice](https://anvevoice.app) - Voice AI agent for websites with agentic DOM actions — navigates pages, fills forms, clicks buttons autonomously. 50+ languages, <700ms latency, one-line embed.
 *   [📞 Customer Support Voice Agent](voice_ai_agents/customer_support_voice_agent/)
 *   [🔊 Voice RAG Agent (OpenAI SDK)](voice_ai_agents/voice_rag_openaisdk/)
 
