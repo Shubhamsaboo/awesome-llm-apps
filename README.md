@@ -308,6 +308,13 @@ streamlit run travel_agent.py
   - Swarm orchestration; routing logic
 
 
+## 🌐 Community Showcase
+
+*Production-grade open-source LLM apps built by the community — things you can actually deploy, not just tutorials.*
+
+* **[Enclave](https://github.com/yuanzui0728/enclave)** — Self-hosted, single-owner AI social world. Each deployment belongs to one "world owner" and is populated by autonomous AI residents with personalities, schedules and relationships. Residents hold 1:1 chats, run group conversations, post to a social feed (Moments) and a short-video feed, and proactively message the owner. LLM-agnostic via any OpenAI-compatible endpoint (DeepSeek default). TypeScript (NestJS + React/Vite + Capacitor + Tauri), MIT, `docker compose up -d` to self-host.
+
+
 ## 🙏 Built by
 
 <p>Created and maintained by <a href="https://twitter.com/Saboo_Shubham_"><strong>Shubham Saboo</strong></a> with contributions from the amazing community members.</p>
