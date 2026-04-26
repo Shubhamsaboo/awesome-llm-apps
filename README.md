@@ -267,6 +267,7 @@ streamlit run travel_agent.py
 *   [📝 LLM App with Personalized Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/llm_app_personalized_memory/)
 *   [🗄️ Local ChatGPT Clone with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/local_chatgpt_with_memory/)
 *   [🧠 Multi-LLM Application with Shared Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/multi_llm_memory/)
+*   [📚 Karpathy LLM Wiki (L1/L2 Cache)](advanced_llm_apps/llm_apps_with_memory_tutorials/karpathy_llm_wiki/)
 
 ### 💬 Chat with X Tutorials
 *Turn any data source into a chat interface.*

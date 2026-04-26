@@ -1,0 +1,68 @@
+- wiki-version:: 1.0
+- type:: schema
+- created:: 2026-04-26
+- updated:: 2026-04-26
+- ## About
+  - This is a minimal example schema for a Logseq-based LLM Wiki.
+  - The `/wiki` skill reads this file before every operation to know:
+    - which namespaces are valid
+    - which page types exist and their required properties
+    - which lint rules to enforce
+    - where the L1 / L2 boundary lies
+  - For the full reference schema and Obsidian variant, see the standalone repo:
+    - https://github.com/MehmetGoekce/llm-wiki
+- ## Namespace Conventions
+  - Top-Level: Wiki/Business, Wiki/Tech, Wiki/Content, Wiki/Projects, Wiki/People, Wiki/Learning, Wiki/Reference, Wiki/Careers
+  - Page Naming: Title Case, hyphens for multi-word
+  - Max depth: 3 levels (e.g. Wiki/Tech/Strapi/Migrations)
+  - Files on disk: Triple-underscore separator (Wiki___Tech___Strapi.md)
+- ## Page Types & Required Properties
+  - ### Entity (Person, Client, Tool)
+    - type:: entity
+    - entity-type:: person | client | tool
+    - created:: YYYY-MM-DD
+    - updated:: YYYY-MM-DD
+    - status:: active | inactive | archived
+  - ### Project
+    - type:: project
+    - status:: active | completed | on-hold
+    - created:: YYYY-MM-DD
+    - updated:: YYYY-MM-DD
+  - ### Knowledge
+    - type:: knowledge
+    - domain:: tech | business | content
+    - confidence:: high | medium | low | stale
+    - updated:: YYYY-MM-DD
+  - ### Feedback (Lessons Learned)
+    - type:: feedback
+    - severity:: critical | important | nice-to-know
+    - created:: YYYY-MM-DD
+  - ### Hub (Namespace Index)
+    - type:: hub
+    - namespace:: (the namespace this hub indexes)
+- ## Lint Rules
+  - Orphan Detection: pages with 0 incoming `[[links]]` (hub pages excluded)
+  - Stale Detection: `updated::` > 90 days AND `confidence:: high`
+  - Missing Properties: pages without their type-specific required properties
+  - Broken References: `[[links]]` to pages that do not exist
+  - Hub Completeness: hub pages missing children in their namespace
+  - Credential Leak: regex scan for `token::`, `password::`, `secret::`, `api.key::`
+  - Empty Pages: only properties, no content
+  - Cross-Ref Minimum: pages with fewer than 1 outgoing `[[link]]`
+  - L1/L2 Duplicates: same info in Memory AND Wiki → warning
+- ## L1 / L2 Boundary
+  - L1 (Memory, auto-loaded every session)
+    - Rules and gotchas (e.g. "always use UTF-8 encoding")
+    - Identity and preferences (name, address, language)
+    - Credentials (API keys, tokens — never in L2)
+    - Heuristic: would a mistake here be dangerous or embarrassing?
+  - L2 (Wiki, queried on demand)
+    - Projects and their history
+    - Workflows and processes
+    - Research and learning notes
+    - Heuristic: would a mistake here be merely inconvenient?
+  - Same info in both? → Lint warning. L1 wins for atomic rules; L2 wins for narratives.
+- ## Cross-References
+  - [[Wiki/Reference/Schema-Reference]] — full reference schema
+  - [[Wiki/Reference/Lint-Rules]] — lint-rule details with examples
+  - [[Wiki/Tech/Logseq]] — Logseq-specific conventions

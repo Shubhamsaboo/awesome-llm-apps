@@ -1,0 +1,11 @@
+# Karpathy LLM Wiki has no Python runtime requirements.
+#
+# Dependencies are external tools:
+#   - Claude Code  (https://docs.anthropic.com/claude/docs/claude-code)
+#   - Logseq       (https://logseq.com/)  -- recommended
+#     OR Obsidian  (https://obsidian.md/) -- alternative
+#   - git          (for wiki version control)
+#
+# Run ./setup.sh to clone the standalone implementation and configure
+# your wiki path interactively. The standalone repo is at:
+#   https://github.com/MehmetGoekce/llm-wiki
