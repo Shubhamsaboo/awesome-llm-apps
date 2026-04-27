@@ -94,7 +94,9 @@ streamlit run travel_agent.py
 |---|---|---|
 | [🧠 DevPulse AI](advanced_ai_agents/multi_agent_apps/devpulse_ai/) | Multi-agent signal intelligence for dev teams | Multi-agent |
 | [🏠 Home Renovation Agent](advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent) | Photo → AI redesign with Nano Banana Pro | Vision + Multi-agent |
-| [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) | Automatically optimize agent skills using Gemini and ADK | Agent Skills + ADK |
+| [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) | Automatically optimize agent skills using Gemini and ADK | Agent Skills + 
+| [🤖 Nexus AI](https://github.com/AhmadFaour9/NexusAI-Intelligent-Customer-Experience-Platform) | Multi-agent orchestration for autonomous task execution | Multi-agent |
+ADK |
 
 > 📬 [Subscribe on Unwind AI](https://www.theunwindai.com) to get new template drops + tutorials in your inbox.
 
@@ -159,6 +161,7 @@ streamlit run travel_agent.py
 *   [🧬 AI Self-Evolving Agent](advanced_ai_agents/multi_agent_apps/ai_self_evolving_agent/)
 *   [👨🏻‍💼 AI Sales Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_sales_intelligence_agent_team)
 *   [🎧 AI Social Media News and Podcast Agent](advanced_ai_agents/multi_agent_apps/ai_news_and_podcast_agents/)
+*   [🤖 Nexus AI - Multi-Agent Orchestration Framework]([https://github.com](https://github.com/AhmadFaour9/NexusAI-Intelligent-Customer-Experience-Platform))
 *   [🌐 Openwork - Open Browser Automation Agent](https://github.com/accomplish-ai/openwork) <sub>↗ external</sub>
 *   [🛡️ Trust-Gated Multi-Agent Research Team](advanced_ai_agents/multi_agent_apps/trust_gated_agent_team/)
 
@@ -230,7 +233,7 @@ streamlit run travel_agent.py
 *Ready-to-use agent skill files you can plug into any AI agent or LLM workflow.*
 
 *   [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
-
+*   [🤖 Nexus AI](https://github.com/AhmadFaour9/NexusAI-Intelligent-Customer-Experience-Platform) | Multi-agent orchestration for autonomous task execution | Multi-agent |
 <details>
 <summary><strong>📋 Browse all 19 skills</strong></summary>
 
