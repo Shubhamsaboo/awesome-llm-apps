@@ -5,7 +5,7 @@ langchain-cohere==0.3.2
 langchain-qdrant==0.2.0
 cohere==5.11.4
 qdrant-client==1.12.1
-duckduckgo-search==6.4.1
+duckduckgo-search>=6.4.2,<9
 streamlit==1.40.2
 tenacity==9.0.0
 typing-extensions==4.12.2
