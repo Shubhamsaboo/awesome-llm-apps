@@ -1,0 +1,19 @@
+{
+  "name": "open-mcp-client",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "clean": "rm -rf node_modules apps/*/node_modules apps/*/.turbo .turbo",
+    "fresh": "pnpm clean && pnpm i"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.1",
+    "turbo": "^2.3.3"
+  },
+  "packageManager": "pnpm@10.13.1"
+}

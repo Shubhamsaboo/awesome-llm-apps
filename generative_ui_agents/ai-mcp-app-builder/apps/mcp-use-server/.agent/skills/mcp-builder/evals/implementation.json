@@ -1,0 +1,26 @@
+[
+  {
+    "query": "Create a tool that fetches user profiles by ID",
+    "expected_behavior": "Uses server.tool() with z.object({ userId: z.string().describe('User ID') }). Returns object() with user data. Adds .describe() to all schema fields. Includes error handling for not-found case using error() helper."
+  },
+  {
+    "query": "Add a resource that returns the current server configuration",
+    "expected_behavior": "Uses server.resource() with uri 'config://settings', mimeType 'application/json'. Returns object() with config data. Does NOT use server.tool() for read-only data."
+  },
+  {
+    "query": "Create a prompt template for code review",
+    "expected_behavior": "Uses server.prompt() with z.object schema. Returns text() with the prompt message. Schema has .describe() on all fields."
+  },
+  {
+    "query": "I need a tool that needs an API key from OpenWeatherMap",
+    "expected_behavior": "Reads API key from process.env.OPENWEATHERMAP_API_KEY. Creates .env.example file. Returns error() if key is missing. Tells user to set the key in the Env tab."
+  },
+  {
+    "query": "How do I return an error from a tool?",
+    "expected_behavior": "Uses error() helper from mcp-use/server. Sets isError: true. Shows try/catch pattern with error() in catch block."
+  },
+  {
+    "query": "Create a parameterized resource for user profiles",
+    "expected_behavior": "Uses server.resourceTemplate() with uriTemplate 'user://{userId}/profile'. Callback receives (uri, { userId }) params. Returns object() with user data."
+  }
+]

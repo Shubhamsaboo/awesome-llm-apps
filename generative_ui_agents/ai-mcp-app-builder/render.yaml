@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: open-mcp-client
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: standard
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-5.4-2026-03-05
+      - key: E2B_API_KEY
+        sync: false
+      - key: E2B_REPO_URL
+        value: https://github.com/CopilotKit/CopilotKit
+      - key: E2B_TEMPLATE
+        sync: false
+      - key: DEFAULT_MCP_SERVERS
+        sync: false
+      - key: NEXT_PUBLIC_DEFAULT_MCP_SERVERS
+        sync: false
+      - key: NEXT_PUBLIC_HEADER_DOCS_URL
+        sync: false
+      - key: NEXT_PUBLIC_HEADER_PRIMARY_CTA_LABEL
+        sync: false
+      - key: NEXT_PUBLIC_HEADER_SECONDARY_CTA_URL
+        sync: false
+      - key: NEXT_PUBLIC_HEADER_SECONDARY_CTA_LABEL
+        sync: false
+      - key: NEXT_PUBLIC_GITHUB_REPO_URL
+        sync: false
+      - key: NEXT_PUBLIC_CHAT_STARTER_PROMPTS
+        sync: false

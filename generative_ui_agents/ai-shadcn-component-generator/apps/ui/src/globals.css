@@ -1,0 +1,490 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-body: "Fredoka", "DM Sans", "Segoe UI", sans-serif;
+  --font-code:
+    "JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
+    monospace;
+  --font-display: "KefirVariable", "Fraunces", "Times New Roman", serif;
+
+  /* Yellows */
+  --sunshine-yellow: rgba(251, 187, 82, 1);
+  --sunshine-yellow-dark: rgba(232, 162, 61, 1);
+  --sunshine-yellow-light: rgba(253, 228, 186, 1);
+
+  /* Blues */
+  --sky-blue-dark: rgba(100, 175, 181, 1);
+  --sky-blue: rgba(158, 207, 215, 1);
+  --sky-blue-light: rgba(216, 236, 239, 1);
+
+  /* Oranges */
+  --sunset-orange: rgba(232, 140, 77, 1);
+  --sunset-orange-light: rgba(246, 209, 184, 1);
+
+  /* Greens */
+  --olive-green: rgba(97, 111, 54, 1);
+  --olive-green-light: rgba(160, 169, 133, 1);
+
+  /* Neutrals */
+  --vanilla-ivory: rgba(248, 246, 253, 1);
+  --chocolate-brown: rgba(119, 70, 37, 1);
+  --chocolate-brown-light: rgba(173, 144, 124, 1);
+  --gray-light: rgba(164, 163, 161, 1);
+  --gray: rgba(94, 92, 90, 1);
+  --gray-dark: rgba(61, 60, 58, 1);
+
+  /* Reds */
+  --indian-red-dark: rgba(146, 78, 78, 1);
+  --indian-red: rgba(184, 96, 96, 1);
+  --indian-red-light: rgba(226, 118, 118, 1);
+
+  --background: var(--vanilla-ivory);
+  --foreground: var(--gray-dark);
+  --surface: rgba(255, 255, 255, 0.8);
+  --surface-elevated: rgba(255, 255, 255, 0.95);
+  --surface-accent: var(--sky-blue-light);
+  --radius: 0.75rem;
+
+  /* ShadCN semantic tokens → Hashbrown palette */
+  --card: rgba(255, 255, 255, 0.92);
+  --card-foreground: var(--gray-dark);
+  --popover: var(--vanilla-ivory);
+  --popover-foreground: var(--gray-dark);
+  --primary: var(--chocolate-brown);
+  --primary-foreground: var(--vanilla-ivory);
+  --secondary: var(--sunshine-yellow-light);
+  --secondary-foreground: var(--chocolate-brown);
+  --muted: rgba(164, 163, 161, 0.15);
+  --muted-foreground: var(--gray);
+  --accent: var(--sky-blue-light);
+  --accent-foreground: var(--chocolate-brown);
+  --destructive: var(--indian-red);
+  --border: rgba(119, 70, 37, 0.12);
+  --input: rgba(119, 70, 37, 0.15);
+  --ring: var(--sunshine-yellow);
+  --chart-1: var(--sunshine-yellow);
+  --chart-2: var(--sky-blue);
+  --chart-3: var(--olive-green);
+  --chart-4: var(--sunset-orange);
+  --chart-5: var(--indian-red);
+  --sidebar: var(--vanilla-ivory);
+  --sidebar-foreground: var(--gray-dark);
+  --sidebar-primary: var(--chocolate-brown);
+  --sidebar-primary-foreground: var(--vanilla-ivory);
+  --sidebar-accent: var(--sky-blue-light);
+  --sidebar-accent-foreground: var(--chocolate-brown);
+  --sidebar-border: rgba(119, 70, 37, 0.1);
+  --sidebar-ring: var(--sunshine-yellow);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: #f8f6fd;
+  background-image:
+    radial-gradient(ellipse 600px 400px at 8% 0%, rgba(216, 208, 253, 0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 350px at 92% 5%, rgba(224, 228, 252, 0.3) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 400px at 50% 100%, rgba(216, 208, 253, 0.15) 0%, transparent 70%);
+  color: var(--foreground);
+  font-family: var(--font-body);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.3;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--font-code);
+}
+
+.flash-create {
+  animation: flash-create 0.7s ease-out;
+}
+
+.flash-update {
+  animation: flash-update 0.6s ease-out;
+}
+
+.weather-card-enter {
+  animation: weather-card-enter 320ms ease-out;
+}
+
+.tool-call-enter {
+  animation: tool-call-enter 260ms ease-out;
+}
+
+.chat-page .copilotKitInputContainer {
+  position: relative;
+}
+
+/* Hide scrollbars in CopilotKit chat */
+[data-copilotkit] div {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+[data-copilotkit] div::-webkit-scrollbar {
+  display: none;
+}
+
+/* Restyle CopilotKit's scroll fade to match body background */
+.absolute.pointer-events-none.bg-gradient-to-t.from-white,
+[class*="cpk\:bg-gradient-to-t"][class*="cpk\:from-white"] {
+  background: linear-gradient(
+    to top,
+    var(--vanilla-ivory) 0%,
+    var(--vanilla-ivory) 40%,
+    transparent 100%
+  ) !important;
+}
+
+.chat-page .copilotKitInputContainer::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -30px;
+  height: 30px;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(to top, rgba(248, 246, 253, 1) 0%, rgba(248, 246, 253, 0) 100%);
+}
+
+.weather-card-fallback {
+  animation: weather-card-fallback-pulse 1.4s ease-in-out infinite;
+}
+
+.weather-card-fallback-block {
+  animation: weather-card-fallback-block 1.2s ease-in-out infinite;
+}
+
+.weather-card-fallback::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.45) 45%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: weather-card-shimmer 1.5s ease-in-out infinite;
+}
+
+.squircle {
+  position: relative;
+}
+
+.squircle-border-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.scrub-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 9999px;
+}
+
+.scrub-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+}
+
+.scrub-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -4px;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--sunshine-yellow);
+}
+
+.scrub-slider::-moz-range-track {
+  height: 8px;
+  border: 0;
+  border-radius: 9999px;
+  background: rgba(164, 163, 161, 0.2);
+}
+
+.scrub-slider::-moz-range-progress {
+  height: 8px;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--sunshine-yellow);
+}
+
+.scrub-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--sunshine-yellow);
+}
+
+.magic-text-output {
+  color: var(--gray-dark);
+  line-height: 1.8rem;
+}
+
+.magic-text-output h1 {
+  font-size: clamp(1.6rem, 2.2vw, 2.1rem);
+  line-height: 1.5;
+  margin-top: 0.3125rem;
+  margin-bottom: 0.75rem;
+}
+
+.magic-text-output h2 {
+  font-size: clamp(1.25rem, 1.7vw, 1.55rem);
+  line-height: 1.18;
+  margin-top: 1rem;
+  margin-bottom: 0.1875rem;
+}
+
+.magic-text-output h3 {
+  font-size: clamp(1.05rem, 1.2vw, 1.2rem);
+  line-height: 1.24;
+  margin-top: 0.125rem;
+  margin-bottom: 0.125rem;
+}
+
+.magic-text-output p,
+.magic-text-output ul,
+.magic-text-output ol {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.magic-text-output ul {
+  list-style-type: disc;
+  list-style-position: outside;
+  padding-left: 1.5rem;
+}
+
+.magic-text-output ol {
+  list-style-type: decimal;
+  list-style-position: outside;
+  padding-left: 1.5rem;
+}
+
+.magic-text-output li {
+  line-height: 2rem;
+}
+
+.magic-text-output hr {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  opacity: 0.12;
+}
+
+.magic-text-output blockquote {
+  margin-top: 0.3125rem;
+  margin-bottom: 0.3125rem;
+  border-left: 2px solid rgba(164, 163, 161, 0.45);
+  padding-left: 1rem;
+}
+
+.magic-text-output code {
+  border-radius: 0.25rem;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0.125rem 0.375rem;
+}
+
+@keyframes flash-create {
+  0% {
+    box-shadow: 0 0 0 0 rgba(232, 140, 77, 0.65);
+    transform: translateY(-3px) scale(1.015);
+  }
+  60% {
+    box-shadow: 0 0 0 16px rgba(232, 140, 77, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(232, 140, 77, 0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes flash-update {
+  0% {
+    color: var(--chocolate-brown);
+    text-shadow: 0 0 10px rgba(251, 187, 82, 0.8);
+  }
+  100% {
+    color: inherit;
+    text-shadow: none;
+  }
+}
+
+@keyframes weather-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tool-call-enter {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes weather-card-fallback-pulse {
+  0%,
+  100% {
+    opacity: 0.86;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes weather-card-fallback-block {
+  0%,
+  100% {
+    opacity: 0.58;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes weather-card-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@theme inline {
+  --font-family-body: "Fredoka", "DM Sans", "Segoe UI", sans-serif;
+  --font-family-display: "KefirVariable", "Fraunces", "Times New Roman", serif;
+  --font-family-code: "JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+.dark {
+  --background: rgba(42, 30, 20, 1);
+  --foreground: rgba(240, 236, 228, 1);
+  --card: rgba(55, 40, 28, 0.9);
+  --card-foreground: rgba(240, 236, 228, 1);
+  --popover: rgba(48, 35, 24, 1);
+  --popover-foreground: rgba(240, 236, 228, 1);
+  --primary: var(--sunshine-yellow);
+  --primary-foreground: rgba(42, 30, 20, 1);
+  --secondary: rgba(119, 70, 37, 0.3);
+  --secondary-foreground: rgba(240, 236, 228, 1);
+  --muted: rgba(119, 70, 37, 0.2);
+  --muted-foreground: var(--chocolate-brown-light);
+  --accent: rgba(100, 175, 181, 0.2);
+  --accent-foreground: rgba(240, 236, 228, 1);
+  --destructive: var(--indian-red-light);
+  --border: rgba(240, 236, 228, 0.1);
+  --input: rgba(240, 236, 228, 0.15);
+  --ring: var(--sunshine-yellow-dark);
+  --chart-1: var(--sunshine-yellow);
+  --chart-2: var(--sky-blue);
+  --chart-3: var(--olive-green-light);
+  --chart-4: var(--sunset-orange);
+  --chart-5: var(--indian-red-light);
+  --sidebar: rgba(48, 35, 24, 1);
+  --sidebar-foreground: rgba(240, 236, 228, 1);
+  --sidebar-primary: var(--sunshine-yellow);
+  --sidebar-primary-foreground: rgba(42, 30, 20, 1);
+  --sidebar-accent: rgba(119, 70, 37, 0.2);
+  --sidebar-accent-foreground: rgba(240, 236, 228, 1);
+  --sidebar-border: rgba(240, 236, 228, 0.1);
+  --sidebar-ring: var(--sunshine-yellow-dark);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

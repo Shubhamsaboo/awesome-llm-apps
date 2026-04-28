@@ -1,0 +1,49 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "dev:mcp": "cd ../threejs-server && pnpm run dev",
+    "pack-download-kit": "node ./scripts/pack-download-kit.mjs",
+    "prebuild": "node ./scripts/pack-download-kit.mjs",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "test:download-kit": "node ./test/test-download-full-kit.mjs",
+    "test:e2b-download": "node ./test/test-e2b-download.mjs"
+  },
+  "dependencies": {
+    "@ag-ui/client": "^0.0.48",
+    "@ag-ui/core": "^0.0.48",
+    "@ag-ui/mastra": "^1.0.1",
+    "@ag-ui/mcp-apps-middleware": "^0.0.3",
+    "@ai-sdk/openai": "^3.0.33",
+    "@copilotkit/react-core": "1.54.1",
+    "@copilotkit/react-ui": "1.54.1",
+    "@copilotkit/runtime": "1.54.1",
+    "@copilotkit/runtime-client-gql": "^1.54.1",
+    "@mastra/core": "^1.7.0",
+    "@mastra/mcp": "^1.0.1",
+    "@modelcontextprotocol/sdk": "^1.25.2",
+    "dotenv": "^17.2.3",
+    "e2b": "^2.13.0",
+    "next": "16.1.1",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "rxjs": "^7.8.1",
+    "tar": "^7.5.4",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

@@ -101,10 +101,11 @@ streamlit run travel_agent.py
 ## 📑 Table of Contents
 
 <details open>
-<summary><strong>13 categories · Click to expand</strong></summary>
+<summary><strong>14 categories · Click to expand</strong></summary>
 
 - [🌱 Starter AI Agents](#-starter-ai-agents)
 - [🚀 Advanced AI Agents](#-advanced-ai-agents)
+- [🖼️ Generative UI and Agentic Frontends](#️-generative-ui-and-agentic-frontends)
 - [🎮 Autonomous Game-Playing Agents](#-autonomous-game-playing-agents)
 - [🤝 Multi-agent Teams](#-multi-agent-teams)
 - [🗣️ Voice AI Agents](#️-voice-ai-agents)
@@ -161,6 +162,22 @@ streamlit run travel_agent.py
 *   [🎧 AI Social Media News and Podcast Agent](advanced_ai_agents/multi_agent_apps/ai_news_and_podcast_agents/)
 *   [🌐 Openwork - Open Browser Automation Agent](https://github.com/accomplish-ai/openwork) <sub>↗ external</sub>
 *   [🛡️ Trust-Gated Multi-Agent Research Team](advanced_ai_agents/multi_agent_apps/trust_gated_agent_team/)
+
+### 🖼️ Generative UI and Agentic Frontends
+*Agents that render interactive UI components — forms, cards, charts, editable plans — not just text. Built with [CopilotKit](https://github.com/CopilotKit/CopilotKit) and [AG-UI](https://github.com/ag-ui-protocol/ag-ui).*
+
+*   [🗂️ Generative UI Starter Project](generative_ui_agents/generative-ui-starter-project/)
+*   [🪙 AI Financial Coach Agent](generative_ui_agents/ai-financial-coach-agent/)
+*   [📊 AI Dashboard Canvas Agent](generative_ui_agents/ai-dashboard-canvas-agent/)
+*   [🛠️ AI MCP App Builder](generative_ui_agents/ai-mcp-app-builder/)
+*   [✈️ MCP Apps Generative UI Showcase](generative_ui_agents/mcp-apps-generative-ui-showcase/)
+*   [🎛️ AI Shadcn Component Generator](generative_ui_agents/ai-shadcn-component-generator/)
+*   [🥋 AG-UI Agent Framework Integration Dojo](generative_ui_agents/ag-ui-integration-dojo/)
+*   [🎆 Generative UI Full Spectrum Demo](generative_ui_agents/generative-ui-full-spectrum-demo/)
+*   [🧩 Open Generative UI Demo](generative_ui_agents/open-generative-ui-demo/)
+*   [🎨 A2UI Component Composer](generative_ui_agents/a2ui-component-composer/)
+
+See [`generative_ui_agents/`](generative_ui_agents/) for the category overview, conventions, and how to contribute a template.
 
 ### 🎮 Autonomous Game-Playing Agents
 *Agents that play games end-to-end - reasoning, strategy, and action.*

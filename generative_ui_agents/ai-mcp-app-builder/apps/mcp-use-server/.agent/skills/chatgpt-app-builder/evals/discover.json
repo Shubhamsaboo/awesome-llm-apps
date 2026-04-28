@@ -1,0 +1,26 @@
+[
+  {
+    "query": "I want to build a ChatGPT app for my pizza restaurant. We have an online ordering API.",
+    "expected_behavior": "PASS. Work through Phases 1-4, asking questions one at a time (never inferring). Create spec with Value Proposition, Why LLM, UI Overview, Product Context. Offer to proceed to architecture."
+  },
+  {
+    "query": "I want to build a ChatGPT app for my business",
+    "expected_behavior": "EXPLORE Phase 1. Too vague -- missing problem, user, pain, core actions. Ask clarifying questions one at a time. Never infer or assume."
+  },
+  {
+    "query": "I have a travel blog with 200 articles. Can I make a ChatGPT app that lets people read my articles?",
+    "expected_behavior": "FAIL at Phase 2. Matches fail pattern: long-form static content better suited for a website. Explain the gap. Suggest pivot: destination recommendations, trip planning Q&A, or personalized itineraries."
+  },
+  {
+    "query": "I want to bring our entire Salesforce CRM into ChatGPT.",
+    "expected_behavior": "FAIL at Phase 1 (core actions). Matches fail pattern: full app port. Ask user to narrow to 1-3 high-frequency tasks (logging calls, checking deal status, pipeline summary)."
+  },
+  {
+    "query": "I want to show a grid of 20 real-time KPIs.",
+    "expected_behavior": "FAIL at Phase 2. Matches fail pattern: dashboards. Suggest pivot: query-based KPI lookup, anomaly alerts, or comparative analysis."
+  },
+  {
+    "query": "We're a law firm with contract templates in Google Drive. Attorneys waste hours finding the right template.",
+    "expected_behavior": "PASS. Good idea. Work through discovery phases. Core action: search templates by description and get pre-filled results. Clarify API access, auth, constraints."
+  }
+]

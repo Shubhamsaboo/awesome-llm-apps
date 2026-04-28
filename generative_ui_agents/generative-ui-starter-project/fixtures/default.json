@@ -1,0 +1,64 @@
+{
+  "fixtures": [
+    {
+      "match": { "toolCallId": "call_manage_todos_001" },
+      "response": {
+        "content": "I've added the tasks to your todo list:\n\n1. **Review project plan** - Go through the Q2 project plan and provide feedback\n2. **Update documentation** - Update the API docs with the new endpoints\n\nBoth tasks are currently pending. Would you like to modify any of them or add more tasks?"
+      }
+    },
+    {
+      "match": { "toolCallId": "call_get_todos_001" },
+      "response": {
+        "content": "Here are your current todos:\n\n1. **Review project plan** - Go through the Q2 project plan and provide feedback (pending)\n2. **Update documentation** - Update the API docs with the new endpoints (pending)\n\nYou have 2 tasks, both pending. Would you like to update or add any tasks?"
+      }
+    },
+    {
+      "match": { "toolCallId": "call_query_data_001" },
+      "response": {
+        "content": "Here's a summary of the financial data:\n\n- **Q1 Revenue**: $1.2M\n- **Q2 Revenue**: $1.5M\n- **Q3 Revenue**: $1.8M\n- **Q4 Revenue**: $2.1M\n\nTotal annual revenue: $6.6M, showing steady quarter-over-quarter growth of approximately 20%. Would you like me to visualize this data differently?"
+      }
+    },
+    {
+      "match": { "userMessage": "Hello" },
+      "response": {
+        "content": "Hello! I'm your todo app assistant. I can help you manage your tasks, query data, and more. Here's what I can do:\n\n- **Manage Todos** - Add, update, or remove tasks\n- **View Todos** - See your current task list\n- **Query Data** - Look up and analyze data\n- **Search Flights** - Find flight information\n\nWhat would you like to do today?"
+      }
+    },
+    {
+      "match": { "userMessage": "Task Manager" },
+      "response": {
+        "toolCalls": [
+          {
+            "name": "manage_todos",
+            "arguments": "{\"todos\":[{\"title\":\"Review project plan\",\"description\":\"Go through the Q2 project plan and provide feedback\",\"emoji\":\"📋\",\"status\":\"pending\"},{\"title\":\"Update documentation\",\"description\":\"Update the API docs with the new endpoints\",\"emoji\":\"📝\",\"status\":\"pending\"}]}",
+            "id": "call_manage_todos_001"
+          }
+        ]
+      }
+    },
+    {
+      "match": { "userMessage": "Pie Chart" },
+      "response": {
+        "toolCalls": [
+          {
+            "name": "query_data",
+            "arguments": "{\"query\":\"Show quarterly revenue data as a pie chart\",\"format\":\"pie_chart\"}",
+            "id": "call_query_data_001"
+          }
+        ]
+      }
+    },
+    {
+      "match": { "userMessage": "Toggle Theme" },
+      "response": {
+        "content": "I've toggled the theme for you. The application should now be displaying in the alternate color scheme. Let me know if you'd like to switch back or if there's anything else I can help with!"
+      }
+    },
+    {
+      "match": {},
+      "response": {
+        "content": "You're currently running against aimock (a mock LLM server). This response is a catch-all for requests that don't match any test fixture. To use a real LLM: (1) Add your OPENAI_API_KEY to .env, (2) Remove or unset OPENAI_BASE_URL from your environment so requests go to OpenAI instead of aimock, (3) Restart with `npm run dev`."
+      }
+    }
+  ]
+}

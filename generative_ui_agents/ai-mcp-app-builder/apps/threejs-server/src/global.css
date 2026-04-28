@@ -1,0 +1,47 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-size: 1rem;
+  margin: 0;
+  padding: 0;
+  background: #1a1a2e;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: #888;
+  font-size: 14px;
+}
+
+.error {
+  padding: 20px;
+  color: #ff6b6b;
+}
+
+.threejs-container {
+  width: 100%;
+  position: relative;
+}
+
+.error-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ff6b6b;
+  background: rgba(26, 26, 46, 0.9);
+  border-radius: 8px;
+  font-family: system-ui;
+  padding: 20px;
+}

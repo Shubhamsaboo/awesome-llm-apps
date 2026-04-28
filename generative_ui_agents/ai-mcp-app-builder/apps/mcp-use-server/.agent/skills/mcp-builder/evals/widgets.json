@@ -1,0 +1,26 @@
+[
+  {
+    "query": "Create a weather widget that shows temperature and conditions",
+    "expected_behavior": "Creates resources/weather-display.tsx with widgetMetadata (description, props Zod schema), default export component, McpUseProvider with autoSize, isPending check. Creates matching tool with widget: { name: 'weather-display' } config. Uses widget() helper in callback."
+  },
+  {
+    "query": "My widget shows 'undefined' for the city name",
+    "expected_behavior": "Diagnoses missing isPending check. Widget renders before tool completes, so props are empty. Must check isPending first and show loading state."
+  },
+  {
+    "query": "I want the widget to call another tool when a button is clicked",
+    "expected_behavior": "Uses callTool from useWidget(). Shows onClick handler: const result = await callTool('tool-name', { args }). Includes try/catch for error handling."
+  },
+  {
+    "query": "How do I make a widget that remembers user selections between interactions?",
+    "expected_behavior": "Uses state and setState from useWidget(). Shows await setState({ selected: item }) pattern. State persists across widget reopens. NOT React useState (ephemeral)."
+  },
+  {
+    "query": "I'm getting a duplicate tool registration error for my widget",
+    "expected_behavior": "The widget has exposeAsTool: true AND a custom tool with widget: { name } config. Fix: remove exposeAsTool: true from widgetMetadata (default is false) since the custom tool handles registration."
+  },
+  {
+    "query": "Build a complex product search widget with multiple components",
+    "expected_behavior": "Uses folder-based structure: resources/product-search/widget.tsx as entry point with widgetMetadata + default export, resources/product-search/components/ProductCard.tsx for sub-components."
+  }
+]

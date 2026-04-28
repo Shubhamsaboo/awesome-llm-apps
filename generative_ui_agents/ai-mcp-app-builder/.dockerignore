@@ -1,0 +1,11 @@
+node_modules
+.next
+.turbo
+dist
+.git
+.env
+.env.local
+*.log
+.agent
+.claude
+.cursor
