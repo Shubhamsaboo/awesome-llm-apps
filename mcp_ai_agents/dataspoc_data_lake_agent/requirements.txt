@@ -1,0 +1,3 @@
+dataspoc-lens[mcp,ai]
+dataspoc-pipe[mcp]
+anthropic>=0.50
