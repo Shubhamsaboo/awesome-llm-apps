@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/shubhamsaboo-awesome-llm-apps-badge.png)](https://mseep.ai/app/shubhamsaboo-awesome-llm-apps)
+
 <p align="center">
   <a href="http://www.theunwindai.com">
     <img src="docs/banner/unwind_black.png" width="900px" alt="Unwind AI">
