@@ -281,8 +281,9 @@ streamlit run travel_agent.py
 ### 🎯 LLM Optimization Tools
 *Reduce token usage, context size, and API cost without losing quality.*
 
-*   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30–60% using TOON format
 *   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50–90%
+*   [⚡ lean-ctx](https://github.com/yvgude/lean-ctx) - MCP context runtime for coding agents; session caching, tree-sitter reads (18 languages), compressed shell output. [leanctx.com](https://leanctx.com). Apache-2.0. <sub>↗ external</sub>
+*   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30–60% using TOON format
 
 ### 🔧 LLM Fine-tuning Tutorials
 *End-to-end fine-tuning recipes for open-source models.*
