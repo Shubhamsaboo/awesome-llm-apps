@@ -225,6 +225,7 @@ streamlit run travel_agent.py
 *   [🖼️ Vision RAG](rag_tutorials/vision_rag/)
 *   [🩺 RAG Failure Diagnostics Clinic](rag_tutorials/rag_failure_diagnostics_clinic/)
 *   [🕸️ Knowledge Graph RAG with Citations](rag_tutorials/knowledge_graph_rag_citations/)
+- [Swiss Truth MCP](https://github.com/swisstruthorg/swiss-truth-mcp) - Verified knowledge base for hallucination-free LLM apps. 3000+ certified facts, 38 domains, 10 languages. MCP server + LangChain/CrewAI/AutoGen integrations. No API key required. ![GitHub Repo stars](https://img.shields.io/github/stars/swisstruthorg/swiss-truth-mcp?style=social)
 
 ### 🧩 Awesome Agent Skills
 *Ready-to-use agent skill files you can plug into any AI agent or LLM workflow.*
