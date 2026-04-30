@@ -122,6 +122,9 @@ streamlit run travel_agent.py
 ## 📂 Featured AI Projects
 
 ### 🌱 Starter AI Agents
+
+- [OpenClaw Monitor](https://github.com/flik2002/openclaw-monitor-frontend) — 🤖 AI 监控 AI。全球首个由 AI 自身驱动开发的 Agent 监控系统。Vue3 前端 + Node.js 后端，开箱即用，Demo → http://47.109.47.116/ ![Dashboard](https://raw.githubusercontent.com/flik2002/openclaw-monitor-frontend/main/Openclaw%20Monitor.jpg)
+
 *Single-file agents that run with just an API key - a great place to start.*
 
 *   [🎙️ AI Blog to Podcast Agent](starter_ai_agents/ai_blog_to_podcast_agent/)
