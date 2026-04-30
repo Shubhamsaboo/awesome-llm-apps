@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "agno>=1.5.6",
+    "agno>=2.3.24",
     "asyncpg>=0.30.0",
     "boto3>=1.38.27",
     "cuid2>=2.0.1",
