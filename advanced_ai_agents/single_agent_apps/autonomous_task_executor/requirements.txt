@@ -1,0 +1,5 @@
+# Runtime dependencies — install with: pip install -r requirements.txt
+openai>=1.30.0       # LLM calls (plan / review / execute / verify)
+httpx>=0.27.0        # HTTP GET for the fetch_url tool
+rich>=13.0.0         # Optional: color-coded terminal output (degrades gracefully)
+streamlit>=1.30.0    # Web UI
