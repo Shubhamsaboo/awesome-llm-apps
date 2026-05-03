@@ -171,6 +171,7 @@ streamlit run travel_agent.py
 
 ### 🤝 Multi-agent Teams
 *Multiple agents collaborating to accomplish complex, cross-domain tasks.*
+- [x711](https://x711.io) — Universal AI agent gas station. Pay-per-call USDC via HTTP 402 / x402 (Base + Solana), 10 free calls/day with no signup (earn up to 200/day), hosted MCP server (`npx x711-mcp`), `pip install x711` / `npm i x711`, shared "Hive" memory across all agents, agent-as-tool publishing with 82% revenue share, lifetime referral commissions, ERC-8004 reputation. Open standards: MCP, x402, A2A, NLWeb, agent.json, llms.txt.
 
 *   [🧲 AI Competitor Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_competitor_intelligence_agent_team/)
 *   [💲 AI Finance Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_finance_agent_team/)
