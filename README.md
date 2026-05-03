@@ -226,6 +226,7 @@ streamlit run travel_agent.py
 *   [🖼️ Vision RAG](rag_tutorials/vision_rag/)
 *   [🩺 RAG Failure Diagnostics Clinic](rag_tutorials/rag_failure_diagnostics_clinic/)
 *   [🕸️ Knowledge Graph RAG with Citations](rag_tutorials/knowledge_graph_rag_citations/)
+*   [🧠 Context Engineering Reference Implementation](https://github.com/outcomeops/context-engineering) <sub>↗ external</sub>
 
 ### 🧩 Awesome Agent Skills
 *Ready-to-use agent skill files you can plug into any AI agent or LLM workflow.*
