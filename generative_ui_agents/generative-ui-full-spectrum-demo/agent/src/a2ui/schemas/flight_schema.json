@@ -1,0 +1,37 @@
+[
+  {
+    "id": "root",
+    "component": "Row",
+    "children": {
+      "componentId": "flight-card",
+      "path": "/flights"
+    },
+    "gap": 16
+  },
+  {
+    "id": "flight-card",
+    "component": "FlightCard",
+    "airline": { "path": "airline" },
+    "airlineLogo": { "path": "airlineLogo" },
+    "flightNumber": { "path": "flightNumber" },
+    "origin": { "path": "origin" },
+    "destination": { "path": "destination" },
+    "date": { "path": "date" },
+    "departureTime": { "path": "departureTime" },
+    "arrivalTime": { "path": "arrivalTime" },
+    "duration": { "path": "duration" },
+    "status": { "path": "status" },
+    "price": { "path": "price" },
+    "action": {
+      "event": {
+        "name": "book_flight",
+        "context": {
+          "flightNumber": { "path": "flightNumber" },
+          "origin": { "path": "origin" },
+          "destination": { "path": "destination" },
+          "price": { "path": "price" }
+        }
+      }
+    }
+  }
+]

@@ -17,18 +17,16 @@ This demo runs all three side by side against the same LangGraph agent so you ca
 
 ## Run it locally
 
-The demo lives inside the CopilotKit monorepo. To run your own copy:
+The code in this folder was scaffolded with the CopilotKit CLI (`npx copilotkit@latest create -f langgraph-py`) from the upstream [`CopilotKit/CopilotKit` → `examples/integrations/langgraph-python`](https://github.com/CopilotKit/CopilotKit/tree/main/examples/integrations/langgraph-python). Prerequisites: Node.js 18+, Python 3.12+, [uv](https://docs.astral.sh/uv/), and an OpenAI API key.
 
 ```bash
-git clone https://github.com/CopilotKit/CopilotKit
-cd CopilotKit/examples/integrations/langgraph-python
-pnpm install
-pnpm dev
+cd generative_ui_agents/generative-ui-full-spectrum-demo
+npm install              # also installs the Python agent via `uv sync`
+cp .env.example .env     # then set OPENAI_API_KEY
+npm run dev              # boots the Next.js UI and the LangGraph agent
 ```
 
-See the example's [`README`](https://github.com/CopilotKit/CopilotKit/tree/main/examples/integrations/langgraph-python) for environment variables and the Python agent setup (`uv sync`).
-
-You can also scaffold a fresh copy with the CopilotKit CLI:
+See [`STARTER.md`](./STARTER.md) for the upstream starter docs (project structure, A2UI catalog/surface model, troubleshooting). To re-scaffold from scratch:
 
 ```bash
 npx copilotkit@latest create -f langgraph-py

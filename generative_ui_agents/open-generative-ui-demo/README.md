@@ -1,47 +1,91 @@
 # Open Generative UI Demo
 
-A hosted gallery of AI-generated visualizations — describe what you want in plain English, watch the agent compose a live, interactive component for you. Powered by the [Open Generative UI](https://github.com/CopilotKit/OpenGenerativeUI) framework, [CopilotKit](https://github.com/CopilotKit/CopilotKit), and [AG-UI](https://github.com/ag-ui-protocol/ag-ui).
+A minimal CopilotKit + LangGraph (Python) starter focused on a single Generative UI pattern: **open-ended generation**. The agent generates complete HTML / CSS / JavaScript on demand and streams it live into a sandboxed iframe inside the chat — no predefined components, no schema, just describe what you want.
 
-- **Live demo:** [opengenerativeui.copilotkit.ai](https://opengenerativeui.copilotkit.ai/)
-- **Source:** [`CopilotKit/OpenGenerativeUI`](https://github.com/CopilotKit/OpenGenerativeUI)
+- **Live demo (hosted gallery):** [opengenerativeui.copilotkit.ai](https://opengenerativeui.copilotkit.ai/)
+- **Docs:** [Open Generative UI](https://docs.copilotkit.ai/generative-ui/open-generative-ui)
 
-https://github.com/user-attachments/assets/ed28c734-e54e-4412-873f-4801da544a7f
+**What "open-ended" means here.** The runtime injects a `generateSandboxedUi` tool into the model's tool list. When the model calls it, the runtime streams the generated markup as `open-generative-ui` activity events into the chat, where CopilotKit's built-in `OpenGenerativeUIRenderer` mounts it inside a sandboxed iframe (no same-origin access, can load CDN libraries like Chart.js / D3 / Three.js via `<script>` tags).
 
-https://github.com/user-attachments/assets/ba7db70d-07c0-49af-b221-f962f30245e2
+**Try one of these prompts:**
 
-**Gen UI concept — open-ended generation from a prompt.** The agent isn't picking from a fixed catalogue of components; it's composing a fresh visualization on demand and streaming it into the page. The hosted gallery samples what's possible:
+- *Build me a modern calculator with clickable buttons.*
+- *Build a pomodoro timer with a circular progress ring.*
+- *Render a KPI dashboard from the company financials.* (calls `query_data` first, then renders with Chart.js)
+- *Build an animated solar system with eight planets orbiting at different speeds.*
+- *Build a step-through binary search visualizer on a sorted array of 16 numbers.*
 
-- **3D / animation** — an interactive airplane with pitch/roll/yaw, a solar system, an audio equalizer
-- **Data viz** — KPI dashboards with charts, trend lines, and filters
-- **Diagrams** — binary search step-throughs, neural-net architectures, sorting visualizers
-- **UI components** — weather cards, invoice cards, pomodoro timers
-
-Every result is editable — the same prompt can be re-run, refined, or branched into a variation. The gallery is the agent's "what if?" space.
-
-## How it relates to the rest of this section
-
-- **Generative UI Starter Project** (in this repo) → a CopilotKit + LangGraph starter showing the shared-state pattern (and A2UI declarative gen UI) on a kanban surface.
-- **Open Generative UI Demo** (this entry) → the hosted gallery showing the open-ended generation framework's range.
-
-If you want to ship something on the shared-state / declarative side, start with the Generative UI Starter Project. If you want to feel what open-ended generation can produce, start here.
+The full set of seeded prompts lives in [`src/hooks/use-example-suggestions.tsx`](src/hooks/use-example-suggestions.tsx).
 
 ## Run it locally
 
+The code in this folder was scaffolded with the CopilotKit CLI (`npx copilotkit@latest create -f langgraph-py`) and then trimmed to the Open Generative UI surface only — A2UI catalog, MCP Apps, kanban canvas, and chart components were removed. Prerequisites: Node.js 18+, Python 3.12+, [uv](https://docs.astral.sh/uv/), and an OpenAI API key.
+
 ```bash
-git clone https://github.com/CopilotKit/OpenGenerativeUI
-cd OpenGenerativeUI
-pnpm install
-pnpm dev
+cd generative_ui_agents/open-generative-ui-demo
+npm install              # also installs the Python agent via `uv sync`
+cp .env.example .env     # then set OPENAI_API_KEY
+npm run dev              # boots the Next.js UI (:3000) and the LangGraph agent (:8123)
 ```
 
-See the upstream [`README`](https://github.com/CopilotKit/OpenGenerativeUI) for the full setup, including agent configuration and required API keys.
+## How it's wired
+
+Open Generative UI is enabled with **one flag** on the runtime side and **one flag** on the React provider — the rest of the stack is plain CopilotKit + LangGraph.
+
+**Next.js runtime** ([`src/app/api/copilotkit/[[...slug]]/route.ts`](src/app/api/copilotkit/%5B%5B...slug%5D%5D/route.ts)):
+
+```ts
+const runtime = new CopilotRuntime({
+  agents: { default: defaultAgent },
+  runner: new InMemoryAgentRunner(),
+  openGenerativeUI: true,   // ← injects the generateSandboxedUi tool
+});
+```
+
+**React provider** ([`src/app/layout.tsx`](src/app/layout.tsx)):
+
+```tsx
+<CopilotKit
+  runtimeUrl="/api/copilotkit"
+  openGenerativeUI={{}}      // ← auto-registers OpenGenerativeUIRenderer
+>
+  {children}
+</CopilotKit>
+```
+
+**LangGraph agent** ([`agent/main.py`](agent/main.py)) stays plain — no special middleware. The agent gets the `generateSandboxedUi` tool injected by the runtime and decides when to call it based on the system prompt:
+
+```python
+agent = create_agent(
+    model=ChatOpenAI(model="gpt-5.4-mini"),
+    tools=[query_data],                        # plus generateSandboxedUi from runtime
+    middleware=[CopilotKitMiddleware()],
+    system_prompt="...call generateSandboxedUi when the user asks for a visual...",
+)
+```
+
+## What got trimmed vs. the langgraph-py scaffold
+
+The CopilotKit `langgraph-py` scaffold ships a kitchen-sink demo (controlled gen UI, A2UI declarative, MCP Apps, todos shared state, charts). This starter trims it to a single concern. Removed:
+
+- `agent/src/a2ui_*.py` and `agent/src/a2ui/` — A2UI tools and schemas
+- `agent/src/todos.py` — kanban shared-state tools
+- `src/app/declarative-generative-ui/` — A2UI catalog (definitions + renderers)
+- `src/components/example-canvas/` — todo kanban canvas
+- `src/components/generative-ui/` — chart components for tool-call rendering
+- `src/components/example-layout/` — chat / app split layout (replaced with a centered chat)
+- Runtime config: removed `a2ui` and `mcpApps` blocks; kept only `openGenerativeUI: true`
+
+If you want any of those patterns back, scaffold a fresh full-spectrum copy with `npx copilotkit@latest create -f langgraph-py` and copy the relevant pieces over.
 
 ## Learn more
 
-- [Open Generative UI on GitHub](https://github.com/CopilotKit/OpenGenerativeUI)
-- [CopilotKit Generative UI docs](https://docs.copilotkit.ai/generative-ui)
+- [Open Generative UI docs](https://docs.copilotkit.ai/generative-ui/open-generative-ui)
+- [OpenGenerativeUI hosted gallery source](https://github.com/CopilotKit/OpenGenerativeUI) — the production version of this pattern
+- [Generative UI overview](https://www.copilotkit.ai/generative-ui)
 - [AG-UI protocol](https://docs.ag-ui.com/introduction)
+- [LangGraph](https://www.langchain.com/langgraph)
 
 ## License
 
-Upstream license applies — see [`CopilotKit/OpenGenerativeUI`](https://github.com/CopilotKit/OpenGenerativeUI).
+MIT — upstream license from the CopilotKit `langgraph-py` scaffold applies; see [`LICENSE`](LICENSE).
