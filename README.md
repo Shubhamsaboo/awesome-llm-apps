@@ -291,6 +291,7 @@ streamlit run travel_agent.py
 * [Llama 3.2 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/llama3.2_finetuning/)
 
 ### 🧑‍🏫 AI Agent Framework Crash Course
+- [SOMA](https://github.com/sunyan999999/soma) — Wisdom architecture for LLM agents. Problem decomposition via thinking laws → bidirectional memory activation → synthesis + self-evolution. Python, REST API, dashboard included. `pip install soma-wisdom`.
 *Deep-dive tutorials on the major agent frameworks.*
 
 [Google ADK Crash Course](ai_agent_framework_crash_course/google_adk_crash_course/)
