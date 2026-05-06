@@ -1,0 +1,9 @@
+# Runtime dependencies — install with: pip install -r requirements.txt
+openai>=1.30.0           # Research LLM calls (plan / synthesize)
+anthropic>=0.40.0        # Independent fact-checking (different provider = different biases)
+httpx>=0.27.0            # HTTP fallback for content extraction
+ddgs>=7.0.0              # Real web search via DuckDuckGo (no API key needed)
+newspaper4k>=0.9.0       # Article text extraction
+beautifulsoup4>=4.12.0   # HTML parsing fallback for non-article pages
+rich>=13.0.0             # Optional: color-coded terminal output (degrades gracefully)
+streamlit>=1.30.0        # Web UI
