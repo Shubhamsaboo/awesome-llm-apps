@@ -62,7 +62,8 @@ def search_recipes(ingredients: str, diet_type: Optional[str] = None) -> Dict:
             "recipes": detailed_recipes,
             "total_found": len(recipes)
         }
-    except:
+    except Exception as e:
+        print(f"Recipe search failed: {e}")
         return {"error": "Recipe search failed"}
 
 @tool
@@ -126,7 +127,8 @@ def analyze_nutrition(recipe_name: str) -> Dict:
             "sodium": sodium,
             "health_insights": health_insights
         }
-    except:
+    except Exception as e:
+        print(f"Nutrition analysis failed: {e}")
         return {"error": "Nutrition analysis failed"}
 
 @tool

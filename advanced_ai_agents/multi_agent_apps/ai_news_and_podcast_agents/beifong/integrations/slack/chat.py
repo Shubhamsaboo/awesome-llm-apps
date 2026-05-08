@@ -99,7 +99,7 @@ def get_session_state(session_id: str):
     if result:
         try:
             return json.loads(result[0])
-        except:
+        except json.JSONDecodeError:
             return {}
     return {}
 
