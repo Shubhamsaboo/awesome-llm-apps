@@ -16,6 +16,7 @@ from agent import Architecture,architecture_agent
 from agent import Planner, planner_agent
 from agent import FinalTour, orchestrator_agent
 from printer import Printer
+from printer import Printer
 
 
 class TourManager:
