@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>📡 Earnings Call Analyst Agent</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/static/styles.css?v=20260506-robust-audit" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="mark">EC</span>
+          <div>
+            <h1>📡 Earnings Call Analyst Agent</h1>
+            <p id="healthLine">Connecting backend</p>
+          </div>
+        </div>
+        <form id="urlForm" class="url-form">
+          <input
+            id="youtubeUrl"
+            name="youtubeUrl"
+            type="url"
+            placeholder="Paste a YouTube earnings-call URL"
+            autocomplete="off"
+            required
+          />
+          <button id="analyzeButton" type="submit">Analyze</button>
+        </form>
+      </header>
+
+      <section class="status-strip">
+        <div class="progress-track"><span id="progressBar"></span></div>
+        <div id="statusText">Waiting for a YouTube URL</div>
+        <div class="status-steps" aria-label="Analysis pipeline">
+          <span data-stage="metadata">Video</span>
+          <span data-stage="transcript">Transcript</span>
+          <span data-stage="research">Research</span>
+          <span data-stage="analysis">Signals</span>
+          <span data-stage="ready">Ready</span>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <section class="watch-column">
+          <div class="video-panel">
+            <div id="player" class="player-empty">
+              <div class="empty-state">
+                <span>Paste URL</span>
+                <strong>Playback-synced analyst cockpit</strong>
+              </div>
+            </div>
+          </div>
+          <div class="watch-status">
+            <span id="timecode">00:00</span>
+            <strong id="watchState">Waiting for a YouTube URL</strong>
+          </div>
+
+          <div class="research-panel">
+            <div class="panel-heading">
+              <h2>Research Pack</h2>
+              <span id="companyBadge">No company loaded</span>
+            </div>
+            <div id="researchGrid" class="research-grid"></div>
+          </div>
+        </section>
+
+        <aside class="insight-column">
+          <div class="feed-panel timeline-workbench">
+            <div class="stream-header">
+              <div>
+                <h2>Analyst Stream</h2>
+                <p id="streamSummary">Paste a URL to build a playback-synced analyst overlay.</p>
+              </div>
+              <span id="timelineStatus">Waiting</span>
+            </div>
+            <div class="stream-controls">
+              <button id="revealNextButton" type="button" disabled>Reveal next signal</button>
+              <button id="showAllButton" type="button" disabled>Show all</button>
+            </div>
+            <div id="timelineFeed" class="analyst-timeline">
+              <div class="empty-feed">Timestamped analyst cards will appear here.</div>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="/static/app.js?v=20260506-robust-audit"></script>
+  </body>
+</html>

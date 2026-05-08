@@ -1,0 +1,9 @@
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.7.0
+requests>=2.31.0
+youtube-transcript-api>=0.6.2
+yt-dlp>=2025.12.8
+google-genai>=1.0.0
+google-adk>=1.0.0
+pytest>=8.0.0
