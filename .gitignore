@@ -20,7 +20,6 @@ env/
 # Environment files
 .env
 .env.local
-.env.example
 .env.production
 *.log
 
