@@ -50,7 +50,7 @@ dlinfo==2.0.0
 dnspython==2.7.0
 docopt==0.6.2
 docstring_parser==0.16
-duckduckgo_search==8.0.1
+duckduckgo_search>=6.3.0
 elevenlabs==1.57.0
 espeakng-loader==0.2.4
 faiss-cpu==1.9.0.post1

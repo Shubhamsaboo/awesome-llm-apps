@@ -1,6 +1,6 @@
 from windows_use.agent.registry.views import Tool as ToolData, ToolResult
 from windows_use.desktop import Desktop
-from langchain.tools import Tool
+from langchain_core.tools import Tool
 from textwrap import dedent
 
 class Registry:

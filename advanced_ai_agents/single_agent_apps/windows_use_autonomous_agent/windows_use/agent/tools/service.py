@@ -2,7 +2,7 @@ from windows_use.agent.tools.views import Click, Type, Launch, Scroll, Drag, Mov
 from windows_use.desktop import Desktop
 from humancursor import SystemCursor
 from markdownify import markdownify
-from langchain.tools import tool
+from langchain_core.tools import tool
 from typing import Literal
 import uiautomation as ua
 import pyperclip as pc

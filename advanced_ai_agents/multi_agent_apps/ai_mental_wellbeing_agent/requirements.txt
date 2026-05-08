@@ -1,4 +1,2 @@
-autogen-agentchat
-autogen-ext
-pyautogen
+agno>=2.0.0
 streamlit

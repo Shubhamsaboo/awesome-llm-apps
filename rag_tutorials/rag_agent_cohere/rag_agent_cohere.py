@@ -1,12 +1,11 @@
 import os
 import streamlit as st
 from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_cohere import CohereEmbeddings, ChatCohere
-from langchain_qdrant import QdrantVectorStore
-from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, VectorParams
-from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.embeddings import CohereEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_community.document_loaders import PyPDFLoader
+from langchain.chains.compress_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
 from langchain import hub
 import tempfile

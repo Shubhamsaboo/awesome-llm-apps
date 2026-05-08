@@ -1,5 +1,5 @@
 streamlit
 chess==1.11.1
-autogen==0.6.1
+ag2>=0.4.0
 cairosvg
 pillow
