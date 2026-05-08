@@ -9,7 +9,7 @@ import bs4
 from agno.agent import Agent
 from agno.models.google import Gemini
 from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams

@@ -1,4 +1,4 @@
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 import pandas as pd
 from langchain_core.runnables import RunnableParallel, RunnableLambda # Import necessary for LCEL
 import random

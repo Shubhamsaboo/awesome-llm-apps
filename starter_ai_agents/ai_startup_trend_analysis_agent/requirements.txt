@@ -1,5 +1,5 @@
 agno>=2.2.10
 streamlit==1.40.2
-duckduckgo_search==6.3.7
+duckduckgo_search>=6.3.0
 newspaper4k==0.9.3.1
 lxml_html_clean==0.4.1

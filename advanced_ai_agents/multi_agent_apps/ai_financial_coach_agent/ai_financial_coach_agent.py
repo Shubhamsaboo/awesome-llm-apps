@@ -530,7 +530,7 @@ def parse_csv_transactions(file_content) -> List[Dict[str, Any]]:
         df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%Y-%m-%d')
         
         # Convert amount strings to float, handling currency symbols and commas
-        df['Amount'] = df['Amount'].replace('[\$,]', '', regex=True).astype(float)
+        df['Amount'] = df['Amount'].replace(r'[\$,]', '', regex=True).astype(float)
         
         # Group by category and calculate totals
         category_totals = df.groupby('Category')['Amount'].sum().reset_index()
@@ -571,7 +571,7 @@ def validate_csv_format(file) -> bool:
             
         # Validate amount format (should be numeric after removing currency symbols)
         try:
-            df['Amount'].replace('[\$,]', '', regex=True).astype(float)
+            df['Amount'].replace(r'[\$,]', '', regex=True).astype(float)
         except Exception:
             return False, "Invalid amount format in Amount column"
             
