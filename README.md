@@ -99,6 +99,8 @@ streamlit run travel_agent.py
 
 > 📬 [Subscribe on Unwind AI](https://www.theunwindai.com) to get new template drops + tutorials in your inbox.
 
+> **⚠️ Disclaimer:** just a heads up, conditions apply to these financial tools. the signals this agent pulls dont guarantee any specific market direction. every investor takes on their own risk, so do your own research before making any trades. this code just extracts data, it isnt financial advice.
+
 ## 📑 Table of Contents
 
 <details open>
