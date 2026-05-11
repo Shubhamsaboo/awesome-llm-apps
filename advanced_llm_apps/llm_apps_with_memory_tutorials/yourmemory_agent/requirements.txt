@@ -1,0 +1,4 @@
+anthropic
+streamlit
+requests
+yourmemory
