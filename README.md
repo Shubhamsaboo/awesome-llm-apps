@@ -123,6 +123,7 @@ streamlit run travel_agent.py
 ## 📂 Featured AI Projects
 
 ### 🌱 Starter AI Agents
+- **[Qonspekt](https://github.com/Qonspekt/qonspekt)** - Article to atomic Obsidian notes via Claude AI. BYOK, single HTML file, no backend. [Live](https://qonspekt.github.io/qonspekt/)
 *Single-file agents that run with just an API key - a great place to start.*
 
 *   [🎙️ AI Blog to Podcast Agent](starter_ai_agents/ai_blog_to_podcast_agent/)
