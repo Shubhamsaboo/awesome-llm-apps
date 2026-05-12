@@ -229,6 +229,7 @@ streamlit run travel_agent.py
 *   [🖼️ Vision RAG](rag_tutorials/vision_rag/)
 *   [🩺 RAG Failure Diagnostics Clinic](rag_tutorials/rag_failure_diagnostics_clinic/)
 *   [🕸️ Knowledge Graph RAG with Citations](rag_tutorials/knowledge_graph_rag_citations/)
+*   [🔐  Local Graph-RAG with Visualized ontology, 3-stage security, self-evolution scaffold](https://github.com/Hashevolution/James-RAG-Evol) <sub>↗ external</sub>
 
 ### 🧩 Awesome Agent Skills
 *Ready-to-use agent skill files you can plug into any AI agent or LLM workflow.*
