@@ -1,0 +1,16 @@
+# Streamlit UI — the chat-app frame
+streamlit>=1.30.0
+
+# LLM provider SDKs — install all three so the sidebar dropdown works
+# for any provider the user picks. Anthropic / OpenAI are pure-Python
+# wheels and add < 5MB combined.
+anthropic>=0.34.0
+openai>=1.40.0
+
+# Ollama uses a plain HTTP API; `requests` is the only client needed.
+requests>=2.31.0
+
+# Context-compression layer.
+# Swap this for `llmlingua`, your own extractor, etc. — the rest of
+# entroly_demo.py does not depend on which compressor you pick.
+entroly>=0.19.0
