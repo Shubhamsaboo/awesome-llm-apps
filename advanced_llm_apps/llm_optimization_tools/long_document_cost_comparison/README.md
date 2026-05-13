@@ -4,20 +4,22 @@ A Streamlit chat app that demonstrates a **production-grade pattern** for
 slashing LLM costs when your users ask questions over long documents
 (release notes, source files, RFCs, transcripts, support tickets, etc.).
 
-For the same question against the same model, the app sends two requests
-side-by-side and shows you the delta in real numbers:
+For the same question against the same model, the app sends two
+requests side-by-side and shows you the delta in **measured** numbers
+from your own documents and your own provider account:
 
-|                  | Raw context | Compressed context |
-|------------------|:-----------:|:------------------:|
-| Input tokens     |    47,210   |    **2,940**       |
-| Cost / call      |    $0.142   |    **$0.0088**     |
-| Latency          |    8.2 s    |    **1.4 s**       |
-| Answer quality   |     ✓       |    **✓** (identical) |
-| Cost / 1,000 calls | **$142.00** | **$8.80**          |
+- **Input tokens** for raw vs. compressed context (from the provider's
+  `response.usage`)
+- **USD cost** at the model's public list rate
+- **Latency** end-to-end per call
+- **Answer text** for both, so you can read them and judge whether
+  compression cost you any quality
 
-That is **94% cheaper** for the same answer. This is not specific to any
-one library — it's a structural pattern: insert a context-compression
-step between your document store and your LLM call.
+The numbers vary by document and by question — paste your own and the
+app shows you what *you* would save. This is not specific to any one
+compression library; it's a structural pattern: insert a
+context-compression step between your document store and your LLM
+call.
 
 ## What this app is
 
@@ -76,16 +78,28 @@ That's the whole change. `compress()` is a pure function that returns a
 shorter string carrying the same information density. You don't change
 your LLM client, your prompt template, or your downstream handling.
 
-## How the compression works (in one paragraph)
+## The contract any compressor must satisfy
 
-Compression scores each chunk of the document on information density
-(Shannon entropy + TF-IDF against the query if available + structural
-importance), then runs a 0/1 knapsack with a token budget to pick the
-mathematically optimal subset. Submodular greedy with a (1−1/e)
-approximation guarantee. The selection is *deterministic* (same input
-→ same output) and runs in tens of milliseconds. No LLM is used during
-compression itself — that's the point. You only pay for the *single*
-LLM call against the compressed context.
+A compressor used in this pattern is just a function that returns a
+shorter string carrying the same information density as its input:
+
+```python
+def compress(text: str, budget: int) -> str: ...
+```
+
+The constraints worth respecting are minimal:
+
+- **Pure** — same input, same output. Lets you cache by input hash.
+- **No LLM call inside** — the whole point is to avoid an extra paid
+  inference. Compression should be deterministic and CPU-bound.
+- **Token-budgeted** — the caller passes a target token count and the
+  compressor stays at or under it.
+
+Beyond that, the algorithmic choice is up to the compressor. Extractive
+summarisation, TF-IDF + greedy selection, embedding-based clustering,
+LLM-distilled prompts cached offline — any of them slots in. See the
+**Swap the compressor** section below for concrete alternatives the
+demo accepts without code changes elsewhere.
 
 ## Swap the compressor
 
