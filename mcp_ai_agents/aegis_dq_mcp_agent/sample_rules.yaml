@@ -1,0 +1,41 @@
+apiVersion: aegis.dev/v1
+rules:
+  - id: orders_amount_positive
+    table: orders
+    column: amount
+    type: range
+    logic:
+      min: 0
+      max: 100000
+    severity: high
+    description: Order amounts must be positive and within a realistic range
+
+  - id: orders_status_valid
+    table: orders
+    column: status
+    type: accepted_values
+    logic:
+      values: [pending, confirmed, shipped, delivered, cancelled]
+    severity: high
+    description: Order status must be one of the allowed values
+
+  - id: orders_customer_id_not_null
+    table: orders
+    column: customer_id
+    type: not_null
+    severity: critical
+    description: Every order must have a customer ID
+
+  - id: orders_no_duplicates
+    table: orders
+    column: order_id
+    type: unique
+    severity: high
+    description: Order IDs must be unique
+
+  - id: orders_amount_not_null
+    table: orders
+    column: amount
+    type: not_null
+    severity: medium
+    description: Order amount should not be null

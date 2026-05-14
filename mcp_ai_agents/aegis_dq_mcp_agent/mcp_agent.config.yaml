@@ -1,0 +1,20 @@
+execution_engine: asyncio
+logger:
+  transports: [console, file]
+  level: info
+  progress_display: true
+  path_settings:
+    path_pattern: "logs/aegis-dq-agent-{unique_id}.jsonl"
+    unique_id: "timestamp"
+    timestamp_format: "%Y%m%d_%H%M%S"
+
+mcp:
+  servers:
+    aegis-dq:
+      command: "aegis"
+      args: ["mcp"]
+      env:
+        DUCKDB_PATH: "/tmp/aegis_demo.duckdb"
+
+openai:
+  default_model: "gpt-4o-mini"
