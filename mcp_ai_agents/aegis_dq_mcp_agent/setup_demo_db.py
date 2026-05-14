@@ -1,9 +1,13 @@
 """Creates a sample DuckDB database with intentional data quality issues for the demo."""
 
+import os
 import duckdb
 
 
 def setup_demo_db(db_path: str = "/tmp/aegis_demo.duckdb") -> str:
+    # Always start fresh to avoid schema conflicts from prior runs
+    if os.path.exists(db_path):
+        os.remove(db_path)
     con = duckdb.connect(db_path)
     con.execute("DROP TABLE IF EXISTS orders")
     con.execute("""
@@ -29,3 +33,8 @@ def setup_demo_db(db_path: str = "/tmp/aegis_demo.duckdb") -> str:
     """)
     con.close()
     return db_path
+
+
+if __name__ == "__main__":
+    path = setup_demo_db()
+    print(f"Demo database created at {path}")
