@@ -1,0 +1,3 @@
+AI engineer with 6 years of experience building Python services, FastAPI APIs, and data workflows for product teams. Recent work includes integrating OpenAI APIs into internal tools, writing prompt evaluation checks, and improving PostgreSQL-backed reporting pipelines.
+
+Skills include Python, SQL, FastAPI, Docker, AWS, CI/CD, OpenAI, stakeholder communication, and technical documentation. Comfortable working with product managers, explaining technical trade-offs, and mentoring junior engineers.

@@ -1,0 +1,19 @@
+Senior AI Engineer
+
+We are looking for a Senior AI Engineer to help build practical AI products for internal operations and customer-facing workflows. You will design and ship Python services, integrate LLM APIs, and work closely with product, design, and operations teams.
+
+Responsibilities:
+- Build and maintain Python and FastAPI services for AI-enabled workflows.
+- Design prompts, evaluations, and monitoring for LLM features.
+- Collaborate with product managers and stakeholders to turn business requirements into reliable AI tools.
+- Improve data processing pipelines using SQL, PostgreSQL, and cloud services.
+- Mentor engineers on AI development practices and production readiness.
+- Document technical decisions and communicate trade-offs clearly.
+
+Requirements:
+- 5+ years of software engineering experience.
+- Strong Python, FastAPI, SQL, and API design skills.
+- Experience with OpenAI or similar LLM APIs.
+- Familiarity with AWS, Docker, CI/CD, and production observability.
+- Good stakeholder communication and ownership.
+- Bonus: experience with RAG, vector databases, LangChain, or evaluation frameworks.
