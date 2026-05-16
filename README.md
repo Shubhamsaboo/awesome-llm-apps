@@ -329,3 +329,5 @@ streamlit run travel_agent.py
 ## 📜 License
 
 Apache-2.0. See [LICENSE](LICENSE). Fork it, ship it, sell it.
+
+- [Septim Agents Pack](https://septimlabs.com/agents) - 15 Claude Code sub-agents pre-scoped as a full exec team for solo founders (chief of staff, CTO, CMO, head of cold sales, head of X voice, thread architect, reply ops, weekly analyst, plus brand/design/legal/customer/research/intern). Drops into `~/.claude/agents/`. Open-source sample at [github.com/septimlabs-code/septim-agents-pack-sample](https://github.com/septimlabs-code/septim-agents-pack-sample). $49 lifetime.
