@@ -83,6 +83,8 @@ if generate_code_btn and query:
                 max_tokens=1  
             )
 
+        if not deepseek_response.choices or deepseek_response.choices[0].message is None:
+            raise ValueError("LLM returned empty or filtered response")
         reasoning_content = deepseek_response.choices[0].message.reasoning_content
         print("\nDeepseek Reasoning:\n", reasoning_content)
         with st.expander("R1's Reasoning"):      
