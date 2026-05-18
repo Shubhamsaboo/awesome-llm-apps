@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# Wrapper that runs claude and handles auto-restart signals
+# Usage: meridian-wrapper [claude args...]
+
+set -euo pipefail
+
+# Find project root (where .meridian exists)
+find_project_root() {
+    local dir="$PWD"
+    while [[ "$dir" != "/" ]]; do
+        if [[ -d "$dir/.meridian" ]]; then
+            echo "$dir"
+            return 0
+        fi
+        dir="$(dirname "$dir")"
+    done
+    echo "$PWD"  # Fallback to current dir
+}
+
+PROJECT_ROOT="$(find_project_root)"
+SIGNAL_FILE="$PROJECT_ROOT/.meridian/.state/restart-signal"
+
+# Clean any stale signal file on startup
+rm -f "$SIGNAL_FILE" 2>/dev/null || true
+
+while true; do
+    # Run claude with all passed arguments
+    claude "$@" || EXIT_CODE=$?
+    EXIT_CODE=${EXIT_CODE:-0}
+
+    # Check for restart signal
+    if [[ -f "$SIGNAL_FILE" ]]; then
+        # Read the initial prompt from signal file
+        INITIAL_PROMPT=$(cat "$SIGNAL_FILE")
+        rm -f "$SIGNAL_FILE"
+
+        echo ""
+        echo "🔄 Meridian: Restarting session with prompt: \"$INITIAL_PROMPT\""
+        echo ""
+
+        # Small delay to ensure clean handoff
+        sleep 0.5
+
+        # Restart claude with the prompt as argument
+        # Note: claude accepts initial prompt as positional argument
+        set -- "$INITIAL_PROMPT"  # Replace args with just the prompt
+        continue  # Loop back to run claude with new args
+    else
+        # No restart signal - exit wrapper with claude's exit code
+        exit $EXIT_CODE
+    fi
+done

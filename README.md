@@ -172,6 +172,7 @@ streamlit run travel_agent.py
 *   [🛠️ AI MCP App Builder](generative_ui_agents/ai-mcp-app-builder/)
 *   [✈️ MCP Apps Generative UI Showcase](generative_ui_agents/mcp-apps-generative-ui-showcase/)
 *   [🎛️ AI Shadcn Component Generator](generative_ui_agents/ai-shadcn-component-generator/)
+*   [🔍 AI Deep Research Agent](generative_ui_agents/ai-deep-research-agent/)
 
 See [`generative_ui_agents/`](generative_ui_agents/) for the category overview, conventions, and how to contribute a template.
 
