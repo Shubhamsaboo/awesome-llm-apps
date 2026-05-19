@@ -240,6 +240,7 @@ streamlit run travel_agent.py
 
 | Skill | Description |
 |---|---|
+| [Suppr Skills](https://github.com/WildDataX/suppr-skills) | Claude Code skills for Suppr academic literature search and document translation APIs. |
 | [🎓 Academic Researcher](awesome_agent_skills/academic-researcher/) | Literature reviews, paper analysis, citation management |
 | [🔍 Code Reviewer](awesome_agent_skills/code-reviewer/) | Automated code review with best-practice checks |
 | [✍️ Content Creator](awesome_agent_skills/content-creator/) | Blog posts, social media, marketing copy |
