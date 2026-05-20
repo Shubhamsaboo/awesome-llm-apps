@@ -325,3 +325,8 @@ streamlit run travel_agent.py
 ## 📜 License
 
 Apache-2.0. See [LICENSE](LICENSE). Fork it, ship it, sell it.
+
+
+### 🌐 AI Agent Monitoring
+- [OpenClaw Monitor](https://github.com/flik2002/openclaw-monitor) - Free open-source monitoring dashboard for OpenClaw AI agents — real-time token usage, session tracking, 7-day trends, and multi-model support.
+
