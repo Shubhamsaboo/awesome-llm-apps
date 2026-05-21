@@ -1,10 +1,20 @@
-import os
-
-os.environ["OPENAI_API_KEY"] = "your_openai_api_key"
-os.environ['TOGETHERAI_API_KEY'] = "your_togetherai_api_key"
-
 import streamlit as st
 from routellm.controller import Controller
+
+# Set up Streamlit app
+st.title("RouteLLM Chat App")
+
+# API key input via sidebar
+openai_key = st.sidebar.text_input("OpenAI API Key", type="password")
+together_key = st.sidebar.text_input("Together AI API Key", type="password")
+
+if not openai_key or not together_key:
+    st.info("Enter your OpenAI and Together AI API keys in the sidebar to get started.")
+    st.stop()
+
+import os
+os.environ["OPENAI_API_KEY"] = openai_key
+os.environ["TOGETHERAI_API_KEY"] = together_key
 
 # Initialize RouteLLM client
 client = Controller(
@@ -12,9 +22,6 @@ client = Controller(
     strong_model="gpt-4o-mini",
     weak_model="together_ai/meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
 )
-
-# Set up Streamlit app
-st.title("RouteLLM Chat App")
 
 # Initialize chat history
 if "messages" not in st.session_state:
