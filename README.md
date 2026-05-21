@@ -287,6 +287,7 @@ streamlit run travel_agent.py
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30–60% using TOON format
 *   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50–90%
+*   [📊 AI Models Catalog](https://github.com/i-need-token/ai-models) - Structured database of 4,587+ AI models across 95 providers with pricing, context windows, and capabilities. [Interactive catalog](https://i-need-token.github.io/ai-models/) with price calculator and model picker.
 
 ### 🔧 LLM Fine-tuning Tutorials
 *End-to-end fine-tuning recipes for open-source models.*
