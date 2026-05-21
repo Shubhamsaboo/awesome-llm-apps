@@ -194,6 +194,8 @@ class ModelChain:
                 stream=False   
             )
 
+            if not deepseek_response.choices or deepseek_response.choices[0].message is None:
+                raise ValueError("DeepSeek returned an empty or filtered response")
             reasoning_content = deepseek_response.choices[0].message.reasoning_content
             normal_content = deepseek_response.choices[0].message.content
             
