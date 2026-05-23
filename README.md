@@ -163,6 +163,7 @@ streamlit run travel_agent.py
 *   [🎧 AI Social Media News and Podcast Agent](advanced_ai_agents/multi_agent_apps/ai_news_and_podcast_agents/)
 *   [🌐 Openwork - Open Browser Automation Agent](https://github.com/accomplish-ai/openwork) <sub>↗ external</sub>
 *   [🛡️ Trust-Gated Multi-Agent Research Team](advanced_ai_agents/multi_agent_apps/trust_gated_agent_team/)
+*   [🐙 Octomind - Open-source AI Agent Runtime](https://github.com/muvon/octomind) <sub>↗ external</sub>
 
 ### 🎮 Autonomous Game-Playing Agents
 *Agents that play games end-to-end - reasoning, strategy, and action.*
