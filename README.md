@@ -287,6 +287,7 @@ streamlit run travel_agent.py
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30–60% using TOON format
 *   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50–90%
+*   [🔍 Voight - Real-time LLM observability](https://github.com/Voightxyz/voight-sdk) <sub>↗ external</sub> - See where your tokens go. Drop-in wrappers for OpenAI, Anthropic, Vercel AI SDK capture prompts, cache reads, tool calls, cost, and latency in a live dashboard.
 
 ### 🔧 LLM Fine-tuning Tutorials
 *End-to-end fine-tuning recipes for open-source models.*
