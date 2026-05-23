@@ -74,6 +74,15 @@ TYPE_REQUIRED_DOCS: dict[str, list[tuple[str, str]]] = {
     ],
 }
 
+BLOCKING_FIELD_QUESTIONS = {
+    "policyholder_name": "What is your full name as it appears on the policy?",
+    "policy_number": "What is the policy number, if you have it available?",
+    "contact_method": "What is the best phone number or email for the adjuster to reach you?",
+    "date_of_loss": "When did the loss happen?",
+    "loss_location": "Where did the loss happen?",
+    "loss_description": "Can you briefly describe what happened?",
+}
+
 
 def _as_model(model_type, value):
     if isinstance(value, model_type):
@@ -186,6 +195,39 @@ def _parse_date(value: str) -> datetime | None:
     return None
 
 
+def _next_claimant_message(
+    route: str,
+    missing: list[str],
+    required_documents: list[str],
+) -> str:
+    if route == "emergency_escalation":
+        return (
+            "Your claim mentions injury, safety, or habitability concerns. A human representative "
+            "should review this immediately. If anyone is in danger, contact local emergency services first."
+        )
+
+    for field_name in missing:
+        if field_name in BLOCKING_FIELD_QUESTIONS:
+            return BLOCKING_FIELD_QUESTIONS[field_name]
+
+    if missing:
+        return f"Can you clarify this missing detail so the adjuster can process the claim smoothly: {missing[0]}?"
+
+    if required_documents:
+        return f"Do you have this document or evidence available now: {required_documents[0]}?"
+
+    if route == "special_investigation":
+        return (
+            "A human reviewer should look at this file, but the core intake packet is started. "
+            "Please keep originals of any receipts, reports, photos, or messages related to the loss."
+        )
+
+    return (
+        "Your intake packet has the core information needed for adjuster assignment. Keep copies of "
+        "all receipts, photos, reports, and communications related to the loss."
+    )
+
+
 def validate_required_claim_fields(claim_value: Any) -> dict[str, Any]:
     """Validate minimum intake facts before coverage and evidence rules run."""
 
@@ -195,6 +237,7 @@ def validate_required_claim_fields(claim_value: Any) -> dict[str, Any]:
 
     required_fields = {
         "policyholder_name": claim.policyholder_name,
+        "policy_number": claim.policy_number,
         "contact_method": claim.contact_method,
         "date_of_loss": claim.date_of_loss,
         "loss_location": claim.loss_location,
@@ -204,8 +247,6 @@ def validate_required_claim_fields(claim_value: Any) -> dict[str, Any]:
         if _blank(value):
             missing.append(field_name)
 
-    if _blank(claim.policy_number):
-        warnings.append("Policy number was not supplied; adjuster may need identity verification.")
     if claim.estimated_loss_usd is None:
         warnings.append("Estimated loss amount was not supplied.")
 
@@ -585,26 +626,7 @@ def build_claim_intake_packet(
         f"Estimated loss: {claim.estimated_loss_usd if claim.estimated_loss_usd is not None else 'not supplied'}."
     )
 
-    if route == "emergency_escalation":
-        claimant_next = (
-            "Your claim mentions injury, safety, or habitability concerns. A human representative "
-            "should review this immediately. If anyone is in danger, contact local emergency services first."
-        )
-    elif route == "special_investigation":
-        claimant_next = (
-            "We can open the intake packet, but some timing or evidence details require specialized "
-            "human review. Please provide the requested documents and keep originals available."
-        )
-    elif route == "needs_docs":
-        claimant_next = (
-            "Your intake packet is started. Please provide the missing information and checklist items "
-            "so an adjuster can evaluate the claim without delay."
-        )
-    else:
-        claimant_next = (
-            "Your intake packet has the core information needed for adjuster assignment. Keep copies of "
-            "all receipts, photos, reports, and communications related to the loss."
-        )
+    claimant_next = _next_claimant_message(route, missing, evidence_decision.required_documents)
 
     audit_lines = [f"{idx}. {entry}" for idx, entry in enumerate(fraud_gate.audit_trail, start=1)]
 

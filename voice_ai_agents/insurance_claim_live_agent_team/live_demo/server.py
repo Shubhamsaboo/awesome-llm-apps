@@ -261,40 +261,6 @@ def _events(
     return events
 
 
-def _next_question(
-    validation: dict[str, Any],
-    coverage: dict[str, Any],
-    fraud_gate: dict[str, Any],
-) -> str:
-    route = fraud_gate.get("final_routing_decision", coverage.get("routing_decision"))
-    signals = fraud_gate.get("signals", [])
-    if route == "emergency_escalation" and any(
-        signal.get("route_to_emergency") for signal in signals
-    ):
-        return (
-            "Because you mentioned an injury or safety concern, are you and everyone "
-            "else currently safe, and has anyone needed emergency medical care?"
-        )
-
-    missing = validation.get("missing_fields", [])
-    question_map = {
-        "policyholder_name": "What is your full name as it appears on the policy?",
-        "contact_method": "What is the best phone number or email for the adjuster to reach you?",
-        "date_of_loss": "When did the loss happen?",
-        "loss_location": "Where did the loss happen?",
-        "loss_description": "Can you briefly describe what happened?",
-    }
-    for field_name in missing:
-        if field_name in question_map:
-            return question_map[field_name]
-
-    required_docs = coverage.get("required_documents", [])
-    if required_docs:
-        return f"Do you already have this document or evidence available: {required_docs[0]}?"
-
-    return "I have enough for the initial intake packet. Is there anything important the adjuster should know before handoff?"
-
-
 def _ui_state(
     session: IntakeSession,
     validation: dict[str, Any],
@@ -383,7 +349,7 @@ def _ui_state(
             "Priority": f"{classification.severity.title()} - {classification.severity_rationale}",
             "Required actions": _join(required_doc_names, "No additional documents identified by current rules."),
             "Attachments": evidence_text,
-            "Next best action": _next_question(validation, coverage, fraud_gate),
+            "Next best action": packet["claimant_next_message"],
         },
         "packet_markdown": packet["markdown"],
         "model": MODEL,
@@ -542,10 +508,14 @@ async def live_voice(websocket: WebSocket) -> None:
         response_modalities=["AUDIO"],
         system_instruction=(
             "You are a voice insurance FNOL intake agent. Speak naturally and briefly. "
-            "Collect claim facts one step at a time. If injury, unsafe housing, or immediate "
-            "danger is mentioned, prioritize safety and human escalation. Do not promise "
-            "coverage, payment, liability, benefits, or approval. Ask only one or two focused "
-            "follow-up questions at a time."
+            "Your job is to collect enough blocking intake facts for a smooth adjuster handoff, "
+            "not to end the call after the claimant's first narrative. If injury, unsafe housing, "
+            "or immediate danger is mentioned, prioritize safety and human escalation. Otherwise, "
+            "keep asking for missing blockers one step at a time: claimant name, contact method, "
+            "policy number if available, date and location of loss, what happened, safety/injury "
+            "status, evidence, documents, reports, tow details, or other involved parties. Do not "
+            "promise coverage, payment, liability, benefits, or approval. Ask only one or two "
+            "focused follow-up questions at a time."
         ),
         speech_config=types.SpeechConfig(
             voice_config=types.VoiceConfig(
