@@ -287,6 +287,7 @@ streamlit run travel_agent.py
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30–60% using TOON format
 *   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50–90%
+*   [⚡ Perseus Context Engine](https://github.com/tcconnally/perseus) - Compile-before-context pre-processor. Resolves live workspace state (git, services, memory, coordination) into a markdown briefing at session start. 10-100x fewer tokens vs runtime discovery. MIT, one dep (pyyaml). Also an MCP server with 13 tools.
 
 ### 🔧 LLM Fine-tuning Tutorials
 *End-to-end fine-tuning recipes for open-source models.*
