@@ -27,6 +27,8 @@ def extract_search_terms(prompt: str, api_key: str, max_terms: int = 10) -> list
             temperature=0.3,
             response_format={"type": "json_object"},
         )
+        if not resp.choices or resp.choices[0].message.content is None:
+            raise ValueError("Received empty or null response from OpenAI API")
         parsed = json.loads(resp.choices[0].message.content.strip())
         if isinstance(parsed, dict) and isinstance(parsed.get("terms"), list):
             return parsed["terms"]

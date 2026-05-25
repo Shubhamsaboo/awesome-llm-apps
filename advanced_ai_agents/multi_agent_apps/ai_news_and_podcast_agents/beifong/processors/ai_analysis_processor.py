@@ -71,6 +71,8 @@ def process_article_with_ai(client, article, max_tokens=8000):
             temperature=0.3,
             max_tokens=1500,
         )
+        if not response.choices or response.choices[0].message.content is None:
+            raise ValueError("Received empty or null response from OpenAI API")
         response_json = json.loads(response.choices[0].message.content)
         categories = response_json.get("categories", [])
         if isinstance(categories, str):

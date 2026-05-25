@@ -45,6 +45,8 @@ def translate_script(script: List[Dict[str, Any]], lang_code: str = "b") -> List
         response_format={"type": "json_object"},
         temperature=0.3,
     )
+    if not response.choices or response.choices[0].message.content is None:
+        raise ValueError("Received empty or null response from OpenAI API")
     response_content = response.choices[0].message.content
     response_data = json.loads(response_content)
     if "script" in response_data:
