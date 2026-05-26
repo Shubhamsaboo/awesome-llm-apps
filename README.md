@@ -1,3 +1,4 @@
+- [Prestyj Stats MCP](https://github.com/Gahroot/prestyj-stats-mcp) - MCP server exposing an open sales, lead-response, and AI marketing statistics dataset for agent/RAG workflows ([dataset](https://prestyj.com/data)).
 <p align="center">
   <a href="http://www.theunwindai.com">
     <img src="docs/banner/unwind_black.png" width="900px" alt="Unwind AI">
