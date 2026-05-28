@@ -234,6 +234,7 @@ streamlit run travel_agent.py
 *Ready-to-use agent skill files you can plug into any AI agent or LLM workflow.*
 
 *   [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
+*   [🛂 Comply - Product Compliance Skills](https://github.com/Cleo-Labs-IA/skills_library) <sub>↗ external</sub> - 40+ production-grade skills + 2 MCP servers for physical-product compliance (REACH, FDA, CE, RoHS, customs, marketplace rules) across cosmetics, food, electronics, toys, textiles. MIT licensed.
 
 <details>
 <summary><strong>📋 Browse all 19 skills</strong></summary>
