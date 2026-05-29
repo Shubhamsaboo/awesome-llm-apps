@@ -283,7 +283,7 @@ streamlit run travel_agent.py
 *   [📽️ Chat with YouTube Videos](advanced_llm_apps/chat_with_X_tutorials/chat_with_youtube_videos/)
 
 ### 🎯 LLM Optimization Tools
-*Reduce token usage, context size, and API cost without losing quality.*
+- [A3M Router](https://github.com/Das-rebel/a3m-router) - #1 LLM routing benchmark & cheapest router with memory. 47+ providers, parallel execution, ensemble voting. ([RouterArena #1](https://github.com/RouteWorks/RouterArena/pull/113))*Reduce token usage, context size, and API cost without losing quality.*
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30–60% using TOON format
 *   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50–90%
