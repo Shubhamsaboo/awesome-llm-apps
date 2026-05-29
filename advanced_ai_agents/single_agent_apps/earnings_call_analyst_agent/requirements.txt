@@ -7,3 +7,5 @@ yt-dlp>=2025.12.8
 google-genai>=1.0.0
 google-adk>=1.0.0
 pytest>=8.0.0
+monocle-apptrace>=0.4.0
+monocle_test_tools

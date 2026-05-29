@@ -7,6 +7,15 @@ __pycache__/
 .env
 .env.local
 
+# MCP server config (contains API keys)
+.mcp.json
+
+# Monocle trace output
+.monocle/
+
+# Scratch / logs
+tmp/
+
 # Virtual environments
 venv/
 .venv/

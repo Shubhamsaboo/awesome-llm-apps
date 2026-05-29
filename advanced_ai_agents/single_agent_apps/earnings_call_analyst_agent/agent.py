@@ -6,6 +6,10 @@ import os
 import re
 from typing import Any
 
+from .telemetry import setup_telemetry
+
+setup_telemetry()
+
 from .adk_runtime import has_adk_credentials, parse_json_object, run_adk_agent_text
 from .schemas import (
     Citation,

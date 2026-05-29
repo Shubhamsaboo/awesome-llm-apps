@@ -35,6 +35,10 @@ def _load_env() -> None:
 
 _load_env()
 
+from earnings_call_analyst_agent.telemetry import setup_telemetry  # noqa: E402
+
+setup_telemetry()
+
 from earnings_call_analyst_agent.adk_runtime import adk_auth_mode, has_adk_credentials  # noqa: E402
 
 from earnings_call_analyst_agent.agent import generate_insights  # noqa: E402
