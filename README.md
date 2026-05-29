@@ -205,6 +205,7 @@ streamlit run travel_agent.py
 *   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent)
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team)
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/)
+*   [♾️ NexusGenesis MCP Server](https://github.com/nexus-genesis/nexusgenesis/tree/master/mcp-server) <sub>↗ Agent Coordination Protocol — on-chain identity, peer discovery, consensus for LLM agents. `npx nexusgenesis-mcp`</sub>
 
 ### 📀 RAG (Retrieval Augmented Generation)
 *Retrieval pipelines - from simple chains to agentic and multi-source.*
