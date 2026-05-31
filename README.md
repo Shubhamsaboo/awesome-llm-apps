@@ -107,6 +107,7 @@ streamlit run travel_agent.py
 - [🌱 Starter AI Agents](#-starter-ai-agents)
 - [🚀 Advanced AI Agents](#-advanced-ai-agents)
 - [🎮 Autonomous Game-Playing Agents](#-autonomous-game-playing-agents)
+- [OpenClaw Monitor](https://github.com/flik2002/openclaw-monitor) - Free open-source monitoring dashboard for OpenClaw AI agents — token usage, session tracking, 7-day trends, multi-model support.
 - [🤝 Multi-agent Teams](#-multi-agent-teams)
 - [🗣️ Voice AI Agents](#️-voice-ai-agents)
 - [♾️ MCP AI Agents](#-mcp-ai-agents)
