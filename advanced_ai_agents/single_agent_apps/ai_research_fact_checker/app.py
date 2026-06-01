@@ -116,9 +116,11 @@ with tab_research:
             st.stop()
 
         # Configure
-        ra.RESEARCH_MODEL = research_model
-        ra.FACTCHECK_MODEL = factcheck_model
-        ra.THRESHOLD = threshold
+        config = ra.Config(
+            research_model=research_model,
+            factcheck_model=factcheck_model,
+            threshold=threshold,
+        )
         os.environ["OPENAI_API_KEY"] = openai_key
         os.environ["ANTHROPIC_API_KEY"] = anthropic_key
         if base_url:
@@ -140,7 +142,7 @@ with tab_research:
 
         # ── Stage 1: Research Plan (OpenAI) ──
         with st.status("Planning research...", expanded=True) as status:
-            plan = ra.plan_research(client, topic)
+            plan = ra.plan_research(client, topic, config)
             status.update(label="Research plan ready", state="complete")
 
         st.markdown(f"**Refined topic:** {plan.get('topic_refined', topic)}")
@@ -189,7 +191,7 @@ with tab_research:
             )
             conn.commit()
             report = ra.synthesize_report(
-                client, plan.get("topic_refined", topic), sources
+                client, plan.get("topic_refined", topic), sources, config
             )
             conn.execute(
                 "UPDATE research SET report=? WHERE id=?",
@@ -211,7 +213,7 @@ with tab_research:
                 (research_id,),
             )
             conn.commit()
-            fc = ra.fact_check(topic, report, sources)
+            fc = ra.fact_check(topic, report, sources, config)
 
             verdict = fc.get("verdict", "reject")
             try:

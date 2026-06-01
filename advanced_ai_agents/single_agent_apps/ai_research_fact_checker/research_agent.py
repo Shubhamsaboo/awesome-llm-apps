@@ -21,6 +21,7 @@ Environment:   OPENAI_API_KEY (research) + ANTHROPIC_API_KEY (fact-check)
 from __future__ import annotations
 
 import argparse, datetime, json, os, sqlite3, sys, uuid
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -44,10 +45,15 @@ except ImportError:
 
 DATA_DIR  = Path.home() / ".research_agent"
 DB_PATH   = DATA_DIR / "research.db"
-RESEARCH_MODEL  = os.environ.get("RESEARCH_AGENT_MODEL", "gpt-4o-mini")
-FACTCHECK_MODEL = os.environ.get("FACTCHECK_AGENT_MODEL", "claude-sonnet-4-20250514")
-THRESHOLD = 0.75   # min fact-check confidence to accept
 MAX_FETCH = 50_000  # chars per URL
+
+
+@dataclass
+class Config:
+    """Runtime configuration — pass explicitly instead of mutating globals."""
+    research_model: str = "gpt-4o-mini"
+    factcheck_model: str = "claude-sonnet-4-20250514"
+    threshold: float = 0.75
 
 # ─── Database ────────────────────────────────────────────────────────────────
 
@@ -93,8 +99,13 @@ def get_factcheck_client() -> anthropic.Anthropic:
     return anthropic.Anthropic(api_key=key)
 
 
-def chat(client: OpenAI, messages: list[dict], json_mode: bool = False) -> str:
-    kw: dict[str, Any] = {"model": RESEARCH_MODEL, "messages": messages}
+def chat(client: OpenAI, messages: list[dict], config: Config,
+         json_mode: bool = False) -> str:
+    kw: dict[str, Any] = {
+        "model": config.research_model,
+        "messages": messages,
+        "max_tokens": 4096,
+    }
     if json_mode:
         kw["response_format"] = {"type": "json_object"}
     return client.chat.completions.create(**kw).choices[0].message.content or ""
@@ -168,12 +179,12 @@ Rules:
 - Each query should target a DIFFERENT aspect of the topic"""
 
 
-def plan_research(client: OpenAI, topic: str) -> dict:
+def plan_research(client: OpenAI, topic: str, config: Config) -> dict:
     section("Planning Research")
     raw = chat(client,
                [{"role": "system", "content": PLAN_SYS},
                 {"role": "user", "content": topic}],
-               json_mode=True)
+               config, json_mode=True)
     try:
         return json.loads(raw)
     except json.JSONDecodeError:
@@ -188,6 +199,7 @@ def gather_sources(conn: sqlite3.Connection,
                    research_id: str, plan: dict) -> list[dict]:
     section("Gathering Sources")
     sources: list[dict] = []
+    seen_urls: set[str] = set()
 
     for i, sq in enumerate(plan.get("search_queries", [])):
         query = sq.get("query", "")
@@ -199,8 +211,9 @@ def gather_sources(conn: sqlite3.Connection,
         for result in results:
             url = result.get("href", "")
             title = result.get("title", url)
-            if not url:
+            if not url or url in seen_urls:
                 continue
+            seen_urls.add(url)
 
             pr(f"    Fetching: {url}", "dim")
             content = fetch_url(url)
@@ -242,7 +255,8 @@ Rules:
 - Be concise but thorough (500-1500 words)"""
 
 
-def synthesize_report(client: OpenAI, topic: str, sources: list[dict]) -> str:
+def synthesize_report(client: OpenAI, topic: str, sources: list[dict],
+                      config: Config) -> str:
     section("Synthesizing Report")
     source_text = "\n\n".join(
         f"[Source {i+1}] {s['url']}\n{s['content']}"
@@ -251,7 +265,8 @@ def synthesize_report(client: OpenAI, topic: str, sources: list[dict]) -> str:
     report = chat(client,
                   [{"role": "system", "content": SYNTHESIS_SYS},
                    {"role": "user", "content":
-                       f"Topic: {topic}\n\nSource Material:\n{source_text}"}])
+                       f"Topic: {topic}\n\nSource Material:\n{source_text}"}],
+                  config)
     return report
 
 
@@ -289,10 +304,11 @@ Return ONLY valid JSON:
  "overall_reason":"<paragraph explaining the fact-check result>"}"""
 
 
-def fact_check(topic: str, report: str, sources: list[dict]) -> dict:
+def fact_check(topic: str, report: str, sources: list[dict],
+               config: Config) -> dict:
     section("Cross-Provider Adversarial Fact-Check")
-    pr(f"  Research model: {RESEARCH_MODEL} (OpenAI)", "dim")
-    pr(f"  Fact-check model: {FACTCHECK_MODEL} (Anthropic)", "dim")
+    pr(f"  Research model: {config.research_model} (OpenAI)", "dim")
+    pr(f"  Fact-check model: {config.factcheck_model} (Anthropic)", "dim")
 
     client = get_factcheck_client()
     source_list = "\n".join(
@@ -301,7 +317,6 @@ def fact_check(topic: str, report: str, sources: list[dict]) -> dict:
     )
 
     user_content = (
-        f"{FACT_CHECK_SYS}\n\n"
         f"Topic: {topic}\n\n"
         f"Report to fact-check:\n{report}\n\n"
         f"Available source material:\n{source_list}"
@@ -309,8 +324,9 @@ def fact_check(topic: str, report: str, sources: list[dict]) -> dict:
 
     try:
         response = client.messages.create(
-            model=FACTCHECK_MODEL,
+            model=config.factcheck_model,
             max_tokens=4096,
+            system=FACT_CHECK_SYS,
             messages=[{"role": "user", "content": user_content}],
         )
         raw = response.content[0].text
@@ -340,7 +356,7 @@ def fact_check(topic: str, report: str, sources: list[dict]) -> dict:
 # ─── Main Pipeline ──────────────────────────────────────────────────────────
 
 def research_topic(client: OpenAI, conn: sqlite3.Connection,
-                   topic: str) -> str:
+                   topic: str, config: Config) -> str:
     research_id = str(uuid.uuid4())
     conn.execute(
         "INSERT INTO research VALUES (?,?,?,?,?,?,?,?,?,?)",
@@ -352,7 +368,7 @@ def research_topic(client: OpenAI, conn: sqlite3.Connection,
     pr(topic)
 
     # 1. Plan
-    plan = plan_research(client, topic)
+    plan = plan_research(client, topic, config)
     pr(f"\nRefined topic: {plan.get('topic_refined', topic)}", "bold")
     for i, sq in enumerate(plan.get("search_queries", [])):
         pr(f"  {i+1}. {sq.get('query', '')}", "dim")
@@ -381,7 +397,8 @@ def research_topic(client: OpenAI, conn: sqlite3.Connection,
     conn.execute("UPDATE research SET status='synthesizing' WHERE id=?",
                  (research_id,))
     conn.commit()
-    report = synthesize_report(client, plan.get("topic_refined", topic), sources)
+    report = synthesize_report(client, plan.get("topic_refined", topic), sources,
+                               config)
     pr(f"\n{report}")
 
     conn.execute("UPDATE research SET report=? WHERE id=?",
@@ -392,7 +409,7 @@ def research_topic(client: OpenAI, conn: sqlite3.Connection,
     conn.execute("UPDATE research SET status='fact_checking' WHERE id=?",
                  (research_id,))
     conn.commit()
-    fc = fact_check(topic, report, sources)
+    fc = fact_check(topic, report, sources, config)
 
     verdict = fc.get("verdict", "reject")
     try:
@@ -401,9 +418,9 @@ def research_topic(client: OpenAI, conn: sqlite3.Connection,
         confidence = 0.0
     reason = fc.get("overall_reason", "")
 
-    if verdict == "accept" and confidence < THRESHOLD:
+    if verdict == "accept" and confidence < config.threshold:
         verdict = "reject"
-        reason = f"Confidence {confidence:.0%} below {THRESHOLD:.0%}. " + reason
+        reason = f"Confidence {confidence:.0%} below {config.threshold:.0%}. " + reason
 
     # Display verdict
     section("Fact-Check Verdict")
@@ -482,17 +499,20 @@ def show_research(conn: sqlite3.Connection, prefix: str) -> None:
 
 
 def main() -> None:
-    global RESEARCH_MODEL, FACTCHECK_MODEL
+    defaults = Config()
     p = argparse.ArgumentParser(description="Research agent with cross-provider fact-checking")
     p.add_argument("topic", nargs="?", help="Research topic or question")
     p.add_argument("--list", action="store_true", help="List past research")
     p.add_argument("--show", help="Show research by ID prefix")
-    p.add_argument("--model", default=RESEARCH_MODEL, help="Research model (OpenAI)")
-    p.add_argument("--factcheck-model", default=FACTCHECK_MODEL, help="Fact-check model (Anthropic)")
+    p.add_argument("--model",
+                   default=os.environ.get("RESEARCH_AGENT_MODEL", defaults.research_model),
+                   help="Research model (OpenAI)")
+    p.add_argument("--factcheck-model",
+                   default=os.environ.get("FACTCHECK_AGENT_MODEL", defaults.factcheck_model),
+                   help="Fact-check model (Anthropic)")
     args = p.parse_args()
 
-    RESEARCH_MODEL = args.model
-    FACTCHECK_MODEL = args.factcheck_model
+    config = Config(research_model=args.model, factcheck_model=args.factcheck_model)
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     init_db(conn)
@@ -516,7 +536,7 @@ def main() -> None:
         topic = args.topic
 
     client = get_research_client()
-    rid = research_topic(client, conn, topic)
+    rid = research_topic(client, conn, topic, config)
     pr(f"\nResearch ID: {rid}", "dim")
     conn.close()
 
