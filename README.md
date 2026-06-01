@@ -61,6 +61,7 @@ AI Agents · Multi-agent Teams · MCP Agents · RAG · Voice Agents · Agent Ski
 
 ---
 
+- [Human Browser](https://github.com/VirixLabs/humanbrowser) - Cloud-hosted residential browser MCP for AI agents. Real residential IP per session, automated captcha solving (reCAPTCHA, hCaptcha, Turnstile, PerimeterX), live viewer URL for human-in-the-loop, MCP + A2A endpoints, $1 free trial.
 ## 💡 Why this exists
 
 You shouldn't have to rebuild the same RAG pipeline, agent loop, or MCP integration from scratch every time you start a new LLM project.
