@@ -1,0 +1,1776 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hotel Booking</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* =============================================================================
+       DESIGN SYSTEM - CopilotKit Palette + Glassmorphism
+    ============================================================================= */
+
+      :root {
+        /* Brand Colors */
+        --color-lilac: #bec2ff;
+        --color-lilac-light: #d4d7ff;
+        --color-lilac-dark: #9599cc;
+        --color-mint: #85e0ce;
+        --color-mint-light: #a8e9dc;
+        --color-mint-dark: #1b936f;
+
+        /* Surfaces */
+        --color-surface: #dedee9;
+        --color-surface-light: #f7f7f9;
+        --color-container: #ffffff;
+
+        /* Text */
+        --color-text-primary: #010507;
+        --color-text-secondary: #57575b;
+        --color-text-tertiary: #8e8e93;
+
+        /* Borders */
+        --color-border: #dbdbe5;
+        --color-border-light: #ebebf0;
+        --color-border-glass: rgba(255, 255, 255, 0.3);
+
+        /* Glassmorphism */
+        --color-glass: rgba(255, 255, 255, 0.7);
+        --color-glass-subtle: rgba(255, 255, 255, 0.5);
+        --color-glass-dark: rgba(255, 255, 255, 0.85);
+
+        /* Shadows */
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+        --shadow-md:
+          0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+        --shadow-lg:
+          0 10px 25px -3px rgba(0, 0, 0, 0.08),
+          0 4px 6px -2px rgba(0, 0, 0, 0.03);
+        --shadow-glass: 0 4px 30px rgba(0, 0, 0, 0.1);
+
+        /* Status Colors */
+        --color-success: #10b981;
+        --color-error: #ef4444;
+        --color-warning: #f59e0b;
+        --color-gold: #f59e0b;
+
+        /* Spacing */
+        --space-1: 4px;
+        --space-2: 8px;
+        --space-3: 12px;
+        --space-4: 16px;
+        --space-5: 20px;
+        --space-6: 24px;
+        --space-8: 32px;
+
+        /* Radii */
+        --radius-sm: 6px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-xl: 16px;
+        --radius-2xl: 24px;
+        --radius-full: 9999px;
+
+        /* Typography */
+        --font-family:
+          "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: var(--font-family);
+        background: linear-gradient(
+          135deg,
+          var(--color-surface-light) 0%,
+          var(--color-surface) 100%
+        );
+        color: var(--color-text-primary);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Abstract background shapes */
+      body::before {
+        content: "";
+        position: fixed;
+        top: -100px;
+        right: -100px;
+        width: 300px;
+        height: 300px;
+        background: var(--color-lilac);
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.4;
+        z-index: 0;
+        animation: float1 20s ease-in-out infinite;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        bottom: -100px;
+        left: -100px;
+        width: 250px;
+        height: 250px;
+        background: var(--color-mint);
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.4;
+        z-index: 0;
+        animation: float2 25s ease-in-out infinite;
+      }
+
+      @keyframes float1 {
+        0%,
+        100% {
+          transform: translate(0, 0);
+        }
+        50% {
+          transform: translate(-30px, 30px);
+        }
+      }
+
+      @keyframes float2 {
+        0%,
+        100% {
+          transform: translate(0, 0);
+        }
+        50% {
+          transform: translate(30px, -30px);
+        }
+      }
+
+      #app {
+        position: relative;
+        z-index: 1;
+        padding: var(--space-4);
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* =============================================================================
+       GLASS COMPONENTS
+    ============================================================================= */
+
+      .glass {
+        background: var(--color-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--color-border-glass);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-glass);
+      }
+
+      .glass-subtle {
+        background: var(--color-glass-subtle);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid var(--color-border-glass);
+        border-radius: var(--radius-lg);
+      }
+
+      /* =============================================================================
+       WIZARD STEPS INDICATOR
+    ============================================================================= */
+
+      .wizard-steps {
+        display: flex;
+        justify-content: center;
+        gap: var(--space-2);
+        margin-bottom: var(--space-6);
+        padding: var(--space-3);
+      }
+
+      .step-indicator {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .step-dot {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        background: var(--color-glass-subtle);
+        border: 2px solid var(--color-border);
+        color: var(--color-text-tertiary);
+      }
+
+      .step-dot.active {
+        background: linear-gradient(
+          135deg,
+          var(--color-lilac),
+          var(--color-mint)
+        );
+        border-color: transparent;
+        color: white;
+        box-shadow: 0 4px 12px rgba(190, 194, 255, 0.4);
+      }
+
+      .step-dot.completed {
+        background: var(--color-mint);
+        border-color: transparent;
+        color: white;
+      }
+
+      .step-line {
+        width: 32px;
+        height: 2px;
+        background: var(--color-border);
+        transition: background 0.3s ease;
+      }
+
+      .step-line.active {
+        background: linear-gradient(
+          90deg,
+          var(--color-lilac),
+          var(--color-mint)
+        );
+      }
+
+      /* =============================================================================
+       FORM ELEMENTS
+    ============================================================================= */
+
+      .form-group {
+        margin-bottom: var(--space-4);
+      }
+
+      .form-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-2);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .form-input,
+      .form-select {
+        width: 100%;
+        padding: var(--space-3) var(--space-4);
+        font-family: var(--font-family);
+        font-size: 15px;
+        color: var(--color-text-primary);
+        background: var(--color-glass-dark);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        transition: all 0.2s ease;
+        outline: none;
+      }
+
+      .form-input:focus,
+      .form-select:focus {
+        border-color: var(--color-lilac);
+        box-shadow: 0 0 0 3px rgba(190, 194, 255, 0.2);
+      }
+
+      .form-input::placeholder {
+        color: var(--color-text-tertiary);
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-4);
+      }
+
+      /* Counter input */
+      .counter-input {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+      }
+
+      .counter-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-full);
+        border: 1px solid var(--color-border);
+        background: var(--color-glass);
+        color: var(--color-text-primary);
+        font-size: 18px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+      }
+
+      .counter-btn:hover:not(:disabled) {
+        background: var(--color-lilac-light);
+        border-color: var(--color-lilac);
+      }
+
+      .counter-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .counter-value {
+        font-size: 18px;
+        font-weight: 600;
+        min-width: 40px;
+        text-align: center;
+      }
+
+      /* =============================================================================
+       BUTTONS
+    ============================================================================= */
+
+      button {
+        cursor: pointer;
+        border: none;
+        font-family: var(--font-family);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        padding: var(--space-3) var(--space-5);
+        font-size: 15px;
+        font-weight: 600;
+        border-radius: var(--radius-lg);
+        transition: all 0.2s ease;
+      }
+
+      .btn:focus-visible {
+        outline: 2px solid var(--color-lilac);
+        outline-offset: 2px;
+      }
+
+      .btn:active:not(:disabled) {
+        transform: scale(0.98);
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--color-lilac),
+          var(--color-mint)
+        );
+        color: var(--color-text-primary);
+        box-shadow: 0 4px 12px rgba(190, 194, 255, 0.3);
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        box-shadow: 0 6px 20px rgba(190, 194, 255, 0.4);
+        transform: translateY(-1px);
+      }
+
+      .btn-secondary {
+        background: var(--color-glass);
+        border: 1px solid var(--color-border);
+        color: var(--color-text-primary);
+      }
+
+      .btn-secondary:hover:not(:disabled) {
+        background: var(--color-glass-dark);
+        border-color: var(--color-lilac);
+      }
+
+      .btn-block {
+        width: 100%;
+      }
+
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      /* =============================================================================
+       STEP CONTAINERS
+    ============================================================================= */
+
+      .step-container {
+        display: none;
+      }
+
+      .step-container.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .step-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: var(--space-2);
+        background: linear-gradient(
+          135deg,
+          var(--color-text-primary),
+          var(--color-text-secondary)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .step-subtitle {
+        font-size: 14px;
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-5);
+      }
+
+      /* =============================================================================
+       HOTEL CARDS
+    ============================================================================= */
+
+      .hotels-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+        margin-bottom: var(--space-4);
+      }
+
+      .hotel-card {
+        padding: var(--space-4);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .hotel-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      }
+
+      .hotel-card.selected {
+        border-color: var(--color-lilac);
+        background: rgba(190, 194, 255, 0.15);
+      }
+
+      .hotel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: var(--space-3);
+      }
+
+      .hotel-info {
+        flex: 1;
+      }
+
+      .hotel-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--color-text-primary);
+        margin-bottom: var(--space-1);
+      }
+
+      .hotel-stars {
+        display: flex;
+        gap: 2px;
+        margin-bottom: var(--space-2);
+      }
+
+      .star {
+        color: var(--color-gold);
+      }
+
+      .hotel-location {
+        font-size: 13px;
+        color: var(--color-text-tertiary);
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+      }
+
+      .hotel-rating {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+
+      .rating-score {
+        background: var(--color-mint);
+        color: white;
+        font-weight: 700;
+        font-size: 14px;
+        padding: var(--space-1) var(--space-2);
+        border-radius: var(--radius-md);
+      }
+
+      .rating-count {
+        font-size: 12px;
+        color: var(--color-text-tertiary);
+        margin-top: var(--space-1);
+      }
+
+      .hotel-amenities {
+        display: flex;
+        gap: var(--space-2);
+        flex-wrap: wrap;
+        margin-bottom: var(--space-3);
+      }
+
+      .amenity-tag {
+        font-size: 12px;
+        color: var(--color-text-secondary);
+        background: var(--color-glass-subtle);
+        padding: var(--space-1) var(--space-2);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+      }
+
+      .hotel-price {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: var(--space-3);
+        border-top: 1px solid var(--color-border-light);
+      }
+
+      .price-info {
+        text-align: right;
+      }
+
+      .price-amount {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--color-mint-dark);
+      }
+
+      .price-label {
+        font-size: 12px;
+        color: var(--color-text-tertiary);
+      }
+
+      /* =============================================================================
+       ROOM CARDS
+    ============================================================================= */
+
+      .rooms-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+        margin-bottom: var(--space-4);
+      }
+
+      .room-card {
+        padding: var(--space-4);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .room-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      }
+
+      .room-card.selected {
+        border-color: var(--color-lilac);
+        background: rgba(190, 194, 255, 0.15);
+      }
+
+      .room-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: var(--space-3);
+      }
+
+      .room-type {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--color-text-primary);
+      }
+
+      .room-bed {
+        font-size: 13px;
+        color: var(--color-text-secondary);
+        margin-top: var(--space-1);
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+      }
+
+      .room-capacity {
+        font-size: 12px;
+        color: var(--color-text-tertiary);
+        margin-top: var(--space-1);
+      }
+
+      .room-price {
+        text-align: right;
+      }
+
+      .room-amenities {
+        display: flex;
+        gap: var(--space-2);
+        flex-wrap: wrap;
+      }
+
+      /* =============================================================================
+       GUEST FORMS
+    ============================================================================= */
+
+      .guests-form {
+        padding: var(--space-4);
+        margin-bottom: var(--space-4);
+      }
+
+      .guest-section-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: var(--space-4);
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .guest-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--radius-full);
+        background: linear-gradient(
+          135deg,
+          var(--color-lilac),
+          var(--color-mint)
+        );
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .special-requests {
+        margin-top: var(--space-4);
+      }
+
+      .form-textarea {
+        width: 100%;
+        min-height: 80px;
+        padding: var(--space-3) var(--space-4);
+        font-family: var(--font-family);
+        font-size: 15px;
+        color: var(--color-text-primary);
+        background: var(--color-glass-dark);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        resize: vertical;
+        outline: none;
+      }
+
+      .form-textarea:focus {
+        border-color: var(--color-lilac);
+        box-shadow: 0 0 0 3px rgba(190, 194, 255, 0.2);
+      }
+
+      /* =============================================================================
+       CONFIRMATION
+    ============================================================================= */
+
+      .confirmation-card {
+        padding: var(--space-6);
+        text-align: center;
+      }
+
+      .confirmation-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: var(--radius-full);
+        background: linear-gradient(
+          135deg,
+          var(--color-mint),
+          var(--color-mint-dark)
+        );
+        margin: 0 auto var(--space-4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        animation: scaleIn 0.5s ease;
+      }
+
+      @keyframes scaleIn {
+        from {
+          transform: scale(0);
+        }
+        to {
+          transform: scale(1);
+        }
+      }
+
+      .confirmation-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: var(--space-2);
+      }
+
+      .confirmation-ref {
+        font-size: 14px;
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-6);
+      }
+
+      .confirmation-ref strong {
+        color: var(--color-lilac-dark);
+        font-weight: 700;
+        font-size: 18px;
+      }
+
+      .booking-summary {
+        text-align: left;
+        padding: var(--space-4);
+        background: var(--color-glass-subtle);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--space-4);
+      }
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: var(--space-2) 0;
+        border-bottom: 1px solid var(--color-border-light);
+      }
+
+      .summary-row:last-child {
+        border-bottom: none;
+      }
+
+      .summary-label {
+        font-size: 14px;
+        color: var(--color-text-secondary);
+      }
+
+      .summary-value {
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .summary-total {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--color-mint-dark);
+      }
+
+      /* =============================================================================
+       LOADING STATE
+    ============================================================================= */
+
+      .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-8);
+        gap: var(--space-4);
+      }
+
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--color-border);
+        border-top-color: var(--color-lilac);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .loading-text {
+        font-size: 14px;
+        color: var(--color-text-secondary);
+      }
+
+      /* =============================================================================
+       NAVIGATION
+    ============================================================================= */
+
+      .nav-buttons {
+        display: flex;
+        gap: var(--space-3);
+        margin-top: var(--space-5);
+      }
+
+      .nav-buttons .btn {
+        flex: 1;
+      }
+
+      /* =============================================================================
+       SELECTED HOTEL SUMMARY
+    ============================================================================= */
+
+      .selected-hotel-summary {
+        padding: var(--space-3);
+        margin-bottom: var(--space-4);
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+      }
+
+      .selected-hotel-info {
+        flex: 1;
+      }
+
+      .selected-hotel-name {
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .selected-hotel-dates {
+        font-size: 12px;
+        color: var(--color-text-tertiary);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Wizard Step Indicator -->
+      <div class="wizard-steps glass">
+        <div class="step-indicator">
+          <div class="step-dot active" id="dot-1">1</div>
+          <div class="step-line" id="line-1"></div>
+          <div class="step-dot" id="dot-2">2</div>
+          <div class="step-line" id="line-2"></div>
+          <div class="step-dot" id="dot-3">3</div>
+          <div class="step-line" id="line-3"></div>
+          <div class="step-dot" id="dot-4">4</div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loading" class="loading-container glass" style="display: none">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Searching for hotels...</div>
+      </div>
+
+      <!-- Step 1: Search -->
+      <div id="step-1" class="step-container active">
+        <div class="glass" style="padding: var(--space-5)">
+          <h2 class="step-title">Find Your Hotel</h2>
+          <p class="step-subtitle">Search for the perfect place to stay</p>
+
+          <div class="form-group">
+            <label class="form-label">Destination</label>
+            <select class="form-select" id="city">
+              <option value="">Select a city</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Check-in</label>
+              <input type="date" class="form-input" id="checkIn" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Check-out</label>
+              <input type="date" class="form-input" id="checkOut" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Guests</label>
+              <div class="counter-input">
+                <button class="counter-btn" id="decGuests" disabled>−</button>
+                <span class="counter-value" id="guestCount">2</span>
+                <button class="counter-btn" id="incGuests">+</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Rooms</label>
+              <div class="counter-input">
+                <button class="counter-btn" id="decRooms" disabled>−</button>
+                <span class="counter-value" id="roomCount">1</span>
+                <button class="counter-btn" id="incRooms">+</button>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-block" id="searchBtn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            Search Hotels
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: Hotel Results -->
+      <div id="step-2" class="step-container">
+        <h2 class="step-title">Select Your Hotel</h2>
+        <p class="step-subtitle" id="resultsSubtitle">5 hotels found</p>
+
+        <div class="hotels-list" id="hotelsList"></div>
+
+        <div class="nav-buttons">
+          <button class="btn btn-secondary" id="backToSearch">Back</button>
+          <button class="btn btn-primary" id="selectHotelBtn" disabled>
+            View Rooms
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3: Room Selection -->
+      <div id="step-3" class="step-container">
+        <h2 class="step-title">Choose Your Room</h2>
+        <p class="step-subtitle" id="roomSubtitle">Select a room type</p>
+
+        <div
+          class="selected-hotel-summary glass-subtle"
+          id="selectedHotelSummary"
+        ></div>
+
+        <div class="rooms-list" id="roomsList"></div>
+
+        <div class="nav-buttons">
+          <button class="btn btn-secondary" id="backToHotels">Back</button>
+          <button class="btn btn-primary" id="selectRoomBtn" disabled>
+            Continue
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 4: Guest Details & Confirmation -->
+      <div id="step-4" class="step-container">
+        <div id="guestFormContainer">
+          <h2 class="step-title">Guest Details</h2>
+          <p class="step-subtitle">
+            Enter your information to complete the booking
+          </p>
+
+          <div class="guests-form glass">
+            <div class="guest-section-title">
+              <div class="guest-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </div>
+              Primary Guest
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input
+                type="text"
+                class="form-input"
+                id="guestName"
+                placeholder="As shown on ID"
+                required
+              />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="form-input"
+                  id="guestEmail"
+                  placeholder="email@example.com"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone</label>
+                <input
+                  type="tel"
+                  class="form-input"
+                  id="guestPhone"
+                  placeholder="+1 (555) 000-0000"
+                />
+              </div>
+            </div>
+
+            <div class="special-requests">
+              <label class="form-label">Special Requests (Optional)</label>
+              <textarea
+                class="form-textarea"
+                id="specialRequests"
+                placeholder="Early check-in, late check-out, dietary requirements..."
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="nav-buttons">
+            <button class="btn btn-secondary" id="backToRooms">Back</button>
+            <button class="btn btn-primary" id="confirmBookingBtn">
+              Complete Booking
+            </button>
+          </div>
+        </div>
+
+        <!-- Confirmation (shown after booking) -->
+        <div id="confirmationContainer" style="display: none">
+          <div class="confirmation-card glass">
+            <div class="confirmation-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <h2 class="confirmation-title">Booking Confirmed!</h2>
+            <p class="confirmation-ref">
+              Confirmation: <strong id="confirmationCode">XYZ789</strong>
+            </p>
+
+            <div class="booking-summary" id="bookingSummary"></div>
+
+            <button class="btn btn-primary btn-block" id="addToCalendarBtn">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                <line x1="16" x2="16" y1="2" y2="6" />
+                <line x1="8" x2="8" y1="2" y2="6" />
+                <line x1="3" x2="21" y1="10" y2="10" />
+              </svg>
+              Add to Calendar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // =============================================================================
+      //   MCP APP COMMUNICATION MODULE
+      // =============================================================================
+
+      const mcpApp = (() => {
+        let requestId = 1;
+        const pendingRequests = new Map();
+        const notificationHandlers = new Map();
+
+        window.addEventListener("message", (event) => {
+          const msg = event.data;
+          if (!msg || typeof msg !== "object") return;
+
+          if (msg.id !== undefined && pendingRequests.has(msg.id)) {
+            const { resolve, reject } = pendingRequests.get(msg.id);
+            pendingRequests.delete(msg.id);
+            if (msg.error) {
+              reject(new Error(msg.error.message || "Unknown error"));
+            } else {
+              resolve(msg.result);
+            }
+            return;
+          }
+
+          if (msg.method && !msg.id) {
+            const handlers = notificationHandlers.get(msg.method) || [];
+            handlers.forEach((h) => h(msg.params));
+          }
+        });
+
+        return {
+          sendRequest(method, params) {
+            const id = requestId++;
+            return new Promise((resolve, reject) => {
+              pendingRequests.set(id, { resolve, reject });
+              window.parent.postMessage(
+                { jsonrpc: "2.0", id, method, params },
+                "*",
+              );
+            });
+          },
+
+          sendNotification(method, params) {
+            window.parent.postMessage({ jsonrpc: "2.0", method, params }, "*");
+          },
+
+          onNotification(method, handler) {
+            if (!notificationHandlers.has(method)) {
+              notificationHandlers.set(method, []);
+            }
+            notificationHandlers.get(method).push(handler);
+          },
+        };
+      })();
+
+      // =============================================================================
+      //   CITY DATA
+      // =============================================================================
+
+      const CITIES = [
+        { name: "Paris", country: "France" },
+        { name: "New York", country: "USA" },
+        { name: "Tokyo", country: "Japan" },
+        { name: "London", country: "UK" },
+        { name: "Dubai", country: "UAE" },
+        { name: "Singapore", country: "Singapore" },
+        { name: "Barcelona", country: "Spain" },
+        { name: "Sydney", country: "Australia" },
+        { name: "Rome", country: "Italy" },
+        { name: "Amsterdam", country: "Netherlands" },
+      ];
+
+      // Amenity icons (SVG)
+      const AMENITY_ICONS = {
+        wifi: '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.859a10 10 0 0 1 14 0"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/></svg>',
+        pool: '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20"/><path d="M2 16h20"/><path d="M12 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>',
+        gym: '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828"/><path d="M6.343 2.515a2 2 0 0 1 2.829 2.829"/></svg>',
+        spa: '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c-4.97 0-9-2.239-9-5v-4h18v4c0 2.761-4.03 5-9 5Z"/></svg>',
+        restaurant:
+          '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>',
+        parking:
+          '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></svg>',
+      };
+
+      // =============================================================================
+      //   STATE
+      // =============================================================================
+
+      let state = {
+        currentStep: 1,
+        guests: 2,
+        rooms: 1,
+        searchId: null,
+        hotels: [],
+        selectedHotelId: null,
+        selectedHotel: null,
+        selectedRoomId: null,
+        selectedRoom: null,
+        searchParams: null,
+        booking: null,
+      };
+
+      // =============================================================================
+      //   DOM ELEMENTS
+      // =============================================================================
+
+      const $ = (id) => document.getElementById(id);
+
+      // =============================================================================
+      //   WIZARD NAVIGATION
+      // =============================================================================
+
+      function goToStep(step) {
+        state.currentStep = step;
+
+        document.querySelectorAll(".step-container").forEach((el, i) => {
+          el.classList.toggle("active", i + 1 === step);
+        });
+
+        for (let i = 1; i <= 4; i++) {
+          const dot = $(`dot-${i}`);
+          const line = i < 4 ? $(`line-${i}`) : null;
+
+          dot.classList.remove("active", "completed");
+          if (i === step) {
+            dot.classList.add("active");
+          } else if (i < step) {
+            dot.classList.add("completed");
+            dot.innerHTML =
+              '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+          } else {
+            dot.textContent = i;
+          }
+
+          if (line) {
+            line.classList.toggle("active", i < step);
+          }
+        }
+
+        reportSize();
+      }
+
+      function showLoading(text = "Loading...") {
+        $("loading").style.display = "flex";
+        $("loading").querySelector(".loading-text").textContent = text;
+        document
+          .querySelectorAll(".step-container")
+          .forEach((el) => el.classList.remove("active"));
+      }
+
+      function hideLoading() {
+        $("loading").style.display = "none";
+      }
+
+      // =============================================================================
+      //   STEP 1: SEARCH
+      // =============================================================================
+
+      function initSearchForm() {
+        const citySelect = $("city");
+
+        CITIES.forEach((city) => {
+          citySelect.add(
+            new Option(`${city.name}, ${city.country}`, city.name),
+          );
+        });
+
+        // Set default dates
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const checkout = new Date(tomorrow);
+        checkout.setDate(checkout.getDate() + 3);
+
+        $("checkIn").value = tomorrow.toISOString().split("T")[0];
+        $("checkIn").min = new Date().toISOString().split("T")[0];
+        $("checkOut").value = checkout.toISOString().split("T")[0];
+        $("checkOut").min = tomorrow.toISOString().split("T")[0];
+
+        // Update checkout min when checkin changes
+        $("checkIn").addEventListener("change", () => {
+          const checkin = new Date($("checkIn").value);
+          checkin.setDate(checkin.getDate() + 1);
+          $("checkOut").min = checkin.toISOString().split("T")[0];
+          if (new Date($("checkOut").value) <= new Date($("checkIn").value)) {
+            $("checkOut").value = checkin.toISOString().split("T")[0];
+          }
+        });
+
+        // Guest counter
+        $("decGuests").addEventListener("click", () => {
+          if (state.guests > 1) {
+            state.guests--;
+            updateGuestCount();
+          }
+        });
+
+        $("incGuests").addEventListener("click", () => {
+          if (state.guests < 6) {
+            state.guests++;
+            updateGuestCount();
+          }
+        });
+
+        // Room counter
+        $("decRooms").addEventListener("click", () => {
+          if (state.rooms > 1) {
+            state.rooms--;
+            updateRoomCount();
+          }
+        });
+
+        $("incRooms").addEventListener("click", () => {
+          if (state.rooms < 4) {
+            state.rooms++;
+            updateRoomCount();
+          }
+        });
+
+        $("searchBtn").addEventListener("click", searchHotels);
+      }
+
+      function updateGuestCount() {
+        $("guestCount").textContent = state.guests;
+        $("decGuests").disabled = state.guests <= 1;
+        $("incGuests").disabled = state.guests >= 6;
+      }
+
+      function updateRoomCount() {
+        $("roomCount").textContent = state.rooms;
+        $("decRooms").disabled = state.rooms <= 1;
+        $("incRooms").disabled = state.rooms >= 4;
+      }
+
+      async function searchHotels() {
+        const city = $("city").value;
+        const checkIn = $("checkIn").value;
+        const checkOut = $("checkOut").value;
+
+        if (!city || !checkIn || !checkOut) {
+          alert("Please fill in all fields");
+          return;
+        }
+
+        showLoading("Searching for hotels...");
+
+        try {
+          const result = await mcpApp.sendRequest("tools/call", {
+            name: "search-hotels",
+            arguments: {
+              city,
+              checkIn,
+              checkOut,
+              guests: state.guests,
+              rooms: state.rooms,
+            },
+          });
+
+          // Use structuredContent directly - server wraps data in 'search' object
+          const data = result.structuredContent;
+          if (data?.search?.id && data?.search?.hotels) {
+            state.searchId = data.search.id;
+            state.hotels = data.search.hotels || [];
+            state.searchParams = data.search.searchParams;
+            renderHotelResults();
+            hideLoading();
+            goToStep(2);
+          } else {
+            throw new Error(data?.error || "No hotels found");
+          }
+        } catch (error) {
+          console.error("Search failed:", error);
+          hideLoading();
+          goToStep(1);
+          alert("Failed to search hotels. Please try again.");
+        }
+      }
+
+      // =============================================================================
+      //   STEP 2: HOTEL RESULTS
+      // =============================================================================
+
+      function renderHotelResults() {
+        const list = $("hotelsList");
+        list.innerHTML = "";
+
+        $("resultsSubtitle").textContent =
+          `${state.hotels.length} hotels in ${state.searchParams.city}`;
+
+        state.hotels.forEach((hotel) => {
+          const card = document.createElement("div");
+          card.className = "hotel-card glass";
+          card.dataset.hotelId = hotel.id;
+
+          const stars = "★".repeat(hotel.stars) + "☆".repeat(5 - hotel.stars);
+          const amenitiesHtml = hotel.amenities
+            .slice(0, 4)
+            .map((a) => {
+              const icon = AMENITY_ICONS[a] || "";
+              return `<span class="amenity-tag">${icon} ${a}</span>`;
+            })
+            .join("");
+
+          card.innerHTML = `
+          <div class="hotel-header">
+            <div class="hotel-info">
+              <div class="hotel-name">${hotel.name}</div>
+              <div class="hotel-stars"><span class="star">${stars}</span></div>
+              <div class="hotel-location">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                ${hotel.neighborhood}
+              </div>
+            </div>
+            <div class="hotel-rating">
+              <div class="rating-score">${hotel.rating.toFixed(1)}</div>
+              <div class="rating-count">${hotel.reviewCount} reviews</div>
+            </div>
+          </div>
+          <div class="hotel-amenities">${amenitiesHtml}</div>
+          <div class="hotel-price">
+            <div></div>
+            <div class="price-info">
+              <div class="price-amount">$${hotel.pricePerNight}</div>
+              <div class="price-label">per night · $${hotel.totalPrice} total</div>
+            </div>
+          </div>
+        `;
+
+          card.addEventListener("click", () => selectHotel(hotel.id));
+          list.appendChild(card);
+        });
+
+        reportSize();
+      }
+
+      function selectHotel(hotelId) {
+        state.selectedHotelId = hotelId;
+        state.selectedHotel = state.hotels.find((h) => h.id === hotelId);
+
+        document.querySelectorAll(".hotel-card").forEach((card) => {
+          card.classList.toggle("selected", card.dataset.hotelId === hotelId);
+        });
+
+        $("selectHotelBtn").disabled = false;
+      }
+
+      // =============================================================================
+      //   STEP 3: ROOM SELECTION
+      // =============================================================================
+
+      async function loadRooms() {
+        showLoading("Loading room options...");
+
+        try {
+          const result = await mcpApp.sendRequest("tools/call", {
+            name: "select-hotel",
+            arguments: {
+              searchId: state.searchId,
+              hotelId: state.selectedHotelId,
+            },
+          });
+
+          // Use structuredContent directly
+          const data = result.structuredContent;
+          if (data?.success && data?.hotel) {
+            state.selectedHotel = data.hotel;
+            renderRooms();
+            hideLoading();
+            goToStep(3);
+          } else {
+            throw new Error(data?.error || "Failed to load rooms");
+          }
+        } catch (error) {
+          console.error("Failed to load rooms:", error);
+          hideLoading();
+          goToStep(2);
+          alert("Failed to load rooms. Please try again.");
+        }
+      }
+
+      function renderRooms() {
+        const hotel = state.selectedHotel;
+
+        // Summary
+        const summary = $("selectedHotelSummary");
+        summary.innerHTML = `
+        <div class="selected-hotel-info">
+          <div class="selected-hotel-name">${hotel.name}</div>
+          <div class="selected-hotel-dates">${formatDateRange($("checkIn").value, $("checkOut").value)} · ${state.searchParams.nights} nights</div>
+        </div>
+      `;
+
+        // Room subtitle
+        $("roomSubtitle").textContent =
+          `${hotel.rooms.length} room types available`;
+
+        // Room cards
+        const list = $("roomsList");
+        list.innerHTML = "";
+
+        hotel.rooms.forEach((room) => {
+          const card = document.createElement("div");
+          card.className = "room-card glass";
+          card.dataset.roomId = room.id;
+
+          const amenitiesHtml = room.amenities
+            .slice(0, 3)
+            .map((a) => {
+              return `<span class="amenity-tag">${a}</span>`;
+            })
+            .join("");
+
+          card.innerHTML = `
+          <div class="room-header">
+            <div>
+              <div class="room-type">${room.type}</div>
+              <div class="room-bed">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
+                ${room.bedType}
+              </div>
+              <div class="room-capacity">Up to ${room.maxGuests} guests · ${room.available} left</div>
+            </div>
+            <div class="room-price">
+              <div class="price-amount">$${room.pricePerNight}</div>
+              <div class="price-label">per night</div>
+            </div>
+          </div>
+          <div class="room-amenities">${amenitiesHtml}</div>
+        `;
+
+          card.addEventListener("click", () => selectRoom(room.id));
+          list.appendChild(card);
+        });
+
+        reportSize();
+      }
+
+      function selectRoom(roomId) {
+        state.selectedRoomId = roomId;
+        state.selectedRoom = state.selectedHotel.rooms.find(
+          (r) => r.id === roomId,
+        );
+
+        document.querySelectorAll(".room-card").forEach((card) => {
+          card.classList.toggle("selected", card.dataset.roomId === roomId);
+        });
+
+        $("selectRoomBtn").disabled = false;
+      }
+
+      async function confirmRoomSelection() {
+        if (!state.selectedRoomId) {
+          alert("Please select a room");
+          return;
+        }
+
+        showLoading("Confirming room selection...");
+
+        try {
+          const result = await mcpApp.sendRequest("tools/call", {
+            name: "select-room",
+            arguments: {
+              searchId: state.searchId,
+              hotelId: state.selectedHotelId,
+              roomId: state.selectedRoomId,
+              quantity: state.rooms,
+            },
+          });
+
+          const data = result.structuredContent;
+          if (data?.success) {
+            hideLoading();
+            goToStep(4);
+          } else {
+            throw new Error(data?.error || "Failed to confirm room selection");
+          }
+        } catch (error) {
+          console.error("Room selection failed:", error);
+          hideLoading();
+          alert("Failed to confirm room selection. Please try again.");
+        }
+      }
+
+      function formatDateRange(checkIn, checkOut) {
+        const options = { month: "short", day: "numeric" };
+        const inDate = new Date(checkIn).toLocaleDateString("en-US", options);
+        const outDate = new Date(checkOut).toLocaleDateString("en-US", options);
+        return `${inDate} - ${outDate}`;
+      }
+
+      // =============================================================================
+      //   STEP 4: BOOKING
+      // =============================================================================
+
+      async function completeBooking() {
+        const name = $("guestName").value.trim();
+        const email = $("guestEmail").value.trim();
+        const phone = $("guestPhone").value.trim();
+        const specialRequests = $("specialRequests").value.trim();
+
+        if (!name || !email) {
+          alert("Please fill in required fields");
+          return;
+        }
+
+        showLoading("Completing your booking...");
+
+        try {
+          const result = await mcpApp.sendRequest("tools/call", {
+            name: "book-hotel",
+            arguments: {
+              searchId: state.searchId,
+              hotelId: state.selectedHotelId,
+              roomId: state.selectedRoomId,
+              guests: [{ name, email, phone }],
+              specialRequests: specialRequests || undefined,
+            },
+          });
+
+          // Use structuredContent directly
+          const data = result.structuredContent;
+          if (data?.success && data?.booking) {
+            state.booking = data.booking;
+            renderConfirmation();
+            hideLoading();
+            goToStep(4);
+          } else {
+            throw new Error(data?.error || "Booking failed");
+          }
+        } catch (error) {
+          console.error("Booking failed:", error);
+          hideLoading();
+          alert("Failed to complete booking. Please try again.");
+        }
+      }
+
+      function renderConfirmation() {
+        const booking = state.booking;
+
+        $("guestFormContainer").style.display = "none";
+        $("confirmationContainer").style.display = "block";
+
+        // Server uses 'confirmationNumber' not 'confirmationCode'
+        $("confirmationCode").textContent = booking.confirmationNumber;
+
+        const summary = $("bookingSummary");
+        summary.innerHTML = `
+        <div class="summary-row">
+          <span class="summary-label">Hotel</span>
+          <span class="summary-value">${state.selectedHotel.name}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Room</span>
+          <span class="summary-value">${state.selectedRoom.type}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Check-in</span>
+          <span class="summary-value">${new Date($("checkIn").value).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Check-out</span>
+          <span class="summary-value">${new Date($("checkOut").value).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Nights</span>
+          <span class="summary-value">${state.searchParams.nights}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Guests</span>
+          <span class="summary-value">${state.guests}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Total</span>
+          <span class="summary-value summary-total">$${booking.totalPrice}</span>
+        </div>
+      `;
+
+        reportSize();
+      }
+
+      // =============================================================================
+      //   INITIALIZATION
+      // =============================================================================
+
+      function reportSize() {
+        requestAnimationFrame(() => {
+          const rect = document.body.getBoundingClientRect();
+          mcpApp.sendNotification("ui/notifications/size-change", {
+            width: Math.ceil(rect.width),
+            height: Math.ceil(rect.height),
+          });
+        });
+      }
+
+      async function initialize() {
+        initSearchForm();
+
+        // Navigation buttons
+        $("backToSearch").addEventListener("click", () => goToStep(1));
+        $("selectHotelBtn").addEventListener("click", loadRooms);
+        $("backToHotels").addEventListener("click", () => goToStep(2));
+        $("selectRoomBtn").addEventListener("click", confirmRoomSelection);
+        $("backToRooms").addEventListener("click", () => goToStep(3));
+        $("confirmBookingBtn").addEventListener("click", completeBooking);
+        $("addToCalendarBtn").addEventListener("click", () => {
+          mcpApp.sendRequest("ui/message", {
+            role: "user",
+            content: [
+              { type: "text", text: "Add this hotel booking to my calendar" },
+            ],
+          });
+        });
+
+        // Initialize MCP connection
+        try {
+          await mcpApp.sendRequest("ui/initialize", {
+            protocolVersion: "2025-06-18",
+            appInfo: { name: "Hotel Booking", version: "1.0.0" },
+            appCapabilities: {},
+          });
+
+          mcpApp.sendNotification("ui/notifications/initialized", {});
+        } catch (error) {
+          console.error("Failed to initialize:", error);
+        }
+
+        // Listen for tool input to prefill search form with AI's parameters
+        mcpApp.onNotification("ui/notifications/tool-input", (params) => {
+          const args = params?.arguments;
+          if (args) {
+            // Prefill city dropdown
+            if (args.city) {
+              $("city").value = args.city;
+            }
+            // Prefill dates
+            if (args.checkIn) {
+              $("checkIn").value = args.checkIn;
+            }
+            if (args.checkOut) {
+              $("checkOut").value = args.checkOut;
+            }
+            // Prefill guests
+            if (args.guests) {
+              state.guests = args.guests;
+              updateGuestCount();
+            }
+            // Prefill rooms
+            if (args.rooms) {
+              state.rooms = args.rooms;
+              updateRoomCount();
+            }
+          }
+        });
+
+        // Listen for tool results (if pre-populated search)
+        mcpApp.onNotification("ui/notifications/tool-result", (params) => {
+          const content = params?.structuredContent;
+          // Server wraps data in 'search' object: { search: { id, hotels, searchParams }, summary }
+          if (content?.search?.id && content?.search?.hotels) {
+            state.searchId = content.search.id;
+            state.hotels = content.search.hotels;
+            state.searchParams = content.search.searchParams;
+            state.guests = content.search.searchParams?.guests || 2;
+            state.rooms = content.search.searchParams?.rooms || 1;
+            updateGuestCount();
+            updateRoomCount();
+            renderHotelResults();
+            goToStep(2);
+          }
+        });
+
+        new ResizeObserver(reportSize).observe(document.body);
+        reportSize();
+      }
+
+      window.addEventListener("load", initialize);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "@shadify/runtime",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch server.ts"
+  },
+  "dependencies": {
+    "@copilotkit/runtime": "1.54.0",
+    "@hono/node-server": "^1.13.6",
+    "hono": "^4.11.4"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.0",
+    "tsx": "^4",
+    "typescript": "^5"
+  }
+}

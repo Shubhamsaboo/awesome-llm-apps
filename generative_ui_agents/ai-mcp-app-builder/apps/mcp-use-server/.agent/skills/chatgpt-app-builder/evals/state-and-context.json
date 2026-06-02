@@ -1,0 +1,22 @@
+[
+  {
+    "query": "I have a color picker widget. When users click a color swatch, I need to remember their choice.",
+    "expected_behavior": "Uses state + setState from useWidget. Shows setState on click. NOT React useState (would lose selection on reopen)."
+  },
+  {
+    "query": "My widget has a hover tooltip that appears when you mouse over items. It keeps showing the tooltip from the last session.",
+    "expected_behavior": "Hover is ephemeral UI -- use React useState, NOT persistent state. useState resets on reopen, which is correct for hover effects."
+  },
+  {
+    "query": "Users browse recipes. When they ask the LLM 'what ingredients do I need?', it doesn't know which recipe they're viewing.",
+    "expected_behavior": "Store the viewed recipe in persistent state via setState so the LLM can read it. The LLM sees state data."
+  },
+  {
+    "query": "I want a 'Compare these options' button that asks the AI to analyze pros and cons.",
+    "expected_behavior": "Uses sendFollowUpMessage from useWidget. Button onClick calls sendFollowUpMessage with comparison prompt including context from state."
+  },
+  {
+    "query": "My playlist builder has an Add Song button in search results and a Remove button in the playlist view. Both need access to the same playlist.",
+    "expected_behavior": "Uses persistent state (setState) for the playlist. Both components read from state and update via setState. NOT separate React useState in each component."
+  }
+]

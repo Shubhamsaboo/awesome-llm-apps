@@ -1,0 +1,34 @@
+[
+  {
+    "query": "Spec: Find concerts nearby, see available seats, purchase tickets. API: Event search, seat availability, purchase. Payment via Stripe checkout.",
+    "expected_behavior": "Widget (browse-events) for search results + seat selection UI. Tool (purchase-tickets) for checkout URL. Widget handles browsing and seat picking. Tool handles payment redirect."
+  },
+  {
+    "query": "Spec: Find restaurants nearby and make reservations. API: Restaurant search, reservation API. Reservations require phone number.",
+    "expected_behavior": "Widget (search-restaurants) showing results with Reserve button. Tool (make-reservation) for booking. Phone number collected via widget form input."
+  },
+  {
+    "query": "Spec: Check PTO balance and request time off. API: PTO balance, time-off request. Needs manager approval.",
+    "expected_behavior": "Tool (get-pto-balance) for balance check -- no UI needed. Tool or widget for requesting time off (calendar date picker is acceptable). Not everything needs a widget."
+  },
+  {
+    "query": "Spec: Track flight status with map. Real-time updates. API: Flight status.",
+    "expected_behavior": "Widget (track-flight) showing flight status with visual map, times, gate info. Rich visual data justifies a widget."
+  },
+  {
+    "query": "Spec: Create support tickets, check ticket status. API: Ticket CRUD.",
+    "expected_behavior": "Tools only -- no widget needed. Tool (create-ticket) takes description/category. Tool (get-ticket-status) returns status. Pure conversational, no visual data."
+  },
+  {
+    "query": "Spec: Movie showtimes nearby. API: Movie listings. No booking.",
+    "expected_behavior": "Widget (search-movies) showing movie cards with showtimes. One widget, no tools -- purely browsing."
+  },
+  {
+    "query": "I have a search-flights widget and also created a get-flight-details tool that loads details when a flight is selected.",
+    "expected_behavior": "BAD PATTERN: lazy-loading. The search-flights widget should return full flight data upfront. Remove get-flight-details tool. Tool calls are expensive."
+  },
+  {
+    "query": "My widget has a search-flights tool AND a select-flight tool AND an add-passenger tool.",
+    "expected_behavior": "BAD PATTERN: widget state as tools. Flight selection and passenger form are widget-internal state. Only create-checkout should be a tool (backend operation)."
+  }
+]

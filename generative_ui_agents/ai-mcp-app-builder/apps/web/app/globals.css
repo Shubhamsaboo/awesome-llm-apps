@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f5f7fb;
+  --foreground: #0f172a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Satoshi", "IBM Plex Sans", "Segoe UI", sans-serif;
+}
+
+body,
+html {
+  height: 100%;
+}
+
+body {
+  background-image:
+    radial-gradient(
+      circle at 15% 10%,
+      rgba(59, 130, 246, 0.14),
+      transparent 36%
+    ),
+    radial-gradient(
+      circle at 85% 18%,
+      rgba(16, 185, 129, 0.1),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 48% 92%,
+      rgba(249, 115, 22, 0.08),
+      transparent 38%
+    ),
+    linear-gradient(180deg, #f7f9fc 0%, #eef3fa 100%);
+  background-attachment: fixed;
+}
+
+#__next,
+body > div:first-child {
+  height: 100%;
+}
+
+.app-shell {
+  position: relative;
+}
+
+.app-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(circle at center, black 55%, transparent 100%);
+  opacity: 0.35;
+}
+
+.glass-panel {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.78) 0%,
+    rgba(255, 255, 255, 0.7) 100%
+  );
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.75) inset,
+    0 18px 40px rgba(15, 23, 42, 0.07);
+  backdrop-filter: blur(10px);
+}
+
+/* ─── Responsive layout toggle ──────────────────────────────────────────── */
+
+.mobile-layout {
+  display: flex;
+}
+
+.desktop-layout {
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  .mobile-layout {
+    display: none !important;
+  }
+
+  .desktop-layout {
+    display: grid !important;
+  }
+}
+
+/* ─── CopilotKit chat overrides ─────────────────────────────────────────── */
+
+/*
+ * Basic CopilotKit styling - keep it minimal to avoid breaking internal layout.
+ */
+.chat-container {
+  --copilot-kit-background-color: white;
+}
+
+/*
+ * Ensure the last chat message never sits behind the fixed composer.
+ * We keep CopilotKit's dynamic padding and add a small extra spacer.
+ */
+.chat-container
+  [class*="overflow-y-scroll"]
+  > div
+  > div[style*="padding-bottom"]::after {
+  content: "";
+  display: block;
+  height: 5rem;
+}
+
+/* Starter chips: show short label only; truncate if title is long (message is sent on click, not shown). */
+.chat-container [data-slot="suggestion-pill"] > span:last-child {
+  max-width: min(11rem, 32vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

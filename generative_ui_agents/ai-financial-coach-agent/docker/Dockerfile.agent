@@ -1,0 +1,16 @@
+FROM python:3.12-slim
+
+# Install uv by copying from the official image (avoids curl|sh pipe-swallow bug
+# where a 5xx on astral.sh silently produces an exit-0 layer with no uv binary).
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+
+WORKDIR /app
+
+COPY pyproject.toml uv.lock ./
+COPY main.py ./
+
+RUN uv sync
+
+EXPOSE 8000
+
+CMD ["uv", "run", "python", "main.py"]

@@ -1,0 +1,2 @@
+# Use Node.js 20+
+NODE_VERSION=20.18.1

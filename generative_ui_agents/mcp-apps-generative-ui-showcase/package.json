@@ -1,0 +1,36 @@
+{
+  "name": "mcp-apps",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@ag-ui/client": "^0.0.53",
+    "@ag-ui/encoder": "^0.0.53",
+    "@ag-ui/mcp-apps-middleware": "^0.0.3",
+    "@copilotkit/react-core": "1.59.2",
+    "@copilotkit/runtime": "1.59.2",
+    "@copilotkit/shared": "1.59.2",
+    "hono": "^4.12.23",
+    "next": "16.1.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "zod": "^3.25.75"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "pnpm": {
+    "overrides": {
+      "rxjs": "7.8.2"
+    }
+  }
+}

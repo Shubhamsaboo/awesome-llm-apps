@@ -1,0 +1,26 @@
+[
+  {
+    "query": "Create a weather widget with temperature and conditions",
+    "expected_behavior": "Creates resources/weather-display.tsx with widgetMetadata (description, props Zod schema), default export, McpUseProvider autoSize, isPending check. Server tool with widget config. Uses widget() helper."
+  },
+  {
+    "query": "My widget shows undefined for city name when it first loads",
+    "expected_behavior": "Missing isPending check. Widget renders before tool completes. Must check isPending and show loading state before accessing props."
+  },
+  {
+    "query": "I want the widget to have a button that calls a booking tool",
+    "expected_behavior": "Uses callTool from useWidget(). Shows async onClick: await callTool('book-item', { id }). Includes loading state and error handling."
+  },
+  {
+    "query": "I'm getting duplicate tool registration for my widget",
+    "expected_behavior": "Widget has exposeAsTool: true AND custom tool with widget: { name }. Fix: remove exposeAsTool: true from widgetMetadata (default is false) since the custom tool handles registration."
+  },
+  {
+    "query": "Show me how to build a product search widget with filter bar and product cards",
+    "expected_behavior": "Uses folder-based structure: resources/product-search/widget.tsx entry point, components/ProductCard.tsx, components/FilterBar.tsx. Entry exports widgetMetadata + default component."
+  },
+  {
+    "query": "How do I make my widget look good in dark mode?",
+    "expected_behavior": "Uses theme from useWidget(). Conditional styling based on theme === 'dark'. Shows both inline style and Tailwind approaches."
+  }
+]

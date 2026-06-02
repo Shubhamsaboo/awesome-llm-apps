@@ -1,0 +1,42 @@
+[
+  {
+    "query": "I want to build a ChatGPT app for my toy store",
+    "expected_behavior": "Must start with discovery workflow (discover.md). Ask Phase 1 questions. Must NOT jump to implementation or copy template."
+  },
+  {
+    "query": "I have a spec ready. How do I set up the project?",
+    "expected_behavior": "References setup.md for bootstrapping. Mentions npx create-mcp-use-app --template mcp-apps. References run-locally for dev server."
+  },
+  {
+    "query": "How do I decide whether to use a widget or just a tool?",
+    "expected_behavior": "References architecture.md. Widget if browsing/comparing/visual data. Tool if conversational text suffices."
+  },
+  {
+    "query": "How do I persist user selections in my widget?",
+    "expected_behavior": "References state-and-context.md. Uses state + setState from useWidget. NOT React useState."
+  },
+  {
+    "query": "What hook do I use to trigger an LLM response from a button click?",
+    "expected_behavior": "References state-and-context.md or components-api.md. Answer: sendFollowUpMessage from useWidget."
+  },
+  {
+    "query": "What happens to PiP mode on mobile?",
+    "expected_behavior": "References ui-guidelines.md. Answer: PiP coerces to fullscreen on mobile."
+  },
+  {
+    "query": "How do I handle theme changes in my widget?",
+    "expected_behavior": "References ui-guidelines.md or components-api.md. Uses theme from useWidget. Shows conditional styling."
+  },
+  {
+    "query": "How do I configure CSP for my widget that calls an external API?",
+    "expected_behavior": "References csp-and-metadata.md. Shows metadata.csp.connectDomains config in widgetMetadata."
+  },
+  {
+    "query": "What's the difference between state (persistent) and useState (ephemeral)?",
+    "expected_behavior": "References state-and-context.md. state persists, LLM sees it. useState is ephemeral, LLM can't see it. Decision guide table."
+  },
+  {
+    "query": "How do I pass large image data to my widget without the LLM seeing it?",
+    "expected_behavior": "Uses props in widget() helper -- props are sent via _meta and hidden from the model. The output field is what the model sees."
+  }
+]
