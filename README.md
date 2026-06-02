@@ -106,10 +106,10 @@ streamlit run travel_agent.py
 
 - [🌱 Starter AI Agents](#-starter-ai-agents)
 - [🚀 Advanced AI Agents](#-advanced-ai-agents)
-- [🖼️ Generative UI and Agentic Frontends](#️-generative-ui-and-agentic-frontends)
-- [🎮 Autonomous Game-Playing Agents](#-autonomous-game-playing-agents)
 - [🤝 Multi-agent Teams](#-multi-agent-teams)
 - [🗣️ Voice AI Agents](#️-voice-ai-agents)
+- [🖼️ Generative UI and Agentic Frontends](#️-generative-ui-and-agentic-frontends)
+- [🎮 Autonomous Game-Playing Agents](#-autonomous-game-playing-agents)
 - [♾️ MCP AI Agents](#-mcp-ai-agents)
 - [📀 RAG Tutorials](#-rag-retrieval-augmented-generation)
 - [🧩 Awesome Agent Skills](#-awesome-agent-skills)
@@ -165,26 +165,6 @@ streamlit run travel_agent.py
 *   [🌐 Openwork - Open Browser Automation Agent](https://github.com/accomplish-ai/openwork) <sub>↗ external</sub>
 *   [🛡️ Trust-Gated Multi-Agent Research Team](advanced_ai_agents/multi_agent_apps/trust_gated_agent_team/)
 
-### 🖼️ Generative UI and Agentic Frontends
-*Agents that render interactive UI components — forms, cards, charts, editable plans — not just text. Built with [CopilotKit](https://github.com/CopilotKit/CopilotKit) and [AG-UI](https://github.com/ag-ui-protocol/ag-ui).*
-
-*   [🗂️ Generative UI Starter Project](generative_ui_agents/generative-ui-starter-project/)
-*   [🪙 AI Financial Coach Agent](generative_ui_agents/ai-financial-coach-agent/)
-*   [📊 AI Dashboard Canvas Agent](generative_ui_agents/ai-dashboard-canvas-agent/)
-*   [🛠️ AI MCP App Builder](generative_ui_agents/ai-mcp-app-builder/)
-*   [✈️ MCP Apps Generative UI Showcase](generative_ui_agents/mcp-apps-generative-ui-showcase/)
-*   [🎛️ AI Shadcn Component Generator](generative_ui_agents/ai-shadcn-component-generator/)
-*   [🔍 AI Deep Research Agent](generative_ui_agents/ai-deep-research-agent/)
-
-See [`generative_ui_agents/`](generative_ui_agents/) for the category overview, conventions, and how to contribute a template.
-
-### 🎮 Autonomous Game-Playing Agents
-*Agents that play games end-to-end - reasoning, strategy, and action.*
-
-*   [🎮 AI 3D Pygame Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_3dpygame_r1/)
-*   [♜ AI Chess Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_chess_agent/)
-*   [🎲 AI Tic-Tac-Toe Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_tic_tac_toe_agent/)
-
 ### 🤝 Multi-agent Teams
 *Multiple agents collaborating to accomplish complex, cross-domain tasks.*
 
@@ -210,6 +190,24 @@ See [`generative_ui_agents/`](generative_ui_agents/) for the category overview, 
 *   [🛡️ Insurance Claim Live Agent Team](voice_ai_agents/insurance_claim_live_agent_team/)
 *   [🔊 Voice RAG Agent (OpenAI SDK)](voice_ai_agents/voice_rag_openaisdk/)
 *   [🎙️ OpenSource Voice Dictation Agent (Wispr Flow clone)](https://github.com/akshayaggarwal99/jarvis-ai-assistant) <sub>↗ external</sub>
+
+### 🖼️ Generative UI and Agentic Frontends
+*Agents that render interactive UI components — forms, cards, charts, editable plans — not just text.*
+
+*   [🗂️ Generative UI Starter Project](generative_ui_agents/generative-ui-starter-project/)
+*   [🪙 AI Financial Coach Agent](generative_ui_agents/ai-financial-coach-agent/)
+*   [📊 AI Dashboard Canvas Agent](generative_ui_agents/ai-dashboard-canvas-agent/)
+*   [🛠️ AI MCP App Builder](generative_ui_agents/ai-mcp-app-builder/)
+*   [✈️ MCP Apps Generative UI Showcase](generative_ui_agents/mcp-apps-generative-ui-showcase/)
+*   [🎛️ AI Shadcn Component Generator](generative_ui_agents/ai-shadcn-component-generator/)
+*   [🔍 AI Deep Research Agent](generative_ui_agents/ai-deep-research-agent/)
+
+### 🎮 Autonomous Game-Playing Agents
+*Agents that play games end-to-end - reasoning, strategy, and action.*
+
+*   [🎮 AI 3D Pygame Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_3dpygame_r1/)
+*   [♜ AI Chess Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_chess_agent/)
+*   [🎲 AI Tic-Tac-Toe Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_tic_tac_toe_agent/)
 
 ### ♾️ MCP AI Agents
 *Agents that connect to external tools and data via Model Context Protocol.*
