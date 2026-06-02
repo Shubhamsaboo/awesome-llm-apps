@@ -6,12 +6,12 @@
  */
 
 import {
+  BuiltInAgent,
   CopilotRuntime,
   createCopilotEndpoint,
   InMemoryAgentRunner,
-} from "@copilotkit/runtime";
+} from "@copilotkit/runtime/v2";
 import { handle } from "hono/vercel";
-import { BuiltInAgent } from "@copilotkit/runtime/v2";
 import { MCPAppsMiddleware } from "@ag-ui/mcp-apps-middleware";
 
 // Determine which LLM model to use based on available API keys
