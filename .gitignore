@@ -2,17 +2,52 @@
 __pycache__/
 *.pyc
 *.pyo
+*.pyc
+*.pyo
+*.pyd
 
-# Environment files
-.env
-.env.local
+# Python packages
+*.egg-info/
+dist/
+build/
 
 # Virtual environments
 venv/
 .venv/
+env/
+.env/
+
+# Environment files
+.env
+.env.local
+.env.production
+*.log
 
 # Node
 node_modules/
 .next/
-dist/
 *.tsbuildinfo
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Coverage
+*.cover
+
+# Temporary files
+tmp/
+temp/
+*.tmp

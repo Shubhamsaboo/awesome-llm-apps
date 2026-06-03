@@ -502,7 +502,7 @@ def display_properties_professionally(properties, market_analysis, property_valu
                     price_num = ''.join(filter(str.isdigit, str(price_str)))
                     if price_num:
                         prices.append(int(price_num))
-                except:
+                except Exception:
                     pass
         avg_price = f"${sum(prices) // len(prices):,}" if prices else "N/A"
         st.metric("Average Price", avg_price)

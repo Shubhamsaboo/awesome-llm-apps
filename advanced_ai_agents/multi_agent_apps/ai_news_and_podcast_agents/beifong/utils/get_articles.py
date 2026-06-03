@@ -1,5 +1,5 @@
 import sqlite3
-import openai
+from openai import OpenAI
 import json
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
@@ -8,7 +8,7 @@ TOPIC_EXTRACTION_MODEL = "gpt-4o-mini"
 
 
 def extract_search_terms(prompt: str, api_key: str, max_terms: int = 10) -> list:
-    client = openai.OpenAI(api_key=api_key)
+    client = OpenAI(api_key=api_key)
     system_msg = (
         "analyze the user's request and extract up to "
         f"{max_terms} key search terms or phrases (focus on nouns and concepts). "
@@ -100,7 +100,7 @@ def _execute_search(
         except Exception as e:
             print(f"Warning: Could not adjust date with fallback: {e}")
     base_query = """
-        SELECT DISTINCT ca.id, ca.title, ca.url, ca.published_date, ca.summary as content, 
+        SELECT DISTINCT ca.id, ca.title, ca.url, ca.published_date, ca.summary as content,
                ca.source_id, ca.feed_id
         FROM crawled_articles ca
         WHERE ca.processed = 1 AND ca.published_date >= ?
@@ -116,16 +116,18 @@ def _execute_search(
     clauses, params = [], [from_date]
     for term in terms:
         term_clauses = []
-        like = f"%{term}%"
-        term_clauses.append("(ca.title LIKE ? OR ca.content LIKE ? OR ca.summary LIKE ?)")
+        escaped_term = term.replace("%", "\\%").replace("_", "\\_")
+        like = f"%{escaped_term}%"
+        term_clauses.append("(ca.title LIKE ? ESCAPE '\\' OR ca.content LIKE ? ESCAPE '\\' OR ca.summary LIKE ? ESCAPE '\\')")
         params.extend([like, like, like])
         if use_categories:
-            term_clauses.append("(ac.category_name LIKE ?)")
+            term_clauses.append("(ac.category_name LIKE ? ESCAPE '\\')")
             params.append(like)
         if term_clauses:
             clauses.append(f"({' OR '.join(term_clauses)})")
     where = f" {operator} ".join(clauses)
-    sql = f"{base_query} AND ({where}) ORDER BY ca.published_date DESC LIMIT {limit}"
+    sql = f"{base_query} AND ({where}) ORDER BY ca.published_date DESC LIMIT ?"
+    params.append(limit)
     cursor.execute(sql, params)
     return [dict(row) for row in cursor.fetchall()]
 
@@ -156,7 +158,7 @@ def _add_source_names(cursor, articles):
             try:
                 cursor.execute(
                     f"""
-                    SELECT sf.id, s.name 
+                    SELECT sf.id, s.name
                     FROM source_feeds sf
                     JOIN sources s ON sf.source_id = s.id
                     WHERE sf.id IN ({placeholders})
