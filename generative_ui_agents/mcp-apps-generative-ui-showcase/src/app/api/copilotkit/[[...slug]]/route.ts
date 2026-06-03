@@ -17,15 +17,15 @@ import { MCPAppsMiddleware } from "@ag-ui/mcp-apps-middleware";
 // Determine which LLM model to use based on available API keys
 const determineModel = () => {
   if (process.env.OPENAI_API_KEY?.trim()) {
-    return "openai/gpt-5.2";
+    return "openai/gpt-5.5";
   }
   if (process.env.ANTHROPIC_API_KEY?.trim()) {
-    return "anthropic/claude-sonnet-4.5";
+    return "anthropic/claude-sonnet-4-6";
   }
   if (process.env.GOOGLE_API_KEY?.trim()) {
-    return "google/gemini-2.5-pro";
+    return "google/gemini-3.1-pro-preview";
   }
-  return "openai/gpt-5.2";
+  return "openai/gpt-5.5";
 };
 
 // Create the agent with multi-app assistant persona and MCP Apps middleware

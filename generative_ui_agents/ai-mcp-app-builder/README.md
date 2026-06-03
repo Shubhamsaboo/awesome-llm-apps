@@ -14,7 +14,7 @@ https://github.com/user-attachments/assets/4bb35806-5e42-43c0-a8fe-01c0d1e5b8b3
 
 - Node.js 20+
 - [pnpm](https://pnpm.io/installation) (required for the workspace)
-- OpenAI API key (`OPENAI_API_KEY`); optional **`OPENAI_MODEL`** for `/api/mastra-agent` (default **`gpt-5.2`**)
+- OpenAI API key (`OPENAI_API_KEY`); optional **`OPENAI_MODEL`** for `/api/mastra-agent` (default **`gpt-5.5`**)
 
 > **Lockfile:** **`pnpm-lock.yaml` is committed** and should stay in version control so installs are reproducible (`--frozen-lockfile`). This repo’s `.gitignore` only excludes `package-lock.json`, `yarn.lock`, and `bun.lockb` — not pnpm’s lockfile.
 

@@ -9,7 +9,7 @@ services:
       - key: OPENAI_API_KEY
         sync: false
       - key: OPENAI_MODEL
-        value: gpt-5.4-2026-03-05
+        value: gpt-5.5
       - key: E2B_API_KEY
         sync: false
       - key: E2B_REPO_URL

@@ -130,7 +130,7 @@ from copilotkit import CopilotKitMiddleware
 from src.todos import todo_tools, AgentState
 
 agent = create_agent(
-    model="gpt-5.2",
+    model="gpt-5.5",
     tools=[*todo_tools, ...],  # manage_todos, get_todos
     middleware=[CopilotKitMiddleware()],
     state_schema=AgentState,  # Defines state shape

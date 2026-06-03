@@ -28,7 +28,7 @@ class AgentContext(TypedDict, total=False):
     output_schema: dict[str, Any]
 
 agent = create_agent(
-    model="openai:gpt-5.2",
+    model="openai:gpt-5.5",
     middleware=[normalize_context, CopilotKitMiddleware(), apply_structured_output_schema],
     context_schema=AgentContext,
     tools=[*search_tools],

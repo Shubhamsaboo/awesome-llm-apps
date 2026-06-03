@@ -167,7 +167,7 @@ def _make_state_injector(prior_keys: List[str]):
 
 budget_agent = LlmAgent(
     name="BudgetAnalysisAgent",
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     description="Analyzes financial data to categorize spending patterns and recommend budget improvements.",
     instruction="""You are a Budget Analysis Agent. Read FINANCIAL DATA above.
 
@@ -190,7 +190,7 @@ Respond strictly using the BudgetAnalysis schema.""",
 
 savings_agent = LlmAgent(
     name="SavingsStrategyAgent",
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     description="Recommends savings strategies based on income, expenses, and prior budget analysis.",
     instruction="""You are a Savings Strategy Agent. Read FINANCIAL DATA and BUDGET_ANALYSIS above when available.
 
@@ -213,7 +213,7 @@ Respond strictly using the SavingsStrategy schema.""",
 
 debt_agent = LlmAgent(
     name="DebtReductionAgent",
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     description="Creates optimized debt payoff plans (avalanche & snowball).",
     instruction="""You are a Debt Reduction Agent. Read FINANCIAL DATA, BUDGET_ANALYSIS, and SAVINGS_STRATEGY above when available.
 
@@ -459,7 +459,7 @@ Style: warm, plain language, no jargon, no markdown headers in chat replies."""
 
 coach_agent = LlmAgent(
     name="FinanceCoachAgent",
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     description="Routes user requests to profile updates or specialist analysis agents.",
     instruction=COACH_INSTRUCTION,
     tools=[

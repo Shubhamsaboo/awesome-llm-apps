@@ -83,7 +83,7 @@ Deep Agent (research_assistant)
 | -------------------------- | -------- | ----------------------- | --------------------------------------------------- |
 | `OPENAI_API_KEY`           | Yes      | -                       | [Get API key](https://platform.openai.com/api-keys) |
 | `TAVILY_API_KEY`           | Yes      | -                       | [Get API key](https://app.tavily.com/home)          |
-| `OPENAI_MODEL`             | No       | `gpt-5.2`               | Model to use (gpt-5.2, gpt-5, etc.)                 |
+| `OPENAI_MODEL`             | No       | `gpt-5.5`               | Model to use (`gpt-5.5`)                            |
 | `LANGGRAPH_DEPLOYMENT_URL` | No       | `http://localhost:8123` | Backend URL                                         |
 | `SERVER_HOST`              | No       | `0.0.0.0`               | Backend host                                        |
 | `SERVER_PORT`              | No       | `8123`                  | Backend port                                        |

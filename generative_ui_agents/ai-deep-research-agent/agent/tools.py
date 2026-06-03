@@ -125,7 +125,7 @@ def research(query: str) -> dict:
             search_results.extend(results)
             return results
 
-        model_name = os.environ.get("OPENAI_MODEL", "gpt-5.2")
+        model_name = os.environ.get("OPENAI_MODEL", "gpt-5.5")
         llm = ChatOpenAI(
             model=model_name,
             temperature=0.7,

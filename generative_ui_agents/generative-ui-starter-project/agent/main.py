@@ -16,7 +16,7 @@ from src.a2ui_fixed_schema import search_flights
 
 from langchain_openai import ChatOpenAI
 
-model = ChatOpenAI(model="gpt-5.4", model_kwargs={"parallel_tool_calls": False})
+model = ChatOpenAI(model="gpt-5.5", model_kwargs={"parallel_tool_calls": False})
 
 agent = create_agent(
     model=model,

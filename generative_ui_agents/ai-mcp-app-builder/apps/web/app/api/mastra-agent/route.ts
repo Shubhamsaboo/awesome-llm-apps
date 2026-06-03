@@ -779,8 +779,8 @@ const openai = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-/** OpenAI chat model for the Mastra agent (`@ai-sdk/openai` id), e.g. gpt-5.2, gpt-4.1, gpt-4o. */
-const OPENAI_MODEL = process.env.OPENAI_MODEL?.trim() || "gpt-5.2";
+/** OpenAI chat model for the Mastra agent (`@ai-sdk/openai` id), e.g. gpt-5.5. */
+const OPENAI_MODEL = process.env.OPENAI_MODEL?.trim() || "gpt-5.5";
 
 // ── Request handler ──────────────────────────────────────────────────────────
 // Architecture:

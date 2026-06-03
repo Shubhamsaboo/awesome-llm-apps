@@ -580,7 +580,7 @@ export const POST = async (req: NextRequest) => {
   const middleware = new MCPAppsMiddlewareFixBase({ mcpServers });
 
   const agent = new BuiltInAgent({
-    model: "openai/gpt-4o",
+    model: "openai/gpt-5.5",
     prompt: AGENT_SYSTEM_PROMPT,
     // Cast: defineTool() returns specific Zod types; BuiltInAgent expects ToolDefinition<ZodTypeAny>[]
     tools: workspaceTools as unknown as ConstructorParameters<
