@@ -1,10 +1,10 @@
 ---
 name: academic-researcher
-description: |
-  Academic research assistant for literature reviews, paper analysis, and scholarly writing.
-  Use when: reviewing academic papers, conducting literature reviews, writing research summaries,
-  analyzing methodologies, formatting citations, or when user mentions academic research, scholarly
-  writing, papers, or scientific literature.
+description: >-
+  This skill should be used when the user asks to "review a paper", "conduct a literature
+  review", "analyze a paper", "summarize research", "compare papers", "write a research
+  summary", "format citations", "synthesize findings", or mentions academic research, scholarly
+  writing, paper analysis, methodology review, or scientific literature.
 license: MIT
 metadata:
   author: awesome-llm-apps
