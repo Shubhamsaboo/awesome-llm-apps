@@ -341,3 +341,4 @@ streamlit run travel_agent.py
 ## 📜 License
 
 Apache-2.0. See [LICENSE](LICENSE). Fork it, ship it, sell it.
+- [AEGIS](https://github.com/cstamigo-droid/aegis-idempotency) - Production reliability layer for LLM-powered agents: exactly-once execution, human approval gates, and per-event billing. MIT, self-hostable, hosted API available.
