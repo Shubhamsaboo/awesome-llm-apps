@@ -1,0 +1,12 @@
+node_modules/
+.next/
+.env
+.env.local
+*.db
+*.db-shm
+*.db-wal
+*.pckl
+*.egg-info/
+.langgraph_api/
+__pycache__/
+.venv/
