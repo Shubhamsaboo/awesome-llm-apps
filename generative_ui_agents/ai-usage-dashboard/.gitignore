@@ -1,0 +1,7 @@
+*.db
+*.db-shm
+*.db-wal
+*.pckl
+*.egg-info/
+.langgraph_api/
+__pycache__/
