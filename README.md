@@ -217,6 +217,7 @@ streamlit run travel_agent.py
 *   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent)
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team)
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/)
+*   [🔐 TWZRD Agent Intel](https://intel.twzrd.xyz) — Solana x402 trust-scoring MCP server. Free preflight + paid Ed25519-signed trust receipts via <1s USDC settlement. [MCP](https://intel.twzrd.xyz/mcp)
 
 ### 📀 RAG (Retrieval Augmented Generation)
 *Retrieval pipelines - from simple chains to agentic and multi-source.*
