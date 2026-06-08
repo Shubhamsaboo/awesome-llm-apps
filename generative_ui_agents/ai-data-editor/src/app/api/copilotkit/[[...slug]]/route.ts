@@ -27,6 +27,7 @@ const runtime = new CopilotRuntime({
 const app = createCopilotEndpoint({
   runtime,
   basePath: "/api/copilotkit",
+  mode: "single-route",
 });
 
 export const GET = handle(app);

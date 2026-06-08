@@ -16,3 +16,7 @@ node_modules/
 .next/
 dist/
 *.tsbuildinfo
+
+# Internal docs
+blog-post.md
+twitter-thread.md
