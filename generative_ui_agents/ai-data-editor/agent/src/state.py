@@ -24,4 +24,3 @@ class PendingMutation(TypedDict):
 class AgentState(CopilotKitState):
     query_result: QueryResult | None
     pending_mutation: PendingMutation | None
-    schema_context: str

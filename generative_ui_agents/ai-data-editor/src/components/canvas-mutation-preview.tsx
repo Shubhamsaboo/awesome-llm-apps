@@ -56,7 +56,7 @@ export function CanvasMutationPreview({
       </div>
 
       <p className="text-sm text-[var(--muted-foreground)]">
-        Use the Approve / Reject buttons to proceed.
+        Use the Approve / Reject buttons in the chat sidebar to proceed.
       </p>
     </div>
   );

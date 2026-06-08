@@ -103,7 +103,7 @@ export default function Page() {
                 </div>
               ) : (
                 <p className="text-sm text-[var(--muted-foreground)]">
-                  Connecting to database...
+                  Ask a question in the sidebar to query your data.
                 </p>
               )}
             </div>

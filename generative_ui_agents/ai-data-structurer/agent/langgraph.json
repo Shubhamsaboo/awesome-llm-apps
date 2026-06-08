@@ -4,7 +4,7 @@
   "dependencies": ["."],
   "package_manager": "uv",
   "graphs": {
-    "knowledge_explorer": "./main.py:graph"
+    "sample_agent": "./main.py:graph"
   },
   "env": "../.env"
 }
