@@ -100,13 +100,13 @@ def select_best_article(client: OpenAI, articles: list[dict], query: str) -> dic
         idx = 0
     return articles[min(idx, len(articles) - 1)]
 
-def news_text_only(client: OpenAI, article: dict) -> str:
+def news_text_only(article: dict) -> str:
     text = f"Title:{article['title']}  \n\n Description:{article.get('description', '')} \n\n Source Name: {article.get('source', {}).get('name', '')} \n Source URL: {article.get('url', '')}"
     
     return text.strip()
 
 def summarize(client: OpenAI, article: dict) -> str:
-    text = news_text_only(client, article)
+    text = news_text_only(article)
     resp = client.chat.completions.create(
         model="gpt-5-mini",
         messages=[
@@ -342,7 +342,7 @@ if generate:
 
         # Show the raw article text immediately so the user has something to read
         # while the heavier image/caption generation continues below
-        summary_placeholder.success(f"{news_text_only(client, best)}")
+        summary_placeholder.success(f"{news_text_only(best)}")
 
         # Step 4: Condense the article into a short summary used by both image and caption
         st.write("Generating summary…")
@@ -358,7 +358,6 @@ if generate:
             st.error(f"Image generation error: {e}")
             st.stop()
 
-        # Burn the first 120 chars of the summary as an overlay onto the image
         img_with_text = add_text_overlay(img_bytes, summary)
         st.write("Image ready.")
 
@@ -372,9 +371,9 @@ if generate:
                 use_container_width=True,
             )
 
-        # Step 6: Write a social-media-ready caption from the summary
+        # Step 6: Write a social-media-ready caption from the news
         st.write("Writing caption…")
-        caption = generate_caption(client, news_text_only(client, best))
+        caption = generate_caption(client, news_text_only(best))
         st.write("Caption ready.")
 
         pipeline_status.update(label="Pipeline complete", state="complete", expanded=False)
