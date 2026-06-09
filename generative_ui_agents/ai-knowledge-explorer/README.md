@@ -41,18 +41,18 @@ cp .env.example .env
 npm run dev
 ```
 
-This starts both the Next.js frontend (port 3000) and the LangGraph agent (port 8123).
+This starts both the Next.js frontend (port 3002) and the LangGraph agent (port 8125).
 
 ## Example Content
 
-Two built-in example sets let you try both modes:
+Two built-in example sets let you try both modes — click the buttons on the empty state to load them instantly.
 
 **Documents** — 3 markdown files about AI agents:
 - `what-are-agents.md` — defines agents, core components (LLM, tools, memory, planning)
 - `agent-frameworks.md` — compares LangGraph, CrewAI, AutoGen, CopilotKit
 - `agent-challenges.md` — hallucination, tool reliability, evaluation, cost, security
 
-Expected graph: ~15 nodes, ~20 edges covering the AI agent ecosystem.
+Expected graph: ~15-22 nodes, ~20-33 edges covering the AI agent ecosystem.
 
 **Codebase** — 3 Python files forming a FastAPI auth system:
 - `auth.py` — JWT token creation, password hashing, TokenService class
@@ -82,14 +82,19 @@ ai-knowledge-explorer/
 │   ├── app/
 │   │   ├── page.tsx           # Main page (chat + graph canvas)
 │   │   ├── layout.tsx         # CopilotKit v2 provider
-│   │   └── api/copilotkit/    # CopilotKit runtime route
+│   │   └── api/
+│   │       ├── copilotkit/    # CopilotKit runtime route
+│   │       └── upload/        # File upload endpoint
 │   ├── components/
 │   │   ├── KnowledgeGraph.tsx  # Force-directed graph visualization
 │   │   ├── NodeDetail.tsx      # Detail panel on node select
-│   │   └── FileDropZone.tsx    # File upload area
-│   └── hooks/
-│       └── use-knowledge-ui.tsx
-├── examples/                  # Sample files to explore
+│   │   └── ToolReasoning.tsx   # Tool call status indicators
+│   ├── hooks/
+│   │   ├── use-knowledge-ui.tsx
+│   │   └── use-suggestions.tsx
+│   └── lib/
+│       ├── types.ts            # KnowledgeNode, KnowledgeEdge types
+│       └── example-content.ts  # Built-in example documents and code
 ├── package.json
 └── .env.example
 ```
