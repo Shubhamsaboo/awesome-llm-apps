@@ -402,22 +402,24 @@ class SocialMediaService:
         """Get sentiment trends over time."""
         try:
             date_range_query = ""
+            params = []
             if date_from and date_to:
-                date_range_query = f"""
+                date_range_query = """
                 WITH RECURSIVE date_range(date) AS (
-                    SELECT date('{date_from}')
+                    SELECT date(?)
                     UNION ALL
                     SELECT date(date, '+1 day')
                     FROM date_range
-                    WHERE date < date('{date_to}')
+                    WHERE date < date(?)
                 )
                 SELECT date as post_date FROM date_range
                 """
+                params.extend([date_from, date_to])
             else:
                 days_ago = (datetime.now() - timedelta(days=30)).isoformat()
-                date_range_query = f"""
+                date_range_query = """
                 WITH RECURSIVE date_range(date) AS (
-                    SELECT date('{days_ago}')
+                    SELECT date(?)
                     UNION ALL
                     SELECT date(date, '+1 day')
                     FROM date_range
@@ -425,6 +427,7 @@ class SocialMediaService:
                 )
                 SELECT date as post_date FROM date_range
                 """
+                params.append(days_ago)
             query_parts = [
                 f"""
                 WITH dates AS (
@@ -443,7 +446,6 @@ class SocialMediaService:
                     posts ON date(posts.post_timestamp) = dates.post_date
                 """
             ]
-            params = []
             if platform:
                 query_parts.append("AND posts.platform = ?")
                 params.append(platform)
