@@ -28,3 +28,9 @@ body {
     -apple-system,
     sans-serif;
 }
+
+/* Hide CopilotKit's unused "+" toolbar button */
+[class*="chatInputToolbar"] button[aria-expanded],
+[data-testid="copilot-add-menu-button"] {
+  display: none !important;
+}
