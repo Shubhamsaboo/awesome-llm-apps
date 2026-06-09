@@ -207,9 +207,41 @@ export default function Page() {
                 </div>
               ) : (
                 <>
-                  <p className="text-sm text-[var(--muted-foreground)] mb-4">
-                    Query and edit data with natural language.
+                  <p className="text-sm text-[var(--muted-foreground)] mb-5">
+                    Query and edit data with natural language. Try one of these
+                    to get started:
                   </p>
+
+                  <div className="flex flex-wrap justify-center gap-2 mb-6">
+                    {[
+                      "Show all accounts",
+                      "Revenue by type",
+                      "Overdue invoices",
+                    ].map((q) => (
+                      <button
+                        key={q}
+                        onClick={() => {
+                          const ta =
+                            document.querySelector<HTMLTextAreaElement>(
+                              'textarea[placeholder*="Ask"]',
+                            );
+                          if (!ta) return;
+                          const set = Object.getOwnPropertyDescriptor(
+                            HTMLTextAreaElement.prototype,
+                            "value",
+                          )?.set;
+                          set?.call(ta, q);
+                          ta.dispatchEvent(
+                            new Event("input", { bubbles: true }),
+                          );
+                          ta.focus();
+                        }}
+                        className="px-3 py-1.5 text-xs rounded-full border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] cursor-pointer transition-colors"
+                      >
+                        {q}
+                      </button>
+                    ))}
+                  </div>
 
                   <label
                     className={`flex flex-col items-center gap-3 px-8 py-6 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${

@@ -70,6 +70,29 @@ export function PasteArea() {
         </div>
       </div>
 
+      {!rawInput && !isDragging && (
+        <div className="flex flex-wrap gap-2">
+          {[
+            {
+              label: "Try sample CSV",
+              data: "name,age,role\nAlice,32,Engineer\nBob,28,Designer\nCarol,45,Manager\nDave,36,Engineer\nEve,29,Analyst",
+            },
+            {
+              label: "Try sample JSON",
+              data: '[{"product":"Widget A","sales":1200,"region":"US"},{"product":"Widget B","sales":850,"region":"EU"},{"product":"Widget C","sales":2100,"region":"US"}]',
+            },
+          ].map((s) => (
+            <button
+              key={s.label}
+              onClick={() => setRawInput(s.data)}
+              className="px-3 py-1.5 text-xs rounded-full border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] cursor-pointer transition-colors"
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="relative flex-1">
         {isDragging && (
           <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg border-2 border-dashed border-[var(--ring)] bg-[var(--accent)]/80">
