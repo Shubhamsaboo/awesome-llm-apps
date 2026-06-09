@@ -41,7 +41,7 @@ cp .env.example .env
 npm run dev
 ```
 
-This starts both the Next.js frontend (port 3002) and the LangGraph agent (port 8125).
+This starts both the Next.js frontend (port 3000) and the LangGraph agent (port 8125).
 
 ## Example Content
 
