@@ -4,25 +4,27 @@ A Streamlit application that turns a one-line topic into a finished social media
 
 Type something like "Fed rate decision" and click Generate. About a minute later you have a 1024×1024 image and a finished caption, both built from actual reporting instead of made-up filler. The whole thing runs in your browser and shows each step as it happens.
 
-Under the hood it's five GPT calls and one image model wired into a single pipeline: pull the day's headlines from NewsAPI, rank them by newsworthiness, write a short headline, generate a documentary-style image, composite the headline onto the picture, then draft a caption with a source line and hashtags.
+Under the hood it's three `gpt-5-mini` agents and one image model wired into a single pipeline: a researcher pulls the day's headlines from NewsAPI and ranks them, a headline writer condenses the best story, `gpt-image-1-mini` generates a documentary-style image, the headline is composited onto the picture, and a caption writer drafts the final post with a source line and hashtags.
 
 ## What it does
 
 1. You type a topic ("Fed rate decision" or "SpaceX launch").
-2. GPT extracts a tight 1-2 word search query from it.
-3. NewsAPI returns up to 5 recent articles; GPT ranks them by relevance, newsworthiness, recency, and source credibility.
-4. The best article is summarised into a ≤15-word punchy headline.
-5. `gpt-image-1-mini` generates a 1024×1024 documentary-style image from that headline.
-6. The headline is composited onto the image as a bottom-strip text overlay (Impact font if available, fallback to system default).
-7. A full caption is written with a hook, context, implication, call to reflection, source line, and 3-5 hashtags.
+2. The Researcher agent derives a tight 1-2 word search keyword and calls the `search_news` tool (retrying once with a broader keyword if nothing comes back).
+3. NewsAPI returns up to 5 recent articles from the last 24 hours; the Researcher ranks them by relevance, newsworthiness, recency, and source credibility, and picks the best one.
+4. The Headline Writer turns that article into a ≤15-word punchy headline.
+5. `gpt-image-1-mini` generates a 1024×1024 documentary-style photojournalism image from the headline.
+6. The headline is composited onto the image as a bottom-strip text overlay (Impact font if available, falling back through Arial Black/Bold to the system default).
+7. The Caption Writer drafts a caption with a hook, context, implication, call to reflection, source line, and 3-5 hashtags.
 
-You can download the finished image straight from the browser.
+The pipeline streams each step into the sidebar as it runs, and you can download the finished image straight from the browser.
 
-## Installation
+## Prerequisites
 
 - Python 3.13+
 - An [OpenAI API key](https://platform.openai.com/api-keys) with access to `gpt-5-mini` and `gpt-image-1-mini`
 - A [NewsAPI key](https://newsapi.org/) (free tier works)
+
+## Installation
 
 1. Clone this repository:
    ```bash
@@ -37,13 +39,14 @@ You can download the finished image straight from the browser.
 
 ## Usage
 
-Once the above setup is complete, stay in the directory and run the following command:
+Run the app:
 
 ```bash
 streamlit run news_to_content.py
 ```
 
-This will open the streamlit application at http://localhost:8501 .
+This opens the Streamlit app at http://localhost:8501.
+
 1. Open the sidebar and paste your OpenAI and NewsAPI keys.
 2. Type a topic in the main text area.
 3. Click **Generate**.
