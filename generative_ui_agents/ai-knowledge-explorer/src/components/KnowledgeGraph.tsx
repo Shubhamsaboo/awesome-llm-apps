@@ -99,13 +99,6 @@ export function KnowledgeGraph({
     [nodes, edges],
   );
 
-  const handleNodeClick = useCallback(
-    (node: any) => {
-      onNodeClick(node.id);
-    },
-    [onNodeClick],
-  );
-
   const lastClickTime = useRef(0);
   const lastClickNode = useRef<string | null>(null);
 

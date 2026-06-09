@@ -282,7 +282,7 @@ def pick_component(data_shape: dict, user_intent: str) -> dict:
         return {"component": "PieChart", "reason": "Distribution/pie chart requested"}
 
     if "dashboard" in intent:
-        return {"component": "Dashboard", "reason": "Multi-metric dashboard requested"}
+        return {"component": "DashboardCard", "reason": "Multi-metric dashboard requested"}
 
     if row_count > 0:
         return {"component": "DataTable", "reason": "Default: tabular data renders as a sortable table"}

@@ -82,7 +82,7 @@ function isMoneyCol(col: string) {
 
 // TODO: Inline editing removed — useCopilotChat (v1) has no v2 equivalent yet.
 // Re-add when CopilotKit v2 exposes a programmatic message API (appendMessage or similar).
-function EditableCell({ value, column }: { value: unknown; column: string }) {
+function DataCell({ value, column }: { value: unknown; column: string }) {
   if (STATUS_COLS.includes(column)) {
     return <StatusBadge status={String(value)} />;
   }
@@ -131,7 +131,7 @@ function DetailPanel({
                     {col.replace(/_/g, " ")}
                   </span>
                   <div className="text-sm">
-                    <EditableCell value={row[col]} column={col} />
+                    <DataCell value={row[col]} column={col} />
                   </div>
                 </div>
               ))}
@@ -255,7 +255,7 @@ export function CanvasDashboard({
                   {col.replace(/_/g, " ")}
                 </span>
                 <div className="text-sm">
-                  <EditableCell value={row[col]} column={col} />
+                  <DataCell value={row[col]} column={col} />
                 </div>
               </div>
             ))}

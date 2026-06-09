@@ -12,11 +12,8 @@
     "postinstall": "npm run install:agent"
   },
   "dependencies": {
-    "@copilotkit/a2ui-renderer": "1.56.2",
     "@copilotkit/react-core": "1.56.2",
-    "@copilotkit/react-ui": "1.56.2",
     "@copilotkit/runtime": "1.56.2",
-    "@copilotkit/shared": "1.56.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "hono": "^4.12.10",

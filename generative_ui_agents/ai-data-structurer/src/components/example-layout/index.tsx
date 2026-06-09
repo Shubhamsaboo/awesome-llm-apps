@@ -10,7 +10,7 @@ interface ExampleLayoutProps {
 }
 
 export function ExampleLayout({ chatContent, appContent }: ExampleLayoutProps) {
-  const [mode, setMode] = useState<"chat" | "app">("chat");
+  const [mode, setMode] = useState<"chat" | "app">("app");
 
   useFrontendTool({
     name: "enableAppMode",

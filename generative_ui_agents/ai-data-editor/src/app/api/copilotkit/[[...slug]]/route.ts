@@ -12,7 +12,7 @@ const defaultAgent = new LangGraphAgent({
     process.env.LANGGRAPH_DEPLOYMENT_URL ||
     "http://localhost:8123",
   graphId: "data_editor_agent",
-  langsmithApiKey: process.env.LANGSMITH_API_KEY || "",
+  langsmithApiKey: process.env.LANGSMITH_API_KEY || undefined,
 });
 
 const runtime = new CopilotRuntime({

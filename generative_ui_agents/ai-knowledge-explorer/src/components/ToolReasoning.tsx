@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Check, Wrench } from "lucide-react";
+import { Loader2, Check } from "lucide-react";
 
 const TOOL_LABELS: Record<string, string> = {
   extract_knowledge: "Extracting knowledge",

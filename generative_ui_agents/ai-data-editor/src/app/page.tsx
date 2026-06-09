@@ -16,7 +16,22 @@ function parseCSV(text: string): {
   columns: string[];
   rows: Record<string, unknown>[];
 } {
-  const lines = text.split("\n").filter((l) => l.trim());
+  const trimmed = text.trim();
+
+  // Detect JSON arrays or objects
+  if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
+    try {
+      let parsed = JSON.parse(trimmed);
+      if (!Array.isArray(parsed)) parsed = [parsed];
+      if (parsed.length === 0) return { columns: [], rows: [] };
+      const columns = Object.keys(parsed[0]);
+      return { columns, rows: parsed };
+    } catch (e) {
+      console.warn("JSON parse failed, falling through to CSV parser:", e);
+    }
+  }
+
+  const lines = trimmed.split("\n").filter((l) => l.trim());
   if (lines.length < 2) return { columns: [], rows: [] };
 
   const sep = lines[0].includes("\t") ? "\t" : ",";
@@ -196,18 +211,6 @@ export default function Page() {
                     Query and edit data with natural language.
                   </p>
 
-                  <div className="flex flex-wrap justify-center gap-2 mb-6">
-                    <span className="px-2.5 py-1 text-xs rounded-full bg-[var(--muted)] text-[var(--muted-foreground)]">
-                      accounts
-                    </span>
-                    <span className="px-2.5 py-1 text-xs rounded-full bg-[var(--muted)] text-[var(--muted-foreground)]">
-                      usage
-                    </span>
-                    <span className="px-2.5 py-1 text-xs rounded-full bg-[var(--muted)] text-[var(--muted-foreground)]">
-                      invoices
-                    </span>
-                  </div>
-
                   <label
                     className={`flex flex-col items-center gap-3 px-8 py-6 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${
                       dragOver
@@ -220,12 +223,12 @@ export default function Page() {
                       Drop a file here or click to upload
                     </span>
                     <span className="text-xs opacity-60">
-                      CSV, TSV, JSON, or plain text
+                      CSV, TSV, or JSON
                     </span>
                     <input
                       type="file"
                       className="hidden"
-                      accept=".csv,.tsv,.json,.txt,.md"
+                      accept=".csv,.tsv,.json"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) handleFile(file);

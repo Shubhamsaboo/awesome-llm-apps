@@ -142,7 +142,7 @@ export default function Page() {
       "value",
     )?.set;
     nativeSet?.call(input, text);
-    input.dispatchEvent(new Event("change", { bubbles: true }));
+    input.dispatchEvent(new Event("input", { bubbles: true }));
     setTimeout(() => {
       const sendBtn = document.querySelector(
         '[data-testid="copilot-send-button"]',
@@ -371,7 +371,7 @@ export default function Page() {
           modalHeaderTitle: "Knowledge Explorer",
           chatInputPlaceholder: hasGraph
             ? "Ask about the graph or add more content..."
-            : "Paste content or describe a topic...",
+            : "Paste a document or article to explore...",
         }}
       />
 

@@ -55,6 +55,26 @@
   --ring: #85ecce;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --background: #010507;
+    --foreground: #ffffff;
+    --card: #191a1e;
+    --card-foreground: #ffffff;
+    --primary: #ffffff;
+    --primary-foreground: #010507;
+    --secondary: #242529;
+    --secondary-foreground: #ffffff;
+    --muted: #242529;
+    --muted-foreground: #adadb2;
+    --accent: #1a2f28;
+    --accent-foreground: #ffffff;
+    --border: #303136;
+    --input: #303136;
+    --ring: #85ecce;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

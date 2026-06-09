@@ -11,8 +11,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <title>AI Data Editor</title>
+      </head>
       <body>
-        <CopilotKit runtimeUrl="/api/copilotkit" showDevConsole={true}>
+        <CopilotKit runtimeUrl="/api/copilotkit" showDevConsole={false}>
           {children}
         </CopilotKit>
       </body>
