@@ -297,34 +297,37 @@ export default function Page() {
               onNodeDoubleClick={handleNodeDoubleClick}
             />
           ) : (
-            <div className="flex h-full flex-col items-center justify-center gap-6">
-              <div className="flex flex-col items-center gap-2 text-[var(--muted-foreground)]">
-                <Network className="h-10 w-10 opacity-20" />
-                <p className="text-sm">
-                  Drop files or use an example to get started
+            <div className="flex h-full flex-col items-center justify-center gap-5">
+              <Network className="h-12 w-12 text-[var(--muted-foreground)] opacity-30" />
+              <div className="text-center">
+                <h1 className="text-lg font-semibold text-[var(--foreground)] mb-1">
+                  Knowledge Explorer
+                </h1>
+                <p className="text-sm text-[var(--muted-foreground)]">
+                  Upload documents or code to build a knowledge graph
                 </p>
               </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-2 text-xs font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--secondary)] hover:text-[var(--foreground)]"
-                >
-                  <Upload className="h-3 w-3" />
-                  Upload files
-                </button>
+              <div className="flex flex-wrap justify-center gap-2">
                 <button
                   onClick={() => handleFilesReady(EXAMPLE_FILES)}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-2 text-xs font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--secondary)] hover:text-[var(--foreground)]"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-2 text-xs font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)] cursor-pointer"
                 >
                   <Sparkles className="h-3 w-3" />
                   Try example docs
                 </button>
                 <button
                   onClick={() => handleFilesReady(CODE_EXAMPLE_FILES)}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-2 text-xs font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--secondary)] hover:text-[var(--foreground)]"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-2 text-xs font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)] cursor-pointer"
                 >
                   <Code className="h-3 w-3" />
                   Try example code
+                </button>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-2 text-xs font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)] cursor-pointer"
+                >
+                  <Upload className="h-3 w-3" />
+                  Upload files
                 </button>
               </div>
             </div>
