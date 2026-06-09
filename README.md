@@ -248,7 +248,7 @@ streamlit run travel_agent.py
 *   [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
 
 <details>
-<summary><strong>📋 Browse all 19 skills</strong></summary>
+<summary><strong>📋 Browse all 20 skills</strong></summary>
 
 | Skill | Description |
 |---|---|
@@ -271,6 +271,7 @@ streamlit run travel_agent.py
 | [📖 Technical Writer](awesome_agent_skills/technical-writer/) | Documentation, API docs, guides |
 | [🎨 UX Designer](awesome_agent_skills/ux-designer/) | UI/UX design feedback and wireframes |
 | [📈 Visualization Expert](awesome_agent_skills/visualization-expert/) | Charts, dashboards, data storytelling |
+| [𝕏 Xquik Social Data](awesome_agent_skills/xquik-social-data/) | X data extraction and automation through Xquik REST API or MCP |
 
 </details>
 

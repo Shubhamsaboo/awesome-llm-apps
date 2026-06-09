@@ -52,6 +52,7 @@ Each skill contains:
 |-------|-------------|
 | [data-analyst](data-analyst/) | SQL, pandas, and statistical analysis |
 | [visualization-expert](visualization-expert/) | Chart selection and data visualization |
+| [xquik-social-data](xquik-social-data/) | X social data extraction and automation with Xquik REST API or MCP |
 
 ### ⚡ Productivity
 
