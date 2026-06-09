@@ -10,7 +10,6 @@ const TOOL_LABELS: Record<string, string> = {
 
 interface ToolReasoningProps {
   name: string;
-  args?: object | unknown;
   status: string;
 }
 

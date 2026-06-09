@@ -158,6 +158,10 @@ export default function Page() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ files }),
       });
+      if (!res.ok) {
+        console.error("Upload failed:", await res.text());
+        return;
+      }
       await res.json();
       typeIntoChat(
         `Uploaded ${files.map((f) => f.name).join(", ")}. Build a knowledge graph.`,

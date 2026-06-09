@@ -5,8 +5,8 @@ import { ToolReasoning } from "@/components/ToolReasoning";
 
 export function useKnowledgeUI() {
   useDefaultRenderTool({
-    render: ({ name, status, parameters }) => {
-      return <ToolReasoning name={name} status={status} args={parameters} />;
+    render: ({ name, status }) => {
+      return <ToolReasoning name={name} status={status} />;
     },
   });
 }
