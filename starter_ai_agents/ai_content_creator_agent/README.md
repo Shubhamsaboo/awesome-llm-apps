@@ -1,4 +1,4 @@
-# AI Content Creator Agent
+# 📱 AI Content Creator Agent
 
 A Streamlit application that turns a one-line topic into a finished social media post. You get a real news story from the last 24 hours, a photorealistic image with the headline built into it, and a caption ready to paste into Instagram or LinkedIn. You never open a design tool or write a word of copy.
 
