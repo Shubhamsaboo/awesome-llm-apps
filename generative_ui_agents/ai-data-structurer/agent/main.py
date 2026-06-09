@@ -16,7 +16,7 @@ from src.tools import detect_schema, transform_data, pick_component
 load_dotenv()
 
 model = ChatOpenAI(
-    model=os.getenv("OPENAI_MODEL", "gpt-5.5"),
+    model=os.getenv("OPENAI_MODEL", "gpt-4o"),
     model_kwargs={"parallel_tool_calls": False},
 )
 
