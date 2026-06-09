@@ -1,0 +1,149 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300..800&display=swap");
+
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #ffffff;
+  --foreground: #010507;
+  --card: #ffffff;
+  --card-foreground: #010507;
+  --primary: #010507;
+  --primary-foreground: #ffffff;
+  --secondary: #ededf5;
+  --secondary-foreground: #010507;
+  --muted: #ededf5;
+  --muted-foreground: #57575b;
+  --accent: #e8f4f0;
+  --accent-foreground: #010507;
+  --border: #dbdbe5;
+  --input: #dbdbe5;
+  --ring: #85ecce;
+  --radius: 0.75rem;
+
+  --cpk-default-font-family: "Plus Jakarta Sans", sans-serif;
+  --font-body: "Plus Jakarta Sans", sans-serif;
+  --font-code: "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+
+  --node-entity: #3b82f6;
+  --node-concept: #8b5cf6;
+  --node-theme: #ec4899;
+  --node-document: #6b7280;
+  --node-module: #f59e0b;
+  --node-class: #10b981;
+  --node-function: #06b6d4;
+  --node-variable: #f97316;
+}
+
+:root.dark,
+.dark {
+  --background: #010507;
+  --foreground: #ffffff;
+  --card: #191a1e;
+  --card-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #010507;
+  --secondary: #242529;
+  --secondary-foreground: #ffffff;
+  --muted: #242529;
+  --muted-foreground: #adadb2;
+  --accent: #1a2f28;
+  --accent-foreground: #ffffff;
+  --border: #303136;
+  --input: #303136;
+  --ring: #85ecce;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --background: #010507;
+    --foreground: #ffffff;
+    --card: #191a1e;
+    --card-foreground: #ffffff;
+    --primary: #ffffff;
+    --primary-foreground: #010507;
+    --secondary: #242529;
+    --secondary-foreground: #ffffff;
+    --muted: #242529;
+    --muted-foreground: #adadb2;
+    --accent: #1a2f28;
+    --accent-foreground: #ffffff;
+    --border: #303136;
+    --input: #303136;
+    --ring: #85ecce;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+}
+
+body,
+html {
+  height: 100%;
+}
+
+/* Hide CopilotKit's + menu button and notification banner */
+[data-testid="copilot-add-menu-button"] {
+  display: none !important;
+}
+[data-copilotkit] [class*="announcement"],
+[data-copilotkit] a[href*="copilotkit.ai"] {
+  display: none !important;
+}
+
+.json-blob-collapsed {
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+
+.json-blob-collapsed summary {
+  cursor: pointer;
+  user-select: none;
+  padding: 4px 0;
+}
+
+.json-blob-collapsed pre {
+  max-height: 160px;
+  overflow: auto;
+  font-size: 10px;
+  background: var(--secondary);
+  border-radius: 6px;
+  padding: 8px;
+  margin-top: 4px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Hide JSON blobs immediately during streaming — collapser refines later */
+[data-copilotkit] [data-json-hidden="true"] {
+  max-height: 1.5em;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  opacity: 0.5;
+  font-size: 11px;
+}
+[data-copilotkit] [data-json-hidden="true"]::after {
+  content: "Click to view raw data";
+  position: absolute;
+  inset: 0;
+  background: var(--background, #fff);
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  color: var(--muted-foreground, #888);
+  opacity: 1;
+}
+[data-copilotkit] [data-json-hidden="true"].json-expanded {
+  max-height: 200px;
+  overflow: auto;
+  opacity: 0.6;
+  font-size: 10px;
+}
+[data-copilotkit] [data-json-hidden="true"].json-expanded::after {
+  display: none;
+}
