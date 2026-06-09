@@ -146,9 +146,7 @@ export function KnowledgeGraph({
       ctx.font = `500 ${fontSize}px "Plus Jakarta Sans", sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "top";
-      ctx.fillStyle = document.documentElement.classList.contains("dark")
-        ? "#ffffffcc"
-        : "#010507cc";
+      ctx.fillStyle = "#ffffffcc";
       ctx.fillText(label, node.x, node.y + nodeSize + 4);
     },
     [selectedNodeId],
@@ -163,10 +161,8 @@ export function KnowledgeGraph({
       ctx.beginPath();
       ctx.moveTo(start.x, start.y);
       ctx.lineTo(end.x, end.y);
-      ctx.strokeStyle = document.documentElement.classList.contains("dark")
-        ? "#ffffff18"
-        : "#00000015";
-      ctx.lineWidth = Math.max(0.5, (link.weight || 1) * 0.8) / globalScale;
+      ctx.strokeStyle = "#ffffff30";
+      ctx.lineWidth = Math.max(1, (link.weight || 1) * 0.8) / globalScale;
       ctx.stroke();
 
       if (globalScale > 0.8) {
@@ -176,9 +172,7 @@ export function KnowledgeGraph({
         ctx.font = `${fontSize}px "Plus Jakarta Sans", sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillStyle = document.documentElement.classList.contains("dark")
-          ? "#adadb2"
-          : "#57575b";
+        ctx.fillStyle = "#ffffffcc";
         ctx.fillText(link.label || "", midX, midY);
       }
     },
