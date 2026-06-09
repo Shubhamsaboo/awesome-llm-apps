@@ -10,7 +10,7 @@ const defaultAgent = new LangGraphAgent({
   deploymentUrl:
     process.env.AGENT_URL ||
     process.env.LANGGRAPH_DEPLOYMENT_URL ||
-    "http://localhost:8123",
+    "http://localhost:8125",
   graphId: "knowledge_explorer",
   langsmithApiKey: process.env.LANGSMITH_API_KEY || "",
 });

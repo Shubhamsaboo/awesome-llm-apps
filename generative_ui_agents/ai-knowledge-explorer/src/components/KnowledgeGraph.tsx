@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback, useEffect, useState } from "react";
+import { useRef, useCallback, useEffect, useState, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { KnowledgeNode, KnowledgeEdge } from "@/lib/types";
 import { Network } from "lucide-react";
@@ -75,26 +75,29 @@ export function KnowledgeGraph({
     }
   }, [nodes]);
 
-  const graphData = {
-    nodes: nodes.map((n) => {
-      const connectionCount = edges.filter(
-        (e) => e.source === n.id || e.target === n.id,
-      ).length;
-      return {
-        id: n.id,
-        label: n.label,
-        type: n.type,
-        color: TYPE_COLORS[n.type] || "#6b7280",
-        val: Math.max(2, connectionCount + 1),
-      } satisfies GraphNode;
+  const graphData = useMemo(
+    () => ({
+      nodes: nodes.map((n) => {
+        const connectionCount = edges.filter(
+          (e) => e.source === n.id || e.target === n.id,
+        ).length;
+        return {
+          id: n.id,
+          label: n.label,
+          type: n.type,
+          color: TYPE_COLORS[n.type] || "#6b7280",
+          val: Math.max(2, connectionCount + 1),
+        } satisfies GraphNode;
+      }),
+      links: edges.map((e) => ({
+        source: e.source,
+        target: e.target,
+        label: e.label,
+        weight: e.weight,
+      })),
     }),
-    links: edges.map((e) => ({
-      source: e.source,
-      target: e.target,
-      label: e.label,
-      weight: e.weight,
-    })),
-  };
+    [nodes, edges],
+  );
 
   const handleNodeClick = useCallback(
     (node: any) => {
@@ -212,9 +215,9 @@ export function KnowledgeGraph({
             ctx.arc(node.x, node.y, nodeSize + 6, 0, 2 * Math.PI);
             ctx.fill();
           }}
-          d3AlphaDecay={0.02}
-          d3VelocityDecay={0.3}
-          cooldownTicks={200}
+          d3AlphaDecay={0.05}
+          d3VelocityDecay={0.4}
+          cooldownTicks={100}
           backgroundColor="transparent"
           linkDirectionalParticles={0}
           dagMode={undefined}

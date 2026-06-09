@@ -1,26 +1,84 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useAgent } from "@copilotkit/react-core/v2";
+import { useCopilotReadable } from "@copilotkit/react-core";
 import { CopilotSidebar } from "@copilotkit/react-core/v2";
 import { useDataEditorUI } from "@/hooks/use-data-editor-ui";
 import { useSuggestions } from "@/hooks/use-suggestions";
 import { useDataEditorContext } from "@/hooks/use-agent-context";
 import { useDataEditorTools } from "@/hooks/use-frontend-tools";
-import { Database, Loader2 } from "lucide-react";
+import { Database, Loader2, Upload, X } from "lucide-react";
 import { CanvasDashboard } from "@/components/canvas-dashboard";
 import { CanvasMutationPreview } from "@/components/canvas-mutation-preview";
+
+function parseCSV(text: string): {
+  columns: string[];
+  rows: Record<string, unknown>[];
+} {
+  const lines = text.split("\n").filter((l) => l.trim());
+  if (lines.length < 2) return { columns: [], rows: [] };
+
+  const sep = lines[0].includes("\t") ? "\t" : ",";
+  const columns = lines[0]
+    .split(sep)
+    .map((c) => c.trim().replace(/^"|"$/g, ""));
+  const rows = lines.slice(1).map((line) => {
+    const values = line.split(sep).map((v) => v.trim().replace(/^"|"$/g, ""));
+    const row: Record<string, unknown> = {};
+    columns.forEach((col, i) => {
+      const val = values[i] ?? "";
+      const num = Number(val);
+      row[col] = val !== "" && !isNaN(num) ? num : val;
+    });
+    return row;
+  });
+  return { columns, rows };
+}
 
 export default function Page() {
   const { agent } = useAgent();
   useDataEditorUI();
 
+  const [uploadedFile, setUploadedFile] = useState<{
+    name: string;
+    content: string;
+  } | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+
+  const fileData = useMemo(() => {
+    if (!uploadedFile) return null;
+    return parseCSV(uploadedFile.content);
+  }, [uploadedFile]);
+
+  useCopilotReadable({
+    description:
+      "File the user uploaded into the dashboard. The data is displayed in the main canvas. Use this to answer questions about the file contents.",
+    value: uploadedFile
+      ? `File: ${uploadedFile.name}\n\n${uploadedFile.content.slice(0, 8000)}`
+      : "",
+  });
+
   const queryResult = agent.state?.query_result;
   const pendingMutation = agent.state?.pending_mutation;
+
+  const displayResult =
+    queryResult ??
+    (fileData && fileData.rows.length > 0
+      ? {
+          sql: `Uploaded: ${uploadedFile!.name}`,
+          columns: fileData.columns,
+          rows: fileData.rows,
+          row_count: fileData.rows.length,
+          result_type: "table" as const,
+        }
+      : null);
+
   const hasResults =
-    !!queryResult?.rows?.length && !("error" in (queryResult.rows[0] || {}));
+    !!displayResult?.rows?.length &&
+    !("error" in (displayResult.rows[0] || {}));
   const hasError =
-    !!queryResult?.rows?.length && "error" in (queryResult.rows[0] || {});
+    !!displayResult?.rows?.length && "error" in (displayResult.rows[0] || {});
   const isRunning = agent.isRunning;
 
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
@@ -35,20 +93,20 @@ export default function Page() {
 
   useDataEditorContext({
     selectedRowId:
-      expandedRow !== null && queryResult?.rows?.[expandedRow]
-        ? ((queryResult.rows[expandedRow].id as number) ?? null)
+      expandedRow !== null && displayResult?.rows?.[expandedRow]
+        ? ((displayResult.rows[expandedRow].id as number) ?? null)
         : null,
     expandedRowId: expandedRow,
     currentView: hasResults
-      ? `${queryResult!.row_count} rows from: ${queryResult!.sql.slice(0, 80)}`
+      ? `${displayResult!.row_count} rows from: ${displayResult!.sql.slice(0, 80)}`
       : "empty",
-    rowCount: queryResult?.row_count ?? 0,
+    rowCount: displayResult?.row_count ?? 0,
   });
 
   const getQueryResult = useCallback(() => {
-    if (!queryResult?.rows?.length) return null;
-    return { columns: queryResult.columns, rows: queryResult.rows };
-  }, [queryResult]);
+    if (!displayResult?.rows?.length) return null;
+    return { columns: displayResult.columns, rows: displayResult.rows };
+  }, [displayResult]);
 
   useDataEditorTools({
     setExpandedRow,
@@ -57,16 +115,31 @@ export default function Page() {
     getQueryResult,
   });
 
-  // Auto-load removed: sendTextMessage is not available on AbstractAgent.
-  // Use the chat sidebar to query data.
-
   useSuggestions(hasResults);
+
+  const handleFile = async (file: File) => {
+    const text = await file.text();
+    setUploadedFile({ name: file.name, content: text });
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  };
 
   return (
     <div className="flex h-screen bg-[var(--background)]">
       <main
         ref={scrollRef as React.RefObject<HTMLDivElement>}
         className="flex-1 overflow-auto"
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragOver(true);
+        }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={handleDrop}
       >
         {pendingMutation ? (
           <div className="flex items-start justify-center p-8">
@@ -78,20 +151,36 @@ export default function Page() {
           <div className="flex items-center justify-center h-full p-8">
             <div className="text-center max-w-md">
               <div className="text-red-400 text-sm font-mono bg-red-500/10 border border-red-500/20 rounded-lg p-4">
-                {String(queryResult!.rows[0].error)}
+                {String(displayResult!.rows[0].error)}
               </div>
             </div>
           </div>
         ) : hasResults ? (
-          <CanvasDashboard
-            queryResult={queryResult!}
-            expandedRow={expandedRow}
-            setExpandedRow={setExpandedRow}
-            highlightedRow={highlightedRow}
-          />
+          <>
+            {uploadedFile && !queryResult && (
+              <div className="flex items-center gap-2 px-6 pt-4 text-xs text-[var(--muted-foreground)]">
+                <Upload className="h-3 w-3" />
+                <span>{uploadedFile.name}</span>
+                <button
+                  onClick={() => setUploadedFile(null)}
+                  className="hover:text-[var(--foreground)] cursor-pointer"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            )}
+            <CanvasDashboard
+              queryResult={displayResult!}
+              expandedRow={expandedRow}
+              setExpandedRow={setExpandedRow}
+              highlightedRow={highlightedRow}
+            />
+          </>
         ) : (
-          <div className="flex items-center justify-center h-full p-8">
-            <div className="text-center max-w-md">
+          <div
+            className={`flex items-center justify-center h-full p-8 transition-colors ${dragOver ? "bg-blue-500/5" : ""}`}
+          >
+            <div className="text-center max-w-lg">
               <Database className="mx-auto h-12 w-12 text-[var(--muted-foreground)] mb-4" />
               <h1 className="text-xl font-semibold text-[var(--foreground)] mb-2">
                 AI Data Editor
@@ -102,9 +191,49 @@ export default function Page() {
                   Loading dashboard...
                 </div>
               ) : (
-                <p className="text-sm text-[var(--muted-foreground)]">
-                  Ask a question in the sidebar to query your data.
-                </p>
+                <>
+                  <p className="text-sm text-[var(--muted-foreground)] mb-4">
+                    Query and edit data with natural language.
+                  </p>
+
+                  <div className="flex flex-wrap justify-center gap-2 mb-6">
+                    <span className="px-2.5 py-1 text-xs rounded-full bg-[var(--muted)] text-[var(--muted-foreground)]">
+                      accounts
+                    </span>
+                    <span className="px-2.5 py-1 text-xs rounded-full bg-[var(--muted)] text-[var(--muted-foreground)]">
+                      usage
+                    </span>
+                    <span className="px-2.5 py-1 text-xs rounded-full bg-[var(--muted)] text-[var(--muted-foreground)]">
+                      invoices
+                    </span>
+                  </div>
+
+                  <label
+                    className={`flex flex-col items-center gap-3 px-8 py-6 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${
+                      dragOver
+                        ? "border-blue-500 bg-blue-500/10 text-blue-400"
+                        : "border-[var(--border)] hover:border-[var(--foreground)] hover:bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                    }`}
+                  >
+                    <Upload className="h-6 w-6" />
+                    <span className="text-sm">
+                      Drop a file here or click to upload
+                    </span>
+                    <span className="text-xs opacity-60">
+                      CSV, TSV, JSON, or plain text
+                    </span>
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept=".csv,.tsv,.json,.txt,.md"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleFile(file);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                </>
               )}
             </div>
           </div>
@@ -115,7 +244,9 @@ export default function Page() {
         className="h-full"
         labels={{
           modalHeaderTitle: "AI Data Editor",
-          chatInputPlaceholder: "Ask about your data or request a change...",
+          chatInputPlaceholder: uploadedFile
+            ? `Ask about ${uploadedFile.name}...`
+            : "Ask about your data or request a change...",
         }}
       />
     </div>

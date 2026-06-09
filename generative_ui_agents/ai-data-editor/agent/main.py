@@ -2,18 +2,72 @@ import os
 from dotenv import load_dotenv
 from langchain.agents import create_agent
 from langchain_openai import ChatOpenAI
+from langchain.chat_models import BaseChatModel
 from copilotkit import CopilotKitMiddleware, StateStreamingMiddleware, StateItem
 
 from src.state import AgentState
 from src.tools import query_database, propose_mutation, execute_mutation
 from src.db import get_schema_context
+from src.seed import seed_if_needed
 
 load_dotenv()
+seed_if_needed()
 
-model = ChatOpenAI(
+IMAGE_PREFIXES = ("data:image/", "http://", "https://")
+
+def strip_non_image_parts(messages):
+    cleaned = []
+    for msg in messages:
+        if not hasattr(msg, "content") or not isinstance(msg.content, list):
+            cleaned.append(msg)
+            continue
+        filtered = []
+        for part in msg.content:
+            if isinstance(part, str):
+                filtered.append(part)
+            elif isinstance(part, dict):
+                if part.get("type") == "image_url":
+                    url = part.get("image_url", {})
+                    if isinstance(url, dict):
+                        url = url.get("url", "")
+                    if isinstance(url, str) and url.startswith(IMAGE_PREFIXES):
+                        filtered.append(part)
+                elif part.get("type") == "text":
+                    filtered.append(part)
+                else:
+                    filtered.append(part)
+            else:
+                filtered.append(part)
+        msg = msg.model_copy(update={"content": filtered if filtered else msg.content})
+        cleaned.append(msg)
+    return cleaned
+
+base_model = ChatOpenAI(
     model=os.getenv("OPENAI_MODEL", "gpt-5.5"),
     model_kwargs={"parallel_tool_calls": False},
 )
+model = base_model | (lambda x: x)  # placeholder, override below
+
+
+class SafeMultimodalModel(BaseChatModel):
+    """Wraps a chat model to strip non-image multimodal parts before calling OpenAI."""
+    inner: BaseChatModel
+
+    @property
+    def _llm_type(self):
+        return self.inner._llm_type
+
+    def _generate(self, messages, stop=None, **kwargs):
+        return self.inner._generate(strip_non_image_parts(messages), stop=stop, **kwargs)
+
+    async def _agenerate(self, messages, stop=None, **kwargs):
+        return await self.inner._agenerate(strip_non_image_parts(messages), stop=stop, **kwargs)
+
+    def bind_tools(self, *args, **kwargs):
+        return SafeMultimodalModel(inner=self.inner.bind_tools(*args, **kwargs))
+
+
+model = SafeMultimodalModel(inner=base_model)
 
 schema_context = get_schema_context()
 

@@ -108,3 +108,7 @@ html {
   border-color: var(--cpk-mint-400);
   background: color-mix(in srgb, var(--cpk-mint-400) 15%, var(--background));
 }
+
+[data-testid="copilot-add-menu-button"] {
+  display: none !important;
+}

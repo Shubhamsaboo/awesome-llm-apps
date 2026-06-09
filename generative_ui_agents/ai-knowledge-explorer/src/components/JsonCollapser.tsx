@@ -5,7 +5,7 @@ import { useEffect } from "react";
 export function JsonCollapser() {
   useEffect(() => {
     const tag = () => {
-      const chatArea = document.querySelector(".json-collapse-chat");
+      const chatArea = document.querySelector("[data-copilotkit]");
       if (!chatArea) return;
       const elements = chatArea.querySelectorAll("p, span, div");
       for (const el of elements) {

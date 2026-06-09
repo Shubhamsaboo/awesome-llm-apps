@@ -20,3 +20,4 @@ dist/
 # Internal docs
 blog-post.md
 twitter-thread.md
+.gstack/

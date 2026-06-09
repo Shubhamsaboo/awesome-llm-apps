@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useAgent } from "@copilotkit/react-core/v2";
-import { CopilotChat } from "@copilotkit/react-core/v2";
+import { CopilotSidebar } from "@copilotkit/react-core/v2";
 import { useKnowledgeUI, useSuggestions } from "@/hooks";
 import { KnowledgeGraph } from "@/components/KnowledgeGraph";
 import { NodeDetail } from "@/components/NodeDetail";
 import { KnowledgeNode, KnowledgeEdge } from "@/lib/types";
 import { EXAMPLE_FILES, CODE_EXAMPLE_FILES } from "@/lib/example-content";
-import { Network, Code, Sparkles, RotateCcw, Plus } from "lucide-react";
+import { Network, Code, Sparkles, Upload } from "lucide-react";
 import { JsonCollapser } from "@/components/JsonCollapser";
 
 const ALLOWED_EXTENSIONS = [
@@ -121,29 +121,6 @@ export default function Page() {
   const dragCounter = useRef(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const inject = () => {
-      const cpkBtn = document.querySelector(
-        '[data-copilotkit] button[data-slot="tooltip-trigger"]',
-      ) as HTMLButtonElement | null;
-      if (!cpkBtn || cpkBtn.getAttribute("data-replaced")) return;
-      cpkBtn.setAttribute("data-replaced", "true");
-      cpkBtn.style.display = "none";
-
-      const ourBtn = document.createElement("button");
-      ourBtn.type = "button";
-      ourBtn.innerHTML = cpkBtn.innerHTML;
-      ourBtn.className = cpkBtn.className;
-      ourBtn.title = "Upload files";
-      ourBtn.addEventListener("click", () => fileInputRef.current?.click());
-      cpkBtn.parentElement?.insertBefore(ourBtn, cpkBtn);
-    };
-    const observer = new MutationObserver(inject);
-    observer.observe(document.body, { childList: true, subtree: true });
-    inject();
-    return () => observer.disconnect();
-  }, []);
-
   const nodes: KnowledgeNode[] = agent.state?.nodes || [];
   const edges: KnowledgeEdge[] = agent.state?.edges || [];
   const hasGraph = nodes.length > 0;
@@ -154,38 +131,24 @@ export default function Page() {
     ? nodes.find((n) => n.id === selectedNodeId) || null
     : null;
 
-  const sendChatMessage = useCallback((text: string) => {
+  const typeIntoChat = useCallback((text: string) => {
     const input = document.querySelector(
-      ".json-collapse-chat textarea, .json-collapse-chat input[type='text']",
-    ) as HTMLTextAreaElement | HTMLInputElement | null;
+      "[data-copilotkit] textarea",
+    ) as HTMLTextAreaElement | null;
     if (!input) return;
-    const nativeSet =
-      Object.getOwnPropertyDescriptor(
-        window.HTMLTextAreaElement.prototype,
-        "value",
-      )?.set ||
-      Object.getOwnPropertyDescriptor(
-        window.HTMLInputElement.prototype,
-        "value",
-      )?.set;
+    input.focus();
+    const nativeSet = Object.getOwnPropertyDescriptor(
+      window.HTMLTextAreaElement.prototype,
+      "value",
+    )?.set;
     nativeSet?.call(input, text);
-    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
     setTimeout(() => {
-      const form = input.closest("form");
-      if (form) {
-        form.dispatchEvent(
-          new Event("submit", { bubbles: true, cancelable: true }),
-        );
-      } else {
-        input.dispatchEvent(
-          new KeyboardEvent("keydown", {
-            key: "Enter",
-            code: "Enter",
-            bubbles: true,
-          }),
-        );
-      }
-    }, 50);
+      const sendBtn = document.querySelector(
+        '[data-testid="copilot-send-button"]',
+      ) as HTMLButtonElement | null;
+      sendBtn?.click();
+    }, 100);
   }, []);
 
   const handleFilesReady = useCallback(
@@ -196,12 +159,18 @@ export default function Page() {
         body: JSON.stringify({ files }),
       });
       await res.json();
-
-      sendChatMessage(
+      typeIntoChat(
         `Uploaded ${files.map((f) => f.name).join(", ")}. Build a knowledge graph.`,
       );
     },
-    [sendChatMessage],
+    [typeIntoChat],
+  );
+
+  const sendChatMessage = useCallback(
+    (text: string) => {
+      typeIntoChat(text);
+    },
+    [typeIntoChat],
   );
 
   const processFileList = useCallback(
@@ -286,7 +255,7 @@ export default function Page() {
 
   return (
     <div
-      className="flex h-screen overflow-hidden relative"
+      className="flex h-screen bg-[var(--background)]"
       onDragEnter={(e) => {
         e.preventDefault();
         dragCounter.current++;
@@ -308,8 +277,6 @@ export default function Page() {
         handleDrop(e);
       }}
     >
-      <JsonCollapser />
-      {/* Drop overlay */}
       {isDragging && (
         <div className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center bg-[var(--background)]/80 backdrop-blur-sm">
           <div className="rounded-2xl border-2 border-dashed border-[var(--ring)] bg-[var(--accent)] px-12 py-8 text-sm font-medium text-[var(--foreground)]">
@@ -318,84 +285,50 @@ export default function Page() {
         </div>
       )}
 
-      {/* Chat sidebar — always 38% */}
-      <div className="flex h-full w-[38%] flex-col border-r border-[var(--border)]">
-        <header className="shrink-0 px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Network className="h-5 w-5 text-[var(--muted-foreground)]" />
-            <h1
-              className="text-lg font-bold"
-              style={{ fontFamily: "var(--font-body)" }}
-            >
-              Knowledge Explorer
-            </h1>
-          </div>
-          {hasGraph && (
-            <button
-              onClick={() => {
-                agent.setState({
-                  nodes: [],
-                  edges: [],
-                  selectedNodeId: "",
-                  processingStatus: "idle",
-                });
-                setSelectedNodeId(null);
-                window.location.reload();
-              }}
-              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--secondary)] hover:text-[var(--foreground)]"
-              title="Start over"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              New
-            </button>
-          )}
-        </header>
-
-        <div className="min-h-0 flex-1 overflow-hidden px-4 py-2">
-          <CopilotChat
-            className="h-full json-collapse-chat"
-            labels={{
-              welcomeMessageText: hasGraph
-                ? ""
-                : "Generate an interactive knowledge graph.",
-              chatInputPlaceholder: hasGraph
-                ? "Ask about the graph or add more content..."
-                : "Paste content or describe a topic...",
-            }}
-          />
-        </div>
-
-        {/* Starting prompt — only when no graph */}
-        {!hasGraph && (
-          <div className="shrink-0 px-6 pb-4 flex items-center justify-center gap-2">
-            <button
-              onClick={() => handleFilesReady(EXAMPLE_FILES)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-2 text-xs font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--secondary)] hover:text-[var(--foreground)]"
-            >
-              <Sparkles className="h-3 w-3" />
-              Try example docs
-            </button>
-            <button
-              onClick={() => handleFilesReady(CODE_EXAMPLE_FILES)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-2 text-xs font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--secondary)] hover:text-[var(--foreground)]"
-            >
-              <Code className="h-3 w-3" />
-              Try example code
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Graph canvas — always visible */}
-      <div className="flex h-full flex-1 flex-col">
+      <JsonCollapser />
+      <main className="flex-1 flex flex-col overflow-hidden">
         <div className="min-h-0 flex-1">
-          <KnowledgeGraph
-            nodes={nodes}
-            edges={edges}
-            selectedNodeId={selectedNodeId}
-            onNodeClick={handleNodeClick}
-            onNodeDoubleClick={handleNodeDoubleClick}
-          />
+          {hasGraph ? (
+            <KnowledgeGraph
+              nodes={nodes}
+              edges={edges}
+              selectedNodeId={selectedNodeId}
+              onNodeClick={handleNodeClick}
+              onNodeDoubleClick={handleNodeDoubleClick}
+            />
+          ) : (
+            <div className="flex h-full flex-col items-center justify-center gap-6">
+              <div className="flex flex-col items-center gap-2 text-[var(--muted-foreground)]">
+                <Network className="h-10 w-10 opacity-20" />
+                <p className="text-sm">
+                  Drop files or use an example to get started
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-2 text-xs font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--secondary)] hover:text-[var(--foreground)]"
+                >
+                  <Upload className="h-3 w-3" />
+                  Upload files
+                </button>
+                <button
+                  onClick={() => handleFilesReady(EXAMPLE_FILES)}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-2 text-xs font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--secondary)] hover:text-[var(--foreground)]"
+                >
+                  <Sparkles className="h-3 w-3" />
+                  Try example docs
+                </button>
+                <button
+                  onClick={() => handleFilesReady(CODE_EXAMPLE_FILES)}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-2 text-xs font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--secondary)] hover:text-[var(--foreground)]"
+                >
+                  <Code className="h-3 w-3" />
+                  Try example code
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {selectedNode && (
@@ -419,12 +352,29 @@ export default function Page() {
                   Processing...
                 </span>
               )}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="ml-auto flex items-center gap-1 transition-colors hover:text-[var(--foreground)]"
+              >
+                <Upload className="h-3 w-3" />
+                Add files
+              </button>
             </div>
           </div>
         )}
-      </div>
+      </main>
 
-      {/* Hidden file input for + button */}
+      <CopilotSidebar
+        defaultOpen
+        className="h-full"
+        labels={{
+          modalHeaderTitle: "Knowledge Explorer",
+          chatInputPlaceholder: hasGraph
+            ? "Ask about the graph or add more content..."
+            : "Paste content or describe a topic...",
+        }}
+      />
+
       <input
         ref={fileInputRef}
         type="file"
