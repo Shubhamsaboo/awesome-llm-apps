@@ -283,6 +283,7 @@ streamlit run travel_agent.py
 *   [📝 LLM App with Personalized Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/llm_app_personalized_memory/)
 *   [🗄️ Local ChatGPT Clone with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/local_chatgpt_with_memory/)
 *   [🧠 Multi-LLM Application with Shared Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/multi_llm_memory/)
+*   [🛡️ Agent Memory Guard – Memory Poisoning Defense](https://github.com/OWASP/www-project-agent-memory-guard) <sub>↗ external</sub> – Detect and block memory poisoning attacks (OWASP ASI06) in agent memory stores like Mem0, Zep, and ChromaDB
 
 ### 💬 Chat with X Tutorials
 *Turn any data source into a chat interface.*
