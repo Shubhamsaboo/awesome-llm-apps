@@ -323,6 +323,7 @@ streamlit run travel_agent.py
   - Multi‑agent patterns; agent handoffs
   - Swarm orchestration; routing logic
 
+* [Konsey](https://github.com/eMediquality/konsey) — Multi-agent, evidence-weighted orchestration CLI; vendor-neutral + local-first; producer-cannot-verify cross-validation.
 
 ## 🙏 Built by
 
