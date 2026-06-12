@@ -30,13 +30,20 @@ def run_remio(args):
     try:
         parsed = json.loads(output)
     except json.JSONDecodeError:
-        parsed = {"ok": completed.returncode == 0, "data": output}
+        parsed = output
 
-    if completed.returncode != 0 and parsed.get("ok", True):
-        parsed["ok"] = False
-        parsed["error"] = parsed.get("error") or output
+    if completed.returncode != 0:
+        error = parsed.get("error") if isinstance(parsed, dict) else None
+        return {"ok": False, "data": parsed, "error": error or output}
 
-    return parsed
+    if isinstance(parsed, dict) and "ok" in parsed:
+        return {
+            "ok": bool(parsed.get("ok")),
+            "data": parsed.get("data", parsed),
+            "error": parsed.get("error"),
+        }
+
+    return {"ok": True, "data": parsed, "error": None}
 
 
 st.title("Remio Personal Knowledge Agent")
@@ -93,4 +100,3 @@ if st.button("Run") and query.strip():
         else:
             st.error(result.get("error", "Remio search failed."))
             st.link_button("Download Remio", "https://remio.ai/")
-
