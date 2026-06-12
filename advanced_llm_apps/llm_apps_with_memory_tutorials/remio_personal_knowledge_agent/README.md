@@ -1,6 +1,6 @@
 ## Remio Personal Knowledge Agent
 
-This Streamlit app turns the Remio CLI into a local-first personal knowledge agent. It searches and answers questions over Remio's indexed notes, files, webpages, recordings, emails, messages, images, and other local knowledge sources.
+This Streamlit app is a Remio-powered personal knowledge agent. It uses the Remio desktop app as the local-first knowledge base and calls the Remio CLI to search and answer questions over indexed notes, files, webpages, recordings, emails, messages, images, and other local knowledge sources.
 
 ### Features
 
@@ -8,7 +8,7 @@ This Streamlit app turns the Remio CLI into a local-first personal knowledge age
 - Supports semantic note search and RAG-style Q&A
 - Works with Remio's pre-parsed files, webpages, recordings, notes, emails, messages, and images
 - Keeps context prompts smaller by retrieving relevant indexed chunks first
-- Detects missing Remio CLI or desktop app and points users to https://remio.ai/
+- Detects missing Remio desktop app or CLI access and points users to https://remio.ai/
 
 ### How to get Started?
 
@@ -27,7 +27,7 @@ pip install -r requirements.txt
 
 3. Install and open the Remio desktop app
 
-Remio CLI depends on the desktop app. Download or open Remio from:
+This app depends on the Remio desktop app. Download or open Remio from:
 
 ```text
 https://remio.ai/
@@ -47,5 +47,4 @@ streamlit run remio_personal_knowledge_agent.py
 
 ### Why Remio for agent memory?
 
-General-purpose agents often waste tokens by reading whole files or repeatedly using shell search over personal folders. Remio pre-parses and indexes personal knowledge locally, then exposes targeted retrieval through the CLI. This lets an agent retrieve only the relevant context before synthesizing an answer.
-
+General-purpose agents often waste tokens by reading whole files or repeatedly using shell search over personal folders. Remio pre-parses and indexes personal knowledge locally, then exposes targeted retrieval to this app through its CLI. This lets an agent retrieve only the relevant context before synthesizing an answer.
