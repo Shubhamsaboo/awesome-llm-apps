@@ -141,6 +141,7 @@ streamlit run travel_agent.py
 ### 🚀 Advanced AI Agents
 *Production-style agents with tools, memory, and multi-step reasoning.*
 
+*   [🔀 A3M Router](https://github.com/Das-rebel/a3m-router) - Adaptive multi-model LLM router with parallel ensemble routing, Shapley value credit allocation, game-theoretic risk profiling, 47+ providers, circuit breaker, semantic cache, guardrails, ObsidianVault memory, multimodal routing. 19K+ npm downloads, highest robustness (0.8524) on RouterArena. <sub>↗ external</sub>
 *   [🏚️ 🍌 AI Home Renovation Agent with Nano Banana Pro](advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent)
 *   [🧠 DevPulse AI - Multi-Agent Signal Intelligence](advanced_ai_agents/multi_agent_apps/devpulse_ai/)
 *   [🔍 AI Deep Research Agent](advanced_ai_agents/single_agent_apps/ai_deep_research_agent/)
