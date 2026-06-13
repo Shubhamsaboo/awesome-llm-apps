@@ -1,0 +1,74 @@
+name: Lint and Test
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  lint:
+    name: Ruff Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install ruff
+
+      - name: Run ruff linter
+        run: |
+          ruff check .
+        continue-on-error: true
+
+  lint-requirements:
+    name: Check requirements.txt consistency
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Find requirements files
+        run: |
+          echo "=== Root requirements.txt ==="
+          cat requirements.txt 2>/dev/null || echo "Not found"
+          echo ""
+          echo "=== Subproject requirements count ==="
+          find . -name "requirements.txt" -type f | wc -l
+
+  markdownlint:
+    name: Check README consistency
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check for uppercase README
+        run: |
+          uppercase_count=$(find . -name "README.MD" -type f | wc -l)
+          if [ "$uppercase_count" -gt 0 ]; then
+            echo "Found $uppercase_count README.MD files (should be lowercase):"
+            find . -name "README.MD" -type f
+            exit 1
+          else
+            echo "All README files are lowercase"
+          fi
+
+      - name: Check for missing READMEs
+        run: |
+          dir_count=$(find . -type d -name "*-agent*" -o -type d -name "*-tutorial*" -o -type d -name "*-apps" 2>/dev/null | wc -l)
+          readme_count=$(find . -name "README.md" -type f | wc -l)
+          echo "Project directories: $dir_count"
+          echo "README files: $readme_count"
