@@ -169,8 +169,8 @@ Agent: "Given your love for hiking, I'd recommend..."
 ## 🔗 Next Steps
 
 After completing this tutorial, you'll be ready for:
-- **[Tutorial 5.2: Persistent Conversation](../5_2_persistent_conversation/README.md)** - Learn database-based session storage
-- **[Tutorial 5.3: Cloud Memory](../5_3_cloud_memory/README.md)** - Explore cloud-based memory solutions
+- **[Tutorial 5.2: Persistent Conversation](../5_2_persistent_conversation_agent/README.md)** - Learn database-based session storage
+- **[Tutorial 5.3: Cloud Memory](../5_memory_agent/README.md)** - Explore cloud-based memory solutions
 
 ## 💡 Pro Tips
 

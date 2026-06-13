@@ -12,7 +12,7 @@ The AI Reasoning Agent leverages advanced AI models to provide insightful reason
 1. **Clone the repository**:
     ```bash
     git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-    cd ai_agent_tutorials/ai_reasoning_agent
+    cd starter_ai_agents/ai_reasoning_agent
     ```
 
 2. **Install the required packages**:

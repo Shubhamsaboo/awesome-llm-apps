@@ -18,13 +18,13 @@ A multi-agent research application built with OpenAI's Agents SDK and Streamlit.
 1. Clone the GitHub repository
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-cd awesome-llm-apps/ai_agent_tutorials/openai_researcher_agent
+cd awesome-llm-apps/starter_ai_agents/openai_research_agent
 ```
 
 2. Install the required dependencies:
 
 ```bash
-cd awesome-llm-apps/ai_agent_tutorials/openai_researcher_agent
+cd awesome-llm-apps/starter_ai_agents/openai_research_agent
 pip install -r requirements.txt
 ```
 

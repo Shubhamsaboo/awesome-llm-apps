@@ -42,4 +42,4 @@ Demonstrates the three execution methods available in the OpenAI Agents SDK: syn
 ## 🔗 Next Steps
 
 - [Conversation Management](../4_2_conversation_management/README.md) - Threading and sessions
-- [Run Configuration](../4_3_run_configuration/README.md) - Advanced settings
+- [Run Configuration](../4_running_agents/4_3_run_configuration/README.md) - Advanced settings

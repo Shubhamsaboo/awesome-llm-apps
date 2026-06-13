@@ -55,5 +55,5 @@ A structured output agent demonstrating Pydantic schema-based responses for cust
 ## 🔗 Next Steps
 
 - [Product Review Agent](../2_2_product_review_agent/README.md) - Complex structured output
-- [Email Generator Agent](../2_3_email_generator_agent/README.md) - Simple structured output
+- [Email Generator Agent](../2_structured_output_agent/README.md) - Simple structured output
 - [Tutorial 3: Tool Using Agent](../../3_tool_using_agent/README.md) - Adding tools to agents

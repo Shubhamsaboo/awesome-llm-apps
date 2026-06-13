@@ -29,8 +29,8 @@ This crash course covers the essential concepts of Google ADK through hands-on t
    - Simple text processing
 
 2. **[2_model_agnostic_agent](./2_model_agnostic_agent/README.md)** - Model-agnostic agent development
-   - **[2.1 OpenAI Agent](./2_model_agnostic_agent/2_1_openai_adk_agent/README.md)** - OpenAI integration
-   - **[2.2 Anthropic Claude Agent](./2_model_agnostic_agent/2_2_anthropic_adk_agent/README.md)** - Claude integration
+   - **[2.1 OpenAI Agent](./2_model_agnostic_agent/README.md)** - OpenAI integration
+   - **[2.2 Anthropic Claude Agent](./2_model_agnostic_agent/README.md)** - Claude integration
 
 3. **[3_structured_output_agent](./3_structured_output_agent/README.md)** - Type-safe responses
    - **[3.1 Customer Support Ticket Agent](./3_structured_output_agent/3_1_customer_support_ticket_agent/README.md)** - Pydantic schemas
@@ -43,8 +43,8 @@ This crash course covers the essential concepts of Google ADK through hands-on t
    - **[4.4 MCP Tools](./4_tool_using_agent/4_4_mcp_tools/README.md)** - MCP tools integration
 
 5. **[5_memory_agent](./5_memory_agent/README.md)** - Memory and session management
-   - **[5.1 In-Memory Conversation](./5_memory_agent/5_1_in_memory_conversation/README.md)** - Basic session management
-   - **[5.2 Persistent Conversation](./5_memory_agent/5_2_persistent_conversation/README.md)** - Database storage with SQLite
+   - **[5.1 In-Memory Conversation](./5_memory_agent/5_1_in_memory_conversation_agent/README.md)** - Basic session management
+   - **[5.2 Persistent Conversation](./5_memory_agent/5_2_persistent_conversation_agent/README.md)** - Database storage with SQLite
 
 6. **[6_callbacks](./6_callbacks/README.md)** - Callback patterns and monitoring
    - **[6.1 Agent Lifecycle Callbacks](./6_callbacks/6_1_agent_lifecycle_callbacks/README.md)** - Monitor agent creation and cleanup
@@ -58,7 +58,7 @@ This crash course covers the essential concepts of Google ADK through hands-on t
    - Usage analytics and monitoring
 
 8. **[8_simple_multi_agent](./8_simple_multi_agent/README.md)** - Multi-agent orchestration
-   - **[8.1 Multi-Agent Researcher](./8_simple_multi_agent/multi_agent_researcher/README.md)** - Research pipeline with specialized agents
+   - **[8.1 Multi-Agent Researcher](./8_simple_multi_agent/README.md)** - Research pipeline with specialized agents
    - Coordinator agent with sub-agents
    - Sequential workflow: Research → Summarize → Critique
    - Web search integration and comprehensive analysis

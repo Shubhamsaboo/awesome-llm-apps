@@ -178,9 +178,9 @@ agent = LlmAgent(
 
 After completing this tutorial, you'll be ready for:
 
-- **[Advanced Agent Patterns](../advanced_patterns/README.md)** - Complex agent architectures
-- **[Production Deployment](../deployment/README.md)** - Deploying agents to production
-- **[Custom Tools](../custom_tools/README.md)** - Building custom tools and integrations
+- **[Advanced Agent Patterns](../6_callbacks/README.md)** - Complex agent architectures
+- **[Production Deployment](../7_plugins/README.md)** - Deploying agents to production
+- **[Custom Tools](../4_tool_using_agent/README.md)** - Building custom tools and integrations
 
 ## 📚 Additional Resources
 

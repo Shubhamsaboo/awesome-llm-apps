@@ -41,4 +41,4 @@ Demonstrates manual conversation threading with `to_input_list()` and automatic 
 ## 🔗 Next Steps
 
 - [Execution Methods](../4_1_execution_methods/README.md) - Basic execution patterns
-- [Streaming Events](../4_4_streaming_events/README.md) - Real-time processing
+- [Streaming Events](../4_running_agents/4_2_conversation_management/README.md) - Real-time processing

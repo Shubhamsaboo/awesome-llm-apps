@@ -102,4 +102,4 @@ result2 = await Runner.run(agent, "Question 2")  # Trace 2
 ## 🔗 Next Steps
 
 - [Custom Tracing](../10_2_custom_tracing/README.md) - Advanced tracing patterns
-- [Tutorial 11: Production Patterns](../../11_production_patterns/README.md) - Real-world deployment
+- [Tutorial 11: Production Patterns](../../11_voice/README.md) - Real-world deployment

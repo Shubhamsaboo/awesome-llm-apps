@@ -31,7 +31,7 @@ An advanced Chess game system where two AI agents play chess against each other 
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-cd ai_agent_tutorials/ai_chess_game
+cd advanced_ai_agents/autonomous_game_playing_agent_apps/ai_chess_agent
 ```
 2. Install the required dependencies:
 

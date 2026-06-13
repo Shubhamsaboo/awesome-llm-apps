@@ -39,6 +39,6 @@ A basic personal assistant agent demonstrating the fundamental concepts of agent
 ## 🔗 Next Steps
 
 This agent demonstrates the absolute basics. For more advanced features, see:
-- [Execution Demo Agent](../execution_demo_agent/README.md) - Different execution methods
+- [Execution Demo Agent](../1_starter_agent/README.md) - Different execution methods
 - [Tutorial 2: Structured Output](../../2_structured_output_agent/README.md) - Pydantic schema outputs
 - [Tutorial 3: Tool Using Agent](../../3_tool_using_agent/README.md) - Adding tools and functions

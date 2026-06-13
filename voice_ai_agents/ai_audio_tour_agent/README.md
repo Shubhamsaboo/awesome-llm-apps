@@ -54,7 +54,7 @@ A conversational voice agent system that generates immersive, self-guided audio 
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-cd ai_agent_tutorials/ai_audio_tour_agent
+cd voice_ai_agents/ai_audio_tour_agent
 ```
 2. Install the required dependencies:
 
