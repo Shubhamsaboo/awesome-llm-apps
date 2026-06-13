@@ -1,6 +1,6 @@
 from agno.agent import Agent
 from agno.team import Team
-from agno.models.openai import OpenAIChat
+from agno.models.anthropic import Claude
 from agno.media import Image as AgnoImage
 from agno.tools.duckduckgo import DuckDuckGoTools
 import streamlit as st
@@ -9,14 +9,48 @@ import logging
 from pathlib import Path
 import tempfile
 import os
+import subprocess
+from datetime import datetime
 
 # Configure logging for errors only
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
-def initialize_agents(api_key: str) -> tuple[Team, Agent, Agent, Agent, Agent]:
+def get_zuora_jwt_token() -> str:
+    """Get fresh JWT token from Zuora infrastructure."""
+    token_file = os.path.expanduser("~/.claude/tokens/id_token.txt")
+
     try:
-        model = OpenAIChat(id="gpt-4o", api_key=api_key)
+        if os.path.exists(token_file):
+            mtime = os.path.getmtime(token_file)
+            age = datetime.now().timestamp() - mtime
+            if age < 86000:  # < 24 hours
+                with open(token_file, "r") as f:
+                    return f.read().strip()
+
+        # Token missing or stale — refresh
+        result = subprocess.run(
+            [os.path.expanduser("~/.claude/scripts/get-current-token.sh")],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        if result.returncode != 0:
+            raise RuntimeError(f"Token refresh failed: {result.stderr}")
+        return result.stdout.strip()
+    except Exception as e:
+        logger.error(f"Failed to get Zuora JWT token: {str(e)}")
+        raise
+
+def initialize_agents() -> tuple[Team, Agent, Agent, Agent, Agent]:
+    try:
+        jwt_token = get_zuora_jwt_token()
+
+        model = Claude(
+            id="claude-sonnet-4-20250514",
+            api_key=jwt_token,
+            base_url="http://claude-proxy.tools.stg.uw2.aws.zuora",
+        )
 
         therapist_agent = Agent(
             model=model,
@@ -105,32 +139,24 @@ st.set_page_config(
 
 
 
-# Sidebar for API key input
+# Sidebar for Zuora Auth status
 with st.sidebar:
-    st.header("🔑 API Configuration")
+    st.header("🔑 Zuora AI Infrastructure")
 
-    if "api_key_input" not in st.session_state:
-        st.session_state.api_key_input = os.environ.get("OPENAI_API_KEY", "")
-        
-    api_key = st.text_input(
-        "Enter your OpenAI API Key",
-        value=st.session_state.api_key_input,
-        type="password",
-        help="Get your API key from OpenAI Platform",
-        key="api_key_widget"  
-    )
-
-    if api_key != st.session_state.api_key_input:
-        st.session_state.api_key_input = api_key
-    
-    if api_key:
-        st.success("API Key provided! ✅")
-    else:
-        st.warning("Please enter your API key to proceed")
+    try:
+        jwt_token = get_zuora_jwt_token()
+        token_age = datetime.now().timestamp() - os.path.getmtime(
+            os.path.expanduser("~/.claude/tokens/id_token.txt")
+        )
+        hours_left = round((86400 - token_age) / 3600)
+        st.success(f"✅ Authenticated (expires in {hours_left}h)")
+    except Exception as e:
+        st.error(f"❌ Auth failed: {str(e)}")
         st.markdown("""
-        To get your API key:
-        1. Go to [OpenAI Platform](https://platform.openai.com/api-keys)
-        2. Create a new secret API key
+        **Fix:**
+        1. Ensure you're on Zuora VPN (Zscaler)
+        2. Run: `~/.claude/scripts/get-current-token.sh`
+        3. Verify token: `cat ~/.claude/tokens/id_token.txt`
         """)
 
 # Main content
@@ -164,12 +190,10 @@ with col2:
         for file in uploaded_files:
             st.image(file, caption=file.name, use_container_width=True)
 
-# Process button and API key check
+# Process button
 if st.button("Get Recovery Plan 💝", type="primary"):
-    if not st.session_state.api_key_input:
-        st.warning("Please enter your API key in the sidebar first!")
-    else:
-        team_leader, therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent = initialize_agents(st.session_state.api_key_input)
+    try:
+        team_leader, therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent = initialize_agents()
 
         if all([team_leader, therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent]):
             if user_input or uploaded_files:
@@ -217,14 +241,17 @@ if st.button("Get Recovery Plan 💝", type="primary"):
                         )
 
                         st.markdown(response.content)
-                            
+
                 except Exception as e:
                     logger.error(f"Error during analysis: {str(e)}")
-                    st.error("An error occurred during analysis. Please check the logs for details.")
+                    st.error(f"Analysis failed: {str(e)}")
             else:
                 st.warning("Please share your feelings or upload screenshots to get help.")
         else:
-            st.error("Failed to initialize agents. Please check your API key.")
+            st.error("Failed to initialize agents. Check sidebar for auth status.")
+    except Exception as e:
+        logger.error(f"Initialization error: {str(e)}")
+        st.error(f"Failed to initialize: {str(e)}")
 
 # Footer
 st.markdown("---")
