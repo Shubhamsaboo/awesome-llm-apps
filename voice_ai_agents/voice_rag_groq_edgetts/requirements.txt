@@ -1,0 +1,19 @@
+# ── Core framework ────────────────────────────────────────────────────────────
+streamlit==1.51.0
+python-dotenv==1.2.2
+
+# ── Vector DB & Embeddings (unchanged) ───────────────────────────────────────
+qdrant-client==1.15.1
+fastembed==0.7.3
+
+# ── Document processing (unchanged) ──────────────────────────────────────────
+langchain==1.0.3
+langchain-community==0.4.1
+langchain-text-splitters==1.0.0
+pypdf==6.13.1
+
+# ── Text generation: Groq  (replaces openai) ─────────────────────────────────
+groq>=0.12.0
+
+# ── Text-to-Speech: edge-tts  (replaces openai TTS, no API key needed) ───────
+edge-tts>=6.1.12
