@@ -20,20 +20,10 @@ https://github.com/user-attachments/assets/47761912-d46a-4fb3-b9bd-cb41ddd02e34
 
 ## Getting Started
 
-1. Install dependencies using your preferred package manager:
+1. Install dependencies (npm, or pnpm/yarn/bun):
 
 ```bash
-# Using npm (default)
 npm install
-
-# Using pnpm
-pnpm install
-
-# Using yarn
-yarn install
-
-# Using bun
-bun install
 ```
 
 This will also install the Python agent dependencies via `uv sync`.
@@ -53,17 +43,7 @@ OPENAI_API_KEY=your-openai-api-key-here
 3. Start the development server:
 
 ```bash
-# Using npm (default)
 npm run dev
-
-# Using pnpm
-pnpm dev
-
-# Using yarn
-yarn dev
-
-# Using bun
-bun run dev
 ```
 
 This will start both the UI and agent servers concurrently.
@@ -180,29 +160,3 @@ Both patterns use the same catalog on the frontend — the difference is where t
 
 - [LangGraph Documentation](https://langchain-ai.github.io/langgraph/) - Learn more about LangGraph and its features
 - [CopilotKit Documentation](https://docs.copilotkit.ai) - Explore CopilotKit's capabilities
-
-## Contributing
-
-Feel free to submit issues and enhancement requests! This starter is designed to be easily extensible.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Troubleshooting
-
-### Agent Connection Issues
-
-If you see "I'm having trouble connecting to my tools", make sure:
-
-1. The LangGraph agent is running on port 8123
-2. Your OpenAI API key is set correctly
-3. Both servers started successfully
-
-### Python Dependencies
-
-If you encounter Python import errors:
-
-```bash
-npm run install:agent
-```

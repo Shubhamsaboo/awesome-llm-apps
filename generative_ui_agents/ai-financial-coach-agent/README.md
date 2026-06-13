@@ -19,36 +19,16 @@ https://github.com/user-attachments/assets/edd4fa8d-ecc5-4b5d-90ff-27b21af5af94
 
 ## Getting Started
 
-1. Install dependencies using your preferred package manager:
+1. Install dependencies (npm, or pnpm/yarn/bun):
 
 ```bash
-# Using npm (default)
 npm install
-
-# Using pnpm
-pnpm install
-
-# Using yarn
-yarn install
-
-# Using bun
-bun install
 ```
 
 2. Install Python dependencies for the ADK agent:
 
 ```bash
-# Using npm (default)
 npm run install:agent
-
-# Using pnpm
-pnpm install:agent
-
-# Using yarn
-yarn install:agent
-
-# Using bun
-bun run install:agent
 ```
 
 > **Note:** This will automatically setup a `.venv` (virtual environment) inside the `agent` directory.
@@ -68,17 +48,7 @@ export GOOGLE_API_KEY="your-google-api-key-here"
 4. Start the development server:
 
 ```bash
-# Using npm (default)
 npm run dev
-
-# Using pnpm
-pnpm dev
-
-# Using yarn
-yarn dev
-
-# Using bun
-bun run dev
 ```
 
 This will start both the UI and agent servers concurrently.
@@ -95,7 +65,7 @@ The following scripts can also be run using your preferred package manager:
 - `start` - Starts the production server
 - `install:agent` - Installs Python dependencies for the agent
 
-## Documentation
+## Customization
 
 The main UI component is in `src/app/page.tsx`. You can:
 
@@ -108,30 +78,3 @@ The main UI component is in `src/app/page.tsx`. You can:
 - [ADK Documentation](https://google.github.io/adk-docs/) - Learn more about the ADK and its features
 - [CopilotKit Documentation](https://docs.copilotkit.ai) - Explore CopilotKit's capabilities
 - [Next.js Documentation](https://nextjs.org/docs) - Learn about Next.js features and API
-
-## Contributing
-
-Feel free to submit issues and enhancement requests! This starter is designed to be easily extensible.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Troubleshooting
-
-### Agent Connection Issues
-
-If you see "I'm having trouble connecting to my tools", make sure:
-
-1. The ADK agent is running on port 8000
-2. Your Google API key is set correctly
-3. Both servers started successfully
-
-### Python Dependencies
-
-If you encounter Python import errors:
-
-```bash
-cd agent
-pip install -r requirements.txt
-```

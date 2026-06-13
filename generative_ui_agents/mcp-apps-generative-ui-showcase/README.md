@@ -137,7 +137,3 @@ The demo is deployed on Railway with two services:
 | MCP Server | https://mcp-server-production-bbb4.up.railway.app |
 
 For production, set `MCP_SERVER_URL` environment variable to point to your deployed MCP server.
-
-## License
-
-MIT

@@ -58,7 +58,3 @@ UI runs at [localhost:5173](http://localhost:5173). Runtime on 4000, agent on 81
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
 
 Or connect your repo — `render.yaml` defines everything.
-
-## License
-
-MIT
