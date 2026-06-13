@@ -1,5 +1,6 @@
 from agno.agent import Agent
-from agno.models.google import Gemini
+from agno.team import Team
+from agno.models.openai import OpenAIChat
 from agno.media import Image as AgnoImage
 from agno.tools.duckduckgo import DuckDuckGoTools
 import streamlit as st
@@ -13,10 +14,10 @@ import os
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
-def initialize_agents(api_key: str) -> tuple[Agent, Agent, Agent, Agent]:
+def initialize_agents(api_key: str) -> tuple[Team, Agent, Agent, Agent, Agent]:
     try:
-        model = Gemini(id="gemini-2.0-flash-exp", api_key=api_key)
-        
+        model = OpenAIChat(id="gpt-4o", api_key=api_key)
+
         therapist_agent = Agent(
             model=model,
             name="Therapist Agent",
@@ -74,11 +75,26 @@ def initialize_agents(api_key: str) -> tuple[Agent, Agent, Agent, Agent]:
             ],
             markdown=True
         )
-        
-        return therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent
+
+        team_leader = Team(
+            model=model,
+            name="Relationship Recovery Coordinator",
+            members=[therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent],
+            instructions=[
+                "You are the Relationship Recovery Coordinator (Team Leader). Your job is to:",
+                "1. Coordinate with your team of specialists: Therapist Agent, Closure Agent, Routine Planner Agent, and Brutal Honesty Agent.",
+                "2. Delegate sub-tasks to these agents using the tools available to you to gather their individual analysis and contributions.",
+                "3. Compile and synthesize their feedback into a single, cohesive, highly-structured recovery roadmap.",
+                "4. Ensure the final response flows logically, starting with the therapist's emotional assessment, followed by the reality check, then the recovery routine, and ending with closure exercises.",
+                "5. Maintain a supportive yet direct tone throughout the report."
+            ],
+            markdown=True
+        )
+
+        return team_leader, therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent
     except Exception as e:
         st.error(f"Error initializing agents: {str(e)}")
-        return None, None, None, None
+        return None, None, None, None, None
 
 # Set page config and UI elements
 st.set_page_config(
@@ -94,13 +110,13 @@ with st.sidebar:
     st.header("🔑 API Configuration")
 
     if "api_key_input" not in st.session_state:
-        st.session_state.api_key_input = ""
+        st.session_state.api_key_input = os.environ.get("OPENAI_API_KEY", "")
         
     api_key = st.text_input(
-        "Enter your Gemini API Key",
+        "Enter your OpenAI API Key",
         value=st.session_state.api_key_input,
         type="password",
-        help="Get your API key from Google AI Studio",
+        help="Get your API key from OpenAI Platform",
         key="api_key_widget"  
     )
 
@@ -113,8 +129,8 @@ with st.sidebar:
         st.warning("Please enter your API key to proceed")
         st.markdown("""
         To get your API key:
-        1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
-        2. Enable the Generative Language API in your [Google Cloud Console](https://console.developers.google.com/apis/api/generativelanguage.googleapis.com)
+        1. Go to [OpenAI Platform](https://platform.openai.com/api-keys)
+        2. Create a new secret API key
         """)
 
 # Main content
@@ -153,9 +169,9 @@ if st.button("Get Recovery Plan 💝", type="primary"):
     if not st.session_state.api_key_input:
         st.warning("Please enter your API key in the sidebar first!")
     else:
-        therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent = initialize_agents(st.session_state.api_key_input)
-        
-        if all([therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent]):
+        team_leader, therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent = initialize_agents(st.session_state.api_key_input)
+
+        if all([team_leader, therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent]):
             if user_input or uploaded_files:
                 try:
                     st.header("Your Personalized Recovery Plan")
@@ -180,88 +196,26 @@ if st.button("Get Recovery Plan 💝", type="primary"):
                     
                     all_images = process_images(uploaded_files) if uploaded_files else []
                     
-                    # Therapist Analysis
-                    with st.spinner("🤗 Getting empathetic support..."):
-                        therapist_prompt = f"""
-                        Analyze the emotional state and provide empathetic support based on:
-                        User's message: {user_input}
-                        
-                        Please provide a compassionate response with:
-                        1. Validation of feelings
-                        2. Gentle words of comfort
-                        3. Relatable experiences
-                        4. Words of encouragement
+                    # Coordinated Team Leader Execution
+                    with st.spinner("🤝 Coordinating with the Breakup Recovery Squad..."):
+                        team_leader_prompt = f"""
+                        Coordinate with your team of specialists to create a comprehensive, synthesized breakup recovery roadmap based on:
+                        User situation: {user_input}
+
+                        Please delegate to each specialist:
+                        1. Ask the Therapist Agent to analyze the emotional state and provide empathetic support.
+                        2. Ask the Brutal Honesty Agent to provide an objective, direct reality check on the situation.
+                        3. Ask the Routine Planner Agent to design a tailored 7-day recovery calendar and self-care routine.
+                        4. Ask the Closure Agent to write a template for unsent messages and release rituals.
+
+                        Synthesize all their contributions into a single, cohesive, beautifully-structured report.
                         """
-                        
-                        response = therapist_agent.run(
-                            therapist_prompt,
+
+                        response = team_leader.run(
+                            team_leader_prompt,
                             images=all_images
                         )
-                        
-                        st.subheader("🤗 Emotional Support")
-                        st.markdown(response.content)
-                    
-                    # Closure Messages
-                    with st.spinner("✍️ Crafting closure messages..."):
-                        closure_prompt = f"""
-                        Help create emotional closure based on:
-                        User's feelings: {user_input}
-                        
-                        Please provide:
-                        1. Template for unsent messages
-                        2. Emotional release exercises
-                        3. Closure rituals
-                        4. Moving forward strategies
-                        """
-                        
-                        response = closure_agent.run(
-                            closure_prompt,
-                            images=all_images
-                        )
-                        
-                        st.subheader("✍️ Finding Closure")
-                        st.markdown(response.content)
-                    
-                    # Recovery Plan
-                    with st.spinner("📅 Creating your recovery plan..."):
-                        routine_prompt = f"""
-                        Design a 7-day recovery plan based on:
-                        Current state: {user_input}
-                        
-                        Include:
-                        1. Daily activities and challenges
-                        2. Self-care routines
-                        3. Social media guidelines
-                        4. Mood-lifting music suggestions
-                        """
-                        
-                        response = routine_planner_agent.run(
-                            routine_prompt,
-                            images=all_images
-                        )
-                        
-                        st.subheader("📅 Your Recovery Plan")
-                        st.markdown(response.content)
-                    
-                    # Honest Feedback
-                    with st.spinner("💪 Getting honest perspective..."):
-                        honesty_prompt = f"""
-                        Provide honest, constructive feedback about:
-                        Situation: {user_input}
-                        
-                        Include:
-                        1. Objective analysis
-                        2. Growth opportunities
-                        3. Future outlook
-                        4. Actionable steps
-                        """
-                        
-                        response = brutal_honesty_agent.run(
-                            honesty_prompt,
-                            images=all_images
-                        )
-                        
-                        st.subheader("💪 Honest Perspective")
+
                         st.markdown(response.content)
                             
                 except Exception as e:
