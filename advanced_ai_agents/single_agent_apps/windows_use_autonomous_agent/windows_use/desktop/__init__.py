@@ -57,9 +57,18 @@ class Desktop:
         return {row.get('Name').lower():row.get('AppID') for row in reader}
     
     def execute_command(self,command:str)->tuple[str,int]:
+        # Pass the command as a single -Command argument. The previous
+        # `+command.split()` form mangled any quoted/multi-token command
+        # (e.g. paths with spaces). -NoProfile/-NonInteractive avoid running
+        # the user's PowerShell profile and prevent the shell from blocking on
+        # an interactive prompt. NOTE: LLM-driven commands are screened and
+        # confirmed in shell_tool (see windows_use/desktop/shell_policy.py);
+        # this method stays gate-free so trusted internal callers
+        # (launch_app, get_apps_from_start_menu) keep working without prompts.
         try:
-            result = subprocess.run(['powershell', '-Command']+command.split(), 
-            capture_output=True, check=True)
+            result = subprocess.run(
+                ['powershell', '-NoProfile', '-NonInteractive', '-Command', command],
+                capture_output=True, check=True)
             return (result.stdout.decode('latin1'),result.returncode)
         except subprocess.CalledProcessError as e:
             return (e.stdout.decode('latin1'),e.returncode)

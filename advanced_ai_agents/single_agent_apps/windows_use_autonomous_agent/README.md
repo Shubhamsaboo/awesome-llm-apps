@@ -72,6 +72,38 @@ Enter your query: <YOUR TASK>
 
 ---
 
+## 🔒 Security / Safe Mode
+
+This agent ships with a **Shell Tool** that can run PowerShell on your machine, and a
+**Scrape Tool** that pulls arbitrary web pages into the model's context. Together these
+create a real **prompt-injection → remote-code-execution** path: a malicious web page the
+agent reads could try to talk the model into running destructive PowerShell as your user.
+
+To contain this, shell execution is **safe-by-default**:
+
+- **Off by default.** The Shell Tool refuses to run unless you set `WINDOWS_USE_ENABLE_SHELL=1`.
+  When off, the agent still works — it falls back to GUI automation (Launch/Click/Type/Shortcut).
+- **Destructive-command deny-list (always on).** Even when enabled, commands matching known
+  destructive/persistence/exfil patterns (disk format, recursive delete, shadow-copy
+  deletion, `iex`+web-download droppers, Defender tampering, scheduled-task persistence,
+  account creation, etc.) are blocked and never executed.
+- **Per-command confirmation.** Each command is shown to you for an interactive `y/N`
+  approval (default **No**). Set `WINDOWS_USE_SHELL_AUTO_APPROVE=1` to skip the prompt for
+  unattended runs — the deny-list still applies, but **only do this in a throwaway VM**.
+- **Audit log (optional).** Set `WINDOWS_USE_SHELL_LOG=<path>` to append every decision
+  (`RUN` / `BLOCKED` / `DECLINED`) with a timestamp.
+
+> **Honest caveat:** a deny-list can never catch every dangerous command — PowerShell has
+> too many ways to express the same action. The deny-list is defense-in-depth for the
+> auto-approve case. The genuine protections are **off-by-default** and **per-command
+> confirmation**. Treat enabling shell on an autonomous agent as inherently risky and run it
+> in a disposable VM or a throwaway, non-admin account.
+
+See `.env-example` for all switches. The safety logic lives in
+`windows_use/desktop/shell_policy.py` (pure-stdlib, unit-tested in `tests/test_shell_policy.py`).
+
+---
+
 ## 🎥 Demos
 
 **PROMPT:** Write a short note about LLMs and save to the desktop
@@ -114,7 +146,7 @@ Talk to your computer. Watch it get things done.
 
 ## ⚠️ Caution
 
-Agent interacts directly with your Windows OS at GUI layer to perform actions. While the agent is designed to act intelligently and safely, it can make mistakes that might bring undesired system behaviour or cause unintended changes. Try to run the agent in a sandbox envirnoment.
+Agent interacts directly with your Windows OS at GUI layer to perform actions. While the agent is designed to act intelligently and safely, it can make mistakes that might bring undesired system behaviour or cause unintended changes. Try to run the agent in a sandbox envirnoment. If you enable the Shell Tool (`WINDOWS_USE_ENABLE_SHELL=1`), also read the [Security / Safe Mode](#-security--safe-mode) section above — running LLM-generated PowerShell on a real machine is inherently risky.
 
 Made with ❤️ by [Jeomon George](https://github.com/Jeomon)
 

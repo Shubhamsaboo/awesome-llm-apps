@@ -1,5 +1,6 @@
 from windows_use.agent.tools.views import Click, Type, Launch, Scroll, Drag, Move, Shortcut, Key, Wait, Scrape,Done, Clipboard, Shell
 from windows_use.desktop import Desktop
+from windows_use.desktop.shell_policy import is_shell_enabled, screen_command, confirm_command, audit_log
 from humancursor import SystemCursor
 from markdownify import markdownify
 from langchain.tools import tool
@@ -27,7 +28,27 @@ def launch_tool(name: str,desktop:Desktop=None) -> str:
 
 @tool('Shell Tool',args_schema=Shell)
 def shell_tool(command: str,desktop:Desktop=None) -> str:
-    'Execute PowerShell commands and return the output with status code'
+    '''Execute PowerShell commands and return the output with status code.
+    SAFE MODE: this tool is DISABLED unless the operator sets the env var
+    WINDOWS_USE_ENABLE_SHELL=1. When enabled, destructive commands are blocked
+    and each command requires interactive approval. If it is disabled or a
+    command is refused, prefer the GUI tools (Launch/Click/Type/Shortcut) to
+    accomplish the task instead.'''
+    # Safe-by-default gate: shell stays off until the operator explicitly opts in.
+    if not is_shell_enabled():
+        return ('Shell Tool is disabled (safe mode). The PowerShell command was '
+                'NOT executed. Use the GUI tools to accomplish this task, or ask '
+                'the operator to set WINDOWS_USE_ENABLE_SHELL=1 to allow shell access.')
+    # Defense-in-depth deny-list (always on, even with auto-approve).
+    allowed, reason = screen_command(command)
+    if not allowed:
+        audit_log(command, "BLOCKED")
+        return f'Refused: command blocked by safety policy ({reason}). It was NOT executed.'
+    # Human-in-the-loop confirmation (default No; auto-approve via env for unattended runs).
+    if not confirm_command(command):
+        audit_log(command, "DECLINED")
+        return 'Declined: the operator did not approve this command. It was NOT executed.'
+    audit_log(command, "RUN")
     response,status=desktop.execute_command(command)
     return f'Status Code: {status}\nResponse: {response}'
 
