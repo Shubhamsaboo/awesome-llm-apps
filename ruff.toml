@@ -1,0 +1,53 @@
+# Awesome LLM Apps - Ruff Linting Configuration
+# https://docs.astral.sh/ruff/
+
+# Root directory
+root = true
+
+# Output format
+line-length = 100
+indent-width = 4
+
+[lint]
+# Enable rule groups
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # Pyflakes
+    "I",      # isort
+    "UP",     # pyupgrade
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "FA",     # flake8-future-annotations
+    "PIE",    # flake8-pie
+    "RUF",    # Ruff-specific rules
+]
+
+# Ignore specific rules
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "FA100",  # future annotation without `from __future__`
+    "B008",   # do not perform function calls in argument defaults
+]
+
+[lint.isort]
+# Force single-line import for standard library
+force-single-line = false
+combine-as-imports = true
+
+[lint.per-file-ignores]
+# Ignore specific rules in specific files
+"__init__.py" = ["F401", "F403"]  # unused imports acceptable in __init__
+"**/test_*.py" = ["B011", "E501"]  # allow assertFalse in tests
+"**/conftest.py" = ["B011", "E501"]
+
+[format]
+# Use black-compatible formatting
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[lint.ruf]
+# Enable specific Ruff rules
+enable-extended-verbose-rule-names = true

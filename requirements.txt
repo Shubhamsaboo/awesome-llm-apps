@@ -1,0 +1,47 @@
+# Awesome LLM Apps - Root Requirements
+# Common dependencies used across multiple projects
+# Install with: pip install -r requirements.txt
+
+# Web UI Framework
+streamlit>=1.31.0
+
+# LLM Providers
+openai>=1.0.0
+anthropic>=0.7.0
+google-genai>=1.0.0
+
+# Agent Frameworks
+agno>=2.2.10
+google-adk>=1.0.0
+
+# Environment Management
+python-dotenv>=1.0.0
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+pypdf>=4.0.0
+Pillow>=10.0.0
+
+# Vector Databases (optional - for RAG projects)
+# qdrant-client>=1.12.1
+
+# Web Search (optional - for research agents)
+duckduckgo-search>=6.4.2
+
+# HTTP Requests
+requests>=2.31.0
+httpx>=0.27.0
+
+# Web Scraping (optional - for web scraping agents)
+beautifulsoup4>=4.12.0
+
+# Local LLM (optional - for local RAG projects)
+# ollama>=0.1.0
+
+# Monitoring & Observability
+# langchain-core
+# langchain-community
+
+# Development Tools
+typing-extensions>=4.12.0
