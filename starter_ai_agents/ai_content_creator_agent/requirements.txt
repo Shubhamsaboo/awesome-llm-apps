@@ -1,0 +1,6 @@
+agno>=2.6.0
+openai>=2.38.0
+pillow>=12.2.0
+pydantic>=2.0.0
+requests>=2.34.2
+streamlit>=1.42.0

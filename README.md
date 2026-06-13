@@ -128,6 +128,7 @@ streamlit run travel_agent.py
 
 *   [🎙️ AI Blog to Podcast Agent](starter_ai_agents/ai_blog_to_podcast_agent/)
 *   [❤️‍🩹 AI Breakup Recovery Agent](starter_ai_agents/ai_breakup_recovery_agent/)
+*   [📱 AI Content Creator Agent](starter_ai_agents/ai_content_creator_agent/)
 *   [📊 AI Data Analysis Agent](starter_ai_agents/ai_data_analysis_agent/)
 *   [🩻 AI Medical Imaging Agent](starter_ai_agents/ai_medical_imaging_agent/)
 *   [😂 AI Meme Generator Agent (Browser)](starter_ai_agents/ai_meme_generator_agent_browseruse/)
