@@ -201,6 +201,7 @@ streamlit run travel_agent.py
 *   [✈️ MCP Apps Generative UI Showcase](generative_ui_agents/mcp-apps-generative-ui-showcase/)
 *   [🎛️ AI Shadcn Component Generator](generative_ui_agents/ai-shadcn-component-generator/)
 *   [🔍 AI Deep Research Agent](generative_ui_agents/ai-deep-research-agent/)
+*   [🏛️ Boardroom](https://github.com/jamiejhouston-commits/boardroom) <sub>↗ external</sub> - Local-first iPhone + Mac command center for running Hermes Agent as an autonomous company with boardroom debates, human greenlights, Demo Day, voice/chat, and multi-agent workflows.
 
 ### 🎮 Autonomous Game-Playing Agents
 *Agents that play games end-to-end - reasoning, strategy, and action.*
