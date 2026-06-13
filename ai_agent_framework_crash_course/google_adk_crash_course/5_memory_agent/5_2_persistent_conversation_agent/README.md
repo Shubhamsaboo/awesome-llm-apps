@@ -185,7 +185,7 @@ Agent: "You love coding!"
 ## 🔗 Next Steps
 
 After completing this tutorial, you'll be ready for:
-- **[Tutorial 5.3: Cloud Memory](../5_memory_agent/README.md)** - Learn cloud-based session storage
+- **[Tutorial 5.3: Cloud Memory](../README.md)** - Learn cloud-based session storage
 - **Advanced Database Patterns** - Multi-user session management
 - **Data Analytics** - Analyzing conversation patterns
 

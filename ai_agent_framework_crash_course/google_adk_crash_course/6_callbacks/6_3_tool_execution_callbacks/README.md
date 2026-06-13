@@ -243,9 +243,9 @@ def after_tool_callback(tool: BaseTool, args: dict, tool_context: ToolContext, t
 
 After completing this tutorial, you'll be ready for:
 
-- **[Advanced Tool Patterns](../4_tool_using_agent/README.md)** - Complex tool architectures
-- **[Custom Tool Development](../4_tool_using_agent/README.md)** - Building custom tools
-- **[Tool Integration](../4_tool_using_agent/README.md)** - Integrating external APIs
+- **[Advanced Tool Patterns](../../4_tool_using_agent/README.md)** - Complex tool architectures
+- **[Custom Tool Development](../../4_tool_using_agent/README.md)** - Building custom tools
+- **[Tool Integration](../../4_tool_using_agent/README.md)** - Integrating external APIs
 
 ## 📚 Additional Resources
 

@@ -129,12 +129,12 @@ A **Session** is like a conversation thread that keeps track of all interactions
 
 This tutorial is divided into three progressive levels:
 
-1. **[5_1_in_memory_conversation](./5_1_in_memory_conversation/README.md)** - Basic session management
+1. **[5_1_in_memory_conversation](./5_1_in_memory_conversation_agent/README.md)** - Basic session management
    - InMemorySessionService for temporary conversations
    - Simple state management
    - Event tracking basics
 
-2. **[5_2_persistent_conversation](./5_2_persistent_conversation/README.md)** - Database persistence
+2. **[5_2_persistent_conversation](./5_2_persistent_conversation_agent/README.md)** - Database persistence
    - DatabaseSessionService with SQLite
    - Persistent state storage
    - Conversation history across sessions

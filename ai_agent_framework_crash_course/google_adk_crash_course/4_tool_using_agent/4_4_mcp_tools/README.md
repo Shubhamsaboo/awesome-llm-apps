@@ -223,9 +223,9 @@ adk web --debug
 ## 🔗 Next Steps
 
 After completing this tutorial:
-- **[Tutorial 4: Memory Agent](../5_memory_agent/README.md)** - Add memory capabilities
-- **[Tutorial 5: Workflow Agent](../7_plugins/README.md)** - Multi-step processes
-- **[Tutorial 6: Multi-agent System](../8_simple_multi_agent/README.md)** - Agent collaboration
+- **[Tutorial 4: Memory Agent](../../5_memory_agent/README.md)** - Add memory capabilities
+- **[Tutorial 5: Workflow Agent](../../7_plugins/README.md)** - Multi-step processes
+- **[Tutorial 6: Multi-agent System](../../8_simple_multi_agent/README.md)** - Agent collaboration
 
 ## 📚 Additional Resources
 

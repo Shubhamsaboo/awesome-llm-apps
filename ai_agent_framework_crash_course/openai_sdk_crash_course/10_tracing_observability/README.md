@@ -189,8 +189,8 @@ with custom_span("Data Processing") as span:
 ## 🔗 Next Steps
 
 After completing this tutorial, you'll be ready for:
-- **[Tutorial 9: Handoffs & Delegation](../9_handoffs_delegation/README.md)** - Agent handoffs and task delegation
-- **[Tutorial 10: Multi-Agent Orchestration](../10_multi_agent_orchestration/README.md)** - Complex multi-agent workflows
+- **[Tutorial 9: Handoffs & Delegation](../8_handoffs_delegation/README.md)** - Agent handoffs and task delegation
+- **[Tutorial 10: Multi-Agent Orchestration](../9_multi_agent_orchestration/README.md)** - Complex multi-agent workflows
 - **[Tutorial 11: Production Patterns](../11_voice/README.md)** - Real-world deployment strategies
 
 ## 🚨 Troubleshooting
