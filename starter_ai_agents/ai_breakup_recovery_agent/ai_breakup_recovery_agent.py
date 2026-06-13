@@ -47,7 +47,7 @@ def initialize_agents() -> tuple[Team, Agent, Agent, Agent, Agent]:
         jwt_token = get_zuora_jwt_token()
 
         model = Claude(
-            id="claude-sonnet-4-20250514",
+            id="aws-bedrock-claude-haiku-4-5",
             api_key=jwt_token,
             base_url="http://claude-proxy.tools.stg.uw2.aws.zuora",
         )
