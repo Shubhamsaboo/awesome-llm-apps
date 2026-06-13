@@ -11,7 +11,7 @@
 2. [XSS Prevention](#xss-prevention)
 
 ### Performance — **HIGH**
-3. [Avoid N+1 Query Problem](#avoid-n-1-query-problem)
+3. [Avoid N+1 Query Problem](#avoid-n1-query-problem)
 
 ### Correctness — **HIGH**
 4. [Proper Error Handling](#proper-error-handling)

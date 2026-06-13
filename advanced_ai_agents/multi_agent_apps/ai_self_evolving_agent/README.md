@@ -1,10 +1,3 @@
-<!-- Add logo here -->
-<div align="center">
-  <a href="https://github.com/EvoAgentX/EvoAgentX">
-    <img src="./assets/EAXLoGo.svg" alt="EvoAgentX" width="50%">
-  </a>
-</div>
-
 <h2 align="center">
     Building a Self-Evolving Ecosystem of AI Agents
 </h2>
@@ -15,7 +8,6 @@
 [![Docs](https://img.shields.io/badge/-Documentation-0A66C2?logo=readthedocs&logoColor=white&color=7289DA&labelColor=grey)](https://EvoAgentX.github.io/EvoAgentX/)
 [![Discord](https://img.shields.io/badge/Chat-Discord-5865F2?&logo=discord&logoColor=white)](https://discord.gg/SUEkfTYn)
 [![Twitter](https://img.shields.io/badge/Follow-@EvoAgentX-e3dee5?&logo=x&logoColor=white)](https://x.com/EvoAgentX)
-[![Wechat](https://img.shields.io/badge/WeChat-EvoAgentX-brightgreen?logo=wechat&logoColor=white)](./assets/wechat_info.md)
 [![GitHub star chart](https://img.shields.io/github/stars/EvoAgentX/EvoAgentX?style=social)](https://star-history.com/#EvoAgentX/EvoAgentX)
 [![GitHub fork](https://img.shields.io/github/forks/EvoAgentX/EvoAgentX?style=social)](https://github.com/EvoAgentX/EvoAgentX/fork)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?)](https://github.com/EvoAgentX/EvoAgentX/blob/main/LICENSE)
@@ -23,23 +15,9 @@
 <!-- [![hf_space](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-EvoAgentX-ffc107?color=ffc107&logoColor=white)](https://huggingface.co/EvoAgentX) -->
 </div>
 
-<div align="center">
-
-<h3 align="center">
-
-<a href="./README.md" style="text-decoration: underline;">English</a> | <a href="./README-zh.md">简体中文</a>
-
-</h3>
-
-</div>
-
 <h4 align="center">
   <i>An automated framework for evaluating and evolving agentic workflows.</i>
 </h4>
-
-<p align="center">
-  <img src="./assets/framework_en.jpg">
-</p>
 
 
 ## 🔥 Latest News
@@ -54,7 +32,6 @@
   - [Configure and Use the LLM](#configure-and-use-the-llm)
 - [Automatic WorkFlow Generation](#automatic-workflow-generation)
 - [Demo Video](#demo-video)
-  - [✨ Final Results](#-final-results)
 - [Evolution Algorithms](#evolution-algorithms)
   - [📊 Results](#-results)
 - [Applications](#applications)
@@ -217,21 +194,6 @@ In this demo, we showcase the workflow generation and execution capabilities of 
 - Application 2: Visual Analysis of A-Share Stocks
 
 
-### ✨ Final Results
-
-<table>
-  <tr>
-    <td align="center">
-      <img src="./assets/demo_result_1.png" width="400"><br>
-      <strong>Application&nbsp;1:</strong><br>Job Recommendation
-    </td>
-    <td align="center">
-      <img src="./assets/demo_result_2.jpeg" width="400"><br>
-      <strong>Application&nbsp;2:</strong><br>Stock Visual Analysis
-    </td>
-  </tr>
-</table>
-
 ## Evolution Algorithms 
 
 We have integrated some existing agent/workflow evolution algorithms into EvoAgentX, including [TextGrad](https://www.nature.com/articles/s41586-025-08661-4), [MIPRO](https://arxiv.org/abs/2406.11695) and [AFlow](https://arxiv.org/abs/2410.10762).
@@ -255,20 +217,7 @@ Please refer to the `examples/optimization` folder for more details.
 
 We use our framework to optimize existing multi-agent systems on the [GAIA](https://huggingface.co/spaces/gaia-benchmark/leaderboard) benchmark. We select [Open Deep Research](https://github.com/huggingface/smolagents/tree/main/examples/open_deep_research) and [OWL](https://github.com/camel-ai/owl), two representative multi-agent framework from the GAIA leaderboard that is open-source and runnable. 
 
-We apply EvoAgentX to optimize their prompts. The performance of the optimized agents on the GAIA benchmark validation set is shown in the figure below.
-
-<table>
-  <tr>
-    <td align="center" width="50%">
-      <img src="./assets/open_deep_research_optimization_report.png" alt="Open Deep Research Optimization" width="100%"><br>
-      <strong>Open Deep Research</strong>
-    </td>
-    <td align="center" width="50%">
-      <img src="./assets/owl_optimization_result.png" alt="OWL Optimization" width="100%"><br>
-      <strong>OWL Agent</strong>
-    </td>
-  </tr>
-</table>
+We apply EvoAgentX to optimize their prompts. The performance of the optimized agents on the GAIA benchmark validation set is shown below.
 
 > Full Optimization Reports: [Open Deep Research](https://github.com/eax6/smolagents) and [OWL](https://github.com/TedSIWEILIU/owl).  
 
@@ -281,8 +230,6 @@ We apply EvoAgentX to optimize their prompts. The performance of the optimized a
 - [ ] **Develop Task Templates and Agent Modules**: Build reusable templates for typical tasks and standardized agent components to streamline application development.
 - [ ] **Integrate Self-Evolving Agent Algorithms**: Incorporate more recent and advanced agent self-evolution across multiple dimensions, including prompt tuning, workflow structures, and memory modules. 
 - [ ] **Enable Visual Workflow Editing Interface**: Provide a visual interface for workflow structure display and editing to improve usability and debugging. 
-
-
 
 ## 🙋 Support
 
