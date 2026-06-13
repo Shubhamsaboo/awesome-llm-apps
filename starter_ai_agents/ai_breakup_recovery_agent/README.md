@@ -3,7 +3,7 @@
 ### 🎓 FREE Step-by-Step Tutorial 
 **👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-an-ai-breakup-recovery-agent-team-f29b) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
 
-This is an AI-powered application designed to help users emotionally recover from breakups by providing support, guidance, and emotional outlet messages from a team of specialized AI agents. The app is built using **Streamlit** and **Agno**, leveraging **OpenAI's GPT-4o (Vision Model)**.
+This is an AI-powered application designed to help users emotionally recover from breakups by providing support, guidance, and emotional outlet messages from a team of specialized AI agents. The app is built using **Streamlit** and **Agno**, leveraging **Claude models via Anthropic API**.
 
 ## 🚀 Features
 
@@ -14,10 +14,10 @@ This is an AI-powered application designed to help users emotionally recover fro
     - **Brutal Honesty Agent:** Provides direct, no-nonsense feedback on the breakup.
 - 📷 **Chat Screenshot Analysis:**
     - Upload screenshots for chat analysis.
-- 🔑 **API Key Management:**
-    - Store and manage your OpenAI API keys securely via Streamlit's sidebar.
+- 🔑 **JWT Authentication:**
+    - Secure authentication via JWT tokens from configured infrastructure.
 - ⚡ **Parallel Execution:** 
-    - Agents process inputs in coordination mode for comprehensive results.
+    - All 4 sub-agents run concurrently with asyncio (~2-3s latency).
 - ✅ **User-Friendly Interface:** 
     - Simple, intuitive UI with easy interaction and display of agent responses.
 
@@ -26,10 +26,10 @@ This is an AI-powered application designed to help users emotionally recover fro
 ## 🛠️ Tech Stack
 
 - **Frontend:** Streamlit (Python)
-- **AI Models:** OpenAI GPT-4o (Vision Model)
+- **AI Models:** Claude via Anthropic API (configurable)
 - **Image Processing:** PIL (for displaying screenshots)
-- **Text Extraction:** OpenAI's GPT-4o to analyze chat screenshots
-- **Environment Variables:** API keys managed with `st.session_state` in Streamlit
+- **Async Execution:** asyncio for parallel agent processing
+- **Environment Variables:** Loaded from `.env` file (python-dotenv)
 
 ---
 
@@ -46,6 +46,15 @@ This is an AI-powered application designed to help users emotionally recover fro
    pip install -r requirements.txt
    ```
 
+3. **Configure Environment Variables:**
+   ```bash
+   # Copy template
+   cp .env.example .env
+   
+   # Edit .env with your values
+   nano .env
+   ```
+
 4. **Run the Streamlit App:**
    ```bash
    streamlit run ai_breakup_recovery_agent.py
@@ -55,9 +64,14 @@ This is an AI-powered application designed to help users emotionally recover fro
 
 ## 🔑 Environment Variables
 
-Make sure to provide your **OpenAI API key** in the Streamlit sidebar:
+Create a `.env` file (copy from `.env.example`) and fill in your own values (required):
 
-- OPENAI_API_KEY=your_openai_api_key
+- `MY_LLM_MODEL` — LLM model alias
+- `MY_LLM_ENDPOINT` — AI Gateway endpoint
+- `MY_TOKEN_FILE` — Path to JWT token file
+- `MY_TOKEN_REFRESH_SCRIPT` — Path to token refresh script
+
+See `.env.example` for template.
 
 ---
 
@@ -65,13 +79,12 @@ Make sure to provide your **OpenAI API key** in the Streamlit sidebar:
 
 1. **Enter Your Feelings:** 
     - Describe how you're feeling in the text area.
-2. **Upload Screenshot (Optional):**
-    - Upload a chat screenshot (PNG, JPG, JPEG) for analysis.
+2. **Upload Screenshots (Optional):**
+    - Upload chat screenshots (PNG, JPG, JPEG) for context analysis.
 3. **Execute Agents:**
-    - Click **"Get Recovery Support"** to run the multi-agent team.
+    - Click **"Get Recovery Plan"** to run all 4 agents in parallel.
 4. **View Results:**
-    - Individual agent responses are displayed.
-    - A final summary is provided by the Team Leader.
+    - Consolidated recovery roadmap synthesized from all agents.
 
 ---
 
@@ -79,7 +92,7 @@ Make sure to provide your **OpenAI API key** in the Streamlit sidebar:
 
 - **Therapist Agent**
     - Provides empathetic support and coping strategies.
-    - Uses **OpenAI GPT-4o** and DuckDuckGo tools for insights.
+    - Analyzes both text and image inputs for emotional context.
   
 - **Closure Agent**
     - Generates unsent emotional messages for emotional release.

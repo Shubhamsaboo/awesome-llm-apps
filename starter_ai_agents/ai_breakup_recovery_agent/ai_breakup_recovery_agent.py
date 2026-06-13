@@ -1,5 +1,4 @@
 from agno.agent import Agent
-from agno.team import Team
 from agno.models.anthropic import Claude
 from agno.media import Image as AgnoImage
 from agno.tools.duckduckgo import DuckDuckGoTools
@@ -11,26 +10,108 @@ import tempfile
 import os
 import subprocess
 from datetime import datetime
+import asyncio
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Configure logging for errors only
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
-def get_zuora_jwt_token() -> str:
-    """Get fresh JWT token from Zuora infrastructure."""
-    token_file = os.path.expanduser("~/.claude/tokens/id_token.txt")
+# Environment Configuration (required, no defaults)
+MY_LLM_MODEL = os.getenv("MY_LLM_MODEL")
+MY_LLM_ENDPOINT = os.getenv("MY_LLM_ENDPOINT")
+MY_TOKEN_FILE = os.getenv("MY_TOKEN_FILE")
+MY_TOKEN_REFRESH_SCRIPT = os.getenv("MY_TOKEN_REFRESH_SCRIPT")
 
+# Validate required env vars
+_missing_vars = [
+    var for var, val in [
+        ("MY_LLM_MODEL", MY_LLM_MODEL),
+        ("MY_LLM_ENDPOINT", MY_LLM_ENDPOINT),
+        ("MY_TOKEN_FILE", MY_TOKEN_FILE),
+        ("MY_TOKEN_REFRESH_SCRIPT", MY_TOKEN_REFRESH_SCRIPT),
+    ] if not val
+]
+
+if _missing_vars:
+    raise ValueError(f"Missing required environment variables: {', '.join(_missing_vars)}")
+
+# Expand user paths
+MY_TOKEN_FILE = os.path.expanduser(MY_TOKEN_FILE)
+MY_TOKEN_REFRESH_SCRIPT = os.path.expanduser(MY_TOKEN_REFRESH_SCRIPT)
+
+async def get_recovery_roadmap(
+    coordinator_agent: Agent,
+    therapist_agent: Agent,
+    closure_agent: Agent,
+    routine_planner_agent: Agent,
+    brutal_honesty_agent: Agent,
+    user_input: str,
+    images: List = None,
+) -> str:
+    """Run 4 sub-agents in parallel, then synthesize with coordinator."""
+    if images is None:
+        images = []
+
+    payload = user_input
+
+    # 1. Run all 4 sub-agents CONCURRENTLY using asyncio
     try:
-        if os.path.exists(token_file):
-            mtime = os.path.getmtime(token_file)
+        tasks = [
+            therapist_agent.arun(payload, images=images),
+            closure_agent.arun(payload, images=images),
+            routine_planner_agent.arun(payload, images=images),
+            brutal_honesty_agent.arun(payload, images=images),
+        ]
+        results = await asyncio.gather(*tasks)
+    except Exception as e:
+        logger.error(f"Sub-agent execution failed: {str(e)}")
+        raise
+
+    # 2. Format sub-agent outputs as context for coordinator
+    sub_agent_context = f"""
+Based on the user situation: {user_input}
+
+EMOTIONAL SUPPORT (Therapist):
+{results[0].content}
+
+CLOSURE EXERCISES (Closure Specialist):
+{results[1].content}
+
+RECOVERY ROUTINE (Routine Planner):
+{results[2].content}
+
+REALITY CHECK (Brutal Honesty):
+{results[3].content}
+
+---
+Now synthesize the above into a single, cohesive recovery roadmap.
+"""
+
+    # 3. Run coordinator to synthesize (final ~2s)
+    try:
+        final_response = await coordinator_agent.arun(sub_agent_context, images=images)
+        return final_response.content
+    except Exception as e:
+        logger.error(f"Coordinator synthesis failed: {str(e)}")
+        raise
+
+def get_jwt_token() -> str:
+    """Get fresh JWT token from configured infrastructure."""
+    try:
+        if os.path.exists(MY_TOKEN_FILE):
+            mtime = os.path.getmtime(MY_TOKEN_FILE)
             age = datetime.now().timestamp() - mtime
             if age < 86000:  # < 24 hours
-                with open(token_file, "r") as f:
+                with open(MY_TOKEN_FILE, "r") as f:
                     return f.read().strip()
 
         # Token missing or stale — refresh
         result = subprocess.run(
-            [os.path.expanduser("~/.claude/scripts/get-current-token.sh")],
+            [MY_TOKEN_REFRESH_SCRIPT],
             capture_output=True,
             text=True,
             timeout=30,
@@ -39,24 +120,26 @@ def get_zuora_jwt_token() -> str:
             raise RuntimeError(f"Token refresh failed: {result.stderr}")
         return result.stdout.strip()
     except Exception as e:
-        logger.error(f"Failed to get Zuora JWT token: {str(e)}")
+        logger.error(f"Failed to get JWT token: {str(e)}")
         raise
 
-def initialize_agents() -> tuple[Team, Agent, Agent, Agent, Agent]:
+def initialize_agents() -> tuple[Agent, Agent, Agent, Agent, Agent]:
+    """Initialize 5 standalone agents for parallel execution."""
     try:
-        jwt_token = get_zuora_jwt_token()
+        jwt_token = get_jwt_token()
 
         model = Claude(
-            id="aws-bedrock-claude-haiku-4-5",
+            id=MY_LLM_MODEL,
             api_key=jwt_token,
             client_params={
-                "base_url": "http://claude-proxy.tools.stg.uw2.aws.zuora",
+                "base_url": MY_LLM_ENDPOINT,
                 "default_headers": {
                     "Authorization": f"Bearer {jwt_token}",
                 },
             },
         )
 
+        # 4 Sub-agents (run in parallel)
         therapist_agent = Agent(
             model=model,
             name="Therapist Agent",
@@ -115,22 +198,22 @@ def initialize_agents() -> tuple[Team, Agent, Agent, Agent, Agent]:
             markdown=True
         )
 
-        team_leader = Team(
+        # Coordinator (synthesizes sub-agent outputs)
+        coordinator_agent = Agent(
             model=model,
             name="Relationship Recovery Coordinator",
-            members=[therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent],
             instructions=[
-                "You are the Relationship Recovery Coordinator (Team Leader). Your job is to:",
-                "1. Coordinate with your team of specialists: Therapist Agent, Closure Agent, Routine Planner Agent, and Brutal Honesty Agent.",
-                "2. Delegate sub-tasks to these agents using the tools available to you to gather their individual analysis and contributions.",
-                "3. Compile and synthesize their feedback into a single, cohesive, highly-structured recovery roadmap.",
-                "4. Ensure the final response flows logically, starting with the therapist's emotional assessment, followed by the reality check, then the recovery routine, and ending with closure exercises.",
-                "5. Maintain a supportive yet direct tone throughout the report."
+                "You are the final synthesis specialist. Your job is to:",
+                "1. Read the 4 specialist responses provided to you below.",
+                "2. Synthesize them into a single, cohesive, beautifully-structured recovery roadmap.",
+                "3. Do NOT list out individual agent outputs; instead, speak with one unified voice.",
+                "4. Flow logically: start with emotional assessment, reality check, recovery routine, then closure exercises.",
+                "5. Maintain supportive yet direct tone throughout."
             ],
             markdown=True
         )
 
-        return team_leader, therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent
+        return coordinator_agent, therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent
     except Exception as e:
         st.error(f"Error initializing agents: {str(e)}")
         return None, None, None, None, None
@@ -144,24 +227,26 @@ st.set_page_config(
 
 
 
-# Sidebar for Zuora Auth status
+# Sidebar for Auth status
 with st.sidebar:
-    st.header("🔑 Zuora AI Infrastructure")
+    st.header("🔑 AI Infrastructure")
 
     try:
-        jwt_token = get_zuora_jwt_token()
-        token_age = datetime.now().timestamp() - os.path.getmtime(
-            os.path.expanduser("~/.claude/tokens/id_token.txt")
-        )
+        jwt_token = get_jwt_token()
+        token_age = datetime.now().timestamp() - os.path.getmtime(MY_TOKEN_FILE)
         hours_left = round((86400 - token_age) / 3600)
         st.success(f"✅ Authenticated (expires in {hours_left}h)")
     except Exception as e:
         st.error(f"❌ Auth failed: {str(e)}")
-        st.markdown("""
+        st.markdown(f"""
         **Fix:**
-        1. Ensure you're on Zuora VPN (Zscaler)
-        2. Run: `~/.claude/scripts/get-current-token.sh`
-        3. Verify token: `cat ~/.claude/tokens/id_token.txt`
+        1. Verify environment variables:
+           - MY_LLM_MODEL
+           - MY_LLM_ENDPOINT
+           - MY_TOKEN_FILE
+           - MY_TOKEN_REFRESH_SCRIPT
+        2. Run token refresh script: `{MY_TOKEN_REFRESH_SCRIPT}`
+        3. Verify token exists: `cat {MY_TOKEN_FILE}`
         """)
 
 # Main content
@@ -198,54 +283,51 @@ with col2:
 # Process button
 if st.button("Get Recovery Plan 💝", type="primary"):
     try:
-        team_leader, therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent = initialize_agents()
+        coordinator_agent, therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent = initialize_agents()
 
-        if all([team_leader, therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent]):
+        if all([coordinator_agent, therapist_agent, closure_agent, routine_planner_agent, brutal_honesty_agent]):
             if user_input or uploaded_files:
                 try:
                     st.header("Your Personalized Recovery Plan")
-                    
+
                     def process_images(files):
                         processed_images = []
                         for file in files:
                             try:
                                 temp_dir = tempfile.gettempdir()
                                 temp_path = os.path.join(temp_dir, f"temp_{file.name}")
-                                
+
                                 with open(temp_path, "wb") as f:
                                     f.write(file.getvalue())
-                                
+
                                 agno_image = AgnoImage(filepath=Path(temp_path))
                                 processed_images.append(agno_image)
-                                
+
                             except Exception as e:
                                 logger.error(f"Error processing image {file.name}: {str(e)}")
                                 continue
                         return processed_images
-                    
+
                     all_images = process_images(uploaded_files) if uploaded_files else []
-                    
-                    # Coordinated Team Leader Execution
-                    with st.spinner("🤝 Coordinating with the Breakup Recovery Squad..."):
-                        team_leader_prompt = f"""
-                        Coordinate with your team of specialists to create a comprehensive, synthesized breakup recovery roadmap based on:
-                        User situation: {user_input}
 
-                        Please delegate to each specialist:
-                        1. Ask the Therapist Agent to analyze the emotional state and provide empathetic support.
-                        2. Ask the Brutal Honesty Agent to provide an objective, direct reality check on the situation.
-                        3. Ask the Routine Planner Agent to design a tailored 7-day recovery calendar and self-care routine.
-                        4. Ask the Closure Agent to write a template for unsent messages and release rituals.
+                    # Parallel Sub-Agent Execution
+                    with st.spinner("🤝 Running Breakup Recovery Squad in parallel..."):
+                        loop = asyncio.new_event_loop()
+                        asyncio.set_event_loop(loop)
 
-                        Synthesize all their contributions into a single, cohesive, beautifully-structured report.
-                        """
-
-                        response = team_leader.run(
-                            team_leader_prompt,
-                            images=all_images
+                        roadmap = loop.run_until_complete(
+                            get_recovery_roadmap(
+                                coordinator_agent=coordinator_agent,
+                                therapist_agent=therapist_agent,
+                                closure_agent=closure_agent,
+                                routine_planner_agent=routine_planner_agent,
+                                brutal_honesty_agent=brutal_honesty_agent,
+                                user_input=user_input,
+                                images=all_images,
+                            )
                         )
 
-                        st.markdown(response.content)
+                        st.markdown(roadmap)
 
                 except Exception as e:
                     logger.error(f"Error during analysis: {str(e)}")

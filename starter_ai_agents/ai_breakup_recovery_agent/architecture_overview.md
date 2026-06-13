@@ -1,6 +1,6 @@
 # 🏗️ Breakup Recovery Squad: Code Architecture
 
-The **Breakup Recovery Squad** is designed as a multi-agent application using **Streamlit** for the frontend interface and the **Agno (formerly Phidata)** framework for agent orchestration, powered by **OpenAI's GPT-4o** model.
+The **Breakup Recovery Squad** is designed as a multi-agent application using **Streamlit** for the frontend interface and the **Agno (formerly Phidata)** framework for agent orchestration, powered by **Anthropic's Claude Haiku 4.5** model via **Zuora's AI infrastructure**.
 
 Below is a detailed breakdown of the application layers, components, and data flow.
 
@@ -12,35 +12,42 @@ Below is a detailed breakdown of the application layers, components, and data fl
 graph TD
     %% User Inputs
     User([User]) -->|Inputs Feelings / Chats| StreamlitUI[Streamlit Frontend UI]
-    User -->|Provides API Key| Sidebar[Streamlit Sidebar]
+    User -->|Triggers| Sidebar[Streamlit Sidebar]
 
-    %% Configuration & Initialization
-    Sidebar -->|API Key| InitAgents[initialize_agents Function]
+    %% Zuora Auth & Initialization
+    Sidebar -->|Checks Auth Status| TokenMgr[JWT Token Manager]
+    TokenMgr -->|~/.claude/tokens/id_token.txt| InitAgents[initialize_agents Function]
 
     %% Image Processing
     StreamlitUI -->|Uploads Screenshots| TempFiles[Tempfile Handler]
     TempFiles -->|Agno Image Files| Team[Relationship Recovery Coordinator Team]
 
-    %% Team & Agents
-    subgraph "Agno Team (GPT-4o)"
-        InitAgents --> Team
-        Team -->|Members| Therapist[Therapist Agent]
-        Team -->|Members| Closure[Closure Agent]
-        Team -->|Members| Routine[Routine Planner Agent]
-        Team -->|Members| Honesty[Brutal Honesty Agent]
+    %% Team & Agents (via Claude Haiku on Zuora)
+    subgraph "Parallel Agent Execution (asyncio)"
+        InitAgents --> Therapist[Therapist Agent]
+        InitAgents --> Closure[Closure Agent]
+        InitAgents --> Routine[Routine Planner Agent]
+        InitAgents --> Honesty[Brutal Honesty Agent]
+        Therapist -.concurrently.-> Gateway
+        Closure -.concurrently.-> Gateway
+        Routine -.concurrently.-> Gateway
+        Honesty -.concurrently.-> Gateway
     end
+    
+    subgraph "Synthesis"
+        Gateway -->|4 Responses| Coordinator[Coordinator Agent]
+        Coordinator -->|Unified Roadmap| RenderRoadmap
+    end
+
+    %% AI Gateway (Configured)
+    Team -->|JWT Bearer + base_url| Gateway["AI Gateway<br/>(MY_LLM_ENDPOINT)"]
+    Gateway -->|Model Inference| Claude["LLM Provider<br/>(MY_LLM_MODEL)"]
 
     %% Tools
     Honesty -->|Searches Web| DDG[DuckDuckGo Search Tool]
 
     %% Execution & Synthesis
-    Therapist -->|Empathetic Support| Team
-    Closure -->|Closure Rituals| Team
-    Routine -->|7-Day Routine| Team
-    Honesty -->|Objective Feedback| Team
-
-    Team -->|Synthesized Roadmap| RenderRoadmap[Render Roadmap]
-    RenderRoadmap --> StreamlitUI
+    StreamlitUI -->|Render| User
 ```
 
 ---
@@ -48,29 +55,68 @@ graph TD
 ## 📂 Core Architectural Layers
 
 ### 1. Frontend & Presentation Layer ([Streamlit](file:///Users/xili/Documents/codes/github/awesome-llm-apps/starter_ai_agents/ai_breakup_recovery_agent/ai_breakup_recovery_agent.py#L83-150))
-*   **Sidebar Config**: Securely takes the OpenAI API key, checks environment variables via `os.environ.get("OPENAI_API_KEY", "")` to auto-populate, and stores it in `st.session_state`.
+*   **Zuora Auth Display**: Shows Zuora AI Gateway auth status, token expiry countdown, and troubleshooting help. No manual API key entry—uses cached JWT from `~/.claude/tokens/id_token.txt`.
 *   **User Input Panel**: Collects a narrative of the breakup (text field) and optional chat screenshots (multi-file uploader).
 *   **Response Renderer**: Groups outputs from individual agents into distinct sections using Markdown for structured formatting.
 
-### 2. Multi-Agent Orchestration Layer ([Agno Framework](file:///Users/xili/Documents/codes/github/awesome-llm-apps/starter_ai_agents/ai_breakup_recovery_agent/ai_breakup_recovery_agent.py#L16-91))
-Agno's Team class orchestrates a group of specialist agents sharing a model configuration ([OpenAIChat](file:///Users/xili/Documents/codes/github/awesome-llm-apps/starter_ai_agents/ai_breakup_recovery_agent/ai_breakup_recovery_agent.py#L19)):
+### 2. Multi-Agent Orchestration Layer ([Agno Framework](file:///Users/xili/Documents/codes/github/awesome-llm-apps/starter_ai_agents/ai_breakup_recovery_agent/ai_breakup_recovery_agent.py#L17-95))
+Agno's Team class orchestrates a group of specialist agents sharing a model configuration ([Claude via Zuora](file:///Users/xili/Documents/codes/github/awesome-llm-apps/starter_ai_agents/ai_breakup_recovery_agent/ai_breakup_recovery_agent.py#L42-47)):
 *   **Relationship Recovery Coordinator (Team)**: An Agno `Team` instance that manages four specialist agents as `members=`. Routes user input to specialists, collects responses, and synthesizes results into a cohesive recovery roadmap.
 *   **Therapist Agent**: Empathetic counselor validating user feelings. Handles visual information (chat screenshot analysis).
 *   **Closure Agent**: Focuses on releasing emotions, suggesting closure exercises, and drafting unsent releases.
 *   **Routine Planner Agent**: Structured recovery architect proposing self-care steps, social rules, and playlists.
 *   **Brutal Honesty Agent**: Objective reality check analyzing errors/opportunities. Uses a search tool to check relationship dynamics or common recovery strategies online.
 
-### 3. Tool & External Services Layer ([DuckDuckGo Search](file:///Users/xili/Documents/codes/github/awesome-llm-apps/starter_ai_agents/ai_breakup_recovery_agent/ai_breakup_recovery_agent.py#L66))
+### 3. AI Infrastructure Layer
+*   **JWT Token Management** ([get_jwt_token](file:///Users/xili/Documents/codes/github/awesome-llm-apps/starter_ai_agents/ai_breakup_recovery_agent/ai_breakup_recovery_agent.py#L17-38)): Manages JWT tokens cached locally. Auto-refreshes if expired (24h TTL). Configured via `MY_TOKEN_FILE` and `MY_TOKEN_REFRESH_SCRIPT` env vars.
+*   **Claude Model via Gateway** ([Claude + client_params](file:///Users/xili/Documents/codes/github/awesome-llm-apps/starter_ai_agents/ai_breakup_recovery_agent/ai_breakup_recovery_agent.py#L42-47)): Routes requests to configured LLM endpoint (`MY_LLM_ENDPOINT`) with Bearer JWT auth. Uses configured model alias (`MY_LLM_MODEL`).
+
+### 4. Tool & External Services Layer ([DuckDuckGo Search](file:///Users/xili/Documents/codes/github/awesome-llm-apps/starter_ai_agents/ai_breakup_recovery_agent/ai_breakup_recovery_agent.py#L103))
 *   Provides web search capability to the Brutal Honesty Agent via `DuckDuckGoTools()` and the underlying python `ddgs` package.
 
 ---
 
 ## 🔄 Execution & Data Flow
 
-1.  **Initialization**: When the user clicks **"Get Recovery Plan 💝"**, [initialize_agents](file:///Users/xili/Documents/codes/github/awesome-llm-apps/starter_ai_agents/ai_breakup_recovery_agent/ai_breakup_recovery_agent.py#L17) builds an Agno `Team` instance with four specialist agents as members, all using `gpt-4o` as the shared LLM model.
-2.  **Screenshot Handling**: If screenshots are uploaded, they are written to a temp folder and wrapped as Agno `Image` objects.
-3.  **Single Team Run**: The `team_leader.run(prompt, images=all_images)` method is called once. The Team internally routes the user situation and instructions to its member agents, each agent processes the request per its role, and the Team synthesizes all responses.
-4.  **Unified Synthesis**: The Team compiles feedback from all specialists into a single, cohesive, beautifully-structured recovery roadmap and returns it as `response.content`, which is then rendered to Streamlit.
+1.  **Token Retrieval**: On app start or user click, [get_jwt_token](file:///Users/xili/Documents/codes/github/awesome-llm-apps/starter_ai_agents/ai_breakup_recovery_agent/ai_breakup_recovery_agent.py#L17) fetches or refreshes JWT from local cache (path from `MY_TOKEN_FILE` env var).
+2.  **Agent Initialization**: [initialize_agents](file:///Users/xili/Documents/codes/github/awesome-llm-apps/starter_ai_agents/ai_breakup_recovery_agent/ai_breakup_recovery_agent.py#L40) creates Claude model with configured gateway + Bearer header. Builds 5 standalone agents (4 sub-agents + coordinator) using shared Claude model.
+3.  **Screenshot Handling**: If screenshots are uploaded, they are written to a temp folder and wrapped as Agno `Image` objects.
+4.  **Parallel Execution**: [get_recovery_roadmap](file:///Users/xili/Documents/codes/github/awesome-llm-apps/starter_ai_agents/ai_breakup_recovery_agent/ai_breakup_recovery_agent.py#L19) uses `asyncio.gather()` to run all 4 sub-agents concurrently. Each agent processes the request per its role. Gateway authenticates each request via JWT Bearer token.
+5.  **Synthesis**: Coordinator agent receives all 4 responses as context and synthesizes into a single, cohesive, beautifully-structured recovery roadmap, which is then rendered to Streamlit.
+
+---
+
+## 🏛️ Architectural Decisions
+
+### Multi-Agent Orchestration: Parallel Asyncio vs. Sequential Team LLM
+
+**Decision:** Use standalone agents with `asyncio.gather()` for parallel execution + dedicated coordinator agent for synthesis.
+
+**Rationale:**
+
+| Aspect | Parallel (Chosen) | Team LLM (Previous) |
+|--------|-------------------|-------------------|
+| **Agent Isolation** | ✅ Full: each agent has own system prompt, role, tools | ✅ Full: identical isolation |
+| **Parallelism** | ✅ Parallel: all 4 agents run concurrently | ❌ Sequential: LLM calls agents one-by-one |
+| **Response Time** | 🟢 ~4-5s (concurrent + synthesis) | 🟡 ~8-10s (4 sequential calls) |
+| **Tool Assignment** | ✅ Honesty Agent only gets DuckDuckGo | ✅ Identical: natural tool isolation |
+| **Role Preservation** | ✅ Therapist stays empathetic, Honesty stays blunt | ✅ Identical: roles isolated by system prompt |
+| **Cross-Agent Context** | ❌ Agents unaware of each other's responses | ❌ Agents unaware of each other's responses |
+| **Token Cost** | ~Same: 4 concurrent reads + 1 synthesis | ~Same: 4 sequential reads + 1 synthesis |
+| **LLM Coordination** | ❌ Static: all agents always called | ✅ LLM decides routing via tool-calls |
+| **Scalability** | 🟡 threadpool size fixed at 4 | ✅ Easy to add agents: LLM auto-discovers via tools |
+
+**Why Parallel Asyncio chosen over Team LLM:**
+
+1. **Speed**: 4 concurrent agents (~2s each) + synthesis (~2s) = ~4-5s total vs. 8-10s sequential.
+2. **Tool isolation**: DuckDuckGo isolated to brutal_honesty_agent at definition time; no LLM decision overhead.
+3. **No LLM coordination cost**: Eliminates Team LLM "thought" cycle (~2-3s).
+4. **Predictable**: All agents always execute; no skip logic needed.
+
+**Trade-offs accepted:**
+
+- ⚠️ **Less extensible**: Adding a 5th agent requires threadpool size change. Team LLM pattern auto-scales.
+- ⚠️ **Higher resource usage**: 4 concurrent API calls vs. sequential. For staging (no rate limits), acceptable.
 
 ---
 
