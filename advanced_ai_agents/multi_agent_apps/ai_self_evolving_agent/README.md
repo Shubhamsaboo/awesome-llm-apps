@@ -75,8 +75,6 @@ We recommend installing EvoAgentX using `pip`:
 pip install git+https://github.com/EvoAgentX/EvoAgentX.git
 ```
 
-For local development or detailed setup (e.g., using conda), refer to the [Installation Guide for EvoAgentX](./docs/installation.md).
-
 <details>
 <summary>Example (optional, for local development):</summary>
 
@@ -169,8 +167,6 @@ llm = OpenAILLM(config=openai_config)
 # Generate a response from the LLM
 response = llm.generate(prompt="What is Agentic Workflow?")
 ```
-> 📖 More details on supported models and config options: [LLM module guide](./docs/modules/llm.md).
-
 
 ## Automatic WorkFlow Generation 
 Once your API key and language model are configured, you can automatically generate and execute multi-agent workflows in EvoAgentX.
@@ -278,23 +274,6 @@ We apply EvoAgentX to optimize their prompts. The performance of the optimized a
 
 ## Tutorial and Use Cases
 
-> 💡 **New to EvoAgentX?** Start with the [Quickstart Guide](./docs/quickstart.md) for a step-by-step introduction.
-
-
-Explore how to effectively use EvoAgentX with the following resources:
-
-| Cookbook | Description |
-|:---|:---|
-| **[Build Your First Agent](./docs/tutorial/first_agent.md)** | Quickly create and manage agents with multi-action capabilities. |
-| **[Build Your First Workflow](./docs/tutorial/first_workflow.md)** | Learn to build collaborative workflows with multiple agents. |
-| **[Automatic Workflow Generation](./docs/quickstart.md#automatic-workflow-generation-and-execution)** | Automatically generate workflows from natural language goals. |
-| **[Benchmark and Evaluation Tutorial](./docs/tutorial/benchmark_and_evaluation.md)** | Evaluate agent performance using benchmark datasets. |
-| **[TextGrad Optimizer Tutorial](./docs/tutorial/textgrad_optimizer.md)** | Automatically optimise the prompts within multi-agent workflow with TextGrad. |
-| **[AFlow Optimizer Tutorial](./docs/tutorial/aflow_optimizer.md)** | Automatically optimise both the prompts and structure of multi-agent workflow with AFlow. |
-<!-- | **[SEW Optimizer Tutorial](./docs/tutorial/sew_optimizer.md)** | Create SEW (Self-Evolving Workflows) to enhance agent systems. | -->
-
-🛠️ Follow the tutorials to build and optimize your EvoAgentX workflows.
-
 🚀 We're actively working on expanding our library of use cases and optimization strategies. **More coming soon — stay tuned!**
 
 ## 🎯 Roadmap
@@ -341,4 +320,4 @@ This project builds upon several outstanding open-source projects: [AFlow](https
 
 ## 📄 License
 
-Source code in this repository is made available under the [MIT License](./LICENSE).
+Source code in this repository is made available under the MIT License.

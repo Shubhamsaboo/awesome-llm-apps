@@ -58,8 +58,6 @@ export SGAI_API_KEY='your-api-key'
 python quickstart.py
 ```
 
-**📖 Full Documentation**: [See scrapegraph_ai_sdk/README.md](scrapegraph_ai_sdk/README.md)
-
 ---
 
 ## 🚀 Getting Started
@@ -230,7 +228,6 @@ request_id = client.smartcrawler(
 ## 📖 Documentation
 
 - **Local Library**: [ScrapeGraphAI GitHub](https://github.com/VinciGit00/Scrapegraph-ai)
-- **Cloud SDK**: [See scrapegraph_ai_sdk/README.md](scrapegraph_ai_sdk/README.md)
 - **API Docs**: https://docs.scrapegraphai.com
 
 ---

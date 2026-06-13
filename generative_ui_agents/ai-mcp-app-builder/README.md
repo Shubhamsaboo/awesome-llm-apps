@@ -4,8 +4,6 @@ Describe an MCP app in chat and get a live, sandboxed instance back. Built with 
 
 **Gen UI concept — agent-generated apps.** Most generative UI picks from a fixed catalogue of components. This goes a step further: the agent authors a brand-new MCP app at runtime, the builder provisions an E2B sandbox to host it, and the app renders inline with full bidirectional tool access. The "component" the agent emits *is a whole app*.
 
-**Production go-live:** [`docs/TRACKER.md`](docs/TRACKER.md) · **Stakeholder / product handoff** (shipped scope, CopilotKit open questions): [`docs/HANDOFF.md`](docs/HANDOFF.md)
-
 This monorepo wires up the **MCP App builder** web UI (`apps/web`) to a **Mastra** agent (`/api/mastra-agent`) that provisions **E2B** sandboxes running the **`mcp-use-server`** template (`apps/mcp-use-server`). An optional local sample is the [Three.js MCP example](https://github.com/modelcontextprotocol/ext-apps/tree/main/examples/threejs-server) in **`apps/threejs-server`** (used for sidebar defaults when running everything locally).
 
 https://github.com/user-attachments/assets/4bb35806-5e42-43c0-a8fe-01c0d1e5b8b3
@@ -57,7 +55,7 @@ Open the URL shown by Next (usually `http://localhost:3000`).
 | Script                       | Description                                                                                                                                                |
 | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `pnpm dev`                   | Next.js dev (Turbopack)                                                                                                                                    |
-| `pnpm build`                 | Runs **`prebuild`** → **`pack-download-kit`** (writes **`.download-kit/base.tar.gz`** for [full app kit](docs/HANDOFF.md) download), then **`next build`** |
+| `pnpm build`                 | Runs **`prebuild`** → **`pack-download-kit`** (writes **`.download-kit/base.tar.gz`** for full app kit download), then **`next build`** |
 | `pnpm pack-download-kit`     | Regenerate **`.download-kit/base.tar.gz`** without a full Next build                                                                                       |
 | `pnpm start`                 | Production Next server                                                                                                                                     |
 | `pnpm lint`                  | ESLint                                                                                                                                                     |
@@ -80,27 +78,25 @@ Requirements: **`E2B_API_KEY`** in `.env` (or environment). The CLI prints a **`
 
 ## Agent and UI
 
-The app title is **MCP App builder** (subtitle **Powered by CopilotKit**), logo **`apps/web/app/image.png`**, agent route **`/api/mastra-agent`**. Header CTAs use **`NEXT_PUBLIC_HEADER_*`** (and **`NEXT_PUBLIC_GITHUB_REPO_URL`** for the secondary link; code default points at **this demo repo**). Chat starters: **`NEXT_PUBLIC_CHAT_STARTER_PROMPTS`** (JSON) or **three** built-in bounded demos — tic tac toe, tip calculator, dice roller (**[`docs/HANDOFF.md`](docs/HANDOFF.md)**). Reference CopilotKit route: **`apps/web/app/api/copilotkit/route.ts`**.
+The app title is **MCP App builder** (subtitle **Powered by CopilotKit**), logo **`apps/web/app/image.png`**, agent route **`/api/mastra-agent`**. Header CTAs use **`NEXT_PUBLIC_HEADER_*`** (and **`NEXT_PUBLIC_GITHUB_REPO_URL`** for the secondary link; code default points at **this demo repo**). Chat starters: **`NEXT_PUBLIC_CHAT_STARTER_PROMPTS`** (JSON) or **three** built-in bounded demos — tic tac toe, tip calculator, dice roller. Reference CopilotKit route: **`apps/web/app/api/copilotkit/route.ts`**.
 
 **Starter prompts** use **`useCopilotChatSuggestions`** (`ChatSuggestions.tsx`) with v2 **`CopilotChat`**.
 
 **Post-provision test chips:** frontend action **`show_mcp_test_prompts`** (`McpTestPromptsAction.tsx`) — JSON string of `{ label, message }[]` for clickable chips (**`appendMessage`**).
 
-**Download:** **`restart_server`** / sidebar download can return a **full app kit** (`.tar.gz`): E2B workspace merged into **`mcp-apps-starter/`** when **`apps/web/.download-kit/base.tar.gz`** exists (created by **`pnpm build`** / **`prebuild`** in `apps/web`). Otherwise download is **MCP-only**. Details: **`docs/HANDOFF.md`**.
+**Download:** **`restart_server`** / sidebar download can return a **full app kit** (`.tar.gz`): E2B workspace merged into **`mcp-apps-starter/`** when **`apps/web/.download-kit/base.tar.gz`** exists (created by **`pnpm build`** / **`prebuild`** in `apps/web`). Otherwise download is **MCP-only**.
 
 **Debug agent traffic:** set **`MASTRA_AGENT_DEBUG=1`** in `.env` for verbose **`/api/mastra-agent`** logs (see `.env.example`).
 
 ### Duplicate React keys (Mastra agent) — RCA and fix
 
-Mastra can reuse the same `messageId` for tool-call parents and text events; CopilotKit then collides keys. **`mastra-agent/route.ts`** remaps ids when collisions are detected — see **`docs/HANDOFF.md`** / inline comments.
+Mastra can reuse the same `messageId` for tool-call parents and text events; CopilotKit then collides keys. **`mastra-agent/route.ts`** remaps ids when collisions are detected — see inline comments.
 
 ## Dynamic MCP UI (sidebar)
 
 - **MCP servers:** add/remove by URL (+ optional `serverId`); list is sent as **`x-mcp-servers`**. Built-in default: **Excalidraw** (`https://mcp.excalidraw.com`). Override via **`NEXT_PUBLIC_DEFAULT_MCP_SERVERS`** / **`DEFAULT_MCP_SERVERS`**.
 - **Tools:** compact list; open a tool for **detail + preview** in a **modal** (not a third mobile tab).
 - **Chat:** CopilotKit v2 chat with suggestions.
-
-More: **[`docs/DYNAMIC_MCP.md`](docs/DYNAMIC_MCP.md)**.
 
 ### Mobile layout
 
@@ -123,21 +119,13 @@ More: **[`docs/DYNAMIC_MCP.md`](docs/DYNAMIC_MCP.md)**.
 3. Set secret env vars in the dashboard: at least **`OPENAI_API_KEY`**; for sandboxes add **`E2B_API_KEY`** + **`E2B_TEMPLATE`**.
 4. Deploy. The Blueprint configures build/start commands, `NODE_VERSION`, and `HOSTNAME` automatically.
 
-Render runs a long-lived Node.js process (not serverless), so there are no per-function timeout limits. See **[`docs/DEPLOY-RENDER.md`](docs/DEPLOY-RENDER.md)** for full setup, env var tables, and troubleshooting.
+Render runs a long-lived Node.js process (not serverless), so there are no per-function timeout limits.
 
 ### Agent tool pattern (sidebar preview)
 
 Widget tools should include **`_meta["ui/previewData"]`** for offline sidebar preview (example: **`apps/mcp-use-server/tools/product-search.ts`**).
 
 ## Documentation
-
-**In this repo**
-
-- **[`docs/TRACKER.md`](docs/TRACKER.md)** — **production go-live checklist**
-- **[`docs/HANDOFF.md`](docs/HANDOFF.md)** — shipped scope, CopilotKit open questions
-- **[`docs/DEPLOY-RENDER.md`](docs/DEPLOY-RENDER.md)** — Render deployment guide
-- **[`docs/DYNAMIC_MCP.md`](docs/DYNAMIC_MCP.md)** — dynamic MCP patterns
-- **[`docs/PLAN.md`](docs/PLAN.md)** / **[`docs/E2B-IMPLEMENTATION.md`](docs/E2B-IMPLEMENTATION.md)** — roadmap and E2B design
 
 **UI entry:** `apps/web/app/page.tsx` (theme, layout, CopilotKit wiring).
 
