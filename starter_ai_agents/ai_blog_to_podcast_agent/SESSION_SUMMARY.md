@@ -18,6 +18,12 @@ The application was streamlined by replacing heavy external dependencies with li
 *   **Boilerplate Mitigation**: Updated the `Agno Agent` instructions to explicitly ignore LinkedIn "Join/Sign-in" and "Cookie Policy" noise.
 *   **Contextual Focus**: Tailored the system prompt to recognize social media posts and focus on extracting core insights and messages for a conversational podcast format.
 
+### 4. Advanced Infrastructure Blueprint: Prompt Caching
+*   **Static Warm-Up (Turn 1)**: By sending a 100% deterministic prompt in the first turn (System Files + MCPs + Skills), you seed a "Global Base Cache." This guarantees a 90% discount on the heaviest context block for all subsequent sessions within the 5-minute cache window.
+*   **Decoupled State Injection (Turn 2)**: Dynamic inputs (user queries, `session_summary.md`) are moved to the second turn. This prevents the "fixed" environment setup from being re-processed at premium rates.
+*   **The 5-Minute Hurdle**: Understanding that Anthropic's ephemeral cache typically expires after 5 minutes of inactivity helps in timing session launches for maximum cost-efficiency.
+*   **Breaking the "Disastrous Financial Loop"**: Strategic session resets using high-fidelity `session_summary.md` files prevent the 200% price penalty caused by continuous micro-compaction in constrained context windows.
+
 ---
 
 ## 🧠 LLM & Agent Knowledge Deep Dive
