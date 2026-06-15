@@ -49,3 +49,38 @@ def test_trigger_endpoint_tolerates_empty_body():
 
     assert response.status_code == 200
     assert response.json()["delivery"]["status"] == "dry_run"
+
+
+def test_scheduled_scout_reports_missing_delivery_config(monkeypatch):
+    for name in [
+        "AGENTSCOUT_DELIVERY",
+        "AGENTSCOUT_WEBHOOK_URL",
+        "AGENTSCOUT_EMAIL_TO",
+        "AGENTSCOUT_EMAIL_FROM",
+        "AGENTSCOUT_GMAIL_CLIENT_ID",
+        "AGENTSCOUT_GMAIL_CLIENT_SECRET",
+        "AGENTSCOUT_GMAIL_REFRESH_TOKEN",
+    ]:
+        monkeypatch.delenv(name, raising=False)
+
+    result = run_scheduled_scout({"dry_run": False, "top_n": 1, "live": False})
+
+    assert result["delivery"]["attempted"] is True
+    assert result["delivery"]["status"] == "skipped_no_delivery"
+
+
+def test_explicit_gmail_delivery_reports_missing_config(monkeypatch):
+    monkeypatch.setenv("AGENTSCOUT_DELIVERY", "gmail")
+    for name in [
+        "AGENTSCOUT_EMAIL_TO",
+        "AGENTSCOUT_EMAIL_FROM",
+        "AGENTSCOUT_GMAIL_CLIENT_ID",
+        "AGENTSCOUT_GMAIL_CLIENT_SECRET",
+        "AGENTSCOUT_GMAIL_REFRESH_TOKEN",
+    ]:
+        monkeypatch.delenv(name, raising=False)
+
+    result = run_scheduled_scout({"dry_run": False, "top_n": 1, "live": False})
+
+    assert result["delivery"]["provider"] == "gmail"
+    assert result["delivery"]["status"] == "skipped_missing_gmail_config"

@@ -14,10 +14,10 @@ from typing import Any, Optional
 from fastapi import FastAPI, Request
 
 try:
-    from .delivery import send_webhook
+    from .delivery import send_brief
     from .scout import run_ambient_scout
 except ImportError:
-    from delivery import send_webhook
+    from delivery import send_brief
     from scout import run_ambient_scout
 
 app = FastAPI(
@@ -52,7 +52,7 @@ def run_scheduled_scout(payload: dict[str, Any] | None = None) -> dict[str, Any]
     """Run AgentScout from a scheduler payload.
 
     Payload fields:
-        dry_run: defaults to true. Set false to call the configured webhook.
+        dry_run: defaults to true. Set false to call configured delivery.
         live: optional override for live Hacker News mode.
         top_n: number of stories, clamped to 1-10.
     """
@@ -67,10 +67,10 @@ def run_scheduled_scout(payload: dict[str, Any] | None = None) -> dict[str, Any]
         "attempted": False,
         "sent": False,
         "status": "dry_run",
-        "detail": "Set dry_run=false to call AGENTSCOUT_WEBHOOK_URL.",
+        "detail": "Set dry_run=false to use configured Gmail or webhook delivery.",
     }
     if dry_run is False:
-        delivery = {"attempted": True, **send_webhook(brief)}
+        delivery = {"attempted": True, **send_brief(brief)}
 
     return {
         "dry_run": dry_run,
