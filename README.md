@@ -69,7 +69,7 @@ You shouldn't have to rebuild the same RAG pipeline, agent loop, or MCP integrat
 
 - 🛠️ **Hand-built, not curated** - every template is original work, tested end-to-end before it ships.
 - 🧪 **Runs in 3 commands** - no broken `requirements.txt`, no "figure it out yourself" scaffolding.
-- 🧠 **Covers the modern AI stack** - AI Agents, Always-on Agents, Multi-agent Teams, MCP Agents, Voice AI Agents, RAG, Agent Skills, Fine-tuning.
+- 🧠 **Covers the modern AI stack** - AI Agents, Always-on Agents, Multi-agent Teams, MCP Agents, Voice AI Agents, RAG, Agent Skills, Fine-tuning and **FinOps Governance (via SentryNode Gateway)**.
 - 🌐 **Provider-agnostic** - switch between Claude, Gemini, GPT, Llama, Qwen, xAI and others with a config change.
 - 📚 **Step-by-step tutorials** - every featured template has a free walkthrough on [Unwind AI](https://www.theunwindai.com).
 - 💸 **Apache-2.0** - fork it, ship it, sell it. No paywall, no signup, no telemetry.
@@ -305,6 +305,7 @@ streamlit run travel_agent.py
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30–60% using TOON format
 *   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50–90%
+*   [🛡️ SentryNode Gateway](https://github.com/nehadangwal/sentrynode-gateway) - AI inference governance, FinOps layer, and semantic loop interception (<40ms)
 
 ### 🔧 LLM Fine-tuning Tutorials
 *End-to-end fine-tuning recipes for open-source models.*
