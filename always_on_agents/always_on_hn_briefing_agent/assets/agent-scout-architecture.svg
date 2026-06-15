@@ -1,0 +1,139 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Always-on Hacker News Briefing Agent architecture</title>
+  <desc id="desc">A left-to-right architecture image showing Hacker News stories flowing into AgentScout, then filtering, ranking, briefing, and webhook delivery.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1600" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#111827"/>
+      <stop offset="0.48" stop-color="#171717"/>
+      <stop offset="1" stop-color="#2A160C"/>
+    </linearGradient>
+    <linearGradient id="orange" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FF8A00"/>
+      <stop offset="1" stop-color="#FF5C00"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#6EE7B7"/>
+      <stop offset="1" stop-color="#22D3EE"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="24" stdDeviation="24" flood-color="#000000" flood-opacity="0.32"/>
+    </filter>
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="20" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 1 0 0.32 0 0 0.42 0 0 0 0 0.08 0 0 0 1 0"/>
+    </filter>
+    <style>
+      .label { font: 700 32px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #F8FAFC; }
+      .small { font: 600 20px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #CBD5E1; }
+      .tiny { font: 500 16px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #94A3B8; }
+      .mono { font: 600 18px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; fill: #FED7AA; }
+      .stroke { stroke: rgba(255,255,255,0.12); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="1340" cy="140" r="260" fill="#FF6B00" opacity="0.08" filter="url(#softGlow)"/>
+  <circle cx="230" cy="780" r="280" fill="#22D3EE" opacity="0.06" filter="url(#softGlow)"/>
+  <path d="M0 710C220 650 430 705 640 650C890 585 1100 570 1600 645V900H0V710Z" fill="#FFFFFF" opacity="0.035"/>
+
+  <text x="92" y="98" class="label">Always-on Hacker News Briefing Agent</text>
+  <text x="94" y="136" class="small">AgentScout scans Hacker News, ranks AI agent signals, and ships a daily engineering brief.</text>
+
+  <g transform="translate(82 236)" filter="url(#shadow)">
+    <rect width="250" height="350" rx="26" fill="#151A23" class="stroke"/>
+    <rect x="22" y="22" width="64" height="64" rx="14" fill="url(#orange)"/>
+    <text x="39" y="64" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="800" fill="white">HN</text>
+    <text x="104" y="50" class="small">Hacker News</text>
+    <text x="104" y="78" class="tiny">live front page</text>
+    <g transform="translate(22 120)">
+      <rect width="206" height="54" rx="12" fill="#202938"/>
+      <circle cx="23" cy="27" r="7" fill="#FF8A00"/>
+      <text x="44" y="25" class="tiny">AI agent framework</text>
+      <text x="44" y="43" class="tiny">428 pts · 116 comments</text>
+    </g>
+    <g transform="translate(22 190)">
+      <rect width="206" height="54" rx="12" fill="#202938"/>
+      <circle cx="23" cy="27" r="7" fill="#22D3EE"/>
+      <text x="44" y="25" class="tiny">MCP tools</text>
+      <text x="44" y="43" class="tiny">312 pts · 84 comments</text>
+    </g>
+    <g transform="translate(22 260)">
+      <rect width="206" height="54" rx="12" fill="#202938"/>
+      <circle cx="23" cy="27" r="7" fill="#A78BFA"/>
+      <text x="44" y="25" class="tiny">Coding agents</text>
+      <text x="44" y="43" class="tiny">256 pts · 73 comments</text>
+    </g>
+  </g>
+
+  <g transform="translate(407 284)">
+    <path d="M0 127H112" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+    <path d="M96 111L112 127L96 143" stroke="#64748B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="12" y="100" class="tiny">scheduled scan</text>
+  </g>
+
+  <g transform="translate(530 236)" filter="url(#shadow)">
+    <rect width="300" height="350" rx="30" fill="#111827" stroke="rgba(255,255,255,0.14)"/>
+    <circle cx="150" cy="104" r="58" fill="url(#teal)" opacity="0.18"/>
+    <circle cx="150" cy="104" r="36" fill="#0F172A" stroke="#67E8F9" stroke-width="3"/>
+    <path d="M133 106L146 119L169 87" stroke="#67E8F9" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="72" y="196" class="label">AgentScout</text>
+    <text x="48" y="232" class="small">Google ADK root_agent</text>
+    <rect x="42" y="268" width="216" height="46" rx="13" fill="#1F2937"/>
+    <text x="62" y="298" class="mono">preview_agent_builder_brief</text>
+  </g>
+
+  <g transform="translate(878 284)">
+    <path d="M0 127H106" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+    <path d="M90 111L106 127L90 143" stroke="#64748B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="0" y="100" class="tiny">briefing pipeline</text>
+  </g>
+
+  <g transform="translate(1010 202)" filter="url(#shadow)">
+    <rect width="250" height="186" rx="24" fill="#172033" stroke="rgba(255,255,255,0.13)"/>
+    <text x="32" y="52" class="small">Filter + Rank</text>
+    <rect x="32" y="82" width="184" height="14" rx="7" fill="#334155"/>
+    <rect x="32" y="112" width="128" height="14" rx="7" fill="#334155"/>
+    <rect x="32" y="142" width="160" height="14" rx="7" fill="#334155"/>
+    <circle cx="205" cy="112" r="32" fill="#FF8A00" opacity="0.18"/>
+    <path d="M191 113L202 124L221 96" stroke="#FDBA74" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g transform="translate(1010 438)" filter="url(#shadow)">
+    <rect width="250" height="186" rx="24" fill="#172033" stroke="rgba(255,255,255,0.13)"/>
+    <text x="32" y="52" class="small">Text + HTML Brief</text>
+    <rect x="32" y="82" width="186" height="14" rx="7" fill="#334155"/>
+    <rect x="32" y="112" width="154" height="14" rx="7" fill="#334155"/>
+    <rect x="32" y="142" width="112" height="14" rx="7" fill="#334155"/>
+    <path d="M199 79H222V156H177V101L199 79Z" fill="#0F172A" stroke="#67E8F9" stroke-width="2"/>
+    <path d="M199 79V101H222" stroke="#67E8F9" stroke-width="2"/>
+  </g>
+
+  <g transform="translate(1304 334)">
+    <path d="M0 113H82" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+    <path d="M66 97L82 113L66 129" stroke="#64748B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="-8" y="86" class="tiny">dry_run=false</text>
+  </g>
+
+  <g transform="translate(1402 276)" filter="url(#shadow)">
+    <rect width="142" height="260" rx="26" fill="#151A23" stroke="rgba(255,255,255,0.14)"/>
+    <text x="30" y="52" class="small">Delivery</text>
+    <g transform="translate(34 86)">
+      <rect width="74" height="34" rx="10" fill="#202938"/>
+      <text x="21" y="23" class="tiny">Email</text>
+    </g>
+    <g transform="translate(34 132)">
+      <rect width="74" height="34" rx="10" fill="#202938"/>
+      <text x="22" y="23" class="tiny">Slack</text>
+    </g>
+    <g transform="translate(34 178)">
+      <rect width="74" height="34" rx="10" fill="#202938"/>
+      <text x="18" y="23" class="tiny">Tickets</text>
+    </g>
+  </g>
+
+  <g transform="translate(92 688)">
+    <rect width="1350" height="92" rx="24" fill="rgba(15,23,42,0.72)" stroke="rgba(255,255,255,0.12)"/>
+    <text x="30" y="38" class="small">Scheduler-ready hooks</text>
+    <text x="30" y="68" class="tiny">GET /agent-scout/dry-run · POST /agent-scout/trigger · POST /agent-scout/pubsub · AGENTSCOUT_WEBHOOK_URL</text>
+  </g>
+</svg>
