@@ -305,6 +305,7 @@ streamlit run travel_agent.py
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30–60% using TOON format
 *   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50–90%
+*   [⚡ OpenClacky Prompt Cache Optimizer](advanced_llm_apps/llm_optimization_tools/openclacky_prompt_cache/) - Benchmark Prompt Cache vs naive stateless agents. OpenClacky achieves 93.8% cache hit rate and ~0.45–0.8× the cost of Claude Code / Codex across a 10-turn coding session.
 
 ### 🔧 LLM Fine-tuning Tutorials
 *End-to-end fine-tuning recipes for open-source models.*

@@ -1,0 +1,4 @@
+anthropic>=0.40.0
+openai>=1.50.0
+tiktoken>=0.7.0
+streamlit>=1.40.0
