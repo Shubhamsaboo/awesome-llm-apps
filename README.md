@@ -303,6 +303,7 @@ streamlit run travel_agent.py
 ### 🎯 LLM Optimization Tools
 *Reduce token usage, context size, and API cost without losing quality.*
 
+*   [🎯 GCF Token Optimization](advanced_llm_apps/llm_optimization_tools/gcf_token_optimization/) - Reduce LLM API costs by 61–71% using GCF format across JSON, YAML, TOML, CSV, and MessagePack
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30–60% using TOON format
 *   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50–90%
 
