@@ -330,6 +330,10 @@ streamlit run travel_agent.py
   - Swarm orchestration; routing logic
 
 
+## 📂 AI resource directories
+
+- [OpenRuna](https://www.openruna.com/best/ai-agent-templates) — Graph directory of agents, prompts, tools, skills, and benchmarks with MCP search API.
+
 ## 🙏 Built by
 
 <p>Created and maintained by <a href="https://twitter.com/Saboo_Shubham_"><strong>Shubham Saboo</strong></a> with contributions from the amazing community members.</p>
