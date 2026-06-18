@@ -222,6 +222,10 @@ streamlit run travel_agent.py
 *   [🐙 GitHub MCP Agent](mcp_ai_agents/github_mcp_agent/)
 *   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent)
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team)
+*   [💰 SqueezeOS — Institutional Trading MCP Agent](https://github.com/Timwal78/SqueezeOS) — 33-tool MCP server for AI trading agents. x402 payment gating, XRPL/RLUSD + Base/USDC, short-squeeze detection. Live: squeezeos-api.onrender.com/mcp
+*   [🔮 xDEO — Decentralized Earnings Oracle MCP](https://xdeo.timothy-walton45.workers.dev) — AI agents pay $0.01/call for SEC EDGAR-verified earnings intelligence. x402 native MCP server.
+*   [🌐 Ghost Layer — Dual-Chain XRPL/Base MCP Gateway](https://ghost-layer.onrender.com) — Autonomous AI agents pay RLUSD on XRPL for tool access. URIToken on-chain licensing, zero custody.
+*   [🔍 Aetheris MCP — x402 Web Scraper Agent](https://github.com/Timwal78/aetheris-mcp-render) — AI agents pay USDC on Base per web scrape. SSE transport, JSDOM sanitization.
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/)
 
 ### 📀 RAG (Retrieval Augmented Generation)
