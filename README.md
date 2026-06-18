@@ -272,6 +272,7 @@ streamlit run travel_agent.py
 | [📋 Meeting Notes](awesome_agent_skills/meeting-notes/) | Meeting summaries, action items, follow-ups |
 | [📅 Project Planner](awesome_agent_skills/project-planner/) | Roadmaps, milestones, resource planning |
 | [🐍 Python Expert](awesome_agent_skills/python-expert/) | Pythonic code, packaging, performance |
+| [🛡️ Traveseal C2PA Provenance](awesome_agent_skills/traveseal-c2pa-provenance/) | C2PA-compliant provenance and tamper resistance for digital assets |
 | [🏃 Sprint Planner](awesome_agent_skills/sprint-planner/) | Agile sprint planning and backlog grooming |
 | [🧭 Strategy Advisor](awesome_agent_skills/strategy-advisor/) | Business strategy and competitive analysis |
 | [📖 Technical Writer](awesome_agent_skills/technical-writer/) | Documentation, API docs, guides |
