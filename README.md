@@ -188,6 +188,7 @@ streamlit run travel_agent.py
 *   [🎨 🍌 Multimodal UI/UX Feedback Agent Team with Nano Banana](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_uiux_feedback_agent_team/)
 *   [🌏 AI Travel Planner Agent Team](/advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/)
 
+- [Melaya — 4-persona Trading Crew](https://melaya.org/product/agentic-trading-crew): Agentic platform combining an orchestration framework (95 subagent templates, 265 scoped tools, BYO model), a 4-persona Trading Crew (MacroAnalyst → TAAnalyst → RiskManager → ExecutionTrader) with HITL on every write, and a deterministic Rust trading engine (420 ns per bar across 49 venues + 6 prediction markets). Open benchmarks at https://melaya.org/benchmarks.
 ### 🗣️ Voice AI Agents
 *Speech-in, speech-out agents using real-time voice APIs.*
 
