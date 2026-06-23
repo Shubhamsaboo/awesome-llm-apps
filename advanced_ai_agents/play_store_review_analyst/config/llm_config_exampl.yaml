@@ -1,0 +1,147 @@
+llm:
+  provider: "gemini"  # gemini | openai | local
+  model: "gemini-2.0-flash"  # Valid Gemini model name for free tier
+  temperature: 0.3
+  max_tokens: 8000  # Increased to handle longer responses
+  
+api_keys: 
+  gemini: "${GEMINI_API_KEY}"
+  openai: "${OPENAI_API_KEY}"
+  
+local_llm:
+  base_url: "http://localhost:11434"
+  model: "llama2"
+  
+prompts:
+  structure_analyzer: |
+    Analyze the provided data sample and identify the columns, data types, and required fields.
+    Respond in JSON format only.
+    
+  topic_classifier: |
+    You are an expert at analyzing app store reviews and classifying them into topics.
+    Your goal is HIGH RECALL - don't miss any important topics. You must also CONSOLIDATE similar topics.
+    
+    {existing_topics}
+    
+    REVIEW TO CLASSIFY:
+    Rating: {review_score}/5
+    Date: {review_date}
+    Content: "{review_content}"
+    
+    YOUR TASK:
+    1. Read the review carefully
+    2. Identify the PRIMARY topic/issue/request/feedback
+    3. Check if it matches any EXISTING topic (even if worded differently)
+    4. If match found → Use the EXACT existing topic name
+    5. If no match → Create a new clear, concise topic name
+    
+    TOPIC CONSOLIDATION RULES (CRITICAL):
+    - "Delivery guy was rude" = "Delivery partner behaved badly" = "Delivery partner rude"
+    - "Payment failed" = "Payment processing error" = "Payment issues"
+    - "App keeps crashing" = "App crashes frequently" = "App crashes"
+    - Always prefer existing topics when semantically similar (>70% match)
+    - Use simple, clear names: "Delivery delays", "Payment issues", "App crashes"
+    
+    TOPIC TYPE CLASSIFICATION:
+    - "issue" → Problems, bugs, complaints (e.g., "App crashes", "Delivery delays")
+    - "request" → Feature requests, wants (e.g., "Add dark mode", "Bring back 10-min delivery")
+    - "feedback" → General feedback, suggestions (e.g., "Great app", "UI could be better")
+    - "other" → Anything that doesn't fit above
+    
+    TOPIC NAMING GUIDELINES:
+    - Be specific but not too narrow (3-8 words)
+    - Use active, descriptive language
+    - Examples: "Delivery delays", "Food quality poor", "Customer service unresponsive"
+    - NOT: "Problem with delivery", "There was an issue", "Something wrong"
+    
+    Return ONLY valid JSON (no other text):
+    {{
+      "topic": "exact topic name here",
+      "type": "issue|request|feedback|other",
+      "confidence": 0.95
+    }}
+    
+    REMEMBER:
+    - HIGH RECALL: Extract every topic, don't miss anything
+    - CONSOLIDATE: Merge similar topics, use existing names when possible
+    - BE SPECIFIC: Clear, informative topic names
+    - USE EXACT NAMES: If matching existing topic, use its exact name
+    
+  trend_analyzer: |
+    Analyze the classified reviews and identify trends over the specified date range.
+    Generate a summary of the top trending categories and changes.
+
+    Reviews data:
+    {reviews_data}
+
+    Date range: {date_range}
+
+    Provide insights on:
+    1. Most frequent categories
+    2. Trending up categories
+    3. Trending down categories
+    4. New emerging categories
+
+  batch_topic_classifier: |
+    You are an expert at analyzing app store reviews and classifying them into topics.
+    Your goal is HIGH RECALL with STRONG CONSOLIDATION - match to existing topics aggressively!
+
+    {existing_topics}
+
+    {reviews_section}
+
+    CRITICAL INSTRUCTIONS - READ CAREFULLY:
+    
+    1. PRIORITIZE EXISTING TOPICS:
+       - For EACH review, check if it matches ANY existing topic (even if worded differently)
+       - If >70% semantic match to existing topic → USE THE EXACT EXISTING TOPIC NAME
+       - Only create NEW topics if truly unique and doesn't fit any existing category
+    
+    2. TOPIC CONSOLIDATION RULES (CRITICAL):
+       - "Delivery guy rude" = "Delivery person behavior" = "Delivery partner issues"
+       - "Payment failed" = "Payment error" = "Payment issues" = "Payment problems"
+       - "App crashes" = "App keeps crashing" = "App freezing" = "App not working"
+       - "Food cold" = "Food not fresh" = "Food quality poor" = "Food quality issues"
+       - "Late delivery" = "Delivery delay" = "Order arrived late" = "Delivery delays"
+       - Always use GENERIC, CONSOLIDATED names
+    
+    3. TOPIC NAMING - BE GENERIC:
+       - Good: "Delivery delays", "Payment issues", "Food quality", "App crashes"
+       - Bad: "Delivery was 30 min late", "Payment failed twice", "Paneer was stale"
+       - Use 2-4 words maximum
+       - Be broad, not specific
+    
+    4. TOPIC TYPE CLASSIFICATION:
+       - "issue" → Problems, bugs, complaints (e.g., "App crashes", "Delivery delays")
+       - "request" → Feature requests, wants (e.g., "Add dark mode", "Better filters")
+       - "feedback" → General feedback, praise (e.g., "Great app", "Love the UI")
+       - "other" → Anything that doesn't fit above
+    
+    5. RESPONSE FORMAT:
+       Return a JSON object where each key is the review_id and value contains:
+       - "topic": EXACT existing topic name OR new generic topic
+       - "type": one of [issue, request, feedback, other]
+       - "confidence": float between 0-1
+    
+    EXAMPLE OUTPUT:
+    {{
+      "review_id_1": {{
+        "topic": "Delivery delays",
+        "type": "issue",
+        "confidence": 0.9
+      }},
+      "review_id_2": {{
+        "topic": "Food quality",
+        "type": "issue",
+        "confidence": 0.85
+      }}
+    }}
+
+    REMEMBER:
+    - MATCH EXISTING TOPICS FIRST - be aggressive in matching!
+    - CREATE NEW TOPICS SPARINGLY - only if truly unique
+    - USE EXACT NAMES - if matching existing topic, use its exact name
+    - BE GENERIC - topics should cover multiple similar reviews
+    - CONSOLIDATE - similar issues = same topic
+
+    Return ONLY the JSON object, no markdown formatting.

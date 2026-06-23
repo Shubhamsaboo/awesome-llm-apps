@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Analyst - Compact Dashboard</title>
+    <link rel="stylesheet" href="style_optimized.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Compact Header -->
+        <header class="compact-header">
+            <div class="header-content">
+                <h1>📊 Review Analysis Dashboard</h1>
+                <div class="header-meta">
+                    <span id="appName">App Name</span>
+                    <span class="divider">•</span>
+                    <span id="analysisDate">Jan 11, 2026</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Input Section - Collapsible -->
+            <div class="card input-card" id="inputCard">
+                <div class="card-header" onclick="toggleInput()">
+                    <h2>Analysis Input</h2>
+                    <span class="toggle-icon" id="toggleIcon">▼</span>
+                </div>
+                <form id="analysisForm" style="display:none;">
+                    <div class="form-row">
+                        <input
+                            type="text"
+                            id="appIdentifier"
+                            placeholder="App package ID or Play Store URL"
+                            required
+                        >
+                        <input
+                            type="date"
+                            id="targetDate"
+                        >
+                        <button type="submit" class="btn-primary">
+                            <span id="btnText">🚀 Analyze</span>
+                            <span id="spinner" style="display:none;">⏳</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Status Messages -->
+            <div id="statusDiv" class="status-message" style="display:none;">
+                <p id="statusText"></p>
+            </div>
+
+            <div id="errorDiv" class="error-message" style="display:none;">
+                <p id="errorText"></p>
+                <button class="btn-secondary" onclick="resetForm()">Try Again</button>
+            </div>
+
+            <!-- Existing Data Prompt -->
+            <div id="existingDataDiv" class="card" style="display:none;">
+                <h2>📁 Existing Data Found</h2>
+                <div id="existingDataInfo"></div>
+                <div id="existingDataButtons" class="button-group"></div>
+            </div>
+
+            <!-- LLM Change Prompt -->
+            <div id="llmChangeDiv" class="card" style="display:none;">
+                <h2>⚠️ LLM Provider Changed</h2>
+                <div id="llmChangeInfo"></div>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="recategorizWithNewLLM()">
+                        🔄 Re-categorize with New LLM
+                    </button>
+                    <button class="btn-secondary" onclick="useOldCategorization()">
+                        ✅ Use Previous Categorization
+                    </button>
+                    <button class="btn-secondary" onclick="hideExistingData()">
+                        ❌ Cancel
+                    </button>
+                </div>
+            </div>
+
+            <!-- OPTIMIZED RESULTS DASHBOARD -->
+            <div id="resultsDiv" class="results-dashboard" style="display:none;">
+
+                <!-- KPI Grid - Compact 4-column -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon">📝</div>
+                        <div class="kpi-value" id="kpiReviews">0</div>
+                        <div class="kpi-label">Reviews</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon">🏷️</div>
+                        <div class="kpi-value" id="kpiTopics">0</div>
+                        <div class="kpi-label">Topics</div>
+                    </div>
+                    <div class="kpi-card alert">
+                        <div class="kpi-icon">🔴</div>
+                        <div class="kpi-value" id="kpiCritical">0</div>
+                        <div class="kpi-label">Critical Issues</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon">⭐</div>
+                        <div class="kpi-value" id="kpiAvgRating">0</div>
+                        <div class="kpi-label">Avg Rating</div>
+                    </div>
+                </div>
+
+                <!-- Data Quality Alert (only if needed) -->
+                <div id="dataQualityAlert" class="alert-card" style="display:none;">
+                    <span class="alert-icon">⚠️</span>
+                    <div class="alert-content">
+                        <strong>Limited Data Sample</strong>
+                        <p id="dataQualityMessage"></p>
+                    </div>
+                </div>
+
+                <!-- Two Column Layout: Priorities + Insights -->
+                <div class="two-column-layout">
+
+                    <!-- LEFT: Priority Issues -->
+                    <div class="card priorities-card">
+                        <h2>🎯 Priority Issues</h2>
+                        <p class="card-subtitle">Top 5 issues by severity (impact × rating)</p>
+                        <div id="prioritiesList" class="priorities-list">
+                            <!-- Compact list of top 3-5 issues -->
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: Key Insights -->
+                    <div class="card insights-card">
+                        <h2>💡 Key Insights</h2>
+                        <div id="insightsList" class="insights-list">
+                            <!-- Bullet point insights -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topic Distribution - Horizontal Bar Chart -->
+                <div class="card chart-card">
+                    <h2>📊 Topic Distribution (Top 10)</h2>
+                    <p class="card-subtitle">Most frequently mentioned topics by review count</p>
+                    <div id="topicChart" class="horizontal-chart">
+                        <!-- Horizontal bar chart -->
+                    </div>
+                </div>
+
+                <!-- Timeline Chart - Only if sufficient data -->
+                <div id="timelineCard" class="card chart-card" style="display:none;">
+                    <h2>📈 Frequency Over Time</h2>
+                    <canvas id="trendChart" height="200"></canvas>
+                </div>
+
+                <!-- Detailed Table - Collapsible -->
+                <div class="card table-card">
+                    <div class="card-header" onclick="toggleTable()">
+                        <h2>📋 Detailed Breakdown</h2>
+                        <span class="toggle-icon" id="tableToggleIcon">▼</span>
+                    </div>
+                    <div id="detailsTable" class="details-table" style="display:none;">
+                        <!-- Table will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-bar">
+                    <button class="btn-primary" onclick="downloadHTML()">
+                        📄 Download Report
+                    </button>
+                    <button class="btn-secondary" onclick="downloadCSV()">
+                        📊 Export CSV
+                    </button>
+                    <button class="btn-secondary" onclick="resetForm()">
+                        🔄 New Analysis
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>AI Agent Analyst • Powered by LLM Analysis</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="app_optimized.js"></script>
+</body>
+</html>

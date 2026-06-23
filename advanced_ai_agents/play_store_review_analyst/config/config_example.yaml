@@ -1,0 +1,40 @@
+data:
+  # start_date: "2024-06-01"
+  start_date: "2025-08-01"
+  batch_size: 600
+  required_fields: ["content", "at", "score"]  # Changed "date" to "at" to match scraped data
+  
+scraper:
+  reviews_per_batch: 500
+  delay_seconds: 2
+  max_retries: 3
+  
+taxonomy:
+  mode: "agent_based"  # agent_based or semantic
+  batch_size: 200
+  
+topic_extraction:
+  # Mode for topic extraction processing.
+  # - "single": Processes each review one-by-one (high accuracy, slower)
+  # - "batch" : Processes reviews in groups of N (see 'batch_size'), balances speed/accuracy
+  # - "day"   : Processes all reviews from same day together (fastest for large datasets)
+  # Example: mode: "single"
+  # Example: mode: "batch"
+  # Example: mode: "day"
+  mode: "batch"
+
+  # Number of reviews in one batch (only applies if mode is "batch")
+  # Example: batch_size: 10
+  batch_size: 70
+
+  # DEPRECATED: Kept for backward compatibility. Use 'mode' instead.
+  # batch_mode: true
+  # batch_size: 20  # DEPRECATED: now uses day-wise batching (all reviews from same day in one batch)
+  
+output:
+  format: "markdown"
+  trend_window_days: 30
+  
+logging:
+  level: "INFO"
+  file: "app.log"

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Analyst - Review Trend Analysis</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 AI Agent Analyst</h1>
+            <p>Google Play Store Review Trend Analysis</p>
+        </header>
+
+        <main>
+            <div class="card">
+                <h2>Analysis Input</h2>
+                <form id="analysisForm">
+                    <div class="form-group">
+                        <label for="appIdentifier">
+                            App Link or Package ID:
+                            <span class="help">e.g., com.swiggy.android or Play Store URL</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="appIdentifier" 
+                            name="appIdentifier"
+                            placeholder="Enter app package ID or Play Store link"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="targetDate">
+                            Target Date (Optional):
+                            <span class="help">Leave blank to use today's date</span>
+                        </label>
+                        <input 
+                            type="date" 
+                            id="targetDate" 
+                            name="targetDate"
+                        >
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <span id="btnText">🚀 Start Analysis</span>
+                        <span id="spinner" style="display:none;">⏳ Analyzing...</span>
+                    </button>
+                </form>
+            </div>
+
+            <div id="statusDiv" class="card status-card" style="display:none;">
+                <h2>⚙️ Analysis in Progress</h2>
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
+                <p id="statusText"></p>
+            </div>
+
+            <div id="errorDiv" class="card error" style="display:none;">
+                <h2>❌ Analysis Error</h2>
+                <p id="errorText"></p>
+                <button class="btn btn-secondary" onclick="resetForm()">Try Again</button>
+            </div>
+
+            <!-- Existing Data Confirmation -->
+            <div id="existingDataDiv" class="card" style="display:none;">
+                <h2>📁 Existing Data Found</h2>
+                <div id="existingDataInfo" class="existing-data-info"></div>
+                <div id="existingDataButtons" class="button-group">
+                    <!-- Buttons will be dynamically populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- LLM Change Confirmation -->
+            <div id="llmChangeDiv" class="card" style="display:none;">
+                <h2>⚠️ LLM Provider Changed</h2>
+                <div id="llmChangeInfo" class="llm-change-info"></div>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="recategorizWithNewLLM()">
+                        🔄 Re-categorize with New LLM
+                    </button>
+                    <button class="btn btn-secondary" onclick="useOldCategorization()">
+                        ✅ Use Previous Categorization
+                    </button>
+                    <button class="btn btn-secondary" onclick="hideExistingData()">
+                        ❌ Cancel
+                    </button>
+                </div>
+            </div>
+
+            <!-- NEW: Enhanced Results Dashboard -->
+            <div id="resultsDiv" class="results-dashboard" style="display:none;">
+                <!-- Executive Summary -->
+                <div class="card dashboard-header">
+                    <h2>✅ Analysis Complete</h2>
+                    <div class="app-info">
+                        <div class="app-name">
+                            <span class="label">App:</span>
+                            <span id="resultApp" class="value"></span>
+                        </div>
+                        <div class="analysis-date">
+                            <span class="label">Analyzed:</span>
+                            <span id="resultDate" class="value"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📝</div>
+                        <div class="stat-content">
+                            <div class="stat-label">Reviews Analyzed</div>
+                            <div class="stat-value" id="resultReviews">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🏷️</div>
+                        <div class="stat-content">
+                            <div class="stat-label">Topics Identified</div>
+                            <div class="stat-value" id="resultTopics">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚠️</div>
+                        <div class="stat-content">
+                            <div class="stat-label">Critical Issues</div>
+                            <div class="stat-value" id="resultCritical">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-content">
+                            <div class="stat-label">Trending Up</div>
+                            <div class="stat-value" id="resultTrendingUp">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actionable Recommendations -->
+                <div class="card recommendations-section">
+                    <h2 class="section-title">🎯 Actionable Recommendations</h2>
+                    <div id="recommendationsList" class="recommendations-list">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Trend Visualization -->
+                <div class="card chart-section">
+                    <h2 class="section-title">📈 Trend Analysis</h2>
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Top Topics -->
+                <div class="card topics-section">
+                    <h2 class="section-title">🔥 Top Issues by Severity</h2>
+                    <div id="topTopicsList" class="topics-list">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Download Reports -->
+                <div class="card download-section">
+                    <h2 class="section-title">📥 Download Reports</h2>
+                    <div class="download-buttons">
+                        <a id="reportHtmlLink" class="btn btn-primary" download target="_blank">
+                            🌐 View Full HTML Report
+                        </a>
+                        <a id="reportMarkdownLink" class="btn btn-secondary" download>
+                            📄 Download Markdown
+                        </a>
+                        <button class="btn btn-secondary" onclick="downloadTableCSV()">
+                            📊 Export CSV
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <button class="btn btn-primary full-width" onclick="resetForm()">
+                        🔄 Analyze Another App
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>AI Agent Analyst v1.0 | Powered by Gemini AI</p>
+        </footer>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
