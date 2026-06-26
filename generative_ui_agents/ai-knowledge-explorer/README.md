@@ -27,10 +27,16 @@ Click a node to see details. Double-click to expand it — the agent extracts su
 | LLM | OpenAI (configurable via env) |
 | Protocol | AG-UI (state streaming) |
 
+## Prerequisites
+
+- Node.js 18+
+- Python 3.12
+- [uv](https://docs.astral.sh/uv/) — the agent's Python dependencies are managed with uv, and `npm install` runs `uv sync` automatically. Install it with `curl -LsSf https://astral.sh/uv/install.sh | sh` (macOS/Linux) or `powershell -c "irm https://astral.sh/uv/install.ps1 | iex"` (Windows). uv fetches Python 3.12 for you if it isn't already installed.
+
 ## Setup
 
 ```bash
-# 1. Install dependencies
+# 1. Install dependencies (also runs `uv sync` for the Python agent)
 npm install
 
 # 2. Set your API key
@@ -41,7 +47,7 @@ cp .env.example .env
 npm run dev
 ```
 
-This starts both the Next.js frontend (port 3000) and the LangGraph agent (port 8125).
+This starts both the Next.js frontend (port 3000) and the LangGraph agent (port 8125). On Windows the same `npm` scripts run the `.bat` equivalents under `scripts/`.
 
 ## Example Content
 
