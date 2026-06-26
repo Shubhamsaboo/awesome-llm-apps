@@ -172,6 +172,8 @@ streamlit run travel_agent.py
 *   [📰 Always-on Hacker News Briefing Agent](always_on_agents/always_on_hn_briefing_agent/)
 
 ### 🤝 Multi-agent Teams
+
+| [Loopy](https://github.com/arjunkshah/loopy) | Kanban-based agent operating system orchestrating dozens of coding-agent CLIs with complexity-aware routing, named subagents, and verifiable execution receipts. Local-first. | [GitHub](https://github.com/arjunkshah/loopy) |
 *Multiple agents collaborating to accomplish complex, cross-domain tasks.*
 
 *   [🧲 AI Competitor Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_competitor_intelligence_agent_team/)
