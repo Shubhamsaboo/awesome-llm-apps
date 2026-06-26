@@ -227,6 +227,7 @@ streamlit run travel_agent.py
 ### 📀 RAG (Retrieval Augmented Generation)
 *Retrieval pipelines - from simple chains to agentic and multi-source.*
 
+*   [🔍 trelix — Semantic Code Search](https://github.com/sairam0424/trelix) — Hybrid BM25+vector code search with Tree-sitter AST, call-graph expansion, LangChain retriever. `pip install trelix`
 *   [🔥 Agentic RAG with Embedding Gemma](rag_tutorials/agentic_rag_embedding_gemma)
 *   [🧐 Agentic RAG with Reasoning](rag_tutorials/agentic_rag_with_reasoning/)
 *   [📰 AI Blog Search (RAG)](rag_tutorials/ai_blog_search/)
