@@ -57,8 +57,7 @@ except ImportError:
 DATA_DIR = Path.home() / ".release_monitor"
 DB_PATH = DATA_DIR / "releases.db"
 WATCHLIST_PATH = DATA_DIR / "watchlist.json"
-MODEL = os.environ.get("RELEASE_MONITOR_MODEL", "claude-sonnet-4-20250514")
-GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
+MODEL = os.environ.get("RELEASE_MONITOR_MODEL", "claude-sonnet-4-6")
 GITHUB_API = "https://api.github.com"
 
 
@@ -141,6 +140,27 @@ def add_repo(repo: str) -> bool:
 
     repos.append(repo)
     save_watchlist(repos)
+
+    # Baseline the repo's current releases as "seen" so the first check doesn't
+    # fire an AI analysis for every pre-existing release (up to per_page each).
+    # Best-effort: a failure here must never prevent the repo from being added.
+    try:
+        conn = get_db()
+        try:
+            now = datetime.now(timezone.utc).isoformat()
+            for rel in get_releases(repo):
+                tag = rel.get("tag_name")
+                if tag:
+                    conn.execute(
+                        "INSERT OR IGNORE INTO seen_releases (repo, tag_name, seen_at) VALUES (?, ?, ?)",
+                        (repo, tag, now),
+                    )
+            conn.commit()
+        finally:
+            conn.close()
+    except Exception as e:  # noqa: BLE001 — baselining is best-effort
+        _print_info(f"Note: could not baseline existing releases for {repo}: {e}")
+
     _print_success(f"Added to watchlist: {repo}")
     return True
 
@@ -165,8 +185,12 @@ def remove_repo(repo: str) -> bool:
 def _github_headers() -> dict[str, str]:
     """Build headers for GitHub API requests."""
     headers = {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
-    if GITHUB_TOKEN:
-        headers["Authorization"] = f"Bearer {GITHUB_TOKEN}"
+    # Read the token at request time, not at import — Streamlit (app.py) sets
+    # os.environ["GITHUB_TOKEN"] after this module is already imported, so a
+    # module-level global would never see a token pasted into the UI.
+    token = os.environ.get("GITHUB_TOKEN")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
     return headers
 
 
@@ -672,7 +696,7 @@ def main():
     rate = get_rate_limit()
     if rate:
         _print_info(f"GitHub API: {rate['remaining']}/{rate['limit']} requests remaining")
-        if rate["remaining"] < 10 and not GITHUB_TOKEN:
+        if rate["remaining"] < 10 and not os.environ.get("GITHUB_TOKEN"):
             _print_info("Tip: Set GITHUB_TOKEN to increase rate limit from 60 to 5000/hour")
 
     # Run the pipeline

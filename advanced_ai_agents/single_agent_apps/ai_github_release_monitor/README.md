@@ -98,7 +98,7 @@ python release_monitor.py --list                 # Show watchlist
 # Check releases
 python release_monitor.py                        # Check all (default action)
 python release_monitor.py --repo owner/repo      # Check specific repo
-python release_monitor.py --model claude-opus-4-20250514  # Use different model
+python release_monitor.py --model claude-opus-4-8  # Use different model
 
 # History
 python release_monitor.py --history              # Show past analyses
