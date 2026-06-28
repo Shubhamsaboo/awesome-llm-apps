@@ -187,6 +187,7 @@ streamlit run travel_agent.py
 *   [✨ Multimodal Design Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_design_agent_team/)
 *   [🎨 🍌 Multimodal UI/UX Feedback Agent Team with Nano Banana](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_uiux_feedback_agent_team/)
 *   [🌏 AI Travel Planner Agent Team](/advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/)
+*   [🦀 h5i - Multi-Agent Coding CLI](https://github.com/h5i-dev/h5i) <sub>↗ external</sub>
 
 ### 🗣️ Voice AI Agents
 *Speech-in, speech-out agents using real-time voice APIs.*
