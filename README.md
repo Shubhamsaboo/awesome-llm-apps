@@ -347,3 +347,7 @@ streamlit run travel_agent.py
 ## 📜 License
 
 Apache-2.0. See [LICENSE](LICENSE). Fork it, ship it, sell it.
+
+## Directories
+
+## 📂 AI resource directories\n\n- [OpenRuna](https://www.openruna.com/best/ai-agent-templates) — Graph directory of agents, prompts, tools, skills, and benchmarks with MCP search API.
