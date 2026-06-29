@@ -280,6 +280,8 @@ streamlit run travel_agent.py
 
 </details>
 
+> 🔎 **Looking for more agent skills?** Browse **3,100+ skills** across 16 categories at [Skill Hub](https://skill.442595.xyz/) — supports Claude Code, Codex, Cursor, OpenCode, and Hermes platform filtering.
+
 ### 💾 LLM Apps with Memory Tutorials
 *Agents and chatbots that remember conversations and user state across sessions.*
 
