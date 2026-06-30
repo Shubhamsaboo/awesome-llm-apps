@@ -138,6 +138,7 @@ streamlit run travel_agent.py
 *   [🔄 Mixture of Agents](starter_ai_agents/mixture_of_agents/)
 *   [📊 xAI Finance Agent](starter_ai_agents/xai_finance_agent/)
 *   [🔍 OpenAI Research Agent](starter_ai_agents/openai_research_agent/)
+*   [🔎 AI Real-Time Research Agent (Google + Reddit + YouTube)](starter_ai_agents/ai_realtime_research_agent/)
 *   [🕸️ Web Scraping AI Agent](starter_ai_agents/web_scraping_ai_agent/)
 
 ### 🚀 Advanced AI Agents
