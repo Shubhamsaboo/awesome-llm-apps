@@ -170,6 +170,7 @@ streamlit run travel_agent.py
 *Background agents that run on schedules or events, monitor changing context, decide what needs attention, and proactively deliver updates, artifacts, or actions.*
 
 *   [📰 Always-on Hacker News Briefing Agent](always_on_agents/always_on_hn_briefing_agent/)
+*   [💼 Metis - Local Job Search Triage Agent](https://github.com/chenlomis/metis) <sub>↗ external</sub>
 
 ### 🤝 Multi-agent Teams
 *Multiple agents collaborating to accomplish complex, cross-domain tasks.*
