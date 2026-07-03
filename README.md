@@ -301,6 +301,7 @@ streamlit run travel_agent.py
 *   [📽️ Chat with YouTube Videos](advanced_llm_apps/chat_with_X_tutorials/chat_with_youtube_videos/)
 
 ### 🎯 LLM Optimization Tools
+- **[llm-box](https://github.com/alib8b8/llm-box)** - Terminal-first AI workflow engine. Orchestrate multi-model LLM pipelines with YAML and a beautiful TUI.
 *Reduce token usage, context size, and API cost without losing quality.*
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30–60% using TOON format
