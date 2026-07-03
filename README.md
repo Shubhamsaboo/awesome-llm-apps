@@ -257,3 +257,7 @@ A curated collection of **Awesome LLM apps built with RAG, AI Agents, Multi-agen
 [![Star History Chart](https://api.star-history.com/svg?repos=Shubhamsaboo/awesome-llm-apps&type=Date)](https://star-history.com/#Shubhamsaboo/awesome-llm-apps&Date)
 
 🌟 **Don’t miss out on future updates! Star the repo now and be the first to know about new and exciting LLM apps with RAG and AI Agents.**
+
+## Helium Open Benchmarks (2026)
+- [Helium Market Resolution](https://huggingface.co/datasets/HeliumTrades/helium-market-resolution-benchmark) — 300 frozen option-chain prompts; best model ~48%. https://heliumtrades.com/benchmarks/
+- [Helium Model Worldview](https://huggingface.co/datasets/HeliumTrades/helium-model-worldview-benchmark) — 304 cue-swap consistency prompts. https://heliumtrades.com/benchmarks/
