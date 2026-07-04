@@ -219,6 +219,7 @@ streamlit run travel_agent.py
 *Agents that connect to external tools and data via Model Context Protocol.*
 
 *   [♾️ Browser MCP Agent](mcp_ai_agents/browser_mcp_agent/)
+*   [🔎 Free Web Search MCP Starter](mcp_ai_agents/parallel_search_mcp_agent/)
 *   [🐙 GitHub MCP Agent](mcp_ai_agents/github_mcp_agent/)
 *   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent)
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team)
