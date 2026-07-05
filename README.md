@@ -92,6 +92,7 @@ streamlit run travel_agent.py
 
 | Template | What it does | Stack |
 |---|---|---|
+| [🎸 Santana Autonomous AI Agent](always_on_agents/santana_agent/) | Always-on autonomous agent with persistent memory, web search, code execution, Telegram/Discord | Python + DeepSeek + SQLite |
 | [📰 Always-on Hacker News Briefing Agent](always_on_agents/always_on_hn_briefing_agent/) | Scheduled Hacker News scout that filters AI agent and LLM app signals into a delivery-ready daily brief | ADK + Agent Runtime |
 | [🛡️ Insurance Claim Live Agent Team](voice_ai_agents/insurance_claim_live_agent_team/) | Real-time voice claim intake with Gemini Live and ADK | Voice + ADK |
 | [🏠 Home Renovation Agent](advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent) | Photo → AI redesign with Nano Banana Pro | Vision + Multi-agent |
@@ -169,6 +170,7 @@ streamlit run travel_agent.py
 ### 🛰️ Always-on Agents
 *Background agents that run on schedules or events, monitor changing context, decide what needs attention, and proactively deliver updates, artifacts, or actions.*
 
+*   [🎸 Santana Autonomous AI Agent](always_on_agents/santana_agent/) — runs 24/7 on a $7/mo VM, <$10/mo inference, zero Docker/Redis/Postgres
 *   [📰 Always-on Hacker News Briefing Agent](always_on_agents/always_on_hn_briefing_agent/)
 
 ### 🤝 Multi-agent Teams
