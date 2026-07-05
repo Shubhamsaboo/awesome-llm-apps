@@ -230,7 +230,7 @@ streamlit run travel_agent.py
 *   [🔥 Agentic RAG with Embedding Gemma](rag_tutorials/agentic_rag_embedding_gemma)
 *   [🧐 Agentic RAG with Reasoning](rag_tutorials/agentic_rag_with_reasoning/)
 *   [📰 AI Blog Search (RAG)](rag_tutorials/ai_blog_search/)
-*   [📺 Bilibili RAG](https://github.com/via007/bilibili-rag) <sub>↗ external</sub>
+*   [📺 Bilibili RAG](rag_tutorials/bilibili_rag/)
 *   [🔍 Autonomous RAG](rag_tutorials/autonomous_rag/)
 *   [🔄 Contextual AI RAG Agent](rag_tutorials/contextualai_rag_agent/)
 *   [🔄 Corrective RAG (CRAG)](rag_tutorials/corrective_rag/)
