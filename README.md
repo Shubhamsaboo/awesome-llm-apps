@@ -34,6 +34,9 @@
 <p><strong>100+ AI Agent & RAG apps you can actually run — clone, customize, ship.</strong><br/>
 AI Agents · Multi-agent Teams · MCP Agents · RAG · Voice Agents · Agent Skills · Fine-tuning</p>
 
+- [flik2002/openclaw-monitor](https://github.com/flik2002/openclaw-monitor) ![GitHub Repo stars](https://img.shields.io/github/stars/flik2002/openclaw-monitor?style=social) - Free open-source monitoring dashboard for OpenClaw AI agents — token usage, session tracking, 7-day trends, multi-model support. Vue 3 + ECharts.
+
+
 <p>
 <strong>Free step-by-step tutorials on <a href="https://www.theunwindai.com">Unwind AI</a></strong><br/>
 <strong>Works with Claude · Gemini · OpenAI · xAI · Qwen · Llama</strong>
