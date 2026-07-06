@@ -51,7 +51,9 @@ if openai_api_key:
                     {"role": "user", "content": full_prompt}
                 ]
             )
-            
+
+            if not response.choices or response.choices[0].message.content is None:
+                raise ValueError("Received empty or null response from OpenAI API")
             answer = response.choices[0].message.content
 
             st.write("Answer: ", answer)
