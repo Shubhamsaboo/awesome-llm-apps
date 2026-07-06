@@ -222,6 +222,7 @@ streamlit run travel_agent.py
 *   [🐙 GitHub MCP Agent](mcp_ai_agents/github_mcp_agent/)
 *   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent)
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team)
+*   [🔎 Cited Web Research MCP Agent](mcp_ai_agents/cited_web_research_mcp_agent/)
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/)
 
 ### 📀 RAG (Retrieval Augmented Generation)
