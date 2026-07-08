@@ -1,6 +1,6 @@
 {
   "skill": "project-graveyard",
-  "purpose": "Trigger-behavior spec — the half of testing that needs an agent. If you change the SKILL.md description, install the skill in a fresh session, paste each prompt, and check activation matches should_trigger. The other half is executable: `python3 test_graveyard.py` (this directory) builds a synthetic graveyard and asserts every classifier, redaction, state, and relapse detection deterministically.",
+  "purpose": "Trigger-behavior spec, two consumers: (1) CI runs tools/run_trigger_evals.py against these cases lexically \u2014 positives must clear near-misses on description vocabulary alone; (2) after any description change, also verify by hand in a fresh agent session. Cases with lexical:false trigger via reasoning, not vocabulary, and are covered by the behavioral tier (evals.json).",
   "cases": [
     {
       "id": "direct-invocation",
@@ -24,7 +24,8 @@
       "id": "necromancer-mode",
       "prompt": "I want to build a newsletter analytics dashboard this weekend, can you scaffold it?",
       "should_trigger": true,
-      "assert": "Before scaffolding, checks the graveyard for prior attempts at the same idea; if found, mentions it once and lets the user choose; never blocks the new project."
+      "assert": "Before scaffolding, checks the graveyard for prior attempts at the same idea; if found, mentions it once and lets the user choose; never blocks the new project.",
+      "lexical": false
     },
     {
       "id": "near-miss-disk-cleanup",

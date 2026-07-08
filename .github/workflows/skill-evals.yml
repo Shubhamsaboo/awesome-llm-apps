@@ -65,3 +65,14 @@ jobs:
           python-version: "3.11"
       - name: Scan all skills for supply-chain and injection patterns
         run: python3 awesome_agent_skills/evals/tools/skill_scanner.py awesome_agent_skills
+
+  trigger-routing:
+    name: trigger & routing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Positives must clear near-misses on description vocabulary
+        run: python3 awesome_agent_skills/evals/tools/run_trigger_evals.py

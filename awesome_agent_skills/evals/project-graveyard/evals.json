@@ -1,0 +1,48 @@
+{
+  "skill_name": "project-graveyard",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "run the graveyard on my machine, my projects are in ~/dev and ~/hacks",
+      "expected_output": "A tombstone report over ~/dev and ~/hacks with census, causes of death, patterns, and exactly one resurrection pick.",
+      "expectations": [
+        "The skill ran scripts/graveyard.py with the user-provided roots and no others",
+        "The report includes a census, per-corpse causes with evidence, and a patterns section",
+        "Exactly one project is proposed for resurrection, with a plan of at most 7 steps ending at shipped",
+        "The agent offered to start step 1 in the current session"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I have like 30 half-finished side projects and it's honestly depressing. why do I never finish anything?",
+      "expected_output": "A scan followed by a patterns-led answer (death timing, shiny-object chains), empathetic but evidence-based, with one resurrection offer.",
+      "expectations": [
+        "The agent asked where projects live (or confirmed roots) before scanning broadly",
+        "The answer leads with measured patterns, not generic productivity advice",
+        "No shaming language; epitaphs punch at the pattern, not the person",
+        "One resurrection candidate offered, not a list"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "of all my old abandoned repos, which one is actually worth finishing?",
+      "expected_output": "Pulse-ranked recommendation of a single project, justified by evidence and a world-check.",
+      "expectations": [
+        "The skill used the pulse ranking from the scanner rather than guessing",
+        "The agent read the top candidate's README/code before recommending",
+        "The recommendation cites what got easier since the project died (world-check)",
+        "Exactly one project is recommended"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "I want to build a newsletter analytics dashboard this weekend, can you scaffold it?",
+      "expected_output": "Before scaffolding, the agent checks the graveyard for a prior attempt at the same idea and mentions it once if found; never blocks the new project.",
+      "expectations": [
+        "The graveyard (state file or fresh scan) was consulted before any scaffolding",
+        "If a prior attempt exists, it is mentioned exactly once with its state and a resurrect-or-restart choice",
+        "The user's new project is not blocked or argued against"
+      ]
+    }
+  ]
+}

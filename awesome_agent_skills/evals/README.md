@@ -5,32 +5,36 @@ every change after. Layout: one folder per skill, `evals/<skill-name>/`,
 mirroring the skill's name. These files never ship in an install; the skill
 folders contain only what runs at runtime.
 
-Two tiers (vocabulary borrowed from
-[addyosmani/agent-skills](https://github.com/addyosmani/agent-skills/tree/main/evals),
-which formalized the pattern):
+The tier model follows
+[addyosmani/agent-skills](https://github.com/addyosmani/agent-skills/tree/main/evals)
+— same names, same jobs — plus two tiers of our own, because skills here ship
+executable code and his don't:
 
 | Tier | What it checks | Runs | Cost |
 |---|---|---|---|
-| 0. Structural | Every SKILL.md obeys the spec: frontmatter rules, name==dir, no unfilled placeholders, no text-only prompt dumps (`tools/skill_lint.py --strict`) | CI on every PR | Free, ~1s |
-| 0b. Security | No install lures, undeclared network calls, credential access, or obfuscated payloads in any skill (`tools/skill_scanner.py`) | CI on every PR | Free, ~1s |
-| 1. Deterministic | The skill's scripts do what they claim — every classifier, edge case, and output shape, asserted against synthetic fixtures | CI on every PR, and by hand before installing | Free, ~10s |
-| 2. Trigger | The skill activates on the prompts it should and stays quiet on near-misses | By hand, in an agent session (needs a model) | Tokens |
-
-The tier 0 tools live in [`tools/`](tools/) — repo-side quality tooling, not
-installable skills.
+| 1. Structural | Frontmatter, naming, name==dir, unfilled placeholders, text-only prompt dumps (`tools/skill_lint.py --strict`) | CI | Free |
+| 1b. Security *(ours)* | Install lures, undeclared network calls, credential access, obfuscated payloads (`tools/skill_scanner.py`) | CI | Free |
+| 2. Trigger & routing | Positive prompts clear near-miss negatives on description vocabulary; with 2+ skills, positives rank their own skill first and no two descriptions near-collide (`tools/run_trigger_evals.py`) | CI | Free |
+| 2b. Deterministic scripts *(ours)* | The skill's bundled scripts do what they claim — every classifier, edge case, and output shape against synthetic fixtures (`<skill>/test_*.py`) | CI | Free, ~10s |
+| 3. Behavioral | An agent following the skill satisfies its `expectations[]` — `evals.json` uses [skill-creator's schema](https://github.com/anthropics/skills/tree/main/skills/skill-creator) verbatim, so its `run_eval.py`, benchmarking, and eval viewer work against our files unmodified | On demand | Tokens |
 
 ## Running
 
 ```bash
-# Tier 1 — deterministic, no dependencies beyond git + Python
+# Tiers 1–2b, exactly what CI runs — deterministic, git + Python only
+python3 awesome_agent_skills/evals/tools/skill_lint.py awesome_agent_skills/project-graveyard --strict
+python3 awesome_agent_skills/evals/tools/skill_scanner.py awesome_agent_skills
+python3 awesome_agent_skills/evals/tools/run_trigger_evals.py
 python3 awesome_agent_skills/evals/project-graveyard/test_graveyard.py
 ```
 
-Tier 2 is a manual protocol for now: each skill's `trigger-cases.json` lists
-the prompts that must activate it (and the near-misses that must not). Install
-the skill in a fresh agent session, paste each prompt, check activation
-matches `should_trigger`. Re-run whenever a skill's `description` changes —
-that field is the entire trigger surface.
+Tier 3 is on demand and spends tokens: each skill's `evals.json` is in
+skill-creator's schema, so run it with Anthropic's own tooling (install the
+skill-creator plugin and point `run_eval.py` at the file), or by hand — fresh
+agent session, paste each prompt, grade against `expectations[]`. Cases marked
+`lexical: false` in `trigger-cases.json` (reasoning-triggered, e.g. necromancer
+mode) are only covered here. Re-run tier 3 whenever `SKILL.md` behavior
+changes; re-run tier 2 whenever a `description` changes.
 
 ## Track record
 
