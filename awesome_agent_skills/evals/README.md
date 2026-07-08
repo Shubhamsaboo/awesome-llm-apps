@@ -11,8 +11,13 @@ which formalized the pattern):
 
 | Tier | What it checks | Runs | Cost |
 |---|---|---|---|
+| 0. Structural | Every SKILL.md obeys the spec: frontmatter rules, name==dir, no unfilled placeholders, no text-only prompt dumps (`tools/skill_lint.py --strict`) | CI on every PR | Free, ~1s |
+| 0b. Security | No install lures, undeclared network calls, credential access, or obfuscated payloads in any skill (`tools/skill_scanner.py`) | CI on every PR | Free, ~1s |
 | 1. Deterministic | The skill's scripts do what they claim — every classifier, edge case, and output shape, asserted against synthetic fixtures | CI on every PR, and by hand before installing | Free, ~10s |
 | 2. Trigger | The skill activates on the prompts it should and stays quiet on near-misses | By hand, in an agent session (needs a model) | Tokens |
+
+The tier 0 tools live in [`tools/`](tools/) — repo-side quality tooling, not
+installable skills.
 
 ## Running
 
