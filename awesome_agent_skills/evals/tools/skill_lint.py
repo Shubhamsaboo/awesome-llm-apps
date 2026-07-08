@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""skill_lint.py — validate an agent skill directory against the agentskills.io spec.
+"""
+[vendored] Repo-side CI copy. Origin: the skill-builder skill (revamp branch).
+If a skill-builder skill ever ships on main, make that the single source of truth.
+skill_lint.py — validate an agent skill directory against the agentskills.io spec.
 
 Usage:
     python3 skill_lint.py <skill-dir> [--strict] [--json]
@@ -338,7 +341,7 @@ def lint(skill_dir, strict=False):
     bundled = [d for d in RESOURCE_DIRS
                if os.path.isdir(os.path.join(skill_dir, d))]
     if not bundled:
-        warnings.append(
+        (errors if strict else warnings).append(
             "text-only skill: no bundled resources (looked for %s) — "
             "production-grade skills ship executable tools or on-demand "
             "references (the awesome-llm-apps quality bar); if all value "

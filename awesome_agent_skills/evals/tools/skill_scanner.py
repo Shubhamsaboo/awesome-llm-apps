@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""skill_scanner.py — static security scanner for agent skills.
+"""
+[vendored] Repo-side CI copy. Origin: the agent-security-auditor skill (revamp
+branch). If that skill ever ships on main, make it the single source of truth.
+skill_scanner.py — static security scanner for agent skills.
 
 Scans one skill directory (or a tree of them) for the attack patterns seen in
 real skill supply-chain campaigns (ClawHavoc, Jan 2026) and mapped to the
