@@ -1,0 +1,34 @@
+name: skill-evals
+
+on:
+  pull_request:
+    paths:
+      - "awesome_agent_skills/**"
+  push:
+    branches: [main]
+    paths:
+      - "awesome_agent_skills/**"
+
+jobs:
+  deterministic-tier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Configure git identity for fixture repos
+        run: |
+          git config --global user.email "ci@example.com"
+          git config --global user.name "ci"
+      - name: Run every skill's deterministic eval
+        run: |
+          set -e
+          found=0
+          for t in awesome_agent_skills/evals/*/test_*.py; do
+            [ -e "$t" ] || continue
+            found=1
+            echo "== $t"
+            python3 "$t"
+          done
+          [ "$found" = "1" ] || { echo "no evals found"; exit 1; }

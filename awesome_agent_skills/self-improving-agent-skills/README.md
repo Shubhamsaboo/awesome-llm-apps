@@ -46,7 +46,6 @@ self-improving-agent-skills/
 │   │   └── components/     # Upload, Config, Running, Results steps
 │   ├── package.json
 │   └── *.config.ts
-├── example_skills/         # Sample skills to test
 │   ├── code-reviewer/
 │   └── content-writer/
 └── README.md
@@ -134,21 +133,18 @@ metadata:
 Your skill instructions here...
 ```
 
-## Example Skills
+## Trying it
 
-Two example skills are included:
-
-- **code-reviewer**: Reviews code for security, performance, and best practices
-- **content-writer**: Writes marketing copy following style guidelines
-
-Create a zip file from an example:
+Zip any skill folder and upload it — for instance this repo's own
+[project-graveyard](../project-graveyard/):
 
 ```bash
-cd example_skills
-zip -r code-reviewer.zip code-reviewer/
+cd awesome_agent_skills
+zip -r project-graveyard.zip project-graveyard/
 ```
 
-Then upload the zip in the app.
+The app's "examples" picker also lists sibling skills from this repo
+automatically — real skills, not toys.
 
 ## How the Multi-Agent Optimization Works
 
