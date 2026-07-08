@@ -92,6 +92,7 @@ streamlit run travel_agent.py
 
 | Template | What it does | Stack |
 |---|---|---|
+| [⚰️ Project Graveyard Skill](awesome_agent_skills/project-graveyard/) | Finds your dead side projects, autopsies why each died from its git history, and resurrects the one with a pulse | Agent Skill + Git Forensics |
 | [📰 Always-on Hacker News Briefing Agent](always_on_agents/always_on_hn_briefing_agent/) | Scheduled Hacker News scout that filters AI agent and LLM app signals into a delivery-ready daily brief | ADK + Agent Runtime |
 | [🛡️ Insurance Claim Live Agent Team](voice_ai_agents/insurance_claim_live_agent_team/) | Real-time voice claim intake with Gemini Live and ADK | Voice + ADK |
 | [🏠 Home Renovation Agent](advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent) | Photo → AI redesign with Nano Banana Pro | Vision + Multi-agent |
@@ -249,36 +250,10 @@ streamlit run travel_agent.py
 *   [🕸️ Knowledge Graph RAG with Citations](rag_tutorials/knowledge_graph_rag_citations/)
 
 ### 🧩 Awesome Agent Skills
-*Ready-to-use agent skill files you can plug into any AI agent or LLM workflow.*
+*Production-grade skills for Claude Code, Codex, Cursor, OpenClaw, Hermes, Antigravity, and any SKILL.md-compatible agent — real scripts and researched playbooks, never text-only prompt dumps. [Read the quality bar →](awesome_agent_skills/)*
 
+*   [⚰️ Project Graveyard](awesome_agent_skills/project-graveyard/) - Scans your machine for dead side projects, autopsies why each one died from its git history, and resurrects the one with a pulse
 *   [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
-
-<details>
-<summary><strong>📋 Browse all 19 skills</strong></summary>
-
-| Skill | Description |
-|---|---|
-| [🎓 Academic Researcher](awesome_agent_skills/academic-researcher/) | Literature reviews, paper analysis, citation management |
-| [🔍 Code Reviewer](awesome_agent_skills/code-reviewer/) | Automated code review with best-practice checks |
-| [✍️ Content Creator](awesome_agent_skills/content-creator/) | Blog posts, social media, marketing copy |
-| [📊 Data Analyst](awesome_agent_skills/data-analyst/) | Data exploration, statistical analysis, insights |
-| [🐛 Debugger](awesome_agent_skills/debugger/) | Systematic bug hunting and root-cause analysis |
-| [🤔 Decision Helper](awesome_agent_skills/decision-helper/) | Structured decision frameworks and trade-off analysis |
-| [🔬 Deep Research](awesome_agent_skills/deep-research/) | Multi-source research with synthesis |
-| [📝 Editor](awesome_agent_skills/editor/) | Proofreading, style, and clarity improvements |
-| [📧 Email Drafter](awesome_agent_skills/email-drafter/) | Professional email composition |
-| [✅ Fact Checker](awesome_agent_skills/fact-checker/) | Claim verification and source validation |
-| [💻 Fullstack Developer](awesome_agent_skills/fullstack-developer/) | End-to-end web app development |
-| [📋 Meeting Notes](awesome_agent_skills/meeting-notes/) | Meeting summaries, action items, follow-ups |
-| [📅 Project Planner](awesome_agent_skills/project-planner/) | Roadmaps, milestones, resource planning |
-| [🐍 Python Expert](awesome_agent_skills/python-expert/) | Pythonic code, packaging, performance |
-| [🏃 Sprint Planner](awesome_agent_skills/sprint-planner/) | Agile sprint planning and backlog grooming |
-| [🧭 Strategy Advisor](awesome_agent_skills/strategy-advisor/) | Business strategy and competitive analysis |
-| [📖 Technical Writer](awesome_agent_skills/technical-writer/) | Documentation, API docs, guides |
-| [🎨 UX Designer](awesome_agent_skills/ux-designer/) | UI/UX design feedback and wireframes |
-| [📈 Visualization Expert](awesome_agent_skills/visualization-expert/) | Charts, dashboards, data storytelling |
-
-</details>
 
 ### 💾 LLM Apps with Memory Tutorials
 *Agents and chatbots that remember conversations and user state across sessions.*

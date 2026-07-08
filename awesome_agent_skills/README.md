@@ -1,152 +1,54 @@
-# Awesome Agent Skills
+# 🧩 Awesome Agent Skills
 
-A curated collection of skills for AI agents following the [Agent Skills](https://agentskills.io) format.
+**Drop-in skills for Claude Code, Codex, Cursor, OpenClaw, Hermes, Antigravity, and any [SKILL.md](https://agentskills.io)-compatible agent.**
 
-## What Are Agent Skills?
+A skill is a folder with a `SKILL.md` file — plus scripts and references — that your agent discovers and loads on demand. One skill works across 20+ agent clients. No server, no plugin API, no SDK.
 
-Agent Skills are packaged instructions and scripts that extend agent capabilities. They follow the [Agent Skills specification](https://agentskills.io/specification) - a simple, open format for giving agents new capabilities and expertise.
+## The bar
 
-Each skill contains:
-- **SKILL.md** - Instructions for the agent
-- **scripts/** - Helper scripts for automation (optional)
-- **references/** - Supporting documentation (optional)
+Most "skills" on registries are text-only prompt dumps — advice the model already knows, wrapped in frontmatter. Skills here have to earn their place:
 
-## Available Skills
+- **Real scripts** — deterministic work runs as code, not as token generation
+- **Researched references** — deep content loads on demand, with sources
+- **Evidence over vibes** — every claim a skill makes must be checkable
+- **Local and private by default** — no network calls unless declared, nothing leaves your machine
+- **Tested before shipped** — on real inputs, not just happy-path fixtures
 
-### 🖥️ Coding
+We deleted 19 of our own skills that didn't meet this bar. What's left is short on purpose.
 
-| Skill | Description |
-|-------|-------------|
-| [python-expert](python-expert/) | Senior Python developer with focus on clean, maintainable code |
-| [code-reviewer](code-reviewer/) | Thorough code review with security and performance focus |
-| [debugger](debugger/) | Systematic debugging and root cause analysis |
-| [fullstack-developer](fullstack-developer/) | Modern web development (React, Node.js, databases) |
+## Skills
 
-### 🔍 Research
+| Skill | What it does |
+|---|---|
+| [⚰️ project-graveyard](project-graveyard/) | Scans your machine for dead side projects, autopsies why each one died from its git history (deploy fear, payments wall, killed by a newer project), shows your personal death patterns, and resurrects the one with a pulse — with relapse tracking on every resurrection it prescribes |
+| [♾️ self-improving-agent-skills](self-improving-agent-skills/) | Automatically optimizes agent skills using Gemini and ADK |
 
-| Skill | Description |
-|-------|-------------|
-| [deep-research](deep-research/) | Multi-source research with citations and synthesis |
-| [fact-checker](fact-checker/) | Verify claims and identify misinformation |
-| [academic-researcher](academic-researcher/) | Literature review and academic writing |
+More coming, released one at a time.
 
-### ✍️ Writing
+## ⚡ Install
 
-| Skill | Description |
-|-------|-------------|
-| [technical-writer](technical-writer/) | Clear documentation and technical content |
-| [content-creator](content-creator/) | Engaging blog posts and social media content |
-| [editor](editor/) | Professional editing and proofreading |
-
-### 📋 Planning
-
-| Skill | Description |
-|-------|-------------|
-| [project-planner](project-planner/) | Break down projects into actionable tasks |
-| [sprint-planner](sprint-planner/) | Agile sprint planning and estimation |
-| [strategy-advisor](strategy-advisor/) | High-level strategic thinking and business decisions |
-
-### 📊 Data Analysis
-
-| Skill | Description |
-|-------|-------------|
-| [data-analyst](data-analyst/) | SQL, pandas, and statistical analysis |
-| [visualization-expert](visualization-expert/) | Chart selection and data visualization |
-
-### ⚡ Productivity
-
-| Skill | Description |
-|-------|-------------|
-| [email-drafter](email-drafter/) | Professional email composition |
-| [meeting-notes](meeting-notes/) | Structured meeting summaries with action items |
-| [decision-helper](decision-helper/) | Structured decision-making frameworks |
-
-## Installation
-
-### Using npx (Recommended)
+One command, any agent — the [skills CLI](https://skills.sh) detects what you have installed (Claude Code, Codex, Cursor, Copilot, Antigravity, OpenClaw, Hermes — 70+ agents) and puts the skill in the right place:
 
 ```bash
-npx skills add shubhamsaboo/awesome-agent-skills
+npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/awesome_agent_skills/<skill>
 ```
 
-### Manual Installation
+Prefer manual? Clone the repo and copy the skill folder into your agent's skills dir:
 
-Clone or download individual skill directories and reference them in your agent's configuration.
+| Agent | Skills dir |
+|---|---|
+| Claude Code | `~/.claude/skills/` |
+| Codex | `~/.codex/skills/` |
+| Cursor | `~/.cursor/skills/` |
+| GitHub Copilot / VS Code | `~/.copilot/skills/` |
+| Antigravity CLI | `.agents/skills/` in your project |
+| OpenClaw | `~/.openclaw/skills/` |
+| Hermes | `~/.hermes/skills/` (also reads `~/.agents/skills/`) |
 
-## Usage
+Team install: put the skill in `.agents/skills/` inside your repo — it's the shared project-level dir most 2026 agents read (Codex, Cursor, Copilot, Antigravity; Claude Code uses `.claude/skills/`).
 
-Skills are automatically available once installed. Agents use them when relevant tasks are detected based on the skill's description and triggers.
+## Before you install any skill — including ours
 
-### Examples
+Skills run with your agent's permissions: your shell, your files, your credentials. Treat them like software, not documents. Read the `SKILL.md` and every script before installing, from us or anyone. Skills here declare any network use up front and ship no install-time execution — nothing asks your agent to `curl | bash` anything, ever.
 
-When you ask your agent:
-- **"Review this React component for performance"** → Triggers `code-reviewer` skill
-- **"Research the benefits of intermittent fasting"** → Triggers `deep-research` skill  
-- **"Help me debug this Python function"** → Triggers `debugger` skill
-- **"Draft an email to decline a meeting"** → Triggers `email-drafter` skill
-
-### Integration with Agent Products
-
-Agent Skills work with any skills-compatible agent product. Examples:
-
-- **Claude Desktop / claude.ai** - Upload SKILL.md files to project knowledge
-- **Cursor / VSCode** - Reference skills in `.cursorrules` or custom instructions
-- **Custom agents** - Load SKILL.md content as system prompts or agent instructions
-- **AI frameworks** - Use with LangChain, AutoGen, or custom agent frameworks
-
-## Skill Structure
-
-Each skill follows the [Agent Skills specification](https://agentskills.io/specification):
-
-```
-skill-name/
-├── SKILL.md          # Required: Instructions for the agent
-├── scripts/          # Optional: Helper scripts
-├── references/       # Optional: Supporting documentation
-└── assets/          # Optional: Images, templates, etc.
-```
-
-### SKILL.md Format
-
-```yaml
----
-name: skill-name
-description: |
-  What the skill does and when to use it.
-  Include triggers like "use when debugging" or "when user mentions code review".
-license: MIT
-metadata:
-  author: awesome-llm-apps
-  version: "1.0.0"
----
-
-# Skill Name
-
-Instructions for the agent to follow...
-```
-
-## Creating Your Own Skills
-
-1. Create a new directory with your skill name (lowercase, hyphens only)
-2. Add a `SKILL.md` file with YAML frontmatter
-3. Write clear, actionable instructions for the agent
-4. (Optional) Add supporting scripts or reference materials
-
-See the [Agent Skills specification](https://agentskills.io/specification) for complete details.
-
-## Contributing
-
-We welcome contributions! To add a new skill:
-
-1. Fork the repository
-2. Create a new skill directory following the specification
-3. Ensure SKILL.md has proper YAML frontmatter
-4. Include clear instructions and examples
-5. Submit a pull request
-
-## Resources
-
-- [Agent Skills Specification](https://agentskills.io/specification)
-- [Agent Skills Documentation](https://agentskills.io)
-- [Vercel Agent Skills](https://github.com/vercel-labs/agent-skills) - Official examples
-- [Anthropic Skills](https://github.com/anthropics/skills) - More examples
+Every skill also has an executable eval in [`evals/`](evals/) — run it from the clone before installing, and note what you *don't* copy: the skill folder contains only what runs at runtime.

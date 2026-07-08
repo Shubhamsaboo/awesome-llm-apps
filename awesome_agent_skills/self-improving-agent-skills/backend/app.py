@@ -445,7 +445,9 @@ async def cleanup_temp_dir(temp_dir: str):
 @app.get("/api/examples")
 async def list_examples():
     """List available example skills"""
-    examples_dir = os.path.join(os.path.dirname(__file__), "..", "example_skills")
+    # Sibling skills in this repo double as examples — the app demos on real
+    # skills (e.g. project-graveyard), not on toy prompt files.
+    examples_dir = os.path.join(os.path.dirname(__file__), "..", "..")
     examples = []
     if os.path.exists(examples_dir):
         for name in sorted(os.listdir(examples_dir)):
@@ -464,7 +466,7 @@ async def load_example(example_name: str):
     """Load an example skill as if it were uploaded"""
     if not re.fullmatch(r"[a-zA-Z0-9_-]+", example_name):
         raise HTTPException(status_code=400, detail="Invalid example name")
-    examples_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "example_skills"))
+    examples_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", ".."))
     skill_dir = os.path.realpath(os.path.join(examples_dir, example_name))
     if not skill_dir.startswith(examples_dir + os.sep):
         raise HTTPException(status_code=400, detail="Invalid example name")
