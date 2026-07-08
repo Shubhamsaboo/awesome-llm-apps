@@ -10,7 +10,8 @@ on:
       - "awesome_agent_skills/**"
 
 jobs:
-  deterministic-tier:
+  evals:
+    name: deterministic evals
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,3 +33,46 @@ jobs:
             python3 "$t"
           done
           [ "$found" = "1" ] || { echo "no evals found"; exit 1; }
+
+  lint:
+    name: skill lint (strict)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Lint every skill against the SKILL.md spec
+        run: |
+          set -e
+          found=0
+          for s in awesome_agent_skills/*/SKILL.md; do
+            [ -e "$s" ] || continue
+            found=1
+            d=$(dirname "$s")
+            echo "== $d"
+            python3 awesome_agent_skills/evals/tools/skill_lint.py "$d" --strict
+          done
+          [ "$found" = "1" ] || { echo "no skills found"; exit 1; }
+
+  security-scan:
+    name: security scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Scan all skills for supply-chain and injection patterns
+        run: python3 awesome_agent_skills/evals/tools/skill_scanner.py awesome_agent_skills
+
+  trigger-routing:
+    name: trigger & routing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Positives must clear near-misses on description vocabulary
+        run: python3 awesome_agent_skills/evals/tools/run_trigger_evals.py
