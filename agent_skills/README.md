@@ -2,7 +2,7 @@
 
 **Drop-in skills for Claude Code, Codex, Cursor, OpenClaw, Hermes, Antigravity, and any [SKILL.md](https://agentskills.io)-compatible agent.**
 
-A skill is a folder with a `SKILL.md` file — plus scripts and references — that your agent discovers and loads on demand. One skill works across Claude Code, Codex, Cursor, and other coding agents. No server, no plugin API, no SDK.
+A skill is a folder with a `SKILL.md` file — plus scripts and references — that your agent discovers and loads on demand. One skill works across Claude Code, Codex, Cursor, and other coding agents.
 
 ## The bar
 
@@ -13,8 +13,6 @@ Most "skills" on registries are text-only prompt dumps — advice the model alre
 - **Evidence over vibes** — every claim a skill makes must be checkable
 - **Local and private by default** — no network calls unless declared, nothing leaves your machine
 - **Tested before shipped** — on real inputs, not just happy-path fixtures
-
-We deleted 19 of our own skills that didn't meet this bar. What's left is short on purpose.
 
 ## Skills
 
