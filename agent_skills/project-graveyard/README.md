@@ -97,7 +97,7 @@ Then it ranks the dead by **pulse** — how close each one is to actually shippi
 
 ## Install (10 seconds)
 
-One command — the [skills CLI](https://skills.sh) installs it into whatever agents you have (Claude Code, Codex, Cursor, Copilot, Antigravity, OpenClaw, Hermes — 70+):
+One command — the [skills CLI](https://skills.sh) installs it into whatever agents you have (Claude Code, Codex, Cursor, Copilot, Antigravity, OpenClaw, Hermes, and other coding agents):
 
 ```bash
 npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/project-graveyard
