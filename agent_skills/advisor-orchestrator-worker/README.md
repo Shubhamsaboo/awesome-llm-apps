@@ -1,4 +1,4 @@
-# 🧠 Advisor Executor Worker
+# 🧠 Advisor Orchestrator Worker
 
 **One model is a bottleneck. A team with one brain, twenty hands, and a board advisor is not.**
 
@@ -10,7 +10,7 @@ This skill turns your coding agent into the orchestrator of a three-tier model t
 
 | Role | Default model <sub>(July 2026 — swap freely)</sub> | What it does | What it never does |
 |---|---|---|---|
-| **Executor** | GPT-5.5 | Frames success criteria, plans waves, dispatches briefs, verifies every result, synthesizes the deliverable | Worker-level grunt work |
+| **Orchestrator** | GPT-5.5 | Frames success criteria, plans waves, dispatches briefs, verifies every result, synthesizes the deliverable | Worker-level grunt work |
 | **Workers** | Gemini 3.5 Flash | One self-contained subtask each, in parallel, stateless — each sees only its brief | Talk to each other, expand scope, get a second chance on the same call |
 | **Advisor** | Claude Fable 5 | Plan review before any dispatch, taste pass before delivery, called mid-run only at commitment boundaries | Execute anything |
 
@@ -27,7 +27,7 @@ Multi-model loops usually die from context leaks, silent partial failures, or ju
 ## Install
 
 ```bash
-npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/advisor-executor-worker
+npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/advisor-orchestrator-worker
 ```
 
 Or copy this folder into your agent's skills dir (`~/.claude/skills/`, `~/.codex/skills/`, `~/.agents/skills/`).
@@ -45,7 +45,7 @@ Every run ends with the deliverable, the plan, a per-subtask verification ledger
 ## Files
 
 ```
-advisor-executor-worker/
+advisor-orchestrator-worker/
 ├── SKILL.md                          # the loop, the team, budgets, escalation rules
 ├── README.md                         # this file
 ├── architecture.jpeg                 # the diagram above
@@ -53,6 +53,6 @@ advisor-executor-worker/
 └── references/advisor-consult.md     # the consult format the advisor answers in
 ```
 
-Evals live repo-side in `agent_skills/evals/advisor-executor-worker/` — you install only what runs.
+Evals live repo-side in `agent_skills/evals/advisor-orchestrator-worker/` — you install only what runs.
 
 Part of [awesome-llm-apps](https://github.com/Shubhamsaboo/awesome-llm-apps) · Apache-2.0 · Last verified: July 2026

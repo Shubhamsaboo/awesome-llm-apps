@@ -1,5 +1,5 @@
 {
-  "skill": "advisor-executor-worker",
+  "skill": "advisor-orchestrator-worker",
   "purpose": "Trigger-behavior spec, two consumers: (1) CI runs tools/run_trigger_evals.py against these cases lexically; (2) after any description change, verify by hand in a fresh agent session. Cases with lexical:false trigger via reasoning, not vocabulary, and are covered by the behavioral tier (evals.json).",
   "cases": [
     {

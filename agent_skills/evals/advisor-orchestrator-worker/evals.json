@@ -1,5 +1,5 @@
 {
-  "skill_name": "advisor-executor-worker",
+  "skill_name": "advisor-orchestrator-worker",
   "evals": [
     {
       "id": 1,

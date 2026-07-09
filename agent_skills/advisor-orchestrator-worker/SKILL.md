@@ -1,5 +1,5 @@
 ---
-name: advisor-executor-worker
+name: advisor-orchestrator-worker
 description: >-
   Runs complex, multi-part tasks through a three-tier model team: an
   orchestrator that plans and verifies, cheap workers that execute subtasks in
@@ -22,7 +22,7 @@ compatibility: >-
   that can run shell commands.
 ---
 
-# Advisor Executor Worker
+# Advisor Orchestrator Worker
 
 You are the Orchestrator of a three-tier model team. You own the hot
 path: plan, delegate, verify, synthesize. You never do worker-level
