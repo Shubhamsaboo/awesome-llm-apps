@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Claude Limits</string>
+    <string name="widget_description">Показывает лимиты Claude на сессию и неделю</string>
+
+    <string name="tab_home">Home</string>
+    <string name="tab_settings">Settings</string>
+
+    <string name="session_5h">Session · 5h</string>
+    <string name="weekly_7d">Weekly · 7d</string>
+    <string name="weekly_opus">Weekly · Opus</string>
+    <string name="weekly_sonnet">Weekly · Sonnet</string>
+    <string name="extra_usage">Extra usage</string>
+
+    <string name="reset_in">Reset in %s</string>
+    <string name="refresh">Refresh</string>
+    <string name="last_updated">Updated %s</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="paste_credentials">Paste ~/.claude/.credentials.json contents</string>
+    <string name="paste_credentials_hint">Or just the accessToken value</string>
+    <string name="save">Save</string>
+    <string name="clear">Clear</string>
+    <string name="refresh_interval">Auto-refresh interval</string>
+    <string name="token_status_ok">Token loaded</string>
+    <string name="token_status_missing">No token — open Settings</string>
+    <string name="token_status_expired">Token expired — refresh on desktop and re-paste</string>
+
+    <string name="error_generic">Error: %s</string>
+    <string name="error_unauthorized">Token rejected. Refresh Claude Code login and re-paste credentials.</string>
+    <string name="error_no_token">No credentials configured</string>
+    <string name="error_no_network">No network</string>
+
+    <string name="widget_no_token">Add token in app</string>
+    <string name="widget_error">Update failed — tap to open</string>
+
+    <string name="tos_warning_title">Legal notice</string>
+    <string name="tos_warning">Anthropic\'s Consumer ToS restricts OAuth tokens from Pro/Max plans to Claude Code and claude.ai only. This app reads your own usage data from an undocumented endpoint. Use at your own risk.</string>
+    <string name="acknowledge">I understand</string>
+</resources>

@@ -1,0 +1,19 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Gradle wrapper — regenerated on first Android Studio import
+/gradle/wrapper/gradle-wrapper.jar
+/gradlew
+/gradlew.bat
+
+# Build outputs
+app/build
+app/release
