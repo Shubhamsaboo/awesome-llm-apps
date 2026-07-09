@@ -2,20 +2,47 @@
 
 **One model is a bottleneck. A team with one brain, twenty hands, and a board advisor is not.**
 
-This skill turns your coding agent into the orchestrator of a three-tier model team:
+This skill turns your coding agent into the orchestrator of a three-tier model team. Big tasks get split into self-contained briefs, blasted across cheap parallel workers, verified one by one, and judged by a stronger model exactly twice — before the work starts and before it ships.
 
-- **Workers** — the cheapest model that passes verification, dispatched as stateless parallel API calls. Each one sees a single self-contained brief and nothing else.
-- **Orchestrator** — your agent. Owns the hot path: frame, plan, delegate, verify, synthesize. Never does worker-level work itself.
-- **Advisor** — the strongest reasoning model you can reach, consulted exactly where judgment matters: plan review before dispatch, taste pass before delivery, and mid-loop only at commitment boundaries (contradicting results, double failures, structural plan changes).
+<!-- Drop your architecture image at ./architecture.png and uncomment:
+![Architecture](architecture.png)
+-->
 
-The economics are the point: parallel cheap generation where volume wins, expensive judgment only where it changes a decision. Budgeted — 20 worker calls, 5 consults — so a run can't quietly burn a hole in your API bill.
+```
+                        you
+                         |
+                         v
+                 +---------------+
+                 |   EXECUTOR    |
+                 | plan-dispatch |
+                 | verify-merge  |
+                 +---+-------+---+
+          briefs     |       |     consults
+       (many, cheap) |       |  (rare, budgeted)
+                     v       v
+        +----------------+  +----------------+
+        |  WORKERS  xN   |  |    ADVISOR     |
+        | parallel, fast |  | judgment only  |
+        +----------------+  +----------------+
+```
 
-## What makes it hold together
+## The team
 
-- **Stateless worker briefs** ([references/worker-brief.md](references/worker-brief.md)) — every dispatch carries its full inputs and acceptance criteria inline. No shared context, no context leaks, no "as discussed above."
-- **Verification before synthesis** — every result is judged against its own acceptance criteria: PASS, FIX (redispatched with the named failure), or ESCALATE. Partial passes are never silently accepted.
-- **The advisor is a critic, not an executor** ([references/advisor-consult.md](references/advisor-consult.md)) — it returns a verdict, ranked risks, and concrete fixes in under 300 words. Every note gets applied or explicitly rebutted, never dropped.
-- **Models are knobs** — the defaults (Gemini Flash workers, Claude advisor, Codex orchestrator) were current in July 2026; the tier pattern is the durable part. Swap any role.
+| Role | Default model <sub>(July 2026 — swap freely)</sub> | What it does | What it never does |
+|---|---|---|---|
+| **Executor** (your agent) | GPT-5.5 in Codex CLI | Frames success criteria, plans waves, dispatches briefs, verifies every result, synthesizes the deliverable | Worker-level grunt work |
+| **Workers** | Gemini Flash, bare API calls | One self-contained subtask each, in parallel, stateless — each sees only its brief | Talk to each other, expand scope, get a second chance on the same call |
+| **Advisor** | Claude Fable 5 via `claude -p` | Plan review before any dispatch, taste pass before delivery, called mid-run only at commitment boundaries | Execute anything |
+
+The economics are the point: cheap parallel generation where volume wins, expensive judgment only where it changes a decision. Budgeted — **20 worker calls, 5 consults** — so a run can't quietly burn a hole in your API bill. Models are knobs: the tier pattern is the durable part, the defaults were current in July 2026.
+
+## Why it doesn't fall apart
+
+Multi-model loops usually die from context leaks, silent partial failures, or judgment applied too late. Each has a rule here:
+
+- **Stateless briefs** ([references/worker-brief.md](references/worker-brief.md)) — every dispatch carries its full inputs and acceptance criteria inline. No shared context, no "as discussed above." Briefs travel as temp files with jq-built payloads, never interpolated into shell strings.
+- **Verify before merge** — every result is judged against its own acceptance criteria: PASS, FIX (redispatched with the named failure), or ESCALATE. No silent partial passes, no hand-patching.
+- **The advisor is a critic, not an executor** ([references/advisor-consult.md](references/advisor-consult.md)) — verdict, ranked risks, concrete fixes, under 300 words. Every note gets applied or explicitly rebutted.
 
 ## Install
 
@@ -23,9 +50,9 @@ The economics are the point: parallel cheap generation where volume wins, expens
 npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/awesome_agent_skills/advisor-executor-worker
 ```
 
-Or manually: copy this folder into your agent's skills dir (`~/.claude/skills/`, `~/.codex/skills/`, `~/.agents/skills/`).
+Or copy this folder into your agent's skills dir (`~/.claude/skills/`, `~/.codex/skills/`, `~/.agents/skills/`).
 
-**Requirements** (declared up front, per this repo's rules): workers call the Gemini API (`GEMINI_API_KEY`), the advisor uses the `claude` CLI, and tool-using workers optionally use the `agy` CLI. Missing pieces degrade gracefully — the orchestrator plays the missing role itself and says so.
+**Needs** (declared up front, per this repo's rules): `GEMINI_API_KEY` (falls back to `GOOGLE_API_KEY`) for workers, the `claude` CLI for the advisor, `jq`, and optionally the `agy` CLI for tool-using workers. Anything missing degrades gracefully — your agent plays the missing role itself and says so.
 
 ## Use it
 
@@ -33,13 +60,13 @@ Or manually: copy this folder into your agent's skills dir (`~/.claude/skills/`,
 > "Fan this out: research all 12 competitors in parallel and synthesize."
 > "Run the advisor-worker loop on this."
 
-The run ends with the deliverable, the plan, a per-subtask verification ledger, advisor notes applied and rejected, and remaining risks.
+Every run ends with the deliverable, the plan, a per-subtask verification ledger, advisor notes applied and rejected, and remaining risks.
 
 ## Files
 
 ```
 advisor-executor-worker/
-├── SKILL.md                          # the orchestrator's loop, team, budgets, escalation rules
+├── SKILL.md                          # the loop, the team, budgets, escalation rules
 ├── README.md                         # this file
 ├── references/worker-brief.md        # the stateless dispatch format workers receive
 └── references/advisor-consult.md     # the consult format the advisor answers in
