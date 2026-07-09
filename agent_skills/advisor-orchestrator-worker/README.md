@@ -4,8 +4,6 @@
 
 This skill turns your coding agent into the orchestrator of a three-tier model team. Big tasks get split into self-contained briefs, blasted across cheap parallel workers, verified one by one, and judged by a stronger model exactly twice — before the work starts and before it ships.
 
-![Meta loop with Claude, GPT and Gemini: orchestrator delegates to parallel workers, advisor consulted off the hot path](architecture.jpeg)
-
 ## The team
 
 | Role | Default model <sub>(July 2026 — swap freely)</sub> | What it does | What it never does |
@@ -48,7 +46,6 @@ Every run ends with the deliverable, the plan, a per-subtask verification ledger
 advisor-orchestrator-worker/
 ├── SKILL.md                          # the loop, the team, budgets, escalation rules
 ├── README.md                         # this file
-├── architecture.jpeg                 # the diagram above
 ├── references/worker-brief.md        # the stateless dispatch format workers receive
 └── references/advisor-consult.md     # the consult format the advisor answers in
 ```
