@@ -10,9 +10,9 @@ This skill turns your coding agent into the orchestrator of a three-tier model t
 
 | Role | Default model <sub>(July 2026 — swap freely)</sub> | What it does | What it never does |
 |---|---|---|---|
-| **Executor** (your agent) | GPT-5.5 in Codex CLI | Frames success criteria, plans waves, dispatches briefs, verifies every result, synthesizes the deliverable | Worker-level grunt work |
-| **Workers** | Gemini Flash, bare API calls | One self-contained subtask each, in parallel, stateless — each sees only its brief | Talk to each other, expand scope, get a second chance on the same call |
-| **Advisor** | Claude Fable 5 via `claude -p` | Plan review before any dispatch, taste pass before delivery, called mid-run only at commitment boundaries | Execute anything |
+| **Executor** | Codex | Frames success criteria, plans waves, dispatches briefs, verifies every result, synthesizes the deliverable | Worker-level grunt work |
+| **Workers** | Gemini Flash | One self-contained subtask each, in parallel, stateless — each sees only its brief | Talk to each other, expand scope, get a second chance on the same call |
+| **Advisor** | Claude Fable 5 | Plan review before any dispatch, taste pass before delivery, called mid-run only at commitment boundaries | Execute anything |
 
 The economics are the point: cheap parallel generation where volume wins, expensive judgment only where it changes a decision. Budgeted — **20 worker calls, 5 consults** — so a run can't quietly burn a hole in your API bill. Models are knobs: the tier pattern is the durable part, the defaults were current in July 2026.
 
