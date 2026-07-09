@@ -7,7 +7,7 @@
   "scripts": {
     "test": "node --test tests/",
     "lint": "web-ext lint --source-dir=.",
-    "build": "web-ext build --overwrite-dest --source-dir=.",
+    "build": "web-ext build --overwrite-dest --source-dir=. --ignore-files 'tests/**' 'tools/**' 'package.json' 'BUILD.md' '.gitignore'",
     "start:firefox": "web-ext run --source-dir=.",
     "icons": "python3 tools/make-icons.py --out src/icons"
   }
