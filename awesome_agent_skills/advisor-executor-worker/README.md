@@ -4,27 +4,7 @@
 
 This skill turns your coding agent into the orchestrator of a three-tier model team. Big tasks get split into self-contained briefs, blasted across cheap parallel workers, verified one by one, and judged by a stronger model exactly twice — before the work starts and before it ships.
 
-<!-- Drop your architecture image at ./architecture.png and uncomment:
-![Architecture](architecture.png)
--->
-
-```
-                        you
-                         |
-                         v
-                 +---------------+
-                 |   EXECUTOR    |
-                 | plan-dispatch |
-                 | verify-merge  |
-                 +---+-------+---+
-          briefs     |       |     consults
-       (many, cheap) |       |  (rare, budgeted)
-                     v       v
-        +----------------+  +----------------+
-        |  WORKERS  xN   |  |    ADVISOR     |
-        | parallel, fast |  | judgment only  |
-        +----------------+  +----------------+
-```
+![Meta loop with Claude, GPT and Gemini: orchestrator delegates to parallel workers, advisor consulted off the hot path](architecture.jpeg)
 
 ## The team
 
@@ -68,6 +48,7 @@ Every run ends with the deliverable, the plan, a per-subtask verification ledger
 advisor-executor-worker/
 ├── SKILL.md                          # the loop, the team, budgets, escalation rules
 ├── README.md                         # this file
+├── architecture.jpeg                 # the diagram above
 ├── references/worker-brief.md        # the stateless dispatch format workers receive
 └── references/advisor-consult.md     # the consult format the advisor answers in
 ```
