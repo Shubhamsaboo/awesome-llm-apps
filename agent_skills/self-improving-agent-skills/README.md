@@ -139,7 +139,7 @@ Zip any skill folder and upload it — for instance this repo's own
 [project-graveyard](../project-graveyard/):
 
 ```bash
-cd awesome_agent_skills
+cd agent_skills
 zip -r project-graveyard.zip project-graveyard/
 ```
 

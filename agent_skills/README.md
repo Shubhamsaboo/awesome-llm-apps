@@ -1,8 +1,8 @@
-# 🧩 Awesome Agent Skills
+# 🧩 Agent Skills
 
 **Drop-in skills for Claude Code, Codex, Cursor, OpenClaw, Hermes, Antigravity, and any [SKILL.md](https://agentskills.io)-compatible agent.**
 
-A skill is a folder with a `SKILL.md` file — plus scripts and references — that your agent discovers and loads on demand. One skill works across 20+ agent clients. No server, no plugin API, no SDK.
+A skill is a folder with a `SKILL.md` file — plus scripts and references — that your agent discovers and loads on demand. One skill works across Claude Code, Codex, Cursor, and other coding agents. No server, no plugin API, no SDK.
 
 ## The bar
 
@@ -20,6 +20,7 @@ We deleted 19 of our own skills that didn't meet this bar. What's left is short 
 
 | Skill | What it does |
 |---|---|
+| [🧠 advisor-orchestrator-worker](advisor-orchestrator-worker/) | Turns your agent into the orchestrator of a three-tier model team: cheap stateless workers in parallel, expensive advisor consulted only at commitment boundaries, verification gates between every step — budgeted so a run can't burn a hole in your API bill |
 | [⚰️ project-graveyard](project-graveyard/) | Scans your machine for dead side projects, autopsies why each one died from its git history (deploy fear, payments wall, killed by a newer project), shows your personal death patterns, and resurrects the one with a pulse — with relapse tracking on every resurrection it prescribes |
 | [♾️ self-improving-agent-skills](self-improving-agent-skills/) | Automatically optimizes agent skills using Gemini and ADK |
 
@@ -27,10 +28,10 @@ More coming, released one at a time.
 
 ## ⚡ Install
 
-One command, any agent — the [skills CLI](https://skills.sh) detects what you have installed (Claude Code, Codex, Cursor, Copilot, Antigravity, OpenClaw, Hermes — 70+ agents) and puts the skill in the right place:
+One command, any agent — the [skills CLI](https://skills.sh) detects what you have installed (Claude Code, Codex, Cursor, Copilot, Antigravity, OpenClaw, Hermes, and other coding agents) and puts the skill in the right place:
 
 ```bash
-npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/awesome_agent_skills/<skill>
+npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/<skill>
 ```
 
 Prefer manual? Clone the repo and copy the skill folder into your agent's skills dir:

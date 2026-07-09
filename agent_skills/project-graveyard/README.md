@@ -97,17 +97,17 @@ Then it ranks the dead by **pulse** — how close each one is to actually shippi
 
 ## Install (10 seconds)
 
-One command — the [skills CLI](https://skills.sh) installs it into whatever agents you have (Claude Code, Codex, Cursor, Copilot, Antigravity, OpenClaw, Hermes — 70+):
+One command — the [skills CLI](https://skills.sh) installs it into whatever agents you have (Claude Code, Codex, Cursor, Copilot, Antigravity, OpenClaw, Hermes, and other coding agents):
 
 ```bash
-npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/awesome_agent_skills/project-graveyard
+npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/project-graveyard
 ```
 
 Or clone and copy — which also lets you run the eval first (below):
 
 ```bash
 git clone --depth 1 https://github.com/Shubhamsaboo/awesome-llm-apps.git
-cp -r awesome-llm-apps/awesome_agent_skills/project-graveyard ~/.claude/skills/
+cp -r awesome-llm-apps/agent_skills/project-graveyard ~/.claude/skills/
 # other agents: ~/.openclaw/skills/, ~/.hermes/skills/, or .agents/skills/ in your project
 ```
 
@@ -135,7 +135,7 @@ Skeptical? Good — you should be, about anything you install into an agent. The
 
 ```bash
 # from the cloned repo, before you install anything:
-python3 awesome_agent_skills/evals/project-graveyard/test_graveyard.py
+python3 agent_skills/evals/project-graveyard/test_graveyard.py
 # builds a synthetic graveyard in a temp dir, asserts all 16 behaviors, ~10 seconds
 ```
 
@@ -153,6 +153,6 @@ project-graveyard/                  # ← this is all that gets copied
 └── references/causes-of-death.md   # the taxonomy: signals, confidence, resurrection strategy per cause
 ```
 
-The test suite stays in the repo (`awesome_agent_skills/evals/project-graveyard/`) — run it before installing; don't carry it around after.
+The test suite stays in the repo (`agent_skills/evals/project-graveyard/`) — run it before installing; don't carry it around after.
 
 Part of [awesome-llm-apps](https://github.com/Shubhamsaboo/awesome-llm-apps) · Apache-2.0 · Last verified: July 2026

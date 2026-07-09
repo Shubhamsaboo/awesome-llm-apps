@@ -22,10 +22,10 @@ executable code and his don't:
 
 ```bash
 # Tiers 1–2b, exactly what CI runs — deterministic, git + Python only
-python3 awesome_agent_skills/evals/tools/skill_lint.py awesome_agent_skills/project-graveyard --strict
-python3 awesome_agent_skills/evals/tools/skill_scanner.py awesome_agent_skills
-python3 awesome_agent_skills/evals/tools/run_trigger_evals.py
-python3 awesome_agent_skills/evals/project-graveyard/test_graveyard.py
+python3 agent_skills/evals/tools/skill_lint.py agent_skills/project-graveyard --strict
+python3 agent_skills/evals/tools/skill_scanner.py agent_skills
+python3 agent_skills/evals/tools/run_trigger_evals.py
+python3 agent_skills/evals/project-graveyard/test_graveyard.py
 ```
 
 Tier 3 is on demand and spends tokens: each skill's `evals.json` is in
