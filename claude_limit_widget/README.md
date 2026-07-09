@@ -34,15 +34,23 @@ Android-приложение и home-screen виджет для монитори
 
 ## Установка
 
-1. Открой папку `claude_limit_widget/` в Android Studio (Hedgehog+ / Iguana+).
-2. Дай IDE сгенерировать Gradle wrapper — она предложит.
-3. Запусти сборку на своём Android-телефоне (minSdk 26, API 26+).
+Полная пошаговая инструкция — в [BUILD.md](./BUILD.md). Она покрывает
+Android Studio path, чистый CLI, установку по USB и Wireless, отладку.
 
-Или собери из командной строки после `gradle wrapper`:
+Короткая версия:
 
 ```bash
-./gradlew :app:assembleDebug
-adb install app/build/outputs/apk/debug/app-debug.apk
+# 1. Открой claude_limit_widget/ в Android Studio → Sync.
+# 2. Подключи телефон (Developer options → USB debugging).
+# 3. ▶ Run 'app'
+```
+
+Или CLI:
+
+```bash
+cd claude_limit_widget
+gradle wrapper --gradle-version 8.11.1
+./gradlew :app:installDebug
 ```
 
 ## Как получить токен
