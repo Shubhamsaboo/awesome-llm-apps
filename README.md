@@ -31,13 +31,12 @@
 
 # 🌟 Awesome LLM Apps
 
-<p><strong>100+ AI agents, agent skills, and multi-agent systems you can actually run — clone, customize, ship.</strong><br/>
+<p><strong>100+ AI agents and agent skills you can actually run — clone, customize, ship.</strong><br/>
 Agent Skills · AI Agents · Multi-agent Teams · Always-on Agents · MCP · Voice · Generative UI · RAG</p>
 
 <p>
 <strong>Free step-by-step tutorials on <a href="https://www.theunwindai.com">Unwind AI</a></strong><br/>
-<strong>Works with Claude · Gemini · OpenAI · DeepSeek · xAI · Qwen · Llama</strong><br/>
-<strong>Skills run in Claude Code · Codex · Cursor · and other coding agents</strong>
+Model-agnostic — works with Claude, Gemini, GPT, DeepSeek, Llama and more. Skills run in Claude Code, Codex, and Cursor.
 </p>
 
 <p>
