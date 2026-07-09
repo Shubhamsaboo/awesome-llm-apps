@@ -4,6 +4,9 @@
 
 This skill turns your coding agent into the orchestrator of a three-tier model team. Big tasks get split into self-contained briefs, blasted across cheap parallel workers, verified one by one, and judged by a stronger model exactly twice — before the work starts and before it ships.
 
+<img width="962" height="451" alt="advisor_executor_worker" src="https://github.com/user-attachments/assets/f0ab5550-1603-4e08-a90f-532976a8ff31" />
+
+
 ## The team
 
 | Role | Default model <sub>(July 2026 — swap freely)</sub> | What it does | What it never does |
