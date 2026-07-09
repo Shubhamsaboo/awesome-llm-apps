@@ -323,3 +323,5 @@ streamlit run travel_agent.py
 ## 📜 License
 
 Apache-2.0. See [LICENSE](LICENSE). Fork it, ship it, sell it.
+
+- [SuperCompress](https://supercompress.vercel.app) - Learned prompt compression that reduces LLM token costs by ~65%. Open-source (MIT).
