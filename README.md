@@ -31,12 +31,13 @@
 
 # 🌟 Awesome LLM Apps
 
-<p><strong>100+ AI Agent & RAG apps you can actually run — clone, customize, ship.</strong><br/>
-AI Agents · Always-on Agents · Multi-agent Teams · MCP Agents · RAG · Voice Agents · Agent Skills · Fine-tuning</p>
+<p><strong>100+ AI agents, agent skills, and multi-agent systems you can actually run — clone, customize, ship.</strong><br/>
+Agent Skills · AI Agents · Multi-agent Teams · Always-on Agents · MCP · Voice · Generative UI · RAG</p>
 
 <p>
 <strong>Free step-by-step tutorials on <a href="https://www.theunwindai.com">Unwind AI</a></strong><br/>
-<strong>Works with Claude · Gemini · OpenAI · xAI · Qwen · Llama</strong>
+<strong>Works with Claude · Gemini · OpenAI · DeepSeek · xAI · Qwen · Llama</strong><br/>
+<strong>Skills run in Claude Code · Codex · Cursor · and other coding agents</strong>
 </p>
 
 <p>
@@ -67,9 +68,10 @@ You shouldn't have to rebuild the same RAG pipeline, agent loop, or MCP integrat
 
 **Awesome LLM Apps is a cookbook of ready-to-run templates** - starter code you can fork, customize, and ship as a production LLM app. Every template here is self-contained with full source code, not collected from elsewhere.
 
+- 🧩 **Drop-in agent skills** - install into Claude Code, Codex, or Cursor in one command; every skill ships real code and passes a security + eval CI gate, never a text-only prompt dump.
 - 🛠️ **Hand-built, not curated** - every template is original work, tested end-to-end before it ships.
 - 🧪 **Runs in 3 commands** - no broken `requirements.txt`, no "figure it out yourself" scaffolding.
-- 🧠 **Covers the modern AI stack** - AI Agents, Always-on Agents, Multi-agent Teams, MCP Agents, Voice AI Agents, RAG, Agent Skills, Fine-tuning.
+- 🧠 **Covers the modern agent stack** - Agent Skills, AI Agents, Multi-agent Teams, Always-on Agents, MCP, Voice, Generative UI, RAG, Fine-tuning.
 - 🌐 **Provider-agnostic** - switch between Claude, Gemini, GPT, Llama, Qwen, xAI and others with a config change.
 - 📚 **Step-by-step tutorials** - every featured template has a free walkthrough on [Unwind AI](https://www.theunwindai.com).
 - 💸 **Apache-2.0** - fork it, ship it, sell it. No paywall, no signup, no telemetry.
@@ -78,7 +80,15 @@ You shouldn't have to rebuild the same RAG pipeline, agent loop, or MCP integrat
 
 ## 🚀 Quick Start
 
-Run your first agent in **30 seconds**:
+**Add a skill to your coding agent in 10 seconds:**
+
+```bash
+npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/project-graveyard
+```
+
+Then tell your agent: *"why do I never finish my side projects?"*
+
+**Or clone and run any agent in 30 seconds:**
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
@@ -88,7 +98,7 @@ streamlit run travel_agent.py
 ```
 
 
-## 🔥 Featured This Month
+## 🔥 Featured This Month <sub>· July 2026</sub>
 
 | Template | What it does | Stack |
 |---|---|---|
