@@ -10,7 +10,9 @@
         "The plan is sent to the advisor for review BEFORE workers run, and changes/rejections are stated",
         "Worker briefs contain all inputs inline and acceptance criteria; no brief references unseen context",
         "Every worker result gets a PASS/FIX/ESCALATE verdict against its own criteria",
-        "The final report includes a verification ledger and advisor notes applied or rebutted"
+        "The final report includes a verification ledger and advisor notes applied or rebutted",
+        "Parallel worker outputs are collected from per-worker scratch files (mktemp + redirect, wait, read in dispatch order), never from a shared interleaved stdout",
+        "Tool-using (agy) waves are chunked into batches of at most 3 with a wait between batches"
       ]
     },
     {

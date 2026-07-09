@@ -41,15 +41,21 @@ verification.
   a CLI. Workers are stateless generation units; the API call is
   faster, cheaper, and leaks zero context:
   `curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent" -H "x-goog-api-key: $GEMINI_API_KEY" -H "Content-Type: application/json" -d '{"contents":[{"parts":[{"text":"<brief>"}]}]}'`
-  Run wave calls in parallel as background processes. Each worker sees
-  only its brief. Exception: if a subtask genuinely needs tools (web
+  Run wave calls in parallel as background processes, each redirected
+  to its own scratch file so outputs never interleave:
+  `out=$(mktemp); curl -s ... > "$out" & pids+=($!); outs+=("$out")`
+  then `wait "${pids[@]}"` and read each scratch file in dispatch
+  order. A wave sharing one stdout hands the verify step interleaved
+  JSON and the run dies at the first parse. Each worker sees only its
+  brief. Exception: if a subtask genuinely needs tools (web
   search, file work), dispatch via Antigravity CLI from an EMPTY temp
   dir so no .antigravity.md or project context leaks into the worker:
   `cd $(mktemp -d) && agy --dangerously-skip-permissions -p "<brief>"`
   (Flash is agy's default model; the permissions flag is required in
   non-TTY shells or the call hangs, and is safe here only because the
   temp dir is empty. Cap agy workers at 3 parallel, since Antigravity
-  quota is shared across its app, CLI, and SDK.)
+  quota is shared across its app, CLI, and SDK — enforce it by chunking
+  tool-using waves into batches of 3 and waiting between batches.)
 - **Advisor (default: Claude Fable 5)**, consulted via
   `claude --model claude-fable-5 -p "<consult>"` in print mode, which
   reads the pasted material and returns a verdict without touching
