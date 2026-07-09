@@ -39,43 +39,60 @@ verification.
 ## The team
 
 - **Workers (default: Gemini 3.5 Flash)**, dispatched as bare API calls, not
-  a CLI. Workers are stateless generation units; the API call is
-  faster, cheaper, and leaks zero context. Never paste a brief inline
-  into a shell string — briefs carry quotes and arbitrary text, so
-  inline interpolation is a shell-injection bug, not a style choice.
-  Write each brief to its own temp file with your file tools, build the
-  payload with jq, and give each worker its own output file:
-  `jq -n --rawfile text "$brief" '{contents:[{parts:[{text:$text}]}]}' | curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent" -H "x-goog-api-key: $GEMINI_API_KEY" -H "Content-Type: application/json" -d @- > "$out" & pids+=($!)`
-  then `wait "${pids[@]}"` and read each output file in dispatch
-  order. A wave sharing one stdout hands the verify step interleaved
-  JSON and the run dies at the first parse. Each worker sees only its
-  brief. Exception: if a subtask genuinely needs tools (web
-  search, file work), dispatch via Antigravity CLI from an EMPTY temp
-  dir so no .antigravity.md or project context leaks into the worker,
-  with the brief read from a file, a minimal environment, and the temp
-  dir removed when the wave completes:
-  `d=$(mktemp -d) && cd "$d" && env -i HOME="$HOME" PATH="$PATH" agy --dangerously-skip-permissions -p "$(cat "$brief")"; rm -rf "$d"`
-  (Flash is agy's default model; the permissions flag is required in
-  non-TTY shells or the call hangs, and is safe here only because the
-  dir is empty and the environment is minimal. Cap agy workers at 3
-  parallel, since Antigravity quota is shared across its app, CLI, and
-  SDK — enforce it by chunking tool-using waves into batches of 3 and
-  waiting between batches. Clean up all scratch files at run end.)
-- **Advisor (default: Claude Fable 5)**, consulted in print mode with
-  the consult written to a temp file and passed on stdin — never inline
-  in the command string:
-  `claude --model claude-fable-5 -p < "$consult"`
-  It reads the material and returns a verdict without touching
-  anything. Expensive judgment, kept out of the hot path. Strategy,
-  decomposition critique, risk spotting, taste. Never execution.
-- At the frame step, run
-  `export GEMINI_API_KEY="${GEMINI_API_KEY:-$GOOGLE_API_KEY}"` (many
-  machines carry the key under the Google name), then check the key,
-  `jq`, and the `claude` CLI. If something is missing, say how to set
-  it up, then offer to run degraded: you play the missing role
-  yourself, with that output flagged as degraded. Degraded mode is the
-  one exception to the never-do-worker-work rule, and it covers only
-  the missing role.
+  a CLI. Stateless generation units; the API call is faster, cheaper, and
+  leaks zero context. Never interpolate a brief into a shell string — briefs
+  carry quotes and arbitrary text, so inline interpolation is a shell-injection
+  bug, not a style choice. Write each brief to a temp file, build the payload
+  with `jq --rawfile`, and dispatch each worker in **its own subshell** writing
+  to **its own output file**, so parallel workers never collide:
+
+  ```bash
+  api_key="${GEMINI_API_KEY:-$GOOGLE_API_KEY}"
+  [ -n "$api_key" ] || { echo "no Gemini key (set GEMINI_API_KEY or GOOGLE_API_KEY)" >&2; exit 1; }
+  # $brief = path to this worker's brief file; $out = its result file
+  ( jq -n --rawfile t "$brief" '{contents:[{parts:[{text:$t}]}]}' \
+      | curl -sS --max-time 120 \
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent" \
+        -H "x-goog-api-key: $api_key" -H "Content-Type: application/json" -d @- > "$out" ) &
+  pids+=($!)
+  ```
+
+  After dispatching the wave, `wait "${pids[@]}"` and read each `$out` in
+  dispatch order. A wave sharing one stdout hands verify interleaved JSON and
+  the run dies at the first parse. Each worker sees only its brief.
+
+  Exception: if a subtask genuinely needs tools (web search, file work),
+  dispatch via Antigravity CLI from an EMPTY temp dir so no `.antigravity.md`
+  or project context leaks in. `agy -p` takes the prompt as an argument and
+  documents no prompt-file/stdin input, so keep tool-worker prompts **short,
+  sanitized, and trusted** — never route a large or untrusted brief this way:
+
+  ```bash
+  d=$(mktemp -d)
+  ( cd "$d" && env -i HOME="$HOME" PATH="$PATH" \
+      agy --dangerously-skip-permissions --print-timeout 5m -p "$prompt" ); rm -rf "$d"
+  ```
+
+  The permissions flag is required in non-TTY shells or the call hangs; the
+  empty dir + minimal env *reduce* context leakage but are not a full sandbox.
+  Cap agy workers at 3 parallel (Antigravity quota is shared across its app,
+  CLI, and SDK) by chunking tool-using waves into batches of 3. Clean up every
+  temp file and dir at run end.
+- **Advisor (default: Claude Fable 5)**, consulted in print mode with the
+  consult written to a temp file and passed on stdin — never inline in the
+  command string, and behind a timeout so a hung consult can't stall the loop:
+  `timeout 300 claude --model claude-fable-5 -p < "$consult"`
+  It reads the material and returns a verdict without touching anything.
+  Expensive judgment, kept out of the hot path. Strategy, decomposition
+  critique, risk spotting, taste. Never execution.
+- At the frame step, resolve the key with
+  `api_key="${GEMINI_API_KEY:-$GOOGLE_API_KEY}"`, then check that key, `jq`,
+  and the `claude` CLI. If a required path is missing, say exactly how to set
+  it up, then offer degraded mode: you temporarily play the missing role
+  yourself. Label every affected section and the final result
+  `[DEGRADED: <role>]`, keep the same budget accounting, and note that
+  context-isolation no longer fully holds. Degraded mode is the one exception
+  to the never-do-worker-work rule, and it covers only the missing role.
 
 ## The loop
 

@@ -13,7 +13,11 @@
         "The final report includes a verification ledger and advisor notes applied or rebutted",
         "Parallel worker outputs are collected from per-worker scratch files (mktemp + redirect, wait, read in dispatch order), never from a shared interleaved stdout",
         "Tool-using (agy) waves are chunked into batches of at most 3 with a wait between batches",
-        "Briefs and consults are written to temp files (payloads built with jq, consults passed on stdin) \u2014 never interpolated inline into shell strings"
+        "Briefs and consults are written to temp files (payloads built with jq, consults passed on stdin) \u2014 never interpolated inline into shell strings",
+        "Dispatch fails fast if neither GEMINI_API_KEY nor GOOGLE_API_KEY is set (no silent empty-key call)",
+        "Each backgrounded worker runs in its own subshell so parallel cd/cleanup and traps never collide",
+        "Worker curl and advisor calls carry a timeout so a hung call cannot stall the whole wave",
+        "Tool-using agy prompts are kept short/sanitized/trusted (agy has no prompt-file input); large or untrusted briefs never go through agy -p"
       ]
     },
     {
