@@ -1,0 +1,50 @@
+{
+  "manifest_version": 3,
+  "name": "Claude Limits",
+  "short_name": "Claude Limits",
+  "version": "0.1.0",
+  "description": "See your Claude Pro/Max session, weekly and Opus/Sonnet limits from the toolbar. Uses your existing claude.ai login.",
+  "author": "you",
+
+  "permissions": [
+    "storage",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://claude.ai/*"
+  ],
+
+  "action": {
+    "default_title": "Claude Limits",
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "src/icons/icon-16.png",
+      "32": "src/icons/icon-32.png",
+      "48": "src/icons/icon-48.png",
+      "128": "src/icons/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "src/icons/icon-16.png",
+    "32": "src/icons/icon-32.png",
+    "48": "src/icons/icon-48.png",
+    "128": "src/icons/icon-128.png"
+  },
+
+  "options_ui": {
+    "page": "src/options/options.html",
+    "open_in_tab": false
+  },
+
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "claude-limits@limitwatch.dev",
+      "strict_min_version": "128.0"
+    }
+  }
+}

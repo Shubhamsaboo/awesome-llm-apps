@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Claude Limits</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header class="head">
+    <div class="head-titles">
+      <div class="title">Claude limits</div>
+      <div class="subtitle" id="subtitle">Loading…</div>
+    </div>
+    <button id="refresh" class="icon-btn" title="Refresh" aria-label="Refresh">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M23 4v6h-6" />
+        <path d="M20.49 15A9 9 0 1 1 5.64 5.64L23 20" />
+      </svg>
+    </button>
+  </header>
+
+  <main id="body"></main>
+
+  <footer class="foot">
+    <button id="openClaude" class="link" type="button">Open claude.ai</button>
+    <button id="openOptions" class="link" type="button">Options</button>
+  </footer>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

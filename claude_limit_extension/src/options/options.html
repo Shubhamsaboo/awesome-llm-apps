@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Claude Limits · Options</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Claude Limits</h1>
+      <p class="sub">Reads your usage from claude.ai using your existing browser session. Nothing leaves this browser except the request to claude.ai itself.</p>
+    </header>
+
+    <section class="group">
+      <div class="row">
+        <label for="interval">Auto-refresh interval</label>
+        <div class="control">
+          <input type="range" id="interval" min="1" max="60" step="1" />
+          <span id="intervalValue" class="value">15 min</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="showBadge">Show percentage on toolbar</label>
+        <div class="control">
+          <input type="checkbox" id="showBadge" />
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="badgeSource">Badge shows</label>
+        <div class="control">
+          <select id="badgeSource">
+            <option value="highest">Highest window (default)</option>
+            <option value="session">Session · 5h only</option>
+            <option value="weekly">Weekly windows only</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="group notice">
+      <h2>Legal notice</h2>
+      <p>
+        This extension calls internal, undocumented endpoints on
+        <code>claude.ai</code> using your logged-in browser cookies. Anthropic
+        has not published these endpoints and may change them without notice.
+        This is a personal-use tool for reading your own limits; use at your
+        own risk.
+      </p>
+    </section>
+
+    <section class="group">
+      <h2>Endpoints used</h2>
+      <ul class="mono">
+        <li><code>GET https://claude.ai/api/organizations</code></li>
+        <li><code>GET https://claude.ai/api/organizations/{org_id}/usage</code></li>
+        <li><code>GET https://claude.ai/api/organizations/{org_id}/overage_spend_limit</code></li>
+        <li><code>GET https://claude.ai/api/account</code></li>
+      </ul>
+    </section>
+
+    <div id="saved" class="saved" hidden>Saved</div>
+  </main>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>
