@@ -92,7 +92,7 @@ streamlit run travel_agent.py
 
 | Template | What it does | Stack |
 |---|---|---|
-| [⚰️ Project Graveyard Skill](awesome_agent_skills/project-graveyard/) | Finds your dead side projects, autopsies why each died from its git history, and resurrects the one with a pulse | Agent Skill + Git Forensics |
+| [⚰️ Project Graveyard Skill](awesome_agent_skills/project-graveyard/) | Finds your dead side projects, tells you why each one died, and helps you finish the one worth going back to | Agent Skill · Runs locally |
 | [📰 Always-on Hacker News Briefing Agent](always_on_agents/always_on_hn_briefing_agent/) | Scheduled Hacker News scout that filters AI agent and LLM app signals into a delivery-ready daily brief | ADK + Agent Runtime |
 | [🛡️ Insurance Claim Live Agent Team](voice_ai_agents/insurance_claim_live_agent_team/) | Real-time voice claim intake with Gemini Live and ADK | Voice + ADK |
 | [🏠 Home Renovation Agent](advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent) | Photo → AI redesign with Nano Banana Pro | Vision + Multi-agent |
@@ -105,6 +105,7 @@ streamlit run travel_agent.py
 <details open>
 <summary><strong>15 categories · Click to expand</strong></summary>
 
+- [🧩 Agent Skills](#-agent-skills)
 - [🌱 Starter AI Agents](#-starter-ai-agents)
 - [🚀 Advanced AI Agents](#-advanced-ai-agents)
 - [🛰️ Always-on Agents](#️-always-on-agents)
@@ -114,7 +115,6 @@ streamlit run travel_agent.py
 - [🎮 Autonomous Game-Playing Agents](#-autonomous-game-playing-agents)
 - [♾️ MCP AI Agents](#-mcp-ai-agents)
 - [📀 RAG Tutorials](#-rag-retrieval-augmented-generation)
-- [🧩 Awesome Agent Skills](#-awesome-agent-skills)
 - [💾 LLM Apps with Memory](#-llm-apps-with-memory-tutorials)
 - [💬 Chat with X Tutorials](#-chat-with-x-tutorials)
 - [🎯 LLM Optimization Tools](#-llm-optimization-tools)
@@ -124,6 +124,13 @@ streamlit run travel_agent.py
 </details>
 
 ## 📂 Featured AI Projects
+
+### 🧩 Agent Skills
+*Give your coding agent new abilities. One command to install, plain English to use — works with Claude Code, Codex, Cursor, and 70+ agents. Every skill ships real working code and is tested before it ships. [Browse all skills →](awesome_agent_skills/)*
+
+*   [⚰️ Project Graveyard](awesome_agent_skills/project-graveyard/) - Finds every side project you abandoned, tells you why each one died, and helps you finish the one worth going back to
+*   [🧠 Advisor Executor Worker](awesome_agent_skills/advisor-executor-worker/) - Your agent runs a model team: cheap models do the work in parallel, a stronger model reviews the plan, your agent manages it all
+*   [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
 
 ### 🌱 Starter AI Agents
 *Single-file agents that run with just an API key - a great place to start.*
@@ -248,13 +255,6 @@ streamlit run travel_agent.py
 *   [🖼️ Vision RAG](rag_tutorials/vision_rag/)
 *   [🩺 RAG Failure Diagnostics Clinic](rag_tutorials/rag_failure_diagnostics_clinic/)
 *   [🕸️ Knowledge Graph RAG with Citations](rag_tutorials/knowledge_graph_rag_citations/)
-
-### 🧩 Awesome Agent Skills
-*Production-grade skills for Claude Code, Codex, Cursor, OpenClaw, Hermes, Antigravity, and any SKILL.md-compatible agent — real scripts and researched playbooks, never text-only prompt dumps. [Read the quality bar →](awesome_agent_skills/)*
-
-*   [⚰️ Project Graveyard](awesome_agent_skills/project-graveyard/) - Scans your machine for dead side projects, autopsies why each one died from its git history, and resurrects the one with a pulse
-*   [🧠 Advisor Executor Worker](awesome_agent_skills/advisor-executor-worker/) - Orchestrate a three-tier model team: cheap parallel workers, one orchestrator, an expensive advisor consulted only where judgment matters
-*   [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
 
 ### 💾 LLM Apps with Memory Tutorials
 *Agents and chatbots that remember conversations and user state across sessions.*
