@@ -2,7 +2,7 @@
 
 **Drop-in skills for Claude Code, Codex, Cursor, OpenClaw, Hermes, Antigravity, and any [SKILL.md](https://agentskills.io)-compatible agent.**
 
-A skill is a folder with a `SKILL.md` file — plus scripts and references — that your agent discovers and loads on demand. One skill works across 20+ agent clients. No server, no plugin API, no SDK.
+A skill is a folder with a `SKILL.md` file — plus scripts and references — that your agent discovers and loads on demand. One skill works across 70+ agents. No server, no plugin API, no SDK.
 
 ## The bar
 

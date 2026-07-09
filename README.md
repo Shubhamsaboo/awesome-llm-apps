@@ -126,11 +126,12 @@ streamlit run travel_agent.py
 ## 📂 Featured AI Projects
 
 ### 🧩 Agent Skills
-*Give your coding agent new abilities. One command to install, plain English to use — works with Claude Code, Codex, Cursor, and 70+ agents. Every skill ships real working code and is tested before it ships. [Browse all skills →](awesome_agent_skills/)*
+*Give your coding agent new abilities. One command to install, plain English to use. Works with Claude Code, Codex, Cursor, and 70+ agents.*
 
 *   [⚰️ Project Graveyard](awesome_agent_skills/project-graveyard/) - Finds every side project you abandoned, tells you why each one died, and helps you finish the one worth going back to
 *   [🧠 Advisor Executor Worker](awesome_agent_skills/advisor-executor-worker/) - Your agent runs a model team: cheap models do the work in parallel, a stronger model reviews the plan, your agent manages it all
 *   [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
+*   [🧩 Browse all skills →](awesome_agent_skills/)
 
 ### 🌱 Starter AI Agents
 *Single-file agents that run with just an API key - a great place to start.*
