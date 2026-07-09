@@ -253,6 +253,7 @@ streamlit run travel_agent.py
 *Production-grade skills for Claude Code, Codex, Cursor, OpenClaw, Hermes, Antigravity, and any SKILL.md-compatible agent — real scripts and researched playbooks, never text-only prompt dumps. [Read the quality bar →](awesome_agent_skills/)*
 
 *   [⚰️ Project Graveyard](awesome_agent_skills/project-graveyard/) - Scans your machine for dead side projects, autopsies why each one died from its git history, and resurrects the one with a pulse
+*   [🧠 Advisor Executor Worker](awesome_agent_skills/advisor-executor-worker/) - Orchestrate a three-tier model team: cheap parallel workers, one orchestrator, an expensive advisor consulted only where judgment matters
 *   [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
 
 ### 💾 LLM Apps with Memory Tutorials
