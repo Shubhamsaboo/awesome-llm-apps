@@ -1,4 +1,4 @@
-# 🧩 Awesome Agent Skills
+# 🧩 Agent Skills
 
 **Drop-in skills for Claude Code, Codex, Cursor, OpenClaw, Hermes, Antigravity, and any [SKILL.md](https://agentskills.io)-compatible agent.**
 
