@@ -11,7 +11,7 @@ This skill turns your coding agent into the orchestrator of a three-tier model t
 | Role | Default model <sub>(July 2026 — swap freely)</sub> | What it does | What it never does |
 |---|---|---|---|
 | **Executor** | Codex | Frames success criteria, plans waves, dispatches briefs, verifies every result, synthesizes the deliverable | Worker-level grunt work |
-| **Workers** | Gemini Flash | One self-contained subtask each, in parallel, stateless — each sees only its brief | Talk to each other, expand scope, get a second chance on the same call |
+| **Workers** | Gemini 3.5 Flash | One self-contained subtask each, in parallel, stateless — each sees only its brief | Talk to each other, expand scope, get a second chance on the same call |
 | **Advisor** | Claude Fable 5 | Plan review before any dispatch, taste pass before delivery, called mid-run only at commitment boundaries | Execute anything |
 
 The economics are the point: cheap parallel generation where volume wins, expensive judgment only where it changes a decision. Budgeted — **20 worker calls, 5 consults** — so a run can't quietly burn a hole in your API bill. Models are knobs: the tier pattern is the durable part, the defaults were current in July 2026.
@@ -27,7 +27,7 @@ Multi-model loops usually die from context leaks, silent partial failures, or ju
 ## Install
 
 ```bash
-npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/awesome_agent_skills/advisor-executor-worker
+npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/advisor-executor-worker
 ```
 
 Or copy this folder into your agent's skills dir (`~/.claude/skills/`, `~/.codex/skills/`, `~/.agents/skills/`).
@@ -53,6 +53,6 @@ advisor-executor-worker/
 └── references/advisor-consult.md     # the consult format the advisor answers in
 ```
 
-Evals live repo-side in `awesome_agent_skills/evals/advisor-executor-worker/` — you install only what runs.
+Evals live repo-side in `agent_skills/evals/advisor-executor-worker/` — you install only what runs.
 
 Part of [awesome-llm-apps](https://github.com/Shubhamsaboo/awesome-llm-apps) · Apache-2.0 · Last verified: July 2026

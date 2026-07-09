@@ -92,11 +92,11 @@ streamlit run travel_agent.py
 
 | Template | What it does | Stack |
 |---|---|---|
-| [⚰️ Project Graveyard Skill](awesome_agent_skills/project-graveyard/) | Finds your dead side projects, tells you why each one died, and helps you finish the one worth going back to | Agent Skill · Runs locally |
+| [⚰️ Project Graveyard Skill](agent_skills/project-graveyard/) | Finds your dead side projects, tells you why each one died, and helps you finish the one worth going back to | Agent Skill · Runs locally |
 | [📰 Always-on Hacker News Briefing Agent](always_on_agents/always_on_hn_briefing_agent/) | Scheduled Hacker News scout that filters AI agent and LLM app signals into a delivery-ready daily brief | ADK + Agent Runtime |
 | [🛡️ Insurance Claim Live Agent Team](voice_ai_agents/insurance_claim_live_agent_team/) | Real-time voice claim intake with Gemini Live and ADK | Voice + ADK |
 | [🏠 Home Renovation Agent](advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent) | Photo → AI redesign with Nano Banana Pro | Vision + Multi-agent |
-| [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) | Automatically optimize agent skills using Gemini and ADK | Agent Skills + ADK |
+| [♾️ Self-Improving Agent Skills](agent_skills/self-improving-agent-skills/) | Automatically optimize agent skills using Gemini and ADK | Agent Skills + ADK |
 
 > 📬 [Subscribe on Unwind AI](https://www.theunwindai.com) to get new template drops + tutorials in your inbox.
 
@@ -126,12 +126,11 @@ streamlit run travel_agent.py
 ## 📂 Featured AI Projects
 
 ### 🧩 Agent Skills
-*Give your coding agent new abilities. One command to install, plain English to use. Works with Claude Code, Codex, Cursor, and 70+ agents.*
+*Give your coding agent new abilities. One command to install, plain English to use. Works with Claude Code, Codex, Cursor, and other coding agents. [Browse all skills →](agent_skills/)*
 
-*   [🧩 Browse all skills →](awesome_agent_skills/)
-*   [⚰️ Project Graveyard](awesome_agent_skills/project-graveyard/) - Finds every side project you abandoned, tells you why each one died, and helps you finish the one worth going back to
-*   [🧠 Advisor Executor Worker](awesome_agent_skills/advisor-executor-worker/) - Your agent runs a model team: cheap models do the work in parallel, a stronger model reviews the plan, your agent manages it all
-*   [♾️ Self-Improving Agent Skills](awesome_agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
+*   [⚰️ Project Graveyard](agent_skills/project-graveyard/) - Finds every side project you abandoned, tells you why each one died, and helps you finish the one worth going back to
+*   [🧠 Advisor Executor Worker](agent_skills/advisor-executor-worker/) - Your agent runs a model team: cheap models do the work in parallel, a stronger model reviews the plan, your agent manages it all
+*   [♾️ Self-Improving Agent Skills](agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
 
 ### 🌱 Starter AI Agents
 *Single-file agents that run with just an API key - a great place to start.*

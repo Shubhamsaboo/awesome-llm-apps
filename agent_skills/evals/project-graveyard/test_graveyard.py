@@ -3,7 +3,7 @@
 Executable eval for project-graveyard. Builds a synthetic graveyard with known
 causes of death, runs the scanner against it, and asserts every classifier.
 
-    python3 awesome_agent_skills/evals/project-graveyard/test_graveyard.py
+    python3 agent_skills/evals/project-graveyard/test_graveyard.py
 
 Lives in the repo, not in the installable skill: users install only what
 runs at runtime; this is what you run BEFORE installing, from the clone.

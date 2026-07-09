@@ -31,7 +31,7 @@ More coming, released one at a time.
 One command, any agent — the [skills CLI](https://skills.sh) detects what you have installed (Claude Code, Codex, Cursor, Copilot, Antigravity, OpenClaw, Hermes — 70+ agents) and puts the skill in the right place:
 
 ```bash
-npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/awesome_agent_skills/<skill>
+npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/<skill>
 ```
 
 Prefer manual? Clone the repo and copy the skill folder into your agent's skills dir:

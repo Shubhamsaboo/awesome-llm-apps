@@ -38,7 +38,7 @@ verification.
 
 ## The team
 
-- **Workers (default: Gemini Flash)**, dispatched as bare API calls, not
+- **Workers (default: Gemini 3.5 Flash)**, dispatched as bare API calls, not
   a CLI. Workers are stateless generation units; the API call is
   faster, cheaper, and leaks zero context. Never paste a brief inline
   into a shell string — briefs carry quotes and arbitrary text, so
