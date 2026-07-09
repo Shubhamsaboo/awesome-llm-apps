@@ -1,5 +1,5 @@
 import { browserApi } from "../lib/browser-polyfill.js";
-import { formatPercent, accentFor, untilReset, sinceEpoch } from "../lib/format.js";
+import { formatPercent, untilReset, sinceEpoch } from "../lib/format.js";
 
 const $body = document.getElementById("body");
 const $subtitle = document.getElementById("subtitle");
@@ -40,14 +40,42 @@ async function refresh() {
   }
 }
 
+// ---------------- rendering (DOM API only, no innerHTML) ----------------
+
+function clear(node) {
+  while (node.firstChild) node.removeChild(node.firstChild);
+}
+
+function el(tag, attrs = {}, ...children) {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === "class") node.className = v;
+    else if (k === "text") node.textContent = v;
+    else if (k === "style") {
+      for (const [sk, sv] of Object.entries(v)) node.style[sk] = sv;
+    } else if (k.startsWith("on") && typeof v === "function") {
+      node.addEventListener(k.slice(2).toLowerCase(), v);
+    } else {
+      node.setAttribute(k, v);
+    }
+  }
+  for (const c of children) {
+    if (c == null || c === false) continue;
+    node.append(c instanceof Node ? c : String(c));
+  }
+  return node;
+}
+
 function renderSkeleton() {
   $subtitle.textContent = "Loading…";
   $body.classList.add("skeleton");
-  $body.innerHTML = `
-    ${cardShell("Session · 5h")}
-    ${cardShell("Weekly · 7d")}
-    ${cardShell("Weekly · Opus")}
-  `;
+  clear($body);
+  $body.append(
+    cardShell("Session · 5h"),
+    cardShell("Weekly · 7d"),
+    cardShell("Weekly · Opus"),
+  );
 }
 
 function render(snapshot) {
@@ -59,14 +87,12 @@ function render(snapshot) {
   subtitleParts.push(`Updated ${sinceEpoch(snapshot.fetchedAtEpochMs)}`);
   $subtitle.textContent = subtitleParts.join(" · ");
 
-  const cards = [];
-  cards.push(cardHtml("Session · 5h", usage.five_hour));
-  cards.push(cardHtml("Weekly · 7d", usage.seven_day));
-  if (usage.seven_day_opus) cards.push(cardHtml("Weekly · Opus", usage.seven_day_opus));
-  if (usage.seven_day_sonnet) cards.push(cardHtml("Weekly · Sonnet", usage.seven_day_sonnet));
-  if (usage.extra_usage?.is_enabled) cards.push(extraUsageCard(usage.extra_usage));
-
-  $body.innerHTML = cards.join("\n");
+  clear($body);
+  $body.append(cardNode("Session · 5h", usage.five_hour));
+  $body.append(cardNode("Weekly · 7d", usage.seven_day));
+  if (usage.seven_day_opus) $body.append(cardNode("Weekly · Opus", usage.seven_day_opus));
+  if (usage.seven_day_sonnet) $body.append(cardNode("Weekly · Sonnet", usage.seven_day_sonnet));
+  if (usage.extra_usage?.is_enabled) $body.append(extraUsageCard(usage.extra_usage));
 }
 
 function renderError(err) {
@@ -87,51 +113,56 @@ function renderError(err) {
   const btnLabel = isLoggedOut ? "Open claude.ai" : "Retry";
 
   $subtitle.textContent = "Error";
-  $body.innerHTML = `
-    <div class="state error">
-      <div class="k err">${escapeHtml(title)}</div>
-      <div class="v">${escapeHtml(explain)}</div>
-      <button class="btn" id="stateAction" type="button">${btnLabel}</button>
-    </div>
-  `;
-  const action = document.getElementById("stateAction");
-  action?.addEventListener("click", async () => {
-    if (isLoggedOut) {
-      await browserApi.tabs.create({ url: "https://claude.ai/login" });
-    } else {
-      await refresh();
-    }
-  });
+  clear($body);
+  $body.append(
+    el("div", { class: "state error" },
+      el("div", { class: "k err", text: title }),
+      el("div", { class: "v", text: explain }),
+      el("button", {
+        class: "btn",
+        type: "button",
+        text: btnLabel,
+        onClick: async () => {
+          if (isLoggedOut) {
+            await browserApi.tabs.create({ url: "https://claude.ai/login" });
+          } else {
+            await refresh();
+          }
+        },
+      }),
+    ),
+  );
 }
 
-function cardHtml(label, window) {
+function cardNode(label, window) {
   const percent = window?.utilization ?? null;
   const cls = severityClass(percent);
   const width = Math.max(0, Math.min(100, percent ?? 0)).toFixed(1);
-  const reset = window?.resets_at ? `Reset in ${escapeHtml(untilReset(window.resets_at) ?? "—")}` : "";
-  return `
-    <div class="card ${cls}">
-      <div class="card-head">
-        <div class="card-label">${escapeHtml(label)}</div>
-        <div class="card-value">${escapeHtml(formatPercent(percent))}</div>
-      </div>
-      <div class="bar"><span style="width:${width}%"></span></div>
-      ${reset ? `<div class="card-reset">${reset}</div>` : ""}
-    </div>
-  `;
+  const resetText = window?.resets_at
+    ? `Reset in ${untilReset(window.resets_at) ?? "—"}`
+    : "";
+
+  return el("div", { class: `card ${cls}` },
+    el("div", { class: "card-head" },
+      el("div", { class: "card-label", text: label }),
+      el("div", { class: "card-value", text: formatPercent(percent) }),
+    ),
+    el("div", { class: "bar" },
+      el("span", { style: { width: `${width}%` } }),
+    ),
+    resetText ? el("div", { class: "card-reset", text: resetText }) : null,
+  );
 }
 
 function cardShell(label) {
-  return `
-    <div class="card mist">
-      <div class="card-head">
-        <div class="card-label">${escapeHtml(label)}</div>
-        <div class="card-value">—</div>
-      </div>
-      <div class="bar"><span style="width:0%"></span></div>
-      <div class="card-reset">&nbsp;</div>
-    </div>
-  `;
+  return el("div", { class: "card mist" },
+    el("div", { class: "card-head" },
+      el("div", { class: "card-label", text: label }),
+      el("div", { class: "card-value", text: "—" }),
+    ),
+    el("div", { class: "bar" }, el("span", { style: { width: "0%" } })),
+    el("div", { class: "card-reset", text: " " }),
+  );
 }
 
 function extraUsageCard(extra) {
@@ -140,16 +171,15 @@ function extraUsageCard(extra) {
   const width = Math.max(0, Math.min(100, percent ?? 0)).toFixed(1);
   const balance = extra.monthly_limit != null && extra.used_credits != null
     ? `$${extra.used_credits.toFixed(2)} / $${extra.monthly_limit.toFixed(2)}`
-    : "";
-  return `
-    <div class="card ${cls}">
-      <div class="card-head">
-        <div class="card-label">Extra usage</div>
-        <div class="card-value">${escapeHtml(balance || formatPercent(percent))}</div>
-      </div>
-      <div class="bar"><span style="width:${width}%"></span></div>
-    </div>
-  `;
+    : formatPercent(percent);
+
+  return el("div", { class: `card ${cls}` },
+    el("div", { class: "card-head" },
+      el("div", { class: "card-label", text: "Extra usage" }),
+      el("div", { class: "card-value", text: balance }),
+    ),
+    el("div", { class: "bar" }, el("span", { style: { width: `${width}%` } })),
+  );
 }
 
 function severityClass(percent) {
@@ -157,12 +187,6 @@ function severityClass(percent) {
   if (percent >= 90) return "red";
   if (percent >= 70) return "amber";
   return "orange";
-}
-
-function escapeHtml(s) {
-  return String(s ?? "").replace(/[&<>"']/g, (c) => (
-    { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]
-  ));
 }
 
 async function getCachedSnapshot() {

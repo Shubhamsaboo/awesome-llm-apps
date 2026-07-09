@@ -1,0 +1,14 @@
+{
+  "name": "claude-limits-extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Chrome/Firefox extension that surfaces Claude Pro/Max usage in the toolbar.",
+  "scripts": {
+    "test": "node --test tests/",
+    "lint": "web-ext lint --source-dir=.",
+    "build": "web-ext build --overwrite-dest --source-dir=.",
+    "start:firefox": "web-ext run --source-dir=.",
+    "icons": "python3 tools/make-icons.py --out src/icons"
+  }
+}

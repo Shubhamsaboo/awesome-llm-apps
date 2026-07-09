@@ -79,9 +79,75 @@ cd claude_limit_extension
 
 # Firefox: запускает Firefox с уже загруженным расширением, hot-reload
 web-ext run
+# или через package.json скрипт:
+npm run start:firefox
 
-# Chrome: генерирует ZIP для загрузки
+# Chrome: генерирует ZIP для загрузки в chrome://extensions
 web-ext build --overwrite-dest
+# или:
+npm run build
+```
+
+---
+
+## Проверка перед коммитом
+
+Проект уже настроен на трёх уровнях контроля. Всё запускается локально без
+браузера — полезно перед пушем в git.
+
+### 1. Линт (web-ext lint)
+
+```bash
+cd claude_limit_extension
+npm run lint            # обёртка над web-ext lint --source-dir=.
+```
+
+Что ловит: невалидный manifest, устаревшие MV2 API, `innerHTML`-ассайнменты,
+недокументированные `permissions`, файлы с бинарными расширениями.
+
+Ожидаемо чисто: 0 errors, 0 warnings. Могут остаться 2 informational NOTICE:
+- **BROWSER_SPECIFIC_SETTINGS_DATA_COLLECTION** — Firefox Nightly предлагает
+  задать data-collection consent. Игнорируем (мы ничего не собираем).
+- **FLAGGED_FILE_TYPE** — PNG иконки flagged как «binary», это стандартный
+  security-check от AMO. Игнорируем.
+
+### 2. Юнит-тесты
+
+Чистые функции покрыты через `node --test` — без DOM, без браузера, работает
+на любой машине с Node ≥ 18.
+
+```bash
+cd claude_limit_extension
+npm test
+# TAP output, ожидаем 15/15 pass
+```
+
+Что покрыто:
+- `format.js`: `formatPercent`, `accentFor` (пороги 70/90), `badgePercent`
+  во всех трёх режимах, `untilReset` для будущих дат / past / junk,
+  `sinceEpoch` относительное время.
+- `api.js` helpers: `pickPrimaryOrg` (max > pro/team > free), `mergeExtraUsage`
+  (usage.extra_usage приоритетнее overage_spend_limit fallback), `ApiError`
+  сохраняет `kind` tag.
+
+Не покрыто (нужен настоящий браузер):
+- `fetchSnapshot()` — сетевой вызов
+- popup rendering — DOM
+- background service worker + alarms
+- toolbar badge painting
+
+### 3. Синтаксис
+
+Быстрый sanity-check если тесты не хочется гонять:
+
+```bash
+node --check src/background.js
+node --check src/popup/popup.js
+node --check src/options/options.js
+node --check src/lib/api.js
+node --check src/lib/format.js
+node --check src/lib/storage.js
+python3 -c "import json; json.load(open('manifest.json'))"
 ```
 
 ---

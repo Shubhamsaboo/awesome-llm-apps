@@ -7,35 +7,6 @@
 
 const BASE = "https://claude.ai";
 
-/**
- * @typedef {Object} UsageWindow
- * @property {number} utilization  // 0..100
- * @property {string} resets_at    // ISO 8601 UTC
- */
-
-/**
- * @typedef {Object} UsageResponse
- * @property {UsageWindow|null} five_hour
- * @property {UsageWindow|null} seven_day
- * @property {UsageWindow|null} seven_day_opus
- * @property {UsageWindow|null} seven_day_sonnet
- * @property {Object|null} extra_usage
- */
-
-/**
- * @typedef {Object} AccountInfo
- * @property {string} email
- * @property {string} plan
- * @property {string} orgId
- */
-
-/**
- * @typedef {Object} Snapshot
- * @property {UsageResponse} usage
- * @property {AccountInfo} account
- * @property {number} fetchedAtEpochMs
- */
-
 export class ApiError extends Error {
   /** @param {"LOGGED_OUT"|"NETWORK"|"HTTP"|"NO_ORG"} kind */
   constructor(kind, message, cause) {
@@ -67,7 +38,6 @@ async function getJson(path) {
 
 /**
  * Reads the whole snapshot in the fewest possible round-trips.
- * @returns {Promise<Snapshot>}
  */
 export async function fetchSnapshot() {
   const orgs = await getJson("/api/organizations");
@@ -92,9 +62,12 @@ export async function fetchSnapshot() {
   };
 }
 
-function pickPrimaryOrg(orgs) {
+/**
+ * Choose the org most likely to have real limits — prefer max, then pro/team.
+ * Exported for unit tests.
+ */
+export function pickPrimaryOrg(orgs) {
   if (!Array.isArray(orgs) || orgs.length === 0) return null;
-  // Prefer a "claude_pro" / "claude_max" / "claude_team" org over the free one.
   const scored = orgs.map((o) => ({
     o,
     score: (o.capabilities || []).reduce(
@@ -106,9 +79,11 @@ function pickPrimaryOrg(orgs) {
   return scored[0].o;
 }
 
-function mergeExtraUsage(usage, overage) {
-  // Some accounts return extra_usage inside /usage, others in /overage_spend_limit.
-  // Normalise so callers see one shape.
+/**
+ * Normalise extra_usage: some accounts return it inside /usage, others in
+ * /overage_spend_limit. Exported for unit tests.
+ */
+export function mergeExtraUsage(usage, overage) {
   const extra = usage.extra_usage
     ?? (overage
       ? {
