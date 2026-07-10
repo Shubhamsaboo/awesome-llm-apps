@@ -24,5 +24,9 @@ Do not restate the material. Do not praise. If it is genuinely fine,
 say so in one line and stop. Keep the full response under 300 words.
 ```
 
+For the final taste pass, the QUESTION must ask: are all success
+criteria satisfied, does the deliverable exercise the real target, and
+is this a ship or a conditional pass?
+
 Handling the response: apply or explicitly rebut every note. Rebuttals
 go in the final report. Never silently drop an advisor note.

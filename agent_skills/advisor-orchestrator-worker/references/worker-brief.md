@@ -1,9 +1,11 @@
 # Worker Brief Format
 
-Every worker dispatch is one stateless CLI call containing this brief.
+Every worker dispatch is one stateless call — an agy CLI run, or a
+Gemini API request on the fallback path — containing this brief.
 The worker has no memory, no follow-ups, and sees nothing but this text.
 Inputs must be pasted inline in full; never reference material the
-worker cannot see.
+worker cannot see. For code subtasks that means the entrypoint, file
+layout, and exact run commands — or workers will invent their own.
 
 ```
 You are a worker completing ONE subtask of a larger project. This brief

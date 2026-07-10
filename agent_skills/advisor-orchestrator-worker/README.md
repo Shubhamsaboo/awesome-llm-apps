@@ -11,16 +11,16 @@ This skill turns your coding agent into the orchestrator of a three-tier model t
 | Role | Default model <sub>(July 2026 — swap freely)</sub> | What it does | What it never does |
 |---|---|---|---|
 | **Orchestrator** | GPT-5.6 | Frames success criteria, plans waves, dispatches briefs, verifies every result, synthesizes the deliverable | Worker-level grunt work |
-| **Workers** | Gemini 3.5 Flash | One self-contained subtask each, in parallel, stateless — each sees only its brief | Talk to each other, expand scope, get a second chance on the same call |
+| **Workers** | Gemini 3.5 Flash via `agy` CLI <sub>(bare Gemini API as fallback)</sub> | One self-contained subtask each, in parallel, stateless — each sees only its brief, with tool access when the subtask needs it | Talk to each other, expand scope, get a second chance on the same call |
 | **Advisor** | Claude Fable 5 | Plan review before any dispatch, taste pass before delivery, called mid-run only at commitment boundaries | Execute anything |
 
-The economics are the point: cheap parallel generation where volume wins, expensive judgment only where it changes a decision. Budgeted — **20 worker calls, 5 consults** — so a run can't quietly burn a hole in your API bill. Models are knobs: the tier pattern is the durable part, the defaults were current in July 2026.
+The economics are the point: cheap parallel generation where volume wins, expensive judgment only where it changes a decision. Every run states a budget up front, sized to the plan, and never spends past it silently: running out means an honest report or an explicit ask, not quiet burn. Models are knobs: the tier pattern is the durable part, the defaults were current in July 2026.
 
 ## Why it doesn't fall apart
 
 Multi-model loops usually die from context leaks, silent partial failures, or judgment applied too late. Each has a rule here:
 
-- **Stateless briefs** ([references/worker-brief.md](references/worker-brief.md)) — every dispatch carries its full inputs and acceptance criteria inline. No shared context, no "as discussed above." Briefs travel as temp files with jq-built payloads, never interpolated into shell strings.
+- **Stateless briefs** ([references/worker-brief.md](references/worker-brief.md)) — every dispatch carries its full inputs and acceptance criteria inline. No shared context, no "as discussed above." Briefs travel as temp files — handed to `agy` as a quoted expansion, or jq-built into API payloads on the fallback path — never interpolated into shell strings.
 - **Verify before merge** — every result is judged against its own acceptance criteria: PASS, FIX (redispatched with the named failure), or ESCALATE. No silent partial passes, no hand-patching.
 - **The advisor is a critic, not an executor** ([references/advisor-consult.md](references/advisor-consult.md)) — verdict, ranked risks, concrete fixes, under 300 words. Every note gets applied or explicitly rebutted.
 
@@ -32,7 +32,7 @@ npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_
 
 Or copy this folder into your agent's skills dir (`~/.claude/skills/`, `~/.codex/skills/`, `~/.agents/skills/`).
 
-**Needs** (declared up front, per this repo's rules): `GEMINI_API_KEY` (falls back to `GOOGLE_API_KEY`) for workers, the `claude` CLI for the advisor, `jq`, and optionally the `agy` CLI for tool-using workers. Anything missing degrades gracefully — your agent plays the missing role itself and says so.
+**Needs** (declared up front, per this repo's rules): the `agy` (Antigravity) CLI for workers — with `GEMINI_API_KEY` (falls back to `GOOGLE_API_KEY`) as the API fallback when agy is unavailable — plus the `claude` CLI for the advisor and `jq` for fallback payloads. Anything missing degrades gracefully — the skill explains the setup fix, then offers degraded mode where your agent plays the missing role itself, labeled as such.
 
 ## Use it
 
