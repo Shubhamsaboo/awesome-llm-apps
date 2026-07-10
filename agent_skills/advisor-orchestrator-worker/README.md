@@ -32,7 +32,7 @@ npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_
 
 Or copy this folder into your agent's skills dir (`~/.claude/skills/`, `~/.codex/skills/`, `~/.agents/skills/`).
 
-**Needs** (declared up front, per this repo's rules): the `agy` (Antigravity) CLI for workers — with `GEMINI_API_KEY` (falls back to `GOOGLE_API_KEY`) as the API fallback — plus the `claude` CLI for the advisor (`ANTHROPIC_API_KEY` as its API fallback) and `jq` for fallback payloads. Every role runs on its subscription CLI when installed and falls back to its API key when not. The orchestrator is whichever agent loads the skill; to put a specific model in that seat, launch the run through its CLI (e.g. `codex exec "..."`). Anything missing degrades gracefully — the skill explains the setup fix, then offers degraded mode where your agent plays the missing role itself, labeled as such.
+**Needs** (declared up front, per this repo's rules): the `agy` CLI for workers, the `claude` CLI for the advisor, and `jq`. Missing a CLI? That role falls back to its API key: `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) for workers, `ANTHROPIC_API_KEY` for the advisor. The orchestrator is whichever agent loads the skill; launch through a specific model's CLI (like `codex exec`) to choose it. If a role has neither CLI nor key, the skill explains the fix and offers a clearly labeled degraded mode.
 
 ## Use it
 
