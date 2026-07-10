@@ -235,7 +235,7 @@ def autopsy(repo, all_repos):
             and not repo["has_tags"]):  # tagged releases = it shipped, just not as a deployment
         findings.append((
             "deploy_fear",
-            "README written, %d commits in, tests %s — and no deploy config anywhere. "
+            "README written, %d commits in, tests %s, and no deploy config anywhere. "
             "It worked. It just never shipped." % (repo["commits"], "present" if repo["has_tests"] else "absent"),
         ))
 
@@ -420,7 +420,7 @@ def main(argv=None):
         print("     ___|____________|___")
         print("    ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
         print()
-    print("GRAVEYARD REPORT — %s" % datetime.now().strftime("%Y-%m-%d"))
+    print("GRAVEYARD REPORT · %s" % datetime.now().strftime("%Y-%m-%d"))
     print("=" * 60)
     print("repos scanned: %d   alive: %d   finished: %d   dead: %d   not yours (skipped): %d"
           % (len(repos) + foreign, len(alive), len(finished), len(dead), foreign))
