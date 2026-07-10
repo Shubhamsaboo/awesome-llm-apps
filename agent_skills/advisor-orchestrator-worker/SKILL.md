@@ -10,7 +10,7 @@ description: >-
 license: Apache-2.0
 metadata:
   author: "Shubham Saboo"
-  version: "1.1.0"
+  version: "1.0.0"
   source: "https://github.com/Shubhamsaboo/awesome-llm-apps"
 compatibility: >-
   Makes network calls: workers via the Antigravity CLI (agy), falling back to
