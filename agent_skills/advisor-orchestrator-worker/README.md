@@ -11,7 +11,7 @@ This skill turns your coding agent into the orchestrator of a three-tier model t
 | Role | Default model <sub>(July 2026 — swap freely)</sub> | What it does | What it never does |
 |---|---|---|---|
 | **Orchestrator** | GPT-5.6 | Frames success criteria, plans waves, dispatches briefs, verifies every result, synthesizes the deliverable | Worker-level grunt work |
-| **Workers** | Gemini 3.5 Flash via `agy` CLI <sub>(bare Gemini API as fallback)</sub> | One self-contained subtask each, in parallel, stateless — each sees only its brief, with tool access when the subtask needs it | Talk to each other, expand scope, get a second chance on the same call |
+| **Workers** | Gemini 3.5 Flash | One self-contained subtask each, in parallel, stateless — each sees only its brief, with tool access when the subtask needs it | Talk to each other, expand scope, get a second chance on the same call |
 | **Advisor** | Claude Fable 5 | Plan review before any dispatch, taste pass before delivery, called mid-run only at commitment boundaries | Execute anything |
 
 The economics are the point: cheap parallel generation where volume wins, expensive judgment only where it changes a decision. Every run states a budget up front, sized to the plan, and never spends past it silently: running out means an honest report or an explicit ask, not quiet burn. Models are knobs: the tier pattern is the durable part, the defaults were current in July 2026.
