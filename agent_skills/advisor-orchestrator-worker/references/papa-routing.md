@@ -1,21 +1,29 @@
 # Papa Routing Format
 
-Papa sits between the orchestrator and the advisor. Every advisor consult
-passes through Papa first. Papa is a router on a **different provider** than
-the Anthropic advisor — that separation prevents routing bias.
+Papa is **not** on the hot path. Mandatory advisor plan review and taste pass
+stay as in v1.0. Invoke Papa only when:
+
+1. **Conflict** — worker outputs contradict each other beyond provided context,
+   or synthesis cannot merge them without guessing.
+2. **Advisor–orchestrator disagreement** — after a mandatory advisor consult
+   (plan review, taste pass, or mid-loop judgment call), the orchestrator
+   would materially reject or diverge from the advisor's verdict/fixes.
+
+Papa is a tie-breaker on a **different provider** than the Anthropic advisor —
+that separation prevents the advisor from owning its own escalation.
 
 Default model: `gemini-3.5-pro` (July 2026 knob). Override for current APIs:
 `PAPA_MODEL=gemini-3.1-pro-preview`.
 
 ```
-You are Papa, the routing gate between an orchestrator and its advisor.
-You never execute work and never rewrite the deliverable. You only decide
-whether this decision needs the advisor or the orchestrator can handle it.
+You are Papa, the conflict and disagreement resolver between an orchestrator
+and its advisor. You never execute work and never rewrite the deliverable.
+You only break ties when they cannot align.
 
-REQUEST TYPE: <plan review | taste pass | conflict | judgment call>
+REQUEST TYPE: <conflict | advisor-orchestrator disagreement>
 TASK AND SUCCESS CRITERIA: <from the frame step>
-QUESTION: <what decision is needed>
-MATERIAL: <plan excerpt, conflict summary, or draft summary — keep under 2k chars>
+QUESTION: <what decision is deadlocked>
+MATERIAL: <conflicting worker excerpts, or advisor verdict vs orchestrator position — keep under 2k chars>
 COST SNAPSHOT: <output of scripts/cost_tracker.sh status>
 
 Respond with exactly this structure (no prose outside it):
@@ -23,21 +31,18 @@ ROUTE: <advisor | orchestrator>
 REASON: one line
 ```
 
-## Routing rules
+## ROUTE meaning
 
-| Situation | Default route |
+| ROUTE | Meaning |
 |---|---|
-| Plan is straightforward and success criteria are checkable | `orchestrator` |
-| Contradiction beyond worker context, second verification failure | `advisor` |
-| Judgment outside success criteria, taste/risk on final deliverable | `advisor` |
-| Structural plan change mid-run | `advisor` |
+| `advisor` | Side with the advisor — apply advisor fixes, escalate conflict to advisor judgment, or hold ship until advisor concerns are addressed |
+| `orchestrator` | Side with the orchestrator — proceed with orchestrator's merge/resolution/rebuttal as stated |
 
-Plan review #1 and taste pass #2 are **not** automatic advisor calls. Papa
-may route `orchestrator` when the material is simple enough.
+Do **not** invoke Papa for straightforward plans, routine plan review, or
+routine taste pass when advisor and orchestrator already align.
 
-Run `scripts/cost_tracker.sh check` before invoking Papa. Record Papa usage
-after the call with `--tier papa --model ${PAPA_MODEL:-gemini-3.5-pro}`.
+Record Papa usage after the call with `--tier papa --model ${PAPA_MODEL:-gemini-3.5-pro}`.
 
-Handling the response: follow the route or log an explicit override with
-reason. Overrides that force `advisor` when Papa said `orchestrator` must
-be stated in the final report.
+Parse with `scripts/parse_papa_route.sh`. Log every Papa ROUTE on the status
+board. If the orchestrator overrides Papa's ROUTE, state why in the final
+report.

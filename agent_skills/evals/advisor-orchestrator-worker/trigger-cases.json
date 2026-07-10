@@ -6,19 +6,19 @@
       "id": "orchestrate-team",
       "prompt": "this task is way too big for one pass, can you orchestrate it across a team of models and run the subtasks in parallel?",
       "should_trigger": true,
-      "assert": "Activates; frames deliverable + success criteria; cost estimate before dispatch."
+      "assert": "Activates; frames deliverable + success criteria; cost estimate with optimizations before dispatch."
     },
     {
       "id": "fan-out-research",
       "prompt": "fan this out: research all 12 competitors in parallel with cheap workers and have a stronger model review the plan first",
       "should_trigger": true,
-      "assert": "Activates; Papa gate before advisor; user approves cost estimate."
+      "assert": "Activates; mandatory advisor plan review; cost estimate is advisory."
     },
     {
       "id": "advisor-worker-loop",
       "prompt": "run the advisor worker loop on this project brief, I want one model orchestrating and an advisor model checking the plan",
       "should_trigger": true,
-      "assert": "Activates; Papa routes before advisor consults; cost tracker gates spend."
+      "assert": "Activates; advisor consults on plan; Papa only on conflict or disagreement."
     },
     {
       "id": "near-miss-ci-parallel",

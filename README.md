@@ -129,7 +129,7 @@ streamlit run travel_agent.py
 *Give your coding agent new abilities. One command to install, plain English to use. Works with Claude Code, Codex, Cursor, and other coding agents. [Browse all skills →](agent_skills/)*
 
 *   [⚰️ Project Graveyard](agent_skills/project-graveyard/) - Finds every side project you abandoned, tells you why each one died, and helps you finish the one worth going back to
-*   [🧠 Advisor Orchestrator Worker](agent_skills/advisor-orchestrator-worker/) - Five-tier meta loop: GPT-5.6 orchestrator, Flash cost estimate + ceiling, Papa (Gemini Pro) routing gate, Gemini 3.5 Flash workers, Claude Fable 5 advisor when Papa routes `advisor`
+*   [🧠 Advisor Orchestrator Worker](agent_skills/advisor-orchestrator-worker/) - Five-tier meta loop: GPT-5.6 orchestrator, advisory Flash cost estimate + spend tracking, mandatory Fable advisor, Papa on conflicts/disagreements only, Gemini 3.5 Flash workers
 *   [♾️ Self-Improving Agent Skills](agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
 
 ### 🌱 Starter AI Agents

@@ -28,5 +28,8 @@ if missing:
 if not isinstance(data["breakdown"], list):
     print("parse_estimate: breakdown must be a list", file=sys.stderr)
     sys.exit(2)
+if "optimizations" in data and not isinstance(data["optimizations"], list):
+    print("parse_estimate: optimizations must be a list", file=sys.stderr)
+    sys.exit(2)
 print(json.dumps(data, separators=(",", ":")))
 PY

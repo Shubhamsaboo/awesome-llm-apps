@@ -4,19 +4,18 @@
     {
       "id": 1,
       "prompt": "Orchestrate this across a model team: produce a competitive analysis of 8 note-taking apps, each covering pricing, target user, and one weakness, synthesized into a comparison table with a recommendation.",
-      "expected_output": "A framed deliverable with checkable success criteria, cost estimate with user approval, Papa routing before advisor consults, parallel worker dispatches, per-subtask verification, and a synthesized table.",
+      "expected_output": "A framed deliverable with checkable success criteria, cost estimate with optimizations, mandatory advisor plan review, parallel worker dispatches, per-subtask verification, and a synthesized table.",
       "expectations": [
         "Success criteria (3-5, checkable) are stated before any dispatch",
-        "Cost estimate (tokens + USD breakdown) is presented and user approval obtained before workers run",
-        "Papa gate runs before advisor plan review; routing decision is logged",
-        "Advisor plan review happens only when Papa routes advisor",
+        "Cost estimate (tokens + USD + optimizations) is presented before workers run without blocking for approval",
+        "Mandatory advisor plan review happens before delegate (not gated by Papa)",
         "Worker briefs contain all inputs inline and acceptance criteria",
         "Every worker result gets PASS/FIX/ESCALATE against its own criteria",
-        "Final report includes verification ledger, Papa decisions, cost estimate vs actuals",
+        "Final report includes verification ledger, Papa decisions if any, cost estimate vs actuals",
         "Parallel worker outputs collected from per-worker scratch files, not shared stdout",
         "Workers dispatch via agy CLI by default with gemini-3.5-flash pinned",
         "Briefs and consults written to temp files, never interpolated into shell strings",
-        "cost_tracker.sh check runs before waves and expensive consults"
+        "cost_tracker.sh records usage; check is advisory and does not block dispatch",
       ]
     },
     {
@@ -33,10 +32,10 @@
     {
       "id": 3,
       "prompt": "Two of the worker results in this run directly contradict each other about the API's rate limits.",
-      "expected_output": "Papa escalation on commitment boundary routing advisor, not silent averaging.",
+      "expected_output": "Papa conflict resolution routing advisor when needed, not silent averaging.",
       "expectations": [
         "Contradiction triggers Papa consult with REQUEST TYPE conflict",
-        "Papa routes advisor for unresolved contradictions",
+        "Papa breaks tie or routes advisor for unresolved conflicts",
         "Conflicts resolved explicitly, never by averaging",
         "Spend recorded in cost_tracker and shown on status board"
       ]
@@ -44,21 +43,22 @@
     {
       "id": 4,
       "prompt": "A worker's output failed its acceptance criteria; just fix it up yourself and move on, we're in a hurry.",
-      "expected_output": "Redispatch with named failure or Papa escalation after second failure; no hand-patching.",
+      "expected_output": "Redispatch with named failure or advisor escalation after second failure; no hand-patching.",
       "expectations": [
         "Substantive failures redispatched with failed criterion quoted",
-        "Second failure escalates through Papa toward advisor",
+        "Second failure escalates to advisor judgment call",
+        "Papa only if orchestrator and advisor then disagree materially",
         "Status board reflects FIX/ESCALATE honestly with cost line"
       ]
     },
     {
       "id": 5,
-      "prompt": "Run a simple 2-subtask research plan where success criteria are already checkable.",
-      "expected_output": "Papa routes orchestrator on plan review; cost estimate shown; minimal advisor spend.",
+      "prompt": "The advisor says we must rewrite the whole plan but I think only one subtask needs to change — who wins?",
+      "expected_output": "Papa advisor-orchestrator disagreement tie-break after mandatory consult.",
       "expectations": [
-        "Cost estimate presented before dispatch",
-        "Papa may route orchestrator instead of advisor for straightforward material",
-        "Advisor not called unless Papa routes advisor or commitment boundary fires",
+        "Material advisor-orchestrator split triggers Papa with REQUEST TYPE advisor-orchestrator disagreement",
+        "Papa ROUTE logged; orchestrator follows tie-break or documents override",
+        "Papa not invoked for routine aligned plan review",
         "Final report includes estimate vs actual cost"
       ]
     }

@@ -10,7 +10,7 @@ call, read token usage from the response and record it:
 # Anthropic: .usage.input_tokens / .usage.output_tokens
 scripts/cost_tracker.sh record --tier <worker|papa|advisor|estimator> \
   --input <n> --output <n> --model <model-id>
-scripts/cost_tracker.sh check || exit 2
+scripts/cost_tracker.sh check   # advisory only
 ```
 
 If usage metadata is missing, estimate chars/4 for input and output:
@@ -35,7 +35,7 @@ scripts/cost_tracker.sh record --tier advisor --input "$inp" --output "$out" \
 
 ## Cost estimator: Gemini Flash API call
 
-One call after Plan, before Papa. Default `gemini-3.5-flash`; override:
+One call after Plan, before advisor plan review. Default `gemini-3.5-flash`; override:
 `ESTIMATOR_MODEL` (e.g. `gemini-3.1-flash-lite`).
 
 ```bash
@@ -56,7 +56,8 @@ Parse with `scripts/parse_estimate.sh` (validates JSON). Record estimator usage 
 
 ## Papa: Gemini Pro API call
 
-Routing only — not `agy`. Default `gemini-3.5-pro` (July 2026 knob).
+Conflict or advisor–orchestrator disagreement only — not routine plan/taste
+pass. Default `gemini-3.5-pro` (July 2026 knob).
 Override for current APIs: `PAPA_MODEL=gemini-3.1-pro-preview`.
 
 ```bash

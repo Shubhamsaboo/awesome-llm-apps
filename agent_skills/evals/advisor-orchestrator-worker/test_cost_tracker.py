@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Executable eval for cost_tracker.sh — deterministic pricing math and ceiling.
+Executable eval for cost_tracker.sh — deterministic pricing math and advisory check.
 
     python3 evals/advisor-orchestrator-worker/test_cost_tracker.py
 
@@ -57,12 +57,10 @@ def main():
     env["COST_PRICING"] = pricing_path
     env["COST_TRACKER"] = tracker_path
 
-    # init
-    r = run_tracker(env, "init", "--approved-usd", "1.00", "--estimated-usd", "0.80")
+    r = run_tracker(env, "init", "--target-usd", "1.00", "--estimated-usd", "0.80")
     check("init exits 0", r.returncode == 0, r.stderr.strip())
     check("init prints tracker path", tracker_path in (r.stdout + r.stderr) or os.path.isfile(tracker_path))
 
-    # record under ceiling: 100k in + 50k out @ flash = 0.10 + 0.10 = 0.20 USD
     r = run_tracker(
         env,
         "record",
@@ -83,12 +81,11 @@ def main():
 
     r = run_tracker(env, "status")
     check("status exits 0", r.returncode == 0)
-    check("status mentions approved", "approved" in r.stdout)
+    check("status mentions target", "target" in r.stdout)
 
     r = run_tracker(env, "check")
-    check("check passes under ceiling", r.returncode == 0, r.stderr.strip())
+    check("check passes under target", r.returncode == 0, r.stderr.strip())
 
-    # push over ceiling: 50k in + 50k out @ fable = 0.50 + 1.00 = 1.50 → total 1.70
     r = run_tracker(
         env,
         "record",
@@ -101,10 +98,14 @@ def main():
         "--model",
         "claude-fable-5",
     )
-    check("record over ceiling still exits 0", r.returncode == 0)
+    check("record over target still exits 0", r.returncode == 0)
 
     r = run_tracker(env, "check")
-    check("check fails over ceiling", r.returncode == 2)
+    check("check advisory over target exits 0", r.returncode == 0)
+    check("check prints advisory", "ADVISORY" in r.stderr, r.stderr.strip())
+
+    r = run_tracker(env, "init", "--approved-usd", "2.00", "--estimated-usd", "1.50")
+    check("legacy --approved-usd init works", r.returncode == 0, r.stderr.strip())
 
     os.unlink(pricing_path)
     os.unlink(tracker_path)

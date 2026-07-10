@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# cost_tracker.sh — runtime spend tracker for advisor-orchestrator-worker
+# cost_tracker.sh — advisory spend tracker for advisor-orchestrator-worker
 # Requires: jq, python3. Pricing from references/pricing.json (COST_PRICING).
+# check is advisory only (always exit 0).
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -36,25 +37,33 @@ print(str(usd.quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)))
 PY
 }
 
-cmd_init() {
-  local approved="" estimated=""
+target_from_args() {
+  local target="" approved="" estimated=""
   while [ $# -gt 0 ]; do
     case "$1" in
+      --target-usd) target="$2"; shift 2 ;;
       --approved-usd) approved="$2"; shift 2 ;;
       --estimated-usd) estimated="$2"; shift 2 ;;
       *) die "unknown init arg: $1" ;;
     esac
   done
-  [ -n "$approved" ] || die "init requires --approved-usd"
+  [ -n "$target" ] || target="$approved"
+  [ -n "$target" ] || die "init requires --target-usd (or legacy --approved-usd)"
+  echo "$target" "$estimated"
+}
+
+cmd_init() {
+  read -r target estimated < <(target_from_args "$@")
+  [ -n "$estimated" ] || estimated="$target"
   require_pricing
   if [ -z "$TRACKER" ]; then
     TRACKER=$(mktemp)
     export COST_TRACKER="$TRACKER"
   fi
   jq -n \
-    --arg approved "$approved" \
-    --arg estimated "${estimated:-$approved}" \
-    '{approved_usd: $approved, estimated_usd: $estimated,
+    --arg target "$target" \
+    --arg estimated "$estimated" \
+    '{target_usd: $target, estimated_usd: $estimated,
       total_input_tokens: 0, total_output_tokens: 0, total_usd: "0.0000",
       records: []}' > "$TRACKER"
   echo "$TRACKER"
@@ -104,22 +113,22 @@ import json, sys
 from decimal import Decimal
 t = json.load(open(sys.argv[1]))
 actual = Decimal(t["total_usd"])
-approved = Decimal(t["approved_usd"])
+target = Decimal(t.get("target_usd") or t.get("approved_usd", "0"))
 estimated = Decimal(t["estimated_usd"])
 pct = (actual / estimated * 100) if estimated > 0 else Decimal(0)
-remaining = approved - actual
+remaining = target - actual
 print(
-    "COST: $%s / $%s approved | %.0f%% of estimate | %dk in / %dk out"
+    "COST: $%s / $%s target | %.0f%% of estimate | %dk in / %dk out"
     % (
         actual.quantize(Decimal("0.01")),
-        approved.quantize(Decimal("0.01")),
+        target.quantize(Decimal("0.01")),
         float(pct),
         t["total_input_tokens"] // 1000,
         t["total_output_tokens"] // 1000,
     )
 )
 if remaining < 0:
-    print("OVER BUDGET by $%s" % (-remaining).quantize(Decimal("0.01")))
+    print("OVER TARGET by $%s (advisory)" % (-remaining).quantize(Decimal("0.01")))
 PY
 }
 
@@ -129,8 +138,15 @@ cmd_check() {
 import json, sys
 from decimal import Decimal
 t = json.load(open(sys.argv[1]))
-if Decimal(t["total_usd"]) > Decimal(t["approved_usd"]):
-    sys.exit(2)
+actual = Decimal(t["total_usd"])
+target = Decimal(t.get("target_usd") or t.get("approved_usd", "0"))
+if actual > target:
+    over = (actual - target).quantize(Decimal("0.01"))
+    print(
+        "ADVISORY: over target by $%s — trim briefs, batch waves, or defer optional consults"
+        % over,
+        file=sys.stderr,
+    )
 PY
 }
 
@@ -142,9 +158,9 @@ case "$cmd" in
   status) cmd_status ;;
   check) cmd_check ;;
   *)
-    echo "usage: COST_TRACKER=<file> COST_PRICING=<pricing.json> $0 init --approved-usd N [--estimated-usd N]" >&2
+    echo "usage: COST_TRACKER=<file> COST_PRICING=<pricing.json> $0 init --target-usd N [--estimated-usd N]" >&2
     echo "       $0 record --tier worker|papa|advisor|estimator --input N --output N --model ID" >&2
-    echo "       $0 status | check" >&2
+    echo "       $0 status | check   # check is advisory only (exit 0)" >&2
     exit 2
     ;;
 esac
