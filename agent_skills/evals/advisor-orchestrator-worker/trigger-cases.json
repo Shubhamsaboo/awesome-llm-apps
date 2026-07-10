@@ -18,7 +18,7 @@
       "id": "advisor-worker-loop",
       "prompt": "run the advisor worker loop on this project brief, I want one model orchestrating and an advisor model checking the plan",
       "should_trigger": true,
-      "assert": "Activates; follows the 7-step loop; consults the advisor at plan review and taste pass only."
+      "assert": "Activates; follows the loop with Papa gates before advisor consults; cost ledger gates every dispatch."
     },
     {
       "id": "near-miss-ci-parallel",
