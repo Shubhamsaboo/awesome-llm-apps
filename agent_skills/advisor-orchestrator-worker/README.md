@@ -49,7 +49,8 @@ advisor-orchestrator-worker/
 ├── SKILL.md                          # the loop, the team, budgets, escalation rules
 ├── README.md                         # this file
 ├── references/worker-brief.md        # the stateless dispatch format workers receive
-└── references/advisor-consult.md     # the consult format the advisor answers in
+├── references/advisor-consult.md     # the consult format the advisor answers in
+└── references/fallbacks.md           # the Gemini and Anthropic API fallback calls
 ```
 
 Evals live repo-side in `agent_skills/evals/advisor-orchestrator-worker/` — you install only what runs.
