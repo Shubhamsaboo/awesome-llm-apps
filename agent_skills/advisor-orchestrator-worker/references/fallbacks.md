@@ -7,7 +7,7 @@ Both fallbacks keep the primary paths' discipline: payloads built with
 failure, and a closing jq that unwraps the response envelope so the
 orchestrator reads plain text on either path.
 
-## Workers — bare Gemini API call
+## Workers: bare Gemini API call
 
 No tools. Run the full wave in parallel; the 3-batch cap is an agy
 quota rule and does not apply here.
@@ -24,7 +24,7 @@ api_key="${GEMINI_API_KEY:-$GOOGLE_API_KEY}"
 pids+=($!)
 ```
 
-## Advisor — bare Anthropic API call
+## Advisor: bare Anthropic API call
 
 Same model as the CLI path. The `fallbacks` parameter re-serves a
 safety-classifier refusal on Opus 4.8 inside the same call, so one

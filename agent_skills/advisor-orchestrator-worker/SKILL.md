@@ -33,9 +33,9 @@ on another shell, run them with `bash -c`.
 
 ## The team
 
-- **Workers (default: Gemini 3.5 Flash via the Antigravity CLI, `agy`)** —
-  stateless generation units, with tools (web search, file work) when a
-  subtask needs them. Never interpolate a brief into a shell string —
+- **Workers (default: Gemini 3.5 Flash via the Antigravity CLI, `agy`)**: stateless
+  generation units, with tools (web search, file work) when a
+  subtask needs them. Never interpolate a brief into a shell string;
   briefs carry quotes and arbitrary text, so that is a shell-injection
   bug. Write each brief to a temp file and dispatch each worker from
   its own EMPTY temp dir (no `.antigravity.md` or project context
@@ -57,18 +57,18 @@ on another shell, run them with `bash -c`.
   Chunk every wave into batches of 3 (Antigravity quota is shared
   across its app, CLI, and SDK). Start each batch with `pids=()`, reap
   each worker with its own `wait "$pid"` (a collective wait reports
-  only the last status), and read each `$out` in dispatch order — a
-  shared stdout hands verify interleaved output. Non-zero exit or an
+  only the last status), and read each `$out` in dispatch order,
+  since a shared stdout hands verify interleaved output. Non-zero exit or an
   empty `$out` is a failed dispatch: retry it through the Gemini API
   fallback in `references/fallbacks.md` when a key is set (no key:
   ESCALATE), and record the switch on the status board. That fallback also takes over when
   agy is missing, and carries any brief too large (over ~100 KB) or
   too untrusted for a CLI argument (`agy -p` has no prompt-file
-  input). API workers run uncapped in parallel but have no tools — a
+  input). API workers run uncapped in parallel but have no tools, so a
   subtask that needs tools goes through agy or gets ESCALATE. Clean up
   all temp files at run end.
 
-- **Advisor (default: Claude Fable 5 via the claude CLI)** — consult
+- **Advisor (default: Claude Fable 5 via the claude CLI)**: consult
   written to a temp file, passed on stdin (never inline in the
   command), behind a timeout so a hung consult can't stall the loop
   (perl's alarm; timeout(1) is missing on stock macOS):
@@ -100,13 +100,13 @@ on another shell, run them with `bash -c`.
 4. **Delegate.** Dispatch each wave using the format in
    `references/worker-brief.md`. Parallel background calls, then wait.
 5. **Verify.** Check every result against its own acceptance criteria,
-   and make the check exercise the deliverable itself — run the actual
+   and make the check exercise the deliverable itself: run the actual
    command, read the actual output. Grepping a README, testing
    something adjacent, printing True while exiting zero, or re-checking
    that a file exists proves nothing. Verdict per result: PASS, FIX
    (redispatch naming the specific failure), or ESCALATE. Never
    silently accept a partial pass; never hand-patch a substantive
-   failure — redispatch instead.
+   failure; redispatch instead.
 6. **Synthesize.** When all subtasks pass, assemble the deliverable.
    Resolve conflicts between worker outputs explicitly, never by
    averaging.
@@ -135,4 +135,4 @@ needs the user. Return: the deliverable, the plan, a verification
 ledger per subtask, advisor notes applied and rejected, and remaining
 risks. Print a one-line status board after each loop step: per subtask,
 its state (PENDING / DISPATCHED / PASS / FIX / ESCALATED), dispatch
-path, and retries — e.g. `W2: FIX → PASS | agy→api | 1 retry`.
+path, and retries, e.g. `W2: FIX → PASS | agy→api | 1 retry`.
