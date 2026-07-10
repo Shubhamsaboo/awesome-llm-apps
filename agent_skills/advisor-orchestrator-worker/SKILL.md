@@ -17,8 +17,8 @@ compatibility: >-
   the Gemini API (GEMINI_API_KEY or GOOGLE_API_KEY); cost estimator and Papa
   routing via the Gemini API; advisor via the claude CLI, falling back to the
   Anthropic API (ANTHROPIC_API_KEY). Needs jq, python3, scripts/cost_tracker.sh,
-  scripts/parse_estimate.sh, and scripts/parse_papa_route.sh. All snippets are
-  bash. Runs in any harness that can execute shell commands.
+  scripts/parse_estimate.sh, scripts/parse_disagreement_cost.sh, and
+  scripts/parse_papa_route.sh. All snippets are bash. Runs in any harness that can execute shell commands.
 ---
 
 # Advisor Orchestrator Worker
@@ -41,18 +41,17 @@ Snippets are bash; on another shell, run them with `bash -c`.
 ## The team
 
 - **Cost control (Gemini 3.5 Flash estimator + `scripts/cost_tracker.sh`)**:
-  After Plan, one Flash call estimates tokens and USD using
-  `references/pricing.json` and `references/cost-estimate.md`. Present
-  breakdown plus `optimizations`; apply cheap wins to the plan. Init
-  tracker with a soft `--target-usd` (user budget from frame if any).
-  `record` logs actual usage; `status` and `check` are advisory only —
-  never refuse dispatch. See `references/cost-control.md`.
+  After Plan, one Flash call estimates the full run (`references/cost-estimate.md`).
+  When Papa is needed, a second Flash call prices **both** resolution paths
+  (`references/disagreement-cost.md`) and that block goes into Papa's brief.
+  Init tracker with soft `--target-usd`; `record` logs usage; `status`/`check`
+  are advisory only. See `references/cost-control.md`.
 
-- **Papa (default: Gemini 3.5 Pro via Gemini API)**: conflict and
-  disagreement resolver only — not a gate on every advisor consult.
-  Different provider than Fable. Reads `references/papa-routing.md`,
-  returns `ROUTE: advisor | orchestrator` as a tie-break. Never
-  executes. Record with `--tier papa`. API path in `references/fallbacks.md`.
+- **Papa (default: Gemini 3.5 Pro via Gemini API)**: tie-break on conflict or
+  advisor–orchestrator disagreement only. Receives disagreement material plus
+  **disagreement cost** from cost advisory; weighs merit and spend. Returns
+  `ROUTE: advisor | orchestrator`. Never executes. API path in
+  `references/fallbacks.md` and `references/papa-routing.md`.
 
 - **Workers (default: Gemini 3.5 Flash via the Antigravity CLI, `agy`)**:
   stateless generation units, with tools when a subtask needs them.
@@ -97,23 +96,33 @@ Snippets are bash; on another shell, run them with `bash -c`.
    Init tracker: `scripts/cost_tracker.sh init --target-usd <estimate or user budget> --estimated-usd <estimate>`.
 4. **Plan review (mandatory advisor consult #1).** Consult via
    `references/advisor-consult.md`. Revise. State what changed and what
-   you rejected. If you would materially reject the advisor's verdict →
-   Papa with REQUEST TYPE `advisor-orchestrator disagreement`.
+   you rejected. If material rejection → disagreement cost estimate
+   (`references/disagreement-cost.md`) → Papa `advisor-orchestrator disagreement`.
 5. **Delegate.** Each wave per `references/worker-brief.md`. Parallel
    calls, then wait.
 6. **Verify.** Exercise each deliverable against its criteria. PASS,
    FIX, or ESCALATE. No silent partial passes; no hand-patching.
-   Contradicting worker results → Papa with REQUEST TYPE `conflict`.
+   Contradicting worker results → disagreement cost estimate → Papa `conflict`.
 7. **Synthesize.** Assemble when all pass. Resolve conflicts explicitly;
-   if merge is still deadlocked → Papa `conflict`.
+   if merge is still deadlocked → disagreement cost estimate → Papa `conflict`.
 8. **Taste pass (mandatory advisor consult #2).** Taste consult via
    `references/advisor-consult.md`. Apply or rebut each note. Material
-   disagreement after rebuttal → Papa `advisor-orchestrator disagreement`.
+   disagreement after rebuttal → disagreement cost estimate → Papa
+   `advisor-orchestrator disagreement`.
 
-## Commitment boundaries (advisor mid-loop; Papa when stuck)
+## Papa invocation (always this order)
 
-- Two worker results contradict → Papa `conflict` (or advisor conflict
-  consult if Papa routes `advisor`)
+1. State both paths (orchestrator vs advisor) in concrete actions.
+2. Flash disagreement cost brief → `scripts/parse_disagreement_cost.sh`.
+3. Build Papa brief with `DISAGREEMENT COST:` block per `references/papa-routing.md`.
+4. Papa call → `scripts/parse_papa_route.sh` → follow ROUTE.
+
+## When Papa is needed
+
+Cost advisory prices orchestrator path vs advisor path, then Papa tie-breaks
+using merit **and** cost. Never call Papa without step 1–2 above.
+
+- Two worker results contradict → disagreement cost → Papa `conflict`
 - Subtask fails verification twice → advisor `judgment call`; Papa only
   if orchestrator and advisor then disagree on the fix
 - Judgment outside success criteria → advisor `judgment call`; Papa on

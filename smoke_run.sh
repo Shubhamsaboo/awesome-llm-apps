@@ -13,12 +13,13 @@ pass() { echo "PASS  $*"; }
 fail() { echo "FAIL  $*" >&2; exit 1; }
 section() { echo ""; echo "=== $* ==="; }
 
-section "CI gate (6 commands)"
+section "CI gate (7 commands)"
 python3 "$ROOT/evals/tools/skill_lint.py" "$SKILL" --strict
 python3 "$ROOT/evals/tools/run_trigger_evals.py"
 python3 "$ROOT/evals/tools/skill_scanner.py" "$SKILL"
 python3 "$EVALS/test_cost_tracker.py"
 python3 "$EVALS/test_parse_estimate.py"
+python3 "$EVALS/test_parse_disagreement_cost.py"
 python3 "$EVALS/test_parse_papa_route.py"
 pass "all CI commands green"
 
@@ -52,6 +53,12 @@ ROUTE: advisor
 REASON: Worker A says 100 req/min, Worker B says 1000 req/min — needs advisor judgment.
 TXT
 "$SKILL/scripts/parse_papa_route.sh" "$tmpdir/papa.txt" | grep -q "ROUTE: advisor"
+cat > "$tmpdir/disagree_cost.txt" <<'JSON'
+{"orchestrator_path":{"estimated_usd":0.12,"summary":"2-app ship"},
+ "advisor_path":{"estimated_usd":0.85,"summary":"8-app expand"},
+ "delta_usd":0.73,"cost_note":"Advisor path +$0.73"}
+JSON
+"$SKILL/scripts/parse_disagreement_cost.sh" "$tmpdir/disagree_cost.txt" | jq -e . >/dev/null
 rm -rf "$tmpdir"
 pass "parse_estimate + parse_papa_route fixtures"
 

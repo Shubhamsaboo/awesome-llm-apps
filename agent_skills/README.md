@@ -18,7 +18,7 @@ Most "skills" on registries are text-only prompt dumps — advice the model alre
 
 | Skill | What it does |
 |---|---|
-| [🧠 advisor-orchestrator-worker](advisor-orchestrator-worker/) | Five-tier model team: Flash cost estimate with token optimizations and advisory spend tracking, mandatory Fable advisor at plan and taste, Papa tie-breaks only on conflicts or advisor–orchestrator disagreement — parallel workers, non-blocking cost visibility |
+| [🧠 advisor-orchestrator-worker](advisor-orchestrator-worker/) | Five-tier model team: Flash cost estimate with optimizations; on deadlock, cost advisory prices orchestrator vs advisor path and feeds Papa; mandatory Fable advisor at plan/taste; Papa tie-breaks using merit and spend |
 | [⚰️ project-graveyard](project-graveyard/) | Scans your machine for dead side projects, autopsies why each one died from its git history (deploy fear, payments wall, killed by a newer project), shows your personal death patterns, and resurrects the one with a pulse — with relapse tracking on every resurrection it prescribes |
 | [♾️ self-improving-agent-skills](self-improving-agent-skills/) | Automatically optimizes agent skills using Gemini and ADK |
 

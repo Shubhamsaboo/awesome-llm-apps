@@ -59,6 +59,14 @@ Example: `COST: $0.42 / $0.80 target | 52% of estimate | 84k in / 31k out`
   said stop at frame.
 - Never silent bleed: always record and show actuals in the final report.
 
+## Disagreement cost → Papa
+
+When a Papa tie-break is needed, cost advisory runs **again** with
+`references/disagreement-cost.md`: price what the orchestrator path costs
+vs what the advisor path costs from this point forward. Parse with
+`scripts/parse_disagreement_cost.sh` and attach to Papa's brief. Papa uses
+this to weigh spend alongside substance.
+
 ## Cleanup
 
 ```bash

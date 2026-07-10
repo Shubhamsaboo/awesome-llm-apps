@@ -34,8 +34,8 @@
       "prompt": "Two of the worker results in this run directly contradict each other about the API's rate limits.",
       "expected_output": "Papa conflict resolution routing advisor when needed, not silent averaging.",
       "expectations": [
-        "Contradiction triggers Papa consult with REQUEST TYPE conflict",
-        "Papa breaks tie or routes advisor for unresolved conflicts",
+        "Contradiction triggers disagreement cost estimate then Papa with REQUEST TYPE conflict",
+        "Disagreement cost includes orchestrator_path and advisor_path USD before Papa decides",
         "Conflicts resolved explicitly, never by averaging",
         "Spend recorded in cost_tracker and shown on status board"
       ]
@@ -56,8 +56,8 @@
       "prompt": "The advisor says we must rewrite the whole plan but I think only one subtask needs to change — who wins?",
       "expected_output": "Papa advisor-orchestrator disagreement tie-break after mandatory consult.",
       "expectations": [
-        "Material advisor-orchestrator split triggers Papa with REQUEST TYPE advisor-orchestrator disagreement",
-        "Papa ROUTE logged; orchestrator follows tie-break or documents override",
+        "Material advisor-orchestrator split triggers disagreement cost then Papa",
+        "Papa ROUTE considers cost_note and path USD from cost advisory",
         "Papa not invoked for routine aligned plan review",
         "Final report includes estimate vs actual cost"
       ]

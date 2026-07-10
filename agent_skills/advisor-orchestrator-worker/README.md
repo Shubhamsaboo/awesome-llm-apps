@@ -45,8 +45,8 @@ flowchart TD
 | Role | Default model <sub>(July 2026, swap freely)</sub> | What it does | What it never does |
 |---|---|---|---|
 | **Orchestrator** | GPT-5.6 | Frames success criteria, plans waves, dispatches briefs, verifies every result, synthesizes the deliverable | Worker-level grunt work |
-| **Cost control** | Gemini 3.5 Flash + `scripts/cost_tracker.sh` | Pre-flight estimate + optimizations; tracks spend vs soft target | Block dispatch or demand approval gates |
-| **Papa** | Gemini 3.5 Pro (`PAPA_MODEL=gemini-3.1-pro-preview` for current APIs) | Breaks ties on worker conflicts or advisor–orchestrator disagreement | Execute, rewrite deliverables, or gate routine advisor consults |
+| **Cost control** | Gemini 3.5 Flash + `scripts/cost_tracker.sh` | Pre-flight estimate + optimizations; **disagreement cost** (orchestrator vs advisor path) fed to Papa | Block dispatch or skip pricing before Papa |
+| **Papa** | Gemini 3.5 Pro | Tie-break on conflict/disagreement using merit **and** disagreement cost from cost advisory | Execute or gate routine advisor consults |
 | **Workers** | Gemini 3.5 Flash | One self-contained subtask each, in parallel, stateless | Talk to each other, expand scope |
 | **Advisor** | Claude Fable 5 | Mandatory plan review and taste pass; judgment on commitment boundaries | Execute anything |
 
@@ -56,7 +56,7 @@ Papa uses a different model family than the advisor so tie-breaking stays indepe
 
 - **Stateless briefs** ([references/worker-brief.md](references/worker-brief.md)): full inputs inline, temp files only.
 - **Cost visibility + optimization** ([references/cost-estimate.md](references/cost-estimate.md), [references/cost-control.md](references/cost-control.md)): estimate, suggest savings, track actuals — never gate the loop.
-- **Papa on deadlock only** ([references/papa-routing.md](references/papa-routing.md)): conflicts and advisor–orchestrator splits — not routine routing.
+- **Cost → Papa on deadlock** ([references/disagreement-cost.md](references/disagreement-cost.md), [references/papa-routing.md](references/papa-routing.md)): prices orchestrator path vs advisor path; Papa weighs both.
 - **Verify before merge**: PASS / FIX / ESCALATE per subtask.
 - **Advisor is a critic** ([references/advisor-consult.md](references/advisor-consult.md)): verdict, risks, fixes; every note applied or rebutted.
 
@@ -68,7 +68,7 @@ npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_
 
 Or copy this folder into your agent's skills dir.
 
-**Needs:** `agy`, `claude` CLI, `jq`, `python3`, `scripts/cost_tracker.sh`, `scripts/parse_estimate.sh`, `scripts/parse_papa_route.sh`. API keys: `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) for workers, estimator, and Papa; `ANTHROPIC_API_KEY` for advisor.
+**Needs:** `agy`, `claude` CLI, `jq`, `python3`, `scripts/cost_tracker.sh`, `scripts/parse_estimate.sh`, `scripts/parse_disagreement_cost.sh`, `scripts/parse_papa_route.sh`. API keys: `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) for workers, estimator, and Papa; `ANTHROPIC_API_KEY` for advisor.
 
 ## Files
 
@@ -78,9 +78,10 @@ advisor-orchestrator-worker/
 ├── README.md
 ├── scripts/cost_tracker.sh
 ├── scripts/parse_estimate.sh
+├── scripts/parse_disagreement_cost.sh
 ├── scripts/parse_papa_route.sh
+├── references/disagreement-cost.md
 ├── references/worker-brief.md
-├── references/advisor-consult.md
 ├── references/papa-routing.md
 ├── references/cost-estimate.md
 ├── references/cost-control.md

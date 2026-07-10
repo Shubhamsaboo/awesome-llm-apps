@@ -54,6 +54,25 @@ model="${ESTIMATOR_MODEL:-gemini-3.5-flash}"
 Parse with `scripts/parse_estimate.sh` (validates JSON). Record estimator usage from
 `$estimate_response` usageMetadata before proceeding.
 
+## Disagreement cost: Gemini Flash API call
+
+One call **per Papa invocation**, after both paths are stated, before Papa.
+Same API pattern as pre-flight estimator; brief from `references/disagreement-cost.md`.
+Parse with `scripts/parse_disagreement_cost.sh`. Paste output into Papa brief.
+
+```bash
+api_key="${GEMINI_API_KEY:-$GOOGLE_API_KEY}"
+model="${ESTIMATOR_MODEL:-gemini-3.5-flash}"
+[ -n "$api_key" ] || { echo "no Gemini key" >&2; exit 1; }
+( set -o pipefail
+  jq -n --rawfile t "$disagreement_cost_brief" '{contents:[{parts:[{text:$t}]}]}' \
+    | curl -sS --fail --max-time 120 \
+      "https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent" \
+      -H "x-goog-api-key: $api_key" -H "Content-Type: application/json" -d @- \
+    | tee "$disagreement_cost_response" \
+    | jq -r '.candidates[0].content.parts[0].text' )
+```
+
 ## Papa: Gemini Pro API call
 
 Conflict or advisor–orchestrator disagreement only — not routine plan/taste
