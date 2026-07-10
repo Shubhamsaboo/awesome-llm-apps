@@ -32,10 +32,10 @@ the advisor.
 
 **Models are knobs.** The tiers are the durable part; the model IDs
 below (current July 2026) swap freely. One rule survives every
-generation: Papa routes cheaply, the advisor is the strongest reasoning
-model you reach for material critiques, workers the cheapest that pass
-verification. Snippets are bash; on another shell, run them with
-`bash -c`.
+generation: Papa routes cheaply with the same Fable tier as the advisor;
+the advisor runs full critiques only when Papa routes `advisor`; workers
+the cheapest that pass verification. Snippets are bash; on another shell,
+run them with `bash -c`.
 
 ## The team
 
@@ -45,10 +45,10 @@ verification. Snippets are bash; on another shell, run them with
   dispatch and consult runs `scripts/cost_ledger.sh checkpoint <kind>`
   first; exit 2 means stop and report, never silent bleed.
 
-- **Papa (default: Claude Sonnet via the claude CLI or Anthropic API)**:
-  routing gate between orchestrator and advisor. Reads a short routing
-  brief from `references/papa-routing.md` and returns
-  `ROUTE: advisor | orchestrator | domain-kb | guardrail | defer | refuse`.
+- **Papa (default: Claude Fable 5 via the claude CLI or Anthropic API)**:
+  routing gate between orchestrator and advisor. Same model tier as the
+  advisor; different job. Reads a short routing brief from
+  `references/papa-routing.md` and returns `ROUTE: advisor | orchestrator`.
   Papa never executes and never rewrites deliverables. Checkpoint `papa`
   before every routing consult. If the CLI is missing, use the Papa API
   fallback in `references/fallbacks.md`.
@@ -101,12 +101,6 @@ verification. Snippets are bash; on another shell, run them with
   CLI is missing or a consult fails, use the Anthropic API fallback in
   `references/fallbacks.md`.
 
-- **Domain KB (`references/domain-kb.md`)**: answered questions on file.
-  Papa routes here when a stored answer fully resolves the decision.
-
-- **Guardrails (`references/guardrails.md`)**: deterministic rules Papa
-  routes to when no LLM judgment is needed.
-
 ## The loop
 
 1. **Frame.** State the deliverable and 3 to 5 checkable success
@@ -132,10 +126,6 @@ verification. Snippets are bash; on another shell, run them with
      `references/advisor-consult.md`; revise; state changes/rejections
    - `orchestrator` → self-review the plan against success criteria;
      log the decision
-   - `domain-kb` → apply stored answers per `references/domain-kb.md`
-   - `guardrail` → apply `references/guardrails.md`
-   - `defer` → ask the user one question and stop
-   - `refuse` → report ledger snapshot and stop
 4. **Delegate.** Dispatch each wave using the format in
    `references/worker-brief.md`. Checkpoint `worker` before every
    dispatch. Parallel background calls, then wait.
@@ -167,8 +157,8 @@ TYPE before acting:
 - The plan must change structurally mid-run → `plan review`
 
 Papa must route `advisor` for unresolved contradictions and double
-failures unless domain-kb or guardrails fully decide. If Papa routes a
-cheaper tier, log the route and reason on the status board.
+failures. If Papa routes `orchestrator`, log the route and reason on
+the status board.
 
 Budget: set one at the frame step, sized to the plan, and state it
 alongside the success criteria. Initialize the ledger with caps from

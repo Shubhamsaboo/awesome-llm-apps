@@ -23,7 +23,7 @@ Default caps if the plan does not specify otherwise:
 |---|---|
 | Workers | `2 × subtask_count` (retries and fallback redispatches count) |
 | Papa | `subtask_count + 3` (plan gate, taste gate, one per commitment boundary) |
-| Advisor consults | `5` (Papa may spend fewer by routing cheaper) |
+| Advisor consults | `5` (Papa may spend fewer by routing `orchestrator`) |
 
 ## Checkpoint before every call
 
@@ -37,9 +37,7 @@ Exit `0` = proceed. Exit `2` = budget exhausted — stop the call, do not
 silently retry on a different path. The orchestrator must either:
 
 1. Report honestly with the ledger snapshot, or
-2. Ask the user for a higher cap, or
-3. Let Papa route to `orchestrator` / `guardrail` / `domain-kb` if a cheaper
-   path remains within budget
+2. Ask the user for a higher cap
 
 ## Ledger snapshot on the status board
 
@@ -54,7 +52,6 @@ COST: workers 4/8 | papa 2/6 | consults 1/5
 - Never spend past the cap silently.
 - A failed checkpoint is not an excuse to hand-patch or skip verification.
 - Retries and API-fallback redispatches consume the same worker slot.
-- Papa routes to `refuse` when the ledger is full and no cheaper tier applies.
 
 ## Cleanup
 

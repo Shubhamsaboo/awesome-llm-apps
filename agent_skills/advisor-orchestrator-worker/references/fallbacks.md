@@ -45,21 +45,22 @@ declined consult cannot stall the loop.
 
 ## Papa: bare Anthropic API call (routing only)
 
-Short response, low token cap. Papa uses Sonnet by default — routing is
-cheaper than a full advisor critique. Checkpoint `papa` on the ledger
-before this call.
+Same model as the advisor (Fable 5). Short response, low token cap.
+Checkpoint `papa` on the ledger before this call.
 
 ```bash
 [ -n "$ANTHROPIC_API_KEY" ] || { echo "no ANTHROPIC_API_KEY" >&2; exit 1; }
 ( set -o pipefail
-  jq -n --rawfile r "$routing" '{model: "claude-sonnet-4-6", max_tokens: 512,
+  jq -n --rawfile r "$routing" '{model: "claude-fable-5", max_tokens: 512,
+      fallbacks: [{model: "claude-opus-4-8"}],
       messages: [{role: "user", content: $r}]}' \
     | curl -sS --fail --max-time 120 "https://api.anthropic.com/v1/messages" \
       -H "x-api-key: $ANTHROPIC_API_KEY" -H "anthropic-version: 2023-06-01" \
+      -H "anthropic-beta: server-side-fallback-2026-06-01" \
       -d @- \
     | jq -r '.content[] | select(.type == "text") | .text' )
 ```
 
-If the `claude` CLI is available, Papa may use it with a pinned Sonnet
-model and the same timeout wrapper as advisor consults. Papa never uses
-Fable 5 — that tier is reserved for advisor critiques.
+If the `claude` CLI is available, Papa uses it with the same Fable model
+and timeout wrapper as advisor consults:
+`perl -e 'alarm shift; exec @ARGV' 120 claude --model claude-fable-5 -p < "$routing"`.
