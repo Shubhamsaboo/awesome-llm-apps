@@ -22,10 +22,11 @@
     },
     {
       "id": 2,
-      "prompt": "Fan out this refactor plan across workers, but this machine has no agy CLI, only GOOGLE_API_KEY set, and no claude CLI.",
-      "expected_output": "The orchestrator detects the missing tools at the frame step: workers drop to the announced Gemini API fallback, and it explains setup for the missing advisor and offers degraded mode where it plays the advisor itself, flagged as degraded.",
+      "prompt": "Fan out this refactor plan across workers, but this machine has no agy CLI, only GOOGLE_API_KEY set, no claude CLI, and no ANTHROPIC_API_KEY.",
+      "expected_output": "The orchestrator detects the missing tools at the frame step: workers drop to the announced Gemini API fallback, and with neither the claude CLI nor ANTHROPIC_API_KEY available it explains setup for the advisor and offers degraded mode, flagged as degraded.",
       "expectations": [
         "With agy missing but a Gemini key set, workers run on the API fallback and this is announced up front, not discovered mid-run",
+        "Each role resolves CLI first then API key: with the claude CLI missing but ANTHROPIC_API_KEY set, consults would run over the Anthropic API; degraded mode is offered only when neither path exists",
         "GEMINI_API_KEY falls back to GOOGLE_API_KEY before being declared missing",
         "Tool availability is checked at the frame step, not discovered mid-run",
         "The user is told how to set up the missing piece",

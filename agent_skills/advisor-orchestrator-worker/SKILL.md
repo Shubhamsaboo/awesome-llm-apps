@@ -15,7 +15,8 @@ metadata:
 compatibility: >-
   Makes network calls: workers via the Antigravity CLI (agy), falling back to
   the Gemini API (GEMINI_API_KEY or GOOGLE_API_KEY); advisor via the claude
-  CLI. Needs jq. Runs in any harness that can execute shell commands.
+  CLI, falling back to the Anthropic API (ANTHROPIC_API_KEY). Needs jq. All
+  snippets are bash. Runs in any harness that can execute shell commands.
 ---
 
 # Advisor Orchestrator Worker
@@ -27,7 +28,9 @@ work yourself, and you never execute through the advisor.
 **Models are knobs, not gospel.** The tiers are the durable part; the
 model IDs below were current in July 2026 — swap freely. One rule
 survives every generation: the advisor is the strongest reasoning model
-you can reach, workers the cheapest that pass verification.
+you can reach, workers the cheapest that pass verification. All
+snippets below are bash; on a host whose shell isn't bash, run them
+with `bash -c`.
 
 ## The team
 
@@ -88,23 +91,45 @@ you can reach, workers the cheapest that pass verification.
   agy or gets ESCALATE — never pretend an API worker browsed the web or
   touched a file.
 
-- **Advisor (default: Claude Fable 5)** — consulted in print mode, the
-  consult written to a temp file and passed on stdin (never inline in
-  the command string), behind a timeout so a hung consult can't stall
-  the loop — via perl's alarm, since timeout(1) is missing on stock macOS:
+- **Advisor (default: Claude Fable 5 via the claude CLI)** — consulted
+  in print mode, the consult written to a temp file and passed on stdin
+  (never inline in the command string), behind a timeout so a hung
+  consult can't stall the loop — via perl's alarm, since timeout(1) is
+  missing on stock macOS:
   `perl -e 'alarm shift; exec @ARGV' 300 claude --model claude-fable-5 -p < "$consult"`.
   Expensive judgment kept out of the hot path: strategy, decomposition
   critique, risk spotting, taste. Never execution.
+
+  **Fallback — bare Anthropic API call** when the claude CLI is missing
+  or a consult fails. Same model, same consult file; the fallbacks
+  parameter re-serves a safety-classifier refusal on Opus 4.8 inside
+  the same call, and the closing jq unwraps the envelope so the
+  orchestrator reads plain advisor text on both paths:
+
+  ```bash
+  [ -n "$ANTHROPIC_API_KEY" ] || { echo "no ANTHROPIC_API_KEY" >&2; exit 1; }
+  ( set -o pipefail
+    jq -n --rawfile c "$consult" '{model: "claude-fable-5", max_tokens: 16000,
+        fallbacks: [{model: "claude-opus-4-8"}],
+        messages: [{role: "user", content: $c}]}' \
+      | curl -sS --fail --max-time 300 "https://api.anthropic.com/v1/messages" \
+        -H "x-api-key: $ANTHROPIC_API_KEY" -H "anthropic-version: 2023-06-01" \
+        -H "anthropic-beta: server-side-fallback-2026-06-01" \
+        -d @- \
+      | jq -r '.content[] | select(.type == "text") | .text' )
+  ```
 
 ## The loop
 
 1. **Frame.** State the deliverable and 3 to 5 checkable success
    criteria; if the task is too vague for that, ask one question and
    stop. Check tools now, not mid-run: `agy`, `jq`, the `claude` CLI,
-   and `api_key="${GEMINI_API_KEY:-$GOOGLE_API_KEY}"`. If agy is missing
-   but a key is set, announce that all workers run on the API fallback
-   (no tools). If a role has no working path, say exactly how to set it
-   up, then offer degraded mode: you temporarily play the missing role
+   `ANTHROPIC_API_KEY`, and `api_key="${GEMINI_API_KEY:-$GOOGLE_API_KEY}"`.
+   Each role resolves CLI first, then API key: agy missing but a Gemini
+   key set means workers run on the API fallback (no tools); claude CLI
+   missing but ANTHROPIC_API_KEY set means consults go over the API.
+   Announce every fallback up front. If a role has no working path, say
+   exactly how to set it up, then offer degraded mode: you temporarily play the missing role
    yourself — same budgets, every affected section and the final result
    labeled `[DEGRADED: <role>]`, context-isolation caveat noted. This is
    the one exception to the never-do-worker-work rule, and it covers at
