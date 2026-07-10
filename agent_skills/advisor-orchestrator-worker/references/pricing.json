@@ -1,0 +1,38 @@
+{
+  "note": "Editable knobs — USD per 1M tokens. Update when provider pricing changes.",
+  "models": {
+    "gemini-3.5-flash": {
+      "input_per_million": 0.15,
+      "output_per_million": 0.60
+    },
+    "gemini-3.5-pro": {
+      "input_per_million": 1.25,
+      "output_per_million": 5.00
+    },
+    "gemini-3.1-pro-preview": {
+      "input_per_million": 2.00,
+      "output_per_million": 12.00
+    },
+    "gemini-3.1-flash-lite": {
+      "input_per_million": 0.25,
+      "output_per_million": 1.50
+    },
+    "gemini-2.5-pro": {
+      "input_per_million": 1.25,
+      "output_per_million": 5.00
+    },
+    "gemini-2.5-pro-002": {
+      "input_per_million": 1.25,
+      "output_per_million": 5.00
+    },
+    "claude-fable-5": {
+      "input_per_million": 3.00,
+      "output_per_million": 15.00
+    },
+    "gpt-5.6": {
+      "input_per_million": 2.50,
+      "output_per_million": 10.00
+    }
+  },
+  "fallback_model": "gemini-3.5-flash"
+}
