@@ -231,6 +231,7 @@ streamlit run travel_agent.py
 *   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent)
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team)
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/)
+*   [🔌 OpenAI Remote MCP Tool Bridge](mcp_ai_agents/openai_remote_mcp_bridge/)
 
 ### 📀 RAG (Retrieval Augmented Generation)
 *Retrieval pipelines - from simple chains to agentic and multi-source.*
