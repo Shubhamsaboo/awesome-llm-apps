@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://nika.sh/spec/v1/workflow.schema.json
 #
-# Local AI News Brief — with receipts.
-# Fetch Hacker News' front-page feed → keep the top stories → a LOCAL
-# model writes the brief → save it. Every run leaves a hash-chained
+# Local AI News Brief, with receipts.
+# Fetch Hacker News' front-page feed, keep the top stories, have a LOCAL
+# model write the brief, save it. Every run leaves a hash-chained
 # trace (`nika trace verify`), and `nika check` audits the whole plan
 # BEFORE a single token is spent.
 #
@@ -13,7 +13,7 @@ nika: v1
 workflow: local-ai-news-brief
 description: "HN front page → top 8 stories → local-model brief → brief.md (+ tamper-evident trace)"
 
-model: ollama/llama3.2:3b        # local by default — swap for any provider
+model: ollama/llama3.2:3b        # local by default, swap for any provider
 
 vars:
   feed_url: "https://news.ycombinator.com/rss"
@@ -45,7 +45,7 @@ tasks:
 
         ${{ tasks.top_stories.output }}
 
-        Write a short brief: one section per story — the title as a
+        Write a short brief: one section per story, the title as a
         heading, then ONE sentence on why it might matter to a
         developer. Plain markdown, no preamble.
       max_tokens: 600
