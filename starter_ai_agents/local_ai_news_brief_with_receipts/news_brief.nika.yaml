@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=https://nika.sh/spec/v1/workflow.schema.json
+#
+# Local AI News Brief — with receipts.
+# Fetch Hacker News' front-page feed → keep the top stories → a LOCAL
+# model writes the brief → save it. Every run leaves a hash-chained
+# trace (`nika trace verify`), and `nika check` audits the whole plan
+# BEFORE a single token is spent.
+#
+#   nika check news_brief.nika.yaml            # static audit (offline)
+#   nika run  news_brief.nika.yaml             # real local run (Ollama)
+#   nika run  news_brief.nika.yaml --model mock/echo   # zero-setup dry run
+nika: v1
+workflow: local-ai-news-brief
+description: "HN front page → top 8 stories → local-model brief → brief.md (+ tamper-evident trace)"
+
+model: ollama/llama3.2:3b        # local by default — swap for any provider
+
+vars:
+  feed_url: "https://news.ycombinator.com/rss"
+  out_path: "./brief.md"
+
+tasks:
+  - id: fetch_feed
+    invoke:
+      tool: "nika:fetch"
+      args:
+        url: "${{ vars.feed_url }}"
+        mode: feed
+
+  - id: top_stories
+    depends_on: [fetch_feed]
+    invoke:
+      tool: "nika:jq"
+      args:
+        input: ${{ tasks.fetch_feed.output }}
+        expression: |
+          [.items[]? | {title, url: .link}] | .[0:8]
+
+  - id: brief
+    depends_on: [top_stories]
+    infer:
+      prompt: |
+        You are writing a morning tech brief. Here are today's top
+        Hacker News stories as JSON:
+
+        ${{ tasks.top_stories.output }}
+
+        Write a short brief: one section per story — the title as a
+        heading, then ONE sentence on why it might matter to a
+        developer. Plain markdown, no preamble.
+      max_tokens: 600
+
+  - id: save
+    depends_on: [brief]
+    invoke:
+      tool: "nika:write"
+      args:
+        path: "${{ vars.out_path }}"
+        content: "${{ tasks.brief.output }}"
+        overwrite: true
+
+outputs:
+  stories:
+    value: ${{ tasks.top_stories.output }}
+    type: array
+    description: "the stories the brief covers (title + url)"
