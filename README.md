@@ -141,6 +141,7 @@ streamlit run travel_agent.py
 *   [🩻 AI Medical Imaging Agent](starter_ai_agents/ai_medical_imaging_agent/)
 *   [😂 AI Meme Generator Agent (Browser)](starter_ai_agents/ai_meme_generator_agent_browseruse/)
 *   [🎵 AI Music Generator Agent](starter_ai_agents/ai_music_generator_agent/)
+*   [📰 Local AI News Brief with Receipts](starter_ai_agents/local_ai_news_brief_with_receipts/)
 *   [🛫 AI Travel Agent (Local & Cloud)](starter_ai_agents/ai_travel_agent/)
 *   [✨ Gemini Multimodal Agent](starter_ai_agents/multimodal_ai_agent/)
 *   [🔄 Mixture of Agents](starter_ai_agents/mixture_of_agents/)
