@@ -1,4 +1,4 @@
-# ⚰️ Project Graveyard
+# 🪦 Project Graveyard Agent Skill
 
 **Every developer has the folder. Twenty-something dead projects, each abandoned for reasons nobody wrote down.**
 
@@ -10,50 +10,9 @@ This skill reads the git history of every abandoned project on your machine and 
 
 **Which one still has a pulse?** Somewhere in that folder is a project that's 90% done: built, documented, never shipped. This finds it, checks what got easier since it died, and writes the short list of steps between it and a URL.
 
-```
-          .--------.
-         /          \
-        |   R.I.P.   |
-        |    your    |
-        |    side    |
-        |  projects  |
-     ___|____________|___
-    ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
-GRAVEYARD REPORT · 2026-07-07
-════════════════════════════════════════════════════════════
-repos scanned: 23 · alive: 3 · finished: 2 · dead: 7
-combined lifespan of the dead: ~9 months of your life
-oldest corpse: crypto-price-alerts, silent since Nov 2024
-
-THE DEAD                     lived   commits   cause of death
-────────────────────────────────────────────────────────────
-invoice-radar                 41d      63      payments wall
-tab-sensei                    12d      54      deploy fear
-recipe-snap                   19d      31      shiny object
-markdown-zen                   6d      22      boilerplate wall
-crypto-price-alerts           23d      35      shiny object
-devlog-cli                    88d      47      slow fade
-weekend-todo                   1d       9      single burst
-
-PATTERNS
-────────────────────────────────────────────────────────────
-· median lifespan of a dead project: 19 days; week three
-  is where you lose them
-· 2 of 7 were killed by a newer project, and both killers
-  are also dead. It's a chain.
-· payments code appears in the final commits of 2 corpses.
-  Stripe is your wall.
-
-STRONGEST PULSE --------/\_/\--------
-────────────────────────────────────────────────────────────
-tab-sensei · 84/100
-  54 commits, tests present, README done, and no deploy
-  config anywhere. It worked. It just never shipped.
-  to ship: needs deploy config
-```
-
 A representative scan (invented projects, real classifier verdicts). Your agent turns it into the funeral: an epitaph per corpse, your patterns named, and an offer to start resurrecting the strongest pulse right now. Yours will hurt more.
+
+<img width="1672" height="941" alt="ChatGPT Image Jul 9, 2026, 06_46_05 PM" src="https://github.com/user-attachments/assets/b80456c7-cd6f-49d8-adcf-641230d4c601" />
 
 ## What it detects
 
