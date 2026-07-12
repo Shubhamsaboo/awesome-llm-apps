@@ -178,6 +178,7 @@ streamlit run travel_agent.py
 *Background agents that run on schedules or events, monitor changing context, decide what needs attention, and proactively deliver updates, artifacts, or actions.*
 
 *   [📰 Always-on Hacker News Briefing Agent](always_on_agents/always_on_hn_briefing_agent/)
+*   [💬 WeChat Mac RPA](https://github.com/wq19901103wq/wechat-mac-rpa) <sub>↗ external</sub> - Always-on visual AI agent for WeChat automation on macOS using multimodal vision perception and LLM, with memory system and multi-agent architecture
 
 ### 🤝 Multi-agent Teams
 *Multiple agents collaborating to accomplish complex, cross-domain tasks.*
