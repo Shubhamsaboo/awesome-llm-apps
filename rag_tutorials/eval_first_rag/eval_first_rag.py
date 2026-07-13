@@ -23,21 +23,6 @@ load_dotenv()  # optional: read OPENAI_API_KEY from a local .env
 EMBED_MODEL = "text-embedding-3-small"
 CHAT_MODEL = "gpt-4o-mini"
 
-# A small built-in corpus of REAL, public financial facts so the app runs with
-# zero setup. Figures are Apple's reported FY2024 results (fiscal year ended
-# Sept 28, 2024) — stated as facts, not reproduced document prose.
-SAMPLE_DOC = """Apple Inc. - FY2024 financial summary (fiscal year ended September 28, 2024).
-Reported figures from Apple's public annual results.
-
-Total revenue (net sales) for FY2024 was $391.0 billion, up about 2% from $383.3 billion in FY2023.
-Services revenue reached a record $96.2 billion.
-Total company gross margin was 46.2%.
-Net income for FY2024 was $93.7 billion.
-Research and development expense was $31.4 billion.
-Apple returned cash to shareholders through share buybacks and dividends, and paid a quarterly cash dividend of $0.25 per share.
-"""
-
-
 def chunk_text(text, size=60, overlap=15):
     """Word-based chunking with overlap so sentence context is preserved."""
     words = text.split()
@@ -139,15 +124,19 @@ with st.sidebar:
         help="Paste ANY answer to score it against the retrieved context — a "
         "deterministic way to watch the evaluator catch a wrong answer. "
         "Leave empty to evaluate the model's own answer.",
-        placeholder="e.g. Apple reported FY2024 revenue of $450.0 billion.",
+        placeholder="e.g. paste an answer that contradicts your document.",
     )
-    st.markdown("**Corpus** (edit to test your own):")
-    doc = st.text_area("Document", SAMPLE_DOC, height=240)
+    st.markdown("**Document** (paste the text you want to query):")
+    doc = st.text_area(
+        "Document",
+        "",
+        height=240,
+        placeholder="Paste any document here — a 10-K excerpt, a report, notes...",
+    )
     st.markdown(
-        "**Strict mode:** *What was Apple's FY2024 revenue?* → grounded · "
-        "*How much did Apple spend on marketing?* → honest refusal.\n\n"
-        "**Loose mode:** *What was Tesla's FY2024 revenue?* → the model answers "
-        "from memory, ungrounded in this doc → ⚠️ confident hallucination."
+        "**To see each verdict:** ask something answered in your doc → *grounded* · "
+        "ask something not in it → *honest refusal* · use **Audit an answer** to "
+        "paste a claim your doc contradicts → *⚠️ confident hallucination*."
     )
 
 question = st.text_input("Ask a question about the document")
@@ -155,6 +144,9 @@ question = st.text_input("Ask a question about the document")
 if st.button("Run") and question:
     if not api_key:
         st.error("Add your OpenAI API key in the sidebar.")
+        st.stop()
+    if not doc.strip():
+        st.error("Paste a document in the sidebar first.")
         st.stop()
 
     client = OpenAI(api_key=api_key)
