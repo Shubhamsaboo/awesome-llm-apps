@@ -4,87 +4,66 @@
   </a>
 </p>
 
-<p align="center">
-  <a href="https://www.linkedin.com/in/shubhamsaboo/">
-    <img src="https://img.shields.io/badge/Follow%20on%20LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
-  </a>
-  <a href="https://twitter.com/Saboo_Shubham_">
-    <img src="https://img.shields.io/badge/Follow%20on%20𝕏-000000?style=for-the-badge&logo=x&logoColor=white" alt="X / Twitter">
-  </a>
-</p>
-
-<p align="center">
-  <!-- Keep these links. Translations will automatically update with the README. -->
-  <a href="https://www.readme-i18n.com/Shubhamsaboo/awesome-llm-apps?lang=de">Deutsch</a> | 
-  <a href="https://www.readme-i18n.com/Shubhamsaboo/awesome-llm-apps?lang=es">Español</a> | 
-  <a href="https://www.readme-i18n.com/Shubhamsaboo/awesome-llm-apps?lang=fr">français</a> | 
-  <a href="https://www.readme-i18n.com/Shubhamsaboo/awesome-llm-apps?lang=ja">日本語</a> | 
-  <a href="https://www.readme-i18n.com/Shubhamsaboo/awesome-llm-apps?lang=ko">한국어</a> | 
-  <a href="https://www.readme-i18n.com/Shubhamsaboo/awesome-llm-apps?lang=pt">Português</a> | 
-  <a href="https://www.readme-i18n.com/Shubhamsaboo/awesome-llm-apps?lang=ru">Русский</a> | 
-  <a href="https://www.readme-i18n.com/Shubhamsaboo/awesome-llm-apps?lang=zh">中文</a>
-</p>
-
-<hr/>
-
 <div align="center">
 
-# 🌟 Awesome LLM Apps
+# Awesome LLM Apps
 
-<p><strong>100+ AI agents and agent skills you can actually run — clone, customize, ship.</strong><br/>
-Agent Skills · AI Agents · Multi-agent Teams · Always-on Agents · MCP · Voice · Generative UI · RAG</p>
+**100+ open-source AI agents, agent skills, and RAG apps. Hand-built, tested end-to-end, Apache-2.0.**
 
-<p>
-<strong>Free step-by-step tutorials on <a href="https://www.theunwindai.com">Unwind AI</a></strong><br/>
-Model-agnostic — works with Claude, Gemini, GPT, DeepSeek, Llama and more. Skills run in Claude Code, Codex, and Cursor.
-</p>
+Every tile below is a real app in this repo. Clone it, run it, ship it.
 
-<p>
-<a href="https://github.com/Shubhamsaboo/awesome-llm-apps/stargazers"><img src="https://img.shields.io/github/stars/Shubhamsaboo/awesome-llm-apps?style=for-the-badge&logo=github&color=FFD700" alt="Stars"></a>
-<a href="https://github.com/Shubhamsaboo/awesome-llm-apps/network/members"><img src="https://img.shields.io/github/forks/Shubhamsaboo/awesome-llm-apps?style=for-the-badge&logo=github&color=4FC3F7" alt="Forks"></a>
-<a href="https://github.com/Shubhamsaboo/awesome-llm-apps/graphs/contributors"><img src="https://img.shields.io/github/contributors/Shubhamsaboo/awesome-llm-apps?style=for-the-badge&color=22C55E" alt="Contributors"></a>
-<a href="LICENSE"><img src="https://img.shields.io/github/license/Shubhamsaboo/awesome-llm-apps?style=for-the-badge&color=8B5CF6" alt="License"></a>
-<img src="https://img.shields.io/github/last-commit/Shubhamsaboo/awesome-llm-apps?style=for-the-badge&color=F97316" alt="Last Commit">
-</p>
-
-<p>
-<a href="#-quick-start"><kbd> &nbsp; 🚀 Quick Start &nbsp; </kbd></a>
-<a href="#-featured-ai-projects"><kbd> &nbsp; 📂 Browse Templates &nbsp; </kbd></a>
-<a href="https://www.theunwindai.com"><kbd> &nbsp; 📚 Step-by-Step Tutorials &nbsp; </kbd></a>
-</p>
-
-<a href="https://trendshift.io/repositories/9876" target="_blank">
-  <img src="https://trendshift.io/api/badge/repositories/9876" width="220" alt="Featured on Trendshift">
-</a>
+**[Step-by-step tutorials on Unwind AI](https://www.theunwindai.com)** · **[Quick start](#-run-one-now)** · **[Browse all templates](#-browse-all-templates)**
 
 </div>
 
----
+<table>
+  <tr>
+    <td width="33.3%" align="center">
+      <a href="agent_skills/self-improving-agent-skills/"><img src="docs/gallery/self-improving-agent-skills.png" alt="Self-Improving Agent Skills results dashboard"></a>
+      <sub><b>♾️ Self-Improving Agent Skills</b><br>Skills that rewrite themselves against evals</sub>
+    </td>
+    <td width="33.3%" align="center">
+      <a href="advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/"><img src="docs/gallery/ai-travel-planner-team.png" alt="AI Travel Planner Agent Team intake UI"></a>
+      <sub><b>🌏 AI Travel Planner Agent Team</b><br>A full trip, planned by an agent team</sub>
+    </td>
+    <td width="33.3%" align="center">
+      <a href="generative_ui_agents/ai-dashboard-canvas-agent/"><img src="docs/gallery/ai-dashboard-canvas.png" alt="AI Dashboard Canvas Agent building charts from chat"></a>
+      <sub><b>📊 AI Dashboard Canvas Agent</b><br>Describe a dashboard, watch it build itself</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <a href="always_on_agents/always_on_hn_briefing_agent/"><img src="docs/gallery/always-on-hn-briefing.png" alt="Always-on Hacker News Briefing Agent pipeline"></a>
+      <sub><b>📰 Always-on HN Briefing Agent</b><br>A scout that reads Hacker News so you don't</sub>
+    </td>
+    <td align="center">
+      <a href="voice_ai_agents/insurance_claim_live_agent_team/"><img src="docs/gallery/insurance-claim-live-team.png" alt="Insurance Claim Live Agent Team architecture"></a>
+      <sub><b>🛡️ Insurance Claim Live Agent Team</b><br>Real-time voice claim intake with Gemini Live</sub>
+    </td>
+    <td align="center">
+      <a href="advanced_ai_agents/single_agent_apps/earnings_call_analyst_agent/"><img src="docs/gallery/earnings-call-analyst.png" alt="Earnings Call Analyst Agent pipeline"></a>
+      <sub><b>📡 Earnings Call Analyst Agent</b><br>YouTube earnings calls, annotated by agents</sub>
+    </td>
+  </tr>
+</table>
 
-## 💡 Why this exists
+<div align="center">
 
-You shouldn't have to rebuild the same RAG pipeline, agent loop, or MCP integration from scratch every time you start a new LLM project.
+Model-agnostic: Claude, Gemini, GPT, DeepSeek, Llama, Qwen and more. Skills run in Claude Code, Codex, and Cursor.
 
-**Awesome LLM Apps is a cookbook of ready-to-run templates** - starter code you can fork, customize, and ship as a production LLM app. Every template here is self-contained with full source code, not collected from elsewhere.
+</div>
 
-- 🧩 **Drop-in agent skills** - install into Claude Code, Codex, or Cursor in one command; every skill ships real code and passes a security + eval CI gate, never a text-only prompt dump.
-- 🛠️ **Hand-built, not curated** - every template is original work, tested end-to-end before it ships.
-- 🧪 **Runs in 3 commands** - no broken `requirements.txt`, no "figure it out yourself" scaffolding.
-- 💸 **Apache-2.0** - fork it, ship it, sell it. No paywall, no signup, no telemetry.
+## 🚀 Run one now
 
-> ⭐ **If this saves you time, [star the repo](https://github.com/Shubhamsaboo/awesome-llm-apps/stargazers) - that's how the next developer discovers it.**
-
-## 🚀 Quick Start
-
-**Add a skill to your coding agent in 10 seconds:**
+Give your coding agent a new skill in 10 seconds:
 
 ```bash
 npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/project-graveyard
 ```
 
-Then tell your agent: *"why do I never finish my side projects?"*
+Then ask it: *"why do I never finish my side projects?"*
 
-**Or clone and run any agent in 30 seconds:**
+Or clone and run any agent in 30 seconds:
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
@@ -93,52 +72,44 @@ pip install -r requirements.txt
 streamlit run travel_agent.py
 ```
 
+## 🧭 Start here
 
-## 🔥 Featured This Month <sub>· July 2026</sub>
+| 🌱 Never built an agent | ⚙️ Shipping something real | 🎓 Going deep |
+|---|---|---|
+| [AI Travel Agent](starter_ai_agents/ai_travel_agent/) | [AI Deep Research Agent](advanced_ai_agents/single_agent_apps/ai_deep_research_agent/) | [Google ADK Crash Course](ai_agent_framework_crash_course/google_adk_crash_course/) |
+| [AI Data Analysis Agent](starter_ai_agents/ai_data_analysis_agent/) | [AI Sales Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_sales_intelligence_agent_team) | [OpenAI Agents SDK Crash Course](ai_agent_framework_crash_course/openai_sdk_crash_course/) |
+| [Basic RAG Chain](rag_tutorials/rag_chain/) | [Customer Support Voice Agent](voice_ai_agents/customer_support_voice_agent/) | [Gemma 3 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/gemma3_finetuning/) |
+
+## 🔥 New in July 2026
 
 | Template | What it does | Stack |
 |---|---|---|
 | [⚰️ Project Graveyard Skill](agent_skills/project-graveyard/) | Finds your dead side projects, tells you why each one died, and helps you finish the one worth going back to | Agent Skill · Runs locally |
 | [📰 Always-on Hacker News Briefing Agent](always_on_agents/always_on_hn_briefing_agent/) | Scheduled Hacker News scout that filters AI agent and LLM app signals into a delivery-ready daily brief | ADK + Agent Runtime |
 | [🛡️ Insurance Claim Live Agent Team](voice_ai_agents/insurance_claim_live_agent_team/) | Real-time voice claim intake with Gemini Live and ADK | Voice + ADK |
-| [🏠 Home Renovation Agent](advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent) | Photo → AI redesign with Nano Banana Pro | Vision + Multi-agent |
+| [🏠 Home Renovation Agent](advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent) | Photo to AI redesign with Nano Banana Pro | Vision + Multi-agent |
 | [♾️ Self-Improving Agent Skills](agent_skills/self-improving-agent-skills/) | Automatically optimize agent skills using Gemini and ADK | Agent Skills + ADK |
 
-> 📬 [Subscribe on Unwind AI](https://www.theunwindai.com) to get new template drops + tutorials in your inbox.
+> 📬 New templates drop weekly. [Get them in your inbox on Unwind AI](https://www.theunwindai.com).
 
-## 📑 Table of Contents
+## 📂 Browse all templates
 
-<details open>
-<summary><strong>15 categories · Click to expand</strong></summary>
+<details>
+<summary><b>🧩 Agent Skills</b> · 3 skills</summary>
+<br>
 
-- [🧩 Agent Skills](#-agent-skills)
-- [🌱 Starter AI Agents](#-starter-ai-agents)
-- [🚀 Advanced AI Agents](#-advanced-ai-agents)
-- [🛰️ Always-on Agents](#️-always-on-agents)
-- [🤝 Multi-agent Teams](#-multi-agent-teams)
-- [🗣️ Voice AI Agents](#️-voice-ai-agents)
-- [🖼️ Generative UI and Agentic Frontends](#️-generative-ui-and-agentic-frontends)
-- [🎮 Autonomous Game-Playing Agents](#-autonomous-game-playing-agents)
-- [♾️ MCP AI Agents](#-mcp-ai-agents)
-- [📀 RAG Tutorials](#-rag-retrieval-augmented-generation)
-- [💾 LLM Apps with Memory](#-llm-apps-with-memory-tutorials)
-- [💬 Chat with X Tutorials](#-chat-with-x-tutorials)
-- [🎯 LLM Optimization Tools](#-llm-optimization-tools)
-- [🔧 LLM Fine-tuning Tutorials](#-llm-fine-tuning-tutorials)
-- [🧑‍🏫 AI Agent Framework Crash Courses](#-ai-agent-framework-crash-course)
-
-</details>
-
-## 📂 Featured AI Projects
-
-### 🧩 Agent Skills
-*Give your coding agent new abilities. One command to install, plain English to use. Works with Claude Code, Codex, Cursor, and other coding agents. [Browse all skills →](agent_skills/)*
+*Give your coding agent new abilities. One command to install, plain English to use. Every skill ships real code and passes a security + eval CI gate. Works with Claude Code, Codex, Cursor, and other coding agents. [Browse all skills →](agent_skills/)*
 
 *   [⚰️ Project Graveyard](agent_skills/project-graveyard/) - Finds every side project you abandoned, tells you why each one died, and helps you finish the one worth going back to
 *   [🧠 Advisor Orchestrator Worker](agent_skills/advisor-orchestrator-worker/) - Your agent runs a model team: cheap models do the work in parallel, a stronger model reviews the plan, your agent manages it all
 *   [♾️ Self-Improving Agent Skills](agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
 
-### 🌱 Starter AI Agents
+</details>
+
+<details>
+<summary><b>🌱 Starter AI Agents</b> · 12 templates</summary>
+<br>
+
 *Single-file agents that run with just an API key - a great place to start.*
 
 *   [🎙️ AI Blog to Podcast Agent](starter_ai_agents/ai_blog_to_podcast_agent/) - Turn any blog URL into a narrated podcast episode
@@ -154,7 +125,12 @@ streamlit run travel_agent.py
 *   [🔍 OpenAI Research Agent](starter_ai_agents/openai_research_agent/) - Multi-agent topic research with the OpenAI Agents SDK
 *   [🕸️ Web Scraping AI Agent](starter_ai_agents/web_scraping_ai_agent/) - Describe what to extract and the agent scrapes it
 
-### 🚀 Advanced AI Agents
+</details>
+
+<details>
+<summary><b>🚀 Advanced AI Agents</b> · 22 templates</summary>
+<br>
+
 *Production-style agents with tools, memory, and multi-step reasoning.*
 
 *   [🏚️ 🍌 AI Home Renovation Agent with Nano Banana Pro](advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent) - Photos of your space in, renovation plan and photorealistic renders out
@@ -180,12 +156,22 @@ streamlit run travel_agent.py
 *   [🌐 Openwork - Open Browser Automation Agent](https://github.com/accomplish-ai/openwork) <sub>↗ external</sub> - Open-source agent that operates a real browser
 *   [🛡️ Trust-Gated Multi-Agent Research Team](advanced_ai_agents/multi_agent_apps/trust_gated_agent_team/) - Every agent verified, every action in a hash-chained audit trail
 
-### 🛰️ Always-on Agents
+</details>
+
+<details>
+<summary><b>🛰️ Always-on Agents</b> · 1 template</summary>
+<br>
+
 *Background agents that run on schedules or events, monitor changing context, decide what needs attention, and proactively deliver updates, artifacts, or actions.*
 
 *   [📰 Always-on Hacker News Briefing Agent](always_on_agents/always_on_hn_briefing_agent/)
 
-### 🤝 Multi-agent Teams
+</details>
+
+<details>
+<summary><b>🤝 Multi-agent Teams</b> · 13 templates</summary>
+<br>
+
 *Multiple agents collaborating to accomplish complex, cross-domain tasks.*
 
 *   [🧲 AI Competitor Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_competitor_intelligence_agent_team/)
@@ -202,7 +188,12 @@ streamlit run travel_agent.py
 *   [🎨 🍌 Multimodal UI/UX Feedback Agent Team with Nano Banana](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_uiux_feedback_agent_team/)
 *   [🌏 AI Travel Planner Agent Team](/advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/)
 
-### 🗣️ Voice AI Agents
+</details>
+
+<details>
+<summary><b>🗣️ Voice AI Agents</b> · 5 templates</summary>
+<br>
+
 *Speech-in, speech-out agents using real-time voice APIs.*
 
 *   [🗣️ AI Audio Tour Agent](voice_ai_agents/ai_audio_tour_agent/)
@@ -211,8 +202,13 @@ streamlit run travel_agent.py
 *   [🔊 Voice RAG Agent (OpenAI SDK)](voice_ai_agents/voice_rag_openaisdk/)
 *   [🎙️ OpenSource Voice Dictation Agent (Wispr Flow clone)](https://github.com/akshayaggarwal99/jarvis-ai-assistant) <sub>↗ external</sub>
 
-### 🖼️ Generative UI and Agentic Frontends
-*Agents that render interactive UI components — forms, cards, charts, editable plans — not just text.*
+</details>
+
+<details>
+<summary><b>🖼️ Generative UI and Agentic Frontends</b> · 7 templates</summary>
+<br>
+
+*Agents that render interactive UI components, not just text: forms, cards, charts, editable plans.*
 
 *   [🗂️ Generative UI Starter Project](generative_ui_agents/generative-ui-starter-project/)
 *   [🪙 AI Financial Coach Agent](generative_ui_agents/ai-financial-coach-agent/)
@@ -222,14 +218,24 @@ streamlit run travel_agent.py
 *   [🎛️ AI Shadcn Component Generator](generative_ui_agents/ai-shadcn-component-generator/)
 *   [🔍 AI Deep Research Agent](generative_ui_agents/ai-deep-research-agent/)
 
-### 🎮 Autonomous Game-Playing Agents
-*Agents that play games end-to-end - reasoning, strategy, and action.*
+</details>
+
+<details>
+<summary><b>🎮 Autonomous Game-Playing Agents</b> · 3 templates</summary>
+<br>
+
+*Agents that play games end-to-end: reasoning, strategy, and action.*
 
 *   [🎮 AI 3D Pygame Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_3dpygame_r1/)
 *   [♜ AI Chess Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_chess_agent/)
 *   [🎲 AI Tic-Tac-Toe Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_tic_tac_toe_agent/)
 
-### ♾️ MCP AI Agents
+</details>
+
+<details>
+<summary><b>♾️ MCP AI Agents</b> · 5 templates</summary>
+<br>
+
 *Agents that connect to external tools and data via Model Context Protocol.*
 
 *   [♾️ Browser MCP Agent](mcp_ai_agents/browser_mcp_agent/)
@@ -238,8 +244,13 @@ streamlit run travel_agent.py
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team)
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/)
 
-### 📀 RAG (Retrieval Augmented Generation)
-*Retrieval pipelines - from simple chains to agentic and multi-source.*
+</details>
+
+<details>
+<summary><b>📀 RAG (Retrieval Augmented Generation)</b> · 20 templates</summary>
+<br>
+
+*Retrieval pipelines, from simple chains to agentic and multi-source.*
 
 *   [🔥 Agentic RAG with Embedding Gemma](rag_tutorials/agentic_rag_embedding_gemma)
 *   [🧐 Agentic RAG with Reasoning](rag_tutorials/agentic_rag_with_reasoning/)
@@ -262,7 +273,12 @@ streamlit run travel_agent.py
 *   [🩺 RAG Failure Diagnostics Clinic](rag_tutorials/rag_failure_diagnostics_clinic/)
 *   [🕸️ Knowledge Graph RAG with Citations](rag_tutorials/knowledge_graph_rag_citations/)
 
-### 💾 LLM Apps with Memory Tutorials
+</details>
+
+<details>
+<summary><b>💾 LLM Apps with Memory</b> · 6 templates</summary>
+<br>
+
 *Agents and chatbots that remember conversations and user state across sessions.*
 
 *   [💾 AI ArXiv Agent with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/ai_arxiv_agent_memory/)
@@ -272,7 +288,12 @@ streamlit run travel_agent.py
 *   [🗄️ Local ChatGPT Clone with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/local_chatgpt_with_memory/)
 *   [🧠 Multi-LLM Application with Shared Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/multi_llm_memory/)
 
-### 💬 Chat with X Tutorials
+</details>
+
+<details>
+<summary><b>💬 Chat with X</b> · 6 templates</summary>
+<br>
+
 *Turn any data source into a chat interface.*
 
 *   [💬 Chat with GitHub (GPT & Llama3)](advanced_llm_apps/chat_with_X_tutorials/chat_with_github/)
@@ -282,50 +303,61 @@ streamlit run travel_agent.py
 *   [📝 Chat with Substack](advanced_llm_apps/chat_with_X_tutorials/chat_with_substack/)
 *   [📽️ Chat with YouTube Videos](advanced_llm_apps/chat_with_X_tutorials/chat_with_youtube_videos/)
 
-### 🎯 LLM Optimization Tools
+</details>
+
+<details>
+<summary><b>🎯 LLM Optimization Tools</b> · 2 templates</summary>
+<br>
+
 *Reduce token usage, context size, and API cost without losing quality.*
 
-*   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30–60% using TOON format
-*   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50–90%
+*   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30-60% using TOON format
+*   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50-90%
 
-### 🔧 LLM Fine-tuning Tutorials
+</details>
+
+<details>
+<summary><b>🔧 LLM Fine-tuning</b> · 2 tutorials</summary>
+<br>
+
 *End-to-end fine-tuning recipes for open-source models.*
 
-* [Gemma 3 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/gemma3_finetuning/)
-* [Llama 3.2 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/llama3.2_finetuning/)
+*   [Gemma 3 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/gemma3_finetuning/)
+*   [Llama 3.2 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/llama3.2_finetuning/)
 
-### 🧑‍🏫 AI Agent Framework Crash Course
+</details>
+
+<details>
+<summary><b>🧑‍🏫 AI Agent Framework Crash Courses</b> · 2 courses</summary>
+<br>
+
 *Deep-dive tutorials on the major agent frameworks.*
 
-[Google ADK Crash Course](ai_agent_framework_crash_course/google_adk_crash_course/)
-  - Starter agent; model‑agnostic (OpenAI, Claude)
-  - Structured outputs (Pydantic)
-  - Tools: built‑in, function, third‑party, MCP tools
-  - Memory; callbacks; Plugins
-  - Simple multi‑agent; Multi‑agent patterns
+*   [Google ADK Crash Course](ai_agent_framework_crash_course/google_adk_crash_course/) - Starter agent, structured outputs, tools (built-in, function, third-party, MCP), memory, callbacks, plugins, and multi-agent patterns. Model-agnostic.
+*   [OpenAI Agents SDK Crash Course](ai_agent_framework_crash_course/openai_sdk_crash_course/) - Starter agent, function calling, structured outputs, tools, memory, evaluation, handoffs, swarm orchestration, and routing logic.
 
-[OpenAI Agents SDK Crash Course](ai_agent_framework_crash_course/openai_sdk_crash_course/)
-  - Starter agent; function calling; structured outputs
-  - Tools: built‑in, function, third‑party integrations
-  - Memory; callbacks; evaluation
-  - Multi‑agent patterns; agent handoffs
-  - Swarm orchestration; routing logic
+</details>
 
+---
 
-## 🙏 Built by
+<div align="center">
 
-<p>Created and maintained by <a href="https://twitter.com/Saboo_Shubham_"><strong>Shubham Saboo</strong></a> with contributions from the amazing community members.</p>
+Created by [Shubham Saboo](https://twitter.com/Saboo_Shubham_) with [contributions from the community](https://github.com/Shubhamsaboo/awesome-llm-apps/graphs/contributors).
 
-<a href="https://github.com/Shubhamsaboo/awesome-llm-apps/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=Shubhamsaboo/awesome-llm-apps&max=40&columns=10&anon=0" alt="Top contributors" />
-</a>
+⭐ **[Star the repo](https://github.com/Shubhamsaboo/awesome-llm-apps/stargazers)** to get notified when new templates drop.
 
-## ⭐ Star History
+<sub>
+<!-- Keep these links. Translations will automatically update with the README. -->
+<a href="https://www.readme-i18n.com/Shubhamsaboo/awesome-llm-apps?lang=de">Deutsch</a> ·
+<a href="https://www.readme-i18n.com/Shubhamsaboo/awesome-llm-apps?lang=es">Español</a> ·
+<a href="https://www.readme-i18n.com/Shubhamsaboo/awesome-llm-apps?lang=fr">français</a> ·
+<a href="https://www.readme-i18n.com/Shubhamsaboo/awesome-llm-apps?lang=ja">日本語</a> ·
+<a href="https://www.readme-i18n.com/Shubhamsaboo/awesome-llm-apps?lang=ko">한국어</a> ·
+<a href="https://www.readme-i18n.com/Shubhamsaboo/awesome-llm-apps?lang=pt">Português</a> ·
+<a href="https://www.readme-i18n.com/Shubhamsaboo/awesome-llm-apps?lang=ru">Русский</a> ·
+<a href="https://www.readme-i18n.com/Shubhamsaboo/awesome-llm-apps?lang=zh">中文</a>
+</sub>
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Shubhamsaboo/awesome-llm-apps&type=Date)](https://star-history.com/#Shubhamsaboo/awesome-llm-apps&Date)
+<sub>Apache-2.0 · See <a href="LICENSE">LICENSE</a> · Fork it, ship it, sell it.</sub>
 
-> 🌟 **Don't miss future drops - [star the repo](https://github.com/Shubhamsaboo/awesome-llm-apps) to get notified when new templates ship.**
-
-## 📜 License
-
-Apache-2.0. See [LICENSE](LICENSE). Fork it, ship it, sell it.
+</div>
