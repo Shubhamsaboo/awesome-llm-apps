@@ -60,12 +60,20 @@ def top_k(query_vec, doc_vecs, k=3):
     return idx, sims[idx]
 
 
-def generate_answer(client, question, context):
-    prompt = (
-        "Answer the question using ONLY the context below. "
-        "If the answer is not in the context, reply exactly: 'Not found in context.'\n\n"
-        f"Context:\n{context}\n\nQuestion: {question}"
-    )
+def generate_answer(client, question, context, strict=True):
+    if strict:
+        instruction = (
+            "Answer the question using ONLY the context below. "
+            "If the answer is not in the context, reply exactly: 'Not found in context.'"
+        )
+    else:
+        # "Loose" mode: the model may answer from general knowledge — this is how
+        # confident hallucinations happen, and how this app catches them.
+        instruction = (
+            "Answer the question. Use the context if relevant; otherwise answer "
+            "from your general knowledge. Always give a concrete answer."
+        )
+    prompt = f"{instruction}\n\nContext:\n{context}\n\nQuestion: {question}"
     resp = client.chat.completions.create(
         model=CHAT_MODEL,
         messages=[{"role": "user", "content": prompt}],
@@ -118,12 +126,27 @@ with st.sidebar:
     api_key = st.text_input(
         "OpenAI API key", type="password", value=os.getenv("OPENAI_API_KEY", "")
     )
+    mode = st.radio(
+        "Grounding mode",
+        ["Strict (context only)", "Loose (answer freely)"],
+        help="Loose lets the model answer from general knowledge — the fastest way "
+        "to see a confident hallucination get caught.",
+    )
+    strict = mode.startswith("Strict")
+    audit_answer = st.text_area(
+        "Audit an answer (optional)",
+        help="Paste ANY answer to score it against the retrieved context — a "
+        "deterministic way to watch the evaluator catch a wrong answer. "
+        "Leave empty to evaluate the model's own answer.",
+        placeholder="e.g. Acme Robotics reported FY2025 revenue of $500.0 million.",
+    )
     st.markdown("**Corpus** (edit to test your own):")
     doc = st.text_area("Document", SAMPLE_DOC, height=240)
     st.markdown(
-        "Try: *What was FY2025 revenue?* (grounded) · "
-        "*What was the FY2025 dividend per share?* (should refuse) · "
-        "*What is Acme's 2026 revenue guidance?* (hallucination trap)"
+        "**Strict mode:** *What was FY2025 revenue?* → grounded · "
+        "*FY2025 dividend per share?* → honest refusal.\n\n"
+        "**Loose mode:** *What was Apple's FY2019 revenue?* → the model answers "
+        "from memory, ungrounded in this doc → ⚠️ confident hallucination."
     )
 
 question = st.text_input("Ask a question about the document")
@@ -141,7 +164,10 @@ if st.button("Run") and question:
         idx, sims = top_k(q_vec, doc_vecs, k=3)
         retrieved = [chunks[i] for i in idx]
         context = "\n\n".join(retrieved)
-        answer = generate_answer(client, question, context)
+        if audit_answer.strip():
+            answer = audit_answer.strip()
+        else:
+            answer = generate_answer(client, question, context, strict=strict)
         report = evaluate(client, question, answer, context)
 
     st.subheader("Answer")
