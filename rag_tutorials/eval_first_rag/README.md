@@ -40,15 +40,15 @@ streamlit run eval_first_rag.py
 4. Add your OpenAI API key (sidebar, or a local `.env` with `OPENAI_API_KEY=...`), then try:
 
    **Strict mode (context only):**
-   - *"What was FY2025 revenue?"* → ✅ **grounded** ($412.6M)
-   - *"What was the FY2025 dividend per share?"* → ✅ **honest refusal** (the doc says none was declared)
+   - *"What was Apple's FY2024 revenue?"* → ✅ **grounded** ($391.0B)
+   - *"How much did Apple spend on marketing in FY2024?"* → ✅ **honest refusal** (not in the summary)
 
    **Loose mode (answer freely):**
-   - *"What was Apple's FY2019 revenue?"* → ⚠️ **confident hallucination** — the model answers from its own memory, but the answer isn't grounded in the retrieved Acme context, so the evaluator flags it. This is the classic RAG failure: answering from parametric memory instead of the documents.
+   - *"What was Tesla's FY2024 revenue?"* → ⚠️ **confident hallucination** — the model answers from its own memory, but the answer isn't grounded in the retrieved Apple context, so the evaluator flags it. This is the classic RAG failure: answering from parametric memory instead of the documents.
 
 > Note: modern aligned models often *refuse* rather than hallucinate on clean factual questions (a good thing) — Strict mode shows that. Loose mode makes the ungrounded-answer failure reproducible so you can see the evaluator catch it.
 
-**Guaranteed demo of the ⚠️ flag** (deterministic, no reliance on model behavior): ask *"What was FY2025 revenue?"*, then paste this into **"Audit an answer"**:
-> `Acme Robotics reported FY2025 revenue of $500.0 million.`
+**Guaranteed demo of the ⚠️ flag** (deterministic, no reliance on model behavior): ask *"What was Apple's FY2024 revenue?"*, then paste this into **"Audit an answer"**:
+> `Apple reported FY2024 revenue of $450.0 billion.`
 
-The real figure is $412.6M, so the evaluator flags it as a **confident hallucination** (groundedness 0.0) every time.
+The real figure is $391.0B, so the evaluator flags it as a **confident hallucination** (groundedness 0.0) every time.
