@@ -11,10 +11,14 @@ Built by Ruthwik Arepelly (https://github.com/Ruthwik-Data) — eval-first AI PM
 """
 
 import json
+import os
 
 import numpy as np
 import streamlit as st
+from dotenv import load_dotenv
 from openai import OpenAI
+
+load_dotenv()  # optional: read OPENAI_API_KEY from a local .env
 
 EMBED_MODEL = "text-embedding-3-small"
 CHAT_MODEL = "gpt-4o-mini"
@@ -111,7 +115,9 @@ st.caption(
 
 with st.sidebar:
     st.header("Setup")
-    api_key = st.text_input("OpenAI API key", type="password")
+    api_key = st.text_input(
+        "OpenAI API key", type="password", value=os.getenv("OPENAI_API_KEY", "")
+    )
     st.markdown("**Corpus** (edit to test your own):")
     doc = st.text_area("Document", SAMPLE_DOC, height=240)
     st.markdown(
