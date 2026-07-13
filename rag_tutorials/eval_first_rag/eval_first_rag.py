@@ -23,17 +23,18 @@ load_dotenv()  # optional: read OPENAI_API_KEY from a local .env
 EMBED_MODEL = "text-embedding-3-small"
 CHAT_MODEL = "gpt-4o-mini"
 
-# A small built-in corpus so the app runs with zero setup. Numbers are specific
-# on purpose — they make hallucinations easy to catch.
-SAMPLE_DOC = """Acme Robotics - FY2025 Annual Report (excerpt)
+# A small built-in corpus of REAL, public financial facts so the app runs with
+# zero setup. Figures are Apple's reported FY2024 results (fiscal year ended
+# Sept 28, 2024) — stated as facts, not reproduced document prose.
+SAMPLE_DOC = """Apple Inc. - FY2024 financial summary (fiscal year ended September 28, 2024).
+Reported figures from Apple's public annual results.
 
-Revenue for fiscal year 2025 was $412.6 million, up 18% from $349.7 million in FY2024.
-Gross margin was 61.2%, compared to 58.9% in the prior year.
-Net income was $47.3 million, or $1.12 per diluted share.
-Research and development expense was $88.4 million, roughly 21% of revenue.
-The company ended the year with $210.0 million in cash and cash equivalents and no long-term debt.
-Acme shipped 24,500 industrial robot units in FY2025, up from 19,800 units in FY2024.
-The Board did not declare a dividend in FY2025.
+Total revenue (net sales) for FY2024 was $391.0 billion, up about 2% from $383.3 billion in FY2023.
+Services revenue reached a record $96.2 billion.
+Total company gross margin was 46.2%.
+Net income for FY2024 was $93.7 billion.
+Research and development expense was $31.4 billion.
+Apple returned cash to shareholders through share buybacks and dividends, and paid a quarterly cash dividend of $0.25 per share.
 """
 
 
@@ -138,14 +139,14 @@ with st.sidebar:
         help="Paste ANY answer to score it against the retrieved context — a "
         "deterministic way to watch the evaluator catch a wrong answer. "
         "Leave empty to evaluate the model's own answer.",
-        placeholder="e.g. Acme Robotics reported FY2025 revenue of $500.0 million.",
+        placeholder="e.g. Apple reported FY2024 revenue of $450.0 billion.",
     )
     st.markdown("**Corpus** (edit to test your own):")
     doc = st.text_area("Document", SAMPLE_DOC, height=240)
     st.markdown(
-        "**Strict mode:** *What was FY2025 revenue?* → grounded · "
-        "*FY2025 dividend per share?* → honest refusal.\n\n"
-        "**Loose mode:** *What was Apple's FY2019 revenue?* → the model answers "
+        "**Strict mode:** *What was Apple's FY2024 revenue?* → grounded · "
+        "*How much did Apple spend on marketing?* → honest refusal.\n\n"
+        "**Loose mode:** *What was Tesla's FY2024 revenue?* → the model answers "
         "from memory, ungrounded in this doc → ⚠️ confident hallucination."
     )
 
