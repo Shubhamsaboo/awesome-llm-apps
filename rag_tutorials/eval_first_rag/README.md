@@ -10,6 +10,8 @@ This Streamlit app runs locally with only an OpenAI API key. It ships with a sma
 - **Three verdicts**: `grounded`, `honest_refusal` (correctly declines when the answer isn't in context), and `confident_hallucination` (the dangerous case — flagged in red)
 - **Retrieval confidence**: top cosine-similarity score, surfaced alongside the answer
 - **LLM-as-judge**: a strict evaluator scores support-by-context, not fluent wording
+- **Audit any answer**: paste any answer to score it against the retrieved context — a deterministic way to watch the evaluator catch a wrong claim
+- **Strict / Loose grounding toggle**: Strict answers from context only; Loose lets the model answer freely so you can see ungrounded answers get flagged
 - **Zero-setup corpus**: built-in sample doc with specific numbers so hallucinations are easy to catch; editable to test your own text
 - **Minimal stack**: OpenAI embeddings + `gpt-4o-mini` + NumPy cosine search — no vector DB required
 
@@ -35,7 +37,18 @@ pip install -r requirements.txt
 streamlit run eval_first_rag.py
 ```
 
-4. Paste your OpenAI API key in the sidebar, then try:
-   - *"What was FY2025 revenue?"* → **grounded**
-   - *"What was the FY2025 dividend per share?"* → **honest refusal** (the doc says no dividend was declared)
-   - *"What is Acme's 2026 revenue guidance?"* → **confident-hallucination trap** (not in the doc)
+4. Add your OpenAI API key (sidebar, or a local `.env` with `OPENAI_API_KEY=...`), then try:
+
+   **Strict mode (context only):**
+   - *"What was FY2025 revenue?"* → ✅ **grounded** ($412.6M)
+   - *"What was the FY2025 dividend per share?"* → ✅ **honest refusal** (the doc says none was declared)
+
+   **Loose mode (answer freely):**
+   - *"What was Apple's FY2019 revenue?"* → ⚠️ **confident hallucination** — the model answers from its own memory, but the answer isn't grounded in the retrieved Acme context, so the evaluator flags it. This is the classic RAG failure: answering from parametric memory instead of the documents.
+
+> Note: modern aligned models often *refuse* rather than hallucinate on clean factual questions (a good thing) — Strict mode shows that. Loose mode makes the ungrounded-answer failure reproducible so you can see the evaluator catch it.
+
+**Guaranteed demo of the ⚠️ flag** (deterministic, no reliance on model behavior): ask *"What was FY2025 revenue?"*, then paste this into **"Audit an answer"**:
+> `Acme Robotics reported FY2025 revenue of $500.0 million.`
+
+The real figure is $412.6M, so the evaluator flags it as a **confident hallucination** (groundedness 0.0) every time.
