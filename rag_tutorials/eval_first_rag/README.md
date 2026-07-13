@@ -2,7 +2,7 @@
 
 Most RAG demos stop at **retrieve → generate**. This one adds the layer that actually matters in production: after every answer it runs an **evaluation pass** that scores retrieval confidence and answer groundedness, then flags the failure mode standard RAG silently ships — a **confident answer the retrieved context does not support** (a "confident hallucination").
 
-This Streamlit app runs locally with only an OpenAI API key. It ships with a small built-in financial document so it works with zero setup, and you can paste in your own.
+This Streamlit app runs locally with only an OpenAI API key. Paste in any document — a 10-K excerpt, a report, meeting notes — and ask questions against it.
 
 ### Features
 
@@ -12,7 +12,7 @@ This Streamlit app runs locally with only an OpenAI API key. It ships with a sma
 - **LLM-as-judge**: a strict evaluator scores support-by-context, not fluent wording
 - **Audit any answer**: paste any answer to score it against the retrieved context — a deterministic way to watch the evaluator catch a wrong claim
 - **Strict / Loose grounding toggle**: Strict answers from context only; Loose lets the model answer freely so you can see ungrounded answers get flagged
-- **Zero-setup corpus**: built-in sample doc with specific numbers so hallucinations are easy to catch; editable to test your own text
+- **Bring your own document**: no bundled data — paste any text and query it
 - **Minimal stack**: OpenAI embeddings + `gpt-4o-mini` + NumPy cosine search — no vector DB required
 
 ### Why it's different
@@ -37,18 +37,10 @@ pip install -r requirements.txt
 streamlit run eval_first_rag.py
 ```
 
-4. Add your OpenAI API key (sidebar, or a local `.env` with `OPENAI_API_KEY=...`), then try:
+4. Add your OpenAI API key (sidebar, or a local `.env` with `OPENAI_API_KEY=...`), paste a document in the sidebar, then see each verdict:
 
-   **Strict mode (context only):**
-   - *"What was Apple's FY2024 revenue?"* → ✅ **grounded** ($391.0B)
-   - *"How much did Apple spend on marketing in FY2024?"* → ✅ **honest refusal** (not in the summary)
+   - **Grounded** — ask something your document answers → the answer comes back with a high groundedness score.
+   - **Honest refusal** — ask something *not* in your document → in Strict mode the model replies "Not found in context," scored as a correct refusal.
+   - **Confident hallucination** — switch to Loose mode (the model may answer from memory), or use **Audit an answer** to paste a claim your document contradicts → the evaluator flags it in red with groundedness ~0.
 
-   **Loose mode (answer freely):**
-   - *"What was Tesla's FY2024 revenue?"* → ⚠️ **confident hallucination** — the model answers from its own memory, but the answer isn't grounded in the retrieved Apple context, so the evaluator flags it. This is the classic RAG failure: answering from parametric memory instead of the documents.
-
-> Note: modern aligned models often *refuse* rather than hallucinate on clean factual questions (a good thing) — Strict mode shows that. Loose mode makes the ungrounded-answer failure reproducible so you can see the evaluator catch it.
-
-**Guaranteed demo of the ⚠️ flag** (deterministic, no reliance on model behavior): ask *"What was Apple's FY2024 revenue?"*, then paste this into **"Audit an answer"**:
-> `Apple reported FY2024 revenue of $450.0 billion.`
-
-The real figure is $391.0B, so the evaluator flags it as a **confident hallucination** (groundedness 0.0) every time.
+> Note: modern aligned models often *refuse* rather than hallucinate on clean factual questions (a good thing) — Strict mode shows that. Loose mode and the answer-audit make the ungrounded-answer failure reproducible so you can watch the evaluator catch it deterministically.
