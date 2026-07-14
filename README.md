@@ -135,7 +135,7 @@ streamlit run travel_agent.py
 
 *Background agents that run on schedules or events, monitor changing context, decide what needs attention, and proactively deliver updates, artifacts, or actions.*
 
-*   [📰 Always-on Hacker News Briefing Agent](always_on_agents/always_on_hn_briefing_agent/)
+*   [📰 Always-on Hacker News Briefing Agent](always_on_agents/always_on_hn_briefing_agent/) - A scheduled scout that ships a ranked daily brief to Slack or email
 
 ### 🤝 Multi-agent Teams
 
@@ -169,78 +169,78 @@ streamlit run travel_agent.py
 
 *Agents that render interactive UI components, not just text: forms, cards, charts, editable plans.*
 
-*   [🗂️ Generative UI Starter Project](generative_ui_agents/generative-ui-starter-project/)
-*   [🪙 AI Financial Coach Agent](generative_ui_agents/ai-financial-coach-agent/)
-*   [📊 AI Dashboard Canvas Agent](generative_ui_agents/ai-dashboard-canvas-agent/)
-*   [🛠️ AI MCP App Builder](generative_ui_agents/ai-mcp-app-builder/)
-*   [✈️ MCP Apps Generative UI Showcase](generative_ui_agents/mcp-apps-generative-ui-showcase/)
-*   [🎛️ AI Shadcn Component Generator](generative_ui_agents/ai-shadcn-component-generator/)
-*   [🔍 AI Deep Research Agent](generative_ui_agents/ai-deep-research-agent/)
+*   [🗂️ Generative UI Starter Project](generative_ui_agents/generative-ui-starter-project/) - A chat-driven kanban board you and the agent work together
+*   [🪙 AI Financial Coach Agent](generative_ui_agents/ai-financial-coach-agent/) - Budget, savings, and debt plans rendered as interactive cards
+*   [📊 AI Dashboard Canvas Agent](generative_ui_agents/ai-dashboard-canvas-agent/) - Describe a dashboard in chat, charts assemble on a live canvas
+*   [🛠️ AI MCP App Builder](generative_ui_agents/ai-mcp-app-builder/) - Describe an MCP app, get a live sandboxed instance back
+*   [✈️ MCP Apps Generative UI Showcase](generative_ui_agents/mcp-apps-generative-ui-showcase/) - MCP apps that render real interactive UI, flight search included
+*   [🎛️ AI Shadcn Component Generator](generative_ui_agents/ai-shadcn-component-generator/) - Chat your way to production-ready shadcn components
+*   [🔍 AI Deep Research Agent](generative_ui_agents/ai-deep-research-agent/) - Research where every tool call renders as a live workspace card
 
 ### 🎮 Autonomous Game-Playing Agents
 
 *Agents that play games end-to-end: reasoning, strategy, and action.*
 
-*   [🎮 AI 3D Pygame Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_3dpygame_r1/)
-*   [♜ AI Chess Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_chess_agent/)
-*   [🎲 AI Tic-Tac-Toe Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_tic_tac_toe_agent/)
+*   [🎮 AI 3D Pygame Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_3dpygame_r1/) - DeepSeek R1 writes PyGame code, browser agents run it live
+*   [♜ AI Chess Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_chess_agent/) - Agent White vs Agent Black with validated moves
+*   [🎲 AI Tic-Tac-Toe Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_tic_tac_toe_agent/) - Two different LLMs battle it out, move by move
 
 ### ♾️ MCP AI Agents
 
 *Agents that connect to external tools and data via Model Context Protocol.*
 
-*   [♾️ Browser MCP Agent](mcp_ai_agents/browser_mcp_agent/)
-*   [🐙 GitHub MCP Agent](mcp_ai_agents/github_mcp_agent/)
-*   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent)
-*   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team)
-*   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/)
+*   [♾️ Browser MCP Agent](mcp_ai_agents/browser_mcp_agent/) - Drive a real browser with natural language over MCP
+*   [🐙 GitHub MCP Agent](mcp_ai_agents/github_mcp_agent/) - Explore and analyze any repo in plain English
+*   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent) - Talk to your Notion pages from the terminal
+*   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team) - Itineraries built on live Airbnb and Google Maps data
+*   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/) - Specialist agents, each wired to its own MCP server
 
 ### 📀 RAG (Retrieval Augmented Generation)
 
 *Retrieval pipelines, from simple chains to agentic and multi-source.*
 
-*   [🔥 Agentic RAG with Embedding Gemma](rag_tutorials/agentic_rag_embedding_gemma)
-*   [🧐 Agentic RAG with Reasoning](rag_tutorials/agentic_rag_with_reasoning/)
-*   [📰 AI Blog Search (RAG)](rag_tutorials/ai_blog_search/)
-*   [🔍 Autonomous RAG](rag_tutorials/autonomous_rag/)
-*   [🔄 Contextual AI RAG Agent](rag_tutorials/contextualai_rag_agent/)
-*   [🔄 Corrective RAG (CRAG)](rag_tutorials/corrective_rag/)
-*   [🐋 Deepseek Local RAG Agent](rag_tutorials/deepseek_local_rag_agent/)
-*   [🤔 Gemini Agentic RAG](rag_tutorials/gemini_agentic_rag/)
-*   [👀 Hybrid Search RAG (Cloud)](rag_tutorials/hybrid_search_rag/)
-*   [🔄 Llama 3.1 Local RAG](rag_tutorials/llama3.1_local_rag/)
-*   [🖥️ Local Hybrid Search RAG](rag_tutorials/local_hybrid_search_rag/)
-*   [🧬 Multimodal Agentic RAG](rag_tutorials/multimodal_agentic_rag/)
-*   [🦙 Local RAG Agent](rag_tutorials/local_rag_agent/)
-*   [🧩 RAG-as-a-Service](rag_tutorials/rag-as-a-service/)
-*   [✨ RAG Agent with Cohere](rag_tutorials/rag_agent_cohere/)
-*   [⛓️ Basic RAG Chain](rag_tutorials/rag_chain/)
-*   [📠 RAG with Database Routing](rag_tutorials/rag_database_routing/)
-*   [🖼️ Vision RAG](rag_tutorials/vision_rag/)
-*   [🩺 RAG Failure Diagnostics Clinic](rag_tutorials/rag_failure_diagnostics_clinic/)
-*   [🕸️ Knowledge Graph RAG with Citations](rag_tutorials/knowledge_graph_rag_citations/)
+*   [🔥 Agentic RAG with Embedding Gemma](rag_tutorials/agentic_rag_embedding_gemma) - Fully local agentic RAG with EmbeddingGemma and Llama 3.2
+*   [🧐 Agentic RAG with Reasoning](rag_tutorials/agentic_rag_with_reasoning/) - Watch the agent's step-by-step reasoning as it retrieves
+*   [📰 AI Blog Search (RAG)](rag_tutorials/ai_blog_search/) - Agentic search over blog content, built on LangGraph
+*   [🔍 Autonomous RAG](rag_tutorials/autonomous_rag/) - GPT-4o answers from your PDFs, falls back to web search
+*   [🔄 Contextual AI RAG Agent](rag_tutorials/contextualai_rag_agent/) - Managed RAG: datastore to grounded chat in minutes
+*   [🔄 Corrective RAG (CRAG)](rag_tutorials/corrective_rag/) - Retrieval that grades itself and retries before answering
+*   [🐋 Deepseek Local RAG Agent](rag_tutorials/deepseek_local_rag_agent/) - Local DeepSeek reasoning over your own documents
+*   [🤔 Gemini Agentic RAG](rag_tutorials/gemini_agentic_rag/) - Query rewriting and web fallback with Gemini Flash Thinking
+*   [👀 Hybrid Search RAG (Cloud)](rag_tutorials/hybrid_search_rag/) - Keyword plus vector search feeding Claude
+*   [🔄 Llama 3.1 Local RAG](rag_tutorials/llama3.1_local_rag/) - Chat with any webpage, fully offline
+*   [🖥️ Local Hybrid Search RAG](rag_tutorials/local_hybrid_search_rag/) - Hybrid search with everything running on your machine
+*   [🧬 Multimodal Agentic RAG](rag_tutorials/multimodal_agentic_rag/) - Text, PDFs, images, audio, and video, answered with citations
+*   [🦙 Local RAG Agent](rag_tutorials/local_rag_agent/) - Llama 3.2 and Qdrant, no API keys required
+*   [🧩 RAG-as-a-Service](rag_tutorials/rag-as-a-service/) - A production RAG service in under 50 lines
+*   [✨ RAG Agent with Cohere](rag_tutorials/rag_agent_cohere/) - Command R7B retrieval with web-search fallback
+*   [⛓️ Basic RAG Chain](rag_tutorials/rag_chain/) - The minimal retrieval pipeline, applied to pharma research
+*   [📠 RAG with Database Routing](rag_tutorials/rag_database_routing/) - Routes each question to the right database automatically
+*   [🖼️ Vision RAG](rag_tutorials/vision_rag/) - Ask questions about images and PDF pages with Embed-4
+*   [🩺 RAG Failure Diagnostics Clinic](rag_tutorials/rag_failure_diagnostics_clinic/) - Find out why your RAG pipeline is wrong, systematically
+*   [🕸️ Knowledge Graph RAG with Citations](rag_tutorials/knowledge_graph_rag_citations/) - Multi-hop answers with verifiable source attribution
 
 ### 💾 LLM Apps with Memory
 
 *Agents and chatbots that remember conversations and user state across sessions.*
 
-*   [💾 AI ArXiv Agent with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/ai_arxiv_agent_memory/)
-*   [🛩️ AI Travel Agent with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/)
-*   [💬 Llama3 Stateful Chat](advanced_llm_apps/llm_apps_with_memory_tutorials/llama3_stateful_chat/)
-*   [📝 LLM App with Personalized Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/llm_app_personalized_memory/)
-*   [🗄️ Local ChatGPT Clone with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/local_chatgpt_with_memory/)
-*   [🧠 Multi-LLM Application with Shared Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/multi_llm_memory/)
+*   [💾 AI ArXiv Agent with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/ai_arxiv_agent_memory/) - Paper search that remembers your research interests
+*   [🛩️ AI Travel Agent with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/) - A travel assistant that remembers your preferences
+*   [💬 Llama3 Stateful Chat](advanced_llm_apps/llm_apps_with_memory_tutorials/llama3_stateful_chat/) - Session-persistent chat with Llama 3
+*   [📝 LLM App with Personalized Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/llm_app_personalized_memory/) - A chatbot that keeps context across conversations
+*   [🗄️ Local ChatGPT Clone with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/local_chatgpt_with_memory/) - Fully local, with a personal memory per user
+*   [🧠 Multi-LLM Application with Shared Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/multi_llm_memory/) - Different models, one shared conversation memory
 
 ### 💬 Chat with X
 
 *Turn any data source into a chat interface.*
 
-*   [💬 Chat with GitHub (GPT & Llama3)](advanced_llm_apps/chat_with_X_tutorials/chat_with_github/)
-*   [📨 Chat with Gmail](advanced_llm_apps/chat_with_X_tutorials/chat_with_gmail/)
-*   [📄 Chat with PDF (GPT & Llama3)](advanced_llm_apps/chat_with_X_tutorials/chat_with_pdf/)
-*   [📚 Chat with Research Papers (ArXiv) (GPT & Llama3)](advanced_llm_apps/chat_with_X_tutorials/chat_with_research_papers/)
-*   [📝 Chat with Substack](advanced_llm_apps/chat_with_X_tutorials/chat_with_substack/)
-*   [📽️ Chat with YouTube Videos](advanced_llm_apps/chat_with_X_tutorials/chat_with_youtube_videos/)
+*   [💬 Chat with GitHub (GPT & Llama3)](advanced_llm_apps/chat_with_X_tutorials/chat_with_github/) - Any repo, answered in 30 lines of RAG
+*   [📨 Chat with Gmail](advanced_llm_apps/chat_with_X_tutorials/chat_with_gmail/) - Ask your inbox questions
+*   [📄 Chat with PDF (GPT & Llama3)](advanced_llm_apps/chat_with_X_tutorials/chat_with_pdf/) - The classic, in 30 lines of Python
+*   [📚 Chat with Research Papers (ArXiv) (GPT & Llama3)](advanced_llm_apps/chat_with_X_tutorials/chat_with_research_papers/) - Explore arXiv conversationally with GPT-4o
+*   [📝 Chat with Substack](advanced_llm_apps/chat_with_X_tutorials/chat_with_substack/) - Chat with any newsletter's archive
+*   [📽️ Chat with YouTube Videos](advanced_llm_apps/chat_with_X_tutorials/chat_with_youtube_videos/) - Ask videos questions via their transcripts
 
 ### 🎯 LLM Optimization Tools
 
@@ -253,8 +253,8 @@ streamlit run travel_agent.py
 
 *End-to-end fine-tuning recipes for open-source models.*
 
-*   [Gemma 3 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/gemma3_finetuning/)
-*   [Llama 3.2 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/llama3.2_finetuning/)
+*   [🦥 Gemma 3 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/gemma3_finetuning/) - 4-bit LoRA with Unsloth, small and readable
+*   [🦙 Llama 3.2 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/llama3.2_finetuning/) - Fine-tune in 30 lines, free on Colab
 
 ### 🧑‍🏫 AI Agent Framework Crash Courses
 
