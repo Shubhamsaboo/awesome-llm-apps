@@ -94,9 +94,7 @@ streamlit run travel_agent.py
 
 ## 📂 Browse all templates
 
-<details>
-<summary><b>🧩 Agent Skills</b> · 3 skills</summary>
-<br>
+### 🧩 Agent Skills
 
 *Give your coding agent new abilities. One command to install, plain English to use. Every skill ships real code and passes a security + eval CI gate. Works with Claude Code, Codex, Cursor, and other coding agents. [Browse all skills →](agent_skills/)*
 
@@ -104,11 +102,7 @@ streamlit run travel_agent.py
 *   [🧠 Advisor Orchestrator Worker](agent_skills/advisor-orchestrator-worker/) - Your agent runs a model team: cheap models do the work in parallel, a stronger model reviews the plan, your agent manages it all
 *   [♾️ Self-Improving Agent Skills](agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
 
-</details>
-
-<details>
-<summary><b>🌱 Starter AI Agents</b> · 12 templates</summary>
-<br>
+### 🌱 Starter AI Agents
 
 *Single-file agents that run with just an API key - a great place to start.*
 
@@ -125,11 +119,7 @@ streamlit run travel_agent.py
 *   [🔍 OpenAI Research Agent](starter_ai_agents/openai_research_agent/) - Multi-agent topic research with the OpenAI Agents SDK
 *   [🕸️ Web Scraping AI Agent](starter_ai_agents/web_scraping_ai_agent/) - Describe what to extract and the agent scrapes it
 
-</details>
-
-<details>
-<summary><b>🚀 Advanced AI Agents</b> · 22 templates</summary>
-<br>
+### 🚀 Advanced AI Agents
 
 *Production-style agents with tools, memory, and multi-step reasoning.*
 
@@ -156,21 +146,13 @@ streamlit run travel_agent.py
 *   [🌐 Openwork - Open Browser Automation Agent](https://github.com/accomplish-ai/openwork) <sub>↗ external</sub> - Open-source agent that operates a real browser
 *   [🛡️ Trust-Gated Multi-Agent Research Team](advanced_ai_agents/multi_agent_apps/trust_gated_agent_team/) - Every agent verified, every action in a hash-chained audit trail
 
-</details>
-
-<details>
-<summary><b>🛰️ Always-on Agents</b> · 1 template</summary>
-<br>
+### 🛰️ Always-on Agents
 
 *Background agents that run on schedules or events, monitor changing context, decide what needs attention, and proactively deliver updates, artifacts, or actions.*
 
 *   [📰 Always-on Hacker News Briefing Agent](always_on_agents/always_on_hn_briefing_agent/)
 
-</details>
-
-<details>
-<summary><b>🤝 Multi-agent Teams</b> · 13 templates</summary>
-<br>
+### 🤝 Multi-agent Teams
 
 *Multiple agents collaborating to accomplish complex, cross-domain tasks.*
 
@@ -188,11 +170,7 @@ streamlit run travel_agent.py
 *   [🎨 🍌 Multimodal UI/UX Feedback Agent Team with Nano Banana](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_uiux_feedback_agent_team/)
 *   [🌏 AI Travel Planner Agent Team](/advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/)
 
-</details>
-
-<details>
-<summary><b>🗣️ Voice AI Agents</b> · 5 templates</summary>
-<br>
+### 🗣️ Voice AI Agents
 
 *Speech-in, speech-out agents using real-time voice APIs.*
 
@@ -202,11 +180,7 @@ streamlit run travel_agent.py
 *   [🔊 Voice RAG Agent (OpenAI SDK)](voice_ai_agents/voice_rag_openaisdk/)
 *   [🎙️ OpenSource Voice Dictation Agent (Wispr Flow clone)](https://github.com/akshayaggarwal99/jarvis-ai-assistant) <sub>↗ external</sub>
 
-</details>
-
-<details>
-<summary><b>🖼️ Generative UI and Agentic Frontends</b> · 7 templates</summary>
-<br>
+### 🖼️ Generative UI and Agentic Frontends
 
 *Agents that render interactive UI components, not just text: forms, cards, charts, editable plans.*
 
@@ -218,11 +192,7 @@ streamlit run travel_agent.py
 *   [🎛️ AI Shadcn Component Generator](generative_ui_agents/ai-shadcn-component-generator/)
 *   [🔍 AI Deep Research Agent](generative_ui_agents/ai-deep-research-agent/)
 
-</details>
-
-<details>
-<summary><b>🎮 Autonomous Game-Playing Agents</b> · 3 templates</summary>
-<br>
+### 🎮 Autonomous Game-Playing Agents
 
 *Agents that play games end-to-end: reasoning, strategy, and action.*
 
@@ -230,11 +200,7 @@ streamlit run travel_agent.py
 *   [♜ AI Chess Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_chess_agent/)
 *   [🎲 AI Tic-Tac-Toe Agent](advanced_ai_agents/autonomous_game_playing_agent_apps/ai_tic_tac_toe_agent/)
 
-</details>
-
-<details>
-<summary><b>♾️ MCP AI Agents</b> · 5 templates</summary>
-<br>
+### ♾️ MCP AI Agents
 
 *Agents that connect to external tools and data via Model Context Protocol.*
 
@@ -244,11 +210,7 @@ streamlit run travel_agent.py
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team)
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/)
 
-</details>
-
-<details>
-<summary><b>📀 RAG (Retrieval Augmented Generation)</b> · 20 templates</summary>
-<br>
+### 📀 RAG (Retrieval Augmented Generation)
 
 *Retrieval pipelines, from simple chains to agentic and multi-source.*
 
@@ -273,11 +235,7 @@ streamlit run travel_agent.py
 *   [🩺 RAG Failure Diagnostics Clinic](rag_tutorials/rag_failure_diagnostics_clinic/)
 *   [🕸️ Knowledge Graph RAG with Citations](rag_tutorials/knowledge_graph_rag_citations/)
 
-</details>
-
-<details>
-<summary><b>💾 LLM Apps with Memory</b> · 6 templates</summary>
-<br>
+### 💾 LLM Apps with Memory
 
 *Agents and chatbots that remember conversations and user state across sessions.*
 
@@ -288,11 +246,7 @@ streamlit run travel_agent.py
 *   [🗄️ Local ChatGPT Clone with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/local_chatgpt_with_memory/)
 *   [🧠 Multi-LLM Application with Shared Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/multi_llm_memory/)
 
-</details>
-
-<details>
-<summary><b>💬 Chat with X</b> · 6 templates</summary>
-<br>
+### 💬 Chat with X
 
 *Turn any data source into a chat interface.*
 
@@ -303,40 +257,26 @@ streamlit run travel_agent.py
 *   [📝 Chat with Substack](advanced_llm_apps/chat_with_X_tutorials/chat_with_substack/)
 *   [📽️ Chat with YouTube Videos](advanced_llm_apps/chat_with_X_tutorials/chat_with_youtube_videos/)
 
-</details>
-
-<details>
-<summary><b>🎯 LLM Optimization Tools</b> · 2 templates</summary>
-<br>
+### 🎯 LLM Optimization Tools
 
 *Reduce token usage, context size, and API cost without losing quality.*
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30-60% using TOON format
 *   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50-90%
 
-</details>
-
-<details>
-<summary><b>🔧 LLM Fine-tuning</b> · 2 tutorials</summary>
-<br>
+### 🔧 LLM Fine-tuning
 
 *End-to-end fine-tuning recipes for open-source models.*
 
 *   [Gemma 3 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/gemma3_finetuning/)
 *   [Llama 3.2 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/llama3.2_finetuning/)
 
-</details>
-
-<details>
-<summary><b>🧑‍🏫 AI Agent Framework Crash Courses</b> · 2 courses</summary>
-<br>
+### 🧑‍🏫 AI Agent Framework Crash Courses
 
 *Deep-dive tutorials on the major agent frameworks.*
 
 *   [Google ADK Crash Course](ai_agent_framework_crash_course/google_adk_crash_course/) - Starter agent, structured outputs, tools (built-in, function, third-party, MCP), memory, callbacks, plugins, and multi-agent patterns. Model-agnostic.
 *   [OpenAI Agents SDK Crash Course](ai_agent_framework_crash_course/openai_sdk_crash_course/) - Starter agent, function calling, structured outputs, tools, memory, evaluation, handoffs, swarm orchestration, and routing logic.
-
-</details>
 
 ---
 
