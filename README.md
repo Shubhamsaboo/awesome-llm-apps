@@ -19,30 +19,30 @@ Every tile below is a real app in this repo. Clone it, run it, ship it.
 <table>
   <tr>
     <td width="33.3%" align="center">
-      <a href="agent_skills/self-improving-agent-skills/"><img src="docs/gallery/self-improving-agent-skills.png" alt="Self-Improving Agent Skills results dashboard"></a>
-      <sub><b>♾️ Self-Improving Agent Skills</b><br>Skills that rewrite themselves against evals</sub>
+      <a href="agent_skills/project-graveyard/"><img src="docs/gallery/project-graveyard.png" alt="Project Graveyard: an agent that autopsies your dead side projects"></a>
+      <sub><b>⚰️ Project Graveyard</b></sub>
     </td>
     <td width="33.3%" align="center">
-      <a href="advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/"><img src="docs/gallery/ai-travel-planner-team.png" alt="AI Travel Planner Agent Team intake UI"></a>
-      <sub><b>🌏 AI Travel Planner Agent Team</b><br>A full trip, planned by an agent team</sub>
+      <a href="voice_ai_agents/insurance_claim_live_agent_team/"><img src="docs/gallery/insurance-claim-live-team.png" alt="Insurance Claim Live Agent Team: voice claims settled in real time"></a>
+      <sub><b>🛡️ Insurance Claim Live Agent Team</b></sub>
     </td>
     <td width="33.3%" align="center">
-      <a href="generative_ui_agents/ai-dashboard-canvas-agent/"><img src="docs/gallery/ai-dashboard-canvas.png" alt="AI Dashboard Canvas Agent building charts from chat"></a>
-      <sub><b>📊 AI Dashboard Canvas Agent</b><br>Describe a dashboard, watch it build itself</sub>
+      <a href="advanced_ai_agents/single_agent_apps/ai_fraud_investigation_agent/"><img src="docs/gallery/ai-fraud-investigation.png" alt="AI Fraud Investigation Agent: public records, cross-examined"></a>
+      <sub><b>🔍 AI Fraud Investigation Agent</b></sub>
     </td>
   </tr>
   <tr>
     <td align="center">
-      <a href="always_on_agents/always_on_hn_briefing_agent/"><img src="docs/gallery/always-on-hn-briefing.png" alt="Always-on Hacker News Briefing Agent pipeline"></a>
-      <sub><b>📰 Always-on HN Briefing Agent</b><br>A scout that reads Hacker News so you don't</sub>
+      <a href="agent_skills/self-improving-agent-skills/"><img src="docs/gallery/self-improving-agent-skills.png" alt="Self-Improving Agent Skills: skills that rewrite themselves against evals"></a>
+      <sub><b>♾️ Self-Improving Agent Skills</b></sub>
     </td>
     <td align="center">
-      <a href="voice_ai_agents/insurance_claim_live_agent_team/"><img src="docs/gallery/insurance-claim-live-team.png" alt="Insurance Claim Live Agent Team architecture"></a>
-      <sub><b>🛡️ Insurance Claim Live Agent Team</b><br>Real-time voice claim intake with Gemini Live</sub>
+      <a href="advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent"><img src="docs/gallery/ai-home-renovation.png" alt="AI Home Renovation Agent: photo in, photoreal redesign out"></a>
+      <sub><b>🏚️ 🍌 AI Home Renovation Agent</b></sub>
     </td>
     <td align="center">
-      <a href="advanced_ai_agents/single_agent_apps/earnings_call_analyst_agent/"><img src="docs/gallery/earnings-call-analyst.png" alt="Earnings Call Analyst Agent pipeline"></a>
-      <sub><b>📡 Earnings Call Analyst Agent</b><br>YouTube earnings calls, annotated by agents</sub>
+      <a href="always_on_agents/always_on_hn_briefing_agent/"><img src="docs/gallery/always-on-hn-briefing.png" alt="Always-on HN Briefing Agent: it reads Hacker News while you sleep"></a>
+      <sub><b>📰 Always-on HN Briefing Agent</b></sub>
     </td>
   </tr>
 </table>
