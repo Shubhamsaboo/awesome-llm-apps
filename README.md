@@ -76,9 +76,9 @@ streamlit run travel_agent.py
 
 | 🌱 Never built an agent | ⚙️ Shipping something real | 🎓 Going deep |
 |---|---|---|
-| [AI Travel Agent](starter_ai_agents/ai_travel_agent/) | [AI Deep Research Agent](advanced_ai_agents/single_agent_apps/ai_deep_research_agent/) | [Google ADK Crash Course](ai_agent_framework_crash_course/google_adk_crash_course/) |
-| [AI Data Analysis Agent](starter_ai_agents/ai_data_analysis_agent/) | [AI Sales Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_sales_intelligence_agent_team) | [OpenAI Agents SDK Crash Course](ai_agent_framework_crash_course/openai_sdk_crash_course/) |
-| [Basic RAG Chain](rag_tutorials/rag_chain/) | [Customer Support Voice Agent](voice_ai_agents/customer_support_voice_agent/) | [Gemma 3 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/gemma3_finetuning/) |
+| [AI Travel Agent](starter_ai_agents/ai_travel_agent/) | [AI Deep Research Agent](advanced_ai_agents/single_agent_apps/ai_deep_research_agent/) | [AI VC Due Diligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_vc_due_diligence_agent_team) |
+| [AI Data Analysis Agent](starter_ai_agents/ai_data_analysis_agent/) | [AI Sales Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_sales_intelligence_agent_team) | [Trust-Gated Multi-Agent Research Team](advanced_ai_agents/multi_agent_apps/trust_gated_agent_team/) |
+| [Basic RAG Chain](rag_tutorials/rag_chain/) | [Customer Support Voice Agent](voice_ai_agents/customer_support_voice_agent/) | [AI Self-Evolving Agent](advanced_ai_agents/multi_agent_apps/ai_self_evolving_agent/) |
 
 ## 🔥 New in July 2026
 
