@@ -20,29 +20,29 @@ Every tile below is a real app in this repo. Clone it, run it, ship it.
   <tr>
     <td width="33.3%" align="center">
       <a href="agent_skills/project-graveyard/"><img src="docs/gallery/project-graveyard.png" alt="Project Graveyard: an agent that autopsies your dead side projects"></a>
-      <sub><b>⚰️ Project Graveyard</b></sub>
+      <sub><b>Project Graveyard</b></sub>
     </td>
     <td width="33.3%" align="center">
       <a href="voice_ai_agents/insurance_claim_live_agent_team/"><img src="docs/gallery/insurance-claim-live-team.png" alt="Insurance Claim Live Agent Team: voice claims settled in real time"></a>
-      <sub><b>🛡️ Insurance Claim Live Agent Team</b></sub>
+      <sub><b>Insurance Claim Live Agent Team</b></sub>
     </td>
     <td width="33.3%" align="center">
       <a href="advanced_ai_agents/single_agent_apps/ai_fraud_investigation_agent/"><img src="docs/gallery/ai-fraud-investigation.png" alt="AI Fraud Investigation Agent: public records, cross-examined"></a>
-      <sub><b>🔍 AI Fraud Investigation Agent</b></sub>
+      <sub><b>AI Fraud Investigation Agent</b></sub>
     </td>
   </tr>
   <tr>
     <td align="center">
       <a href="agent_skills/self-improving-agent-skills/"><img src="docs/gallery/self-improving-agent-skills.png" alt="Self-Improving Agent Skills: skills that rewrite themselves against evals"></a>
-      <sub><b>♾️ Self-Improving Agent Skills</b></sub>
+      <sub><b>Self-Improving Agent Skills</b></sub>
     </td>
     <td align="center">
       <a href="advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent"><img src="docs/gallery/ai-home-renovation.png" alt="AI Home Renovation Agent: photo in, photoreal redesign out"></a>
-      <sub><b>🏚️ 🍌 AI Home Renovation Agent</b></sub>
+      <sub><b>AI Home Renovation Agent</b></sub>
     </td>
     <td align="center">
       <a href="always_on_agents/always_on_hn_briefing_agent/"><img src="docs/gallery/always-on-hn-briefing.png" alt="Always-on HN Briefing Agent: it reads Hacker News while you sleep"></a>
-      <sub><b>📰 Always-on HN Briefing Agent</b></sub>
+      <sub><b>Always-on HN Briefing Agent</b></sub>
     </td>
   </tr>
 </table>
