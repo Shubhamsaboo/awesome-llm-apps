@@ -282,8 +282,6 @@ streamlit run travel_agent.py
 
 <div align="center">
 
-Created by [Shubham Saboo](https://twitter.com/Saboo_Shubham_) with [contributions from the community](https://github.com/Shubhamsaboo/awesome-llm-apps/graphs/contributors).
-
 ⭐ **[Star the repo](https://github.com/Shubhamsaboo/awesome-llm-apps/stargazers)** to get notified when new templates drop.
 
 <sub>
