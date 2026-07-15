@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1600" viewBox="0 0 1200 1600">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <style>
+      .title { font: 700 54px Arial, Helvetica, sans-serif; fill: #f8fafc; }
+      .subtitle { font: 500 28px Arial, Helvetica, sans-serif; fill: #cbd5e1; }
+      .section { font: 700 30px Arial, Helvetica, sans-serif; fill: #e2e8f0; }
+      .body { font: 400 24px Arial, Helvetica, sans-serif; fill: #e2e8f0; }
+      .small { font: 400 20px Arial, Helvetica, sans-serif; fill: #94a3b8; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="1600" fill="url(#bg)"/>
+
+  <rect x="80" y="80" width="1040" height="1440" rx="24" fill="#111827" stroke="#334155" stroke-width="3"/>
+
+  <text x="120" y="180" class="title">Dr. Srikant Gupta</text>
+  <text x="120" y="225" class="subtitle">Biographical Research Profile</text>
+  <line x1="120" y1="255" x2="1080" y2="255" stroke="#475569" stroke-width="2"/>
+
+  <text x="120" y="330" class="section">Academic Identity</text>
+  <text x="140" y="380" class="body">Associate Professor, Operations and Decision Sciences</text>
+  <text x="140" y="420" class="body">Jaipuria Institute of Management (publicly listed affiliations)</text>
+  <text x="140" y="460" class="body">Specialization: Operations Research and Management Analytics</text>
+
+  <text x="120" y="560" class="section">Research Focus</text>
+  <text x="140" y="610" class="body">- Supply chain optimization and analytics</text>
+  <text x="140" y="650" class="body">- Multi-objective decision modeling</text>
+  <text x="140" y="690" class="body">- Industrial production planning models</text>
+  <text x="140" y="730" class="body">- System reliability and quantitative methods</text>
+  <text x="140" y="770" class="body">- Sustainability-oriented operations research</text>
+
+  <text x="120" y="870" class="section">Research Contribution Snapshot</text>
+  <text x="140" y="920" class="body">Publishes in peer-reviewed outlets and engages in scholarly review.</text>
+  <text x="140" y="960" class="body">Work links methodological rigor with real-world operational problems.</text>
+  <text x="140" y="1000" class="body">Themes include efficiency, resilience, and sustainable decision-making.</text>
+
+  <text x="120" y="1100" class="section">Academic Impact</text>
+  <text x="140" y="1150" class="body">Visible citation footprint in operations and analytics scholarship.</text>
+  <text x="140" y="1190" class="body">Known for integrating teaching, research, and institutional service.</text>
+
+  <line x1="120" y1="1280" x2="1080" y2="1280" stroke="#475569" stroke-width="2"/>
+  <text x="120" y="1340" class="small">Profile prepared from publicly available academic information.</text>
+  <text x="120" y="1380" class="small">Design: professional one-page research biography card (SVG).</text>
+</svg>
