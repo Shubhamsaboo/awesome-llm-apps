@@ -1,0 +1,4 @@
+google-adk==1.9.0
+fastapi==0.115.12
+uvicorn==0.34.2
+
