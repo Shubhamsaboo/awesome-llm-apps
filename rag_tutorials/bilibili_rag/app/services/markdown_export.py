@@ -67,9 +67,9 @@ def organize_video_content(
         raise ValueError("视频没有可整理的内容")
 
     if client is None:
-        if not settings.openai_api_key:
+        if not settings.chat_api_key:
             raise ValueError("未配置 LLM API Key")
-        client = OpenAI(api_key=settings.openai_api_key, base_url=settings.openai_base_url)
+        client = OpenAI(api_key=settings.chat_api_key, base_url=settings.chat_base_url)
 
     selected_model = model or settings.llm_model
     if len(chunks) == 1:

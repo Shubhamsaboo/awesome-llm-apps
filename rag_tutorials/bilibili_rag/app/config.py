@@ -15,14 +15,19 @@ class Settings(BaseSettings):
     # OpenAI / LLM 配置
     openai_api_key: str = Field(
         default="",
-        validation_alias=AliasChoices("DASHSCOPE_API_KEY", "OPENAI_API_KEY"),
+        validation_alias="OPENAI_API_KEY",
     )
-    openai_base_url: str = Field(default="https://api.openai.com/v1", env="OPENAI_BASE_URL")
+    nebius_api_key: str = Field(default="", validation_alias="NEBIUS_API_KEY")
+    openai_base_url: str = Field(default="", validation_alias="OPENAI_BASE_URL")
     llm_model: str = Field(default="gpt-4-turbo", env="LLM_MODEL")
     embedding_model: str = Field(default="text-embedding-3-small", env="EMBEDDING_MODEL")
     chat_use_llm_router: bool = Field(default=False, env="CHAT_USE_LLM_ROUTER")
 
     # DashScope ASR
+    dashscope_api_key: str = Field(
+        default="",
+        validation_alias=AliasChoices("DASHSCOPE_API_KEY", "OPENAI_API_KEY"),
+    )
     dashscope_base_url: str = Field(
         default="https://dashscope.aliyuncs.com/api/v1",
         env="DASHSCOPE_BASE_URL"
@@ -54,6 +59,22 @@ class Settings(BaseSettings):
     retrieval_top_k: int = Field(default=8, env="RETRIEVAL_TOP_K")
     retrieval_mmr_fetch_k: int = Field(default=32, env="RETRIEVAL_MMR_FETCH_K")
     retrieval_mmr_lambda: float = Field(default=0.55, env="RETRIEVAL_MMR_LAMBDA")
+
+    @property
+    def chat_api_key(self) -> str:
+        """Return the configured key for OpenAI-compatible chat calls."""
+        return self.nebius_api_key or self.openai_api_key or self.dashscope_api_key
+
+    @property
+    def chat_base_url(self) -> str:
+        """Resolve the chat endpoint without changing DashScope SDK endpoints."""
+        if self.openai_base_url:
+            return self.openai_base_url
+        if self.nebius_api_key:
+            return "https://api.tokenfactory.nebius.com/v1"
+        if self.dashscope_api_key and not self.openai_api_key:
+            return "https://dashscope.aliyuncs.com/compatible-mode/v1"
+        return "https://api.openai.com/v1"
 
     class Config:
         env_file = ".env"

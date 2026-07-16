@@ -46,7 +46,7 @@ class RAGService:
             ) from exc
 
         self.embeddings = DashScopeEmbeddings(
-            dashscope_api_key=settings.openai_api_key,
+            dashscope_api_key=settings.dashscope_api_key,
             model=settings.embedding_model
         )
         logger.info("使用 DashScopeEmbeddings 初始化成功")
@@ -60,8 +60,8 @@ class RAGService:
 
         # 初始化 LLM
         self.llm = ChatOpenAI(
-            api_key=settings.openai_api_key,
-            base_url=settings.openai_base_url,
+            api_key=settings.chat_api_key,
+            base_url=settings.chat_base_url,
             model=settings.llm_model,
             temperature=0.5
         )

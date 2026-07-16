@@ -35,7 +35,7 @@ class ASRService:
         timeout: Optional[int] = None,
         cancel_check: CancelCheck = None,
     ):
-        self.api_key = api_key or settings.openai_api_key
+        self.api_key = api_key or settings.dashscope_api_key
         self.base_url = base_url or getattr(settings, "dashscope_base_url", None)
         self.model = model or getattr(settings, "asr_model", "fun-asr")
         self.timeout = timeout or getattr(settings, "asr_timeout", 600)

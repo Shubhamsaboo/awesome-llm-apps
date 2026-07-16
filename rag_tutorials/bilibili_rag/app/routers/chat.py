@@ -31,20 +31,20 @@ ProgressCallback = Optional[Callable[[dict], None]]
 
 def _get_llm_client() -> OpenAI:
     """获取 LLM 客户端"""
-    if not settings.openai_api_key:
+    if not settings.chat_api_key:
         raise HTTPException(status_code=400, detail="未配置 LLM API Key")
     return OpenAI(
-        api_key=settings.openai_api_key,
-        base_url=settings.openai_base_url,
+        api_key=settings.chat_api_key,
+        base_url=settings.chat_base_url,
     )
 
 def _get_async_llm_client() -> AsyncOpenAI:
     """获取异步 LLM 客户端，用于流式问答。"""
-    if not settings.openai_api_key:
+    if not settings.chat_api_key:
         raise HTTPException(status_code=400, detail="未配置 LLM API Key")
     return AsyncOpenAI(
-        api_key=settings.openai_api_key,
-        base_url=settings.openai_base_url,
+        api_key=settings.chat_api_key,
+        base_url=settings.chat_base_url,
     )
 
 def _emit_progress(callback: ProgressCallback, event_type: str, **payload) -> None:
@@ -544,7 +544,6 @@ async def _prepare_messages(
     """准备 LLM 消息与来源信息"""
     prepare_started = time.perf_counter()
     question = request.question.strip()
-    rag = get_rag_service()
     folder_ids = []
     if request.session_id:
         folder_ids = await _get_folder_ids_for_session(db, request.session_id, request.folder_ids)
@@ -682,6 +681,7 @@ async def _prepare_messages(
     # 7) 混合检索：向量 MMR + SQLite 关键词召回，再用 RRF 融合。
     docs: List[Document] = []
     try:
+        rag = get_rag_service()
         recall_started = time.perf_counter()
         _emit_progress(
             progress_callback,

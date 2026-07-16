@@ -56,15 +56,27 @@ cd awesome-llm-apps/rag_tutorials/bilibili_rag
 cp .env.example .env
 ```
 
-Set at least `DASHSCOPE_API_KEY` in `.env`. The default config uses Alibaba Cloud DashScope's OpenAI-compatible endpoint:
+Set `DASHSCOPE_API_KEY` for ingestion. By default, the same key is also used with Alibaba Cloud DashScope's OpenAI-compatible chat endpoint:
 
 ```env
 DASHSCOPE_API_KEY=your-dashscope-api-key
-OPENAI_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 LLM_MODEL=qwen3-max
 EMBEDDING_MODEL=text-embedding-v4
 CHAT_USE_LLM_ROUTER=false
 ```
+
+To use Nebius Token Factory for chat and other LLM calls, add:
+
+```env
+NEBIUS_API_KEY=your-nebius-api-key
+LLM_MODEL=your-nebius-chat-model
+```
+
+When `NEBIUS_API_KEY` is set and `OPENAI_BASE_URL` is empty, the app uses
+`https://api.tokenfactory.nebius.com/v1`. An explicit `OPENAI_BASE_URL` always
+takes precedence. Nebius support covers the chat/LLM path only; video ASR and
+embeddings remain DashScope-specific, so ingestion still requires
+`DASHSCOPE_API_KEY`.
 
 3. Install and start the backend:
 
@@ -119,14 +131,16 @@ docker compose down
 
 - Keep `.env` in this folder, not inside `frontend/`.
 - `DASHSCOPE_API_KEY` is used for ASR and embeddings.
-- `OPENAI_BASE_URL` is used by OpenAI-compatible chat calls.
+- `NEBIUS_API_KEY` selects Nebius Token Factory for OpenAI-compatible chat calls.
+- `OPENAI_API_KEY` can be used with an explicit compatible chat endpoint.
+- `OPENAI_BASE_URL` overrides the automatically selected chat endpoint.
 - `DASHSCOPE_BASE_URL` is only for ASR and should not be used as the chat base URL.
 - The app writes runtime data to `data/` and logs to `logs/`; both are ignored by git.
 - After changing model or API key settings, restart the backend.
 
 ## Troubleshooting
 
-If you see `The api_key client option must be set`, the backend did not load a valid API key. Check that `.env` exists in this folder and includes `DASHSCOPE_API_KEY` or `OPENAI_API_KEY`.
+If you see `The api_key client option must be set`, the backend did not load a valid chat API key. Check that `.env` exists in this folder and includes `NEBIUS_API_KEY`, `OPENAI_API_KEY`, or `DASHSCOPE_API_KEY`.
 
 If embedding initialization fails, reinstall backend dependencies with `pip install -r requirements.txt` and restart the backend.
 
