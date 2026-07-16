@@ -117,12 +117,26 @@ if serp_api_key:
     num_days = st.number_input("How many days do you want to travel for?", min_value=1, max_value=30, value=7)
 
     col1, col2 = st.columns(2)
-    
+
     with col1:
         if st.button("Generate Itinerary"):
-            with st.spinner("Processing..."):
-                # Get the response from the assistant
-                response: RunOutput = planner.run(f"{destination} for {num_days} days", stream=False)
+            with st.spinner("Researching your destination..."):
+                # First get research results
+                research_results: RunOutput = researcher.run(f"Research {destination} for a {num_days} day trip", stream=False)
+
+                # Show research progress
+                st.write("Research completed")
+
+            with st.spinner("Creating your personalized itinerary..."):
+                # Pass research results to planner
+                prompt = f"""
+                Destination: {destination}
+                Duration: {num_days} days
+                Research Results: {research_results.content}
+
+                Please create a detailed itinerary based on this research.
+                """
+                response: RunOutput = planner.run(prompt, stream=False)
                 # Store the response in session state
                 st.session_state.itinerary = response.content
                 st.write(response.content)
