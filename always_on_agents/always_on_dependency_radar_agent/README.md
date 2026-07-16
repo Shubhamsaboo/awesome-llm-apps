@@ -44,23 +44,55 @@ The app holds no API keys. Credentials live in the `llm-router` worker; whatever
 
 ## Installation
 
-Install and start the iii engine:
+**Step 1: Install the iii engine**
 
 ```bash
 curl -fsSL https://install.iii.dev/iii/main/install.sh | sh
+```
+
+**Step 2: Start the engine**
+
+```bash
 mkdir iii-app && cd iii-app
 touch config.yaml
 iii -c config.yaml
 ```
 
-Add the harness from a second terminal in the same folder (this pulls session-manager, context-manager, llm-router, web, state, queue, cron, and the rest of the loop's workers):
+**Step 3: Add the workers this app depends on**
+
+From a second terminal in the same folder (`iii worker add` writes to the `config.yaml` of the directory it runs in):
 
 ```bash
 cd iii-app
 iii worker add harness console
 ```
 
-Open `http://localhost:3113` and configure a provider key in the model picker. Then install the app:
+`harness` is the only required add: it installs the whole dependency set of the loop in one command, and each piece is a reusable worker this app calls over the bus:
+
+| Worker (installed with harness) | Used here for |
+|---|---|
+| `harness` | The analyst agent turn, `harness::send`, the `harness::turn-completed` trigger |
+| `session-manager` | The analyst's transcript |
+| `context-manager` | Token budgeting per turn |
+| `llm-router` + `provider-anthropic` / `provider-openai` | Model catalog and completion routing |
+| `web` | `web::fetch` for the npm registry, changelogs, and the delivery webhook |
+| `iii-state` | `state::set` / `state::get` for digest storage and history |
+| `iii-cron` | The `cron` trigger type behind the schedule |
+| `queue` | The durable `harness-turn` queue |
+
+`console` adds the UI at `http://localhost:3113`: provider key configuration and the live trace of every scan.
+
+**Step 4: Configure a model provider**
+
+Open `http://localhost:3113`, click the model picker, and paste an Anthropic or OpenAI key (stored in the `llm-router` worker config). Other providers are one add away (`iii worker add provider-xai`, `provider-llamacpp` for local models, ...).
+
+**Step 5 (optional): REST endpoints**
+
+```bash
+iii worker add http
+```
+
+**Step 6: Install and run the app**
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
