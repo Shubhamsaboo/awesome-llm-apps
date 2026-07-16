@@ -135,6 +135,7 @@ streamlit run travel_agent.py
 
 *Background agents that run on schedules or events, monitor changing context, decide what needs attention, and proactively deliver updates, artifacts, or actions.*
 
+*   [📡 Always-on Dependency Radar Agent](always_on_agents/always_on_dependency_radar_agent/) - A cron-scheduled agent on the iii engine that reads the changelogs of your outdated npm packages and grades every upgrade's risk
 *   [📰 Always-on Hacker News Briefing Agent](always_on_agents/always_on_hn_briefing_agent/) - A scheduled scout that ships a ranked daily brief to Slack or email
 
 ### 🤝 Multi-agent Teams
@@ -142,6 +143,7 @@ streamlit run travel_agent.py
 *Multiple agents collaborating to accomplish complex, cross-domain tasks.*
 
 *   [🧲 AI Competitor Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_competitor_intelligence_agent_team/) - Structured competitor teardowns built from their own websites
+*   [🔭 AI Deep Research Agent Team with iii](advanced_ai_agents/multi_agent_apps/agent_teams/ai_deep_research_agent_team_iii/) - An orchestrator on the iii engine that spawns its own researcher sub-agents and returns a fully cited report
 *   [💲 AI Finance Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_finance_agent_team/) - A financial analyst team in 20 lines of Python
 *   [🎨 AI Game Design Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_game_design_agent_team/) - Full game concepts from a swarm of design specialists
 *   [🧭 AG2 Adaptive Research Team](advanced_ai_agents/multi_agent_apps/agent_teams/ag2_adaptive_research_team/) - Agent teamwork with routing and fallback, built on AG2

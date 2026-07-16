@@ -1,0 +1,18 @@
+{
+  "name": "always-on-dependency-radar-agent",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Always-on dependency radar on the iii engine: a cron-triggered harness agent reads the changelogs of your outdated npm packages and stores an upgrade-risk digest",
+  "main": "radar.js",
+  "scripts": {
+    "start": "node radar.js --serve",
+    "scan": "node radar.js"
+  },
+  "dependencies": {
+    "iii-sdk": "^0.21.6"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

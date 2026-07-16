@@ -1,0 +1,18 @@
+{
+  "name": "ai-deep-research-agent-team-iii",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Multi-agent deep research team on the iii engine: an orchestrator turn spawns researcher sub-agents and returns a cited JSON report",
+  "main": "agent_team.js",
+  "scripts": {
+    "start": "node agent_team.js --serve",
+    "ask": "node agent_team.js"
+  },
+  "dependencies": {
+    "iii-sdk": "^0.21.6"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
