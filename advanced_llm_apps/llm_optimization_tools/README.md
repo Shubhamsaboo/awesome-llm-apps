@@ -63,6 +63,49 @@ python quick_test.py
 
 ---
 
+### 🔁 [Loopr Prompt Optimization](loopr_prompt_optimization/)
+
+**Optimize prompts for *quality*, not just cost** — a self-improving loop that rewrites your prompt until the outputs pass your eval cases.
+
+#### What it does:
+- Runs your prompt on a set of eval cases
+- Scores the outputs deterministically (11 built-in scorers)
+- Reflects on the failures in plain language and rewrites the prompt (GEPA-style)
+- Repeats until it converges, plateaus, or spends its budget
+
+#### Key Features:
+- ✅ **Local-first** — runs offline on Ollama at zero per-token cost (cloud key optional)
+- ✅ **Deterministic & reproducible** — scoring and stop decision are eval-gated
+- ✅ **No platform to adopt** — a `pip install` and a dict/YAML file
+- ✅ CLI + Python API + live web UI (`loopr serve`)
+
+#### Quick Example:
+```python
+from loopr import Task, optimize
+
+task = Task.from_dict({
+    "name": "yesno",
+    "description": "Answer with exactly 'yes' or 'no', lowercase.",
+    "seed_prompt": "Question: {input}",   # under-specified on purpose
+    "scorer": "exact",
+    "cases": [{"input": "Is the sky blue?", "expected": "yes"}],
+})
+
+result = optimize(task)
+print(result.best_prompt)   # the prompt Loopr rewrote for you
+```
+
+#### Get Started:
+```bash
+cd loopr_prompt_optimization/
+pip install -r requirements.txt
+python loopr_demo.py
+```
+
+**📖 [Full Documentation →](loopr_prompt_optimization/README.md)**
+
+---
+
 ## 💡 Why Optimize?
 
 ### Cost Savings

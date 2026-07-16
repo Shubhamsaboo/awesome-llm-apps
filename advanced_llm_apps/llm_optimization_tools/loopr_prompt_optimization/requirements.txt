@@ -1,0 +1,7 @@
+# Loopr — self-improving prompt-optimization loop.
+# Installs the package (and its only runtime dep, pyyaml) from source.
+loopr @ git+https://github.com/rohitguta2432/loopr.git
+
+# Backend is local-first via Ollama (no key needed). Uncomment for a cloud fallback:
+# openai>=1.0.0
+# anthropic>=0.40.0
