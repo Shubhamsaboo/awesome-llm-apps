@@ -194,6 +194,7 @@ streamlit run travel_agent.py
 *   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent) - Talk to your Notion pages from the terminal
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team) - Itineraries built on live Airbnb and Google Maps data
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/) - Specialist agents, each wired to its own MCP server
+*   [🗺️ Manifest MCP Agent](mcp_ai_agents/manifest_mcp_agent/) - Turn any URL into a structured JSON action map so agents know what they can do on a page — buttons, forms, inputs, required fields, cross-action dependencies
 *   [🗺️ Manifest](https://omfang.io/manifest-overview) - Converts any webpage into a structured JSON action map so agents know what they can do on a page — buttons, forms, inputs, required fields, cross-action dependencies
 
 ### 📀 RAG (Retrieval Augmented Generation)
