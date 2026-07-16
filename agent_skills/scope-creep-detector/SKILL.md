@@ -9,7 +9,7 @@ description: >-
   keep, split, or justify guidance. Operates locally and offline.
 license: Apache-2.0
 metadata:
-  author: "Shubham Saboo"
+  author: "Matt Van Horn"
   version: "1.0.0"
   source: "https://github.com/Shubhamsaboo/awesome-llm-apps"
 ---
