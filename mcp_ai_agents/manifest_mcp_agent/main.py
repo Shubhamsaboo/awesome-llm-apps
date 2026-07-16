@@ -31,7 +31,7 @@ with col1:
             with st.spinner("Calling Manifest API..."):
                 try:
                     resp = requests.post(
-                        "https://api.manifest.omfang.io/manifest",
+                        "https://manifest.omfang.io/manifest",
                         headers={"X-API-Key": MANIFEST_API_KEY, "Content-Type": "application/json"},
                         json={"url": url},
                         timeout=30,
@@ -83,7 +83,7 @@ if "manifest" in st.session_state:
                     import anthropic
                     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
                     message = client.messages.create(
-                        model="claude-haiku-4-5",
+                        model="claude-haiku-4-5-20251001",
                         max_tokens=1024,
                         messages=[{"role": "user", "content": prompt}],
                     )
