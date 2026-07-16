@@ -1,0 +1,42 @@
+{
+  "skill": "dependency-doctor",
+  "purpose": "Trigger behavior spec. CI checks lexical routing from these cases; behavioral expectations live in evals.json.",
+  "cases": [
+    {
+      "id": "check-requirements",
+      "prompt": "check my requirements.txt for problems",
+      "should_trigger": true,
+      "assert": "Runs the offline dependency diagnosis on the selected requirements.txt and explains each finding."
+    },
+    {
+      "id": "deps-wont-install",
+      "prompt": "why won't my deps install?",
+      "should_trigger": true,
+      "assert": "Uses dependency-doctor to inspect the manifest for shadowing pins, backports, drift, duplicates, and conflicts."
+    },
+    {
+      "id": "anything-wrong",
+      "prompt": "is anything wrong with my dependencies?",
+      "should_trigger": true,
+      "assert": "Runs a local manifest autopsy and presents evidence-backed fixes without editing."
+    },
+    {
+      "id": "near-miss-install",
+      "prompt": "install my deps",
+      "should_trigger": false,
+      "assert": "Does not trigger because the user asked to install, not diagnose, dependencies."
+    },
+    {
+      "id": "near-miss-upgrade",
+      "prompt": "upgrade everything to the latest version",
+      "should_trigger": false,
+      "assert": "Does not trigger because bulk upgrades are outside the skill's diagnostic scope."
+    },
+    {
+      "id": "near-miss-add",
+      "prompt": "add a package to my project",
+      "should_trigger": false,
+      "assert": "Does not trigger because adding a dependency is not a manifest autopsy."
+    }
+  ]
+}
