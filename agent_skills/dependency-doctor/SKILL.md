@@ -12,7 +12,7 @@ description: >-
 license: Apache-2.0
 compatibility: "Python 3.11+. Offline by default. Network access to pypi.org occurs only when the user explicitly approves --online."
 metadata:
-  author: "Shubham Saboo"
+  author: "Matt Van Horn"
   version: "1.0.0"
   source: "https://github.com/Shubhamsaboo/awesome-llm-apps"
 ---
