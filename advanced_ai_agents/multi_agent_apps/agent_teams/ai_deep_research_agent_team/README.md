@@ -85,7 +85,7 @@ iii worker add http
 
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-cd awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_deep_research_agent_team_iii
+cd awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_deep_research_agent_team
 npm install
 ```
 
