@@ -1,6 +1,6 @@
 # 🗺️ Manifest MCP Agent
 
-A Streamlit app that turns any URL into a structured action map using the [Manifest API](https://omfang.io/manifest-overview), then uses an LLM to reason about what an agent could do on that page.
+A Streamlit app that turns any URL into a structured action map using the [Manifest API](https://omfang.io/), then uses an LLM to reason about what an agent could do on that page.
 
 ## What it does
 
