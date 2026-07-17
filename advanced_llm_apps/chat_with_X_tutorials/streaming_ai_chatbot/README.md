@@ -1,149 +1,133 @@
 # Streaming AI Chatbot
 
-A minimal example demonstrating **real-time AI streaming** and **conversation state management** using the Motia framework.
-![streaming-ai-chatbot](docs/images/streaming-ai-chatbot.gif)
+A streaming, multi-turn AI chatbot built on the [iii engine](https://iii.dev) in one file of business logic. Token-by-token streaming, conversation state, durable turns, model routing, and REST endpoints are not implemented in this app: they come from reusable workers on the engine's bus, and the app just sends messages and listens to triggers.
 
-## 🚀 Features
+The core is genuinely a few lines. Sending a message with full multi-turn context is one function call:
 
-- **Real-time AI Streaming**: Token-by-token response generation using OpenAI's streaming API
-- **Live State Management**: Conversation state updates in real-time with message history
-- **Event-driven Architecture**: Clean API → Event → Streaming Response flow
-- **Minimal Complexity**: Maximum impact with just 3 core files
-
-## 📁 Architecture
-
-```
-streaming-ai-chatbot/
-├── steps/
-│   ├── conversation.stream.ts    # Real-time conversation state
-│   ├── chat-api.step.ts         # Simple chat API endpoint  
-│   └── ai-response.step.ts      # Streaming AI response handler
-├── package.json                 # Dependencies
-├── .env.example                 # Configuration template
-└── README.md                    # This file
+```javascript
+const send = await iii.trigger({
+  function_id: 'harness::send',
+  payload: {
+    message,
+    model,
+    session_id: conversationId,
+    options: { system_prompt: SYSTEM_PROMPT },
+  },
+})
 ```
 
-## 🛠️ Setup
+And live token streaming is one trigger binding: `session::message-updated` fires on every revision of the streaming assistant message, the handler prints the new suffix.
 
-### Installation & Setup
+| Capability | Who provides it |
+|---|---|
+| Turn loop, streaming generation, durability (crash resumes mid-turn) | `harness` worker |
+| Conversation state, transcript, live message-update triggers | `session-manager` worker |
+| Token budgeting when conversations get long | `context-manager` worker |
+| Model catalog and routing, any provider, key storage | `llm-router` + `provider-*` workers |
+| Web access for the bot (optional, one env var) | `web` worker |
+| REST endpoints (optional) | `http` worker |
+
+## What the rewrite adds
+
+The previous version of this tutorial hand-rolled the pipeline against a single provider. Rebuilt on the engine, the same app is smaller and does more:
+
+- **Multi-turn conversations.** Every message carries the full session context automatically. The old version sent each message in isolation.
+- **Any model, no key in the app.** The model comes from `router::models::list` at runtime; credentials live in the `llm-router` worker. Nothing is hardcoded.
+- **An agent, not just a chatbot.** `CHAT_FUNCTIONS=web::fetch` turns it into a chatbot that can read the web mid-answer. Any function on the bus can be granted the same way.
+- **Durable turns.** A crash or restart resumes mid-turn instead of dropping the response.
+- **Observability.** Every turn is a correlated trace in the iii console, including per-call token usage.
+
+## Installation
+
+**Step 1: Install the iii engine**
 
 ```bash
-# Clone the repository
+curl -fsSL https://install.iii.dev/iii/main/install.sh | sh
+```
+
+**Step 2: Start the engine**
+
+```bash
+mkdir iii-app && cd iii-app
+touch config.yaml
+iii -c config.yaml
+```
+
+**Step 3: Add the workers this app depends on**
+
+From a second terminal in the same folder:
+
+```bash
+cd iii-app
+iii worker add harness console
+```
+
+One command: `harness` installs the whole loop (session-manager, context-manager, llm-router with the Anthropic and OpenAI providers, web, state, queue, and siblings). `console` adds the UI at `http://localhost:3113`.
+
+**Step 4: Configure a model provider**
+
+Open `http://localhost:3113`, click the model picker, and paste a provider key. It is stored in the `llm-router` worker config, not in this app.
+
+**Step 5 (optional): REST endpoints**
+
+```bash
+iii worker add http
+```
+
+**Step 6: Install and run the app**
+
+```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-cd advanced_llm_apps/chat_with_X_tutorials/chat_with_llms
-
-# Install dependencies
+cd awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/streaming_ai_chatbot
 npm install
-
-# Start the development server
-npm run dev
+node chatbot.js
 ```
 
-### Configure OpenAI API
-   ```bash
-   cp .env.example .env
-   # Edit .env and add your OpenAI API key
-   ```
+## Usage
 
-**Open Motia Workbench**:
-   Navigate to `http://localhost:3000` to interact with the chatbot
+Interactive terminal chat with live token streaming:
 
-## 🔧 Usage
+```text
+you > hi! what can you do?
+ai  > Hi! I can answer questions, help you write and debug code, summarize
+text, brainstorm ideas...
 
-### Send a Chat Message
-
-**POST** `/chat`
-
-```json
-{
-  "message": "Hello, how are you?",
-  "conversationId": "optional-conversation-id"  // Optional: If not provided, a new conversation will be created
-}
+you > shorter please
+ai  > I answer questions and help with writing, code, and ideas.
 ```
 
-**Response:**
-```json
-{
-  "conversationId": "uuid-v4",
-  "message": "Message received, AI is responding...",
-  "status": "streaming"
-}
+The second turn already proves the state management: "shorter please" only makes sense because the session carried the history.
+
+Give the bot the web and it becomes an agent:
+
+```bash
+CHAT_FUNCTIONS=web::fetch node chatbot.js
 ```
 
-The response will update as the AI processes the message, with possible status values:
-- `created`: Initial message state
-- `streaming`: AI is generating the response
-- `completed`: Response is complete with full message
+Run it as a resident worker (`chat::send` / `chat::history` callable by any other worker or agent on the bus):
 
-When completed, the response will contain the actual AI message instead of the processing message.
-
-### Real-time State Updates
-
-The conversation state stream provides live updates as the AI generates responses:
-
-- **User messages**: Immediately stored with `status: 'completed'`
-- **AI responses**: Start with `status: 'streaming'`, update in real-time, end with `status: 'completed'`
-
-## 🎯 Key Concepts Demonstrated
-
-### 1. **Streaming API Integration**
-```typescript
-const stream = await openai.chat.completions.create({
-  model: 'gpt-4o-mini',
-  messages: [...],
-  stream: true, // Enable streaming
-})
-
-for await (const chunk of stream) {
-  // Update state with each token
-  await streams.conversation.set(conversationId, messageId, {
-    message: fullResponse,
-    status: 'streaming',
-    // ...
-  })
-}
+```bash
+node chatbot.js --serve
 ```
 
-### 2. **Real-time State Management**
-```typescript
-export const config: StateStreamConfig = {
-  name: 'conversation',
-  schema: z.object({
-    message: z.string(),
-    from: z.enum(['user', 'assistant']),
-    status: z.enum(['created', 'streaming', 'completed']),
-    timestamp: z.string(),
-  }),
-  baseConfig: { storageType: 'state' },
-}
+With the `http` worker installed, the same surface over REST:
+
+```bash
+curl -X POST http://localhost:3111/chat \
+  -H 'content-type: application/json' \
+  -d '{"message": "Hello, how are you?"}'
+# { "conversation_id": "s_...", "turn_id": "t_...", "history": "GET /chat/s_..." }
+
+curl http://localhost:3111/chat/<conversation_id>
 ```
 
-### 3. **Event-driven Flow**
-```typescript
-// API emits event
-await emit({
-  topic: 'chat-message',
-  data: { message, conversationId, assistantMessageId },
-})
+`GET /chat/:conversation_id` during generation returns the partial assistant text: the transcript is the stream, so polling it is already live. Pass `conversation_id` back into `POST /chat` to continue the conversation.
 
-// Event handler subscribes and processes
-export const config: EventConfig = {
-  subscribes: ['chat-message'],
-  // ...
-}
-```
+## Configuration
 
-## 🌟 Why This Example Matters
-
-This example showcases Motia's power in just **3 files**:
-
-- **Effortless streaming**: Real-time AI responses with automatic state updates
-- **Type-safe events**: End-to-end type safety from API to event handlers
-- **Built-in state management**: No external state libraries needed
-- **Scalable architecture**: Event-driven design that grows with your needs
-
-Perfect for demonstrating how Motia makes complex real-time applications simple and maintainable.
-
-## 🔑 Environment Variables
-
-- `OPENAI_API_KEY`: Your OpenAI API key (required)
+| Env var | Default | Meaning |
+|---|---|---|
+| `III_URL` | `ws://localhost:49134` | Engine WebSocket address |
+| `CHAT_MODEL` | none | Model id; required only when several models are available |
+| `CHAT_SYSTEM_PROMPT` | concise friendly assistant | System prompt (enriches the harness identity prompt) |
+| `CHAT_FUNCTIONS` | none | Comma-separated function allow-list for the bot, e.g. `web::fetch` |
