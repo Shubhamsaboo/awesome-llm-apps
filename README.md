@@ -191,7 +191,7 @@ streamlit run travel_agent.py
 
 *   [♾️ Browser MCP Agent](mcp_ai_agents/browser_mcp_agent/) - Drive a real browser with natural language over MCP
 *   [🐙 GitHub MCP Agent](mcp_ai_agents/github_mcp_agent/) - Explore and analyze any repo in plain English
-*   [🔨 Agentlas OS Agent Operation Environment (AOE) MCP Workforce Finder](mcp_ai_agents/agentlas_os_aoe_workforce_finder/) - Retrieve qualified agent and team candidates from a typed work order
+*   [🔨 Agentlas OS Agent Operation Environment (AOE) Local MCP Agent](mcp_ai_agents/agentlas_os_aoe_local_agent/) - Run a local Ollama model that routes work through a local Agentlas OS MCP server
 *   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent) - Talk to your Notion pages from the terminal
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team) - Itineraries built on live Airbnb and Google Maps data
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/) - Specialist agents, each wired to its own MCP server
