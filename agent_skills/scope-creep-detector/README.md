@@ -5,6 +5,12 @@ flags unrelated paths, new dependencies, public API renames, config or CI
 edits, oversized hunks, formatting-only files, and subsystem spread. The output
 is a local JSON report for keep, split, or justify decisions.
 
+![Scope Creep Detector demo](https://github.com/mvanhorn/awesome-llm-apps/releases/download/demo-assets/scope-creep-detector.gif)
+
+The demo analyzes a "fix null deref in parser" change that also touched CI
+config, added a dependency, and dropped in an unrelated file. The parser fix is
+kept; the rest is flagged.
+
 ## Install
 
 ```bash
