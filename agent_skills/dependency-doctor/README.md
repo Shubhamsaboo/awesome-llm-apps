@@ -4,6 +4,8 @@ Dependency Doctor inspects one dependency manifest and explains common sources
 of install drift and runtime breakage. It is a local, user-invoked development
 tool, not a repository CI rule.
 
+![demo](https://github.com/mvanhorn/awesome-llm-apps/releases/download/demo-assets/dependency-doctor.gif)
+
 ## What it checks
 
 - Python standard-library shadowing pins such as `pathlib==1.0.1`
