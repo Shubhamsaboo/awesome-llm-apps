@@ -1,7 +1,7 @@
-# Loopr — self-improving prompt-optimization loop.
-# Installs the package (and its only runtime dep, pyyaml) from source.
-loopr @ git+https://github.com/rohitguta2432/loopr.git
-
-# Backend is local-first via Ollama (no key needed). Uncomment for a cloud fallback:
-# openai>=1.0.0
-# anthropic>=0.40.0
+# No third-party dependencies — this tutorial uses the Python standard library only
+# (urllib, json, re, dataclasses). Nothing to install.
+#
+# Backend is local-first via Ollama (no API key needed):
+#     ollama serve && ollama pull qwen2.5:14b
+#
+# The OpenAI fallback (LOOPR_PROVIDER=openai) also uses urllib directly — no SDK required.
