@@ -9,6 +9,8 @@ messages, summarizes current authorship, detects repeatedly co-changed files,
 and flags issue references, reverts, workarounds, temporary choices, and TODOs.
 The agent turns that evidence into a readable history and a change-risk note.
 
+![demo](https://github.com/mvanhorn/awesome-llm-apps/releases/download/demo-assets/commit-archaeologist.gif)
+
 ## Install
 
 ```bash
