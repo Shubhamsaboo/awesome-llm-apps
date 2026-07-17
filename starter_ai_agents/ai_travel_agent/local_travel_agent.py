@@ -84,7 +84,7 @@ if serp_api_key:
         ),
         instructions=[
             "Given a travel destination and the number of days the user wants to travel for, first generate a list of 3 search terms related to that destination and the number of days.",
-            "For each search term, `search_google` and analyze the results."
+            "For each search term, `search_google` and analyze the results.",
             "From the results of all searches, return the 10 most relevant results to the user's preferences.",
             "Remember: the quality of the results is important.",
         ],
@@ -120,9 +120,23 @@ if serp_api_key:
     
     with col1:
         if st.button("Generate Itinerary"):
-            with st.spinner("Processing..."):
-                # Get the response from the assistant
-                response: RunOutput = planner.run(f"{destination} for {num_days} days", stream=False)
+            with st.spinner("Researching your destination..."):
+                # First get research results
+                research_results: RunOutput = researcher.run(f"Research {destination} for a {num_days} day trip", stream=False)
+
+                # Show research progress
+                st.write(" Research completed")
+
+            with st.spinner("Creating your personalized itinerary..."):
+                # Pass research results to planner
+                prompt = f"""
+                Destination: {destination}
+                Duration: {num_days} days
+                Research Results: {research_results.content}
+
+                Please create a detailed itinerary based on this research.
+                """
+                response: RunOutput = planner.run(prompt, stream=False)
                 # Store the response in session state
                 st.session_state.itinerary = response.content
                 st.write(response.content)
