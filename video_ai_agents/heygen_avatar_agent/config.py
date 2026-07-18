@@ -21,9 +21,14 @@ EMBED_HEIGHT = 720
 
 
 def resolve_api_key(override=None):
-    """Return the HeyGen API key.
+    """Return the LiveAvatar (HeyGen) API key.
 
-    A non-empty override (e.g. the sidebar field) always wins over the
-    HEYGEN_API_KEY environment variable.
+    A non-empty override (e.g. the sidebar field) always wins. Otherwise
+    HEYGEN_API_KEY is used (LIVEAVATAR_API_KEY is accepted as a fallback).
+    Get a key at https://app.liveavatar.com/developers
     """
-    return (override or "").strip() or os.getenv("HEYGEN_API_KEY", "")
+    return (
+        (override or "").strip()
+        or os.getenv("HEYGEN_API_KEY", "")
+        or os.getenv("LIVEAVATAR_API_KEY", "")
+    )

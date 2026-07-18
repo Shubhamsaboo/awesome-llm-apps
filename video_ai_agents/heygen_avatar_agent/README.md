@@ -37,9 +37,9 @@ A real-time conversational video avatar you can customize for any use case — c
    pip install -r requirements.txt
    ```
 
-4. **Get your HeyGen API key**
-   - Sign up at https://app.heygen.com
-   - Go to Settings → API → copy your key
+4. **Get your HeyGen (LiveAvatar) API key**
+   - Open [LiveAvatar Developers](https://app.liveavatar.com/developers) (LiveAvatar is a HeyGen product)
+   - Copy your API key
    - Create a `.env` file:
    ```bash
    HEYGEN_API_KEY=your_heygen_api_key_here

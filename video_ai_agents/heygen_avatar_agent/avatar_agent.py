@@ -39,7 +39,11 @@ def render_sidebar():
         api_key_input = st.text_input(
             "HeyGen API Key",
             type="password",
-            help="Get your key at liveavatar.com. Overrides HEYGEN_API_KEY env var.",
+            help=(
+                "LiveAvatar by HeyGen — get your key at "
+                "https://app.liveavatar.com/developers. "
+                "Overrides HEYGEN_API_KEY env var."
+            ),
         )
         api_key = resolve_api_key(api_key_input)
 
