@@ -43,7 +43,7 @@ An OpenAI SDK powered customer support agent application that delivers voice-pow
 
 3. **Run the Application**
    ```bash
-   streamlit run ai_voice_agent_docs.py
+   streamlit run customer_support_voice_agent.py
    ```
 
 4. **Use the Interface**
