@@ -88,6 +88,7 @@ streamlit run travel_agent.py
 *   [🧠 Advisor Orchestrator Worker](agent_skills/advisor-orchestrator-worker/) - Meta Loop with Claude Flabe 5 as advisor, GPT-5.6 as orchestrator, and Gemini 3.5 Flash as worker
 *   [♾️ Self-Improving Agent Skills](agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
 
+*   [🎯 Skill-Router G6](https://github.com/ForYourHelpAI101/skill-router-g6) - Self-learning MCP skill router for AI coding agents. Routes prompts to the best 5 skills using Thompson sampling + RAG + DPP diversity. 805-skill handbook, ~65ms per route, 5-layer anti-hallucination
 ### 🌱 Starter AI Agents
 
 *Single-file agents that run with just an API key - a great place to start.*
