@@ -10,6 +10,7 @@ PyPI lookups for exact Python pins so fully yanked releases can be reported.
 
 import argparse
 from collections import Counter, defaultdict
+from itertools import combinations
 import json
 from pathlib import Path
 import re
@@ -229,6 +230,26 @@ def marker_applies(entry):
     return True
 
 
+def non_python_version_marker(entry):
+    """Return normalized marker clauses that describe a non-Python axis."""
+    if entry["ecosystem"] != "python" or not entry["marker"]:
+        return ""
+    clauses = re.split(r"\s+(?:and|or)\s+", entry["marker"], flags=re.IGNORECASE)
+    non_python_clauses = [
+        " ".join(clause.split()).lower()
+        for clause in clauses
+        if not PYTHON_MARKER_RE.match(clause.strip())
+    ]
+    return " && ".join(sorted(non_python_clauses))
+
+
+def has_differing_non_python_markers(left, right):
+    """Return whether entries are split across distinct non-Python markers."""
+    left_marker = non_python_version_marker(left)
+    right_marker = non_python_version_marker(right)
+    return bool(left_marker and right_marker and left_marker != right_marker)
+
+
 def exact_pin(entry):
     """Return an exact version, or None for ranges and direct references."""
     spec = entry["spec"].strip()
@@ -264,7 +285,18 @@ def offline_findings(entries):
         remove_instead_of_pin = False
         if entry["ecosystem"] == "python":
             module_name = package.replace("-", "_")
-            if module_name in stdlib_names:
+            if package in BACKPORTS:
+                # A known backport is the more specific, actionable root cause.
+                remove_instead_of_pin = True
+                findings.append(make_finding(
+                    "high",
+                    "abandoned-backport",
+                    entry,
+                    BACKPORTS[package] + " The old backport can conflict with supported runtimes.",
+                    "Remove %s on supported Python versions. If an older runtime is required, guard the backport with a Python-version marker."
+                    % package,
+                ))
+            elif module_name in stdlib_names:
                 remove_instead_of_pin = True
                 findings.append(make_finding(
                     "high",
@@ -273,16 +305,6 @@ def offline_findings(entries):
                     "%s is provided by this Python runtime. Installing a package with the same name can shadow the maintained standard-library module."
                     % package,
                     "Remove %s from the manifest and import the standard-library module directly."
-                    % package,
-                ))
-            if package in BACKPORTS:
-                remove_instead_of_pin = True
-                findings.append(make_finding(
-                    "high",
-                    "abandoned-backport",
-                    entry,
-                    BACKPORTS[package] + " The old backport can conflict with supported runtimes.",
-                    "Remove %s on supported Python versions. If an older runtime is required, guard the backport with a Python-version marker."
                     % package,
                 ))
 
@@ -313,16 +335,25 @@ def offline_findings(entries):
     for (_ecosystem, package), package_entries in sorted(grouped.items()):
         if len(package_entries) < 2:
             continue
-        pins = {pin for pin in (exact_pin(item) for item in package_entries) if pin}
+        conflicting_pairs = [
+            (left, right)
+            for left, right in combinations(package_entries, 2)
+            if exact_pin(left)
+            and exact_pin(right)
+            and exact_pin(left) != exact_pin(right)
+            and not has_differing_non_python_markers(left, right)
+        ]
         lines = ", ".join(str(item["line"]) for item in package_entries)
         representative = package_entries[1]
-        if len(pins) > 1:
+        if conflicting_pairs:
+            conflict_entries = conflicting_pairs[0]
+            conflict_lines = ", ".join(str(item["line"]) for item in conflict_entries)
             findings.append(make_finding(
                 "high",
                 "conflicting-constraints",
-                representative,
+                conflict_entries[1],
                 "%s is pinned to incompatible exact versions on lines %s."
-                % (package, lines),
+                % (package, conflict_lines),
                 "Choose one compatible version for %s and keep a single constraint."
                 % package,
             ))
