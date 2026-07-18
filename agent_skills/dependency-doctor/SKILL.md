@@ -1,14 +1,13 @@
 ---
 name: dependency-doctor
 description: >-
-  Diagnoses requirements.txt, pyproject.toml, and package.json dependency
-  manifests for standard-library shadowing pins, abandoned backports, unpinned
-  dependencies, duplicate or conflicting constraints, and opt-in PyPI yanked
-  releases. Use when the user says "check my requirements.txt for dependency
-  problems", asks "why won't my deps install" or "is anything wrong with my
-  dependencies", wants a dependency autopsy, or suspects dependency manifest
-  rot. Runs offline by default as a local tool for the user's own project, not
-  repository CI.
+  Checks requirements.txt, pyproject.toml, and package.json dependency manifests
+  for surface-level direct-dependency footguns: standard-library shadowing pins,
+  abandoned backports, unpinned dependencies, and obvious intra-manifest
+  conflicts, plus opt-in PyPI yanked releases. Use when the user asks to check a
+  manifest for dependency problems, wants a dependency autopsy, or suspects
+  dependency manifest rot. Runs offline by default as a local tool for the
+  user's own project, not repository CI.
 license: Apache-2.0
 compatibility: "Python 3.11+. Offline by default. Network access to pypi.org occurs only when the user explicitly approves --online."
 metadata:
@@ -19,9 +18,9 @@ metadata:
 
 # Dependency Doctor
 
-Autopsy one dependency manifest on the user's machine. Find quiet sources of
-install drift and runtime breakage, explain each finding in plain language,
-then offer a small, reviewable fix.
+Inspect one dependency manifest on the user's machine for direct, surface-level
+footguns. Explain each finding in plain language, then offer a small,
+reviewable fix. This does not diagnose a failed pip or uv resolution.
 
 This is a local developer tool for a project the user chooses. It is not a
 repository-wide lint rule, a CI gate, or a proposal to enforce dependency
@@ -30,7 +29,7 @@ policy across unrelated apps.
 ## When to use
 
 - The user asks to check, audit, diagnose, or autopsy a dependency manifest
-- A `requirements.txt` install fails for unclear dependency reasons
+- The user wants to rule out direct-manifest issues before deeper install debugging
 - The user suspects stale pins, backports, duplicate entries, or dependency rot
 - The user asks whether anything looks wrong with their dependencies
 

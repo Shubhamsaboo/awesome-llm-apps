@@ -65,6 +65,14 @@ def finding(report, kind, package):
     )
 
 
+def finding_count(report, kinds, package):
+    """Return the number of findings for a package in the supplied kinds."""
+    return sum(
+        item.get("kind") in kinds and item.get("package") == package
+        for item in report.get("findings", [])
+    )
+
+
 def check_finding(report, kind, package, severity, fix_fragment):
     """Assert classification, severity, location, explanation, and fix."""
     item = finding(report, kind, package)
@@ -77,7 +85,7 @@ def check_finding(report, kind, package, severity, fix_fragment):
     check("%s suggests a fix" % kind, fix_fragment.lower() in item["fix"].lower())
 
 
-def test_requirements(root):
+def check_requirements(root):
     manifest = root / "requirements.txt"
     manifest.write_text(
         "pathlib==1.0.1\n"
@@ -93,7 +101,11 @@ def test_requirements(root):
     report = run_json(manifest)
 
     check("report names the input file", report.get("file") == str(manifest))
-    check_finding(report, "stdlib-shadowing", "pathlib", "high", "remove")
+    check_finding(report, "abandoned-backport", "pathlib", "high", "remove")
+    check(
+        "known backports do not also produce stdlib-shadowing findings",
+        finding_count(report, {"stdlib-shadowing", "abandoned-backport"}, "pathlib") == 1,
+    )
     check_finding(report, "abandoned-backport", "enum34", "high", "remove")
     check_finding(report, "unpinned", "requests", "medium", "pin")
     check_finding(report, "duplicate-constraint", "requests", "medium", "one")
@@ -113,7 +125,7 @@ def test_requirements(root):
     )
 
 
-def test_pyproject(root):
+def check_pyproject(root):
     manifest = root / "pyproject.toml"
     manifest.write_text(
         "[project]\n"
@@ -132,9 +144,13 @@ def test_pyproject(root):
     check_finding(report, "unpinned", "httpx", "medium", "pin")
     check("Poetry range is treated as a constraint", finding(report, "unpinned", "rich") is None)
     check_finding(report, "unpinned", "dataclasses", "medium", "do not add")
+    check(
+        "Poetry backports produce one root-cause finding",
+        finding_count(report, {"stdlib-shadowing", "abandoned-backport"}, "dataclasses") == 1,
+    )
 
 
-def test_version_marker(root):
+def check_version_marker(root):
     manifest = root / "guarded-requirements.txt"
     manifest.write_text(
         "dataclasses; python_version < \"3.7\"\n",
@@ -147,7 +163,24 @@ def test_version_marker(root):
     )
 
 
-def test_package_json(root):
+def check_platform_markers(root):
+    manifest = root / "platform-requirements.txt"
+    manifest.write_text(
+        "torch==2.1.0; platform_system == \"Linux\"\n"
+        "torch==2.0.0; platform_system == \"Darwin\"\n"
+        "requests==2.31.0; platform_system == \"Linux\"\n"
+        "requests==2.32.0; platform_system == \"Linux\"\n",
+        encoding="utf-8",
+    )
+    report = run_json(manifest)
+    check(
+        "platform-split pins are not conflicts",
+        finding(report, "conflicting-constraints", "torch") is None,
+    )
+    check_finding(report, "conflicting-constraints", "requests", "high", "choose")
+
+
+def check_package_json(root):
     manifest = root / "package.json"
     manifest.write_text(
         json.dumps({"dependencies": {"left-pad": "*", "chalk": "5.3.0"}}, indent=2) + "\n",
@@ -165,10 +198,11 @@ def main():
     print("dependency-doctor eval:")
     with tempfile.TemporaryDirectory(prefix="dependency-doctor-eval-") as temp_dir:
         root = Path(temp_dir)
-        test_requirements(root)
-        test_pyproject(root)
-        test_version_marker(root)
-        test_package_json(root)
+        check_requirements(root)
+        check_pyproject(root)
+        check_version_marker(root)
+        check_platform_markers(root)
+        check_package_json(root)
 
     print()
     passed = sum(CHECKS)
@@ -181,3 +215,8 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+def test_dependency_doctor_eval():
+    """Expose the standalone eval harness to pytest."""
+    assert main() == 0

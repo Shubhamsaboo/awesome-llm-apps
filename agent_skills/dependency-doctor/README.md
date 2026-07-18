@@ -1,8 +1,10 @@
 # Dependency Doctor Agent Skill
 
-Dependency Doctor inspects one dependency manifest and explains common sources
-of install drift and runtime breakage. It is a local, user-invoked development
-tool, not a repository CI rule.
+Dependency Doctor inspects one dependency manifest for surface-level,
+direct-manifest footguns. It catches unpinned versions, standard-library
+shadowing, obsolete backports, and obvious intra-manifest conflicts; it does
+not diagnose a failed pip or uv dependency resolution. It is a local,
+user-invoked development tool, not a repository CI rule.
 
 ![demo](https://github.com/mvanhorn/awesome-llm-apps/releases/download/demo-assets/dependency-doctor.gif)
 
