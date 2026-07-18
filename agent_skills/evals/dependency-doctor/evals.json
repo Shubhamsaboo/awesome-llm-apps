@@ -1,0 +1,38 @@
+{
+  "skill_name": "dependency-doctor",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "check my requirements.txt and explain anything that looks wrong",
+      "expected_output": "An offline JSON-backed diagnosis of the selected requirements.txt, followed by plain-language findings and suggested fixes.",
+      "expectations": [
+        "The skill runs scripts/dep_doctor.py on the named manifest with --json and without --online",
+        "Each finding includes severity, kind, package, line, why, and fix",
+        "The answer distinguishes standard-library pins, obsolete backports, unpinned dependencies, duplicates, and exact-pin conflicts",
+        "No manifest edit is made without the user's approval"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "why won't my deps install? please autopsy pyproject.toml",
+      "expected_output": "A local diagnosis of pyproject.toml that leads with high-severity manifest problems and states the limits of the check.",
+      "expectations": [
+        "The selected pyproject.toml is inspected instead of sweeping the repository",
+        "High-severity findings are explained before medium or low findings",
+        "The answer does not claim to be a complete dependency resolver or CVE audit",
+        "The skill offers a focused edit only after presenting the diagnosis"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "is this exact package version yanked on PyPI?",
+      "expected_output": "A permission check before any network access, then an opt-in PyPI yank lookup for the exact Python pin.",
+      "expectations": [
+        "The skill asks for permission before passing --online",
+        "Only package names and exact pinned versions are sent to pypi.org",
+        "A release is called yanked only when all of its PyPI files are marked yanked",
+        "The answer does not equate a yank with a CVE"
+      ]
+    }
+  ]
+}
