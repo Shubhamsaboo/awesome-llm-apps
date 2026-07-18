@@ -266,7 +266,7 @@ def historical_paths(path, timeline):
 
 
 def summarize_co_changes(path, timeline):
-    threshold = 1 if len(timeline) == 1 else max(2, (len(timeline) + 2) // 3)
+    threshold = max(2, (len(timeline) + 2) // 3)
     aliases = historical_paths(path, timeline)
     commits_by_file = defaultdict(list)
     for entry in timeline:

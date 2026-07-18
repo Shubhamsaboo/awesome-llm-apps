@@ -174,6 +174,17 @@ def main():
             "docs/decision.md" not in co_changed,
             str(report["co_changed"]),
         )
+        single_commit = run(repo, "--json", file_path="docs/decision.md")
+        single_commit_report = (
+            json.loads(single_commit.stdout) if single_commit.returncode == 0 else {}
+        )
+        check(
+            "single-commit history has no repeated co-changes",
+            single_commit.returncode == 0
+            and single_commit_report.get("co_changed") == []
+            and single_commit_report.get("region", {}).get("co_change_threshold") == 2,
+            single_commit.stderr or str(single_commit_report),
+        )
         signal_types = {entry["type"] for entry in report["intent_signals"]}
         check("workaround signal is present", "workaround" in signal_types)
         check("temporary signal is present", "temporary" in signal_types)
