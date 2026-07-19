@@ -51,7 +51,11 @@ PAYMENT_HINTS = ("stripe", "billing", "payment", "checkout", "subscription", "pa
 def sh(args, cwd=None):
     """Run a command, return stdout or '' on any failure. Never raises."""
     try:
-        out = subprocess.run(args, cwd=cwd, capture_output=True, text=True, timeout=30)
+        # Decode git output as UTF-8. With text=True and no encoding, Python uses
+        # the locale default (cp1252 on Windows), which raises UnicodeDecodeError
+        # on non-Latin-1 bytes in commit messages (emoji, em-dashes, …).
+        out = subprocess.run(args, cwd=cwd, capture_output=True, text=True,
+                             encoding="utf-8", errors="replace", timeout=30)
         return out.stdout.strip() if out.returncode == 0 else ""
     except (OSError, subprocess.TimeoutExpired):
         return ""
