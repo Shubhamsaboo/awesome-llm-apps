@@ -15,11 +15,12 @@ metadata:
   version: "1.0.0"
   source: "https://github.com/Shubhamsaboo/awesome-llm-apps"
 compatibility: >-
-  The scaffolder is offline (Python 3.8+, stdlib). The generated agent is a
-  Node 20+ worker that connects to a local engine over WebSocket
-  (ws://localhost:49134) and needs the harness worker installed; model
-  credentials live in the engine's model-router worker, never in the
-  generated code.
+  The scaffolder is offline (Python 3.8+, stdlib). Workers on the engine bus
+  are language-agnostic (the installed ones are mostly Rust binaries); the
+  scaffolded business-logic worker uses the Node SDK and needs Node 20+, a
+  local engine over WebSocket (ws://localhost:49134), and the harness worker
+  installed. Model credentials live in the engine's model-router worker,
+  never in the generated code.
 ---
 
 # Harness Agent Builder
@@ -28,10 +29,12 @@ A durable agent is not a framework project. The engine this skill targets is
 a bus: reusable workers register functions and triggers, and an agent is one
 small worker of business logic that asks the `harness` worker to run turns
 for it. Streaming, transcripts, model routing, durability, scheduling, and
-HTTP all come from workers that are installed, not written. This skill turns
-a user's "build me an agent that X" into that one small worker, correctly
-wired. The concrete engine underneath is [iii](https://iii.dev); every
-command below runs against it.
+HTTP all come from workers that are installed, not written. Language is
+invisible on the bus: the installed workers are mostly Rust binaries, SDKs
+exist for Rust, Python, Node, and the browser, and the function id is the
+only contract; this skill scaffolds the business-logic worker in Node. The
+concrete engine underneath is [iii](https://iii.dev); every command below
+runs against it.
 
 ## When to use
 
@@ -48,8 +51,8 @@ command below runs against it.
 
 - Orchestrating multiple LLM CLIs or model teams without an engine
 - Generic cron jobs or Express servers that call a model SDK directly
-- Writing engine workers in Rust or Python (this skill scaffolds the Node
-  consumer pattern)
+- Hand-writing a worker in another SDK language (Rust, Python, browser);
+  the same wire contracts apply but this scaffolder emits Node
 
 ## Step 1: Confirm the environment
 

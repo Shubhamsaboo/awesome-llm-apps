@@ -49,5 +49,7 @@ harness-agent-builder/
 ```
 
 The scaffolder makes no network calls and refuses to overwrite existing
-files. The generated agent needs Node 20+ and a running engine with the
-harness worker; SKILL.md walks through both.
+files. Workers on the bus are language-agnostic (the installed ones are
+mostly Rust); the scaffolded business-logic worker uses the Node SDK, so it
+needs Node 20+ and a running engine with the harness worker. SKILL.md walks
+through both.
