@@ -1,0 +1,48 @@
+{
+  "skill": "harness-agent-builder",
+  "purpose": "Trigger-behavior spec for deterministic lexical routing and manual behavior checks.",
+  "cases": [
+    {
+      "id": "build-agent-backend",
+      "prompt": "build a durable agent backend on the harness engine",
+      "should_trigger": true,
+      "assert": "Verifies the engine and harness worker, gathers the four decisions, and scaffolds the agent."
+    },
+    {
+      "id": "wire-into-harness",
+      "prompt": "wire my script into the harness so other agents can call it",
+      "should_trigger": true,
+      "assert": "Scaffolds a callable ::run function with a completed-turn binding."
+    },
+    {
+      "id": "always-on-scheduled-agent",
+      "prompt": "make an always-on agent with workers and a cron trigger, no server",
+      "should_trigger": true,
+      "assert": "Uses the cron trigger with a 6-field expression and the installed worker set."
+    },
+    {
+      "id": "durable-agent-triggers",
+      "prompt": "turn this script into a durable agent with triggers",
+      "should_trigger": true,
+      "assert": "Scaffolds the turn-loop consumer with the requested trigger binding."
+    },
+    {
+      "id": "near-miss-model-team",
+      "prompt": "orchestrate multiple models to fan this work out",
+      "should_trigger": false,
+      "assert": "Model-team orchestration without an engine routes to the orchestrator skill instead."
+    },
+    {
+      "id": "near-miss-plain-cron",
+      "prompt": "write a cron job that curls my healthcheck",
+      "should_trigger": false,
+      "assert": "A plain cron job is not a harness agent; no engine involved."
+    },
+    {
+      "id": "near-miss-express-server",
+      "prompt": "build me an express server that calls the openai api",
+      "should_trigger": false,
+      "assert": "A direct SDK web server does not involve the harness engine."
+    }
+  ]
+}

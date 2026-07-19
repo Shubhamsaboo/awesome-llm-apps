@@ -1,0 +1,38 @@
+{
+  "skill_name": "harness-agent-builder",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Build a durable agent that checks my RSS feeds every morning and writes a digest.",
+      "expected_output": "A scaffolded cron-triggered agent wired to the harness worker, with web::fetch allowed, a JSON digest contract, and verification steps against the live engine.",
+      "expectations": [
+        "The skill verifies the harness send function and the model catalog exist before writing code",
+        "The skill runs scripts/scaffold_agent.py with --trigger cron and a 6-field expression",
+        "The generated agent resolves its model from the router catalog and hardcodes none",
+        "The skill directs the user to test with a real task and the console trace"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Wire my summarizer script into the harness so other agents can call it.",
+      "expected_output": "A callable <name>::run function on the bus that sends the task to the harness and returns the finished result through a completed-turn binding.",
+      "expectations": [
+        "The scaffold registers a namespaced ::run function other workers can trigger",
+        "Results arrive via the completed-turn trigger binding, not polling",
+        "Deterministic pre-work stays in plain code before the harness send",
+        "The wait path has a timeout that stops the abandoned turn"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "My harness agent's results never come back and the sub-agents I asked for seem to be missing.",
+      "expected_output": "A diagnosis pass over the documented wire gotchas: binding correlation, unordered event delivery, the spawn subset rule, and live-children-only status.",
+      "expectations": [
+        "The skill checks the completed-turn binding and session id correlation first",
+        "The answer explains that turn status lists live children only and points at the console trace",
+        "The subset rule is applied: a parent can only grant functions it holds",
+        "Oversized web::fetch results are ruled out with max_bytes guidance"
+      ]
+    }
+  ]
+}
