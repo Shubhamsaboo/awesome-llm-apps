@@ -19,7 +19,9 @@ Most "skills" on registries are text-only prompt dumps — advice the model alre
 | Skill | What it does |
 |---|---|
 | [🧠 advisor-orchestrator-worker](advisor-orchestrator-worker/) | Turns your agent into the orchestrator of a three-tier model team: cheap stateless workers in parallel, expensive advisor consulted only at commitment boundaries, verification gates between every step — budgeted so a run can't burn a hole in your API bill |
+| [🏺 commit-archaeologist](commit-archaeologist/) | Reconstructs why a file or code region exists from local git history, including its introducing commit, later edits, repeated companion files, current authorship, and intent clues |
 | [⚰️ project-graveyard](project-graveyard/) | Scans your machine for dead side projects, autopsies why each one died from its git history (deploy fear, payments wall, killed by a newer project), shows your personal death patterns, and resurrects the one with a pulse — with relapse tracking on every resurrection it prescribes |
+| [🔭 scope-creep-detector](scope-creep-detector/) | Checks a diff against its stated intent, flags unrelated files and scope signals, and recommends what to keep, split, or justify |
 | [♾️ self-improving-agent-skills](self-improving-agent-skills/) | Automatically optimizes agent skills using Gemini and ADK |
 
 More coming, released one at a time.

@@ -1,0 +1,42 @@
+{
+  "skill": "commit-archaeologist",
+  "purpose": "Trigger behavior spec. CI checks that positive prompts match the skill description more strongly than near-misses.",
+  "cases": [
+    {
+      "id": "why-code-exists",
+      "prompt": "why does this code exist",
+      "should_trigger": true,
+      "assert": "Traces the relevant lines through local git history and explains the evidence for their likely intent."
+    },
+    {
+      "id": "who-wrote-function",
+      "prompt": "who wrote this function and why",
+      "should_trigger": true,
+      "assert": "Reports current authorship, the introducing commit, later changes, and likely intent."
+    },
+    {
+      "id": "explain-function-history",
+      "prompt": "explain the history of this function",
+      "should_trigger": true,
+      "assert": "Builds a chronological narrative for the function from local git evidence."
+    },
+    {
+      "id": "near-miss-git-blame",
+      "prompt": "run git blame on src/parser.py",
+      "should_trigger": false,
+      "assert": "Does not trigger for a direct request to print blame output without intent analysis."
+    },
+    {
+      "id": "near-miss-delete-history",
+      "prompt": "delete this file's history",
+      "should_trigger": false,
+      "assert": "Does not trigger for destructive history rewriting."
+    },
+    {
+      "id": "near-miss-squash",
+      "prompt": "squash my commits",
+      "should_trigger": false,
+      "assert": "Does not trigger for commit rewriting."
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+eval_set_id: release_radar_dependency_brief
+name: Release Radar dependency brief eval prompts
+description: Prompts for checking that Release Radar filters noise and explains impact.
+eval_cases:
+  - name: daily_brief
+    prompt: Give me today's dependency release brief.
+    expected_behavior:
+      - Calls preview_dependency_brief.
+      - Returns only breaking, deprecation, security, yanked, or major-version changes.
+      - Includes a release link and one-line impact for every finding.
+  - name: manifest_brief
+    prompt: Check /workspace/package.json and show me the five dependency changes that matter.
+    expected_behavior:
+      - Passes the manifest path and a limit of five to the tool.
+      - Groups findings by dependency.
+      - Skips routine patch notes.
+  - name: no_false_delivery
+    prompt: Email this dependency brief to the team.
+    expected_behavior:
+      - Does not claim to send email or call a webhook.
+      - Provides handoff-ready text or HTML.
+
