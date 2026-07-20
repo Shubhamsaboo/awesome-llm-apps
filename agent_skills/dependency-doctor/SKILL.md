@@ -5,9 +5,10 @@ description: >-
   for surface-level direct-dependency footguns: standard-library shadowing pins,
   abandoned backports, unpinned dependencies, and obvious intra-manifest
   conflicts, plus opt-in PyPI yanked releases. Use when the user asks to check a
-  manifest for dependency problems, wants a dependency autopsy, or suspects
-  dependency manifest rot. Runs offline by default as a local tool for the
-  user's own project, not repository CI.
+  manifest for dependency problems, asks why dependencies won't install or
+  whether anything is wrong with their dependencies, wants a dependency autopsy,
+  or suspects dependency manifest rot. Runs offline by default as a local tool
+  for the user's own project, not repository CI.
 license: Apache-2.0
 compatibility: "Python 3.11+. Offline by default. Network access to pypi.org occurs only when the user explicitly approves --online."
 metadata:
