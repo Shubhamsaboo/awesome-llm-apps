@@ -168,6 +168,12 @@ streamlit run travel_agent.py
 *   [🔊 Voice RAG Agent (OpenAI SDK)](voice_ai_agents/voice_rag_openaisdk/) - Ask your PDFs questions, hear the answers
 *   [🎙️ OpenSource Voice Dictation Agent (Wispr Flow clone)](https://github.com/akshayaggarwal99/jarvis-ai-assistant) <sub>↗ external</sub> - Open-source dictation that types where you talk
 
+### 📱 On-Device AI Apps
+
+*AI apps that run models locally on your phone or computer - private by design, no cloud required.*
+
+*   [🧠 Private Mind](on_device_ai_apps/private_mind/) - Chat with LLMs 100% on-device on iOS and Android, offline and free
+
 ### 🖼️ Generative UI and Agentic Frontends
 
 *Agents that render interactive UI components, not just text: forms, cards, charts, editable plans.*
