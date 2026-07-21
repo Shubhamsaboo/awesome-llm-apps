@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "thrift-memory": {
+      "command": "npx",
+      "args": ["-y", "thrift-memory"]
+    }
+  }
+}
