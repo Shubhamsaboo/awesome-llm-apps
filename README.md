@@ -196,6 +196,7 @@ streamlit run travel_agent.py
 *   [🐙 GitHub MCP Agent](mcp_ai_agents/github_mcp_agent/) - Explore and analyze any repo in plain English
 *   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent) - Talk to your Notion pages from the terminal
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team) - Itineraries built on live Airbnb and Google Maps data
+*   [📟 Gumpbox MCP Agent](mcp_ai_agents/gumpbox_mcp_agent/) - Turn any AI editor into a Linux sysadmin managing real SSH servers, tunnels, sandboxes, and workflows over MCP
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/) - Specialist agents, each wired to its own MCP server
 
 ### 📀 RAG (Retrieval Augmented Generation)
