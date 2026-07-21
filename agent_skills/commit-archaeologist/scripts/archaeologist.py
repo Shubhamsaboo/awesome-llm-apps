@@ -37,6 +37,12 @@ def git(repo, args, required=True):
             ["git", "-C", repo, *args],
             capture_output=True,
             text=True,
+            # Decode git output as UTF-8. With text=True and no encoding, Python
+            # uses the locale default (cp1252 on Windows), which raises
+            # UnicodeDecodeError on non-Latin-1 bytes in commit messages or file
+            # content (emoji, em-dashes, …).
+            encoding="utf-8",
+            errors="replace",
             timeout=30,
         )
     except FileNotFoundError as exc:
