@@ -5,7 +5,7 @@ from typing import List, Dict, Any
 # Import pipeline components from main.py and agents
 from main import collect_signals, DEFAULT_SIGNAL_LIMIT
 from agents import (
-    SignalCollectorAgent,
+    SignalCollector,
     RelevanceAgent,
     RiskAgent,
     SynthesisAgent
@@ -102,7 +102,7 @@ if run_button:
         st.warning("Please select at least one signal source.")
     else:
         # Initialize Agents
-        collector = SignalCollectorAgent()
+        collector = SignalCollector()
         relevance = RelevanceAgent()
         risk = RiskAgent()
         synthesis = SynthesisAgent()
