@@ -1,4 +1,4 @@
-# Commit Archaeologist Agent Skill
+# 🏺 Commit Archaeologist Agent Skill
 
 `git blame` tells you who last changed a line. Commit Archaeologist reconstructs
 why the line exists.
