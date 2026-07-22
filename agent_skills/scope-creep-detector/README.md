@@ -1,4 +1,4 @@
-# Scope Creep Detector
+# 🔭 Scope Creep Detector 
 
 Checks a working, staged, saved, or branch diff against a one-line intent. It
 flags unrelated paths, new dependencies, public API renames, config or CI
