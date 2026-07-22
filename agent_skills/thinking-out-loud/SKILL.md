@@ -2,17 +2,18 @@
 name: thinking-out-loud
 description: >-
   A contract for what the agent does when a long, messy, stream-of-consciousness
-  ramble arrives (usually voice dictation): act on nothing until a structured
-  echo is approved. The echo audits the full transfer, mission, locked decisions
+  ramble arrives (usually voice dictation): act on nothing until the echo brief
+  is approved. The echo audits the entire transfer, mission, locked decisions
   and constraints, open questions, flips and parked tangents, with the model's
-  inferences and guesses quarantined away from the user's own words, so the
+  inferences and guesses quarantined away from the user's own phrasing, so the
   user verifies what the model believes, not just what it doubts. Use when the
-  user says they want to think out loud or ramble, when a message opens with a
-  speech-to-text preamble like "switching to voice, sorry for typos", when
-  input is a long weakly punctuated stream with restarts and reversals, or when
-  the user asks to be interviewed about a fuzzy idea. Includes an optional
-  capture mode for rambles spread across several messages and an optional
-  targeted interview.
+  user says "let me think out loud" or wants to ramble a bit before building
+  anything, when a message opens with a speech-to-text preamble like "switching
+  to voice, sorry for typos", when input is a long weakly punctuated stream
+  with restarts and mid-message reversals ("actually no, wait, scrap that idea
+  entirely"), or when the user asks to be interviewed about a fuzzy half-formed
+  idea. Includes an optional capture mode for rambles spread across several
+  messages and an optional targeted interview.
 license: Apache-2.0
 metadata:
   author: "Shubham Saboo"
