@@ -1,4 +1,4 @@
-# Self-Improving Agent Skills
+# ♾️ Self-Improving Agent Skills 
 
 Automatically optimize your agent skills using a multi-agent system built with **Google ADK (Agent Development Kit)** and **Gemini**. Upload a skill, let the agents generate test scenarios and evaluation criteria, then watch as three specialized ADK agents collaborate to improve your skill through iterative optimization.
 
