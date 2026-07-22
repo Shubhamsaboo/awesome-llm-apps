@@ -1,19 +1,13 @@
-# Thinking Out Loud
+# 🎙️ Thinking Out Loud 
 
 Ramble at your agent by voice. Audit what it heard before it acts.
 
-Voice dictation already lets you think out loud for ten minutes, and LLMs
-are already good at reconstructing the mess. The danger sits one step
-later: the model fills every gap in your ramble confidently. "The usual
-model" silently becomes a specific model. The idea you reversed
-mid-ramble survives as fact. Then an agent with tools starts building on
-a misreading it fully believes, and you find out an hour of generated
-work later.
+Voice dictation already lets you think out loud for ten minutes, and LLMs are already good at reconstructing the mess. The danger sits one step later: the model fills every gap in your ramble confidently. "The usual model" silently becomes a specific model. The idea you reversed mid-ramble survives as fact. Then an agent with tools starts building on a misreading it fully believes, and you find out an hour of generated work later.
 
-This skill is a contract for that moment: the agent acts on nothing
-until it echoes back a short structured audit of everything it absorbed,
-with its own guesses quarantined from your words. You correct three
-lines instead of debugging a built artifact.
+This skill is a contract for that moment: the agent acts on nothing until it echoes back a short structured audit of everything it absorbed, with its own guesses quarantined from your words. You correct three lines instead of debugging a built artifact.
+
+<img width="1390" height="782" alt="thinking_out_loud" src="https://github.com/user-attachments/assets/81030cf9-1537-408a-ad8e-0ab6b6acbc58" />
+
 
 ## Install
 
