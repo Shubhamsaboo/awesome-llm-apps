@@ -1,0 +1,48 @@
+{
+  "skill": "thinking-out-loud",
+  "purpose": "Trigger-behavior spec: when a ramble should enter capture or echo, and when ordinary input should be left alone.",
+  "cases": [
+    {
+      "id": "explicit-invoke",
+      "prompt": "let me think out loud for a bit before we build anything",
+      "should_trigger": true,
+      "assert": "Enters capture mode: one short acknowledgment, then minimal replies until a done sentinel."
+    },
+    {
+      "id": "voice-preamble",
+      "prompt": "switching to speech recognition sorry for any typos. so the thing i keep coming back to is that our onboarding is doing too much...",
+      "should_trigger": true,
+      "assert": "Recognizes the voice preamble; if the ramble is complete, jumps straight to the echo."
+    },
+    {
+      "id": "unpunctuated-stream",
+      "prompt": "ok so basically what i want is some kind of dashboard no wait not a dashboard more like a digest thing that runs itself and my cofounder needs it too actually scrap the dashboard idea entirely the point is i never want to open a browser tab for this",
+      "should_trigger": true,
+      "assert": "Detects stream-of-consciousness with reversals; produces an echo with the reversal logged in the ledger."
+    },
+    {
+      "id": "interview-request",
+      "prompt": "I have a fuzzy idea for a product, interview me about it",
+      "should_trigger": true,
+      "assert": "Runs capture (or takes what is given), echoes, then interviews on open questions one at a time."
+    },
+    {
+      "id": "near-miss-verbatim",
+      "prompt": "here's my voice memo transcript, clean up the punctuation but keep my exact words",
+      "should_trigger": false,
+      "assert": "Does not trigger: the user wants verbatim cleanup, not reconstruction."
+    },
+    {
+      "id": "near-miss-structured-doc",
+      "prompt": "here's the full PRD I wrote, review it: [three pages of structured markdown]",
+      "should_trigger": false,
+      "assert": "Does not trigger: long but already structured input is not a ramble."
+    },
+    {
+      "id": "near-miss-clear-request",
+      "prompt": "fix the failing test in test_ranker.py",
+      "should_trigger": false,
+      "assert": "Does not trigger: short, clear, actionable request."
+    }
+  ]
+}

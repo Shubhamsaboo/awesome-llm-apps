@@ -1,0 +1,57 @@
+{
+  "skill_name": "thinking-out-loud",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "switching to voice sorry for typos. so i want a weekly changelog email for our users but written like a human not release notes. marketing should own it eventually but for now me. it should pull from merged PRs. oh and we should definitely include screenshots. hmm actually screenshots are a pain to automate skip them for v1. also random but we could repurpose this for investor updates later. anyway it has to go out friday mornings without me babysitting it and the tone thing matters most, if it reads like a robot wrote it the whole thing is pointless.",
+      "expected_output": "A structured echo: one-sentence mission, brief with goals, constraints, made decisions and open questions, a ledger flagging the screenshots reversal and parking the investor-updates tangent, and an assumption diff separating said, inferred, and guessed.",
+      "expectations": [
+        "No implementation, file edits, planning, or solutioning happens before the echo is approved; the reply is the echo and nothing else",
+        "Mission is a single sentence capturing the actual goal (human-sounding weekly changelog email, fully automated)",
+        "The screenshots reversal appears in the ledger with both positions and the later one (skip for v1) adopted",
+        "The investor-updates idea is parked as a tangent, not folded into the goals",
+        "The decision that tone matters most is captured as a made decision, not an open question",
+        "My additions contains only Inferred and Guessed entries; there is no you-said recap section",
+        "Unstated gap-fills (such as which repo or which email tool) appear under Guessed or Open, never stated as locked facts",
+        "No fact appears in more than one section of the echo",
+        "Every bullet is a single line",
+        "No comment on typos, dictation artifacts, or lack of punctuation",
+        "The echo ends by inviting corrections and offering the interview"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "let me ramble for a minute. [followed across several messages by fragments, including one direct question mid-stream: 'wait, does vercel support cron jobs?', then more rambling, then 'ok done, echo me']",
+      "expected_output": "Capture-mode discipline: one short acknowledgment, minimal one-line replies to each fragment, the direct question answered in at most two sentences before returning to listening, and no echo until the sentinel.",
+      "expectations": [
+        "The acknowledgment is one short line that names the exit sentinel",
+        "Every mid-stream reply is a single minimal line with no solutions, praise, summaries, or questions",
+        "The direct vercel question is answered in at most two sentences, then listening resumes",
+        "No reconstruction, advice, or partial echo appears before the user says done",
+        "The echo arrives immediately after the sentinel with all four sections"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "[after an echo listing two open questions and two guesses] yes interview me",
+      "expected_output": "A short targeted interview: one question per message, drawn only from the flagged open questions and guesses, highest information gain first, each with a one-clause reason, capped at five, ending with a restatement of only the changed echo sections.",
+      "expectations": [
+        "Questions target only items flagged in the echo, never new generic discovery",
+        "Exactly one question per message",
+        "Each question includes a one-clause reason why it matters",
+        "The interview stops at five questions or earlier once answers stop changing the brief",
+        "After the interview, only the changed sections of the echo are restated"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "[after corrections] yes that's exactly it, locked",
+      "expected_output": "Offers exactly three persistence options (append to CLAUDE.md, save to docs/rambles/, keep in conversation) and does not write anything until the user picks one.",
+      "expectations": [
+        "Exactly three options are offered, matching the skill's persistence section",
+        "No file or CLAUDE.md write happens before the user chooses",
+        "After a choice, the approved brief governs the session: its decisions are not re-asked later"
+      ]
+    }
+  ]
+}
