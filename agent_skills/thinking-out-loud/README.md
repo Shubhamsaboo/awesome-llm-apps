@@ -6,8 +6,7 @@ Voice dictation already lets you think out loud for ten minutes, and LLMs are al
 
 This skill is a contract for that moment: the agent acts on nothing until it echoes back a short structured audit of everything it absorbed, with its own guesses quarantined from your words. You correct three lines instead of debugging a built artifact.
 
-<img width="1390" height="782" alt="thinking_out_loud" src="https://github.com/user-attachments/assets/81030cf9-1537-408a-ad8e-0ab6b6acbc58" />
-
+https://github.com/user-attachments/assets/6f272cf5-8ad9-4d9d-a5bd-538076487b47
 
 ## Install
 
