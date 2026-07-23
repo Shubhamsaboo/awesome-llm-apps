@@ -866,7 +866,7 @@ def main():
                     use_cache=True
                 ):
                     # Update progress bar and status
-                    if 'progress' in result:
+                    if 'email' not in result:
                         progress_bar.progress(result['progress'])
                         status_text.text(f"🔄 {result['status']} - {result['step']}")
                     else:
