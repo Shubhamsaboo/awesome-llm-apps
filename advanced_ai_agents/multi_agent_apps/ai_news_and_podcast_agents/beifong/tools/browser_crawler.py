@@ -73,7 +73,7 @@ class PlaywrightScraper:
                     continue
                 else:
                     return {
-                        "originalUrl": url,
+                        "original_url": url,
                         "error": str(e),
                         "success": False,
                         "timestamp": datetime.now().isoformat(),
@@ -107,7 +107,7 @@ class PlaywrightScraper:
                     continue
                 else:
                     return {
-                        "originalUrl": url,
+                        "original_url": url,
                         "error": str(e),
                         "success": False,
                         "timestamp": datetime.now().isoformat(),
