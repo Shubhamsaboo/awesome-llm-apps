@@ -135,8 +135,8 @@ def compute_image_embedding(base64_img: str, _cohere_client) -> np.ndarray | Non
             images=[base64_img],
         )
         
-        if api_response.embeddings and api_response.embeddings.float:
-            return np.asarray(api_response.embeddings.float[0])
+        if api_response.embeddings and api_response.embeddings.float_:
+            return np.asarray(api_response.embeddings.float_[0])
         else:
             st.warning("Could not get embedding. API response might be empty.")
             return None
@@ -320,11 +320,11 @@ def search(question: str, co_client: cohere.Client, embeddings: np.ndarray, imag
             texts=[question],
         )
 
-        if not api_response.embeddings or not api_response.embeddings.float:
+        if not api_response.embeddings or not api_response.embeddings.float_:
             st.error("Failed to get query embedding.")
             return None
 
-        query_emb = np.asarray(api_response.embeddings.float[0])
+        query_emb = np.asarray(api_response.embeddings.float_[0])
 
         # Ensure query embedding has the correct shape for dot product
         if query_emb.shape[0] != embeddings.shape[1]:
