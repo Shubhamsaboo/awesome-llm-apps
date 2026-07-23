@@ -1,0 +1,15 @@
+.git
+.claude
+.DS_Store
+.env
+__pycache__
+*.py[cod]
+.pytest_cache
+.mypy_cache
+.ruff_cache
+data
+logs
+frontend
+assets
+skills
+test
