@@ -64,7 +64,9 @@ def _normalize_name(name: str) -> str:
 
 def _extract_version(specifier: str) -> str | None:
     matches = VERSION_PATTERN.findall(specifier)
-    return matches[-1] if matches else None
+    # Specifiers put the pinned/lower bound first ("==1.2.3", ">=1.2.3,<2.0.0"),
+    # so the last match is the exclusive upper bound, not the installed version.
+    return matches[0] if matches else None
 
 
 def _github_repo_from_spec(specifier: str) -> str | None:
