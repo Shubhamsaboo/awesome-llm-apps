@@ -1,0 +1,4 @@
+anthropic
+x402[evm,httpx]
+eth-account
+httpx
