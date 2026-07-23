@@ -884,7 +884,7 @@ def main():
             )
         
         if analyze_button:
-            if expense_option == "Upload CSV Transactions" and transactions_df is None:
+            if expense_option == "📤 Upload CSV Transactions" and transactions_df is None:
                 st.error("Please upload a valid transaction CSV file or choose manual entry.")
                 return
             if use_manual_expenses and (not manual_expenses or not any(manual_expenses.values())):
