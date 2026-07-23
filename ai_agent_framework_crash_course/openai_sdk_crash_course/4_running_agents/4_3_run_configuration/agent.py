@@ -1,4 +1,4 @@
-from agents import Agent, Runner, RunConfig
+from agents import Agent, Runner, RunConfig, ModelSettings
 
 # Create an agent for demonstrating run configuration
 root_agent = Agent(
@@ -12,19 +12,16 @@ async def model_config_example():
     
     run_config = RunConfig(
         model="gpt-4o",  # Override agent's default model
-        model_settings={
-            "temperature": 0.1,  # Low temperature for consistent responses
-            "top_p": 0.9
-        },
-        max_turns=5,  # Limit conversation turns
+        model_settings=ModelSettings(temperature=0.1, top_p=0.9),
         workflow_name="demo_workflow",  # For tracing
         trace_metadata={"experiment": "config_demo"}
     )
-    
+
     result = await Runner.run(
-        root_agent, 
+        root_agent,
         "Explain the weather in exactly 3 sentences.",
-        run_config=run_config
+        run_config=run_config,
+        max_turns=5,  # max_turns is a Runner.run() argument, not a RunConfig field
     )
     
     return result.final_output

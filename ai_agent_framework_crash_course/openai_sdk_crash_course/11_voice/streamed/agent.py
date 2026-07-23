@@ -14,7 +14,10 @@ from agents.voice import (
     VoicePipeline,
 )
 
-from .util import AudioPlayer, StreamedAudioRecorder, create_silence
+try:
+    from .util import AudioPlayer, StreamedAudioRecorder, create_silence
+except ImportError:  # running directly as a script: `python agent.py`
+    from util import AudioPlayer, StreamedAudioRecorder, create_silence
 
 """
 This is a streaming voice example that processes audio in real-time. Run it via:
