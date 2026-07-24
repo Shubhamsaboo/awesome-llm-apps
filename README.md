@@ -267,6 +267,12 @@ streamlit run travel_agent.py
 *   [Google ADK Crash Course](ai_agent_framework_crash_course/google_adk_crash_course/) - Starter agent, structured outputs, tools (built-in, function, third-party, MCP), memory, callbacks, plugins, and multi-agent patterns. Model-agnostic.
 *   [OpenAI Agents SDK Crash Course](ai_agent_framework_crash_course/openai_sdk_crash_course/) - Starter agent, function calling, structured outputs, tools, memory, evaluation, handoffs, swarm orchestration, and routing logic.
 
+### 🛠️ Coding Frameworks & Tools
+
+*Tools, harnesses, and frameworks for coding with AI agents.*
+
+*   [TeDDy](https://github.com/atte500/TeDDy) - An opinionated coding harness that prevents code slop by embedding TDD, Hexagonal Architecture, and vertical slicing into a Markdown-driven workflow. Python, AGPL-3.0.
+
 ---
 
 <div align="center">
