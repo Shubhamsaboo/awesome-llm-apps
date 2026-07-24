@@ -72,3 +72,7 @@ you ──question──▶ Claude ──tool call──▶ GET paid API
 ```
 
 The whole payment negotiation is 3 HTTP requests and settles on-chain in seconds. A run of this demo costs a few cents total.
+
+### Going to production: managed wallets
+
+This demo keeps the wallet as a raw private key so you can see every moving part. For a production agent, Coinbase's new [CDP x402 SDK](https://docs.cdp.coinbase.com/x402/core-concepts/cdp-sdk) (TypeScript) wraps the same open x402 standard with managed wallets (no private key to store), client-side spend controls (per-payment caps, rolling daily limits, payee allowlists), and hosted settlement. The `MAX_PRICE_USDC` guard in this tutorial is a minimal version of the same idea — cap what an autonomous spender can spend before it spends it. Everything the agent does here (402 quote → signed USDC payment → retry) works identically against any x402 endpoint from either stack.
