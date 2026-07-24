@@ -288,3 +288,6 @@ streamlit run travel_agent.py
 <sub>Apache-2.0 · See <a href="LICENSE">LICENSE</a> · Fork it, ship it, sell it.</sub>
 
 </div>
+
+## Analytics
+- [IntelAI](https://github.com/Yacine-ai-tech/IntelAI) - A persona-aware AI analytics and RAG copilot with GraphRAG-lite and ML forecasting.
