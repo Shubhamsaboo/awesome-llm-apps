@@ -1,0 +1,60 @@
+{
+  "skill": "flip-flop-detector",
+  "purpose": "Trigger-behavior spec for deterministic lexical routing and manual behavior checks.",
+  "cases": [
+    {
+      "id": "keeps-changing-back-and-forth",
+      "prompt": "why does this file keep changing back and forth",
+      "should_trigger": true,
+      "assert": "Runs the detector against the file's history and reports oscillating blocks."
+    },
+    {
+      "id": "was-this-ever-settled",
+      "prompt": "was this design ever actually settled, or has it been going back and forth",
+      "should_trigger": true,
+      "assert": "Reports indecision hotspots with flip counts and involved authors."
+    },
+    {
+      "id": "most-argued-over-code",
+      "prompt": "find the most argued-over code in this repo",
+      "should_trigger": true,
+      "assert": "Ranks hotspots by flip count across the repo and names the top offenders."
+    },
+    {
+      "id": "keeps-getting-reverted",
+      "prompt": "this fix keeps getting reverted, we can never agree on this",
+      "should_trigger": true,
+      "assert": "Analyzes the file's history for oscillation and reports the alternating states."
+    },
+    {
+      "id": "near-miss-why-code-exists",
+      "prompt": "why does this code exist",
+      "should_trigger": false,
+      "assert": "Does not trigger for a single-origin history question about one line."
+    },
+    {
+      "id": "near-miss-pr-too-broad",
+      "prompt": "is my PR too broad",
+      "should_trigger": false,
+      "assert": "Does not trigger for a scope-of-diff question."
+    },
+    {
+      "id": "near-miss-linter",
+      "prompt": "run the linter",
+      "should_trigger": false,
+      "assert": "Does not trigger for routine lint execution."
+    },
+    {
+      "id": "near-miss-commit-message",
+      "prompt": "write my commit message",
+      "should_trigger": false,
+      "assert": "Does not trigger for commit message drafting alone."
+    },
+    {
+      "id": "near-miss-history-of-function",
+      "prompt": "explain the history of this function before I refactor it",
+      "should_trigger": false,
+      "assert": "Does not trigger for a single-function origin/history explanation."
+    }
+  ]
+}

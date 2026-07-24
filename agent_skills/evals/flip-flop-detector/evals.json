@@ -1,0 +1,36 @@
+{
+  "skill_name": "flip-flop-detector",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Why does src/auth/session.py keep changing? Find the most contentious spots.",
+      "expected_output": "A ranked list of flip-flop hotspots in the file with flip counts, involved authors, and the alternating states.",
+      "expectations": [
+        "The skill runs scripts/flip_flop.py against the file rather than guessing from a single git blame",
+        "The report separates genuine oscillation (flip_count > 0) from ordinary iterative edits",
+        "The report names every commit and author involved, not just the most recent change",
+        "The skill does not modify the working tree, index, commits, or branches"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "This retry logic keeps getting reverted. Is this one person flip-flopping or a real disagreement?",
+      "expected_output": "A judgment grounded in flip_count, change_count, authors, and time span, not intuition.",
+      "expectations": [
+        "The skill reads references/anchor-heuristics.md before making a judgment call",
+        "The skill distinguishes a single-author rapid-iteration pattern from a multi-author disagreement pattern",
+        "The skill states plainly when the evidence is ambiguous instead of overclaiming"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Find the most argued-over code in this whole repo before I start the refactor.",
+      "expected_output": "A repo-wide ranked hotspot report using the default discovery mode, with a caveat about performance bounds.",
+      "expectations": [
+        "The skill uses the default hot-file discovery pass rather than walking every tracked file",
+        "The skill mentions the --max-files and --max-commits-per-file bounds if the repo is large",
+        "The skill recommends a next step (design note, decision record, conversation) rather than editing code"
+      ]
+    }
+  ]
+}
