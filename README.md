@@ -288,3 +288,8 @@ streamlit run travel_agent.py
 <sub>Apache-2.0 · See <a href="LICENSE">LICENSE</a> · Fork it, ship it, sell it.</sub>
 
 </div>
+
+
+## Community Additions
+
+- [CinéVague — Auteur Cinema Designer](https://github.com/zfryrgnci/CineVague-Film-Project-Designer) - A multi-agent arthouse filmmaking desktop application simulating a virtual studio.
