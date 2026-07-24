@@ -1,8 +1,8 @@
 import torch
 from unsloth import FastLanguageModel
 from datasets import load_dataset
-from trl import SFTTrainer
-from transformers import TrainingArguments
+from trl import SFTTrainer, SFTConfig 
+from transformers import DataCollatorForSeq2Seq 
 from unsloth.chat_templates import get_chat_template, standardize_sharegpt
 
 # Load model and tokenizer
@@ -37,10 +37,12 @@ dataset = dataset.map(
 # Set up trainer
 trainer = SFTTrainer(
     model=model,
+    tokenizer=tokenizer, 
     train_dataset=dataset,
     dataset_text_field="text",
     max_seq_length=2048,
-    args=TrainingArguments(
+    data_collator=DataCollatorForSeq2Seq(tokenizer=tokenizer), 
+    args=SFTConfig( 
         per_device_train_batch_size=2,
         gradient_accumulation_steps=4,
         warmup_steps=5,
@@ -58,3 +60,4 @@ trainer.train()
 
 # Save the finetuned model
 model.save_pretrained("finetuned_model")
+tokenizer.save_pretrained("finetuned_model") 
