@@ -1,5 +1,4 @@
 # Core dependencies
-phidata
 agno>=2.2.10
 streamlit==1.40.2
 PyPDF2==3.0.1
