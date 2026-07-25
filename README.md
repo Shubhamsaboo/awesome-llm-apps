@@ -110,6 +110,7 @@ streamlit run travel_agent.py
 
 *Production-style agents with tools, memory, and multi-step reasoning.*
 
+*   [🧩 Heym](https://github.com/heymrun/heym) <sub>↗ external</sub> - Build, run, and observe AI workflows with a visual canvas, agents, RAG, MCP, and human-in-the-loop controls
 *   [🏚️ 🍌 AI Home Renovation Agent with Nano Banana Pro](advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent) - Photos of your space in, renovation plan and photorealistic renders out
 *   [🧠 DevPulse AI - Multi-Agent Signal Intelligence](advanced_ai_agents/multi_agent_apps/devpulse_ai/) - Aggregates and scores technical signals into a daily intelligence digest
 *   [🔍 AI Deep Research Agent](advanced_ai_agents/single_agent_apps/ai_deep_research_agent/) - Comprehensive web research with the OpenAI Agents SDK and Firecrawl
