@@ -267,6 +267,12 @@ streamlit run travel_agent.py
 *   [Google ADK Crash Course](ai_agent_framework_crash_course/google_adk_crash_course/) - Starter agent, structured outputs, tools (built-in, function, third-party, MCP), memory, callbacks, plugins, and multi-agent patterns. Model-agnostic.
 *   [OpenAI Agents SDK Crash Course](ai_agent_framework_crash_course/openai_sdk_crash_course/) - Starter agent, function calling, structured outputs, tools, memory, evaluation, handoffs, swarm orchestration, and routing logic.
 
+## 🌐 Community Platforms
+
+*Open-source AI platforms that extend the agent ecosystem beyond individual templates.*
+
+*   [🚀 IHUI-AI](https://github.com/IHUI-INF-AI/IHUI-AI) - Eight-platform full-stack AI operating system unifying 176 LLMs via LangGraph + MCP + A2A. Includes RAG knowledge base, agent marketplace, multi-tenant RLS over 340 tables. Apache 2.0. Live demo: https://ihui.ai
+
 ---
 
 <div align="center">
