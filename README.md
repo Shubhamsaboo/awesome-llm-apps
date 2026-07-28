@@ -197,6 +197,7 @@ streamlit run travel_agent.py
 *   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent) - Talk to your Notion pages from the terminal
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team) - Itineraries built on live Airbnb and Google Maps data
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/) - Specialist agents, each wired to its own MCP server
+*   [🏆 Lumify Sports Intelligence Agent](mcp_ai_agents/lumify_sports_intelligence_agent/) - Schedules, odds, and explainable bet confidence via the Lumify MCP server
 
 ### 📀 RAG (Retrieval Augmented Generation)
 
