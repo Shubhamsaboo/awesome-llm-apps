@@ -2,7 +2,7 @@ import streamlit as st
 from agno.agent import Agent
 from agno.run.agent import RunOutput
 from agno.models.openai import OpenAIChat
-from composio_phidata import Action, ComposioToolSet
+from composio_agno import Action, ComposioToolSet
 import os
 from agno.tools.arxiv import ArxivTools
 from agno.utils.pprint import pprint_run_response
