@@ -390,6 +390,11 @@ def main(argv=None):
 
     if args.redact:
         for i, r in enumerate(sorted(repos, key=lambda r: r["first"]), 1):
+            # Keep the real identifiers so relapse-watch matching and the local
+            # --state resume file stay correct; only the shareable report is
+            # redacted (see by_path / --state / --json below).
+            r["real_name"] = r["name"]
+            r["real_path"] = r["path"]
             r["name"] = "project-%d" % i
             r["path"] = "(redacted)"
 
@@ -482,7 +487,7 @@ def main(argv=None):
 
     # ---- relapse watch: hold past resurrections to their promise ----
     if state["resurrections"]:
-        by_path = {r["path"]: r for r in repos}
+        by_path = {r.get("real_path", r["path"]): r for r in repos}
         lines = []
         for res in state["resurrections"]:
             r = by_path.get(res["path"])
@@ -519,19 +524,26 @@ def main(argv=None):
                        "days_threshold": args.days,
                        "alive": [{k: r[k] for k in ("name", "path", "last", "commits")} for r in alive],
                        "finished": [{k: r[k] for k in ("name", "path", "last", "commits")} for r in finished],
-                       "unversioned": [{"name": u.name, "path": str(u)} for u in unversioned],
-                       "dead": [{k: r[k] for k in r if k not in ("messages", "gaps", "last_touched")}
+                       "unversioned": [{"name": "unversioned-%d" % i, "path": "(redacted)"}
+                                       if args.redact else {"name": u.name, "path": str(u)}
+                                       for i, u in enumerate(unversioned, 1)],
+                       "dead": [{k: r[k] for k in r
+                                 if k not in ("messages", "gaps", "last_touched", "real_name", "real_path")}
                                 for r in dead]}, f, indent=1)
         print("full report: %s" % args.json)
 
     if args.state:
+        # The state file is a local resume artifact, not the shared report, so it
+        # always records the real names/paths even under --redact.
         state["last_scan"] = {
             "date": datetime.now().strftime("%Y-%m-%d"),
             "roots": [str(r) for r in roots],
-            "dead": [{"name": r["name"], "path": r["path"], "cause": r["causes"][0][0],
-                      "pulse": r["pulse"]} for r in dead],
-            "alive": [{"name": r["name"], "path": r["path"]} for r in alive],
-            "finished": [{"name": r["name"], "path": r["path"]} for r in finished],
+            "dead": [{"name": r.get("real_name", r["name"]), "path": r.get("real_path", r["path"]),
+                      "cause": r["causes"][0][0], "pulse": r["pulse"]} for r in dead],
+            "alive": [{"name": r.get("real_name", r["name"]), "path": r.get("real_path", r["path"])}
+                      for r in alive],
+            "finished": [{"name": r.get("real_name", r["name"]), "path": r.get("real_path", r["path"])}
+                         for r in finished],
             "unversioned": [{"name": u.name, "path": str(u)} for u in unversioned],
         }
         with open(args.state, "w") as f:
