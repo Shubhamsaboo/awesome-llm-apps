@@ -12,7 +12,12 @@ import pandas as pd
 
 def count_tokens(text: str, model: str = "gpt-4") -> int:
     """Count tokens in text."""
-    encoding = tiktoken.encoding_for_model(model)
+    try:
+        encoding = tiktoken.encoding_for_model(model)
+    except KeyError:
+        # tiktoken can't map non-OpenAI model names (e.g. claude-3-*); fall back
+        # to the modern OpenAI encoding so the token count still renders.
+        encoding = tiktoken.get_encoding("cl100k_base")
     return len(encoding.encode(text))
 
 

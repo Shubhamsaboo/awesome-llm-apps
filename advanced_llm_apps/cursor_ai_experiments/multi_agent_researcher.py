@@ -82,7 +82,7 @@ def create_article_crew(topic):
     crew = Crew(
         agents=[researcher, writer, editor],
         tasks=[research_task, writing_task, editing_task],
-        verbose=2,
+        verbose=True,
         process=Process.sequential
     )
 

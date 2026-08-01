@@ -80,6 +80,10 @@ def upload_dataset(code_interpreter: Sandbox, uploaded_file) -> str:
     dataset_path = f"./{uploaded_file.name}"
     
     try:
+        # The Streamlit upload was already read to EOF by pd.read_csv earlier in
+        # the run, so rewind before uploading — otherwise a 0-byte file reaches the
+        # sandbox and every analysis reads an empty dataset.
+        uploaded_file.seek(0)
         code_interpreter.files.write(dataset_path, uploaded_file)
         return dataset_path
     except Exception as error:
