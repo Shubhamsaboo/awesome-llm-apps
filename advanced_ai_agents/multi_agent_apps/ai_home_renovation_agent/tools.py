@@ -264,8 +264,10 @@ async def generate_renovation_rendering(tool_context: ToolContext, inputs: Gener
                 image_part = types.Part(inline_data=inline_data)
                 
                 try:
-                    # Save the image as an artifact
-                    version = await tool_context.save_artifact(
+                    # Save the image as an artifact. Do NOT rebind `version` from
+                    # the return value: that is ADK's per-filename artifact revision,
+                    # not our asset version counter (already set by get_next_version_number).
+                    await tool_context.save_artifact(
                         filename=artifact_filename, 
                         artifact=image_part
                     )
@@ -449,9 +451,11 @@ async def edit_renovation_rendering(tool_context: ToolContext, inputs: EditRenov
                 edited_image_part = types.Part(inline_data=inline_data)
                 
                 try:
-                    # Save the edited image as an artifact
-                    version = await tool_context.save_artifact(
-                        filename=edited_artifact_filename, 
+                    # Save the edited image as an artifact. Do NOT rebind `version`
+                    # from the return value (ADK's per-filename revision); keep the
+                    # asset version from get_next_version_number above.
+                    await tool_context.save_artifact(
+                        filename=edited_artifact_filename,
                         artifact=edited_image_part
                     )
                     
