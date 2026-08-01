@@ -34,13 +34,16 @@ def x_post_extractor(html_content):
     data["is_ad"] = check_ad(soup)
     user_element = soup.find("div", {"data-testid": "User-Name"})
     if user_element:
-        display_name_element = user_element.find(lambda tag: tag.name and (tag.name == "span" or tag.name == "div") and "Henrik" in tag.text)
+        # The display name is the first profile anchor without an "@" (the handle
+        # anchor carries the "@"). The name was previously hardcoded to "Henrik",
+        # so it was never captured for any other author.
+        display_name_element = user_element.find(lambda tag: tag.name == "a" and "@" not in tag.text and tag.get_text(strip=True))
         if display_name_element:
-            data["user_display_name"] = display_name_element.text.strip()
+            data["user_display_name"] = display_name_element.get_text(strip=True)
         username_element = user_element.find(lambda tag: tag.name == "a" and "@" in tag.text)
         if username_element:
             data["user_handle"] = username_element.text.strip()
-        profile_pic = soup.select_one("[data-testid='UserAvatar-Container-HenrikTaro'] img")
+        profile_pic = soup.select_one("[data-testid^='UserAvatar-Container-'] img")
         if profile_pic and profile_pic.has_attr("src"):
             data["user_profile_pic_url"] = profile_pic["src"]
 
