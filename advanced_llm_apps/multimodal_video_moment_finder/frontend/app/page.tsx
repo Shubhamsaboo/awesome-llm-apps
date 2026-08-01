@@ -160,13 +160,21 @@ export default function Home() {
 
   const jumpToMoment = (moment: Moment) => {
     setVideoTimestamp(moment.timestamp);
+    const switchingVideo = moment.video_id !== selectedVideo;
     setSelectedVideo(moment.video_id);
-    setTimeout(() => {
+    const seek = () => {
       if (videoRef.current) {
         videoRef.current.currentTime = moment.timestamp;
         videoRef.current.play();
       }
-    }, 100);
+    };
+    if (switchingVideo && videoRef.current) {
+      // The <video src> changes on the re-render triggered above; a fixed 100ms
+      // timeout races that reload, so seek only once the new file has loaded.
+      videoRef.current.addEventListener("loadeddata", seek, { once: true });
+    } else {
+      setTimeout(seek, 100);
+    }
   };
 
   // Drag and drop
