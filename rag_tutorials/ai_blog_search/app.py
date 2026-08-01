@@ -1,6 +1,7 @@
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
+from qdrant_client.models import Distance, VectorParams
 from uuid import uuid4
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -72,6 +73,15 @@ def initialize_components():
             st.session_state.qdrant_host,
             api_key=st.session_state.qdrant_api_key
         )
+
+        # QdrantVectorStore validates the collection on construction and raises a
+        # 404 if it doesn't exist, so create it up front on a fresh instance.
+        # 768 = dimension of models/embedding-001.
+        if not client.collection_exists("qdrant_db"):
+            client.create_collection(
+                collection_name="qdrant_db",
+                vectors_config=VectorParams(size=768, distance=Distance.COSINE),
+            )
 
         # Initialize vector store
         db = QdrantVectorStore(
