@@ -54,20 +54,25 @@ class _LLMProvider:
         self._cache = {}
 
     def _create(self, model: str):
-        api_key = (
-            os.getenv("LLM_API_KEY")
-            or os.getenv("DEEPSEEK_API_KEY")
-            or os.getenv("OPENAI_API_KEY")
-        )
+        api_key = os.getenv("LLM_API_KEY")
+        base_url = os.getenv("LLM_BASE_URL")
+
+        if not api_key:
+            if os.getenv("DEEPSEEK_API_KEY"):
+                api_key = os.getenv("DEEPSEEK_API_KEY")
+                if not base_url:
+                    base_url = os.getenv("DEEPSEEK_BASE_URL") or "https://api.deepseek.com"
+            elif os.getenv("OPENAI_API_KEY"):
+                api_key = os.getenv("OPENAI_API_KEY")
+
         if not api_key:
             raise RuntimeError(
                 "LLM API Key is not set. Set it in the .env file or in the app sidebar."
             )
-        base_url = (
-            os.getenv("LLM_BASE_URL")
-            or os.getenv("DEEPSEEK_BASE_URL")
-            or "https://api.deepseek.com"
-        )
+
+        if not base_url and not os.getenv("OPENAI_API_KEY"):
+            base_url = "https://api.deepseek.com"
+
         return ChatOpenAI(
             model=model,
             openai_api_key=api_key,
@@ -177,12 +182,33 @@ class _NoShowPyplot:
 CHART_CODE_TIMEOUT = 30  # seconds allowed for LLM-generated chart code
 
 
+def _restricted_import(name, globals=None, locals=None, fromlist=(), level=0):
+    allowed = {
+        "matplotlib",
+        "plt",
+        "numpy",
+        "pandas",
+        "sns",
+        "seaborn",
+        "math",
+        "random",
+        "datetime",
+    }
+    root_name = name.split(".")[0]
+    if root_name not in allowed:
+        raise ImportError(f"Importing module '{name}' is not allowed in sandbox.")
+    return __import__(name, globals, locals, fromlist, level)
+
+
 def _render_chart_png(python_code: str) -> str:
     """Execute LLM-written chart code and return the base64 PNG payload."""
+    safe_builtins = __builtins__.copy() if isinstance(__builtins__, dict) else vars(__builtins__).copy()
+    safe_builtins["__import__"] = _restricted_import
+
     exec_globals = {
         "plt": _NoShowPyplot(),
         "matplotlib": matplotlib,
-        "__builtins__": __builtins__,
+        "__builtins__": safe_builtins,
     }
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", UserWarning)
@@ -518,13 +544,19 @@ LLM_TIMEOUT = 90
 
 
 def _invoke_with_timeout(agent_or_llm, messages, timeout=LLM_TIMEOUT):
-    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
-        fut = pool.submit(agent_or_llm.invoke, messages)
-        try:
-            return fut.result(timeout=timeout)
-        except concurrent.futures.TimeoutError:
-            logger.error(f"LLM invoke timed out after {timeout}s")
-            raise TimeoutError(f"LLM call timed out after {timeout}s")
+    pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+    fut = pool.submit(agent_or_llm.invoke, messages)
+    try:
+        res = fut.result(timeout=timeout)
+        pool.shutdown(wait=False)
+        return res
+    except concurrent.futures.TimeoutError:
+        logger.error(f"LLM invoke timed out after {timeout}s")
+        pool.shutdown(wait=False)
+        raise TimeoutError(f"LLM call timed out after {timeout}s")
+    except Exception as e:
+        pool.shutdown(wait=False)
+        raise e
 
 
 RESEARCHER_SYSTEM_PROMPT = """You are an elite, highly-analytical research analyst with access to real-time web search.
