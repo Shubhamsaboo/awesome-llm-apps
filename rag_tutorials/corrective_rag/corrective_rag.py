@@ -20,6 +20,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams
 import tempfile
 import os
+from urllib.parse import urlparse
 from langchain_anthropic import ChatAnthropic
 from tenacity import retry, stop_after_attempt, wait_exponential
 
@@ -155,8 +156,13 @@ def web_search(state):
 def load_documents(file_or_url: str, is_url: bool = True) -> list:
     try:
         if is_url:
-            loader = WebBaseLoader(file_or_url)
-            loader.requests_per_second = 1
+            # A .pdf URL must be parsed as a PDF; WebBaseLoader would run an HTML
+            # parser over the binary body and embed decoded garbage.
+            if urlparse(file_or_url).path.lower().endswith(".pdf"):
+                loader = PyPDFLoader(file_or_url)
+            else:
+                loader = WebBaseLoader(file_or_url)
+                loader.requests_per_second = 1
         else:
             file_extension = os.path.splitext(file_or_url)[1].lower()
             if file_extension == '.pdf':
@@ -190,7 +196,12 @@ else:
         # Clean up the temporary file
         os.unlink(tmp_file.name)
 
-if docs:
+# Streamlit re-runs this whole script on every widget interaction (e.g. asking a
+# question), so ingest only when the source actually changes — otherwise every
+# question would delete the collection and re-embed the entire document.
+source_key = url if input_option == "URL" else (uploaded_file.name if uploaded_file else None)
+
+if docs and st.session_state.get("ingested_source") != source_key:
     text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
         chunk_size=500, chunk_overlap=100
     )
@@ -203,7 +214,7 @@ if docs:
         # Try to delete the collection if it exists
         client.delete_collection(collection_name)
     except Exception:
-        pass  
+        pass
 
     client.create_collection(
         collection_name=collection_name,
@@ -220,6 +231,10 @@ if docs:
     # Add documents to the vectorstore
     vectorstore.add_documents(all_splits)
     retriever = vectorstore.as_retriever()
+    st.session_state.ingested_source = source_key
+    st.session_state.retriever = retriever
+elif st.session_state.get("retriever") is not None:
+    retriever = st.session_state.retriever
 
 
 class GraphState(TypedDict):

@@ -144,13 +144,16 @@ class KnowledgeGraphManager:
     
     def semantic_search(self, query: str) -> List[Dict]:
         """Search for relevant entities based on query."""
+        # CONTAINS on the whole question can never match an entity name/description,
+        # so match any term (case-insensitively) instead of the full raw query.
+        terms = re.findall(r"[A-Za-z0-9]{3,}", query) or [query]
         with self.driver.session() as session:
             # Simple text matching (in production, use vector embeddings)
             result = session.run(
                 """
                 MATCH (e:Entity)
-                WHERE e.name CONTAINS $query 
-                   OR e.description CONTAINS $query
+                WHERE any(t IN $terms WHERE toLower(e.name) CONTAINS toLower(t)
+                                         OR toLower(e.description) CONTAINS toLower(t))
                 RETURN e.name as name,
                        e.description as description,
                        e.source_doc as source,
@@ -158,7 +161,7 @@ class KnowledgeGraphManager:
                        e.type as type
                 LIMIT 10
                 """,
-                query=query
+                terms=terms
             )
             return [dict(record) for record in result]
 
