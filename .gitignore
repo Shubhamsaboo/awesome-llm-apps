@@ -16,3 +16,6 @@ node_modules/
 .next/
 dist/
 *.tsbuildinfo
+
+# JetBrains IDEs
+.idea/
