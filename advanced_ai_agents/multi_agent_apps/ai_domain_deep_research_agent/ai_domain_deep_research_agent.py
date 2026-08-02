@@ -215,18 +215,22 @@ if together_api_key and composio_api_key:
         
         # Store the answers
         st.session_state.question_answers = question_answers
-        
-        # Compile report button
-        if st.button("Compile Final Report", key="compile_report"):
-            report_content = compile_report(llm, composio_tools, topic, domain, question_answers)
-            
-            # Display the report content
-            st.header("Final Report")
-            st.success("Your report has been compiled and a Google Doc has been created.")
-            
-            # Show the full report content
-            with st.expander("View Full Report Content", expanded=True):
-                st.markdown(report_content)
+
+    # Compile report button — must live OUTSIDE the "Start Research" block. Clicking
+    # it reruns the script, at which point "Start Research" is False and a nested
+    # button would never be rendered (so it could never fire).
+    if st.session_state.question_answers and st.button("Compile Final Report", key="compile_report"):
+        report_content = compile_report(
+            llm, composio_tools, topic, domain, st.session_state.question_answers
+        )
+
+        # Display the report content
+        st.header("Final Report")
+        st.success("Your report has been compiled and a Google Doc has been created.")
+
+        # Show the full report content
+        with st.expander("View Full Report Content", expanded=True):
+            st.markdown(report_content)
     
     # Display previous results if available
     if len(st.session_state.question_answers) > 0 and not st.session_state.research_complete:
