@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useCoAgent, useCopilotAction } from "@copilotkit/react-core";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -362,10 +362,19 @@ export default function NegotiationBattle() {
     }
   };
 
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Stop polling on unmount so we don't fetch/setState on an unmounted component
+  // or keep polling forever when a run never reaches deal/no_deal.
+  useEffect(() => () => {
+    if (pollRef.current) clearInterval(pollRef.current);
+  }, []);
+
   const runNegotiation = async () => {
     // This will be handled by the agent automatically
     // Just need to poll for state updates
-    const pollInterval = setInterval(async () => {
+    if (pollRef.current) clearInterval(pollRef.current);
+    pollRef.current = setInterval(async () => {
       try {
         const stateRes = await fetch('http://localhost:8000/get_negotiation_state');
         const stateData = await stateRes.json();
@@ -385,7 +394,7 @@ export default function NegotiationBattle() {
         });
 
         if (stateData.status === "deal" || stateData.status === "no_deal") {
-          clearInterval(pollInterval);
+          if (pollRef.current) clearInterval(pollRef.current);
         }
       } catch (error) {
         console.error('Error polling state:', error);
