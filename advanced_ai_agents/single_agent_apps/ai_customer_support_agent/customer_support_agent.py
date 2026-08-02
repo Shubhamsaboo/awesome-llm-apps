@@ -26,6 +26,9 @@ if openai_api_key:
                         "port": 6333,
                     }
                 },
+                # mem0 defaults to v1.0, whose search()/get_all() return a bare
+                # list; the code below expects the v1.1 {"results": [...]} shape.
+                "version": "v1.1",
             }
             try:
                 self.memory = Memory.from_config(config)

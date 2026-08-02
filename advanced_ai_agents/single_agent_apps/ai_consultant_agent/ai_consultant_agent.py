@@ -1,6 +1,7 @@
 import logging
 from typing import Dict, Any, List, Union
 from dataclasses import dataclass
+from functools import wraps
 import base64
 import requests
 import os
@@ -58,6 +59,7 @@ def safe_tool_wrapper(tool_func):
     Returns:
         Wrapped function that sanitizes output
     """
+    @wraps(tool_func)
     def wrapped_tool(*args, **kwargs):
         try:
             result = tool_func(*args, **kwargs)
@@ -69,10 +71,9 @@ def safe_tool_wrapper(tool_func):
                 "tool": tool_func.__name__,
                 "status": "error"
             }
-    
-    # Preserve function metadata
-    wrapped_tool.__name__ = tool_func.__name__
-    wrapped_tool.__doc__ = tool_func.__doc__
+
+    # @wraps copies __wrapped__ so ADK's inspect.signature() sees the real
+    # parameters (a bare *args/**kwargs wrapper is declared to Gemini with none).
     return wrapped_tool
 
 @dataclass
