@@ -76,13 +76,16 @@ def crawl_x_profile(profile_url, db_file="x_posts.db"):
                     break
 
         except KeyboardInterrupt:
-            if analysis_queue:
-                try:
-                    analysis_results = analyze_posts_sentiment(analysis_queue)
-                    update_posts_with_analysis(conn, queue_post_ids, analysis_results)
-                except Exception:
-                    pass
+            pass
 
-            conn.close()
-            return post_count
+        # Flush any posts still queued (a partial final batch on a normal exit, or
+        # whatever was pending at a KeyboardInterrupt) so they are analyzed instead
+        # of being left with NULL sentiment/categories forever; also close the conn.
+        if analysis_queue:
+            try:
+                analysis_results = analyze_posts_sentiment(analysis_queue)
+                update_posts_with_analysis(conn, queue_post_ids, analysis_results)
+            except Exception:
+                pass
+        conn.close()
         return post_count
