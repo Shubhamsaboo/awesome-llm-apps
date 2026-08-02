@@ -19,10 +19,6 @@ def preprocess_and_save(file):
             st.error("Unsupported file format. Please upload a CSV or Excel file.")
             return None, None, None
         
-        # Ensure string columns are properly quoted
-        for col in df.select_dtypes(include=['object']):
-            df[col] = df[col].astype(str).replace({r'"': '""'}, regex=True)
-        
         # Parse dates and numeric columns
         for col in df.columns:
             if 'date' in col.lower():

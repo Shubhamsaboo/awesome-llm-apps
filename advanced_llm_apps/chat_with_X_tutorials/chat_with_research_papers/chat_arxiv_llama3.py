@@ -11,7 +11,7 @@ st.caption("This app allows you to chat with arXiv research papers using Llama-3
 # Create an instance of the Assistant
 assistant = Agent(
 model=Ollama(
-    id="llama3.1:8b") , tools=[ArxivTools()], show_tool_calls=True
+    id="llama3.1:8b") , tools=[ArxivTools()]
 )
 
 # Get the search query from the user
