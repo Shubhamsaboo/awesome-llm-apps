@@ -1,0 +1,31 @@
+# Web framework
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+httpx==0.27.2
+
+# Database
+sqlalchemy==2.0.35
+aiosqlite==0.20.0
+
+# LangChain + vector store
+langchain==0.3.7
+langchain-community==0.3.7
+langchain-openai==0.2.6
+langchain-chroma==0.1.4
+chromadb==0.5.15
+openai==1.59.7
+dashscope==1.20.0
+
+# QR code
+qrcode[pil]==7.4.2
+
+# Settings & validation
+pydantic==2.9.2
+pydantic-settings==2.5.2
+python-dotenv==1.0.1
+
+# Logging
+loguru==0.7.2
+
+# System dependency (required for ASR local fallback)
+# ffmpeg (install separately and add to PATH)
