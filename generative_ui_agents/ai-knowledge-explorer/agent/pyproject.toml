@@ -14,6 +14,6 @@ dependencies = [
   "langgraph-cli[inmem]>=0.4.11",
   "langchain-openai>=1.1.0",
   "copilotkit==0.1.87",
-  "langgraph-api>=0.7.70",
+  "langgraph-api>=0.11.0",
   "pip>=26.0.1",
 ]

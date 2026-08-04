@@ -4,6 +4,8 @@ Drop files — documents or source code — into a chatbot. The agent extracts e
 
 Click a node to see details. Double-click to expand it — the agent extracts sub-concepts (or sub-components for code) and adds them to the graph. Ask questions in chat to navigate.
 
+![Demo](./demo.gif)
+
 ## How It Works
 
 1. **Drop files** — drag documents (`.txt`, `.md`, `.json`, `.csv`) or code files (`.py`, `.ts`, `.js`, `.java`, `.go`, `.rs`, and more) onto the canvas
@@ -26,6 +28,8 @@ Click a node to see details. Double-click to expand it — the agent extracts su
 | Graph | react-force-graph-2d |
 | LLM | OpenAI (configurable via env) |
 | Protocol | AG-UI (state streaming) |
+
+**On the default model (`gpt-4o`)**: extraction (`extract_knowledge`, `find_connections`, `expand_node`) works by prompting the model to return raw JSON and parsing it — there's no function-calling schema or structured-output mode tuned specifically to gpt-4o, so any model with solid instruction-following should work as a drop-in swap via `OPENAI_MODEL`. gpt-4o was picked as a well-understood, inexpensive baseline for reliably following the "return only JSON" instruction, not because it was benchmarked against newer models for this task. If you swap in a newer or reasoning-focused model, expect it to work, but re-verify the "ONLY valid JSON" instruction is still being honored (some models wrap output in explanation or markdown even when told not to).
 
 ## Prerequisites
 
