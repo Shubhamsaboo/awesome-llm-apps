@@ -8,6 +8,8 @@
 
 # Awesome LLM Apps
 
+**[English](README.md) | [中文](README_CN.md)**
+
 **100+ open-source AI agents, agent skills, and RAG apps. Hand-built, tested end-to-end, Apache-2.0.**
 
 Clone it, ship it, sell it - 100% free and open-source
