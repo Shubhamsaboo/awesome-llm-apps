@@ -198,6 +198,7 @@ streamlit run travel_agent.py
 *   [📑 Notion MCP Agent](mcp_ai_agents/notion_mcp_agent) - Talk to your Notion pages from the terminal
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team) - Itineraries built on live Airbnb and Google Maps data
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/) - Specialist agents, each wired to its own MCP server
+*   [📣 Publora MCP Agent](mcp_ai_agents/publora_mcp_agent/) - Draft and schedule social posts across ten networks from the terminal
 
 ### 📀 RAG (Retrieval Augmented Generation)
 
