@@ -1,3 +1,6 @@
+## Project Overview
+This repository is a carefully curated collection of 100+ open-source AI Agents, Agentic workflows, and RAG applications. It is designed to help developers quickly find ready-to-use examples and learn practical AI automation patterns.
+
 <p align="center">
   <a href="http://www.theunwindai.com">
     <img src="docs/banner/unwind_black.png" width="900px" alt="Unwind AI">
