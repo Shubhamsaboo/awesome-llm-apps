@@ -1,0 +1,258 @@
+{
+  "labels": [
+    {
+      "name": "Herb",
+      "description": "中药材实体，存储单味中药的详细信息，包括性味归经、功效主治、炮制方法、产地等",
+      "properties": [
+        {
+          "name": "alias",
+          "description": "中药的别名或异名，如同一药材在不同地区或文献中的其他称呼"
+        },
+        {
+          "name": "dosage",
+          "description": "中药的常用剂量范围，通常以克(g)为单位"
+        },
+        {
+          "name": "effect",
+          "description": "中药的功效，如清热解毒、活血化瘀、补气养血等"
+        },
+        {
+          "name": "indication",
+          "description": "中药的主治病症，即该药适用的疾病或症状范围"
+        },
+        {
+          "name": "meridian",
+          "description": "归经，指中药对特定脏腑经络的选择性作用，如归肺经、归肝经等"
+        },
+        {
+          "name": "name",
+          "description": "中药的正式名称（中文正名）"
+        },
+        {
+          "name": "origin",
+          "description": "中药的来源/基原，说明药材的动植物或矿物来源，如根、茎、叶、花等入药部位"
+        },
+        {
+          "name": "place",
+          "description": "中药的产地或道地产区，如四川、河南怀庆府（四大怀药）等"
+        },
+        {
+          "name": "processing",
+          "description": "炮制方法，如炒制、炙制、蒸制、酒制等加工处理方式"
+        },
+        {
+          "name": "property_flavor",
+          "description": "性味，即四气（寒热温凉）五味（酸苦甘辛咸），描述中药的药性特征"
+        },
+        {
+          "name": "source",
+          "description": "文献出处，记载该中药信息的典籍或参考来源"
+        },
+        {
+          "name": "taboo",
+          "description": "禁忌与注意事项，如孕妇忌用、不宜与某些药物同用等"
+        },
+        {
+          "name": "traits",
+          "description": "性状描述，包括药材的外观形态、颜色、气味、质地等鉴别特征"
+        },
+        {
+          "name": "usage",
+          "description": "用法，如内服（煎汤、入丸散）、外用（捣敷、煎水洗）等具体使用方法"
+        }
+      ]
+    },
+    {
+      "name": "Effect",
+      "description": "中药功效实体，表示一味中药或一个方剂所具有的治疗功效，如清热解毒、活血化瘀、疏肝理气等",
+      "properties": [
+        {
+          "name": "name",
+          "description": "功效名称，如清热解毒、活血化瘀、补中益气、祛风除湿等"
+        }
+      ]
+    },
+    {
+      "name": "Symptom",
+      "description": "症状实体，表示疾病所表现出的具体临床症状或体征，如头痛、发热、咳嗽、乏力等",
+      "properties": [
+        {
+          "name": "name",
+          "description": "症状名称，如头痛、发热、咳嗽、胸闷、纳差、失眠等"
+        }
+      ]
+    },
+    {
+      "name": "Disease",
+      "description": "疾病实体，包括中医病名（如伤寒、温病、痹证）和西医病名（如高血压、糖尿病、冠心病）",
+      "properties": [
+        {
+          "name": "name",
+          "description": "疾病名称，可为中医病名（如感冒、咳嗽、胃痛）或西医病名（如高血压、糖尿病）"
+        }
+      ]
+    },
+    {
+      "name": "Source",
+      "description": "文献来源实体，记录中药或方剂信息的出处典籍，如《伤寒论》、《本草纲目》、《金匮要略》等",
+      "properties": [
+        {
+          "name": "name",
+          "description": "文献来源名称，如《伤寒论》、《本草纲目》、《金匮要略》、《千金方》等"
+        }
+      ]
+    },
+    {
+      "name": "Formula",
+      "description": "方剂实体，由一味或多味中药按一定配伍原则组成的复方，如麻黄汤、四君子汤、六味地黄丸等",
+      "properties": [
+        {
+          "name": "alias",
+          "description": "方剂的别名或异名，如同一方剂在不同文献中的其他名称"
+        },
+        {
+          "name": "effect",
+          "description": "方剂的整体功效，即该方剂所能达到的治疗作用"
+        },
+        {
+          "name": "indication",
+          "description": "方剂的主治病症，即该方剂主要适用的疾病或证候"
+        },
+        {
+          "name": "name",
+          "description": "方剂的正式名称，如麻黄汤、桂枝汤、四君子汤等"
+        },
+        {
+          "name": "source",
+          "description": "方剂的文献出处，记载该方剂的原始典籍"
+        },
+        {
+          "name": "taboo",
+          "description": "方剂的禁忌与使用注意事项，如禁忌人群、配伍禁忌等"
+        },
+        {
+          "name": "usage",
+          "description": "方剂的用法，如煎服方法、服用时间、剂量调整等具体使用说明"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "type": "FROM_SOURCE",
+      "description": "来源关系，表示中药或方剂的知识信息来源于某文献典籍",
+      "properties": []
+    },
+    {
+      "type": "HAS_INGREDIENT",
+      "description": "组成关系，表示方剂中包含某味中药作为其组成成分",
+      "properties": []
+    },
+    {
+      "type": "TREATS_DISEASE",
+      "description": "治疗关系，表示中药或方剂可用于治疗某种疾病",
+      "properties": []
+    },
+    {
+      "type": "HAS_EFFECT",
+      "description": "功效关系，表示中药或方剂具有某种治疗功效",
+      "properties": []
+    },
+    {
+      "type": "HAS_SYMPTOM",
+      "description": "症状表现关系，表示某种疾病会表现出特定的临床症状",
+      "properties": []
+    },
+    {
+      "type": "ALLEVIATES_SYMPTOM",
+      "description": "缓解症状关系，表示中药或方剂能够缓解某种具体症状",
+      "properties": []
+    }
+  ],
+  "triples": [
+    {
+      "from": "Formula",
+      "rel_type": "FROM_SOURCE",
+      "to": "Source",
+      "description": "方剂的知识信息来源于某文献典籍，如麻黄汤出自《伤寒论》"
+    },
+    {
+      "from": "Formula",
+      "rel_type": "HAS_INGREDIENT",
+      "to": "Herb",
+      "description": "方剂由某味中药组成，如麻黄汤含有麻黄、桂枝、杏仁、甘草"
+    },
+    {
+      "from": "Formula",
+      "rel_type": "TREATS_DISEASE",
+      "to": "Disease",
+      "description": "方剂用于治疗某种疾病，如麻黄汤治疗风寒感冒"
+    },
+    {
+      "from": "Formula",
+      "rel_type": "HAS_EFFECT",
+      "to": "Effect",
+      "description": "方剂整体具有某种治疗功效，如麻黄汤具有发汗解表、宣肺平喘之功效"
+    },
+    {
+      "from": "Disease",
+      "rel_type": "HAS_SYMPTOM",
+      "to": "Symptom",
+      "description": "疾病会表现出某种临床症状，如风寒感冒表现为恶寒发热、头痛身痛等症状"
+    },
+    {
+      "from": "Formula",
+      "rel_type": "ALLEVIATES_SYMPTOM",
+      "to": "Symptom",
+      "description": "方剂能够缓解某种具体症状，如麻黄汤缓解恶寒、发热、头痛等症状"
+    },
+    {
+      "from": "Herb",
+      "rel_type": "HAS_EFFECT",
+      "to": "Effect",
+      "description": "单味中药具有某种功效，如麻黄具有发汗解表、宣肺平喘之功效"
+    },
+    {
+      "from": "Herb",
+      "rel_type": "ALLEVIATES_SYMPTOM",
+      "to": "Symptom",
+      "description": "单味中药能够缓解某种具体症状，如麻黄缓解恶寒发热、无汗而喘等症状"
+    },
+    {
+      "from": "Herb",
+      "rel_type": "TREATS_DISEASE",
+      "to": "Disease",
+      "description": "单味中药可用于治疗某种疾病，如麻黄用于治疗风寒感冒"
+    },
+    {
+      "from": "Herb",
+      "rel_type": "FROM_SOURCE",
+      "to": "Source",
+      "description": "中药的知识信息来源于某文献典籍，如麻黄记载于《神农本草经》"
+    },
+    {
+      "from": "Formula",
+      "rel_type": "TREATS_DISEASE",
+      "to": "Symptom",
+      "description": "方剂针对某症状进行治疗（症状级治疗关联），如麻黄汤针对恶寒发热之表证"
+    },
+    {
+      "from": "Herb",
+      "rel_type": "TREATS_DISEASE",
+      "to": "Symptom",
+      "description": "单味中药针对某症状进行治疗（症状级治疗关联），如麻黄针对无汗而喘之症状"
+    },
+    {
+      "from": "Formula",
+      "rel_type": "HAS_INGREDIENT",
+      "to": "Formula",
+      "description": "方剂中包含子方剂作为其组成成分（方剂嵌套关系），如大青龙汤中包含麻黄汤的配伍"
+    },
+    {
+      "from": "Formula",
+      "rel_type": "ALLEVIATES_SYMPTOM",
+      "to": "Disease",
+      "description": "方剂通过缓解症状间接治疗某种疾病（症状-疾病关联），如通过缓解头痛发热来治疗感冒"
+    }
+  ]
+}
