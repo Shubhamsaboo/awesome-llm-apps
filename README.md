@@ -89,6 +89,7 @@ streamlit run travel_agent.py
 *   [🩺 Dependency Doctor](agent_skills/dependency-doctor/) - Checks a dependency manifest for standard-library pins, obsolete backports, unpinned entries, duplicate constraints, and yanked releases
 *   [🧠 Advisor Orchestrator Worker](agent_skills/advisor-orchestrator-worker/) - Meta Loop with Claude Fable 5 as advisor, GPT-5.6 as orchestrator, and Gemini 3.5 Flash as worker
 *   [♾️ Self-Improving Agent Skills](agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
+*   [🛡️ Pentest AI Agents](https://github.com/0xSteph/pentest-ai-agents) <sub>↗ external</sub> - Specialized Claude Code subagents that turn it into an offensive security research assistant: plan engagements, analyze recon, research exploits, build detections, audit STIGs, and write reports
 
 ### 🌱 Starter AI Agents
 
