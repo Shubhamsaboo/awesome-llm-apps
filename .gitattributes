@@ -1,0 +1,9 @@
+# Lockfiles are machine-generated. Keep them committed for reproducible installs,
+# but mark them as generated so GitHub collapses them in diffs and excludes them
+# from repository language statistics. Patterns without a slash match at any depth.
+package-lock.json linguist-generated=true
+yarn.lock linguist-generated=true
+pnpm-lock.yaml linguist-generated=true
+uv.lock linguist-generated=true
+poetry.lock linguist-generated=true
+Cargo.lock linguist-generated=true
