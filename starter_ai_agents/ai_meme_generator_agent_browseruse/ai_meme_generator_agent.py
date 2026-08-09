@@ -23,9 +23,9 @@ async def generate_meme(query: str, model_choice: str, api_key: str) -> None:
         )
     elif model_choice == "Gemini":
         llm = ChatGoogleGenerativeAI(
-            model="gemini-3.5-flash",
+            model="gemini-3.6-flash",
             google_api_key=api_key,
-            temperature=0)
+            temperature=0.3)
 
     else:  # OpenAI
         llm = ChatOpenAI(
