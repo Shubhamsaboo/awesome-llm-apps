@@ -17,18 +17,18 @@ Reviews ONE Markdown document per invocation across 14 document scenarios (PRD, 
 
 ## Usage
 
-```
+```text
 /md-review <path> [scenario] [--dimensions 1,2,3,4,5,6] [--format full|summary|fix] [--solo] [--pass-threshold N] [--output file] [json]
 ```
 
 - `<scenario>` — one of the 14 scenarios; omit for generic mode
-- `--solo` — non-interactive CI mode; exit codes: `0` = no P0 and score ≥ threshold (default 75), `1` = P0 issues or below threshold, `2` = error
+- `--solo` — non-interactive CI mode; exit codes: `0` = no P0 (blocking/bug-level issue) and score ≥ threshold (default 75), `1` = P0 issues or below threshold, `2` = error
 - `--format fix` — applies only safe mechanical fixes automatically (link-text repairs, filler-word removal, echo-title removal); judgment calls are reported unfixed
 - Every report ends with a machine-readable `MD-REVIEW-SUMMARY` block for CI parsing
 
 ## Structure
 
-```
+```text
 md-review/
 ├── SKILL.md                  skill definition (workflow + phases 0-6)
 ├── references/               5 review-rules files + 14 per-scenario checklists
