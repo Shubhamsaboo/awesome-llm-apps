@@ -3,6 +3,7 @@ import streamlit as st
 from browser_use import Agent, SystemPrompt
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage
 import re
 
@@ -20,6 +21,12 @@ async def generate_meme(query: str, model_choice: str, api_key: str) -> None:
             api_key=api_key,
             temperature=0.3
         )
+    elif model_choice == "Gemini":
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-3.6-flash",
+            google_api_key=api_key,
+            temperature=0.3)
+
     else:  # OpenAI
         llm = ChatOpenAI(
             model="gpt-4o",
@@ -74,7 +81,7 @@ def main():
         # Model selection
         model_choice = st.selectbox(
             "Select AI Model",
-            ["Claude", "Deepseek", "OpenAI"],
+            ["Claude", "Deepseek", "OpenAI", "Gemini"],
             index=0,
             help="Choose which LLM to use for meme generation"
         )
@@ -87,6 +94,9 @@ def main():
         elif model_choice == "Deepseek":
             api_key = st.text_input("Deepseek API Key", type="password",
                                   help="Get your API key from https://platform.deepseek.com")
+        elif model_choice == "Gemini":
+            api_key = st.text_input("Gemini API Key", type="password",
+                                  help="Get your API key from https://aistudio.google.com/app/api-keys")
         else:
             api_key = st.text_input("OpenAI API Key", type="password",
                                   help="Get your API key from https://platform.openai.com")
