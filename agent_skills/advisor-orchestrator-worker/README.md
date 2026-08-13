@@ -8,7 +8,7 @@ This skill turns your coding agent into the orchestrator of a three-tier model t
 
 ## The team
 
-| Role | Default model <sub>(July 2026, swap freely)</sub> | What it does | What it never does |
+| Role | Default model <sub>(Aug 2026, swap freely)</sub> | What it does | What it never does |
 |---|---|---|---|
 | **Orchestrator** | GPT-5.6 | Frames success criteria, plans waves, dispatches briefs, verifies every result, synthesizes the deliverable | Worker-level grunt work |
 | **Workers** | Gemini 3.7 Flash | One self-contained subtask each, in parallel, stateless; each sees only its brief, with tool access when the subtask needs it | Talk to each other, expand scope, get a second chance on the same call |
