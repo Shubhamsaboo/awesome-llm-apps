@@ -56,6 +56,8 @@ Works with Claude, Gemini, GPT, DeepSeek, Llama, Qwen and other open-source mode
   </tr>
 </table>
 
+- [ViBo — encrypted memory for AI agents (97.5% fewer tokens)](https://github.com/vnbochkarev-netizen/ViBo-memory) — persistent memory L1/L2/L3, web search savings 99.6%, thread memory. $5/mo, free trial.
+
 ## 🚀 Run one now
 
 Give your coding agent a new skill in 10 seconds:
