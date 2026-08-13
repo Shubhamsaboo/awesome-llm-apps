@@ -18,7 +18,7 @@ api_key="${GEMINI_API_KEY:-$GOOGLE_API_KEY}"
 ( set -o pipefail
   jq -n --rawfile t "$brief" '{contents:[{parts:[{text:$t}]}]}' \
     | curl -sS --fail --max-time 300 \
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent" \
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent" \
       -H "x-goog-api-key: $api_key" -H "Content-Type: application/json" -d @- \
     | jq -r '.candidates[0].content.parts[0].text' > "$out" ) &
 pids+=($!)
