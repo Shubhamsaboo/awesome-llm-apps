@@ -33,7 +33,7 @@ on another shell, run them with `bash -c`.
 
 ## The team
 
-- **Workers (default: Gemini 3.5 Flash via the Antigravity CLI, `agy`)**: stateless
+- **Workers (default: Gemini 3.7 Flash via the Antigravity CLI, `agy`)**: stateless
   generation units, with tools (web search, file work) when a
   subtask needs them. Never interpolate a brief into a shell string;
   briefs carry quotes and arbitrary text, so that is a shell-injection
@@ -45,7 +45,7 @@ on another shell, run them with `bash -c`.
   # $brief = this worker's brief file; $out = its result file (absolute path)
   d=$(mktemp -d)
   ( cd "$d" && env -i HOME="$HOME" PATH="$PATH" \
-      agy --dangerously-skip-permissions --model "gemini-3.5-flash" \
+      agy --dangerously-skip-permissions --model "gemini-3.7-flash" \
       --print-timeout 5m -p "$(cat "$brief")" \
       > "$out"; s=$?; rm -rf "$d"; exit "$s" ) &
   pids+=($!)
