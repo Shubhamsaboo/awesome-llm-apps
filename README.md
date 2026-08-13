@@ -132,6 +132,7 @@ streamlit run travel_agent.py
 *   [👨🏻‍💼 AI Sales Intelligence Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_sales_intelligence_agent_team) - Generates competitive sales battle cards in real time
 *   [🎧 AI Social Media News and Podcast Agent](advanced_ai_agents/multi_agent_apps/ai_news_and_podcast_agents/) - Curates your trusted sources into briefs and generated podcasts
 *   [🌐 Openwork - Open Browser Automation Agent](https://github.com/accomplish-ai/openwork) <sub>↗ external</sub> - Open-source agent that operates a real browser
+*   [🤖 SARA — WhatsApp AI Agent](https://github.com/Alessandro114/sara) <sub>↗ external</sub> - Open-source multi-tenant WhatsApp AI agent with 20 industry verticals, function calling, RAG, and multi-provider LLM failover. AGPL-3.0.
 *   [🛡️ Trust-Gated Multi-Agent Research Team](advanced_ai_agents/multi_agent_apps/trust_gated_agent_team/) - Every agent verified, every action in a hash-chained audit trail
 
 ### 🛰️ Always-on Agents
