@@ -1,1 +1,17 @@
-Placeholder
+{
+  "name": "nexusgenesis-agent-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "NexusGenesis Agent Identity Demo — PQC self-custody keys with human takeover",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "nexusgenesis-agent-keys": "^0.2.2",
+    "openai": "^4.0.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.0"
+  }
+}
