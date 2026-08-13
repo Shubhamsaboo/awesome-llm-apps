@@ -4,7 +4,7 @@
 
 This skill turns your coding agent into the orchestrator of a three-tier model team. Big tasks get split into self-contained briefs, blasted across cheap parallel workers, verified one by one, and judged by a stronger model exactly twice: before the work starts and before it ships.
 
-<img width="1832" height="858" alt="advisor_skill" src="advisor_skill.png" />
+<img width="1504" height="704" alt="advisor_skill" src="advisor_skill.jpeg" />
 
 ## The team
 
