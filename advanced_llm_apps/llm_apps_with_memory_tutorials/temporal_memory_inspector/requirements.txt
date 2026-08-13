@@ -1,0 +1,2 @@
+lians-sdk[local]==0.5.0
+streamlit>=1.40,<2
