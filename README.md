@@ -89,6 +89,7 @@ streamlit run travel_agent.py
 *   [🩺 Dependency Doctor](agent_skills/dependency-doctor/) - Checks a dependency manifest for standard-library pins, obsolete backports, unpinned entries, duplicate constraints, and yanked releases
 *   [🧠 Advisor Orchestrator Worker](agent_skills/advisor-orchestrator-worker/) - Meta Loop with Claude Fable 5 as advisor, GPT-5.6 as orchestrator, and Gemini 3.5 Flash as worker
 *   [♾️ Self-Improving Agent Skills](agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
+*   [🛡️ **superpowers-safe**](https://github.com/JFWaskin/superpowers-safe) - Safety-hardened fork of `obra/superpowers` with a mandatory 5-gate preflight (resource budget, command risk scan, loop/spend limits, secret/PII scan, scope confirmation) before any non-trivial skill runs. Ships for 10 coding-agent runtimes (Claude Code, Codex, Cursor, Gemini CLI, Kimi Code, OpenCode, Pi, Hermes, GitHub Copilot CLI, Factory Droid) and ships 4 pressure scenarios in Quorum format
 
 ### 🌱 Starter AI Agents
 
