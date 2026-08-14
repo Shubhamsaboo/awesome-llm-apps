@@ -1,0 +1,3 @@
+streamlit>=1.40.2
+openai>=1.102.0
+crw>=0.30.0
