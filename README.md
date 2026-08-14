@@ -158,6 +158,7 @@ streamlit run travel_agent.py
 *   [✨ Multimodal Design Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_design_agent_team/) - Design critiques from a Gemini-powered expert panel
 *   [🎨 🍌 Multimodal UI/UX Feedback Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_uiux_feedback_agent_team/) - Landing page feedback plus an auto-generated improved version
 *   [🌏 AI Travel Planner Agent Team](/advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/) - A complete trip itinerary, crafted by a team
+*   [🎯 博思AI智能体 (Bos AI)](https://github.com/ysy0915/chat-system) - Multi-model debate (3-6 LLMs) + parallel Multi-Agent workflow with RabbitMQ + RAG with Milvus + reusable LLM gateway (Java/Spring Boot)
 
 ### 🗣️ Voice AI Agents
 
