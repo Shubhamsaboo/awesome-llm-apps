@@ -45,7 +45,7 @@ on another shell, run them with `bash -c`.
   # $brief = this worker's brief file; $out = its result file (absolute path)
   d=$(mktemp -d)
   ( cd "$d" && env -i HOME="$HOME" PATH="$PATH" \
-      agy --dangerously-skip-permissions --model "gemini-3.7-flash" \
+      agy --dangerously-skip-permissions --model "gemini-3.7-flash" --effort high \
       --print-timeout 5m -p "$(cat "$brief")" \
       > "$out"; s=$?; rm -rf "$d"; exit "$s" ) &
   pids+=($!)
@@ -53,7 +53,8 @@ on another shell, run them with `bash -c`.
 
   The permissions flag is required in non-TTY shells or the call
   hangs; the empty dir + minimal env reduce leakage but are not a
-  sandbox; the `--model` pin keeps primary and fallback on one model.
+  sandbox; the `--model` pin keeps primary and fallback on one model,
+  and `--effort high` satisfies the CLI's required effort selection.
   Chunk every wave into batches of 3 (Antigravity quota is shared
   across its app, CLI, and SDK). Start each batch with `pids=()`, reap
   each worker with its own `wait "$pid"` (a collective wait reports
