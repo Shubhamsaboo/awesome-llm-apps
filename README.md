@@ -161,6 +161,7 @@ streamlit run travel_agent.py
 *   [🎯 博思AI智能体 (Bos AI)](https://github.com/ysy0915/chat-system) - Multi-model debate (3-6 LLMs) + parallel Multi-Agent workflow with RabbitMQ + RAG with Milvus + reusable LLM gateway (Java/Spring Boot)
 *   [🎯 博思AI智能体 (Bos AI)](https://github.com/ysy0915/chat-system) - Multi-model debate (3-6 LLMs) + parallel Multi-Agent workflow with RabbitMQ + RAG with Milvus + reusable LLM gateway (Java/Spring Boot)
 *   [🎯 博思AI智能体 (Bos AI)](https://github.com/ysy0915/chat-system) - Multi-model debate (3-6 LLMs) + parallel Multi-Agent workflow with RabbitMQ + RAG with Milvus + reusable LLM gateway (Java/Spring Boot)
+*   [🎯 博思AI智能体 (Bos AI)](https://github.com/ysy0915/chat-system) - Multi-model debate (3-6 LLMs) + parallel Multi-Agent workflow with RabbitMQ + RAG with Milvus + reusable LLM gateway (Java/Spring Boot)
 
 ### 🗣️ Voice AI Agents
 
