@@ -254,6 +254,7 @@ streamlit run travel_agent.py
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30-60% using TOON format
 *   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50-90%
+*   [🔌 OpenAI-Compatible API Proxy](https://github.com/Xplore-LAB/openai-compatible-proxy) - Turn any LLM API into an OpenAI-style `/v1/*` endpoint; drop-in for existing SDKs, clients, and workflows (FastAPI, Docker, systemd ready)
 
 ### 🔧 LLM Fine-tuning
 
