@@ -1,0 +1,80 @@
+services:
+  # UI - Vite + React static site
+  - type: web
+    name: shadify-ui
+    runtime: static
+    buildCommand: corepack enable && pnpm install --no-frozen-lockfile && pnpm --filter @shadify/ui build
+    staticPublishPath: ./apps/ui/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: SKIP_INSTALL_DEPS
+        value: "true"
+      - key: VITE_RUNTIME_HOST
+        fromService:
+          name: shadify-runtime
+          type: web
+          property: host
+    buildFilter:
+      paths:
+        - apps/ui/**
+        - package.json
+        - pnpm-lock.yaml
+
+  # Runtime - Hono API server
+  - type: web
+    name: shadify-runtime
+    runtime: node
+    plan: starter
+    scaling:
+      minInstances: 1
+      maxInstances: 3
+      targetMemoryPercent: 80
+      targetCPUPercent: 70
+    buildCommand: corepack enable && pnpm install --no-frozen-lockfile && npm install -g tsx
+    startCommand: node --max-old-space-size=256 --expose-gc --import tsx/esm apps/runtime/server.ts
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: SKIP_INSTALL_DEPS
+        value: "true"
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: LANGGRAPH_DEPLOYMENT_URL
+        fromService:
+          name: shadify-agent
+          type: web
+          property: hostport
+    buildFilter:
+      paths:
+        - apps/runtime/**
+        - package.json
+        - pnpm-lock.yaml
+
+  # Agent - Python LangGraph + FastAPI
+  - type: web
+    name: shadify-agent
+    runtime: python
+    plan: starter
+    scaling:
+      minInstances: 1
+      maxInstances: 3
+      targetMemoryPercent: 80
+      targetCPUPercent: 70
+    rootDir: apps/agent
+    buildCommand: pip install uv && uv sync
+    startCommand: uv run uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.6"
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: TAVILY_API_KEY
+        sync: false
+    buildFilter:
+      paths:
+        - apps/agent/**

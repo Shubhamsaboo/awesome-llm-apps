@@ -1,0 +1,22 @@
+{
+  "name": "shadify",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"pnpm run dev:ui\" \"pnpm run dev:runtime\" \"pnpm run dev:agent\" --names ui,runtime,agent --prefix-colors blue,yellow,green --kill-others",
+    "dev:ui": "pnpm --filter @shadify/ui dev",
+    "dev:runtime": "pnpm --filter @shadify/runtime dev",
+    "dev:agent": "cd apps/agent && uv sync && uv run python main.py",
+    "lint": "oxlint apps/ui/src apps/runtime",
+    "lint:fix": "oxlint --fix apps/ui/src apps/runtime",
+    "format": "oxfmt apps/ui/src apps/runtime",
+    "format:check": "oxfmt --check apps/ui/src apps/runtime"
+  },
+  "devDependencies": {
+    "@langchain/langgraph-cli": "^1.0.4",
+    "concurrently": "^9.1.2",
+    "oxfmt": "^0.41.0",
+    "oxlint": "^1.56.0",
+    "shadcn": "^3.8.5"
+  }
+}

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" role="img" aria-labelledby="title description">
+  <title id="title">Typed Agentic RAG screenshot placeholder</title>
+  <desc id="description">Placeholder showing the planned Streamlit answer and citation layout.</desc>
+  <rect width="1200" height="700" fill="#f5f7fb"/>
+  <rect x="40" y="40" width="1120" height="620" rx="20" fill="#ffffff" stroke="#d7dce5" stroke-width="2"/>
+  <rect x="40" y="40" width="280" height="620" rx="20" fill="#eef2f8"/>
+  <text x="80" y="105" fill="#172033" font-family="Arial, sans-serif" font-size="26" font-weight="700">Model settings</text>
+  <rect x="80" y="140" width="200" height="46" rx="8" fill="#ffffff" stroke="#c7cfdb"/>
+  <text x="98" y="170" fill="#536078" font-family="Arial, sans-serif" font-size="17">OpenAI</text>
+  <rect x="80" y="215" width="200" height="46" rx="8" fill="#ffffff" stroke="#c7cfdb"/>
+  <text x="98" y="245" fill="#536078" font-family="Arial, sans-serif" font-size="17">Auto embeddings</text>
+  <text x="365" y="105" fill="#172033" font-family="Arial, sans-serif" font-size="34" font-weight="700">Typed Agentic RAG</text>
+  <text x="365" y="145" fill="#536078" font-family="Arial, sans-serif" font-size="18">Validated answers with exact source quotes</text>
+  <rect x="365" y="190" width="740" height="92" rx="12" fill="#f7f9fc" stroke="#d7dce5"/>
+  <text x="392" y="225" fill="#172033" font-family="Arial, sans-serif" font-size="18" font-weight="700">Question</text>
+  <text x="392" y="258" fill="#536078" font-family="Arial, sans-serif" font-size="18">How much parental leave does the handbook grant?</text>
+  <rect x="365" y="310" width="740" height="190" rx="12" fill="#effaf4" stroke="#8dcda9"/>
+  <text x="392" y="350" fill="#176b43" font-family="Arial, sans-serif" font-size="18" font-weight="700">Answered · 91% confidence</text>
+  <text x="392" y="392" fill="#172033" font-family="Arial, sans-serif" font-size="19">The handbook grants twelve weeks of paid parental leave.</text>
+  <rect x="392" y="425" width="680" height="50" rx="8" fill="#ffffff" stroke="#b9ddc8"/>
+  <text x="412" y="457" fill="#536078" font-family="Arial, sans-serif" font-size="16">handbook.pdf | handbook.pdf:p1:c1</text>
+  <rect x="365" y="530" width="740" height="72" rx="12" fill="#fff7e8" stroke="#e9be68"/>
+  <text x="392" y="574" fill="#805610" font-family="Arial, sans-serif" font-size="18">Weak evidence returns a refusal instead of a guess.</text>
+</svg>

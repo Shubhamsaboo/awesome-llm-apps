@@ -1,0 +1,77 @@
+# Docker Compose stack for e2e smoke testing with aimock.
+# Mirrors the user experience: Next.js frontend + langgraph dev agent + aimock as LLM.
+# Usage: docker compose -f docker-compose.test.yml up -d
+services:
+  aimock:
+    image: ghcr.io/copilotkit/aimock:latest
+    volumes:
+      - ./fixtures:/fixtures:ro
+    command:
+      ["--fixtures", "/fixtures", "--host", "0.0.0.0", "--validate-on-load"]
+
+  agent:
+    build:
+      context: ./agent
+      dockerfile: ../docker/Dockerfile.agent
+    environment:
+      - OPENAI_API_KEY=test-key-for-aimock
+      - OPENAI_BASE_URL=http://aimock:4010/v1
+    depends_on:
+      aimock:
+        condition: service_started
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8123/ok')",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.app
+    environment:
+      - LANGGRAPH_DEPLOYMENT_URL=http://agent:8123
+    depends_on:
+      agent:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "const http = require('http'); const req = http.get('http://localhost:3000/', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }); req.on('error', () => process.exit(1)); req.setTimeout(2000, () => { req.destroy(); process.exit(1); });",
+        ]
+      interval: 5s
+      timeout: 10s
+      retries: 30
+      start_period: 60s
+
+  tests:
+    image: mcr.microsoft.com/playwright:v1.52.0-noble
+    working_dir: /tests
+    volumes:
+      - ../../../showcase/tests:/tests
+      - test-results:/tests/test-results
+    environment:
+      - STARTER=${STARTER:-langgraph-python}
+      - STARTER_URL=http://app:3000
+    depends_on:
+      app:
+        condition: service_healthy
+    command:
+      [
+        "bash",
+        "-c",
+        "cd /tests && npm install --no-audit --no-fund 2>/dev/null && npx playwright install chromium && npx playwright test starter-smoke --reporter=list",
+      ]
+
+volumes:
+  test-results:

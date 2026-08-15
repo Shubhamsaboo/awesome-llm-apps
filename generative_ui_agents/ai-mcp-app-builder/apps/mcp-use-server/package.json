@@ -1,0 +1,55 @@
+{
+  "name": "mcp-use-server",
+  "version": "1.0.0",
+  "description": "MCP server: mcp-use-server",
+  "keywords": [
+    "apps-sdk",
+    "mcp",
+    "mcp-ui",
+    "prompts",
+    "react",
+    "resources",
+    "server",
+    "starter",
+    "tools",
+    "ui",
+    "uiresource",
+    "widgets"
+  ],
+  "license": "MIT",
+  "author": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "mcp-use build --inline",
+    "dev": "mcp-use build --inline && cross-env NODE_ENV=production npx tsx index.ts",
+    "start": "mcp-use start",
+    "deploy": "mcp-use deploy",
+    "postinstall": "mcp-use generate-types || node -e \"process.exit(0)\""
+  },
+  "dependencies": {
+    "@openai/apps-sdk-ui": "^0.2.1",
+    "e2b": "^2.13.0",
+    "mcp-use": "^1.22.3",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-router": "^7.13.0",
+    "tailwindcss": "^4.2.0",
+    "zod": "4.3.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.2.0",
+    "@types/node": "^25.3.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.4",
+    "cross-env": "^10.1.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  },
+  "overrides": {
+    "lodash": "4.17.23",
+    "sugarss": "^5.0.1"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalEnv": [
+    "OPENAI_API_KEY",
+    "OPENAI_MODEL",
+    "E2B_API_KEY",
+    "E2B_REPO_URL",
+    "E2B_TEMPLATE",
+    "MASTRA_AGENT_DEBUG",
+    "DEFAULT_MCP_SERVERS",
+    "NEXT_PUBLIC_DEFAULT_MCP_SERVERS",
+    "NEXT_PUBLIC_HEADER_DOCS_URL",
+    "NEXT_PUBLIC_HEADER_PRIMARY_CTA_LABEL",
+    "NEXT_PUBLIC_HEADER_SECONDARY_CTA_URL",
+    "NEXT_PUBLIC_HEADER_SECONDARY_CTA_LABEL",
+    "NEXT_PUBLIC_GITHUB_REPO_URL",
+    "NEXT_PUBLIC_CHAT_STARTER_PROMPTS"
+  ],
+  "tasks": {
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", ".download-kit/**"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    }
+  }
+}

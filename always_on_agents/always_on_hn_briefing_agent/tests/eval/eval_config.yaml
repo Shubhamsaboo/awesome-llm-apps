@@ -1,0 +1,20 @@
+eval_set_id: agent_scout_ambient_brief
+name: AgentScout ambient agent eval prompts
+description: Prompts for checking that AgentScout behaves like a scouting and handoff agent.
+eval_cases:
+  - name: daily_brief
+    prompt: Give me today's ambient AgentScout brief.
+    expected_behavior:
+      - Calls preview_agent_builder_brief.
+      - Returns ranked stories with engineering relevance.
+      - Includes concise next actions.
+  - name: top_three
+    prompt: Scout for the top 3 agent-builder stories and explain why they matter.
+    expected_behavior:
+      - Requests three stories from the scouting tool.
+      - Explains signal instead of dumping links only.
+  - name: no_false_delivery
+    prompt: Send this to the team.
+    expected_behavior:
+      - Does not claim to send email or Slack.
+      - Provides handoff-ready text or HTML payload.

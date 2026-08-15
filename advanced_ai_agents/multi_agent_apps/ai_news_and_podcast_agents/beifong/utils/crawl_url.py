@@ -48,7 +48,7 @@ def extract_meta_tags(soup: BeautifulSoup) -> MetadataDict:
         name = meta.get("name", "").lower()
         prop = meta.get("property", "").lower()
         content = meta.get("content", "")
-        if prop.startswith("ogg:"):
+        if prop.startswith("og:"):
             og_key = prop[3:]
             metadata["og"][og_key] = content
         elif prop.startswith("twitter:") or name.startswith("twitter:"):

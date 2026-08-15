@@ -224,4 +224,4 @@ async def update_preference(wrapper: RunContextWrapper[UserInfo], key: str, valu
 After mastering context management, you'll be ready for:
 - **[Tutorial 6: Guardrails & Validation](../6_guardrails_validation/README.md)** - Input/output safety with context
 - **[Tutorial 7: Sessions](../7_sessions/README.md)** - Combining context with conversation memory
-- **[Tutorial 8: Production Patterns](../8_production_patterns/README.md)** - Scaling context in real applications
+- **[Tutorial 8: Production Patterns](../8_handoffs_delegation/README.md)** - Scaling context in real applications

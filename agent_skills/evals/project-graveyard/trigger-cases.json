@@ -1,0 +1,49 @@
+{
+  "skill": "project-graveyard",
+  "purpose": "Trigger-behavior spec, two consumers: (1) CI runs tools/run_trigger_evals.py against these cases lexically \u2014 positives must clear near-misses on description vocabulary alone; (2) after any description change, also verify by hand in a fresh agent session. Cases with lexical:false trigger via reasoning, not vocabulary, and are covered by the behavioral tier (evals.json).",
+  "cases": [
+    {
+      "id": "direct-invocation",
+      "prompt": "run the graveyard on my machine, my projects are in ~/dev and ~/hacks",
+      "should_trigger": true,
+      "assert": "Runs scripts/graveyard.py with the given roots and produces a tombstone report with census, causes, patterns, and one resurrection pick."
+    },
+    {
+      "id": "emotional-phrasing",
+      "prompt": "I have like 30 half-finished side projects and it's honestly depressing. why do I never finish anything?",
+      "should_trigger": true,
+      "assert": "Triggers; scans, then leads with the patterns section (death timing, shiny-object chains) rather than shaming; offers one resurrection."
+    },
+    {
+      "id": "what-should-i-finish",
+      "prompt": "of all my old abandoned repos, which one is actually worth finishing?",
+      "should_trigger": true,
+      "assert": "Triggers; uses pulse ranking plus judgment (reads top candidate's README, checks what got easier since) and picks exactly one."
+    },
+    {
+      "id": "necromancer-mode",
+      "prompt": "I want to build a newsletter analytics dashboard this weekend, can you scaffold it?",
+      "should_trigger": true,
+      "assert": "Before scaffolding, checks the graveyard for prior attempts at the same idea; if found, mentions it once and lets the user choose; never blocks the new project.",
+      "lexical": false
+    },
+    {
+      "id": "near-miss-disk-cleanup",
+      "prompt": "my disk is full, find old projects with giant node_modules folders I can delete",
+      "should_trigger": false,
+      "assert": "Does not trigger; this is disk cleanup (kondo/npkill territory), not project archaeology."
+    },
+    {
+      "id": "near-miss-github-archive",
+      "prompt": "help me archive some of my old GitHub repos and clean up my profile",
+      "should_trigger": false,
+      "assert": "Does not trigger; archiving remote repos is GitHub admin work, not a local graveyard scan."
+    },
+    {
+      "id": "near-miss-single-repo-history",
+      "prompt": "walk me through the git history of this repo and explain how the architecture evolved",
+      "should_trigger": false,
+      "assert": "Does not trigger; single-repo history analysis is plain git log reading, no scan needed."
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "skill": "scope-creep-detector",
+  "purpose": "Trigger-behavior spec for deterministic lexical routing and manual behavior checks.",
+  "cases": [
+    {
+      "id": "change-grew-beyond-fix",
+      "prompt": "did my change grow beyond the fix",
+      "should_trigger": true,
+      "assert": "Analyzes the diff against the stated fix and reports likely scope creep."
+    },
+    {
+      "id": "pr-too-broad",
+      "prompt": "is my PR too broad",
+      "should_trigger": true,
+      "assert": "Produces a scope report and recommends what to keep, split, or justify."
+    },
+    {
+      "id": "unrelated-files-touched",
+      "prompt": "what unrelated stuff did I touch",
+      "should_trigger": true,
+      "assert": "Flags unrelated files and explains the deterministic signals."
+    },
+    {
+      "id": "near-miss-format",
+      "prompt": "format my code",
+      "should_trigger": false,
+      "assert": "Does not trigger for a direct formatting request."
+    },
+    {
+      "id": "near-miss-linter",
+      "prompt": "run the linter",
+      "should_trigger": false,
+      "assert": "Does not trigger for routine lint execution."
+    },
+    {
+      "id": "near-miss-commit-message",
+      "prompt": "write my commit message",
+      "should_trigger": false,
+      "assert": "Does not trigger for commit message drafting alone."
+    }
+  ]
+}

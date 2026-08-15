@@ -116,14 +116,6 @@ Talk to your computer. Watch it get things done.
 
 Agent interacts directly with your Windows OS at GUI layer to perform actions. While the agent is designed to act intelligently and safely, it can make mistakes that might bring undesired system behaviour or cause unintended changes. Try to run the agent in a sandbox envirnoment.
 
-## 🪪 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please check the [CONTRIBUTING](CONTRIBUTING) file for setup and development workflow.
-
 Made with ❤️ by [Jeomon George](https://github.com/Jeomon)
 
 ---

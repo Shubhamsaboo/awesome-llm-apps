@@ -1,4 +1,4 @@
-openai-agents[voice]>=1.0.0
+openai-agents[voice]>=0.2.0
 sounddevice>=0.4.0
 numpy>=1.21.0
 soundfile>=0.12.0

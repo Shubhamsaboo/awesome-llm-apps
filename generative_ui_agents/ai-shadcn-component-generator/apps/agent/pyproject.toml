@@ -1,0 +1,19 @@
+[project]
+name = "sample-agent"
+version = "0.1.0"
+description = "A LangGraph agent"
+requires-python = ">=3.12"
+dependencies = [
+    "langchain==1.2.0",
+    "langgraph==1.0.7",  # pinned: BoundedMemorySaver relies on MemorySaver.storage internal
+    "langsmith>=0.4.49",
+    "openai>=1.68.2,<2.0.0",
+    "fastapi>=0.115.5,<1.0.0",
+    "uvicorn>=0.29.0,<1.0.0",
+    "python-dotenv>=1.0.0,<2.0.0",
+    "langchain-openai>=1.1.0",
+    "copilotkit>=0.1.78",
+    "ag-ui-langgraph==0.0.25",
+    "pydantic>=2.0.0,<3.0.0",
+    "tavily-python>=0.7.21",
+]

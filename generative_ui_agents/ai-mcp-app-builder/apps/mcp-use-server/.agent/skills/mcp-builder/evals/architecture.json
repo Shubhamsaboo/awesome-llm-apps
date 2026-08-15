@@ -1,0 +1,34 @@
+[
+  {
+    "query": "Build me a weather app",
+    "expected_behavior": "Creates a widget tool (get-weather) with visual display of temperature, conditions, humidity. Uses mock data. Does NOT require an API key by default. Widget renders a styled weather card."
+  },
+  {
+    "query": "I need a tool that translates text between languages",
+    "expected_behavior": "Creates a tool-only (translate-text) with no widget. Returns text() response. Accepts text, targetLanguage, optional sourceLanguage. No visual UI needed for text translation."
+  },
+  {
+    "query": "Make a recipe finder where I can search and browse recipes",
+    "expected_behavior": "Creates a widget tool (search-recipes) with recipe card list UI. Widget shows name, cuisine, time, ingredients. May also create get-recipe-details tool. Uses mock recipe data."
+  },
+  {
+    "query": "I want a todo list manager",
+    "expected_behavior": "Creates multiple tools: add-todo, list-todos, complete-todo, delete-todo. list-todos should have a widget with interactive checklist. Widget calls other tools via callTool."
+  },
+  {
+    "query": "Build a stock price checker",
+    "expected_behavior": "Creates a widget tool (get-stock) showing price, change, and key metrics visually. Also creates compare-stocks tool. Uses mock stock data with slight randomization."
+  },
+  {
+    "query": "I need a simple calculator tool",
+    "expected_behavior": "Creates tool-only (calculate) with no widget. Takes expression or operands. Returns text() with the result. No visual UI needed."
+  },
+  {
+    "query": "Make a quiz app where users can take quizzes on different topics",
+    "expected_behavior": "Creates a widget tool (generate-quiz) showing questions with multiple choice options. Also creates check-answer tool. Widget manages quiz state (current question, score) internally."
+  },
+  {
+    "query": "Build a color palette generator",
+    "expected_behavior": "Creates a widget tool showing color swatches visually (hex codes, color previews). Widget approach because visual color representation is far better than text descriptions of colors."
+  }
+]

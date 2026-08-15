@@ -1,0 +1,15 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
+watchPatterns = [
+  "src/**",
+  "public/**",
+  "package.json",
+  "Dockerfile",
+  "next.config.ts",
+]
+
+[deploy]
+startCommand = "npm start"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 5

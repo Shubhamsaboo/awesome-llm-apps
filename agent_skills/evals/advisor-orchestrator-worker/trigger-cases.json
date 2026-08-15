@@ -1,0 +1,42 @@
+{
+  "skill": "advisor-orchestrator-worker",
+  "purpose": "Trigger-behavior spec, two consumers: (1) CI runs tools/run_trigger_evals.py against these cases lexically; (2) after any description change, verify by hand in a fresh agent session. Cases with lexical:false trigger via reasoning, not vocabulary, and are covered by the behavioral tier (evals.json).",
+  "cases": [
+    {
+      "id": "orchestrate-team",
+      "prompt": "this task is way too big for one pass, can you orchestrate it across a team of models and run the subtasks in parallel?",
+      "should_trigger": true,
+      "assert": "Activates; frames deliverable + success criteria before any dispatch; plans waves for parallel workers."
+    },
+    {
+      "id": "fan-out-research",
+      "prompt": "fan this out: research all 12 competitors in parallel with cheap workers and have a stronger model review the plan first",
+      "should_trigger": true,
+      "assert": "Activates; uses stateless worker briefs with inline inputs; mandatory advisor plan review happens before dispatch."
+    },
+    {
+      "id": "advisor-worker-loop",
+      "prompt": "run the advisor worker loop on this project brief, I want one model orchestrating and an advisor model checking the plan",
+      "should_trigger": true,
+      "assert": "Activates; follows the 7-step loop; consults the advisor at plan review and taste pass only."
+    },
+    {
+      "id": "near-miss-ci-parallel",
+      "prompt": "my test suite is slow, run the tests in parallel across more CI workers",
+      "should_trigger": false,
+      "assert": "Does not trigger; CI test parallelism is infra config, not multi-model orchestration."
+    },
+    {
+      "id": "near-miss-model-choice",
+      "prompt": "which model should I use for my chatbot, something cheap or something strong?",
+      "should_trigger": false,
+      "assert": "Does not trigger; picking one model for an app is not running a model team."
+    },
+    {
+      "id": "near-miss-single-task",
+      "prompt": "review this one file and fix the bug in the parser",
+      "should_trigger": false,
+      "assert": "Does not trigger; single-pass single-model work. The skill's own scope line excludes it."
+    }
+  ]
+}

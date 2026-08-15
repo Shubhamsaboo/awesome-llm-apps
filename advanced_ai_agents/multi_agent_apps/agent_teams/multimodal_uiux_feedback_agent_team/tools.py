@@ -179,7 +179,10 @@ Make the improvements look natural and professional.
                 
                 try:
                     # Save the edited image as an artifact
-                    version = await tool_context.save_artifact(
+                    # Do NOT rebind `version` from save_artifact()'s return value:
+                    # that is ADK's per-filename artifact revision, not our asset
+                    # version counter (already set by get_next_version_number above).
+                    await tool_context.save_artifact(
                         filename=edited_artifact_filename, 
                         artifact=edited_image_part
                     )
@@ -321,7 +324,10 @@ Create a professional UI/UX design that would be magazine-quality.
                 image_part = types.Part(inline_data=inline_data)
                 
                 try:
-                    version = await tool_context.save_artifact(
+                    # Do NOT rebind `version` from save_artifact()'s return value:
+                    # that is ADK's per-filename artifact revision, not our asset
+                    # version counter (already set by get_next_version_number above).
+                    await tool_context.save_artifact(
                         filename=artifact_filename, 
                         artifact=image_part
                     )

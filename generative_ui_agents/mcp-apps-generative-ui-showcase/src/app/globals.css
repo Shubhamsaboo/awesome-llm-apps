@@ -1,0 +1,447 @@
+/* Plus Jakarta Sans - CopilotKit's brand font */
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
+
+@import "tailwindcss";
+
+/* =============================================================================
+   DESIGN SYSTEM - CopilotKit Palette
+============================================================================= */
+
+:root {
+  /* Brand Colors */
+  --color-lilac: #bec2ff;
+  --color-lilac-light: #d4d7ff;
+  --color-lilac-dark: #9599cc;
+  --color-mint: #85e0ce;
+  --color-mint-light: #a8e9dc;
+  --color-mint-dark: #1b936f;
+
+  /* Surfaces */
+  --color-surface: #dedee9;
+  --color-surface-light: #f7f7f9;
+  --color-container: #ffffff;
+
+  /* Text */
+  --color-text-primary: #010507;
+  --color-text-secondary: #57575b;
+  --color-text-tertiary: #8e8e93;
+
+  /* Borders */
+  --color-border: #dbdbe5;
+  --color-border-light: #ebebf0;
+  --color-border-glass: rgba(255, 255, 255, 0.3);
+
+  /* Glassmorphism */
+  --color-glass: rgba(255, 255, 255, 0.7);
+  --color-glass-subtle: rgba(255, 255, 255, 0.5);
+  --color-glass-dark: rgba(255, 255, 255, 0.85);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg:
+    0 10px 25px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  --shadow-glass: 0 4px 30px rgba(0, 0, 0, 0.1);
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+
+  /* Typography */
+  --font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 32px;
+  --font-size-4xl: 40px;
+
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-background: var(--color-surface-light);
+  --color-foreground: var(--color-text-primary);
+  --font-sans: var(--font-family);
+}
+
+/* =============================================================================
+   BASE STYLES
+============================================================================= */
+
+body {
+  font-family: var(--font-family);
+  background: var(--color-surface-light);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =============================================================================
+   ABSTRACT SHAPES BACKGROUND
+============================================================================= */
+
+.abstract-bg {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  background: linear-gradient(
+    135deg,
+    var(--color-surface-light) 0%,
+    var(--color-surface) 100%
+  );
+}
+
+.abstract-bg::before,
+.abstract-bg::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.6;
+}
+
+.abstract-bg::before {
+  width: 600px;
+  height: 600px;
+  background: var(--color-lilac);
+  top: -200px;
+  right: -100px;
+  animation: blob1 25s ease-in-out infinite;
+}
+
+.abstract-bg::after {
+  width: 500px;
+  height: 500px;
+  background: var(--color-mint);
+  bottom: -150px;
+  left: -100px;
+  animation: blob2 30s ease-in-out infinite;
+}
+
+.blob-3 {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(
+    135deg,
+    var(--color-lilac-light),
+    var(--color-mint-light)
+  );
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.4;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: blob3 35s ease-in-out infinite;
+}
+
+@keyframes blob1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(-30px, 50px) scale(1.1);
+  }
+  50% {
+    transform: translate(20px, -30px) scale(0.95);
+  }
+  75% {
+    transform: translate(40px, 20px) scale(1.05);
+  }
+}
+
+@keyframes blob2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(50px, -40px) scale(1.1);
+  }
+  66% {
+    transform: translate(-30px, 30px) scale(0.9);
+  }
+}
+
+@keyframes blob3 {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  25% {
+    transform: translate(-45%, -55%) scale(1.15);
+  }
+  50% {
+    transform: translate(-55%, -45%) scale(0.9);
+  }
+  75% {
+    transform: translate(-48%, -52%) scale(1.1);
+  }
+}
+
+/* Mobile responsive blobs - reduce size and blur for performance */
+@media (max-width: 767px) {
+  .abstract-bg::before {
+    width: 300px;
+    height: 300px;
+    filter: blur(60px);
+  }
+  .abstract-bg::after {
+    width: 250px;
+    height: 250px;
+    filter: blur(50px);
+  }
+  .blob-3 {
+    width: 200px;
+    height: 200px;
+    filter: blur(40px);
+  }
+}
+
+/* =============================================================================
+   GLASSMORPHISM COMPONENTS
+============================================================================= */
+
+.glass {
+  background: var(--color-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border-glass);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass);
+}
+
+.glass-subtle {
+  background: var(--color-glass-subtle);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--color-border-glass);
+  border-radius: var(--radius-lg);
+}
+
+.glass-card {
+  background: var(--color-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border-glass);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass);
+  padding: var(--space-6);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* =============================================================================
+   APP CARDS
+============================================================================= */
+
+.app-card {
+  background: var(--color-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border-glass);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.app-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-lilac), var(--color-mint));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.app-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.app-card:hover::before {
+  opacity: 1;
+}
+
+.app-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-4);
+  color: white;
+}
+
+.app-card-icon.flights {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.app-card-icon.hotels {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.app-card-icon.trading {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.app-card-icon.kanban {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+
+/* =============================================================================
+   PROMPT PILLS
+============================================================================= */
+
+.prompt-pill {
+  background: var(--color-glass-subtle);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--color-border-glass);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.prompt-pill:hover {
+  background: var(--color-glass);
+  color: var(--color-text-primary);
+  border-color: var(--color-lilac);
+  transform: translateY(-1px);
+}
+
+/* =============================================================================
+   DOCS BUTTONS
+============================================================================= */
+
+.docs-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-xl);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+  font-family: var(--font-family);
+}
+
+.docs-btn-primary {
+  background: linear-gradient(
+    135deg,
+    var(--color-lilac-dark),
+    var(--color-mint-dark)
+  );
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.docs-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(27, 147, 111, 0.35);
+  filter: brightness(1.05);
+}
+
+.docs-btn-secondary {
+  background: var(--color-glass);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--color-border-glass);
+  color: var(--color-text-primary);
+}
+
+.docs-btn-secondary:hover {
+  background: var(--color-glass-dark);
+  border-color: var(--color-lilac);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* =============================================================================
+   COPILOTKIT SIDEBAR OVERRIDES
+============================================================================= */
+
+/* Sidebar container */
+[data-copilotkit-sidebar] {
+  --copilot-kit-background-color: rgba(247, 247, 249, 0.95) !important;
+  --copilot-kit-secondary-color: rgba(255, 255, 255, 0.7) !important;
+  --copilot-kit-primary-color: var(--color-lilac) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-left: 1px solid var(--color-border-glass) !important;
+}
+
+/* Message bubbles */
+[data-copilotkit-sidebar] .copilotkit-message {
+  font-family: var(--font-family);
+}
+
+/* Input area */
+[data-copilotkit-sidebar] textarea,
+[data-copilotkit-sidebar] input {
+  font-family: var(--font-family);
+  border-radius: var(--radius-lg);
+}
+
+/* =============================================================================
+   UTILITY CLASSES
+============================================================================= */
+
+.text-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--color-lilac-dark),
+    var(--color-mint-dark)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.border-gradient {
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--color-container), var(--color-container)) padding-box,
+    linear-gradient(135deg, var(--color-lilac), var(--color-mint)) border-box;
+}

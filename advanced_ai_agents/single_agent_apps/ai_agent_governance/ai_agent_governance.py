@@ -242,12 +242,25 @@ class PolicyEngine:
     
     def evaluate(self, action: Action) -> PolicyResult:
         """Evaluate an action against all policy rules"""
+        allow_result = None
         for rule in self.rules:
             result = rule.evaluate(action)
-            if result and result.is_terminal:
-                self._log_audit(action, result)
-                return result
-        
+            if not result or not result.is_terminal:
+                continue
+            if result.decision == Decision.ALLOW:
+                # An allow is not final: a later rule may still deny the action
+                # or require approval for it. Remember the first allow but keep
+                # evaluating so deny/approval rules can override it.
+                if allow_result is None:
+                    allow_result = result
+                continue
+            self._log_audit(action, result)
+            return result
+
+        if allow_result is not None:
+            self._log_audit(action, allow_result)
+            return allow_result
+
         # Default allow if no rule blocks
         result = PolicyResult(
             decision=Decision.ALLOW,

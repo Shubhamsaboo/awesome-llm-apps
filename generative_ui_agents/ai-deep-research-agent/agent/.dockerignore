@@ -1,0 +1,8 @@
+.venv
+__pycache__
+*.pyc
+.git
+.env
+*.log
+.DS_Store
+deep_research_agent.egg-info

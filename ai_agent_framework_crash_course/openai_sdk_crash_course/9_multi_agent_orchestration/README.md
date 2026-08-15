@@ -214,7 +214,7 @@ with trace("Content Creation Pipeline"):
 
 After completing this tutorial, you'll be ready for:
 - **[Tutorial 10: Tracing & Observability](../10_tracing_observability/README.md)** - Monitoring complex workflows
-- **[Tutorial 11: Production Patterns](../11_production_patterns/README.md)** - Real-world deployment strategies
+- **[Tutorial 11: Production Patterns](../11_voice/README.md)** - Real-world deployment strategies
 
 ## 🚨 Troubleshooting
 

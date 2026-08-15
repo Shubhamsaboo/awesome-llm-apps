@@ -198,7 +198,7 @@ await session.clear_session()
 After completing this tutorial, you'll be ready for:
 - **[Tutorial 8: Handoffs & Delegation](../8_handoffs_delegation/README.md)** - Agent handoffs and task delegation
 - **[Tutorial 9: Multi-Agent Orchestration](../9_multi_agent_orchestration/README.md)** - Complex multi-agent workflows
-- **[Tutorial 10: Production Patterns](../10_production_patterns/README.md)** - Real-world deployment strategies
+- **[Tutorial 10: Production Patterns](../10_tracing_observability/README.md)** - Real-world deployment strategies
 
 ## 🚨 Troubleshooting
 

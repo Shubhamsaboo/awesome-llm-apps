@@ -1,0 +1,57 @@
+{
+  "skill_name": "advisor-orchestrator-worker",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Orchestrate this across a model team: produce a competitive analysis of 8 note-taking apps, each covering pricing, target user, and one weakness, synthesized into a comparison table with a recommendation.",
+      "expected_output": "A framed deliverable with checkable success criteria, a wave plan, parallel worker dispatches with self-contained briefs, per-subtask verification, and a synthesized table.",
+      "expectations": [
+        "Success criteria (3-5, checkable) are stated before any dispatch",
+        "The plan is sent to the advisor for review BEFORE workers run, and changes/rejections are stated",
+        "Worker briefs contain all inputs inline and acceptance criteria; no brief references unseen context",
+        "Every worker result gets a PASS/FIX/ESCALATE verdict against its own criteria",
+        "The final report includes a verification ledger and advisor notes applied or rebutted",
+        "Parallel worker outputs are collected from per-worker scratch files (mktemp + redirect, wait, read in dispatch order), never from a shared interleaved stdout",
+        "Workers dispatch via the agy CLI by default with --model pinned to gemini-3.5-flash (same model as the API fallback), waves chunked into batches of at most 3 with a wait between batches",
+        "Briefs and consults are written to temp files (handed to agy as a quoted expansion, jq-built payloads on the API fallback, consults passed on stdin); never interpolated inline into shell strings",
+        "The Gemini API fallback fails fast if neither GEMINI_API_KEY nor GOOGLE_API_KEY is set (no silent empty-key call)",
+        "Each backgrounded worker runs in its own subshell so parallel cd/cleanup and traps never collide",
+        "Worker and advisor calls carry a timeout so a hung call cannot stall the whole wave",
+        "Briefs too large or too untrusted to travel safely as an agy -p argument (agy has no prompt-file input) are routed to the API fallback instead"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Fan out this refactor plan across workers, but this machine has no agy CLI, only GOOGLE_API_KEY set, no claude CLI, and no ANTHROPIC_API_KEY.",
+      "expected_output": "The orchestrator detects the missing tools at the frame step: workers drop to the announced Gemini API fallback, and with neither the claude CLI nor ANTHROPIC_API_KEY available it explains setup for the advisor and offers degraded mode, flagged as degraded.",
+      "expectations": [
+        "With agy missing but a Gemini key set, workers run on the API fallback and this is announced up front, not discovered mid-run",
+        "Each role resolves CLI first then API key: with the claude CLI missing but ANTHROPIC_API_KEY set, consults would run over the Anthropic API; degraded mode is offered only when neither path exists",
+        "GEMINI_API_KEY falls back to GOOGLE_API_KEY before being declared missing",
+        "Tool availability is checked at the frame step, not discovered mid-run",
+        "The user is told how to set up the missing piece",
+        "Degraded mode is offered, covers only the missing role, and its output is explicitly flagged as degraded"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Two of the worker results in this run directly contradict each other about the API's rate limits.",
+      "expected_output": "A mid-loop advisor escalation (commitment boundary), not silent averaging or hand-patching.",
+      "expectations": [
+        "Contradiction beyond provided context triggers an advisor consult",
+        "Conflicts are resolved explicitly, never by averaging",
+        "The consult counts against the consult budget stated at the frame step and is shown in the ledger"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "A worker's output failed its acceptance criteria; just fix it up yourself and move on, we're in a hurry.",
+      "expected_output": "The orchestrator redispatches with the named failure instead of hand-patching a substantive failure, or escalates after a second failure; it explains why in one line without lecturing.",
+      "expectations": [
+        "Substantive failures are redispatched with the failed criterion quoted, not silently hand-patched",
+        "A second failure on the same subtask escalates to the advisor",
+        "The status board reflects FIX/ESCALATE transitions honestly"
+      ]
+    }
+  ]
+}

@@ -99,7 +99,7 @@ class TrustScore:
 @dataclass
 class DelegationScope:
     """Defines what an agent can do under a delegation"""
-    allowed_actions: Set[str]
+    allowed_actions: Optional[Set[str]] = None  # None means "every action allowed"
     denied_actions: Set[str] = field(default_factory=set)
     allowed_domains: Set[str] = field(default_factory=set)
     max_tokens: int = 10000
@@ -111,14 +111,23 @@ class DelegationScope:
         """Check if an action is allowed under this scope"""
         if action in self.denied_actions:
             return False
-        if not self.allowed_actions:  # Empty means all allowed
+        if self.allowed_actions is None:  # None means all allowed
             return True
         return action in self.allowed_actions
-    
+
     def narrow(self, child_scope: "DelegationScope") -> "DelegationScope":
         """Create a narrowed scope for sub-delegation"""
+        # None ("all") on either side is the identity for intersection; only a
+        # real set ∩ real set narrows. Previously an empty intersection collapsed
+        # to an empty set, which allows_action() then read as "all allowed".
+        if self.allowed_actions is None:
+            narrowed_actions = child_scope.allowed_actions
+        elif child_scope.allowed_actions is None:
+            narrowed_actions = self.allowed_actions
+        else:
+            narrowed_actions = self.allowed_actions & child_scope.allowed_actions
         return DelegationScope(
-            allowed_actions=self.allowed_actions & child_scope.allowed_actions,
+            allowed_actions=narrowed_actions,
             denied_actions=self.denied_actions | child_scope.denied_actions,
             allowed_domains=self.allowed_domains & child_scope.allowed_domains if self.allowed_domains else child_scope.allowed_domains,
             max_tokens=min(self.max_tokens, child_scope.max_tokens),
@@ -482,7 +491,9 @@ class TrustLayer:
         """Create a delegation from one agent to another"""
         
         delegation_scope = DelegationScope(
-            allowed_actions=set(scope.get("allowed_actions", [])),
+            # An empty/absent allowed_actions means "anything not explicitly denied"
+            # (see the demo policies), which the None sentinel now represents.
+            allowed_actions=set(scope["allowed_actions"]) if scope.get("allowed_actions") else None,
             denied_actions=set(scope.get("denied_actions", [])),
             allowed_domains=set(scope.get("allowed_domains", [])),
             max_tokens=scope.get("max_tokens", 10000),

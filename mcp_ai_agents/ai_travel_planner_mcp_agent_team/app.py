@@ -39,7 +39,7 @@ def generate_ics_content(plan_text: str, start_date: datetime = None) -> bytes:
         event.add('summary', "Travel Itinerary")
         event.add('description', plan_text)
         event.add('dtstart', start_date.date())
-        event.add('dtend', start_date.date())
+        event.add('dtend', start_date.date() + timedelta(days=1))
         event.add("dtstamp", datetime.now())
         cal.add_component(event)
     else:
@@ -55,7 +55,7 @@ def generate_ics_content(plan_text: str, start_date: datetime = None) -> bytes:
 
             # Make it an all-day event
             event.add('dtstart', current_date.date())
-            event.add('dtend', current_date.date())
+            event.add('dtend', current_date.date() + timedelta(days=1))
             event.add("dtstamp", datetime.now())
             cal.add_component(event)
 

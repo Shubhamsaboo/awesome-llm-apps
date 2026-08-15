@@ -47,6 +47,8 @@ if all(api_keys.values()):
         Output Format: Table with the following columns: [{{"title": "Paper Title", "authors": "Author Names", "abstract": "Brief abstract", "link": "arXiv link"}}, ...]
         """
         response = openai_client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "user", "content": prompt}], temperature=0.2)
+        if not response.choices or response.choices[0].message.content is None:
+            raise ValueError("Received empty or null response from OpenAI API")
         return response.choices[0].message.content
 
     if st.button('Search for Papers'):

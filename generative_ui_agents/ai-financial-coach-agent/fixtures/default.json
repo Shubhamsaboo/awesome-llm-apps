@@ -1,0 +1,16 @@
+{
+  "fixtures": [
+    {
+      "match": { "userMessage": "Hello" },
+      "response": {
+        "content": "Hello! I'm the adk AI assistant. How can I help you?"
+      }
+    },
+    {
+      "match": {},
+      "response": {
+        "content": "You're currently running against aimock (a mock LLM server). This response is a catch-all for requests that don't match any test fixture. To use a real LLM: (1) Add your GOOGLE_API_KEY to .env, (2) Restart with `pnpm dev`."
+      }
+    }
+  ]
+}

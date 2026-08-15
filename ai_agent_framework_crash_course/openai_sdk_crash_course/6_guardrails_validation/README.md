@@ -255,5 +255,5 @@ async def business_rules(ctx, agent, input) -> GuardrailFunctionOutput:
 
 After mastering guardrails, you'll be ready for:
 - **[Tutorial 7: Sessions](../7_sessions/README.md)** - Combining safety with conversation memory
-- **[Tutorial 8: Production Patterns](../8_production_patterns/README.md)** - Scaling guardrails in production
-- **[Tutorial 9: Advanced Security](../9_advanced_security/README.md)** - Enterprise-grade AI safety patterns
+- **[Tutorial 8: Production Patterns](../8_handoffs_delegation/README.md)** - Scaling guardrails in production
+- **[Tutorial 9: Advanced Security](../9_multi_agent_orchestration/README.md)** - Enterprise-grade AI safety patterns

@@ -1,0 +1,1483 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Investment Simulator</title>
+    <!-- Plus Jakarta Sans - CopilotKit's brand font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ==========================================================================
+       DESIGN SYSTEM - CopilotKit Glassmorphism Theme
+    ========================================================================== */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        /* CopilotKit Brand Colors */
+        --color-lilac: #bec2ff;
+        --color-lilac-light: #d4d7ff;
+        --color-lilac-dark: #9599cc;
+        --color-mint: #85e0ce;
+        --color-mint-light: #a8e9dc;
+        --color-mint-dark: #1b936f;
+
+        /* Surfaces */
+        --color-surface: #dedee9;
+        --color-surface-light: #f7f7f9;
+        --color-container: #ffffff;
+
+        /* Text */
+        --color-text-primary: #010507;
+        --color-text-secondary: #57575b;
+        --color-text-tertiary: #8e8e93;
+
+        /* Borders */
+        --color-border: #dbdbe5;
+        --color-border-light: #ebebf0;
+        --color-border-glass: rgba(255, 255, 255, 0.3);
+
+        /* Glassmorphism */
+        --color-glass: rgba(255, 255, 255, 0.7);
+        --color-glass-subtle: rgba(255, 255, 255, 0.5);
+        --color-glass-dark: rgba(255, 255, 255, 0.85);
+
+        /* Semantic Colors */
+        --color-success: #22c55e;
+        --color-success-light: #dcfce7;
+        --color-success-dark: #16a34a;
+        --color-danger: #ef4444;
+        --color-danger-light: #fef2f2;
+        --color-danger-dark: #dc2626;
+
+        /* Shadows */
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+        --shadow-md:
+          0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+        --shadow-lg:
+          0 10px 25px -3px rgba(0, 0, 0, 0.08),
+          0 4px 6px -2px rgba(0, 0, 0, 0.03);
+        --shadow-glass: 0 4px 30px rgba(0, 0, 0, 0.1);
+
+        /* Spacing */
+        --space-1: 4px;
+        --space-2: 8px;
+        --space-3: 12px;
+        --space-4: 16px;
+        --space-5: 20px;
+        --space-6: 24px;
+
+        /* Radii */
+        --radius-sm: 6px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-xl: 16px;
+        --radius-2xl: 24px;
+        --radius-full: 9999px;
+
+        /* Typography */
+        --font-family:
+          "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+        --font-size-xs: 11px;
+        --font-size-sm: 13px;
+        --font-size-base: 15px;
+        --font-size-lg: 17px;
+        --font-size-xl: 20px;
+        --font-size-2xl: 24px;
+        --font-size-3xl: 32px;
+      }
+
+      /* ==========================================================================
+       BASE STYLES
+    ========================================================================== */
+      body {
+        font-family: var(--font-family);
+        background: linear-gradient(
+          135deg,
+          var(--color-surface-light) 0%,
+          var(--color-surface) 100%
+        );
+        color: var(--color-text-primary);
+        line-height: 1.5;
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* Abstract background shapes */
+      body::before {
+        content: "";
+        position: fixed;
+        top: -150px;
+        right: -100px;
+        width: 400px;
+        height: 400px;
+        background: var(--color-lilac);
+        border-radius: 50%;
+        filter: blur(100px);
+        opacity: 0.4;
+        z-index: -1;
+        animation: blob1 25s ease-in-out infinite;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        bottom: -100px;
+        left: -100px;
+        width: 350px;
+        height: 350px;
+        background: var(--color-mint);
+        border-radius: 50%;
+        filter: blur(100px);
+        opacity: 0.3;
+        z-index: -1;
+        animation: blob2 30s ease-in-out infinite;
+      }
+
+      @keyframes blob1 {
+        0%,
+        100% {
+          transform: translate(0, 0) scale(1);
+        }
+        33% {
+          transform: translate(-20px, 30px) scale(1.05);
+        }
+        66% {
+          transform: translate(15px, -20px) scale(0.95);
+        }
+      }
+
+      @keyframes blob2 {
+        0%,
+        100% {
+          transform: translate(0, 0) scale(1);
+        }
+        50% {
+          transform: translate(30px, -25px) scale(1.08);
+        }
+      }
+
+      /* ==========================================================================
+       UTILITY CLASSES
+    ========================================================================== */
+      .hidden {
+        display: none !important;
+      }
+      .flex {
+        display: flex;
+      }
+      .flex-1 {
+        flex: 1;
+      }
+      .items-center {
+        align-items: center;
+      }
+      .justify-between {
+        justify-content: space-between;
+      }
+      .gap-2 {
+        gap: var(--space-2);
+      }
+      .gap-3 {
+        gap: var(--space-3);
+      }
+      .gap-4 {
+        gap: var(--space-4);
+      }
+      .grid {
+        display: grid;
+      }
+      .grid-cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .text-center {
+        text-align: center;
+      }
+      .text-right {
+        text-align: right;
+      }
+      .ml-2 {
+        margin-left: var(--space-2);
+      }
+      .mr-2 {
+        margin-right: var(--space-2);
+      }
+
+      /* ==========================================================================
+       GLASSMORPHISM COMPONENTS
+    ========================================================================== */
+      .glass {
+        background: var(--color-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--color-border-glass);
+        border-radius: var(--radius-xl);
+      }
+
+      .card {
+        background: var(--color-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--color-border-glass);
+        border-radius: var(--radius-xl);
+        padding: var(--space-4);
+        margin-bottom: var(--space-3);
+        box-shadow: var(--shadow-glass);
+      }
+
+      /* ==========================================================================
+       BUTTONS
+    ========================================================================== */
+      button {
+        cursor: pointer;
+        border: none;
+        font: inherit;
+        font-family: var(--font-family);
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-lg);
+        font-weight: 600;
+        font-size: var(--font-size-sm);
+        transition: all 0.2s ease;
+      }
+
+      .btn-sm {
+        padding: var(--space-1) var(--space-3);
+        font-size: var(--font-size-xs);
+        border-radius: var(--radius-md);
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--color-lilac),
+          var(--color-mint)
+        );
+        color: var(--color-text-primary);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-success {
+        background: linear-gradient(
+          135deg,
+          var(--color-mint),
+          var(--color-mint-dark)
+        );
+        color: white;
+      }
+
+      .btn-success:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(133, 224, 206, 0.3);
+      }
+
+      .btn-danger {
+        background: linear-gradient(
+          135deg,
+          var(--color-danger),
+          var(--color-danger-dark)
+        );
+        color: white;
+      }
+
+      .btn-danger:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      }
+
+      .btn-outline {
+        background: var(--color-glass-subtle);
+        border: 1px solid var(--color-border-glass);
+        color: var(--color-text-secondary);
+      }
+
+      .btn-outline:hover:not(:disabled) {
+        background: var(--color-glass);
+        border-color: var(--color-lilac);
+        color: var(--color-text-primary);
+      }
+
+      button:focus-visible {
+        outline: 2px solid var(--color-lilac);
+        outline-offset: 2px;
+      }
+
+      .btn:focus-visible {
+        box-shadow: 0 0 0 3px rgba(190, 194, 255, 0.3);
+      }
+
+      .btn:active:not(:disabled) {
+        transform: scale(0.98);
+      }
+
+      /* ==========================================================================
+       ANIMATIONS
+    ========================================================================== */
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes slide-up {
+        from {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .animate-spin {
+        animation: spin 1s linear infinite;
+      }
+
+      /* ==========================================================================
+       PORTFOLIO HEADER
+    ========================================================================== */
+      .portfolio-header {
+        background: linear-gradient(
+          135deg,
+          var(--color-lilac-light),
+          var(--color-mint-light)
+        );
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--color-border-glass);
+        border-radius: var(--radius-xl);
+        padding: var(--space-5);
+        margin-bottom: var(--space-4);
+        box-shadow: var(--shadow-glass);
+      }
+
+      .portfolio-label {
+        font-size: var(--font-size-xs);
+        font-weight: 500;
+        color: var(--color-text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: var(--space-1);
+      }
+
+      .total-value {
+        font-size: var(--font-size-3xl);
+        font-weight: 700;
+        color: var(--color-text-primary);
+        letter-spacing: -0.5px;
+      }
+
+      .profit-loss {
+        font-weight: 600;
+      }
+
+      .profit-loss.positive {
+        color: var(--color-mint-dark);
+      }
+
+      .profit-loss.negative {
+        color: var(--color-danger);
+      }
+
+      .cash-display {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+      }
+
+      .cash-display .icon {
+        width: 16px;
+        height: 16px;
+        color: var(--color-mint-dark);
+      }
+
+      /* ==========================================================================
+       SECTION HEADER
+    ========================================================================== */
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin-bottom: var(--space-3);
+      }
+
+      .section-header .icon {
+        width: 18px;
+        height: 18px;
+        color: var(--color-lilac-dark);
+      }
+
+      .section-title {
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        color: var(--color-text-primary);
+      }
+
+      .section-count {
+        margin-left: auto;
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+        font-weight: 400;
+      }
+
+      /* ==========================================================================
+       CHARTS
+    ========================================================================== */
+      .bar-chart {
+        display: flex;
+        align-items: flex-end;
+        height: 70px;
+        gap: 3px;
+        padding: var(--space-2) var(--space-1);
+      }
+
+      .bar {
+        flex: 1;
+        background: linear-gradient(
+          to top,
+          var(--color-lilac-dark),
+          var(--color-lilac)
+        );
+        border-radius: 3px 3px 0 0;
+        transition: height 0.3s ease;
+        min-width: 6px;
+      }
+
+      .bar.current {
+        background: linear-gradient(
+          to top,
+          var(--color-mint-dark),
+          var(--color-mint)
+        );
+      }
+
+      .pie-chart-container {
+        display: flex;
+        align-items: center;
+        gap: var(--space-4);
+      }
+
+      .pie-chart {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+      }
+
+      .legend {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        font-size: var(--font-size-xs);
+        color: var(--color-text-secondary);
+      }
+
+      .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      .legend-dot.stocks {
+        background: linear-gradient(
+          135deg,
+          var(--color-lilac),
+          var(--color-lilac-dark)
+        );
+      }
+
+      .legend-dot.cash {
+        background: var(--color-border);
+      }
+
+      /* ==========================================================================
+       HOLDINGS & STOCKS
+    ========================================================================== */
+      .holding-row {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-3);
+        border-bottom: 1px solid var(--color-border-light);
+        transition: background 0.2s ease;
+      }
+
+      .holding-row:last-child {
+        border-bottom: none;
+      }
+
+      .holding-row:hover {
+        background: var(--color-glass-subtle);
+        border-radius: var(--radius-md);
+      }
+
+      .holding-symbol {
+        font-weight: 600;
+        font-size: var(--font-size-sm);
+        color: var(--color-text-primary);
+      }
+
+      .holding-details {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+      }
+
+      .holding-value {
+        font-weight: 600;
+        font-size: var(--font-size-sm);
+        color: var(--color-text-primary);
+      }
+
+      .holding-pl {
+        font-size: var(--font-size-xs);
+      }
+
+      .stock-card {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-3);
+        background: var(--color-glass-subtle);
+        border: 1px solid var(--color-border-glass);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--space-2);
+        transition: all 0.2s ease;
+      }
+
+      .stock-card:hover {
+        background: var(--color-glass);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .stock-symbol {
+        font-weight: 600;
+        font-size: var(--font-size-sm);
+        color: var(--color-text-primary);
+      }
+
+      .stock-name {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-tertiary);
+      }
+
+      .stock-price {
+        font-weight: 600;
+        font-size: var(--font-size-sm);
+        color: var(--color-text-primary);
+      }
+
+      .stock-change {
+        font-size: var(--font-size-xs);
+      }
+
+      .stock-change.positive {
+        color: var(--color-mint-dark);
+      }
+
+      .stock-change.negative {
+        color: var(--color-danger);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: var(--space-6);
+        color: var(--color-text-tertiary);
+        font-size: var(--font-size-sm);
+      }
+
+      .stocks-scroll {
+        max-height: 200px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-border) transparent;
+      }
+
+      .stocks-scroll::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .stocks-scroll::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .stocks-scroll::-webkit-scrollbar-thumb {
+        background: var(--color-border);
+        border-radius: var(--radius-full);
+      }
+
+      /* ==========================================================================
+       MODAL
+    ========================================================================== */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        animation: fade-in 0.2s ease;
+      }
+
+      .modal-content {
+        background: var(--color-glass-dark);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--color-border-glass);
+        border-radius: var(--radius-xl);
+        padding: var(--space-6);
+        width: 90%;
+        max-width: 320px;
+        box-shadow: var(--shadow-lg);
+        animation: slide-up 0.3s ease;
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin-bottom: var(--space-4);
+      }
+
+      .modal-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+      }
+
+      .modal-icon.buy {
+        background: linear-gradient(
+          135deg,
+          var(--color-mint),
+          var(--color-mint-dark)
+        );
+      }
+
+      .modal-icon.sell {
+        background: linear-gradient(
+          135deg,
+          var(--color-danger),
+          var(--color-danger-dark)
+        );
+      }
+
+      .modal-icon .icon {
+        width: 18px;
+        height: 18px;
+      }
+
+      .modal-title {
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        color: var(--color-text-primary);
+      }
+
+      .modal-subtitle {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-tertiary);
+      }
+
+      .modal-field {
+        margin-bottom: var(--space-4);
+      }
+
+      .modal-label {
+        display: block;
+        font-size: var(--font-size-xs);
+        font-weight: 500;
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-1);
+      }
+
+      .modal-input {
+        width: 100%;
+        padding: var(--space-3);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        font-size: var(--font-size-base);
+        font-family: var(--font-family);
+        background: var(--color-container);
+        color: var(--color-text-primary);
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .modal-input:focus {
+        outline: none;
+        border-color: var(--color-lilac);
+        box-shadow: 0 0 0 3px rgba(190, 194, 255, 0.2);
+      }
+
+      .modal-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--space-3);
+        background: var(--color-glass-subtle);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--space-4);
+      }
+
+      .modal-total-label {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+      }
+
+      .modal-total-value {
+        font-size: var(--font-size-lg);
+        font-weight: 700;
+        color: var(--color-text-primary);
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: var(--space-3);
+      }
+
+      .modal-actions .btn {
+        flex: 1;
+        padding: var(--space-3);
+      }
+
+      /* ==========================================================================
+       LOADING STATE
+    ========================================================================== */
+      .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-6) 0;
+        animation: fade-in 0.3s ease;
+      }
+
+      .loading-icon {
+        width: 48px;
+        height: 48px;
+        margin-bottom: var(--space-4);
+        color: var(--color-lilac-dark);
+      }
+
+      .loading-spinner {
+        width: 32px;
+        height: 32px;
+        border: 3px solid var(--color-border-light);
+        border-top-color: var(--color-lilac);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: var(--space-4);
+      }
+
+      .loading-text {
+        font-size: var(--font-size-sm);
+        font-weight: 500;
+        color: var(--color-text-secondary);
+      }
+
+      /* ==========================================================================
+       APP CONTAINER
+    ========================================================================== */
+      #app {
+        padding: var(--space-4);
+        width: 100%;
+        max-width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Loading State -->
+      <div id="loading" class="loading-container">
+        <svg
+          class="loading-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+          <polyline points="16 7 22 7 22 13" />
+        </svg>
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Building your portfolio...</p>
+      </div>
+
+      <!-- Main Content -->
+      <div id="content" class="hidden">
+        <!-- Portfolio Header -->
+        <div class="portfolio-header">
+          <div class="portfolio-label">Total Portfolio Value</div>
+          <div id="total-value" class="total-value">$0.00</div>
+          <div
+            class="flex items-center gap-2"
+            style="margin-top: var(--space-2)"
+          >
+            <span id="total-pl" class="profit-loss positive">+$0.00</span>
+            <span
+              id="total-pl-percent"
+              style="
+                font-size: var(--font-size-sm);
+                color: var(--color-text-secondary);
+              "
+              >(+0.00%)</span
+            >
+          </div>
+          <div
+            class="flex items-center justify-between"
+            style="margin-top: var(--space-3)"
+          >
+            <div class="cash-display">
+              <svg
+                class="icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect width="20" height="14" x="2" y="5" rx="2" />
+                <line x1="2" x2="22" y1="10" y2="10" />
+              </svg>
+              <span>Cash: <strong id="cash-amount">$0.00</strong></span>
+            </div>
+            <button id="refresh-btn" class="btn btn-outline btn-sm">
+              <svg
+                class="icon"
+                style="width: 14px; height: 14px"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                <path d="M21 3v5h-5" />
+                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                <path d="M8 16H3v5" />
+              </svg>
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div
+          class="grid grid-cols-2 gap-3"
+          style="margin-bottom: var(--space-3)"
+        >
+          <!-- Performance Chart -->
+          <div class="card">
+            <div class="section-header">
+              <svg
+                class="icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M3 3v18h18" />
+                <path d="m19 9-5 5-4-4-3 3" />
+              </svg>
+              <span class="section-title">7-Day</span>
+            </div>
+            <div id="performance-chart" class="bar-chart"></div>
+          </div>
+
+          <!-- Allocation Chart -->
+          <div class="card">
+            <div class="section-header">
+              <svg
+                class="icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+                <path d="M22 12A10 10 0 0 0 12 2v10z" />
+              </svg>
+              <span class="section-title">Allocation</span>
+            </div>
+            <div class="pie-chart-container">
+              <div id="pie-chart" class="pie-chart"></div>
+              <div class="legend">
+                <div class="legend-item">
+                  <div class="legend-dot stocks"></div>
+                  <span>Stocks <span id="stocks-percent">0%</span></span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-dot cash"></div>
+                  <span>Cash <span id="cash-percent">0%</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Holdings -->
+        <div class="card">
+          <div class="section-header">
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+              <rect width="20" height="14" x="2" y="6" rx="2" />
+            </svg>
+            <span class="section-title">Holdings</span>
+            <span id="holdings-count" class="section-count">0 stocks</span>
+          </div>
+          <div id="holdings-list"></div>
+        </div>
+
+        <!-- Available Stocks -->
+        <div class="card">
+          <div class="section-header">
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="8" cy="21" r="1" />
+              <circle cx="19" cy="21" r="1" />
+              <path
+                d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
+              />
+            </svg>
+            <span class="section-title">Buy Stocks</span>
+          </div>
+          <div id="available-stocks" class="stocks-scroll"></div>
+        </div>
+      </div>
+
+      <!-- Trade Modal -->
+      <div id="trade-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div id="modal-icon" class="modal-icon buy">
+              <svg
+                class="icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                <polyline points="16 7 22 7 22 13" />
+              </svg>
+            </div>
+            <div>
+              <div class="modal-title">
+                <span id="modal-action">Buy</span>
+                <span id="modal-symbol">AAPL</span>
+              </div>
+              <div class="modal-subtitle">
+                Price: <span id="modal-price">$0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-field">
+            <label class="modal-label">Quantity</label>
+            <input
+              type="number"
+              id="quantity-input"
+              class="modal-input"
+              placeholder="Enter quantity"
+              min="1"
+              value="1"
+            />
+          </div>
+
+          <div class="modal-total">
+            <span class="modal-total-label">Total</span>
+            <span id="modal-total" class="modal-total-value">$0.00</span>
+          </div>
+
+          <div class="modal-actions">
+            <button id="cancel-trade-btn" class="btn btn-outline">
+              Cancel
+            </button>
+            <button id="confirm-trade-btn" class="btn btn-success">
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      // ==========================================================================
+      // LUCIDE ICONS (inline SVG)
+      // ==========================================================================
+      const icons = {
+        trendingUp: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>`,
+        trendingDown: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg>`,
+      };
+
+      // ==========================================================================
+      // MCP APP COMMUNICATION MODULE
+      // ==========================================================================
+      const mcpApp = (() => {
+        let requestId = 1;
+        const pendingRequests = new Map();
+
+        function sendRequest(method, params) {
+          const id = requestId++;
+          return new Promise((resolve, reject) => {
+            pendingRequests.set(id, { resolve, reject });
+            window.parent.postMessage(
+              { jsonrpc: "2.0", id, method, params },
+              "*",
+            );
+          });
+        }
+
+        function sendNotification(method, params) {
+          window.parent.postMessage({ jsonrpc: "2.0", method, params }, "*");
+        }
+
+        window.addEventListener("message", (event) => {
+          const data = event.data;
+          if (!data || typeof data !== "object") return;
+          if (data.id && pendingRequests.has(data.id)) {
+            const { resolve, reject } = pendingRequests.get(data.id);
+            pendingRequests.delete(data.id);
+            data.error ? reject(data.error) : resolve(data.result);
+            return;
+          }
+          if (data.method && notificationHandlers[data.method]) {
+            notificationHandlers[data.method](data.params);
+          }
+        });
+
+        const notificationHandlers = {};
+        function onNotification(method, handler) {
+          notificationHandlers[method] = handler;
+        }
+
+        function reportSize() {
+          const app = document.getElementById("app");
+          sendNotification("ui/notifications/size-change", {
+            width: Math.ceil(app.scrollWidth),
+            height: Math.ceil(app.scrollHeight),
+          });
+        }
+
+        return { sendRequest, sendNotification, onNotification, reportSize };
+      })();
+
+      // ==========================================================================
+      // APP STATE
+      // ==========================================================================
+      let portfolio = null;
+      let availableStocks = [];
+      let currentTrade = null;
+
+      // DOM elements
+      const el = {
+        loading: document.getElementById("loading"),
+        content: document.getElementById("content"),
+        totalValue: document.getElementById("total-value"),
+        totalPl: document.getElementById("total-pl"),
+        totalPlPercent: document.getElementById("total-pl-percent"),
+        cashAmount: document.getElementById("cash-amount"),
+        refreshBtn: document.getElementById("refresh-btn"),
+        performanceChart: document.getElementById("performance-chart"),
+        pieChart: document.getElementById("pie-chart"),
+        stocksPercent: document.getElementById("stocks-percent"),
+        cashPercent: document.getElementById("cash-percent"),
+        holdingsList: document.getElementById("holdings-list"),
+        holdingsCount: document.getElementById("holdings-count"),
+        availableStocks: document.getElementById("available-stocks"),
+        tradeModal: document.getElementById("trade-modal"),
+        modalIcon: document.getElementById("modal-icon"),
+        modalAction: document.getElementById("modal-action"),
+        modalSymbol: document.getElementById("modal-symbol"),
+        modalPrice: document.getElementById("modal-price"),
+        quantityInput: document.getElementById("quantity-input"),
+        modalTotal: document.getElementById("modal-total"),
+        cancelTradeBtn: document.getElementById("cancel-trade-btn"),
+        confirmTradeBtn: document.getElementById("confirm-trade-btn"),
+      };
+
+      // ==========================================================================
+      // INITIALIZATION
+      // ==========================================================================
+      async function initialize() {
+        try {
+          await mcpApp.sendRequest("ui/initialize", {
+            protocolVersion: "2025-06-18",
+            appInfo: { name: "Investment Simulator", version: "1.0.0" },
+            appCapabilities: {},
+          });
+          mcpApp.sendNotification("ui/notifications/initialized", {});
+          new ResizeObserver(() => mcpApp.reportSize()).observe(
+            document.getElementById("app"),
+          );
+        } catch (e) {
+          console.error("Init failed:", e);
+        }
+      }
+
+      // Listen for tool results
+      mcpApp.onNotification("ui/notifications/tool-result", (params) => {
+        const result = params?.structuredContent;
+        if (result?.portfolio) {
+          portfolio = result.portfolio;
+          availableStocks = result.availableStocks || [];
+          render();
+        }
+      });
+
+      // ==========================================================================
+      // FORMATTING
+      // ==========================================================================
+      const fmt = (v) =>
+        new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(v);
+      const fmtPct = (v, sign = true) =>
+        `${sign && v > 0 ? "+" : ""}${v.toFixed(2)}%`;
+
+      // ==========================================================================
+      // RENDER FUNCTIONS
+      // ==========================================================================
+      function render() {
+        if (!portfolio) return;
+
+        el.loading.classList.add("hidden");
+        el.content.classList.remove("hidden");
+
+        // Portfolio header
+        el.totalValue.textContent = fmt(portfolio.totalValue);
+        el.cashAmount.textContent = fmt(portfolio.cash);
+
+        // Profit/loss styling
+        const plClass =
+          portfolio.totalProfitLoss >= 0 ? "positive" : "negative";
+        el.totalPl.textContent = `${portfolio.totalProfitLoss >= 0 ? "+" : ""}${fmt(portfolio.totalProfitLoss)}`;
+        el.totalPl.className = `profit-loss ${plClass}`;
+
+        const initVal = portfolio.totalValue - portfolio.totalProfitLoss;
+        el.totalPlPercent.textContent = `(${fmtPct(initVal > 0 ? (portfolio.totalProfitLoss / initVal) * 100 : 0)})`;
+
+        renderChart();
+        renderPie();
+        renderHoldings();
+        renderStocks();
+        mcpApp.reportSize();
+      }
+
+      function renderChart() {
+        const perf = portfolio.performance || [];
+        if (!perf.length) return;
+
+        const vals = perf.map((p) => p.value);
+        const min = Math.min(...vals) * 0.95;
+        const max = Math.max(...vals) * 1.05;
+        const range = max - min || 1;
+
+        el.performanceChart.innerHTML = perf
+          .map((p, i) => {
+            const h = Math.max(10, ((p.value - min) / range) * 100);
+            const isLast = i === perf.length - 1;
+            return `<div class="bar${isLast ? " current" : ""}" style="height:${h}%;"></div>`;
+          })
+          .join("");
+      }
+
+      function renderPie() {
+        const s = portfolio.allocation?.stocks || 0;
+        const c = portfolio.allocation?.cash || 0;
+        el.pieChart.style.background = `conic-gradient(var(--color-lilac) 0% ${s}%, var(--color-border) ${s}% 100%)`;
+        el.stocksPercent.textContent = `${s}%`;
+        el.cashPercent.textContent = `${c}%`;
+      }
+
+      function renderHoldings() {
+        const h = portfolio.holdings || [];
+        el.holdingsCount.textContent = `${h.length} stock${h.length !== 1 ? "s" : ""}`;
+
+        if (!h.length) {
+          el.holdingsList.innerHTML =
+            '<p class="empty-state">No holdings yet</p>';
+          return;
+        }
+
+        el.holdingsList.innerHTML = h
+          .map((x) => {
+            const cls = x.profitLoss >= 0 ? "positive" : "negative";
+            const sign = x.profitLoss >= 0 ? "+" : "";
+            const icon =
+              x.profitLoss >= 0 ? icons.trendingUp : icons.trendingDown;
+
+            return `
+          <div class="holding-row">
+            <div class="flex-1">
+              <div class="holding-symbol">${x.symbol}</div>
+              <div class="holding-details">${x.shares} shares @ ${fmt(x.avgCost)}</div>
+            </div>
+            <div class="text-right mr-2">
+              <div class="holding-value">${fmt(x.value)}</div>
+              <div class="holding-pl profit-loss ${cls}">${icon} ${sign}${fmt(x.profitLoss)}</div>
+            </div>
+            <button class="btn btn-danger btn-sm" data-action="sell" data-symbol="${x.symbol}" data-price="${x.currentPrice}" data-max="${x.shares}">Sell</button>
+          </div>
+        `;
+          })
+          .join("");
+
+        document.querySelectorAll('[data-action="sell"]').forEach((btn) => {
+          btn.addEventListener("click", () =>
+            openModal(
+              "sell",
+              btn.dataset.symbol,
+              +btn.dataset.price,
+              +btn.dataset.max,
+            ),
+          );
+        });
+      }
+
+      function renderStocks() {
+        if (!availableStocks.length) {
+          el.availableStocks.innerHTML =
+            '<p class="empty-state">No stocks available</p>';
+          return;
+        }
+
+        el.availableStocks.innerHTML = availableStocks
+          .map((s) => {
+            const cls = s.change >= 0 ? "positive" : "negative";
+            const sign = s.change >= 0 ? "+" : "";
+
+            return `
+          <div class="stock-card">
+            <div class="flex-1">
+              <div class="stock-symbol">${s.symbol}</div>
+              <div class="stock-name">${s.name}</div>
+            </div>
+            <div class="text-right mr-2">
+              <div class="stock-price">${fmt(s.price)}</div>
+              <div class="stock-change ${cls}">${sign}${s.change.toFixed(2)}%</div>
+            </div>
+            <button class="btn btn-success btn-sm" data-action="buy" data-symbol="${s.symbol}" data-price="${s.price}">Buy</button>
+          </div>
+        `;
+          })
+          .join("");
+
+        document.querySelectorAll('[data-action="buy"]').forEach((btn) => {
+          btn.addEventListener("click", () =>
+            openModal("buy", btn.dataset.symbol, +btn.dataset.price),
+          );
+        });
+      }
+
+      // ==========================================================================
+      // MODAL FUNCTIONS
+      // ==========================================================================
+      function openModal(action, symbol, price, maxShares = null) {
+        currentTrade = { action, symbol, price, maxShares };
+
+        el.modalAction.textContent = action === "buy" ? "Buy" : "Sell";
+        el.modalSymbol.textContent = symbol;
+        el.modalPrice.textContent = fmt(price);
+        el.quantityInput.value = 1;
+        el.quantityInput.max = maxShares || 9999;
+
+        // Update modal icon and button style
+        el.modalIcon.className = `modal-icon ${action}`;
+        el.confirmTradeBtn.className =
+          action === "buy" ? "btn btn-success" : "btn btn-danger";
+
+        updateTotal();
+        el.tradeModal.classList.remove("hidden");
+        el.quantityInput.focus();
+      }
+
+      function updateTotal() {
+        if (!currentTrade) return;
+        const qty = parseInt(el.quantityInput.value, 10) || 0;
+        el.modalTotal.textContent = fmt(qty * currentTrade.price);
+      }
+
+      function closeModal() {
+        el.tradeModal.classList.add("hidden");
+        currentTrade = null;
+      }
+
+      async function executeTrade() {
+        if (!currentTrade || !portfolio) return;
+
+        const qty = parseInt(el.quantityInput.value, 10);
+        if (qty <= 0) return;
+
+        if (
+          currentTrade.action === "sell" &&
+          currentTrade.maxShares &&
+          qty > currentTrade.maxShares
+        ) {
+          alert(`Maximum ${currentTrade.maxShares} shares available`);
+          return;
+        }
+
+        const total = qty * currentTrade.price;
+        if (currentTrade.action === "buy" && total > portfolio.cash) {
+          alert(`Insufficient funds. Available: ${fmt(portfolio.cash)}`);
+          return;
+        }
+
+        // Store trade details before closing modal
+        const tradeDetails = {
+          symbol: currentTrade.symbol,
+          action: currentTrade.action,
+          quantity: qty,
+        };
+        closeModal();
+
+        try {
+          const res = await mcpApp.sendRequest("tools/call", {
+            name: "execute-trade",
+            arguments: {
+              portfolioId: portfolio.id,
+              symbol: tradeDetails.symbol,
+              action: tradeDetails.action,
+              quantity: tradeDetails.quantity,
+            },
+          });
+          if (res?.structuredContent?.portfolio) {
+            portfolio = res.structuredContent.portfolio;
+            render();
+          }
+        } catch (e) {
+          console.error("Trade failed:", e);
+          alert("Trade failed. Please try again.");
+        }
+      }
+
+      async function refreshPrices() {
+        if (!portfolio) return;
+
+        el.refreshBtn.disabled = true;
+        el.refreshBtn.innerHTML = `
+        <svg class="animate-spin" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+        </svg>
+        Refreshing...
+      `;
+
+        try {
+          const res = await mcpApp.sendRequest("tools/call", {
+            name: "refresh-prices",
+            arguments: { portfolioId: portfolio.id },
+          });
+          if (res?.structuredContent?.portfolio) {
+            portfolio = res.structuredContent.portfolio;
+            availableStocks =
+              res.structuredContent.availableStocks || availableStocks;
+            render();
+          }
+        } catch (e) {
+          console.error("Refresh failed:", e);
+        } finally {
+          el.refreshBtn.disabled = false;
+          el.refreshBtn.innerHTML = `
+          <svg class="icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+            <path d="M21 3v5h-5"/>
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+            <path d="M8 16H3v5"/>
+          </svg>
+          Refresh
+        `;
+        }
+      }
+
+      // ==========================================================================
+      // EVENT LISTENERS
+      // ==========================================================================
+      el.quantityInput.addEventListener("input", updateTotal);
+      el.cancelTradeBtn.addEventListener("click", closeModal);
+      el.confirmTradeBtn.addEventListener("click", executeTrade);
+      el.refreshBtn.addEventListener("click", refreshPrices);
+      el.tradeModal.addEventListener("click", (e) => {
+        if (e.target === el.tradeModal) closeModal();
+      });
+
+      // Initialize on load
+      window.addEventListener("load", initialize);
+    </script>
+  </body>
+</html>

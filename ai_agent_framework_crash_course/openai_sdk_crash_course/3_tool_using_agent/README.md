@@ -221,7 +221,7 @@ orchestrator = Agent(
 ## 🔗 Next Steps
 
 After completing this tutorial, you'll be ready for:
-- **[Tutorial 4: Runner Execution Methods](../4_runner_execution/README.md)** - Master different execution patterns
+- **[Tutorial 4: Runner Execution Methods](../4_running_agents/README.md)** - Master different execution patterns
 - **[Tutorial 5: Context Management](../5_context_management/README.md)** - Manage state across interactions
 - **[Tutorial 6: Guardrails & Validation](../6_guardrails_validation/README.md)** - Add safety and validation
 

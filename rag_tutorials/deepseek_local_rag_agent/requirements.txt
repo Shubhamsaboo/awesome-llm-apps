@@ -1,5 +1,6 @@
-agno
-exa==0.5.26
+agno>=2.2.10
+pypdf
+exa-py
 qdrant-client==1.12.1
 langchain-qdrant==0.2.0
 langchain-community==0.3.13

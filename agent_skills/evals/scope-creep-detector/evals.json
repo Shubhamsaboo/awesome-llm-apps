@@ -1,0 +1,36 @@
+{
+  "skill_name": "scope-creep-detector",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Did my change grow beyond the parser fix I intended?",
+      "expected_output": "A local scope report that separates the parser fix from unrelated diff content and recommends keep, split, or justify.",
+      "expectations": [
+        "The skill asks for or derives a one-line intent before classifying the diff",
+        "The skill runs scripts/scope_creep.py against the requested working, staged, or branch diff",
+        "The report distinguishes in-scope files from likely creep using evidence from the JSON",
+        "Every likely-creep item receives a keep, split, or justify recommendation"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Is my PR too broad? Check the staged changes before I open it.",
+      "expected_output": "A staged-diff scope report with subsystem counts, dependency and API signals, and concrete split advice.",
+      "expectations": [
+        "The skill uses --staged and does not modify the index or working tree",
+        "The report names touched subsystems and high-risk scope signals",
+        "Suggested splits group related files or hunks without changing them"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "What unrelated stuff did I touch while fixing this null dereference?",
+      "expected_output": "A concise explanation of unrelated files, new dependencies, renames, config edits, and oversized or formatting-only changes.",
+      "expectations": [
+        "The answer does not call keyword relatedness proof of intent",
+        "The answer cites file paths and classifier reasons",
+        "The agent asks before making any split or revert edits"
+      ]
+    }
+  ]
+}

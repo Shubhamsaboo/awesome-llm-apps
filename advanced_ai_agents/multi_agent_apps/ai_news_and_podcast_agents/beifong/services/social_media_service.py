@@ -566,6 +566,14 @@ class SocialMediaService:
             if not result:
                 return {"avg_engagement": 0, "total_posts": 0, "unique_authors": 0}
             result_dict = dict(result)
+            # AVG()/MAX() over zero matching rows return NULL (the inner COALESCE
+            # only guards per-row NULLs, not an empty set), while COUNT(*) is 0 —
+            # so the `if not result` guard above never fires and summing None would
+            # 500. Coalesce the aggregates to 0 for an empty range.
+            for _key in ("avg_replies", "avg_retweets", "avg_likes", "avg_bookmarks", "avg_views",
+                         "max_replies", "max_retweets", "max_likes", "max_bookmarks", "max_views"):
+                if result_dict.get(_key) is None:
+                    result_dict[_key] = 0
             result_dict["avg_engagement"] = (
                 result_dict["avg_replies"] + result_dict["avg_retweets"] + result_dict["avg_likes"] + result_dict["avg_bookmarks"]
             )

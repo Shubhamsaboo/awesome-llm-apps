@@ -39,7 +39,7 @@ API keys required:
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-   cd ai_agent_tutorials/ai_meme_generator_browseruse
+   cd starter_ai_agents/ai_meme_generator_agent_browseruse
    ```
 2. **Install the dependencies**:
     ```bash
@@ -53,4 +53,26 @@ API keys required:
     ```bash
     streamlit run ai_meme_generator_agent.py
 
+    ```
+
+### Running with uv
+
+You can also run this project using [uv](https://docs.astral.sh/uv/), a fast Python package manager, instead of `pip`.
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
+   cd starter_ai_agents/ai_meme_generator_agent_browseruse
+   ```
+2. **Install the dependencies** (this creates a `.venv` and installs everything from `pyproject.toml`/`uv.lock`):
+    ```bash
+    uv sync
+    ```
+    Install `playwright`'s browser binaries if needed:
+    ```bash
+    uv run playwright install --with-deps
+    ```
+3. **Run the Streamlit app**:
+    ```bash
+    uv run streamlit run ai_meme_generator_agent.py
     ```

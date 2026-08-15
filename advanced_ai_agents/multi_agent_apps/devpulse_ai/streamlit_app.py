@@ -5,7 +5,7 @@ from typing import List, Dict, Any
 # Import pipeline components from main.py and agents
 from main import collect_signals, DEFAULT_SIGNAL_LIMIT
 from agents import (
-    SignalCollectorAgent,
+    SignalCollector,
     RelevanceAgent,
     RiskAgent,
     SynthesisAgent
@@ -73,10 +73,11 @@ scores them for relevance, identifies potential risks, and synthesizes a final i
 st.sidebar.header("⚙️ Pipeline Configuration")
 
 # API Key
-api_key = st.sidebar.text_input("Gemini API Key (optional)", type="password", help="Provide a Google Gemini API key. If not provided, agents will use fallback heuristic logic.")
+api_key = st.sidebar.text_input("OpenAI API Key (optional)", type="password", help="Provide an OpenAI API key. If not provided, agents will use fallback heuristic logic.")
 if api_key:
-    # Agno's GoogleGemini looks for GOOGLE_API_KEY
-    os.environ["GOOGLE_API_KEY"] = api_key
+    # RelevanceAgent / RiskAgent / SynthesisAgent all use agno's OpenAIChat,
+    # which reads OPENAI_API_KEY.
+    os.environ["OPENAI_API_KEY"] = api_key
 
 # Source Selection
 sources = st.sidebar.multiselect(
@@ -102,7 +103,7 @@ if run_button:
         st.warning("Please select at least one signal source.")
     else:
         # Initialize Agents
-        collector = SignalCollectorAgent()
+        collector = SignalCollector()
         relevance = RelevanceAgent()
         risk = RiskAgent()
         synthesis = SynthesisAgent()

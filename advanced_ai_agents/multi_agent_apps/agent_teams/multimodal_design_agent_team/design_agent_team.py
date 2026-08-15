@@ -190,7 +190,7 @@ if st.session_state.api_key_input:
                                 """
                                 
                                 response: RunOutput = vision_agent.run(
-                                    message=vision_prompt,
+                                    vision_prompt,
                                     images=all_images
                                 )
                                 
@@ -211,7 +211,7 @@ if st.session_state.api_key_input:
                                 """
                                 
                                 response: RunOutput = ux_agent.run(
-                                    message=ux_prompt,
+                                    ux_prompt,
                                     images=all_images
                                 )
                                 
@@ -232,7 +232,7 @@ if st.session_state.api_key_input:
                             """
                             
                             response: RunOutput = market_agent.run(
-                                message=market_prompt,
+                                market_prompt,
                                 images=all_images
                             )
                             

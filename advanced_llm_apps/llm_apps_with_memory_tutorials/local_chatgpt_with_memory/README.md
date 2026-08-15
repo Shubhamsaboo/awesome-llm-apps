@@ -13,13 +13,12 @@ This Streamlit application implements a fully local ChatGPT-like experience usin
 1. Clone the GitHub repository
 ```bash
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-cd awesome-llm-apps/llm_apps_with_memory_tutorials/local_chatgpt_with_memory
+cd awesome-llm-apps/advanced_llm_apps/llm_apps_with_memory_tutorials/local_chatgpt_with_memory
 ```
 
 2. Install the required dependencies:
 
 ```bash
-cd awesome-llm-apps/rag_tutorials/local_rag_agent
 pip install -r requirements.txt
 ```
 
@@ -34,6 +33,8 @@ docker run -p 6333:6333 qdrant/qdrant
 ```bash
 ollama pull llama3.1
 ```
+
+> Using AMD Strix Halo / Ryzen AI MAX+ 395? The [AMD Strix Halo Local LLM Guide](https://github.com/hogeheer499-commits/strix-halo-guide) documents a tested Ubuntu and Ollama Vulkan/RADV setup, model and quantization choices, benchmark evidence, and known failed routes for this hardware.
 
 5. Run the Streamlit App
 ```bash

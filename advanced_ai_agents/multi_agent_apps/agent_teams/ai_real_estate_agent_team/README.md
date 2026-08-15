@@ -80,7 +80,7 @@ Follow these steps to set up and run the application:
 
 4. **Run the Streamlit app**:
     ```bash
-    streamlit run real_estate_agent_team.py
+    streamlit run ai_real_estate_agent_team.py
     ```
 
 ### **Local Version (Ollama)**
@@ -177,7 +177,7 @@ Follow these steps to set up and run the application:
 
 ```
 ai_real_estate_agent_team/
-├── real_estate_agent_team.py           # API version (Google Gemini)
+├── ai_real_estate_agent_team.py        # API version (Google Gemini)
 ├── local_ai_real_estate_agent_team.py  # Local version (Ollama)
 ├── requirements.txt                    # Python dependencies
 ├── README.md                          # This documentation

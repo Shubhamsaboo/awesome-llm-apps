@@ -65,6 +65,8 @@ if openai_api_key and anthropic_api_key:
                         {"role": "user", "content": full_prompt}
                     ]
                 )
+                if not response.choices or response.choices[0].message.content is None:
+                    raise ValueError("Received empty or null response from OpenAI API")
                 answer = response.choices[0].message.content
             elif llm_choice == 'Claude Sonnet 3.5':
                 messages=[
@@ -72,6 +74,8 @@ if openai_api_key and anthropic_api_key:
                         {"role": "user", "content": full_prompt}
                     ]
                 response = completion(model="claude-3-5-sonnet-20240620", messages=messages)
+                if not response.choices or response.choices[0].message.content is None:
+                    raise ValueError("Received empty or null response from Claude API")
                 answer = response.choices[0].message.content
             st.write("Answer: ", answer)
 

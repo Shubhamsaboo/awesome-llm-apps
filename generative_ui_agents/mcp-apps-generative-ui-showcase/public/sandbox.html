@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <!-- Permissive CSP so nested content is not constrained by host CSP -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+      default-src 'self';
+      img-src * data: blob: 'unsafe-inline';
+      media-src * blob: data:;
+      font-src * blob: data:;
+      script-src 'self'
+                 'wasm-unsafe-eval'
+                 'unsafe-inline'
+                 'unsafe-eval'
+                 blob: data: http://localhost:* https://localhost:*;
+      style-src * blob: data: 'unsafe-inline';
+      connect-src *;
+      frame-src * blob: data: http://localhost:* https://localhost:*;
+      base-uri 'self';
+    "
+    />
+    <title>MCP-UI Proxy</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100vh;
+        width: 100vw;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      iframe {
+        background-color: transparent;
+        border: 0px none transparent;
+        padding: 0px;
+        overflow: hidden;
+        flex-grow: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      // Sandbox proxy script - relays messages between parent and inner iframe
+
+      if (window.self === window.top) {
+        throw new Error("This file is only to be used in an iframe sandbox.");
+      }
+
+      // Create inner iframe
+      const inner = document.createElement("iframe");
+      inner.style = "width:100%; height:100%; border:none;";
+      inner.setAttribute(
+        "sandbox",
+        "allow-scripts allow-same-origin allow-forms",
+      );
+      document.body.appendChild(inner);
+
+      // Relay messages between parent and inner
+      window.addEventListener("message", async (event) => {
+        if (event.source === window.parent) {
+          if (
+            event.data &&
+            event.data.method === "ui/notifications/sandbox-resource-ready"
+          ) {
+            const { html, sandbox } = event.data.params;
+            if (typeof sandbox === "string") {
+              inner.setAttribute("sandbox", sandbox);
+            }
+            if (typeof html === "string") {
+              inner.srcdoc = html;
+            }
+          } else {
+            if (inner && inner.contentWindow) {
+              inner.contentWindow.postMessage(event.data, "*");
+            }
+          }
+        } else if (event.source === inner.contentWindow) {
+          // Relay messages from inner to parent
+          window.parent.postMessage(event.data, "*");
+        }
+      });
+
+      // Notify parent that proxy is ready to receive HTML
+      window.parent.postMessage(
+        {
+          jsonrpc: "2.0",
+          method: "ui/notifications/sandbox-proxy-ready",
+          params: {},
+        },
+        "*",
+      );
+    </script>
+  </body>
+</html>

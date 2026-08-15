@@ -66,7 +66,7 @@ Follow these steps to set up and run the application:
 
 4. **Run the Streamlit app**:
     ```bash
-    streamlit run ai_competitor_analyser.py
+    streamlit run competitor_agent_team.py
     ```
 
 ## Usage

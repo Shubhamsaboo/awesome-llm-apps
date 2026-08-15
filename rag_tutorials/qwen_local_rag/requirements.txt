@@ -1,6 +1,6 @@
 agno>=2.2.10
 pypdf
-exa
+exa-py
 qdrant-client
 langchain-qdrant
 langchain-community

@@ -130,7 +130,7 @@ By the end of this tutorial, you'll understand:
 After completing this tutorial, you'll be ready for:
 - **[Tutorial 2: Structured Output Agent](../2_structured_output_agent/README.md)** - Learn to create type-safe, structured responses
 - **[Tutorial 3: Tool Using Agent](../3_tool_using_agent/README.md)** - Add custom tools and functions to your agent
-- **[Tutorial 4: Runner Execution Methods](../4_runner_execution/README.md)** - Master different execution patterns
+- **[Tutorial 4: Runner Execution Methods](../4_running_agents/README.md)** - Master different execution patterns
 
 ## 💡 Pro Tips
 

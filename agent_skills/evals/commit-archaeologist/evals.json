@@ -1,0 +1,38 @@
+{
+  "skill_name": "commit-archaeologist",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Why does src/cache.py lines 40-72 exist? Trace who introduced it and what changed later.",
+      "expected_output": "A history report grounded in the local repository, with the introducing commit, chronological timeline, repeated co-changes, and intent evidence.",
+      "expectations": [
+        "The agent runs scripts/archaeologist.py with the user-provided repository, file, line range, and --json",
+        "The report names the introducing commit and presents later modifications from oldest to newest",
+        "Repeatedly co-changed files are separated from one-off neighboring changes",
+        "Intent claims cite commit messages or explicit signals and label inference as inference",
+        "The agent offers to assess whether the choice was deliberate or what could break if the region changes"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Who wrote this function and why? The repo is /work/api and the file is src/retry.py.",
+      "expected_output": "A file-wide dig report that distinguishes current blame ownership from historical commit authorship and explains the likely reason for the function.",
+      "expectations": [
+        "The agent uses only the specified local repository and file",
+        "Current blame ownership and timeline authors are not treated as the same fact",
+        "The narrative includes timeline, co-change, and intent sections",
+        "The answer does not claim certainty when the commit evidence is ambiguous"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Explain the history of this function before I rewrite it.",
+      "expected_output": "The agent asks only for the missing repository, file, or line range, then produces a change-risk oriented history report.",
+      "expectations": [
+        "The agent requests missing path information instead of scanning unrelated repositories",
+        "The report identifies repeated companion files and temporary or workaround signals",
+        "The closing follow-up focuses on deliberate constraints and change risks"
+      ]
+    }
+  ]
+}

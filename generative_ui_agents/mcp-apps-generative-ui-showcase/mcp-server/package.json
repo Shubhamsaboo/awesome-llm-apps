@@ -1,0 +1,36 @@
+{
+  "name": "mcp-server",
+  "version": "1.0.0",
+  "description": "MCP Server for Travel Booking and Productivity Apps demo",
+  "keywords": [
+    "booking",
+    "copilotkit",
+    "mcp",
+    "travel"
+  ],
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc && npm run build:app",
+    "build:app": "cd apps && rm -rf dist && BUILD_APP=flights-app vite build && BUILD_APP=hotels-app vite build && BUILD_APP=trading-app vite build && BUILD_APP=kanban-app vite build",
+    "start": "node dist/server.js",
+    "dev": "tsx watch server.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.2",
+    "cors": "^2.8.5",
+    "express": "^5.2.1",
+    "zod": "^4.3.5"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.6",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vite-plugin-singlefile": "^2.3.0"
+  }
+}

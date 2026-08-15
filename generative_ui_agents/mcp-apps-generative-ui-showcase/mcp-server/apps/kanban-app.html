@@ -1,0 +1,1443 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kanban Board</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* =============================================================================
+       DESIGN SYSTEM - CopilotKit Palette
+    ============================================================================= */
+      :root {
+        /* Brand Colors */
+        --color-lilac: #bec2ff;
+        --color-lilac-light: #d4d7ff;
+        --color-lilac-dark: #9599cc;
+        --color-mint: #85e0ce;
+        --color-mint-light: #a8e9dc;
+        --color-mint-dark: #1b936f;
+
+        /* Surfaces */
+        --color-surface: #dedee9;
+        --color-surface-light: #f7f7f9;
+        --color-container: #ffffff;
+
+        /* Text */
+        --color-text-primary: #010507;
+        --color-text-secondary: #57575b;
+        --color-text-tertiary: #8e8e93;
+
+        /* Borders */
+        --color-border: #dbdbe5;
+        --color-border-light: #ebebf0;
+        --color-border-glass: rgba(255, 255, 255, 0.3);
+
+        /* Glassmorphism */
+        --color-glass: rgba(255, 255, 255, 0.7);
+        --color-glass-subtle: rgba(255, 255, 255, 0.5);
+        --color-glass-dark: rgba(255, 255, 255, 0.85);
+
+        /* Status Colors */
+        --color-success: #22c55e;
+        --color-success-light: #dcfce7;
+        --color-warning: #f59e0b;
+        --color-warning-light: #fef3c7;
+        --color-danger: #ef4444;
+        --color-danger-light: #fee2e2;
+
+        /* Column Colors */
+        --column-backlog: linear-gradient(135deg, #94a3b8, #64748b);
+        --column-todo: linear-gradient(
+          135deg,
+          var(--color-lilac),
+          var(--color-lilac-dark)
+        );
+        --column-progress: linear-gradient(135deg, #f59e0b, #d97706);
+        --column-done: linear-gradient(
+          135deg,
+          var(--color-mint),
+          var(--color-mint-dark)
+        );
+
+        /* Shadows */
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+        --shadow-md:
+          0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+        --shadow-lg:
+          0 10px 25px -3px rgba(0, 0, 0, 0.08),
+          0 4px 6px -2px rgba(0, 0, 0, 0.03);
+        --shadow-glass: 0 4px 30px rgba(0, 0, 0, 0.1);
+
+        /* Spacing */
+        --space-1: 4px;
+        --space-2: 8px;
+        --space-3: 12px;
+        --space-4: 16px;
+        --space-5: 20px;
+        --space-6: 24px;
+        --space-8: 32px;
+
+        /* Radii */
+        --radius-sm: 6px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-xl: 16px;
+        --radius-2xl: 24px;
+        --radius-full: 9999px;
+
+        /* Typography */
+        --font-family:
+          "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+        --font-size-xs: 11px;
+        --font-size-sm: 13px;
+        --font-size-base: 15px;
+        --font-size-lg: 17px;
+        --font-size-xl: 20px;
+        --font-size-2xl: 24px;
+      }
+
+      /* =============================================================================
+       BASE STYLES
+    ============================================================================= */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--font-family);
+        background: linear-gradient(
+          135deg,
+          var(--color-surface-light) 0%,
+          var(--color-surface) 100%
+        );
+        color: var(--color-text-primary);
+        line-height: 1.5;
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* Abstract Background Shapes */
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.4;
+        z-index: 0;
+        pointer-events: none;
+      }
+      body::before {
+        width: 400px;
+        height: 400px;
+        background: var(--color-lilac);
+        top: -100px;
+        right: -100px;
+        animation: blob1 25s ease-in-out infinite;
+      }
+      body::after {
+        width: 350px;
+        height: 350px;
+        background: var(--color-mint);
+        bottom: -80px;
+        left: -80px;
+        animation: blob2 30s ease-in-out infinite;
+      }
+
+      @keyframes blob1 {
+        0%,
+        100% {
+          transform: translate(0, 0) scale(1);
+        }
+        25% {
+          transform: translate(-20px, 30px) scale(1.1);
+        }
+        50% {
+          transform: translate(15px, -20px) scale(0.95);
+        }
+        75% {
+          transform: translate(25px, 15px) scale(1.05);
+        }
+      }
+      @keyframes blob2 {
+        0%,
+        100% {
+          transform: translate(0, 0) scale(1);
+        }
+        33% {
+          transform: translate(35px, -25px) scale(1.1);
+        }
+        66% {
+          transform: translate(-20px, 20px) scale(0.9);
+        }
+      }
+
+      #app {
+        position: relative;
+        z-index: 1;
+        padding: var(--space-4);
+        min-height: 100px;
+      }
+
+      /* =============================================================================
+       GLASSMORPHISM COMPONENTS
+    ============================================================================= */
+      .glass {
+        background: var(--color-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--color-border-glass);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-glass);
+      }
+
+      .glass-subtle {
+        background: var(--color-glass-subtle);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid var(--color-border-glass);
+        border-radius: var(--radius-lg);
+      }
+
+      /* =============================================================================
+       BOARD HEADER
+    ============================================================================= */
+      .board-header {
+        background: var(--color-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--color-border-glass);
+        border-radius: var(--radius-xl);
+        padding: var(--space-4) var(--space-5);
+        margin-bottom: var(--space-4);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: var(--shadow-glass);
+      }
+
+      .board-title-section {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+      }
+
+      .board-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(
+          135deg,
+          var(--color-lilac),
+          var(--color-mint)
+        );
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+      }
+
+      .board-icon svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      .board-title {
+        font-size: var(--font-size-xl);
+        font-weight: 700;
+        color: var(--color-text-primary);
+      }
+
+      .board-stats {
+        display: flex;
+        align-items: center;
+        gap: var(--space-4);
+      }
+
+      .stat-badge {
+        background: var(--color-glass-subtle);
+        padding: var(--space-2) var(--space-3);
+        border-radius: var(--radius-full);
+        font-size: var(--font-size-sm);
+        font-weight: 500;
+        color: var(--color-text-secondary);
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .stat-badge svg {
+        width: 14px;
+        height: 14px;
+        opacity: 0.7;
+      }
+
+      /* =============================================================================
+       COLUMNS
+    ============================================================================= */
+      .columns {
+        display: flex;
+        gap: var(--space-4);
+        overflow-x: auto;
+        padding-bottom: var(--space-4);
+        scroll-behavior: smooth;
+      }
+
+      /* Custom scrollbar */
+      .columns::-webkit-scrollbar {
+        height: 8px;
+      }
+      .columns::-webkit-scrollbar-track {
+        background: var(--color-glass-subtle);
+        border-radius: var(--radius-full);
+      }
+      .columns::-webkit-scrollbar-thumb {
+        background: var(--color-lilac);
+        border-radius: var(--radius-full);
+      }
+
+      .column {
+        flex: 0 0 280px;
+        background: var(--color-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--color-border-glass);
+        border-radius: var(--radius-xl);
+        display: flex;
+        flex-direction: column;
+        max-height: 480px;
+        box-shadow: var(--shadow-glass);
+        overflow: hidden;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .column:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+      }
+
+      .column-header {
+        padding: var(--space-3) var(--space-4);
+        font-weight: 600;
+        font-size: var(--font-size-sm);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .column-header-content {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .column-header svg {
+        width: 16px;
+        height: 16px;
+        opacity: 0.9;
+      }
+
+      .column-count {
+        background: rgba(255, 255, 255, 0.25);
+        padding: 2px var(--space-2);
+        border-radius: var(--radius-full);
+        font-size: var(--font-size-xs);
+        font-weight: 700;
+        min-width: 20px;
+        text-align: center;
+      }
+
+      .column-cards {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--space-3);
+        min-height: 80px;
+        transition: background 0.2s ease;
+      }
+
+      /* Custom scrollbar for columns */
+      .column-cards::-webkit-scrollbar {
+        width: 4px;
+      }
+      .column-cards::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .column-cards::-webkit-scrollbar-thumb {
+        background: var(--color-border);
+        border-radius: var(--radius-full);
+      }
+
+      .column-cards.drag-over {
+        background: rgba(190, 194, 255, 0.2);
+        border: 2px dashed var(--color-lilac);
+        border-radius: var(--radius-lg);
+      }
+
+      /* =============================================================================
+       CARDS
+    ============================================================================= */
+      .card {
+        background: var(--color-glass-dark);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid var(--color-border-glass);
+        border-radius: var(--radius-lg);
+        padding: var(--space-3);
+        margin-bottom: var(--space-3);
+        cursor: grab;
+        box-shadow: var(--shadow-md);
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease,
+          opacity 0.15s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .card:active {
+        cursor: grabbing;
+        transform: scale(0.98);
+      }
+
+      .card.dragging {
+        opacity: 0.5;
+        cursor: grabbing;
+        transform: rotate(2deg) scale(1.02);
+      }
+
+      .card-header {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--space-2);
+        margin-bottom: var(--space-2);
+      }
+
+      .card-grip {
+        color: var(--color-text-tertiary);
+        opacity: 0.5;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      .card-grip svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .card-title {
+        font-weight: 600;
+        font-size: var(--font-size-sm);
+        color: var(--color-text-primary);
+        flex: 1;
+        line-height: 1.4;
+      }
+
+      .card-desc {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-secondary);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: var(--space-2);
+        line-height: 1.5;
+      }
+
+      .card-footer {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding-top: var(--space-2);
+        border-top: 1px solid var(--color-border-light);
+      }
+
+      .card-priority {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+        font-size: var(--font-size-xs);
+        font-weight: 500;
+        padding: 2px var(--space-2);
+        border-radius: var(--radius-full);
+      }
+
+      .card-priority svg {
+        width: 10px;
+        height: 10px;
+      }
+
+      .priority-high {
+        background: var(--color-danger-light);
+        color: var(--color-danger);
+      }
+      .priority-medium {
+        background: var(--color-warning-light);
+        color: var(--color-warning);
+      }
+      .priority-low {
+        background: var(--color-success-light);
+        color: var(--color-success);
+      }
+
+      .card-tags {
+        display: flex;
+        gap: var(--space-1);
+        flex-wrap: wrap;
+        flex: 1;
+        justify-content: flex-end;
+      }
+
+      .tag {
+        font-size: 10px;
+        font-weight: 500;
+        background: var(--color-glass-subtle);
+        color: var(--color-text-secondary);
+        padding: 2px var(--space-2);
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--color-border-light);
+      }
+
+      /* =============================================================================
+       ADD CARD
+    ============================================================================= */
+      .add-card-btn {
+        width: 100%;
+        padding: var(--space-3);
+        background: transparent;
+        border: 2px dashed var(--color-border);
+        border-radius: var(--radius-lg);
+        cursor: pointer;
+        color: var(--color-text-tertiary);
+        font-size: var(--font-size-sm);
+        font-weight: 500;
+        font-family: var(--font-family);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        transition: all 0.2s ease;
+      }
+
+      .add-card-btn:hover {
+        background: var(--color-glass-subtle);
+        border-color: var(--color-lilac);
+        color: var(--color-lilac-dark);
+      }
+
+      .add-card-btn svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      .add-card-form {
+        padding: var(--space-3);
+        background: var(--color-glass-subtle);
+        border-radius: var(--radius-lg);
+        margin: var(--space-3);
+      }
+
+      .add-card-form input,
+      .add-card-form textarea {
+        width: 100%;
+        padding: var(--space-3);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        font-size: var(--font-size-sm);
+        font-family: var(--font-family);
+        margin-bottom: var(--space-2);
+        background: var(--color-container);
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .add-card-form input:focus,
+      .add-card-form textarea:focus {
+        outline: none;
+        border-color: var(--color-lilac);
+        box-shadow: 0 0 0 3px rgba(190, 194, 255, 0.2);
+      }
+
+      .add-card-form textarea {
+        resize: none;
+        height: 60px;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: var(--space-2);
+      }
+
+      /* =============================================================================
+       BUTTONS
+    ============================================================================= */
+      button {
+        cursor: pointer;
+        border: none;
+        font-family: var(--font-family);
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      button:focus-visible {
+        outline: 2px solid var(--color-lilac);
+        outline-offset: 2px;
+      }
+
+      .btn {
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-md);
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .btn:focus-visible {
+        box-shadow: 0 0 0 3px rgba(190, 194, 255, 0.3);
+      }
+
+      .btn:active:not(:disabled) {
+        transform: scale(0.98);
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--color-lilac),
+          var(--color-mint)
+        );
+        color: white;
+        box-shadow: 0 2px 8px rgba(190, 194, 255, 0.4);
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        box-shadow: 0 4px 12px rgba(190, 194, 255, 0.5);
+        transform: translateY(-1px);
+      }
+
+      .btn-secondary {
+        background: var(--color-glass);
+        color: var(--color-text-secondary);
+        border: 1px solid var(--color-border);
+      }
+
+      .btn-secondary:hover:not(:disabled) {
+        background: var(--color-container);
+        border-color: var(--color-lilac);
+      }
+
+      .btn-danger {
+        background: var(--color-danger);
+        color: white;
+      }
+
+      .btn-danger:hover:not(:disabled) {
+        background: #dc2626;
+      }
+
+      /* =============================================================================
+       MODAL
+    ============================================================================= */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+      }
+
+      .modal-overlay.show {
+        display: flex;
+      }
+
+      .modal {
+        background: var(--color-glass-dark);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--color-border-glass);
+        border-radius: var(--radius-2xl);
+        width: 90%;
+        max-width: 420px;
+        padding: var(--space-6);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        animation: modal-slide-up 0.3s ease;
+      }
+
+      @keyframes modal-slide-up {
+        from {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-5);
+      }
+
+      .modal-title {
+        font-size: var(--font-size-lg);
+        font-weight: 700;
+        color: var(--color-text-primary);
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .modal-title svg {
+        width: 20px;
+        height: 20px;
+        color: var(--color-lilac-dark);
+      }
+
+      .modal-close {
+        background: var(--color-glass-subtle);
+        border: 1px solid var(--color-border-glass);
+        border-radius: var(--radius-md);
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--color-text-secondary);
+        transition: all 0.2s ease;
+      }
+
+      .modal-close:hover {
+        background: var(--color-container);
+        color: var(--color-text-primary);
+      }
+
+      .modal-close svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .modal-field {
+        margin-bottom: var(--space-4);
+      }
+
+      .modal-field label {
+        display: block;
+        font-size: var(--font-size-xs);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: var(--space-2);
+        color: var(--color-text-secondary);
+      }
+
+      .modal-field input,
+      .modal-field textarea,
+      .modal-field select {
+        width: 100%;
+        padding: var(--space-3);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        font-size: var(--font-size-sm);
+        font-family: var(--font-family);
+        background: var(--color-container);
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .modal-field input:focus,
+      .modal-field textarea:focus,
+      .modal-field select:focus {
+        outline: none;
+        border-color: var(--color-lilac);
+        box-shadow: 0 0 0 3px rgba(190, 194, 255, 0.2);
+      }
+
+      .modal-field textarea {
+        resize: none;
+        height: 100px;
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: var(--space-3);
+        justify-content: flex-end;
+        margin-top: var(--space-5);
+        padding-top: var(--space-4);
+        border-top: 1px solid var(--color-border-light);
+      }
+
+      /* Delete Confirmation Modal */
+      .delete-modal-content {
+        text-align: center;
+        padding: var(--space-4) 0;
+      }
+
+      .delete-icon {
+        width: 64px;
+        height: 64px;
+        background: var(--color-danger-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto var(--space-4);
+      }
+
+      .delete-icon svg {
+        width: 32px;
+        height: 32px;
+        color: var(--color-danger);
+      }
+
+      .delete-title {
+        font-size: var(--font-size-lg);
+        font-weight: 700;
+        color: var(--color-text-primary);
+        margin-bottom: var(--space-2);
+      }
+
+      .delete-message {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-4);
+      }
+
+      .delete-actions {
+        display: flex;
+        gap: var(--space-3);
+        justify-content: center;
+      }
+
+      /* =============================================================================
+       LOADING STATE
+    ============================================================================= */
+      .loading {
+        text-align: center;
+        padding: var(--space-8);
+      }
+
+      .loading-icon {
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(
+          135deg,
+          var(--color-lilac),
+          var(--color-mint)
+        );
+        border-radius: var(--radius-xl);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto var(--space-4);
+        color: white;
+      }
+
+      .loading-icon svg {
+        width: 32px;
+        height: 32px;
+      }
+
+      .spinner {
+        width: 32px;
+        height: 32px;
+        border: 3px solid var(--color-border);
+        border-top-color: var(--color-lilac);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto var(--space-4);
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .loading-text {
+        font-size: var(--font-size-base);
+        color: var(--color-text-secondary);
+        font-weight: 500;
+      }
+
+      /* =============================================================================
+       ANIMATIONS
+    ============================================================================= */
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .column {
+        animation: fade-in 0.3s ease;
+      }
+
+      .card {
+        animation: fade-in 0.2s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="loading">
+        <div class="loading-icon">
+          <!-- layout-grid icon -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect width="7" height="7" x="3" y="3" rx="1" />
+            <rect width="7" height="7" x="14" y="3" rx="1" />
+            <rect width="7" height="7" x="14" y="14" rx="1" />
+            <rect width="7" height="7" x="3" y="14" rx="1" />
+          </svg>
+        </div>
+        <div class="spinner"></div>
+        <p class="loading-text">Setting up your board...</p>
+      </div>
+    </div>
+
+    <!-- Edit Card Modal -->
+    <div class="modal-overlay" id="modal">
+      <div class="modal">
+        <div class="modal-header">
+          <span class="modal-title">
+            <!-- edit icon -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+              <path d="m15 5 4 4" />
+            </svg>
+            Edit Card
+          </span>
+          <button class="modal-close" onclick="closeModal()">
+            <!-- x icon -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-field">
+          <label>Title</label>
+          <input type="text" id="modal-title" placeholder="Enter card title" />
+        </div>
+        <div class="modal-field">
+          <label>Description</label>
+          <textarea
+            id="modal-desc"
+            placeholder="Add a description..."
+          ></textarea>
+        </div>
+        <div class="modal-field">
+          <label>Priority</label>
+          <select id="modal-priority">
+            <option value="low">Low Priority</option>
+            <option value="medium">Medium Priority</option>
+            <option value="high">High Priority</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-danger" onclick="deleteCurrentCard()">
+            <!-- trash icon -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M3 6h18" />
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+            </svg>
+            Delete
+          </button>
+          <button class="btn btn-secondary" onclick="closeModal()">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="saveCard()">
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="delete-modal">
+      <div class="modal" style="max-width: 340px">
+        <div class="delete-modal-content">
+          <div class="delete-icon">
+            <!-- trash icon -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M3 6h18" />
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+            </svg>
+          </div>
+          <h3 class="delete-title">Delete Card?</h3>
+          <p class="delete-message">
+            This action cannot be undone. The card will be permanently removed.
+          </p>
+          <div class="delete-actions">
+            <button class="btn btn-secondary" onclick="cancelDelete()">
+              Cancel
+            </button>
+            <button class="btn btn-danger" onclick="confirmDelete()">
+              Delete Card
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Lucide SVG Icons
+      const icons = {
+        layoutGrid: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>`,
+        columns: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>`,
+        cards: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></svg>`,
+        gripVertical: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/></svg>`,
+        plus: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>`,
+        circle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>`,
+        alertCircle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>`,
+        archive: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/></svg>`,
+        clock: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+        checkCircle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`,
+      };
+
+      // Column icons and colors
+      const columnStyles = {
+        Backlog: { icon: icons.archive, gradient: "var(--column-backlog)" },
+        "To Do": { icon: icons.circle, gradient: "var(--column-todo)" },
+        "In Progress": {
+          icon: icons.clock,
+          gradient: "var(--column-progress)",
+        },
+        Done: { icon: icons.checkCircle, gradient: "var(--column-done)" },
+      };
+
+      // State
+      let board = null;
+      let currentCard = null;
+      let draggedCard = null;
+
+      // MCP Apps communication module
+      const mcpApp = (() => {
+        let requestId = 1;
+        const pendingRequests = new Map();
+
+        function sendRequest(method, params) {
+          const id = requestId++;
+          return new Promise((resolve, reject) => {
+            pendingRequests.set(id, { resolve, reject });
+            window.parent.postMessage(
+              { jsonrpc: "2.0", id, method, params },
+              "*",
+            );
+          });
+        }
+
+        function sendNotification(method, params) {
+          window.parent.postMessage({ jsonrpc: "2.0", method, params }, "*");
+        }
+
+        window.addEventListener("message", (event) => {
+          const data = event.data;
+          if (!data || typeof data !== "object") return;
+
+          if (data.id && pendingRequests.has(data.id)) {
+            const { resolve, reject } = pendingRequests.get(data.id);
+            pendingRequests.delete(data.id);
+            if (data.error) {
+              reject(data.error);
+            } else {
+              resolve(data.result);
+            }
+            return;
+          }
+
+          if (data.method) {
+            const handler = notificationHandlers[data.method];
+            if (handler) handler(data.params);
+          }
+        });
+
+        const notificationHandlers = {};
+        function onNotification(method, handler) {
+          notificationHandlers[method] = handler;
+        }
+
+        return { sendRequest, sendNotification, onNotification };
+      })();
+
+      function reportSize() {
+        const app = document.getElementById("app");
+        mcpApp.sendNotification("ui/notifications/size-change", {
+          width: Math.ceil(app.scrollWidth),
+          height: Math.ceil(app.scrollHeight),
+        });
+      }
+
+      // Get column style
+      function getColumnStyle(colName) {
+        // Try exact match first
+        if (columnStyles[colName]) return columnStyles[colName];
+
+        // Try partial match
+        const nameLower = colName.toLowerCase();
+        if (nameLower.includes("backlog")) return columnStyles["Backlog"];
+        if (nameLower.includes("done") || nameLower.includes("complete"))
+          return columnStyles["Done"];
+        if (nameLower.includes("progress") || nameLower.includes("doing"))
+          return columnStyles["In Progress"];
+        if (nameLower.includes("todo") || nameLower.includes("to do"))
+          return columnStyles["To Do"];
+
+        // Default
+        return { icon: icons.circle, gradient: "var(--column-todo)" };
+      }
+
+      // Render board
+      function renderBoard() {
+        if (!board) return;
+        const totalCards = board.columns.reduce(
+          (sum, c) => sum + c.cards.length,
+          0,
+        );
+
+        const html = `
+        <div class="board-header">
+          <div class="board-title-section">
+            <div class="board-icon">${icons.layoutGrid}</div>
+            <h1 class="board-title">${board.name}</h1>
+          </div>
+          <div class="board-stats">
+            <div class="stat-badge">${icons.columns} ${board.columns.length} columns</div>
+            <div class="stat-badge">${icons.cards} ${totalCards} cards</div>
+          </div>
+        </div>
+        <div class="columns">
+          ${board.columns
+            .map((col) => {
+              const style = getColumnStyle(col.name);
+              return `
+            <div class="column" data-column-id="${col.id}">
+              <div class="column-header" style="background: ${col.color || style.gradient}">
+                <div class="column-header-content">
+                  ${style.icon}
+                  <span>${col.name}</span>
+                </div>
+                <span class="column-count">${col.cards.length}</span>
+              </div>
+              <div class="column-cards"
+                   ondragover="handleDragOver(event)"
+                   ondragleave="handleDragLeave(event)"
+                   ondrop="handleDrop(event, '${col.id}')">
+                ${col.cards
+                  .map(
+                    (card) => `
+                  <div class="card"
+                       draggable="true"
+                       data-card-id="${card.id}"
+                       ondragstart="handleDragStart(event, '${card.id}')"
+                       ondragend="handleDragEnd(event)"
+                       onclick="openCardModal('${card.id}')">
+                    <div class="card-header">
+                      <div class="card-grip">${icons.gripVertical}</div>
+                      <div class="card-title">${card.title}</div>
+                    </div>
+                    ${card.description ? `<div class="card-desc">${card.description}</div>` : ""}
+                    <div class="card-footer">
+                      <div class="card-priority priority-${card.priority}">
+                        ${icons.alertCircle}
+                        ${card.priority}
+                      </div>
+                      <div class="card-tags">
+                        ${card.tags
+                          .slice(0, 2)
+                          .map((t) => `<span class="tag">${t}</span>`)
+                          .join("")}
+                      </div>
+                    </div>
+                  </div>
+                `,
+                  )
+                  .join("")}
+              </div>
+              <div class="add-card-form" id="form-${col.id}" style="display: none;">
+                <input type="text" placeholder="Enter card title..." id="input-${col.id}" />
+                <div class="form-actions">
+                  <button class="btn btn-secondary" onclick="hideAddForm('${col.id}')">Cancel</button>
+                  <button class="btn btn-primary" onclick="submitCard('${col.id}')">Add Card</button>
+                </div>
+              </div>
+              <div style="padding: var(--space-3);" id="btn-${col.id}">
+                <button class="add-card-btn" onclick="showAddForm('${col.id}')">
+                  ${icons.plus}
+                  Add card
+                </button>
+              </div>
+            </div>
+          `;
+            })
+            .join("")}
+        </div>
+      `;
+        document.getElementById("app").innerHTML = html;
+        requestAnimationFrame(reportSize);
+      }
+
+      // Drag and drop handlers
+      function handleDragStart(e, cardId) {
+        draggedCard = cardId;
+        e.target.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+      }
+
+      function handleDragEnd(e) {
+        e.target.classList.remove("dragging");
+        draggedCard = null;
+      }
+
+      function handleDragOver(e) {
+        e.preventDefault();
+        e.currentTarget.classList.add("drag-over");
+      }
+
+      function handleDragLeave(e) {
+        e.currentTarget.classList.remove("drag-over");
+      }
+
+      async function handleDrop(e, columnId) {
+        e.preventDefault();
+        e.currentTarget.classList.remove("drag-over");
+        if (!draggedCard || !board) return;
+
+        try {
+          const result = await mcpApp.sendRequest("tools/call", {
+            name: "move-card",
+            arguments: {
+              boardId: board.id,
+              cardId: draggedCard,
+              targetColumnId: columnId,
+            },
+          });
+          if (result?.structuredContent?.board) {
+            board = result.structuredContent.board;
+            renderBoard();
+          }
+        } catch (err) {
+          console.error("Move card failed:", err);
+        }
+      }
+
+      // Add card form
+      function showAddForm(colId) {
+        document.getElementById(`form-${colId}`).style.display = "block";
+        document.getElementById(`btn-${colId}`).style.display = "none";
+        document.getElementById(`input-${colId}`).focus();
+      }
+
+      function hideAddForm(colId) {
+        document.getElementById(`form-${colId}`).style.display = "none";
+        document.getElementById(`btn-${colId}`).style.display = "block";
+        document.getElementById(`input-${colId}`).value = "";
+      }
+
+      async function submitCard(colId) {
+        const input = document.getElementById(`input-${colId}`);
+        const title = input.value.trim();
+        if (!title || !board) return;
+
+        try {
+          const result = await mcpApp.sendRequest("tools/call", {
+            name: "add-card",
+            arguments: {
+              boardId: board.id,
+              columnId: colId,
+              title,
+              priority: "medium",
+            },
+          });
+          if (result?.structuredContent?.board) {
+            board = result.structuredContent.board;
+            renderBoard();
+          }
+        } catch (err) {
+          console.error("Add card failed:", err);
+        }
+        hideAddForm(colId);
+      }
+
+      // Modal handlers
+      function openCardModal(cardId) {
+        for (const col of board.columns) {
+          const card = col.cards.find((c) => c.id === cardId);
+          if (card) {
+            currentCard = card;
+            document.getElementById("modal-title").value = card.title;
+            document.getElementById("modal-desc").value =
+              card.description || "";
+            document.getElementById("modal-priority").value = card.priority;
+            document.getElementById("modal").classList.add("show");
+            return;
+          }
+        }
+      }
+
+      function closeModal() {
+        document.getElementById("modal").classList.remove("show");
+        currentCard = null;
+      }
+
+      async function saveCard() {
+        if (!currentCard || !board) return;
+
+        const title = document.getElementById("modal-title").value.trim();
+        const description = document.getElementById("modal-desc").value.trim();
+        const priority = document.getElementById("modal-priority").value;
+
+        if (!title) return;
+
+        try {
+          const result = await mcpApp.sendRequest("tools/call", {
+            name: "update-card",
+            arguments: {
+              boardId: board.id,
+              cardId: currentCard.id,
+              updates: { title, description, priority },
+            },
+          });
+          if (result?.structuredContent?.board) {
+            board = result.structuredContent.board;
+            renderBoard();
+          }
+        } catch (err) {
+          console.error("Update card failed:", err);
+        }
+        closeModal();
+      }
+
+      function deleteCurrentCard() {
+        if (!currentCard || !board) return;
+        document.getElementById("delete-modal").classList.add("show");
+      }
+
+      function cancelDelete() {
+        document.getElementById("delete-modal").classList.remove("show");
+      }
+
+      async function confirmDelete() {
+        if (!currentCard || !board) return;
+        document.getElementById("delete-modal").classList.remove("show");
+
+        try {
+          const result = await mcpApp.sendRequest("tools/call", {
+            name: "delete-card",
+            arguments: { boardId: board.id, cardId: currentCard.id },
+          });
+          if (result?.structuredContent?.board) {
+            board = result.structuredContent.board;
+            renderBoard();
+          }
+        } catch (err) {
+          console.error("Delete card failed:", err);
+        }
+        closeModal();
+      }
+
+      // Initialize
+      window.addEventListener("load", async () => {
+        mcpApp.onNotification("ui/notifications/tool-result", (params) => {
+          const data = params?.structuredContent;
+          if (data?.board) {
+            board = data.board;
+            renderBoard();
+          }
+        });
+
+        try {
+          await mcpApp.sendRequest("ui/initialize", {
+            protocolVersion: "2025-06-18",
+            appInfo: { name: "Kanban Board", version: "1.0.0" },
+            appCapabilities: {},
+          });
+          mcpApp.sendNotification("ui/notifications/initialized", {});
+        } catch (err) {
+          console.error("Init failed:", err);
+        }
+
+        new ResizeObserver(reportSize).observe(document.getElementById("app"));
+      });
+    </script>
+  </body>
+</html>

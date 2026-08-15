@@ -138,4 +138,4 @@ with custom_span("Business Process") as span:
 ## 🔗 Next Steps
 
 - [Default Tracing](../10_1_default_tracing/README.md) - Basic tracing fundamentals
-- [Tutorial 11: Production Patterns](../../11_production_patterns/README.md) - Real-world deployment
+- [Tutorial 11: Production Patterns](../../11_voice/README.md) - Real-world deployment

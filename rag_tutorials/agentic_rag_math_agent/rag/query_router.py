@@ -83,6 +83,12 @@ Only include valid math steps — do not guess or make up answers.
     return response.text
 
 
+# query_kb returns a cosine similarity (higher = better); with OpenAI embeddings
+# almost any two English texts score well above 0, so `> 0.` accepted every query
+# and served an arbitrary KB answer as authoritative. Require a real match.
+KB_SIMILARITY_THRESHOLD = 0.80
+
+
 def answer_math_question(question: str):
     print(f"🔍 Query: {question}")
 
@@ -96,7 +102,7 @@ def answer_math_question(question: str):
         kb_answer, similarity = query_kb(question)
         print("🧪 KB raw answer:", kb_answer)
 
-        if similarity > 0.:
+        if similarity >= KB_SIMILARITY_THRESHOLD:
             print("✅ High similarity KB match, using GPT for step-by-step explanation...")
 
             prompt = f"""

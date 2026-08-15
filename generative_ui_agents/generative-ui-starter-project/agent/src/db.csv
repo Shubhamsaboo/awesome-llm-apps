@@ -1,0 +1,41 @@
+date,category,subcategory,amount,type,notes
+2026-01-05,Revenue,Enterprise Subscriptions,28000,income,3 new enterprise customers (Acme Corp, TechFlow, DataViz Inc)
+2026-01-05,Revenue,Pro Tier Upgrades,18000,income,24 users upgraded from free to pro
+2026-01-08,Revenue,API Usage Overages,9500,income,High API usage from top 5 customers
+2026-01-10,Expenses,Engineering Salaries,42000,expense,7 engineers + 2 contractors
+2026-01-10,Expenses,Product Team,18000,expense,PM and 2 designers
+2026-01-12,Expenses,AWS Infrastructure,8200,expense,Increased compute for new AI features
+2026-01-15,Expenses,Marketing - Paid Ads,12000,expense,Google Ads and LinkedIn campaigns
+2026-01-18,Revenue,Consulting Services,14500,income,Custom integration for Acme Corp
+2026-01-20,Expenses,Customer Success,15000,expense,3 CSMs + support tools (Intercom)
+2026-01-22,Expenses,AI Model Costs,4200,expense,OpenAI API usage for product features
+2026-01-25,Revenue,Marketplace Sales,12800,income,Template and plugin sales
+2026-01-28,Expenses,Office & Equipment,3500,expense,New laptops and coworking spaces
+2026-02-03,Revenue,Enterprise Subscriptions,31000,income,2 new customers + expansion from TechFlow
+2026-02-03,Revenue,Pro Tier Upgrades,22500,income,31 upgrades + reduced churn
+2026-02-05,Revenue,API Usage Overages,11800,income,DataViz Inc heavy API usage spike
+2026-02-07,Expenses,Engineering Salaries,42000,expense,Same headcount as January
+2026-02-07,Expenses,Product Team,18000,expense,No changes to product team
+2026-02-10,Expenses,AWS Infrastructure,9500,expense,Traffic spike from viral social post
+2026-02-12,Expenses,Marketing - Paid Ads,15000,expense,Increased ad spend for Q1 push
+2026-02-14,Revenue,Consulting Services,18000,income,2 custom projects (TechFlow + new client)
+2026-02-18,Expenses,Customer Success,16500,expense,Hired 1 additional CSM
+2026-02-20,Expenses,AI Model Costs,5800,expense,Increased usage from new AI features launch
+2026-02-22,Revenue,Marketplace Sales,14200,income,Top template hit featured list
+2026-02-25,Expenses,Conference & Travel,4500,expense,Team attended SaaS Conference 2026
+2026-02-27,Revenue,Partnership Revenue,11500,income,Referral fees from integration partners
+2026-03-02,Revenue,Enterprise Subscriptions,35000,income,Major win: Fortune 500 customer signed
+2026-03-02,Revenue,Pro Tier Upgrades,26000,income,42 upgrades - best month yet
+2026-03-05,Revenue,API Usage Overages,13200,income,Consistent high usage across top tier
+2026-03-08,Expenses,Engineering Salaries,48000,expense,Hired 1 senior engineer for AI team
+2026-03-08,Expenses,Product Team,21000,expense,Promoted designer to senior level
+2026-03-10,Expenses,AWS Infrastructure,11000,expense,Scaled infrastructure for enterprise client
+2026-03-12,Expenses,Marketing - Paid Ads,18000,expense,Doubled down on successful campaigns
+2026-03-14,Revenue,Consulting Services,21500,income,Fortune 500 onboarding + 2 other projects
+2026-03-16,Expenses,Customer Success,19500,expense,Hired dedicated enterprise CSM
+2026-03-18,Expenses,AI Model Costs,7200,expense,Fortune 500 client heavy AI usage
+2026-03-20,Revenue,Marketplace Sales,15800,income,3 new templates in top 10
+2026-03-22,Expenses,Sales & BD,12000,expense,Hired first sales rep for enterprise
+2026-03-24,Revenue,Partnership Revenue,14200,income,New integration partnerships launched
+2026-03-26,Expenses,Security & Compliance,6500,expense,SOC 2 audit and security tools
+2026-03-28,Revenue,Training & Workshops,10200,income,Conducted 2 customer training sessions

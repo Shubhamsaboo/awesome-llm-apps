@@ -1,0 +1,34 @@
+[
+  {
+    "query": "I want to build a ChatGPT app for my restaurant",
+    "expected_behavior": "Must read design-and-architecture.md first. Identifies core actions from user request. Decides which need widgets vs tools. Does NOT jump to code immediately."
+  },
+  {
+    "query": "How do I create a tool in mcp-use?",
+    "expected_behavior": "Must reference tools-and-resources.md. Shows server.tool() syntax with schema, callback, response helpers."
+  },
+  {
+    "query": "What response helpers are available?",
+    "expected_behavior": "Must reference response-helpers.md. Lists all helpers: text, object, markdown, html, image, audio, binary, error, mix, widget, resource."
+  },
+  {
+    "query": "How do I create a widget for my tool?",
+    "expected_behavior": "Must reference widgets.md. Shows complete pattern: widget file in resources/ with widgetMetadata + default component, tool with widget config, widget() helper."
+  },
+  {
+    "query": "How do I define a parameterized resource with URI templates?",
+    "expected_behavior": "Must reference resource-templates.md. Shows server.resourceTemplate() with uriTemplate syntax."
+  },
+  {
+    "query": "What's the difference between a tool and a widget tool?",
+    "expected_behavior": "Must reference design-and-architecture.md. Tool = backend action returning data. Widget tool = tool with visual UI component. Uses widget when visual/interactive output improves UX."
+  },
+  {
+    "query": "How do I handle errors in tool callbacks?",
+    "expected_behavior": "Must reference tools-and-resources.md. Shows error() helper, try/catch pattern, graceful error messages."
+  },
+  {
+    "query": "What fields does useWidget return?",
+    "expected_behavior": "Must reference widgets.md. Lists all fields including: props, isPending, state, setState, theme, callTool, sendFollowUpMessage, openExternal, displayMode, safeArea, maxHeight, userAgent, locale."
+  }
+]

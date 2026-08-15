@@ -1,0 +1,30 @@
+[
+  {
+    "query": "My dashboard should show a summary first, then expand to show all charts.",
+    "expected_behavior": "Widget starts inline. Uses displayMode + requestDisplayMode from useWidget. Provides expand button to fullscreen and collapse button to return. User-triggered switching only."
+  },
+  {
+    "query": "Building a language learning flashcard game. Needs to stay visible while chatting.",
+    "expected_behavior": "Suggests PiP mode. Uses requestDisplayMode('pip'). Notes PiP coerces to fullscreen on mobile. Widget stays visible during conversation."
+  },
+  {
+    "query": "Just need to show order confirmation with a tracking number.",
+    "expected_behavior": "Inline mode (default) is sufficient. No display mode switching needed. Simple card widget. Max 2 CTAs."
+  },
+  {
+    "query": "Widget looks jarring when ChatGPT is in dark mode.",
+    "expected_behavior": "Uses theme from useWidget(). Shows conditional styling. Both inline styles and Tailwind approaches."
+  },
+  {
+    "query": "I want dates formatted for the user's language.",
+    "expected_behavior": "Uses locale from useWidget(). Shows Intl.DateTimeFormat(locale) for formatting."
+  },
+  {
+    "query": "My complex grid doesn't work on phones.",
+    "expected_behavior": "Uses userAgent.device.type from useWidget(). Shows conditional layout: mobile gets list view, desktop gets grid."
+  },
+  {
+    "query": "My widget content gets cut off at the bottom on phones with notches.",
+    "expected_behavior": "Uses safeArea.insets from useWidget(). Applies insets as padding. Also uses maxHeight to constrain widget height."
+  }
+]

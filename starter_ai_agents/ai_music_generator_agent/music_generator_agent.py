@@ -24,7 +24,6 @@ if openai_api_key and models_lab_api_key:
         name="ModelsLab Music Agent",
         agent_id="ml_music_agent",
         model=OpenAIChat(id="gpt-4o", api_key=openai_api_key),
-        show_tool_calls=True,
         tools=[ModelsLabTools(api_key=models_lab_api_key, wait_for_completion=True, file_type=FileType.MP3)],
         description="You are an AI agent that can generate music using the ModelsLabs API.",
         instructions=[

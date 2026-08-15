@@ -1,0 +1,35 @@
+{
+  "name": "ai-financial-coach-agent",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:ui\" \"npm run dev:agent\" --names ui,agent --prefix-colors blue,green --kill-others",
+    "dev:debug": "LOG_LEVEL=debug npm run dev",
+    "dev:agent": "./scripts/run-agent.sh || scripts\\run-agent.bat",
+    "dev:ui": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "install:agent": "./scripts/setup-agent.sh || scripts\\setup-agent.bat",
+    "postinstall": "npm run install:agent"
+  },
+  "dependencies": {
+    "@ag-ui/client": "0.0.52",
+    "@copilotkit/react-core": "^1.56.4",
+    "@copilotkit/react-textarea": "^1.56.4",
+    "@copilotkit/react-ui": "^1.56.4",
+    "@copilotkit/runtime": "^1.56.4",
+    "next": "16.1.1",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "shiki": "^3.19.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "concurrently": "^9.1.2",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

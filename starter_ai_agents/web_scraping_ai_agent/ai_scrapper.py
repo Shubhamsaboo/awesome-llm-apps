@@ -24,7 +24,7 @@ if openai_access_token:
     # Get the URL of the website to scrape
     url = st.text_input("Enter the URL of the website you want to scrape")
     # Get the user prompt
-    user_prompt = st.text_input("What you want the AI agent to scrae from the website?")
+    user_prompt = st.text_input("What you want the AI agent to scrape from the website?")
     
     # Create a SmartScraperGraph object
     smart_scraper_graph = SmartScraperGraph(

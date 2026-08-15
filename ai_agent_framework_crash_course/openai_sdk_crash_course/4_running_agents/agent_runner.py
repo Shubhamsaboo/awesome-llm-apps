@@ -3,7 +3,7 @@ import asyncio
 import time
 import json
 from datetime import datetime
-from agents import Agent, Runner, RunConfig, SQLiteSession
+from agents import Agent, Runner, RunConfig, SQLiteSession, ModelSettings
 from agents.exceptions import (
     AgentsException,
     MaxTurnsExceeded,
@@ -356,16 +356,15 @@ def render_run_configuration(agent, model_choice, temperature, max_turns):
                     try:
                         run_config = RunConfig(
                             model=model_choice,
-                            model_settings={
-                                "temperature": config_temperature,
-                                "top_p": config_top_p
-                            },
-                            max_turns=config_max_turns,
+                            model_settings=ModelSettings(
+                                temperature=config_temperature,
+                                top_p=config_top_p
+                            ),
                             workflow_name="basic_config_demo"
                         )
-                        
+
                         start_time = time.time()
-                        result = asyncio.run(Runner.run(agent, config_input, run_config=run_config))
+                        result = asyncio.run(Runner.run(agent, config_input, run_config=run_config, max_turns=config_max_turns))
                         execution_time = time.time() - start_time
                         
                         st.success(f"✅ Completed in {execution_time:.2f}s")
@@ -599,8 +598,8 @@ def render_exception_handling(agent, model_choice, temperature, max_turns):
             
             if maxturns_submitted and maxturns_input:
                 try:
-                    run_config = RunConfig(max_turns=max_turns_test)
-                    result = asyncio.run(Runner.run(agent, maxturns_input, run_config=run_config))
+                    run_config = RunConfig()
+                    result = asyncio.run(Runner.run(agent, maxturns_input, run_config=run_config, max_turns=max_turns_test))
                     st.success("✅ Completed without hitting max turns")
                     st.write(f"**Response:** {result.final_output}")
                     

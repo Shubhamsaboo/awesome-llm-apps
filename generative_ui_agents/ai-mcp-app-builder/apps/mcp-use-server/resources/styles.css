@@ -1,0 +1,117 @@
+@import "tailwindcss";
+@import "@openai/apps-sdk-ui/css";
+
+/* Configure Tailwind v4 to scan for classes */
+@source "../node_modules/@openai/apps-sdk-ui";
+@source "./**/*.{ts,tsx,js,jsx,html}";
+
+@theme {
+  /* Enable class-based dark mode */
+  --color-scheme: light dark;
+}
+
+@variant dark (&:where(.dark, .dark *));
+
+/* Custom styles */
+body {
+  margin: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply text-default;
+}
+
+p {
+  @apply text-secondary;
+}
+
+a {
+  @apply text-info;
+}
+
+/* Carousel scroll container with padding for blur effect */
+.carousel-scroll-container {
+  padding-bottom: 2rem;
+}
+
+/* Hover effect styles for carousel items */
+.carousel-item {
+  position: relative;
+  container-type: size;
+  cursor: pointer;
+  transition-property: translate, scale;
+  transition-duration: 0.12s;
+  transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+  -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.carousel-item:active {
+  translate: 0 1px;
+  scale: 0.99;
+}
+
+.carousel-item-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-item-bg {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  transform: translateZ(0);
+  filter: blur(28px) saturate(5) brightness(1.3);
+  translate: calc(var(--pointer-x, -10) * 50cqi)
+    calc(var(--pointer-y, -10) * 50cqh);
+  scale: var(--icon-scale, 3.4);
+  opacity: var(--icon-opacity, 0.25);
+  will-change: transform, filter, opacity;
+  pointer-events: none;
+  z-index: 1;
+  transition:
+    opacity 0.26s ease-out,
+    scale 0.26s ease-out;
+  border-radius: inherit;
+}
+
+.carousel-item-bg img {
+  width: 100px;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.carousel-item::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  inset: 0px;
+  border-radius: inherit;
+  border: 3px solid transparent;
+  backdrop-filter: blur(0px) saturate(4.2) brightness(2.5) contrast(2.5);
+  -webkit-backdrop-filter: blur(0px) saturate(4.2) brightness(2.5) contrast(2.5);
+  mask:
+    linear-gradient(#fff 0 100%) border-box,
+    linear-gradient(#fff 0 100%) padding-box;
+  mask-composite: exclude;
+  z-index: 3;
+  transform: translateZ(0);
+}

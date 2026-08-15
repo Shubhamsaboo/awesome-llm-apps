@@ -237,7 +237,7 @@ def setup_agents(openai_api_key: str):
         4. Keep the tone professional but friendly
         5. Use appropriate pauses for better comprehension
         6. Ensure the speech is clear and well-articulated""",
-        model="gpt-4o-mini-tts"
+        model="gpt-4o"
     )
     
     return processor_agent, tts_agent

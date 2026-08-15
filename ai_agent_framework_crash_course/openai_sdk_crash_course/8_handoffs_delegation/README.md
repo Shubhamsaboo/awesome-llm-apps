@@ -167,7 +167,7 @@ filtered_handoff = handoff(
 After completing this tutorial, you'll be ready for:
 - **[Tutorial 9: Multi-Agent Orchestration](../9_multi_agent_orchestration/README.md)** - Complex multi-agent workflows with parallel execution
 - **[Tutorial 10: Tracing & Observability](../10_tracing_observability/README.md)** - Monitoring and debugging
-- **[Tutorial 11: Production Patterns](../11_production_patterns/README.md)** - Real-world deployment strategies
+- **[Tutorial 11: Production Patterns](../11_voice/README.md)** - Real-world deployment strategies
 
 ## 💡 Pro Tips
 

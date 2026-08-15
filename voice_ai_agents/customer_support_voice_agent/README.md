@@ -30,7 +30,7 @@ An OpenAI SDK powered customer support agent application that delivers voice-pow
    ```bash
    # Clone the repository
    git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-   cd awesome-llm-apps/ai_agent_tutorials/ai_voice_agent_openaisdk
+   cd awesome-llm-apps/voice_ai_agents/customer_support_voice_agent
    
    # Install dependencies
    pip install -r requirements.txt
@@ -43,7 +43,7 @@ An OpenAI SDK powered customer support agent application that delivers voice-pow
 
 3. **Run the Application**
    ```bash
-   streamlit run ai_voice_agent_docs.py
+   streamlit run customer_support_voice_agent.py
    ```
 
 4. **Use the Interface**

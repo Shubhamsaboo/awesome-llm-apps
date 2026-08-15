@@ -71,9 +71,9 @@ async def chat(user_id: str, message: str) -> str:
 # Test the persistent memory
 if __name__ == "__main__":
     async def test():
-        # Initialize database
-        await session_service.initialize()
-        print("✅ Database initialized")
+        # DatabaseSessionService creates its tables in the constructor;
+        # no explicit initialization call is needed.
+        print("✅ Database ready")
         
         user_id = "test_user"
         messages = ["My name is Bob", "What's my name?", "I love coding", "What do I love?"]

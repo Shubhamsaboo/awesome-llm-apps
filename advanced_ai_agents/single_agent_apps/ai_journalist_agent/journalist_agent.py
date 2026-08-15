@@ -1,6 +1,7 @@
 # Import the required libraries
 from textwrap import dedent
 from agno.agent import Agent
+from agno.team import Team
 from agno.run.agent import RunOutput
 from agno.tools.serpapi import SerpApiTools
 from agno.tools.newspaper4k import Newspaper4kTools
@@ -63,10 +64,10 @@ if openai_api_key and serp_api_key:
         markdown=True,
     )
 
-    editor = Agent(
+    editor = Team(
         name="Editor",
         model=OpenAIChat(id="gpt-4o", api_key=openai_api_key),
-        team=[searcher, writer],
+        members=[searcher, writer],
         description="You are a senior NYT editor. Given a topic, your goal is to write a NYT worthy article.",
         instructions=[
             "Given a topic, ask the search journalist to search for the most relevant URLs for that topic.",

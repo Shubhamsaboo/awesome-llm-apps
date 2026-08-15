@@ -12,7 +12,10 @@ from agents.voice import (
     VoicePipeline,
 )
 
-from .util import AudioPlayer, record_audio
+try:
+    from .util import AudioPlayer, record_audio
+except ImportError:  # running directly as a script: `python agent.py`
+    from util import AudioPlayer, record_audio
 
 """
 This is a simple example that uses a recorded audio buffer. Run it via:

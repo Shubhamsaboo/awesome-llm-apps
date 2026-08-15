@@ -1,0 +1,14 @@
+[project]
+name = "proverbs-agent"
+version = "0.1.0"
+description = "ADK Proverbs Agent with shared state"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi",
+  "uvicorn[standard]",
+  "python-dotenv",
+  "pydantic",
+  "google-adk",
+  "google-genai",
+  "ag-ui-adk",
+]

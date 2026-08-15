@@ -958,7 +958,7 @@ export default function Plan() {
                               <NumberInput
                                 value={field.value}
                                 onChange={field.onChange}
-                                min={1}
+                                min={0}
                               />
                             </FormControl>
                             <FormMessage />

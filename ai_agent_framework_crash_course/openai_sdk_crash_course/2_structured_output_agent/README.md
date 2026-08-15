@@ -168,7 +168,7 @@ class ProductReview(BaseModel):
 
 After completing this tutorial, you'll be ready for:
 - **[Tutorial 3: Tool Using Agent](../3_tool_using_agent/README.md)** - Add custom tools and functions
-- **[Tutorial 4: Runner Execution Methods](../4_runner_execution/README.md)** - Master different execution patterns
+- **[Tutorial 4: Runner Execution Methods](../4_running_agents/README.md)** - Master different execution patterns
 - **[Tutorial 5: Context Management](../5_context_management/README.md)** - Manage state across interactions
 
 ## 💡 Pro Tips
