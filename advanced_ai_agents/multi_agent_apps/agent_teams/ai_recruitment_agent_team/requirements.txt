@@ -1,7 +1,7 @@
 # Core dependencies
 agno>=2.2.10
 streamlit==1.40.2
-PyPDF2==3.0.1
+pypdf>=4.0.0
 streamlit-pdf-viewer==0.0.19
 requests==2.32.3
 pytz==2023.4

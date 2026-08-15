@@ -83,7 +83,7 @@ A Streamlit application that simulates a full-service recruitment team using mul
 - **Framework**: Phidata
 - **Model**: OpenAI GPT-4o
 - **Integration**: Zoom API, EmailTools Tool from Phidata
-- **PDF Processing**: PyPDF2
+- **PDF Processing**: pypdf
 - **Time Management**: pytz
 - **State Management**: Streamlit Session State
 
