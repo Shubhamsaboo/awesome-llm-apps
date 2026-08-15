@@ -89,6 +89,7 @@ streamlit run travel_agent.py
 *   [🩺 Dependency Doctor](agent_skills/dependency-doctor/) - Checks a dependency manifest for standard-library pins, obsolete backports, unpinned entries, duplicate constraints, and yanked releases
 *   [🧠 Advisor Orchestrator Worker](agent_skills/advisor-orchestrator-worker/) - Meta Loop with Claude Fable 5 as advisor, GPT-5.6 as orchestrator, and Gemini 3.7 Flash as worker
 *   [♾️ Self-Improving Agent Skills](agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
+*   [⚙️ Low-Level Skills Collection](https://github.com/TrothByte/low-level-skills-trothbyte) <sub>↗ external</sub> - 124 verified low-level engineering skills for coding agents (C/C++/Rust/asm/kernel/embedded/Zig/GPU/RE), 65 executed on real toolchains, every claim source-traced
 
 ### 🌱 Starter AI Agents
 
