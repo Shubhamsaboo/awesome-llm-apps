@@ -8,10 +8,8 @@
     "start": "node main.js"
   },
   "dependencies": {
+    "dotenv": "^16.0.0",
     "nexusgenesis-agent-keys": "^0.2.2",
     "openai": "^4.0.0"
-  },
-  "devDependencies": {
-    "dotenv": "^16.0.0"
   }
 }
