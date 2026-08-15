@@ -1,0 +1,43 @@
+{
+  "skill": "sandbase-multi-source-research",
+  "purpose": "Trigger behavior spec for source-diverse research and fact-checking.",
+  "cases": [
+    {
+      "id": "multi-source-research",
+      "prompt": "research this topic across multiple web and academic sources",
+      "should_trigger": true,
+      "assert": "Runs source-diverse discovery and validates a claim-to-source ledger."
+    },
+    {
+      "id": "cross-provider-fact-check",
+      "prompt": "fact-check this claim across independent search providers",
+      "should_trigger": true,
+      "assert": "Cross-checks independent evidence and detects circular reporting."
+    },
+    {
+      "id": "source-disagreement",
+      "prompt": "compare sources and show where the evidence disagrees",
+      "should_trigger": true,
+      "assert": "Preserves agreements, conflicts, confidence, and gaps."
+    },
+    {
+      "id": "near-miss-quick-lookup",
+      "prompt": "look up the current time in Tokyo",
+      "should_trigger": false,
+      "assert": "Does not trigger for a simple single-source lookup."
+    },
+    {
+      "id": "near-miss-proofread",
+      "prompt": "proofread this research summary without checking sources",
+      "should_trigger": false,
+      "assert": "Does not trigger when the user explicitly excludes source checking."
+    },
+    {
+      "id": "near-miss-existing-output",
+      "prompt": "verify the grammar in the response you already wrote",
+      "should_trigger": false,
+      "assert": "Does not trigger for post-hoc grammar review without new research."
+    }
+  ]
+}
+
