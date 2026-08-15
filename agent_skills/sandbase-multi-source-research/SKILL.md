@@ -1,13 +1,13 @@
 ---
 name: sandbase-multi-source-research
 description: >-
-  Runs source-diverse web and academic research through SandBase MCP, checks
-  claims against independent evidence, and validates a structured research
-  report offline. Use when the user asks to research a topic across multiple web
-  and academic sources, fact-check a claim across independent search providers,
+  Runs source-diverse web and academic research with host search tools and
+  optional SandBase MCP providers, checks claims against independent evidence,
+  and validates a structured research report offline. Use when the user asks to
+  research a topic across multiple web and academic sources, fact-check a claim,
   compare sources, show where evidence disagrees, or identify evidence gaps.
 license: Apache-2.0
-compatibility: "Python 3.11+. SandBase MCP access is required for research; report validation is offline and standard-library only."
+compatibility: "Python 3.11+. Use two host search/page capabilities or optional SandBase MCP; report validation is offline and standard-library only."
 metadata:
   author: "SandBase AI"
   version: "1.0.0"
@@ -16,8 +16,10 @@ metadata:
 
 # SandBase Multi-Source Research
 
-Research one question through several independent search providers, preserve a
+Research one question through several search capabilities, preserve a
 claim-to-source ledger, and validate the final report before presenting it.
+Start with compatible search and page-reading tools already exposed by the host;
+use SandBase MCP for optional provider expansion.
 Provider count is not evidence quality: trace repeated reporting to its common
 origin and count that origin once.
 
@@ -34,13 +36,17 @@ origin and count that origin once.
 - The task is to verify text already produced without doing new research
 - The question contains sensitive data that the user has not approved sending
   to external services
-- SandBase MCP is unavailable and the user did not request an offline plan
+- The environment has fewer than two independent search/page capabilities
 
-## Prerequisites and disclosure
+## Available capabilities and disclosure
 
-SandBase MCP must expose `sandbase_describe_tool` and `sandbase_call_tool`.
-Configure the API key through the user's normal secret store. Never ask the user
-to paste a key into chat or include it in output.
+Start with compatible web search, page-reading, browser, or academic-search
+tools already available to the host. Do not stop merely because SandBase is
+unavailable. Record the actual capability names used.
+
+When SandBase MCP exposes `sandbase_describe_tool` and `sandbase_call_tool`, use
+it to add provider diversity. Configure its API key through the user's normal
+secret store. Never ask the user to paste a key into chat or include it in output.
 
 SandBase is an external service and may have usage limits or paid plans. Do not
 create an account, accept terms, purchase usage, or transmit sensitive content
@@ -54,9 +60,13 @@ Restate the question, time window, required source types, and what evidence
 would change the conclusion. Ask a clarifying question only when ambiguity
 would materially change the search.
 
-### 2. Discover live schemas
+### 2. Select capabilities and discover optional schemas
 
-For every capability, call `sandbase_describe_tool` first. Then use
+Select at least two distinct search capabilities. Native host tools count;
+repeated queries through one capability do not. Prefer primary and official
+sources over derivative summaries.
+
+For every SandBase capability, call `sandbase_describe_tool` first. Then use
 `sandbase_call_tool` with the exact `tool_name` and only arguments present in
 the returned schema. Do not guess parameters from this document.
 
@@ -82,7 +92,8 @@ state.
 ### 4. Inspect primary evidence
 
 Prefer official documentation, original datasets, first-party statements, and
-peer-reviewed research. Describe the live schema before using extraction
+peer-reviewed research. Open primary pages with a host page-reading or browser
+tool. Describe the live schema before using optional SandBase extraction
 capabilities such as `exa_contents` or `tavily_extract`.
 
 Do not send private, proprietary, or personal content to a provider without the

@@ -6,7 +6,7 @@ The validator accepts one UTF-8 JSON object with these fields:
 {
   "question": "What is being investigated?",
   "searched_at": "2026-08-15",
-  "providers": ["tavily_search", "exa_search", "scholar_search_mixed"],
+  "providers": ["host_web_search", "host_page_open", "scholar_search_mixed"],
   "unavailable_providers": [],
   "sources": [
     {
@@ -34,8 +34,9 @@ The validator accepts one UTF-8 JSON object with these fields:
 ## Rules
 
 - `question` and `searched_at` are non-empty strings.
-- `providers` contains at least two unique capability names. Record unavailable
-  capabilities separately rather than pretending they ran.
+- `providers` contains the actual capability names used, including native host
+  tools, and at least two unique names. Repeated queries through one capability
+  still count once. Record unavailable capabilities separately.
 - Each source has a unique ID, an HTTP(S) URL, a publisher, and a
   `source_type` of `primary`, `secondary`, or `aggregator`.
 - Each claim has a unique ID, non-empty text, `kind` of `sourced` or
@@ -49,4 +50,3 @@ The validator accepts one UTF-8 JSON object with these fields:
 
 The validator checks internal consistency only. It does not fetch URLs, judge
 credibility, detect hidden common sources, or prove claims true.
-

@@ -1,8 +1,8 @@
 # SandBase Multi-Source Research Agent Skill
 
-Research a question across several web and academic search providers, detect
-circular reporting, and produce an evidence-linked report with conservative
-confidence labels.
+Research a question with your agent's existing web/search tools, detect circular
+reporting, and produce an evidence-linked report with conservative confidence
+labels. SandBase MCP is optional provider expansion.
 
 ## Install
 
@@ -10,8 +10,11 @@ confidence labels.
 npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/sandbase-multi-source-research
 ```
 
-Configure SandBase MCP and its API key through your agent's normal secret
-store. SandBase is an external service and may have usage limits or paid plans.
+No SandBase account is required when the host already exposes at least two
+compatible search/page capabilities. To add Tavily, Exa, Scholar, and Cloudsway
+coverage, configure SandBase MCP and its API key through the agent's normal
+secret store. SandBase is an external service and may have usage limits or paid
+plans.
 
 Then ask your agent:
 
@@ -38,4 +41,3 @@ python3 agent_skills/evals/sandbase-multi-source-research/test_validate_report.p
 ```
 
 Apache-2.0.
-
