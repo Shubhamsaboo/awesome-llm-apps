@@ -1,0 +1,28 @@
+{
+  "skill_name": "sandbase-multi-source-research",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Research this claim across independent web and academic sources and show disagreements.",
+      "expected_output": "A source-diverse, citation-linked synthesis backed by a validated evidence ledger.",
+      "expectations": [
+        "The agent describes each live SandBase capability schema before calling it",
+        "At least three independently worded searches are attempted when available",
+        "Derivative reporting is traced to common origins rather than counted repeatedly",
+        "The JSON report passes scripts/validate_report.py before presentation"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Compare what web and academic sources say about this disputed technical claim.",
+      "expected_output": "A synthesis that preserves conflicts, confidence, source provenance, and evidence gaps.",
+      "expectations": [
+        "Primary sources are preferred over aggregators",
+        "Confidence does not exceed the independent-source threshold",
+        "Sourced facts are separated from inference",
+        "Unavailable providers and inaccessible primary sources are disclosed"
+      ]
+    }
+  ]
+}
+
