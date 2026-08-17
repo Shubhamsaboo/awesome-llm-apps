@@ -3,7 +3,7 @@ import os
 import time
 import json
 import requests
-import PyPDF2
+import pypdf
 from datetime import datetime, timedelta
 import pytz
 
@@ -177,7 +177,7 @@ def create_scheduler_agent() -> Agent:
 
 def extract_text_from_pdf(pdf_file) -> str:
     try:
-        pdf_reader = PyPDF2.PdfReader(pdf_file)
+        pdf_reader = pypdf.PdfReader(pdf_file)
         text = ""
         for page in pdf_reader.pages:
             text += page.extract_text()
