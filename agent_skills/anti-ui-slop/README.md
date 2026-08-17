@@ -8,7 +8,7 @@ collection.
 ## Install
 
 ```bash
-npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/anti-ui-slop
+npx skills add https://github.com/uizze/uizze --skill anti-ui-slop
 ```
 
 Then ask an agent to audit a frontend project for UI slop, or run the core
