@@ -1,0 +1,42 @@
+{
+  "skill": "anti-ui-slop",
+  "purpose": "Trigger-behavior spec for deterministic UI quality routing.",
+  "cases": [
+    {
+      "id": "audit-ui-quality",
+      "prompt": "audit my frontend for UI quality problems",
+      "should_trigger": true,
+      "assert": "Runs the local checker and produces a finish-gate report."
+    },
+    {
+      "id": "stop-ui-slop",
+      "prompt": "stop the generic UI slop before we ship",
+      "should_trigger": true,
+      "assert": "Checks concrete source signals and required interaction states."
+    },
+    {
+      "id": "review-frontend-diff",
+      "prompt": "review this frontend diff for inert controls and missing states",
+      "should_trigger": true,
+      "assert": "Scans the selected frontend files and explains each finding."
+    },
+    {
+      "id": "near-miss-format",
+      "prompt": "format my code",
+      "should_trigger": false,
+      "assert": "Does not trigger for routine formatting alone."
+    },
+    {
+      "id": "near-miss-deploy",
+      "prompt": "deploy the application",
+      "should_trigger": false,
+      "assert": "Does not trigger for deployment alone."
+    },
+    {
+      "id": "near-miss-api",
+      "prompt": "add an API endpoint",
+      "should_trigger": false,
+      "assert": "Does not trigger for backend work without a UI quality request."
+    }
+  ]
+}
