@@ -1,5 +1,5 @@
-import sqlite3
 import json
+import sqlite3
 
 
 def create_connection(db_file="x_posts.db"):
@@ -115,16 +115,15 @@ def check_and_store_post(conn, post_data):
         return needs_analysis
     else:
         update_changed_metrics(conn, existing_post, data)
-        return False
+        return bool(data.get("post_text")) and not existing_post["sentiment"]
 
 
 def update_changed_metrics(conn, existing_post, new_data):
     metrics = ["engagement_reply_count", "engagement_retweet_count", "engagement_like_count", "engagement_bookmark_count", "engagement_view_count"]
     changes = {}
     for metric in metrics:
-        if metric in new_data and metric in existing_post:
-            if new_data[metric] != existing_post[metric]:
-                changes[metric] = new_data[metric]
+        if metric in new_data and metric in existing_post and new_data[metric] != existing_post[metric]:
+            changes[metric] = new_data[metric]
     if changes:
         set_clauses = [f"{metric} = ?" for metric in changes]
         set_sql = ", ".join(set_clauses)
