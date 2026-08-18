@@ -29,6 +29,7 @@ Beifong manages your trusted articles and social media platform sources. It gene
 - [Web Search and Browser Automation](#web-search-and-browser-automation)
   - [Search Commands](#search-commands)
   - [Social Media Login Sessions](#social-media-login-sessions)
+  - [Xquik API Backend](#xquik-api-backend)
   - [Advanced Persistent Session Configuration](#advanced-persistent-session-configuration)
 - [Social Media Monitoring](#social-media-monitoring)
   - [Supported Platforms](#supported-platforms)
@@ -109,6 +110,10 @@ ELEVENSLAB_API_KEY=your_elevenlabs_api_key  # Optional
 REDIS_HOST=localhost
 REDIS_PORT=6379
 REDIS_DB=0
+# Optional server-friendly X (Twitter) home timeline backend
+X_SOCIAL_BACKEND=xquik
+XQUIK_API_KEY=your_xquik_api_key
+XQUIK_MAX_PAGES=1
 ```
 
 ### Starting the Application
@@ -291,6 +296,19 @@ For websites requiring authentication (X.com, Facebook, LinkedIn, etc.), you nee
    - Close the browser when finished
 4. **Session Persistence** - Beifong will use these authenticated sessions for future automated searches
 
+### Xquik API Backend
+
+The X social processor uses the saved browser session by default. For scheduled jobs on servers without a display, select the optional Xquik Python SDK backend instead. It reads the connected account's X (Twitter) home timeline and stores the same post, author, media, and engagement fields as the browser scraper.
+
+1. Connect the X account you want to read in Xquik.
+2. Set `X_SOCIAL_BACKEND=xquik` and `XQUIK_API_KEY`.
+3. Keep `XQUIK_MAX_PAGES=1` initially. The supported range is 1 to 5 pages per scheduled run.
+4. Run the existing `social_x_scraper` processor.
+
+Each page is a separate API read, so review usage before increasing the page limit. See the [Xquik Python SDK](https://docs.xquik.com/sdks/python) and [REST API documentation](https://docs.xquik.com/api-reference/overview) for current authentication, response, and billing behavior.
+
+Xquik is an independent third-party service. Not affiliated with X Corp. "Twitter" and "X" are trademarks of X Corp.
+
 ### Advanced Persistent Session Configuration
 
 For persistent logged in sessions and advanced browser management:
@@ -316,7 +334,7 @@ For persistent logged in sessions and advanced browser management:
 
 Beifong currently supports automated monitoring for:
 
-- **X.com (Twitter)** - Collects and analyzes your social media feeds
+- **X.com (Twitter)** - Collects and analyzes your home timeline through a saved browser session or the optional Xquik API backend
 - **Facebook.com** - Monitors your Facebook timeline and interactions
 
 ### Setting Up Scheduled Feed Collection
@@ -376,7 +394,7 @@ Beifong supports easy expansion to additional platforms:
 
 **Important Scheduling Considerations:**
 
-⚠️ **Avoid Concurrent Execution** - When scheduling multiple social media feed collection tasks, ensure they don't run simultaneously. All social media processors share the same persistent browser session.
+⚠️ **Avoid Concurrent Execution** - When scheduling browser-backed social media collection tasks, ensure they don't run simultaneously. Browser processors share the same persistent session. The Xquik backend does not use that browser profile.
 
 **Recommended Scheduling Approach:**
 - **Stagger Collection Times** - Schedule X.com and Facebook.com collection at different times
@@ -638,6 +656,8 @@ For reference: https://github.com/facebookresearch/faiss
 ### Browser-Based Data Collection Issues
 
 Some of the data collection features rely on browser automation, which sometimes won't work properly in server environments. While Beifong will still function, some browser dependent features may not work in server environments without proper browser setup.
+
+For X home timeline monitoring, `X_SOCIAL_BACKEND=xquik` avoids Playwright and persistent browser sessions. It still requires a connected X account and an Xquik API key.
 
 ## Updates
 
