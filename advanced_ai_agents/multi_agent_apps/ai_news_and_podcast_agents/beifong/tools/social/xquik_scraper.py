@@ -1,7 +1,8 @@
 import os
 import re
+from contextlib import ExitStack
 
-from x_twitter_scraper import XTwitterScraper
+from x_twitter_scraper import XTwitterScraper, XTwitterScraperError
 
 from tools.social.db import create_connection, setup_database
 from tools.social.x_ingestion import PostIngestor
@@ -88,19 +89,23 @@ def crawl_xquik_timeline(
     if owns_client:
         client = client_factory(api_key=resolved_api_key)
 
-    conn = create_connection(db_file)
-    setup_database(conn)
-    ingestor = PostIngestor(conn, analyze_posts=analyze_posts)
-    cursor = None
-    seen_cursors = set()
+    with ExitStack() as resources:
+        if owns_client:
+            resources.callback(client.close)
+        conn = create_connection(db_file)
+        resources.callback(conn.close)
+        setup_database(conn)
+        ingestor = PostIngestor(conn, analyze_posts=analyze_posts)
+        resources.callback(ingestor.flush)
+        cursor = None
+        seen_cursors = set()
 
-    try:
         for _ in range(max_pages):
             request = {"cursor": cursor} if cursor else {}
             try:
                 response = client.x.get_home_timeline(**request)
-            except Exception as error:
-                raise RuntimeError("Xquik timeline request failed. Check the API key, connected X account, and service status.") from error
+            except XTwitterScraperError:
+                raise RuntimeError("Xquik timeline request failed. Check the API key, connected X account, and service status.") from None
 
             tweets = _attribute(response, "tweets")
             if not isinstance(tweets, list):
@@ -115,12 +120,5 @@ def crawl_xquik_timeline(
                 raise RuntimeError("Xquik timeline response returned an invalid pagination cursor.")
             seen_cursors.add(next_cursor)
             cursor = next_cursor
-    finally:
-        try:
-            ingestor.flush()
-        finally:
-            conn.close()
-            if owns_client:
-                client.close()
 
-    return ingestor.post_count
+        return ingestor.post_count

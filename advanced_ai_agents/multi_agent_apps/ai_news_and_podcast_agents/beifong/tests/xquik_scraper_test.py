@@ -1,12 +1,14 @@
 import json
 import sqlite3
 import tempfile
+import traceback
 import unittest
 from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
 from unittest import mock
 
+from x_twitter_scraper import XTwitterScraperError
 from x_twitter_scraper.types.shared.content_disclosure import Advertising, ContentDisclosure
 from x_twitter_scraper.types.shared.search_tweet import SearchTweet
 from x_twitter_scraper.types.shared.tweet_media import TweetMedia
@@ -333,6 +335,25 @@ class XquikScraperTest(unittest.TestCase):
                 "neutral",
             )
 
+    def test_closes_owned_sdk_client_when_database_initialization_fails(self):
+        created_client = FakeClient(FakeXResource())
+
+        with (
+            mock.patch(
+                "tools.social.xquik_scraper.create_connection",
+                side_effect=sqlite3.OperationalError("database unavailable"),
+            ),
+            self.assertRaisesRegex(sqlite3.OperationalError, "database unavailable"),
+        ):
+            crawl_xquik_timeline(
+                db_file=self.db_path,
+                api_key="test-key",
+                client_factory=lambda api_key: created_client,
+                analyze_posts=lambda posts: [],
+            )
+
+        self.assertTrue(created_client.closed)
+
     def test_rejects_repeated_pagination_cursor(self):
         resource = FakeXResource(
             responses=[
@@ -366,7 +387,7 @@ class XquikScraperTest(unittest.TestCase):
         crawl.assert_called_once_with(db_file="posts.db", max_pages=2)
 
     def test_redacts_upstream_error_details(self):
-        resource = FakeXResource(error=RuntimeError("upstream leaked test-key"))
+        resource = FakeXResource(error=XTwitterScraperError("upstream leaked test-key"))
 
         with self.assertRaisesRegex(RuntimeError, "Check the API key") as raised:
             crawl_xquik_timeline(
@@ -377,6 +398,18 @@ class XquikScraperTest(unittest.TestCase):
             )
 
         self.assertNotIn("test-key", str(raised.exception))
+        self.assertNotIn("test-key", "".join(traceback.format_exception(raised.exception)))
+
+    def test_preserves_non_sdk_client_errors(self):
+        resource = FakeXResource(error=ValueError("invalid injected client"))
+
+        with self.assertRaisesRegex(ValueError, "invalid injected client"):
+            crawl_xquik_timeline(
+                db_file=self.db_path,
+                api_key="test-key",
+                client=FakeClient(resource),
+                analyze_posts=lambda posts: [],
+            )
 
 
 if __name__ == "__main__":

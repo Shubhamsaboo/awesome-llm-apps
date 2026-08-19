@@ -232,6 +232,6 @@ weasel==0.4.1
 websockets==15.0.1
 widgetsnbextension==4.0.14
 wrapt==1.17.2
-x_twitter_scraper==0.11.0
+x_twitter_scraper==0.11.2
 yarl==1.20.0
 zstandard==0.23.0
