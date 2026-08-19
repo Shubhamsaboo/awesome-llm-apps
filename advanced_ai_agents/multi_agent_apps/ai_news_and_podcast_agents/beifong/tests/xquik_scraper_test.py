@@ -1,6 +1,7 @@
 import json
 import sqlite3
 import tempfile
+import traceback
 import unittest
 from contextlib import contextmanager
 from pathlib import Path
@@ -333,6 +334,25 @@ class XquikScraperTest(unittest.TestCase):
                 "neutral",
             )
 
+    def test_closes_owned_sdk_client_when_database_initialization_fails(self):
+        created_client = FakeClient(FakeXResource())
+
+        with (
+            mock.patch(
+                "tools.social.xquik_scraper.create_connection",
+                side_effect=sqlite3.OperationalError("database unavailable"),
+            ),
+            self.assertRaisesRegex(sqlite3.OperationalError, "database unavailable"),
+        ):
+            crawl_xquik_timeline(
+                db_file=self.db_path,
+                api_key="test-key",
+                client_factory=lambda api_key: created_client,
+                analyze_posts=lambda posts: [],
+            )
+
+        self.assertTrue(created_client.closed)
+
     def test_rejects_repeated_pagination_cursor(self):
         resource = FakeXResource(
             responses=[
@@ -377,6 +397,7 @@ class XquikScraperTest(unittest.TestCase):
             )
 
         self.assertNotIn("test-key", str(raised.exception))
+        self.assertNotIn("test-key", "".join(traceback.format_exception(raised.exception)))
 
 
 if __name__ == "__main__":
