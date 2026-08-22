@@ -56,6 +56,31 @@ Works with Claude, Gemini, GPT, DeepSeek, Llama, Qwen and other open-source mode
   </tr>
 </table>
 
+## 🙏 Thanks to our sponsors
+
+<table align="center" cellpadding="16" cellspacing="12">
+  <tr>
+    <td align="center">
+      <a href="https://devtoolsacademy.link/shubham" target="_blank" rel="noopener" title="Vorflux">
+        <img src="docs/banner/sponsors/vorflux.png" alt="Vorflux" width="500">
+      </a>
+      <br>
+      <a href="https://devtoolsacademy.link/shubham" target="_blank" rel="noopener" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
+        Vorflux
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://sponsorunwindai.com/" title="Become a Sponsor">
+        <img src="docs/banner/sponsor_awesome_llm_apps.png" alt="Become a Sponsor" width="500">
+      </a>
+      <br>
+      <a href="https://sponsorunwindai.com/" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
+        Become a Sponsor
+      </a>
+    </td>
+  </tr>
+</table>
+
 ## 🚀 Run one now
 
 Give your coding agent a new skill in 10 seconds:
