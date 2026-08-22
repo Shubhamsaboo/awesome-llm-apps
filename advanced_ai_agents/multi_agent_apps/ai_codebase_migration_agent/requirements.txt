@@ -1,0 +1,9 @@
+langgraph>=1.2.6
+langgraph-checkpoint>=4.1.1
+langchain>=1.3.11
+langchain-core>=1.4.8
+langchain-openai>=1.3.3
+pydantic>=2.13.4
+python-dotenv>=1.2.2
+streamlit
+matplotlib
