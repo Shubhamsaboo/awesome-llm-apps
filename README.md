@@ -56,6 +56,27 @@ Works with Claude, Gemini, GPT, DeepSeek, Llama, Qwen and other open-source mode
   </tr>
 </table>
 
+## 🚀 Run one now
+
+Give your coding agent a new skill in 10 seconds:
+
+```bash
+npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/project-graveyard
+```
+
+Then ask it: *"why do I never finish my side projects?"*
+
+Or clone and run any agent in 30 seconds:
+
+```bash
+git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
+cd awesome-llm-apps/starter_ai_agents/ai_travel_agent
+pip install -r requirements.txt
+streamlit run travel_agent.py
+```
+
+> 📬 New templates drop weekly. [Get them in your inbox on Unwind AI](https://www.theunwindai.com).
+
 ## 🙏 Thanks to our sponsors
 
 <table align="center" cellpadding="16" cellspacing="12">
@@ -80,27 +101,6 @@ Works with Claude, Gemini, GPT, DeepSeek, Llama, Qwen and other open-source mode
     </td>
   </tr>
 </table>
-
-## 🚀 Run one now
-
-Give your coding agent a new skill in 10 seconds:
-
-```bash
-npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/project-graveyard
-```
-
-Then ask it: *"why do I never finish my side projects?"*
-
-Or clone and run any agent in 30 seconds:
-
-```bash
-git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-cd awesome-llm-apps/starter_ai_agents/ai_travel_agent
-pip install -r requirements.txt
-streamlit run travel_agent.py
-```
-
-> 📬 New templates drop weekly. [Get them in your inbox on Unwind AI](https://www.theunwindai.com).
 
 ## 📂 Browse all templates
 
