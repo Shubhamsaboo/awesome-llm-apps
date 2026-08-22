@@ -1,0 +1,4 @@
+streamlit
+google-adk
+mem0ai==2.0.14
+qdrant-client
