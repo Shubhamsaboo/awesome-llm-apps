@@ -46,7 +46,7 @@ Works with Claude, Gemini, GPT, DeepSeek, Llama, Qwen and other open-source mode
       <sub><b>Self-Improving Agent Skills</b></sub>
     </td>
     <td align="center">
-      <a href="advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent"><img src="docs/gallery/ai-home-renovation.png" alt="AI Home Renovation Agent: photo in, photoreal redesign out"></a>
+      <a href="advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent/"><img src="docs/gallery/ai-home-renovation.png" alt="AI Home Renovation Agent: photo in, photoreal redesign out"></a>
       <sub><b>AI Home Renovation Agent</b></sub>
     </td>
     <td align="center">
