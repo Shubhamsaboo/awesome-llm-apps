@@ -1,7 +1,7 @@
-fastapi
+fastapi>=0.110.0
 uvicorn[standard]
 python-dotenv
-pydantic
+pydantic>=2.0.0
 google-adk
 google-genai
 ag-ui-adk

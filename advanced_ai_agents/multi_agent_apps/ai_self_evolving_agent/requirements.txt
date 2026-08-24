@@ -20,7 +20,7 @@ numpy>=1.26.4
 openai>=1.55.3
 litellm>=1.55.6
 # pydantic>=2.9.0
-pydantic>=2.9.0,<=2.10.6
+pydantic>=2.0.0
 pydantic-settings==2.8.1
 pydantic_core>=2.23.2,<=2.27.2
 loguru>=0.7.3 
@@ -36,10 +36,10 @@ faiss-cpu==1.8.0.post1
 textgrad>=0.1.8
 
 # fast api dependencies
-fastapi>=0.115.11
+fastapi>=0.110.0
 motor>=3.7.0
 uvicorn>=0.34.0
-sqlalchemy>=2.0.38
+sqlalchemy>=2.0.0
 python-jose>=3.3.0
 passlib>=1.7.4
 python-multipart>=0.0.6

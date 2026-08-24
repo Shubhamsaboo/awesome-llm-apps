@@ -130,7 +130,7 @@ pyasn1==0.6.1
     #   rsa
 pyasn1-modules==0.4.1
     # via google-auth
-pydantic==2.10.6
+pydantic>=2.0.0
     # via
     #   agno
     #   anthropic

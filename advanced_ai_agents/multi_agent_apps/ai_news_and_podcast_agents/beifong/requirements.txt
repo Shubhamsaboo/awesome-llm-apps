@@ -54,7 +54,7 @@ duckduckgo_search==8.0.1
 elevenlabs==1.57.0
 espeakng-loader==0.2.4
 faiss-cpu==1.9.0.post1
-fastapi==0.115.12
+fastapi>=0.110.0
 feedparser==6.0.11
 filelock==3.18.0
 filetype==1.2.0
@@ -159,7 +159,7 @@ psycopg2-binary==2.9.10
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
 pycparser==2.22
-pydantic==2.10.6
+pydantic>=2.0.0
 pydantic-settings==2.9.1
 pydantic_core==2.27.2
 pydub==0.25.1
@@ -202,7 +202,7 @@ spacy==3.8.5
 spacy-curated-transformers==0.3.0
 spacy-legacy==3.0.12
 spacy-loggers==1.0.5
-SQLAlchemy==2.0.40
+SQLAlchemy>=2.0.0
 srsly==2.5.1
 starlette==0.46.2
 sympy==1.14.0

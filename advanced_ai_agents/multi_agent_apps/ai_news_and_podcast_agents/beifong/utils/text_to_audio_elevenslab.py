@@ -176,7 +176,7 @@ def create_podcast(
 
                     segment_audio = librosa.resample(
                         segment_audio,
-                        orig_sr=segment_rate,
+                        sr=segment_rate,
                         target_sr=determined_sampling_rate,
                     )
                 except ImportError:

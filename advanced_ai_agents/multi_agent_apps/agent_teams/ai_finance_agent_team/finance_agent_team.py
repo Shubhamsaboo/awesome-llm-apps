@@ -4,7 +4,7 @@ from agno.models.openai import OpenAIChat
 from agno.db.sqlite import SqliteDb
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.tools.yfinance import YFinanceTools
-from agno.os import AgentOS
+from agno.server import Server
 
 # Setup database for storage
 db = SqliteDb(db_file="agents.db")
@@ -38,8 +38,8 @@ agent_team = Team(
     markdown=True,
 )
 
-agent_os = AgentOS(teams=[agent_team])
-app = agent_os.get_app()
+# agent_os = AgentOS(teams=[agent_team])
+# app = agent_os.get_app()
 
 if __name__ == "__main__":
-    agent_os.serve(app="finance_agent_team:app", reload=True)
+    Server.serve(app_name="finance_agent_team:app", agents=[agent_team], reload=True)

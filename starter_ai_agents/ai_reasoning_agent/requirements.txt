@@ -1,4 +1,4 @@
 agno
 ollama
-fastapi
+fastapi>=0.110.0
 uvicorn

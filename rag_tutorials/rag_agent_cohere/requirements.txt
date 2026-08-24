@@ -9,6 +9,6 @@ duckduckgo-search>=6.4.2,<9
 streamlit==1.40.2
 tenacity==9.0.0
 typing-extensions==4.12.2
-pydantic==2.9.2
+pydantic>=2.0.0
 pydantic-core==2.23.4
 langgraph==0.2.53

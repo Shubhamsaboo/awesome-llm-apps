@@ -63,7 +63,7 @@ async def update_podcast_config(
     - **config_id**: The ID of the podcast configuration to update
     - **config_data**: Updated data for the podcast configuration
     """
-    updates = {k: v for k, v in config_data.dict().items() if v is not None}
+    updates = config_data.model_dump(exclude_none=True)
     return await podcast_config_service.update_config(config_id=config_id, updates=updates)
 
 

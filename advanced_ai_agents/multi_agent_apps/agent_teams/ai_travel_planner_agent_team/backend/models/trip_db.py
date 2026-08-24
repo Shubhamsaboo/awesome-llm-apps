@@ -1,11 +1,11 @@
 from sqlalchemy import Column, String, TIMESTAMP, ForeignKey, Text, DateTime
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+
 from datetime import datetime, timezone
 from typing import Optional
-from cuid2 import Cuid
+from cuid2 import cuid
 
-CUID_GENERATOR: Cuid = Cuid()
+CUID_GENERATOR = cuid
 
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -18,8 +18,8 @@ class TripPlan(Base):
     __tablename__ = (
         "trip_plan"  # Assuming this table exists as per foreign key constraints
     )
-    id = Column(
-        String, primary_key=True, default=lambda: str(CUID_GENERATOR.generate())
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(CUID_GENERATOR())
     )
     # Add other fields for TripPlan if needed for standalone model definition
     # For this task, we only need it to satisfy relationship constraints if defined from this end.
@@ -31,7 +31,7 @@ class TripPlanStatus(Base):
     __tablename__ = "trip_plan_status"
 
     id: Mapped[str] = mapped_column(
-        Text, primary_key=True, default=lambda: CUID_GENERATOR.generate()
+        Text, primary_key=True, default=lambda: CUID_GENERATOR()
     )
     tripPlanId: Mapped[str] = mapped_column(Text, index=True)
     status: Mapped[str] = mapped_column(Text, default="pending")
@@ -63,7 +63,7 @@ class TripPlanOutput(Base):
     __tablename__ = "trip_plan_output"
 
     id: Mapped[str] = mapped_column(
-        Text, primary_key=True, default=lambda: CUID_GENERATOR.generate()
+        Text, primary_key=True, default=lambda: CUID_GENERATOR()
     )
     tripPlanId: Mapped[str] = mapped_column(Text, index=True)
     itinerary: Mapped[str] = mapped_column(Text)

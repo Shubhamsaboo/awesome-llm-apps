@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Iterable, List
 
 from pypdf import PdfReader
-from autogen.tools.experimental import SearxngSearchTool
+from autogen.agentchat.contrib.tool import SearxngSearchTool
 
 
 @dataclass

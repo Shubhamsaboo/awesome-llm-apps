@@ -4,7 +4,7 @@ openai
 psycopg-binary
 pgvector
 requests
-sqlalchemy
+sqlalchemy>=2.0.0
 pypdf
 duckduckgo-search
 nest_asyncio

@@ -1,13 +1,13 @@
 import asyncio
 import streamlit as st
-from autogen import (
+from autogen.agentchat.contrib.swarms import (
     SwarmAgent,
     SwarmResult,
     initiate_swarm_chat,
-    OpenAIWrapper,
     AFTER_WORK,
     UPDATE_SYSTEM_MESSAGE
 )
+from autogen.oai.client import OpenAIWrapper
 
 # Initialize session state
 if 'output' not in st.session_state:
@@ -206,7 +206,7 @@ if st.button("Generate Game Concept"):
                     agent.llm_config['tool_choice'] = None
                     agent.client = OpenAIWrapper(**agent.llm_config)
                     # the agent has given a summary, now it should generate a detailed response
-                    system_prompt += f"\n\nYour task\nYou task is write the {current_gen} part of the report. Do not include any other parts. Do not use XML tags.\nStart your response with: '## {current_gen.capitalize()} Design'."    
+                    system_prompt += f"\n\nYour task\nYou task is write the {current_gen} part of the report. Do not include any other parts. Do not use XML tags.\nStart your response with: '## {current_gen.capitalize()} Design.'"    
                     
                     # Remove all messages except the first one with less cost
                     k = list(agent._oai_messages.keys())[-1]
@@ -287,4 +287,3 @@ if st.button("Generate Game Concept"):
 
         with st.expander("Technical Recommendations"):
             st.markdown(st.session_state.output['tech'])
-

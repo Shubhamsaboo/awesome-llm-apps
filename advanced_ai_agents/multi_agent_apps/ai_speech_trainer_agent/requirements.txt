@@ -12,5 +12,5 @@ librosa
 python-dotenv
 moviepy
 faster-whisper
-fastapi
+fastapi>=0.110.0
 uvicorn

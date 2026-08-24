@@ -1,6 +1,6 @@
 google-adk>=2.0.0a1
 google-genai>=1.0.0
-fastapi>=0.115
+fastapi>=0.110.0
 uvicorn[standard]>=0.30
-pydantic>=2.7
+pydantic>=2.0.0
 typing-extensions>=4.12

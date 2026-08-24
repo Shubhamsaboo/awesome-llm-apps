@@ -2,4 +2,4 @@ agno>=2.2.10
 openai
 mcp
 python-dotenv
-sqlalchemy
+sqlalchemy>=2.0.0

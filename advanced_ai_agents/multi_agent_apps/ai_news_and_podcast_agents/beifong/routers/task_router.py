@@ -98,7 +98,7 @@ async def update_task(
     - **task_id**: The ID of the task to update
     - **task_data**: Updated data for the task
     """
-    updates = {k: v for k, v in task_data.dict().items() if v is not None}
+    updates = {k: v for k, v in task_data.model_dump(exclude_none=True).items()}
     return await task_service.update_task(task_id=task_id, updates=updates)
 
 

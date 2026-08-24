@@ -213,17 +213,19 @@ if "openai_api_key" in st.session_state and "firecrawl_api_key" in st.session_st
                 try:
                     if hasattr(response, 'success') and response.success:
                         if hasattr(response, 'data') and response.data:
-                            extracted_info = response.data
+                            # FirecrawlApp.extract returns response.data as List[Dict[str, Any]]
+                            # Access the first item in the list, which should be the extracted dictionary
+                            extracted_info_dict = response.data[0]
                             
-                            # Create JSON structure
+                            # Create JSON structure using the extracted dictionary
                             competitor_json = {
                                 "competitor_url": competitor_url,
-                                "company_name": extracted_info.get('company_name', 'N/A') if isinstance(extracted_info, dict) else getattr(extracted_info, 'company_name', 'N/A'),
-                                "pricing": extracted_info.get('pricing', 'N/A') if isinstance(extracted_info, dict) else getattr(extracted_info, 'pricing', 'N/A'),
-                                "key_features": extracted_info.get('key_features', [])[:5] if isinstance(extracted_info, dict) and extracted_info.get('key_features') else getattr(extracted_info, 'key_features', [])[:5] if hasattr(extracted_info, 'key_features') else ['N/A'],
-                                "tech_stack": extracted_info.get('tech_stack', [])[:5] if isinstance(extracted_info, dict) and extracted_info.get('tech_stack') else getattr(extracted_info, 'tech_stack', [])[:5] if hasattr(extracted_info, 'tech_stack') else ['N/A'],
-                                "marketing_focus": extracted_info.get('marketing_focus', 'N/A') if isinstance(extracted_info, dict) else getattr(extracted_info, 'marketing_focus', 'N/A'),
-                                "customer_feedback": extracted_info.get('customer_feedback', 'N/A') if isinstance(extracted_info, dict) else getattr(extracted_info, 'customer_feedback', 'N/A')
+                                "company_name": extracted_info_dict.get('company_name', 'N/A'),
+                                "pricing": extracted_info_dict.get('pricing', 'N/A'),
+                                "key_features": extracted_info_dict.get('key_features', [])[:5],
+                                "tech_stack": extracted_info_dict.get('tech_stack', [])[:5],
+                                "marketing_focus": extracted_info_dict.get('marketing_focus', 'N/A'),
+                                "customer_feedback": extracted_info_dict.get('customer_feedback', 'N/A')
                             }
                             
                             return competitor_json
@@ -233,9 +235,11 @@ if "openai_api_key" in st.session_state and "firecrawl_api_key" in st.session_st
                         return None
                         
                 except Exception as response_error:
+                    # print(f"Error processing Firecrawl response for {competitor_url}: {response_error}") # For debugging
                     return None
                     
             except Exception as e:
+                # print(f"Error during Firecrawl extraction for {competitor_url}: {e}") # For debugging
                 return None
 
         def generate_comparison_report(competitor_data: list) -> None:
