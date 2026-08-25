@@ -97,7 +97,7 @@ def search_agent_run(agent: Agent, query: str) -> str:
         session_id=session_id,
     )
     response = search_agent.run(query, session_id=session_id)
-    response_dict = response.to_dict()
+    response_dict = response.model_dump()
     current_state["stage"] = "search"
     current_state["search_results"] = response_dict["content"]["items"]
     SessionService.save_session(session_id, current_state)

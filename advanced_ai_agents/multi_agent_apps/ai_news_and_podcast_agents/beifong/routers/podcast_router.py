@@ -136,7 +136,7 @@ async def update_podcast(podcast_id: int = Path(..., description="The ID of the 
 
     Returns the updated podcast metadata.
     """
-    update_data = {k: v for k, v in podcast_data.dict().items() if v is not None}
+    update_data = {k: v for k, v in podcast_data.model_dump().items() if v is not None}
     return await podcast_service.update_podcast(podcast_id, update_data)
 
 
