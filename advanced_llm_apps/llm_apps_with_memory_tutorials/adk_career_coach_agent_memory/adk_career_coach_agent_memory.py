@@ -300,8 +300,12 @@ if google_api_key:
         st.session_state.messages.append({"role": "assistant", "content": answer})
 
         # Write this exchange back to long-term memory for future sessions.
+        # Only the candidate's own message goes in: one memory.add() call
+        # instead of two (half the extraction latency/cost, since infer=True
+        # runs an LLM call per add()), and the fact store stays candidate
+        # facts only -- the coach's own advice text never gets treated as a
+        # fact about the candidate.
         memory.add(prompt, user_id=user_id, metadata={"role": "user"})
-        memory.add(answer, user_id=user_id, metadata={"role": "assistant"})
     elif not user_id:
         st.error("Please enter your email to start chatting.")
 else:

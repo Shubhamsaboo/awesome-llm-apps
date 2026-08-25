@@ -127,8 +127,11 @@ Step by step, in plain terms:
    tool to look something up (a sample interview question, a salary
    benchmark, etc.) before answering.
 5. The specialist's answer comes back through the orchestrator to the app.
-6. The app saves both your message and the answer into Mem0, so this
-   exchange is available to recall in future conversations.
+6. The app saves your message into Mem0 -- just your side of the exchange,
+   not the coach's reply. The long-term store is meant to hold facts about
+   you (the candidate), not the advice the coach gave, so only your message
+   goes in. This also means only one Mem0 write per turn instead of two,
+   which matters because each write triggers its own LLM call internally.
 7. The answer is shown to you in the chat window.
 
 ## Two very different kinds of "remembering"
