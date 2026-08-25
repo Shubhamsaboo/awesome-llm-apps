@@ -13,7 +13,7 @@ async def main():
         task="Compare the price of gpt-4o and DeepSeek-V3",
         llm=llm,
     )
-    result = await agent.run()
+    result = await agent.invoke()
     print(result)
 
 

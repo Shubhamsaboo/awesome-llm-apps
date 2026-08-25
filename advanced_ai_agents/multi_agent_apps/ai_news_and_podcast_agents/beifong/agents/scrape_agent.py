@@ -112,7 +112,7 @@ def verify_content_with_agent(agent, query, search_results, use_agent=True):
                 f"Keep content relevant to the query and ensure quality: {content_for_verification}",
                 session_id=agent.session_id,
             )
-            verified_item = response.to_dict()["content"]
+            verified_item = response.content
             search_result["full_text"] = verified_item.get("full_text", search_result["full_text"])
             search_result["published_date"] = verified_item.get("published_date", search_result["published_date"])
             search_result["agent_verified"] = True

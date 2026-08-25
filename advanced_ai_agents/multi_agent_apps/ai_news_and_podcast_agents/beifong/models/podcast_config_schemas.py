@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional
+from pydantic import ConfigDict
 
 
 class PodcastConfigBase(BaseModel):
@@ -20,8 +21,7 @@ class PodcastConfig(PodcastConfigBase):
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PodcastConfigCreate(PodcastConfigBase):

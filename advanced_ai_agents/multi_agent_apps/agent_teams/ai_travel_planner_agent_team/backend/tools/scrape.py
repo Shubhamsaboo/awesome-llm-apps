@@ -27,8 +27,10 @@ def scrape_website(url: str) -> str:
     """
     scrape_status = app.scrape_url(
         url,
-        formats=["markdown"],
-        wait_for=30000,
+        params=ScrapeOptions(
+            page_format="markdown",
+            page_wait_for_timeout=30000,
+        ),
         timeout=60000,
     )
     return scrape_status.markdown

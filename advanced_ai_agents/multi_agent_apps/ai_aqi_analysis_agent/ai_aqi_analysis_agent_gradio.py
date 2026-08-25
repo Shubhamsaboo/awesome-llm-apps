@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pydantic import BaseModel, Field
 from agno.agent import Agent
 from agno.run.agent import RunOutput
-from agno.models.openai import OpenAIChat
+from agno.models.llm import OpenAI
 from firecrawl import FirecrawlApp
 import gradio as gr
 import json
@@ -83,9 +83,9 @@ class HealthRecommendationAgent:
     
     def __init__(self, openai_key: str) -> None:
         self.agent = Agent(
-            model=OpenAIChat(
-                id="gpt-4o",
-                name="Health Recommendation Agent",
+            name="Health Recommendation Agent",
+            model=OpenAI(
+                model="gpt-4o",
                 api_key=openai_key
             )
         )

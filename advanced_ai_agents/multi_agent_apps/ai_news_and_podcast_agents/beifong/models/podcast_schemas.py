@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, model_validator
 from typing import Optional, List, Dict, Any, Union
 
 
@@ -17,8 +17,7 @@ class Podcast(PodcastBase):
     created_at: Optional[str] = None
     audio_path: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PodcastContent(BaseModel):
@@ -31,16 +30,13 @@ class PodcastSource(BaseModel):
     url: Optional[str] = None
     source: Optional[str] = None
 
+    @model_validator(mode='before')
     @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, v):
+    def validate_source_input(cls, v):
         if isinstance(v, str):
-            return cls(url=v)
+            return {'url': v}
         if isinstance(v, dict):
-            return cls(**v)
+            return v
         raise ValueError("Source must be a string or a dict")
 
 

@@ -1,8 +1,8 @@
 import streamlit as st
 from agno.agent import Agent
-from agno.run.agent import RunOutput
+from agno.messages import Message
 from agno.team import Team
-from agno.knowledge.knowledge import Knowledge
+from agno.knowledge import KnowledgeBase, Document
 from agno.vectordb.qdrant import Qdrant
 from agno.models.ollama import Ollama
 from agno.knowledge.embedder.ollama import OllamaEmbedder
@@ -35,12 +35,12 @@ def process_document(uploaded_file, vector_db: Qdrant):
         try:
             st.write("Processing document...")
             # Create knowledge base with local embedder
-            knowledge_base = Knowledge(
+            knowledge_base = KnowledgeBase(
                 vector_db=vector_db
             )
             
             st.write("Loading knowledge base...")
-            knowledge_base.add_content(path=temp_file_path)
+            knowledge_base.add_documents([Document(path=temp_file_path)])
             
             st.write("Knowledge base ready!")
             return knowledge_base
@@ -213,7 +213,7 @@ def main():
                         else:
                             combined_query = user_query
 
-                        response: RunOutput = st.session_state.legal_team.run(combined_query)
+                        response: Message = st.session_state.legal_team.run(combined_query)
                         
                         # Display results in tabs
                         tabs = st.tabs(["Analysis", "Key Points", "Recommendations"])
@@ -222,14 +222,10 @@ def main():
                             st.markdown("### Detailed Analysis")
                             if response.content:
                                 st.markdown(response.content)
-                            else:
-                                for message in response.messages:
-                                    if message.role == 'assistant' and message.content:
-                                        st.markdown(message.content)
                         
                         with tabs[1]:
                             st.markdown("### Key Points")
-                            key_points_response: RunOutput = st.session_state.legal_team.run(
+                            key_points_response: Message = st.session_state.legal_team.run(
                                 f"""Based on this previous analysis:    
                                 {response.content}
                                 
@@ -238,14 +234,10 @@ def main():
                             )
                             if key_points_response.content:
                                 st.markdown(key_points_response.content)
-                            else:
-                                for message in key_points_response.messages:
-                                    if message.role == 'assistant' and message.content:
-                                        st.markdown(message.content)
                         
                         with tabs[2]:
                             st.markdown("### Recommendations")
-                            recommendations_response: RunOutput = st.session_state.legal_team.run(
+                            recommendations_response: Message = st.session_state.legal_team.run(
                                 f"""Based on this previous analysis:
                                 {response.content}
                                 
@@ -254,10 +246,6 @@ def main():
                             )
                             if recommendations_response.content:
                                 st.markdown(recommendations_response.content)
-                            else:
-                                for message in recommendations_response.messages:
-                                    if message.role == 'assistant' and message.content:
-                                        st.markdown(message.content)
 
                     except Exception as e:
                         st.error(f"Error during analysis: {str(e)}")

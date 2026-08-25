@@ -2,4 +2,4 @@ openai
 agno>=2.2.10
 duckduckgo-search
 yfinance
-sqlalchemy
+sqlalchemy>=2.0.0

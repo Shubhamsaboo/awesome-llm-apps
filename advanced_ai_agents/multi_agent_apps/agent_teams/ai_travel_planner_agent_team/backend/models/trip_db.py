@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, TIMESTAMP, ForeignKey, Text, DateTime
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+
 from datetime import datetime, timezone
 from typing import Optional
 from cuid2 import Cuid
@@ -18,7 +18,7 @@ class TripPlan(Base):
     __tablename__ = (
         "trip_plan"  # Assuming this table exists as per foreign key constraints
     )
-    id = Column(
+    id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: str(CUID_GENERATOR.generate())
     )
     # Add other fields for TripPlan if needed for standalone model definition
