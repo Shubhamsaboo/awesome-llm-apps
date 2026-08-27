@@ -193,6 +193,7 @@ streamlit run travel_agent.py
 *   [🛡️ Insurance Claim Live Agent Team](voice_ai_agents/insurance_claim_live_agent_team/) - Real-time voice claim intake with Gemini Live
 *   [🔊 Voice RAG Agent (OpenAI SDK)](voice_ai_agents/voice_rag_openaisdk/) - Ask your PDFs questions, hear the answers
 *   [🎙️ OpenSource Voice Dictation Agent (Wispr Flow clone)](https://github.com/akshayaggarwal99/jarvis-ai-assistant) <sub>↗ external</sub> - Open-source dictation that types where you talk
+*   [🪶 Quill (macOS system-wide voice typing)](https://github.com/skundu42/quill) <sub>↗ external</sub> - Native macOS dictation that inserts cleaned-up text at your cursor, using your own Gemini API key
 
 ### 🖼️ Generative UI and Agentic Frontends
 
