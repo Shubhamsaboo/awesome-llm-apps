@@ -3,9 +3,8 @@ from openai import OpenAI
 from agno.agent import Agent as AgnoAgent
 from agno.run.agent import RunOutput
 from agno.models.openai import OpenAIChat as AgnoOpenAIChat
-from langchain_openai import ChatOpenAI 
 import asyncio
-from browser_use import Browser
+from browser_use import Agent as BrowserAgent, BrowserSession, ChatOpenAI
 
 st.set_page_config(page_title="PyGame Code Generator", layout="wide")
 
@@ -126,24 +125,24 @@ elif generate_vis_btn:
         st.warning("Please generate code first before visualization")
     else:
         async def run_pygame_on_trinket(code: str) -> None:
-            browser = Browser()
-            from browser_use import Agent 
-            async with await browser.new_context() as context:
+            browser_session = BrowserSession()
+            try:
+                await browser_session.start()
                 model = ChatOpenAI(
                     model="gpt-4o", 
                     api_key=st.session_state.api_keys["openai"]
                 )
                 
-                agent1 = Agent(
+                agent1 = BrowserAgent(
                     task='Go to https://trinket.io/features/pygame, thats your only job.',
                     llm=model,
-                    browser_context=context,
+                    browser_session=browser_session,
                 )
                 
-                executor = Agent(
+                executor = BrowserAgent(
                     task='Executor. Execute the code written by the User by clicking on the run button on the right. ',
                     llm=model,
-                    browser_context=context
+                    browser_session=browser_session,
                 )
 
                 # FIX: The `code` parameter was previously never referenced inside
@@ -152,7 +151,7 @@ elif generate_vis_btn:
                 # directly into the coder agent's task, and the instruction is
                 # changed from "wait for the user to write the code" (passive)
                 # to an explicit action: click into the editor and type the code.
-                coder = Agent(
+                coder = BrowserAgent(
                     task=(
                         "Coder. Click into the Trinket code editor. Select all existing "
                         "content (Ctrl+A) and delete it. Then paste the following Python "
@@ -161,13 +160,13 @@ elif generate_vis_btn:
                         f"{code}"
                     ),
                     llm=model,
-                    browser_context=context
+                    browser_session=browser_session,
                 )
                 
-                viewer = Agent(
+                viewer = BrowserAgent(
                     task='Viewer. Your job is to just view the pygame window for 10 seconds.',
                     llm=model,
-                    browser_context=context,
+                    browser_session=browser_session,
                 )
 
                 with st.spinner("Running code on Trinket..."):
@@ -180,6 +179,8 @@ elif generate_vis_btn:
                     except Exception as e:
                         st.error(f"Error running code on Trinket: {str(e)}")
                         st.info("You can still copy the code above and run it manually on Trinket")
+            finally:
+                await browser_session.stop()
 
         # Run the async function with the stored code
         asyncio.run(run_pygame_on_trinket(st.session_state.generated_code))

@@ -1,4 +1,3 @@
 agno>=2.2.10
-langchain-openai
-browser-use
+browser-use==0.13.8
 streamlit
