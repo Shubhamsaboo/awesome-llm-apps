@@ -4,9 +4,5 @@ version = "0.1.0"
 requires-python = "==3.11.*"
 dependencies = [
     "streamlit",
-    "browser-use==0.1.26",
-    "playwright==1.49.1",
-    "langchain-openai",
-    "langchain-anthropic",
-    "langchain-google-genai",
+    "browser-use==0.13.8",
 ]
