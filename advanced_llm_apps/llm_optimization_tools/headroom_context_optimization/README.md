@@ -4,7 +4,7 @@ Reduce LLM API costs by 50-90% through intelligent context compression. Tool out
 
 ## 📋 Overview
 
-This app demonstrates how to use [Headroom](https://github.com/chopratejas/headroom) to dramatically reduce token usage when working with AI agents and tool-heavy LLM applications. Unlike simple truncation, Headroom uses statistical analysis to keep what matters and compress what doesn't.
+This app demonstrates how to use [Headroom](https://github.com/headroomlabs-ai/headroom) to dramatically reduce token usage when working with AI agents and tool-heavy LLM applications. Unlike simple truncation, Headroom uses statistical analysis to keep what matters and compress what doesn't.
 
 ### Key Benefits
 
@@ -142,10 +142,10 @@ python headroom_demo.py
 
 ## 🔗 Resources
 
-- **GitHub**: https://github.com/chopratejas/headroom
+- **GitHub**: https://github.com/headroomlabs-ai/headroom
 - **PyPI**: https://pypi.org/project/headroom-ai/
-- **Documentation**: https://github.com/chopratejas/headroom/tree/main/docs
-- **Demo Video**: https://github.com/chopratejas/headroom/releases
+- **Documentation**: https://github.com/headroomlabs-ai/headroom/tree/main/docs
+- **Demo Video**: https://github.com/headroomlabs-ai/headroom/releases
 
 ## 🔌 Provider Support
 
@@ -167,7 +167,7 @@ Contributions are welcome! Feel free to:
 
 ## 📄 License
 
-Apache License 2.0 - see [LICENSE](https://github.com/chopratejas/headroom/blob/main/LICENSE).
+Apache License 2.0 - see [LICENSE](https://github.com/headroomlabs-ai/headroom/blob/main/LICENSE).
 
 ## 🙏 Credits
 

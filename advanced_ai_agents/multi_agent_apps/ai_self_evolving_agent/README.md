@@ -1,6 +1,6 @@
 # 🧬 Self-Evolving AI Agent
 
-A multi-agent app built on [EvoAgentX](https://github.com/EvoAgentX/EvoAgentX) that turns a
+A multi-agent app built on [EvoAgentX](https://github.com/ANative-Lab/EvoAgentX) that turns a
 single natural-language goal into a working program. It **automatically generates a
 multi-agent workflow**, executes it to produce code, then **verifies and repairs** that code
 with a second model — no manual agent wiring required.
@@ -26,7 +26,7 @@ in the browser"* and writes a ready-to-play `index.html`.
 2. **Install dependencies**
    ```bash
    pip install -r requirements.txt
-   pip install git+https://github.com/EvoAgentX/EvoAgentX.git
+   pip install git+https://github.com/ANative-Lab/EvoAgentX.git
    ```
 
 3. **Set your API keys**
@@ -54,4 +54,4 @@ in the browser"* and writes a ready-to-play `index.html`.
 
 This example is powered by the open-source **EvoAgentX** framework. For docs, tutorials, and
 additional optimizers (TextGrad, AFlow, MIPRO), see the
-[EvoAgentX repository](https://github.com/EvoAgentX/EvoAgentX).
+[EvoAgentX repository](https://github.com/ANative-Lab/EvoAgentX).
