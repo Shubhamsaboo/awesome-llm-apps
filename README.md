@@ -132,6 +132,7 @@ streamlit run travel_agent.py
 *   [📊 xAI Finance Agent](starter_ai_agents/xai_finance_agent/) - Real-time stock analysis powered by Grok
 *   [🔍 OpenAI Research Agent](starter_ai_agents/openai_research_agent/) - Multi-agent topic research with the OpenAI Agents SDK
 *   [🕸️ Web Scraping AI Agent](starter_ai_agents/web_scraping_ai_agent/) - Describe what to extract and the agent scrapes it
+*   [🔍 Hybrid RAG Issue & PR Assistant](https://github.com/Cagrik34/Hybrid-RAG-Issue-PR-Assistant) - Zero-cloud hybrid retrieval GitHub Action using SQLite FTS5 (BM25) + dense embeddings via Reciprocal Rank Fusion for deterministic code triage with AST-grounded citations
 
 ### 🚀 Advanced AI Agents
 
