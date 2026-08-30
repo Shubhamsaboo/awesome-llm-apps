@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
 
 
@@ -32,8 +32,7 @@ class Source(SourceBase):
     created_at: Optional[str] = None
     last_crawled: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SourceCreate(SourceBase):

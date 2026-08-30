@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator, ConfigDict
 from typing import Optional, List, Dict, Any
 from enum import Enum
 
@@ -62,7 +62,8 @@ class TaskBase(BaseModel):
     description: Optional[str] = None
     enabled: bool = True
 
-    @validator("task_type")
+    @field_validator("task_type")
+    @classmethod
     def set_command_from_type(cls, v):
         if v not in TASK_TYPES:
             raise ValueError(f"Invalid task type: {v}")
@@ -75,8 +76,7 @@ class Task(TaskBase):
     last_run: Optional[str] = None
     created_at: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TaskCreate(TaskBase):
