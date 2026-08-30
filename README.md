@@ -92,6 +92,7 @@ streamlit run travel_agent.py
 *   [🧠 Advisor Orchestrator Worker](agent_skills/advisor-orchestrator-worker/) - Meta Loop with Claude Fable 5 as advisor, GPT-5.6 as orchestrator, and Gemini 3.5 Flash as worker
 *   [♾️ Self-Improving Agent Skills](agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
 
+- [ViBo-memory](https://github.com/vnbochkarev-netizen/ViBo-memory) - Persistent memory for AI agents: semantic search, L1/L2/L3 encryption, 50-150x token savings on context
 ### 🌱 Starter AI Agents
 
 *Single-file agents that run with just an API key - a great place to start.*
