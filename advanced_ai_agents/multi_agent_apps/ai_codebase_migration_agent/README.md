@@ -7,7 +7,7 @@ An AI-powered multi-agent codebase migration assistant built with **LangGraph** 
 - 🧠 **Planner Agent** — Analyzes a repository target and migration goal to generate an architectural strategy plus a file-by-file migration plan with risk levels (`Low`, `Medium`, `High`, `Critical`).
 - 🛡️ **Human-in-the-Loop Approval Gate** — Pause execution via LangGraph `interrupt()` so engineers can inspect, review, and modify risk levels or file scopes in natural language before any code changes occur.
 - 🛠️ **Parallel Refactor Workers** — Fan out simultaneously via LangGraph's `Send()` API — one worker per file in the plan — generating precise code diffs, breaking changes analysis, and recommended test cases.
-- 📊 **Aggregator Agent** — Synthesizes all file diffs into a publication-ready Migration Guide & Report, auto-generating 1-2 matplotlib visual charts (embedded as base64 images).
+- 📊 **Aggregator Agent** — Synthesizes all file diffs into a publication-ready Migration Guide & Report, auto-generating 1-2 data-driven matplotlib charts (embedded as base64 images).
 - 🖥️ **Streamlit UI** — Sidebar API configuration, risk badges, interactive revision controls, markdown report rendering with embedded charts, and one-click `.md` download.
 - ✅ **Query Validation** — Validates repository inputs and migration goals to block empty, unsafe, or destructive prompts before hitting LLMs.
 
@@ -50,7 +50,7 @@ Repo Target + Goal → Validator → Planner (Strategy + File Tasks) → HITL Ap
 2. **Planner Agent** (structured output) formulates a high-level migration strategy and breaks down changes into 3–6 file migration tasks with estimated risk levels.
 3. **Plan Approval Gate** pauses the graph using LangGraph's `interrupt()` API to let developers review the risk matrix, request revisions in natural language, or approve execution.
 4. **Parallel Refactor Workers** fan out via `Send()` API calls — one branch per file — to produce unified diffs, before/after snippets, and test cases.
-5. **Aggregator Agent** synthesizes all refactoring diffs into a comprehensive report, embeds visual risk charts using Matplotlib, and outlines post-migration validation steps.
+5. **Aggregator Agent** synthesizes all refactoring diffs into a comprehensive report, chooses chart data (not executable code), renders visual risk charts using trusted Matplotlib templates, and outlines post-migration validation steps.
 
 Session state is persisted using LangGraph's in-memory `MemorySaver`, allowing execution interrupts to survive Streamlit reruns seamlessly.
 
@@ -67,7 +67,7 @@ Session state is persisted using LangGraph's in-memory `MemorySaver`, allowing e
 |---|---|
 | Agent Graph | LangGraph (`Send()` fan-out, `interrupt()` HITL, `MemorySaver` checkpointer) |
 | LLMs | Configurable (defaults: `gpt-5-mini` for fast steps, `gpt-5.5` for synthesis) |
-| Charts | Matplotlib (embedded base64 PNG data URIs) |
+| Charts | Validated data rendered by trusted Matplotlib templates (embedded base64 PNG data URIs) |
 | UI | Streamlit |
 
 ## Dependencies

@@ -8,17 +8,16 @@
 # The graph itself is importable without Streamlit via build_migration_graph().
 
 import base64
-import concurrent.futures
 import io
 import json
 import logging
+import math
 import operator
 import os
 import random
 import re
 import time
 import uuid
-import warnings
 from typing import Annotated, List, Literal, Optional, TypedDict
 
 import matplotlib
@@ -48,6 +47,7 @@ load_dotenv()
 # LLM_BASE_URL plus MODEL_FAST / MODEL_PRO (e.g. DeepSeek, Groq, Together, Ollama).
 DEFAULT_MODEL_FAST = "gpt-5-mini"  # validation, planning, per-file refactor workers
 DEFAULT_MODEL_PRO = "gpt-5.5"  # final report synthesis + chart generation
+LLM_TIMEOUT = 300  # seconds for each provider request
 
 
 class _LLMProvider:
@@ -70,6 +70,7 @@ class _LLMProvider:
             model=model,
             openai_api_key=api_key,
             openai_api_base=base_url or None,
+            timeout=LLM_TIMEOUT,
         )
 
     def flash(self):
@@ -140,87 +141,63 @@ class MigrationState(TypedDict):
 #############################
 
 
-class _NoShowPyplot:
-    """Delegate to pyplot, but neutralize plt.show() for headless rendering."""
-
-    def __getattr__(self, name):
-        return getattr(plt, name)
-
-    def show(self, *args, **kwargs):
-        return None
-
-
-CHART_CODE_TIMEOUT = 30  # seconds allowed for LLM-generated chart code
-
-
-def _restricted_import(name, globals=None, locals=None, fromlist=(), level=0):
-    allowed = {
-        "matplotlib",
-        "plt",
-        "numpy",
-        "pandas",
-        "sns",
-        "seaborn",
-        "math",
-        "random",
-        "datetime",
-    }
-    root_name = name.split(".")[0]
-    if root_name not in allowed:
-        raise ImportError(f"Importing module '{name}' is not allowed in sandbox.")
-    return __import__(name, globals, locals, fromlist, level)
-
-
-def _render_chart_png(python_code: str) -> str:
-    """Execute LLM-written matplotlib code and return base64 PNG data URI payload."""
-    safe_builtins = (
-        __builtins__.copy() if isinstance(__builtins__, dict) else vars(__builtins__).copy()
-    )
-    safe_builtins["__import__"] = _restricted_import
-
-    exec_globals = {
-        "plt": _NoShowPyplot(),
-        "matplotlib": matplotlib,
-        "__builtins__": safe_builtins,
-    }
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", UserWarning)
-        exec(python_code, exec_globals, {})
-
-    buf = io.BytesIO()
-    plt.savefig(buf, format="png", bbox_inches="tight", dpi=150)
-    plt.close("all")
-    buf.seek(0)
-    return base64.b64encode(buf.read()).decode("ascii")
+MAX_CHART_POINTS = 50
 
 
 @tool
-def generate_matplotlib_chart(python_code: str) -> str:
-    """Execute Python code containing matplotlib instructions to generate a risk or progress chart.
-    The code should plot data using standard matplotlib.pyplot (plt) functions.
-    Do NOT call plt.show() - the execution wrapper will automatically save the figure.
-    Always define clean labels, title, and grid/legend where appropriate.
-    Returns:
-        A markdown image link containing an embedded base64 PNG data URI of the chart
-        (e.g. ![Generated Chart](data:image/png;base64,...)) which you MUST insert
-        into the appropriate section in the final markdown report.
+def generate_matplotlib_chart(
+    chart_type: Literal["bar", "line"],
+    labels: list[str],
+    values: list[float],
+    title: str = "Migration Risk Distribution",
+    y_label: str = "Files",
+) -> str:
+    """Render a chart from validated data selected by the model.
+
+    This tool accepts data only. It never executes model-generated Python,
+    imports, or callables, so model output cannot access the host filesystem.
     """
-    plt.clf()
-    plt.close("all")
+    if chart_type not in {"bar", "line"}:
+        return "Error rendering chart: chart_type must be 'bar' or 'line'."
+    if not labels or len(labels) > MAX_CHART_POINTS:
+        return f"Error rendering chart: provide 1-{MAX_CHART_POINTS} labels."
+    if len(labels) != len(values):
+        return "Error rendering chart: labels and values must have the same length."
+    if any(
+        not isinstance(label, str) or not label.strip() or len(label) > 120
+        for label in labels
+    ):
+        return "Error rendering chart: labels must be non-empty strings of at most 120 characters."
+    if any(
+        not isinstance(value, (int, float)) or not math.isfinite(value)
+        for value in values
+    ):
+        return "Error rendering chart: values must be finite numbers."
+    if not isinstance(title, str) or not title.strip() or len(title) > 120:
+        return "Error rendering chart: title must be a non-empty string of at most 120 characters."
+    if not isinstance(y_label, str) or not y_label.strip() or len(y_label) > 80:
+        return "Error rendering chart: y_label must be a non-empty string of at most 80 characters."
+
     try:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
-            future = pool.submit(_render_chart_png, python_code)
-            b64 = future.result(timeout=CHART_CODE_TIMEOUT)
+        fig, axis = plt.subplots(figsize=(10, 6))
+        if chart_type == "bar":
+            axis.bar(labels, values)
+        else:
+            axis.plot(labels, values, marker="o")
+        axis.set_title(title)
+        axis.set_ylabel(y_label)
+        axis.grid(axis="y", alpha=0.3)
+        fig.tight_layout()
+
+        buf = io.BytesIO()
+        fig.savefig(buf, format="png", bbox_inches="tight", dpi=150)
+        plt.close(fig)
+        buf.seek(0)
+        b64 = base64.b64encode(buf.read()).decode("ascii")
         return f"![Generated Chart](data:image/png;base64,{b64})"
-    except concurrent.futures.TimeoutError:
-        plt.clf()
+    except Exception as exc:
         plt.close("all")
-        logger.error(f"Chart code timed out after {CHART_CODE_TIMEOUT}s")
-        return f"Error executing matplotlib code: timed out after {CHART_CODE_TIMEOUT}s"
-    except Exception as e:
-        plt.clf()
-        plt.close("all")
-        return f"Error executing matplotlib code: {str(e)}"
+        return f"Error rendering chart: {exc}"
 
 
 #############################
@@ -399,7 +376,10 @@ def planner_node(state: MigrationState) -> dict:
     except Exception as e:
         error_msg = str(e)
         logger.error(f"Error generating migration plan: {e}", exc_info=True)
-        return {"status": "error", "error": f"Failed to generate migration plan: {error_msg}"}
+        return {
+            "status": "error",
+            "error": f"Failed to generate migration plan: {error_msg}",
+        }
 
 
 # --- Plan Approval Node (HITL Interrupt) ---
@@ -414,7 +394,9 @@ Classification Rules:
 
 
 class PlanApprovalState(BaseModel):
-    plan_approved: bool = Field(description="True if user approved the migration plan, False if modifications requested.")
+    plan_approved: bool = Field(
+        description="True if user approved the migration plan, False if modifications requested."
+    )
 
 
 def plan_approval(state: MigrationState) -> dict:
@@ -426,7 +408,9 @@ def plan_approval(state: MigrationState) -> dict:
         else str(user_response)
     )
 
-    approval_llm = llm.flash().with_structured_output(PlanApprovalState, method="json_mode")
+    approval_llm = llm.flash().with_structured_output(
+        PlanApprovalState, method="json_mode"
+    )
 
     user_content = (
         f"User feedback: {feedback}\n"
@@ -443,7 +427,11 @@ def plan_approval(state: MigrationState) -> dict:
     logger.info(f"Plan approval status: {result.plan_approved}, Feedback: '{feedback}'")
 
     status = "refactoring" if result.plan_approved else "planning"
-    return {"plan_approved": result.plan_approved, "user_feedback": feedback, "status": status}
+    return {
+        "plan_approved": result.plan_approved,
+        "user_feedback": feedback,
+        "status": status,
+    }
 
 
 # --- Supervisor: Fan-out Workers via Send() ---
@@ -458,28 +446,6 @@ def dispatch_workers(state: MigrationState) -> List[Send]:
 
 
 # --- Refactor Worker Node ---
-
-# Workers emit a full file diff plus tests, and all of them hit the API concurrently,
-# so responses routinely run past a minute. Keep this generous or workers get culled
-# mid-flight and their file silently lands in the report as a failure.
-LLM_TIMEOUT = 300
-
-
-def _invoke_with_timeout(agent_or_llm, messages, timeout=LLM_TIMEOUT):
-    pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-    fut = pool.submit(agent_or_llm.invoke, messages)
-    try:
-        res = fut.result(timeout=timeout)
-        pool.shutdown(wait=False)
-        return res
-    except concurrent.futures.TimeoutError:
-        logger.error(f"LLM invoke timed out after {timeout}s")
-        pool.shutdown(wait=False)
-        raise TimeoutError(f"LLM call timed out after {timeout}s")
-    except Exception as e:
-        pool.shutdown(wait=False)
-        raise e
-
 
 REFACTOR_WORKER_PROMPT = """You are a Senior Staff Refactoring Engineer specializing in automated, production-grade code migrations.
 
@@ -527,7 +493,7 @@ def refactor_worker_node(state: MigrationState) -> dict:
     ]
 
     try:
-        response = _invoke_with_timeout(llm.flash(), messages)
+        response = llm.flash().invoke(messages)
         diff_output = (
             f"### 📄 File: `{file_path}`\n"
             f"**Risk Level:** `{file_task.get('risk_level', 'Medium')}` | **Action:** {file_task.get('action', '')}\n\n"
@@ -537,7 +503,9 @@ def refactor_worker_node(state: MigrationState) -> dict:
         logger.info(f"Refactor worker finished for {file_path}")
         return {"results": [diff_output]}
     except Exception as e:
-        logger.error(f"Error in refactor worker node for {file_path}: {e}", exc_info=True)
+        logger.error(
+            f"Error in refactor worker node for {file_path}: {e}", exc_info=True
+        )
         return {
             "results": [
                 f"### 📄 File: `{file_path}`\n"
@@ -558,7 +526,8 @@ Structure requirements:
 3. **Migration Risk Summary & Impact Matrix**: Markdown table summarizing all files, their risk level (Low/Medium/High/Critical), and primary changes.
 4. **Matplotlib Risk Visualization Tool**:
    - You have access to `generate_matplotlib_chart`.
-   - You MUST call this tool to generate 1 to 2 visual charts (e.g. Risk Level Distribution bar chart, Migration Progress / Complexity by File).
+   - Call this tool to generate 1 to 2 visual charts (e.g. Risk Level Distribution bar chart, Migration Progress / Complexity by File).
+   - The tool accepts only `chart_type` (`bar` or `line`), string `labels`, numeric `values`, and optional title/y-axis label. Never provide Python source code.
    - Embed the exact return marker (e.g. `<!--CHART_1-->`) in the report where the chart belongs.
 5. **Consolidated File Refactoring & Diffs**: Include all individual file diffs and refactored code clearly grouped by module/file.
 6. **Post-Migration Verification & Rollback Plan**: Checklist for automated tests, CI validation, and emergency rollback.
@@ -567,7 +536,6 @@ Keep the style formal, highly technical, visually clean, and thorough."""
 
 
 MAX_AGGREGATOR_ROUNDS = 6
-AGGREGATOR_TIMEOUT = 300
 
 
 def aggregator_node(state: MigrationState) -> dict:
@@ -582,7 +550,7 @@ def aggregator_node(state: MigrationState) -> dict:
                 f"Overall Strategy: {state.get('strategy', '')}\n\n"
                 f"Individual File Diffs & Refactoring Output:\n{combined_results}\n\n"
                 "Synthesize the final Codebase Migration Report & Risk Guide in Markdown. "
-                "Call `generate_matplotlib_chart` to render 1-2 charts showing risk distribution or migration effort across files."
+                "Call `generate_matplotlib_chart` with chart data to render 1-2 charts showing risk distribution or migration effort across files."
             )
         ),
     ]
@@ -594,11 +562,9 @@ def aggregator_node(state: MigrationState) -> dict:
 
         for round_num in range(1, MAX_AGGREGATOR_ROUNDS + 1):
             try:
-                response = _invoke_with_timeout(
-                    llm_with_tools, messages_history, timeout=AGGREGATOR_TIMEOUT
-                )
+                response = llm_with_tools.invoke(messages_history)
             except TimeoutError:
-                logger.error(f"Aggregator LLM call timed out on round {round_num}")
+                logger.error(f"Aggregator LLM request timed out on round {round_num}")
                 break
 
             messages_history.append(response)
@@ -609,7 +575,7 @@ def aggregator_node(state: MigrationState) -> dict:
             for tool_call in response.tool_calls:
                 if tool_call["name"] == "generate_matplotlib_chart":
                     result = generate_matplotlib_chart.invoke(tool_call["args"])
-                    if result.startswith("Error executing matplotlib code"):
+                    if result.startswith("Error rendering chart"):
                         messages_history.append(
                             ToolMessage(
                                 content=result[:300],
@@ -742,9 +708,7 @@ def apply_api_keys(api_key: str, base_url: str, model_fast: str, model_pro: str)
 # Streamlit UI
 #############################
 
-_CHART_RE = re.compile(
-    r"!\[([^\]]*)\]\((data:image/png;base64,[A-Za-z0-9+/=]+)\)"
-)
+_CHART_RE = re.compile(r"!\[([^\]]*)\]\((data:image/png;base64,[A-Za-z0-9+/=]+)\)")
 
 
 def _render_report_with_charts(report: str):
@@ -923,7 +887,9 @@ def render_ui():
         )
         col1, col2 = st.columns(2)
         with col1:
-            approve_clicked = st.button("✅ Approve & Execute Migration Plan", type="primary")
+            approve_clicked = st.button(
+                "✅ Approve & Execute Migration Plan", type="primary"
+            )
         with col2:
             revise_clicked = st.button("🔄 Revise Migration Plan")
 
@@ -938,7 +904,9 @@ def render_ui():
             graph = get_graph()
             config = {"configurable": {"thread_id": st.session_state.thread_id}}
             log = []
-            with st.status("🛠️ Parallel refactoring workers executing...", expanded=True) as box:
+            with st.status(
+                "🛠️ Parallel refactoring workers executing...", expanded=True
+            ) as box:
                 try:
                     for event in graph.stream(
                         Command(resume={"message": message}), config=config
@@ -950,7 +918,9 @@ def render_ui():
                                 log.append(f"**Refactor Worker** → {snippet}")
                                 box.write(f"✅ Refactor worker completed: {snippet}")
                             elif node_name == "aggregator":
-                                box.write("🧠 Aggregator synthesizing migration report & charts...")
+                                box.write(
+                                    "🧠 Aggregator synthesizing migration report & charts..."
+                                )
                 except Exception as e:
                     box.write(f"❌ Error: {str(e)}")
                     st.session_state.status = "error"
