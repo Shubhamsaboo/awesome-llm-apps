@@ -226,5 +226,5 @@ policies:
 ## Related Projects
 
 - [LangGraph](https://github.com/langchain-ai/langgraph) - Multi-agent orchestration
-- [CrewAI](https://github.com/joaomdmoura/crewAI) - Multi-agent framework
+- [CrewAI](https://github.com/crewAIInc/crewAI) - Multi-agent framework
 - [AutoGen](https://github.com/microsoft/autogen) - Multi-agent conversations
