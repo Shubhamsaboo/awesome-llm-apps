@@ -9,7 +9,7 @@ from google.genai import types
 from mem0 import Memory
 
 APP_NAME = "adk_career_coach"
-MODEL = "gemini-2.5-flash"
+MODEL = "gemini-3.7-flash"
 
 # Mem0 config: Gemini for both the LLM (fact extraction) and the embedder,
 # plus an on-disk Qdrant collection -- no Docker/Qdrant server, no OpenAI
