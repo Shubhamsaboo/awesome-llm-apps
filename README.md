@@ -132,6 +132,8 @@ streamlit run travel_agent.py
 *   [📊 xAI Finance Agent](starter_ai_agents/xai_finance_agent/) - Real-time stock analysis powered by Grok
 *   [🔍 OpenAI Research Agent](starter_ai_agents/openai_research_agent/) - Multi-agent topic research with the OpenAI Agents SDK
 *   [🕸️ Web Scraping AI Agent](starter_ai_agents/web_scraping_ai_agent/) - Describe what to extract and the agent scrapes it
+*   [🕵️ AI Document Authenticity Agent](starter_ai_agents/ai_document_authenticity_agent/) - Forensic authenticity check on any payslip, invoice or ID: risk band + evidence, no API key to start
+*   [📝 AI AI-Text Detector Agent](starter_ai_agents/ai_ai_text_detector_agent/) - Probability a document's prose is AI-written, with the linguistic tells; abstains on non-prose
 
 ### 🚀 Advanced AI Agents
 
