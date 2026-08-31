@@ -1,6 +1,6 @@
-anthropic
-x402[evm,httpx,fastapi]
-eth-account
-httpx
-fastapi
-uvicorn
+anthropic==1.2.0
+x402[evm,httpx,fastapi]==2.21.0
+eth-account==0.14.0
+httpx==0.28.1
+fastapi==0.141.1
+uvicorn==0.52.4
