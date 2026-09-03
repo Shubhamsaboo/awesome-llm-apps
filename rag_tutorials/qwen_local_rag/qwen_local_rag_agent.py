@@ -164,9 +164,9 @@ def process_pdf(file) -> List:
                 })
                 
             text_splitter = RecursiveCharacterTextSplitter(
-                chunk_size=1000,
-                chunk_overlap=200
-            )
+            chunk_size=1000,
+            chunk_overlap=200
+        )
             return text_splitter.split_documents(documents)
     except Exception as e:
         st.error(f"📄 PDF processing error: {str(e)}")
@@ -195,9 +195,9 @@ def process_web(url: str) -> List:
             })
             
         text_splitter = RecursiveCharacterTextSplitter(
-                chunk_size=1000,
-                chunk_overlap=200
-            )
+            chunk_size=1000,
+            chunk_overlap=200
+        )
         return text_splitter.split_documents(documents)
     except Exception as e:
         st.error(f"🌐 Web processing error: {str(e)}")
