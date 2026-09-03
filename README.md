@@ -251,6 +251,7 @@ streamlit run travel_agent.py
 *   [🖼️ Vision RAG](rag_tutorials/vision_rag/) - Ask questions about images and PDF pages with Embed-4
 *   [🩺 RAG Failure Diagnostics Clinic](rag_tutorials/rag_failure_diagnostics_clinic/) - Find out why your RAG pipeline is wrong, systematically
 *   [🕸️ Knowledge Graph RAG with Citations](rag_tutorials/knowledge_graph_rag_citations/) - Multi-hop answers with verifiable source attribution
+*   * [Gorgona](https://github.com/adrianpeticila/gorgona) - Zero-dependency Python guardrail engine to stop autonomous AI agents from looping and leaking credentials.
 
 ### 💾 LLM Apps with Memory
 
