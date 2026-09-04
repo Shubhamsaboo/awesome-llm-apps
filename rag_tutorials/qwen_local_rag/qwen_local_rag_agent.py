@@ -164,9 +164,9 @@ def process_pdf(file) -> List:
                 })
                 
             text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=1000,
-            chunk_overlap=200
-        )
+                chunk_size=1000,
+                chunk_overlap=200
+            )
             return text_splitter.split_documents(documents)
     except Exception as e:
         st.error(f"📄 PDF processing error: {str(e)}")
@@ -285,6 +285,7 @@ def get_rag_agent() -> Agent:
 
 
 
+
 def check_document_relevance(query: str, vector_store, threshold: float = 0.7) -> tuple[bool, List]:
 
     if not vector_store:
@@ -292,10 +293,7 @@ def check_document_relevance(query: str, vector_store, threshold: float = 0.7) -
         
     retriever = vector_store.as_retriever(
         search_type="similarity_score_threshold",
-        search_kwargs={
-            "k": 5, 
-            "score_threshold": threshold
-        }
+        search_kwargs={"k": 5, "score_threshold": threshold}
     )
     docs = retriever.invoke(query)
     return bool(docs), docs
