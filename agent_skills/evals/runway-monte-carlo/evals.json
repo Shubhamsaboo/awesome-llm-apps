@@ -1,0 +1,38 @@
+{
+  "skill_name": "runway-monte-carlo",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We have $2.4M in the bank and burn about $210k a month, revenue is $60k growing maybe 5% monthly. How long does our cash actually last?",
+      "expected_output": "A simulated runway distribution (P10/P50/P90 in months) with the naive cash-divided-by-burn number shown alongside for contrast, a death curve, and an .xlsx with live assumption cells.",
+      "expectations": [
+        "The skill runs scripts/runway_sim.py with the user's cash, burn, revenue, and growth figures rather than estimating percentiles by generation",
+        "The answer reports P10, P50, and P90 runway and the survival probability at the horizon, not a single number",
+        "The naive cash/net-burn figure appears alongside the simulated percentiles for contrast",
+        "The model's stated limits (normal noise, no seasonality, no fundraise events) are surfaced, not hidden"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "When should we start fundraising? Assume the same finances as our last board deck: $1.1M cash, $95k burn, no revenue.",
+      "expected_output": "A percentile-based runway read that anchors the fundraise-start recommendation to the unlucky (P10) path and the steepening of the death curve, not to the median.",
+      "expectations": [
+        "The recommendation is anchored to the P10 path or the death-curve steepening, with the reasoning stated",
+        "The simulation is run with --seed so the result is reproducible",
+        "Pre-revenue is handled by omitting or zeroing revenue flags, not by inventing revenue",
+        "No fundraise event is silently added to the model; the answer says to model the round separately"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Our burn is super volatile month to month, like swings of 25%. Does that change our runway story?",
+      "expected_output": "Two runs contrasted — default volatility versus --burn-vol 0.25 — showing how volatility widens the P10/P90 spread while barely moving the median.",
+      "expectations": [
+        "The skill sets --burn-vol from the user's stated volatility instead of keeping the default",
+        "The comparison isolates volatility as the changed variable across runs",
+        "The answer explains that volatility widens the distribution rather than shifting the median",
+        "Both runs use fixed seeds so the contrast is attributable to the parameter, not the noise"
+      ]
+    }
+  ]
+}
