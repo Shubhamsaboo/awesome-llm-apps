@@ -1,0 +1,48 @@
+{
+  "skill": "runway-monte-carlo",
+  "purpose": "Trigger behavior spec. CI checks lexical routing from these cases; behavioral expectations live in evals.json.",
+  "cases": [
+    {
+      "id": "how-long-cash-lasts",
+      "prompt": "we have $2.4M and burn $210k a month — how long does our cash last?",
+      "should_trigger": true,
+      "assert": "Runs the Monte Carlo simulator on the stated cash and burn and reports P10/P50/P90 runway with the naive figure alongside."
+    },
+    {
+      "id": "when-to-fundraise",
+      "prompt": "when should we start fundraising given our burn?",
+      "should_trigger": true,
+      "assert": "Simulates the runway distribution and anchors the fundraise timing to the unlucky-decile path and death-curve steepening."
+    },
+    {
+      "id": "runway-volatility",
+      "prompt": "our burn swings a lot month to month — what does that do to runway?",
+      "should_trigger": true,
+      "assert": "Contrasts runs at different --burn-vol settings to show volatility widening the P10/P90 spread."
+    },
+    {
+      "id": "death-curve",
+      "prompt": "what's the probability we're out of cash by month 18?",
+      "should_trigger": true,
+      "assert": "Reads the month-by-month death curve from the simulation output rather than guessing a probability."
+    },
+    {
+      "id": "negative-airline-runway",
+      "prompt": "how much runway does the plane need to take off?",
+      "should_trigger": false,
+      "assert": "Aviation runway, not cash runway — the skill must not trigger."
+    },
+    {
+      "id": "negative-burn-rate-fitness",
+      "prompt": "what's a good calorie burn rate for my morning run?",
+      "should_trigger": false,
+      "assert": "Fitness vocabulary overlap (burn, run) must not route to cash-runway simulation."
+    },
+    {
+      "id": "negative-generic-budget",
+      "prompt": "help me plan next month's household budget",
+      "should_trigger": false,
+      "assert": "Personal budgeting is not a startup runway distribution question."
+    }
+  ]
+}
