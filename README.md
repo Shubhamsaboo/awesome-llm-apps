@@ -184,6 +184,7 @@ streamlit run travel_agent.py
 *   [✨ Multimodal Design Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_design_agent_team/) - Design critiques from a Gemini-powered expert panel
 *   [🎨 🍌 Multimodal UI/UX Feedback Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_uiux_feedback_agent_team/) - Landing page feedback plus an auto-generated improved version
 *   [🌏 AI Travel Planner Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/) - A complete trip itinerary, crafted by a team
+*   [🐜 tinyhivemind - Ant-colony Coordination for Agent Teams](https://github.com/tinyhumansai/tinyhivemind) <sub>↗ external</sub> - Open-source coordination library for agent groups (stigmergy, quorum sensing); same five agents go from 57.6% alone to 82.1% as a hive
 
 ### 🗣️ Voice AI Agents
 
@@ -225,6 +226,7 @@ streamlit run travel_agent.py
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team) - Itineraries built on live Airbnb and Google Maps data
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/) - Specialist agents, each wired to its own MCP server
 *   [🔌 OpenAI Remote MCP Tool Bridge](mcp_ai_agents/openai_remote_mcp_bridge/) - Connect OpenAI function calling directly to a remote MCP server
+*   [🧑‍💻 OpenHuman - Local-first Desktop AI Agent (MCP client)](https://github.com/tinyhumansai/openhuman) <sub>↗ external</sub> - Open-source, local-first personal AI desktop app with agents, workflows, MCP and local models
 
 ### 📀 RAG (Retrieval Augmented Generation)
 
