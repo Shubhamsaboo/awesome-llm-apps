@@ -156,22 +156,23 @@ with tab1:
             # Display results
             st.divider()
             
-            if outcome.status.value == "success":
+            # Handle both string and enum status values
+            status_value = outcome.status.value if hasattr(outcome.status, 'value') else outcome.status
+            if status_value == "success" or status_value == "SUCCESS":
                 st.success("✅ Refactoring Successful!")
                 
-                col1, col2 = st.columns(2)
+                # Display original code
+                st.subheader("📝 Original Code")
+                st.code(outcome.code_input, language="python", line_numbers=True)
                 
-                with col1:
-                    st.subheader("Original Code")
-                    st.code(outcome.code_input, language="python")
+                # Display refactored code in full width
+                st.subheader("✨ Refactored Code")
+                st.code(outcome.code_output, language="python", line_numbers=True)
                 
-                with col2:
-                    st.subheader("Refactored Code")
-                    st.code(outcome.code_output, language="python")
-                
+                # Display agent's explanation in full
                 if outcome.key_insight:
-                    with st.expander("💡 Agent's Explanation"):
-                        st.write(outcome.key_insight)
+                    st.subheader("💡 Agent's Explanation")
+                    st.info(outcome.key_insight)
             
             else:
                 st.error("❌ Refactoring Failed")
