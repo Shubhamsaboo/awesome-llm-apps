@@ -1,0 +1,17 @@
+pandas 
+numpy 
+langchain 
+scikit-learn 
+optuna 
+openai  
+langchain_openai 
+kagglehub 
+langgraph 
+langgraph-sdk 
+langgraph-checkpoint-sqlite 
+langsmith 
+matplotlib 
+seaborn 
+langchain_nvidia_ai_endpoints
+umap-learn
+langchain-groq
