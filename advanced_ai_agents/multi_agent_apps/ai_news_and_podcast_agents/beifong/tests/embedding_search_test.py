@@ -12,6 +12,12 @@ EMBEDDING_MODEL = "text-embedding-3-small"
 FAISS_INDEX_PATH, FAIS_MAPPING_PATH = get_faiss_db_path()
 
 
+def l2_distance_to_cosine_similarity(distance: float) -> float:
+    """Convert FAISS L2 distance to cosine similarity for unit-normalized embeddings."""
+    similarity = 1.0 - (float(distance) ** 2) / 2.0
+    return float(max(0.0, min(1.0, similarity)))
+
+
 def generate_query_embedding(client, query_text, model=EMBEDDING_MODEL):
     try:
         response = client.embeddings.create(input=query_text, model=model)
@@ -93,7 +99,7 @@ def search_articles(
         results = get_article_details(tracking_db_path, result_article_ids)
         for i, result in enumerate(results):
             distance = float(distances[0][i])
-            similarity = float(np.exp(-distance))
+            similarity = l2_distance_to_cosine_similarity(distance)
             result["distance"] = distance
             result["similarity"] = similarity
             result["score"] = similarity
