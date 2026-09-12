@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """
 AI Code Refactor Agent with Structured Experience Memory.
 Learns from refactoring failures and adapts strategy.
@@ -351,3 +352,50 @@ def process_data(data):
     
     print(f"\nOutcome: {outcome.status}")
     print(f"Session summary: {agent.get_session_summary()}")
+=======
+from __future__ import annotations
+
+from typing import List
+
+from memory_schema import ConstraintRecord, SessionMemory
+
+
+class RefactorAgent:
+    def __init__(self) -> None:
+        self.memory = SessionMemory()
+
+    def learn_from_outcome(self, task: str, outcome: str, error_message: str = "") -> None:
+        self.memory.record_outcome(task=task, status=outcome, error_message=error_message)
+
+        if outcome == "failure" and error_message:
+            self.memory.record_constraint(
+                constraint=self._infer_constraint(error_message),
+                source_error=error_message,
+                severity="high" if "AttributeError" in error_message or "NameError" in error_message else "medium",
+            )
+
+    def _infer_constraint(self, error_message: str) -> str:
+        msg = error_message.lower()
+        if "nameerror" in msg:
+            return "Do not reference undefined symbols without checking the current scope."
+        if "attributeerror" in msg:
+            return "Check object attributes before using them during refactoring."
+        if "importerror" in msg:
+            return "Verify imports and module dependencies before changing symbols."
+        return "Validate the refactor against the actual runtime error before applying the change."
+
+    def get_relevant_constraints(self, task: str) -> List[ConstraintRecord]:
+        return self.memory.get_relevant_constraints(task)
+
+    def summarize_memory(self) -> str:
+        if not self.memory.outcomes:
+            return "No refactor outcomes recorded yet."
+
+        success_count = sum(1 for outcome in self.memory.outcomes if outcome.status == "success")
+        failure_count = sum(1 for outcome in self.memory.outcomes if outcome.status == "failure")
+        return (
+            f"Recorded {len(self.memory.outcomes)} outcomes: "
+            f"{success_count} success, {failure_count} failure. "
+            f"{len(self.memory.constraints)} learned constraints available."
+        )
+>>>>>>> 88c344b (feat: add local AI code refactor agent memory demo)

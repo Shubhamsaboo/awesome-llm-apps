@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """
 Memory schema for AI Code Refactor Agent.
 Defines structured models for storing and retrieving execution experiences.
@@ -137,3 +138,67 @@ class MemoryQuery(BaseModel):
     tags: List[str] = Field(default_factory=list, description="Optional tags to filter")
     limit: int = Field(default=5, description="Max results to return")
     filter_status: Optional[str] = Field(default=None, description="Filter by status (success, failed, etc)")
+=======
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from typing import List, Optional
+import uuid
+
+
+@dataclass
+class ConstraintRecord:
+    constraint: str
+    source_error: str = ""
+    severity: str = "medium"
+    frequency: int = 1
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    id: str = field(default_factory=lambda: str(uuid.uuid4()))
+
+
+@dataclass
+class OutcomeRecord:
+    task: str
+    status: str
+    error_message: str = ""
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    id: str = field(default_factory=lambda: str(uuid.uuid4()))
+
+
+@dataclass
+class SessionMemory:
+    constraints: List[ConstraintRecord] = field(default_factory=list)
+    outcomes: List[OutcomeRecord] = field(default_factory=list)
+
+    def record_constraint(self, constraint: str, source_error: str = "", severity: str = "medium") -> ConstraintRecord:
+        existing = next((c for c in self.constraints if c.constraint == constraint), None)
+        if existing is not None:
+            existing.frequency += 1
+            return existing
+
+        record = ConstraintRecord(
+            constraint=constraint,
+            source_error=source_error,
+            severity=severity,
+            frequency=1,
+        )
+        self.constraints.append(record)
+        return record
+
+    def record_outcome(self, task: str, status: str, error_message: str = "") -> OutcomeRecord:
+        outcome = OutcomeRecord(task=task, status=status, error_message=error_message)
+        self.outcomes.append(outcome)
+        return outcome
+
+    def get_relevant_constraints(self, query: str, limit: int = 5) -> List[ConstraintRecord]:
+        query_text = (query or "").lower()
+        if not query_text:
+            return self.constraints[:limit]
+
+        matches = [
+            item for item in self.constraints
+            if query_text in item.constraint.lower() or query_text in item.source_error.lower()
+        ]
+        return matches[:limit]
+>>>>>>> 88c344b (feat: add local AI code refactor agent memory demo)

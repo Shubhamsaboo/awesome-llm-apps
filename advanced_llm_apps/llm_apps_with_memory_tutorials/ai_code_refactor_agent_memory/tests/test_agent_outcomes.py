@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """
 Tests for CodeRefactorAgent core logic.
 """
@@ -296,3 +297,38 @@ class TestIntegration:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+=======
+from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from refactor_agent import RefactorAgent
+
+
+def test_agent_records_failure_and_constraint():
+    agent = RefactorAgent()
+    agent.learn_from_outcome(
+        task="Refactor data processing",
+        outcome="failure",
+        error_message="NameError: total is undefined",
+    )
+
+    assert len(agent.memory.outcomes) == 1
+    assert agent.memory.outcomes[0].status == "failure"
+    assert len(agent.memory.constraints) == 1
+    assert "undefined" in agent.memory.constraints[0].constraint.lower()
+
+
+def test_agent_summarizes_memory_correctly():
+    agent = RefactorAgent()
+    agent.learn_from_outcome("task 1", "success")
+    agent.learn_from_outcome("task 2", "failure", "AttributeError: object has no attribute 'save'")
+
+    summary = agent.summarize_memory()
+
+    assert "2 outcomes" in summary
+    assert "1 success" in summary
+    assert "1 failure" in summary
+    assert "1 learned constraints" in summary
+>>>>>>> 88c344b (feat: add local AI code refactor agent memory demo)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🔧 AI Code Refactor Agent with Structured Experience Memory
 
 An intelligent Python refactoring agent that **learns from failures** and adapts its strategy over time.
@@ -91,10 +92,57 @@ streamlit run streamlit_app.py
 ## 📖 How to Use
 
 ### Via Streamlit UI (Recommended)
+=======
+# AI Code Refactor Agent with Memory
+
+This project is a lightweight local demo for an AI code refactor agent that learns from prior refactoring attempts. It stores execution outcomes, discovered constraints, and strategy changes in a simple in-memory session memory so the agent can reuse lessons on later tasks.
+
+This project is intentionally scoped as a tutorial/demo app and does not claim production-grade persistent memory or benchmarked model accuracy.
+
+## Features
+
+- Local Streamlit interface
+- Code refactor prompt workflow
+- Stores successful and failed execution outcomes
+- Learns constraints from repeated failures
+- Adapts strategies based on earlier outcomes
+- Self-contained memory layer for session-based learning
+
+## How it works
+
+1. The user provides a code snippet or task description.
+2. The agent suggests a refactor strategy.
+3. The code is validated or checked for obvious failure patterns.
+4. If the attempt fails, the error is recorded.
+5. Similar past failures are retrieved from memory.
+6. Relevant constraints are added to the next prompt.
+7. The agent retries with adjusted strategy.
+
+## Local setup
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
+cd awesome-llm-apps/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_code_refactor_agent_memory
+```
+
+2. Create a virtual environment and install dependencies:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+3. Run the app:
+
+>>>>>>> 88c344b (feat: add local AI code refactor agent memory demo)
 ```bash
 streamlit run streamlit_app.py
 ```
 
+<<<<<<< HEAD
 Then:
 1. Paste Python code in the text area
 2. Describe what refactoring you want
@@ -535,3 +583,39 @@ Inspired by:
 **⭐ If this helps your projects, please star the repo!**
 
 Made with ❤️ for developers building intelligent, learning-enabled code agents.
+=======
+## Project structure
+
+```text
+ai_code_refactor_agent_memory/
+├── README.md
+├── requirements.txt
+├── memory_schema.py
+├── refactor_agent.py
+├── streamlit_app.py
+├── tests/
+│   ├── test_memory_schema.py
+│   └── test_agent_outcomes.py
+└── .env.example
+```
+
+## Memory model
+
+The project uses a lightweight session memory structure:
+
+- OutcomeRecord stores task, status, and error metadata
+- ConstraintRecord stores learned rules and their frequency
+- SessionMemory keeps the current session's outcomes and constraints
+
+This data is session-based and intentionally simple rather than a production vector database.
+
+## Limitations
+
+- Uses in-memory session state rather than a production persistent memory store
+- The agent relies on model quality and validation quality
+- This is a demo app for learning and experimentation, not a benchmarked production system
+
+## License
+
+This project follows the repository license in the root of the project.
+>>>>>>> 88c344b (feat: add local AI code refactor agent memory demo)

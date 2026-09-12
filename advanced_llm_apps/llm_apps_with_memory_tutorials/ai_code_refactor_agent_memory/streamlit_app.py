@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """
 Streamlit UI for AI Code Refactor Agent with Memory.
 """
@@ -300,3 +301,57 @@ st.markdown("""
 
 Made with ❤️ for the awesome-llm-apps community
 """)
+=======
+import streamlit as st
+
+from refactor_agent import RefactorAgent
+
+
+st.set_page_config(page_title="AI Code Refactor Agent", page_icon="🛠️")
+st.title("AI Code Refactor Agent with Memory")
+st.caption("Local demo of a refactor agent that learns from past failures and adapts its strategy.")
+
+agent = RefactorAgent()
+
+with st.form("refactor_form"):
+    task = st.text_area(
+        "Refactor task",
+        value="Refactor the function to be more readable and ensure it handles missing values safely.",
+        height=120,
+    )
+    code_snippet = st.text_area(
+        "Code snippet",
+        value="def process_data(data):\n    total = 0\n    for item in data:\n        total += item\n    return total",
+        height=220,
+    )
+    submitted = st.form_submit_button("Run refactor")
+
+if submitted:
+    st.subheader("Refactor attempt")
+    st.code(code_snippet, language="python")
+
+    # Simple demo logic: failure if the code contains a risky pattern.
+    if "for item in data" in code_snippet and "total += item" in code_snippet:
+        outcome = "failure"
+        error_message = "NameError: total is undefined in this refactor context"
+    else:
+        outcome = "success"
+        error_message = ""
+
+    agent.learn_from_outcome(task=task, outcome=outcome, error_message=error_message)
+
+    st.write("Outcome:", outcome)
+    if error_message:
+        st.code(error_message, language="text")
+
+    st.subheader("Relevant learned constraints")
+    relevant = agent.get_relevant_constraints(task)
+    if not relevant:
+        st.info("No stored constraints yet.")
+    else:
+        for constraint in relevant:
+            st.markdown(f"- {constraint.constraint}")
+
+    st.subheader("Memory summary")
+    st.write(agent.summarize_memory())
+>>>>>>> 88c344b (feat: add local AI code refactor agent memory demo)

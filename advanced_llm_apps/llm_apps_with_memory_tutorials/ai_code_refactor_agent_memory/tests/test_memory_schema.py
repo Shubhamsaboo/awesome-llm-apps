@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """
 Tests for memory schema Pydantic models.
 """
@@ -227,3 +228,49 @@ class TestOutcomeStatus:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+=======
+from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from memory_schema import ConstraintRecord, OutcomeRecord, SessionMemory
+
+
+def test_constraint_record_is_created_with_required_fields():
+    c = ConstraintRecord(
+        constraint="Do not rename functions without updating imports",
+        source_error="NameError: calculate_total is not defined",
+        severity="high",
+    )
+
+    assert c.constraint.startswith("Do not rename")
+    assert c.severity == "high"
+    assert c.frequency == 1
+
+
+def test_outcome_record_tracks_status_and_error():
+    outcome = OutcomeRecord(
+        task="Refactor add_user function",
+        status="failure",
+        error_message="AttributeError: object has no attribute 'save'",
+    )
+
+    assert outcome.status == "failure"
+    assert "save" in outcome.error_message
+
+
+def test_session_memory_records_constraint_and_outcome():
+    session = SessionMemory()
+    session.record_constraint("Avoid mutating shared state in loops")
+    session.record_outcome(
+        task="Refactor cache logic",
+        status="success",
+        error_message="",
+    )
+
+    assert len(session.constraints) == 1
+    assert session.constraints[0].constraint == "Avoid mutating shared state in loops"
+    assert len(session.outcomes) == 1
+    assert session.outcomes[0].status == "success"
+>>>>>>> 88c344b (feat: add local AI code refactor agent memory demo)
