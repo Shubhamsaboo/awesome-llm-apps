@@ -32,12 +32,11 @@ Free-model notes: list at https://openrouter.ai/models?max_price=0 changes often
   - Fixed for agno 3.x: `reasoning=True` no longer exists → `tools=[ReasoningTools(...)]`.
   - Learned: thinking (tool-traced, 13.8s, auditable) vs non-thinking (direct, 6.5s);
     use thinking for multi-step/constraints, regular for simple facts.
-- [x] `starter_ai_agents/web_scraping_ai_agent/` — SETUP DONE, scrape test pending
+- [x] `starter_ai_agents/web_scraping_ai_agent/` — DONE (scrape tested)
   - OpenAI gpt-4o/gpt-5 → OpenRouter via `ChatOpenAI(model_instance)` + free selectbox (`ai_scrapper.py`).
-  - Installed Playwright Chromium. Launched on :8502 (HTTP 200), servers since stopped.
+  - Installed Playwright Chromium. Launched on :8502, ran a real scrape successfully.
   - Learned: ScrapeGraphAI builds LLM via langchain `init_chat_model`; `model_instance`
     escape hatch lets any OpenAI-compatible endpoint (OpenRouter) plug in.
-  - TODO: run one real scrape (URL + prompt) and note result quality.
 - [ ] `starter_ai_agents/mixture_of_agents/` — NEXT
 - [ ] `starter_ai_agents/openai_research_agent/` — queued
 
@@ -55,3 +54,4 @@ Free-model notes: list at https://openrouter.ai/models?max_price=0 changes often
 - 2026-09-13: reasoning agent converted + run (regular vs reasoning compared).
 - 2026-09-13: fork `tushar-hatwar/awesome-llm-apps_test`, branch `feature/learn-openrouter`, pushed.
 - 2026-09-13: web scraper converted + launched :8502, pushed. All servers stopped, logs cleaned.
+- 2026-09-13: scrape tested OK. `LEARNING_PLAN.md` created to track progress.
