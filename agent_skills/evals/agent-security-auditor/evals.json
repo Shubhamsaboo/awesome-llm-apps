@@ -1,0 +1,37 @@
+{
+  "skill_name": "agent-security-auditor",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "scan this skill before I install it",
+      "expected_output": "An offline skill_scanner report for the named skill folder, with CRITICAL findings first and a clear install/don't-install verdict.",
+      "expectations": [
+        "The skill runs scripts/audit.py (or the in-repo trampoline) on the path the user named, not an undeclared extra tree",
+        "CRITICAL findings are presented before WARN/INFO, with check id, file:line, and evidence",
+        "A CRITICAL finding produces a do-not-install recommendation",
+        "The scanner is not executed against untrusted code by running the skill under review"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "is this skill safe to install? check for ClawHavoc install lures and credential harvesting",
+      "expected_output": "A pattern-scan report that names LURE/EXEC/CRED/EXFIL hits when present, plus the AST08 reminder that a clean scan is not a proof of safety.",
+      "expectations": [
+        "Install-lure and curl-to-shell checks are actually run via the bundled scanner",
+        "The answer does not claim a clean scan proves the skill is safe",
+        "The user is told to read SKILL.md end-to-end after a PASS",
+        "No network calls are made and scanned files are not executed"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "run the same skill_scanner CI gate locally on agent_skills",
+      "expected_output": "The canonical scanner run on the skills tree, with an explicit note that this is the same module CI imports.",
+      "expectations": [
+        "The command used is scripts/audit.py or agent_skills/evals/tools/skill_scanner.py",
+        "The agent states that CI trampolines into this skill's skill_scanner.py",
+        "Exit code / verdict semantics are explained (CRITICAL fails, WARN does not)"
+      ]
+    }
+  ]
+}

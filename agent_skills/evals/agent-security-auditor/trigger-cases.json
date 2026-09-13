@@ -1,0 +1,42 @@
+{
+  "skill": "agent-security-auditor",
+  "purpose": "Trigger-behavior spec. CI checks lexical routing from these cases; behavioral expectations live in evals.json.",
+  "cases": [
+    {
+      "id": "scan-this-skill",
+      "prompt": "scan this skill before I install it, run skill_scanner on the SKILL.md folder",
+      "should_trigger": true,
+      "assert": "Runs scripts/audit.py (or the CI trampoline) on the named skill folder and reports findings."
+    },
+    {
+      "id": "install-lure",
+      "prompt": "check this agent skill for ClawHavoc install lures and curl-to-shell before I copy it into ~/.claude/skills",
+      "should_trigger": true,
+      "assert": "Runs the offline skill_scanner and leads with CRITICAL install-lure or EXEC findings if present."
+    },
+    {
+      "id": "local-ci-gate",
+      "prompt": "run the same skill_scanner CI security gate locally on agent_skills so I can see supply-chain findings without pushing",
+      "should_trigger": true,
+      "assert": "Invokes the canonical scanner (skill CLI or evals/tools trampoline) on the skills tree."
+    },
+    {
+      "id": "near-miss-pip-audit",
+      "prompt": "run pip-audit on requirements.txt and tell me which CVEs to pin",
+      "should_trigger": false,
+      "assert": "Does not trigger; dependency CVE audits are pip-audit / dependency-doctor, not a SKILL.md scan."
+    },
+    {
+      "id": "near-miss-web-pentest",
+      "prompt": "pentest the login page and dump the session cookies from production",
+      "should_trigger": false,
+      "assert": "Does not trigger; this is application pentesting, not a static skill supply-chain scan."
+    },
+    {
+      "id": "near-miss-voice-echo",
+      "prompt": "let me think out loud for a bit before we build anything, echo back what you heard",
+      "should_trigger": false,
+      "assert": "Does not trigger; ramble/echo briefs belong to thinking-out-loud."
+    }
+  ]
+}

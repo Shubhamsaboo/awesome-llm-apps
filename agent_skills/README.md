@@ -18,6 +18,7 @@ Most "skills" on registries are text-only prompt dumps: advice the model already
 
 | Skill | What it does |
 |---|---|
+| [🛡️ agent-security-auditor](agent-security-auditor/) | Runs this repo's `skill_scanner` locally: the same offline CI gate for ClawHavoc-style install lures, undeclared network, credential harvesting, and obfuscated payloads, so a skill can be reviewed before it is installed |
 | [🧠 advisor-orchestrator-worker](advisor-orchestrator-worker/) | Turns your agent into the orchestrator of a three-tier model team: cheap stateless workers in parallel, expensive advisor consulted only at commitment boundaries, verification gates between every step, all budgeted so a run can't burn a hole in your API bill |
 | [🏺 commit-archaeologist](commit-archaeologist/) | Reconstructs why a file or code region exists from local git history, including its introducing commit, later edits, repeated companion files, current authorship, and intent clues |
 | [🩺 dependency-doctor](dependency-doctor/) | Autopsies a dependency manifest for standard-library shadowing pins, obsolete backports, unpinned entries, duplicate or conflicting constraints, and opt-in yanked PyPI releases |

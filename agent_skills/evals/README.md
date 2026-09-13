@@ -13,7 +13,7 @@ executable code and his don't:
 | Tier | What it checks | Runs | Cost |
 |---|---|---|---|
 | 1. Structural | Frontmatter, naming, name==dir, unfilled placeholders, text-only prompt dumps (`tools/skill_lint.py --strict`) | CI | Free |
-| 1b. Security *(ours)* | Install lures, undeclared network calls, credential access, obfuscated payloads (`tools/skill_scanner.py`) | CI | Free |
+| 1b. Security *(ours)* | Install lures, undeclared network calls, credential access, obfuscated payloads (`tools/skill_scanner.py`, a trampoline into `agent-security-auditor/scripts/skill_scanner.py`) | CI | Free |
 | 2. Trigger & routing | Positive prompts clear near-miss negatives on description vocabulary; with 2+ skills, positives rank their own skill first and no two descriptions near-collide (`tools/run_trigger_evals.py`) | CI | Free |
 | 2b. Deterministic scripts *(ours)* | The skill's bundled scripts do what they claim — every classifier, edge case, and output shape against synthetic fixtures (`<skill>/test_*.py`) | CI | Free, ~10s |
 | 3. Behavioral | An agent following the skill satisfies its `expectations[]` — `evals.json` uses [skill-creator's schema](https://github.com/anthropics/skills/tree/main/skills/skill-creator) verbatim, so its `run_eval.py`, benchmarking, and eval viewer work against our files unmodified | On demand | Tokens |
@@ -24,8 +24,10 @@ executable code and his don't:
 # Tiers 1–2b, exactly what CI runs — deterministic, git + Python only
 python3 agent_skills/evals/tools/skill_lint.py agent_skills/project-graveyard --strict
 python3 agent_skills/evals/tools/skill_scanner.py agent_skills
+python3 agent_skills/agent-security-auditor/scripts/audit.py agent_skills
 python3 agent_skills/evals/tools/run_trigger_evals.py
 python3 agent_skills/evals/project-graveyard/test_graveyard.py
+python3 agent_skills/evals/agent-security-auditor/test_auditor.py
 ```
 
 Tier 3 is on demand and spends tokens: each skill's `evals.json` is in
