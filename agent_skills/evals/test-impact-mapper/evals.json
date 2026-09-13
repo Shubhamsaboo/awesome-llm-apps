@@ -1,0 +1,45 @@
+{
+  "skill_name": "test-impact-mapper",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "which tests should I run after this change",
+      "expected_output": "A ranked shortlist of tests for the current local diff, each with path and evidence, plus any unmapped changed files.",
+      "expectations": [
+        "The skill ran scripts/impact_map.py against the user's repository without modifying git state",
+        "Recommended tests are quoted from the script output, not invented",
+        "Unmapped changed files are named when present",
+        "The agent did not run the full suite unless the mapper returned no tests"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "what tests does this diff impact",
+      "expected_output": "An impact report: changed files, recommended tests with evidence kinds, and a suggested runner command using those paths.",
+      "expectations": [
+        "Output cites evidence kinds (path, import, symbol, or self)",
+        "The report distinguishes source changes from docs/config that have no test evidence",
+        "No claim that the shortlist equals full coverage"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "give me a test impact map for the staged files",
+      "expected_output": "The mapper run with --staged, listing only tests tied to the index.",
+      "expectations": [
+        "The command included --staged",
+        "Working-tree-only files that are not staged are not treated as the diff source",
+        "JSON or human output is summarized as a shortlist, not dumped unread"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "shortlist the tests that cover this change so I can skip the full suite",
+      "expected_output": "A bounded recommended list with scores, plus a reminder that unmapped source files are coverage gaps.",
+      "expectations": [
+        "The agent prefers the shortlist over running every test",
+        "If recommended is empty, the agent says no test was tied to the diff rather than guessing"
+      ]
+    }
+  ]
+}

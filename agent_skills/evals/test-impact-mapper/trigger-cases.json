@@ -1,0 +1,54 @@
+{
+  "skill": "test-impact-mapper",
+  "purpose": "Trigger-behavior spec for deterministic lexical routing and manual behavior checks.",
+  "cases": [
+    {
+      "id": "which-tests-after-change",
+      "prompt": "which tests should I run after this change",
+      "should_trigger": true,
+      "assert": "Runs impact_map.py on the local diff and reports a ranked shortlist with evidence."
+    },
+    {
+      "id": "diff-impact",
+      "prompt": "what tests does this diff impact",
+      "should_trigger": true,
+      "assert": "Maps changed files to impacted tests and cites path, import, or symbol evidence."
+    },
+    {
+      "id": "test-impact-map",
+      "prompt": "give me a test impact map for the staged files",
+      "should_trigger": true,
+      "assert": "Runs the mapper with --staged and returns the recommended tests."
+    },
+    {
+      "id": "regression-shortlist",
+      "prompt": "shortlist the tests that cover this change so I can skip the full suite",
+      "should_trigger": true,
+      "assert": "Produces an evidence-backed regression shortlist instead of running every test."
+    },
+    {
+      "id": "near-miss-run-pytest",
+      "prompt": "run pytest on the whole suite",
+      "should_trigger": false,
+      "assert": "Does not trigger; executing the full suite is not test-impact mapping."
+    },
+    {
+      "id": "near-miss-write-tests",
+      "prompt": "write unit tests for this function",
+      "should_trigger": false,
+      "assert": "Does not trigger; generating tests is not selecting which existing tests to run."
+    },
+    {
+      "id": "near-miss-flaky",
+      "prompt": "why is this test flaky",
+      "should_trigger": false,
+      "assert": "Does not trigger; flake debugging is not a diff-to-test map."
+    },
+    {
+      "id": "near-miss-scope",
+      "prompt": "did my change grow beyond the fix",
+      "should_trigger": false,
+      "assert": "Does not trigger; scope creep belongs to scope-creep-detector."
+    }
+  ]
+}

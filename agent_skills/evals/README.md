@@ -26,6 +26,7 @@ python3 agent_skills/evals/tools/skill_lint.py agent_skills/project-graveyard --
 python3 agent_skills/evals/tools/skill_scanner.py agent_skills
 python3 agent_skills/evals/tools/run_trigger_evals.py
 python3 agent_skills/evals/project-graveyard/test_graveyard.py
+python3 agent_skills/evals/test-impact-mapper/test_impact_map.py
 ```
 
 Tier 3 is on demand and spends tokens: each skill's `evals.json` is in

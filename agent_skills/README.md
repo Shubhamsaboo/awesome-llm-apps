@@ -25,6 +25,7 @@ Most "skills" on registries are text-only prompt dumps: advice the model already
 | [🪦 project-graveyard](project-graveyard/) | Scans your machine for dead side projects, autopsies why each one died from its git history (deploy fear, payments wall, killed by a newer project), shows your personal death patterns, and resurrects the one with a pulse, then tracks relapses on every resurrection it prescribes |
 | [🔭 scope-creep-detector](scope-creep-detector/) | Checks a diff against its stated intent, flags unrelated files and scope signals, and recommends what to keep, split, or justify |
 | [♾️ self-improving-agent-skills](self-improving-agent-skills/) | Automatically optimizes agent skills using Gemini and ADK |
+| [🎯 test-impact-mapper](test-impact-mapper/) | Maps a local git diff to an evidence-backed shortlist of likely tests to run, citing conventional path pairs, reverse imports, and mentioned symbols |
 | [🎙️ thinking-out-loud](thinking-out-loud/) | Audit what your agent heard before it acts: on any voice ramble it echoes back a scannable brief with its own guesses quarantined and your reversals flagged, because follow-up questions only verify what the model doubts, while the echo verifies what it believes |
 
 More coming, released one at a time.
