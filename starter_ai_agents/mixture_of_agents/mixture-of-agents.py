@@ -1,27 +1,39 @@
 import streamlit as st
 import asyncio
 import os
-from together import AsyncTogether, Together
+from openai import AsyncOpenAI, OpenAI
 
 # Set up the Streamlit app
 st.title("Mixture-of-Agents LLM App")
 
 # Get API key from the user
-together_api_key = st.text_input("Enter your Together API Key:", type="password")
+openrouter_api_key = st.text_input("Enter your OpenRouter API Key:", type="password")
 
-if together_api_key:
-    os.environ["TOGETHER_API_KEY"] = together_api_key
-    client = Together(api_key=together_api_key)
-    async_client = AsyncTogether(api_key=together_api_key)
+if openrouter_api_key:
+    os.environ["OPENROUTER_API_KEY"] = openrouter_api_key
+    _headers = {
+        "HTTP-Referer": "https://github.com/tushar-hatwar/awesome-llm-apps_test",
+        "X-Title": "Mixture-of-Agents LLM App",
+    }
+    client = OpenAI(
+        api_key=openrouter_api_key,
+        base_url="https://openrouter.ai/api/v1",
+        default_headers=_headers,
+    )
+    async_client = AsyncOpenAI(
+        api_key=openrouter_api_key,
+        base_url="https://openrouter.ai/api/v1",
+        default_headers=_headers,
+    )
 
-    # Define the models
+    # Define the models - free OpenRouter models (https://openrouter.ai/models?max_price=0)
     reference_models = [
-        "Qwen/Qwen2-72B-Instruct",
-        "Qwen/Qwen1.5-72B-Chat",
-        "mistralai/Mixtral-8x22B-Instruct-v0.1",
-        "databricks/dbrx-instruct",
+        "google/gemma-4-26b-a4b-it:free",
+        "google/gemma-4-31b-it:free",
+        "nvidia/nemotron-3-super-120b-a12b:free",
+        "nex-agi/nex-n2.5-pro:free",
     ]
-    aggregator_model = "mistralai/Mixtral-8x22B-Instruct-v0.1"
+    aggregator_model = "openrouter/free"
 
     # Define the aggregator system prompt
     aggregator_system_prompt = """You have been provided with a set of responses from various open-source models to the latest user query. Your task is to synthesize these responses into a single, high-quality response. It is crucial to critically evaluate the information provided in these responses, recognizing that some of it may be biased or incorrect. Your response should not simply replicate the given answers but should offer a refined, accurate, and comprehensive reply to the instruction. Ensure your response is well-structured, coherent, and adheres to the highest standards of accuracy and reliability. Responses from models:"""
@@ -75,7 +87,7 @@ if together_api_key:
             st.warning("Please enter a question.")
 
 else:
-    st.warning("Please enter your Together API key to use the app.")
+    st.warning("Please enter your OpenRouter API key to use the app.")
 
 # Add some information about the app
 st.sidebar.title("About this app")
@@ -87,13 +99,13 @@ st.sidebar.write(
 st.sidebar.subheader("How it works:")
 st.sidebar.markdown(
     """
-    1. The app sends your question to multiple LLMs:
-        - Qwen/Qwen2-72B-Instruct
-        - Qwen/Qwen1.5-72B-Chat
-        - mistralai/Mixtral-8x22B-Instruct-v0.1
-        - databricks/dbrx-instruct
+    1. The app sends your question to multiple free LLMs in parallel:
+        - google/gemma-4-26b-a4b-it:free
+        - google/gemma-4-31b-it:free
+        - nvidia/nemotron-3-super-120b-a12b:free
+        - nex-agi/nex-n2.5-pro:free
     2. Each model provides its own response
-    3. All responses are then aggregated using Mixtral-8x22B-Instruct-v0.1
+    3. All responses are then aggregated using openrouter/free
     4. The final aggregated response is displayed
     """
 )

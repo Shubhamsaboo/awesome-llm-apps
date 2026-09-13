@@ -37,7 +37,14 @@ Free-model notes: list at https://openrouter.ai/models?max_price=0 changes often
   - Installed Playwright Chromium. Launched on :8502, ran a real scrape successfully.
   - Learned: ScrapeGraphAI builds LLM via langchain `init_chat_model`; `model_instance`
     escape hatch lets any OpenAI-compatible endpoint (OpenRouter) plug in.
-- [ ] `starter_ai_agents/mixture_of_agents/` — NEXT
+- [x] `starter_ai_agents/mixture_of_agents/` — SETUP DONE, answer test pending
+  - Together SDK → `openai` SDK pointed at OpenRouter (`mixture-of-agents.py`, `requirements.txt`).
+  - 4 free reference models in parallel (`asyncio.gather`) + `openrouter/free` aggregator.
+  - Launched on :8503 (HTTP 200), servers since stopped.
+  - Learned: parallel fan-out/fan-in vs travel agent's sequential chain; aggregator
+    system prompt synthesizes instead of replicating.
+  - TODO: ask one question in the UI and compare individual vs aggregated answers.
+- [ ] `starter_ai_agents/openai_research_agent/` — NEXT
 - [ ] `starter_ai_agents/openai_research_agent/` — queued
 
 ### Phase 2 — Core skills (not started)
