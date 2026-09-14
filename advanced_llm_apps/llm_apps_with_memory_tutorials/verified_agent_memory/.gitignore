@@ -1,0 +1,8 @@
+# SQLite databases
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Benchmark output
+benchmark_results.json
