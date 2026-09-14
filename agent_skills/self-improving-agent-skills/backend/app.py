@@ -16,6 +16,7 @@ import re
 import logging
 import traceback
 from adk_optimizer import SkillOptimizer
+from contextlib import asynccontextmanager
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -29,7 +30,39 @@ ALLOWED_EXTENSIONS = {
     ".html", ".css", ".xml", ".toml", ".cfg", ".ini", ".sh",
 }
 
-app = FastAPI()
+sessions: Dict[str, dict] = {}
+
+
+async def _cleanup_expired_sessions():
+    """Periodically remove sessions older than SESSION_TTL."""
+    while True:
+        await asyncio.sleep(300)  # every 5 minutes
+        now = time.time()
+        expired = [
+            sid for sid, s in sessions.items()
+            if now - s.get("created_at", now) > SESSION_TTL
+            and s.get("status") not in ("running",)
+        ]
+        for sid in expired:
+            del sessions[sid]
+        if expired:
+            logger.info(f"Cleaned up {len(expired)} expired session(s)")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Starting background session cleanup task via lifespan.")
+    cleanup_task = asyncio.create_task(_cleanup_expired_sessions())
+    yield
+    logger.info("Shutting down background session cleanup task via lifespan.")
+    cleanup_task.cancel()
+    try:
+        await cleanup_task
+    except asyncio.CancelledError:
+        logger.info("Background session cleanup task cancelled.")
+
+
+app = FastAPI(title="Skill Optimizer API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -39,7 +72,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-sessions: Dict[str, dict] = {}
 
 
 class AnalyzeRequest(BaseModel):
@@ -505,25 +537,6 @@ async def health_check():
     return {"status": "healthy"}
 
 
-async def _cleanup_expired_sessions():
-    """Periodically remove sessions older than SESSION_TTL."""
-    while True:
-        await asyncio.sleep(300)  # every 5 minutes
-        now = time.time()
-        expired = [
-            sid for sid, s in sessions.items()
-            if now - s.get("created_at", now) > SESSION_TTL
-            and s.get("status") not in ("running",)
-        ]
-        for sid in expired:
-            del sessions[sid]
-        if expired:
-            logger.info(f"Cleaned up {len(expired)} expired session(s)")
-
-
-@app.on_event("startup")
-async def startup():
-    asyncio.create_task(_cleanup_expired_sessions())
 
 
 if __name__ == "__main__":
