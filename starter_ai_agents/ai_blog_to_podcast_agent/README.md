@@ -22,7 +22,16 @@ This is a Streamlit-based application that allows users to convert any blog post
 
     - **Firecrawl API Key**: Get your Firecrawl API key from Firecrawl.
 
-2. **Python 3.8+**: Ensure you have Python 3.8 or higher installed.
+2. **Python 3.12+**: Ensure you have Python 3.12 or higher installed.
+
+3. **uv**: This project uses [uv](https://docs.astral.sh/uv/) for dependency management. Install it with:
+   ```bash
+   # macOS / Linux
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+
+   # Windows
+   powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+   ```
 
 ### Installation
 1. Clone this repository:
@@ -31,15 +40,15 @@ This is a Streamlit-based application that allows users to convert any blog post
    cd starter_ai_agents/ai_blog_to_podcast_agent
    ```
 
-2. Install the required Python packages:
+2. Install the dependencies (uv creates the virtual environment for you):
    ```bash
-   pip install -r requirements.txt
+   uv sync
    ```
 ### Running the App
 
 1. Start the Streamlit app:
    ```bash
-   streamlit run blog_to_podcast_agent.py
+   uv run streamlit run blog_to_podcast_agent.py
    ```
 
 2. In the app interface:

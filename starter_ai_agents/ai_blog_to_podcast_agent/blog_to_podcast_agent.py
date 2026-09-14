@@ -1,4 +1,3 @@
-import os
 from uuid import uuid4
 from agno.agent import Agent
 from agno.run.agent import RunOutput
@@ -12,8 +11,16 @@ st.set_page_config(page_title="📰 ➡️ 🎙️ Blog to Podcast", page_icon="
 st.title("📰 ➡️ 🎙️ Blog to Podcast Agent")
 
 # API Keys (Runtime Input)
-st.sidebar.header("🔑 API Keys")
-openai_key = st.sidebar.text_input("OpenAI API Key", type="password")
+st.sidebar.header("🔑 API Configuration")
+azure_openai_base_url = st.sidebar.text_input(
+    "Azure OpenAI v1 Base URL",
+    placeholder="https://<resource-name>.openai.azure.com/openai/v1/",
+)
+azure_openai_deployment = st.sidebar.text_input(
+    "Azure OpenAI Deployment Name",
+    placeholder="gpt-4o",
+)
+azure_openai_key = st.sidebar.text_input("Azure OpenAI API Key", type="password")
 elevenlabs_key = st.sidebar.text_input("ElevenLabs API Key", type="password")
 firecrawl_key = st.sidebar.text_input("Firecrawl API Key", type="password")
 
@@ -21,21 +28,29 @@ firecrawl_key = st.sidebar.text_input("Firecrawl API Key", type="password")
 url = st.text_input("Enter Blog URL:", "")
 
 # Generate Button
-if st.button("🎙️ Generate Podcast", disabled=not all([openai_key, elevenlabs_key, firecrawl_key])):
+azure_openai_config = [
+    azure_openai_base_url.strip(),
+    azure_openai_deployment.strip(),
+    azure_openai_key,
+]
+if st.button(
+    "🎙️ Generate Podcast",
+    disabled=not all([*azure_openai_config, elevenlabs_key, firecrawl_key]),
+):
     if not url.strip():
         st.warning("Please enter a blog URL")
     else:
         with st.spinner("Scraping blog and generating podcast..."):
             try:
-                # Set API keys
-                os.environ["OPENAI_API_KEY"] = openai_key
-                os.environ["FIRECRAWL_API_KEY"] = firecrawl_key
-                
                 # Create agent for scraping and summarization
                 agent = Agent(
                     name="Blog Summarizer",
-                    model=OpenAIChat(id="gpt-4o"),
-                    tools=[FirecrawlTools()],
+                    model=OpenAIChat(
+                        id=azure_openai_deployment.strip(),
+                        api_key=azure_openai_key,
+                        base_url=azure_openai_base_url.strip(),
+                    ),
+                    tools=[FirecrawlTools(api_key=firecrawl_key)],
                     instructions=[
                         "Scrape the blog URL and create a concise, engaging summary (max 2000 characters) suitable for a podcast.",
                         "The summary should be conversational and capture the main points."

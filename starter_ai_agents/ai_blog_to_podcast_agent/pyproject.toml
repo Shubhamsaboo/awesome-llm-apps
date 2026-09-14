@@ -1,0 +1,14 @@
+[project]
+name = "ai-blog-to-podcast-agent"
+version = "0.1.0"
+description = "Streamlit app that turns any blog post into a podcast episode."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "agno>=2.2.10",
+    "streamlit>=1.40.2",
+    "openai>=1.102.0",
+    "requests",
+    "firecrawl-py>=4.6.0",
+    "elevenlabs>=1.0.0",
+]
