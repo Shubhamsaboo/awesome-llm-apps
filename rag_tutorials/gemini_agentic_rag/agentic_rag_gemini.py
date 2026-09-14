@@ -4,7 +4,8 @@ from datetime import datetime
 from typing import List
 
 import streamlit as st
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 import bs4
 from agno.agent import Agent
 from agno.models.google import Gemini
@@ -19,19 +20,22 @@ from agno.tools.exa import ExaTools
 
 class GeminiEmbedder(Embeddings):
     def __init__(self, model_name="models/text-embedding-004"):
-        genai.configure(api_key=st.session_state.google_api_key)
+        # Initialize the new genai client here
+        if not st.session_state.google_api_key:
+            raise ValueError("Google API Key not set in session state.")
+        self.client = genai.Client(api_key=st.session_state.google_api_key)
         self.model = model_name
 
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
         return [self.embed_query(text) for text in texts]
 
     def embed_query(self, text: str) -> List[float]:
-        response = genai.embed_content(
+        response = self.client.models.embed_content(
             model=self.model,
-            content=text,
-            task_type="retrieval_document"
+            contents=text,
+            config=types.EmbedContentConfig(task_type="RETRIEVAL_DOCUMENT")
         )
-        return response['embedding']
+        return response.embeddings[0].values
 
 
 # Constants
@@ -319,7 +323,6 @@ def check_document_relevance(query: str, vector_store, threshold: float = 0.7) -
 # Main Application Flow
 if st.session_state.google_api_key:
     os.environ["GOOGLE_API_KEY"] = st.session_state.google_api_key
-    genai.configure(api_key=st.session_state.google_api_key)
     
     qdrant_client = init_qdrant()
     
