@@ -170,6 +170,8 @@ streamlit run travel_agent.py
 *   [🛡️ Insurance Claim Live Agent Team](voice_ai_agents/insurance_claim_live_agent_team/) - Real-time voice claim intake with Gemini Live
 *   [🔊 Voice RAG Agent (OpenAI SDK)](voice_ai_agents/voice_rag_openaisdk/) - Ask your PDFs questions, hear the answers
 *   [🎙️ OpenSource Voice Dictation Agent (Wispr Flow clone)](https://github.com/akshayaggarwal99/jarvis-ai-assistant) <sub>↗ external</sub> - Open-source dictation that types where you talk
+* [HostDeFi](https://hostdefi.com) - Agent-ready token-safety scanner with a public A2A agent card, hosted MCP server and x402-paid endpoints for autonomous checks.
+
 
 ### 🖼️ Generative UI and Agentic Frontends
 
