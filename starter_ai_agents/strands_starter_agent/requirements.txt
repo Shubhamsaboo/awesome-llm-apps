@@ -1,0 +1,2 @@
+streamlit>=1.28.0
+strands-agents[openai]>=1.0.0
