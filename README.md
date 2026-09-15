@@ -201,6 +201,7 @@ streamlit run travel_agent.py
 *   [🌍 AI Travel Planner MCP Agent](mcp_ai_agents/ai_travel_planner_mcp_agent_team) - Itineraries built on live Airbnb and Google Maps data
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/) - Specialist agents, each wired to its own MCP server
 *   [🔌 OpenAI Remote MCP Tool Bridge](mcp_ai_agents/openai_remote_mcp_bridge/) - Connect OpenAI function calling directly to a remote MCP server
+*   [🧵 Strands MCP Agent](mcp_ai_agents/strands_mcp_agent/) - Answer questions about a codebase's docs with a Strands agent wired to an MCP server over stdio
 
 ### 📀 RAG (Retrieval Augmented Generation)
 
