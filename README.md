@@ -136,6 +136,8 @@ streamlit run travel_agent.py
 *   [🌐 Openwork - Open Browser Automation Agent](https://github.com/accomplish-ai/coworker) <sub>↗ external</sub> - Open-source agent that operates a real browser
 *   [🛡️ Trust-Gated Multi-Agent Research Team](advanced_ai_agents/multi_agent_apps/trust_gated_agent_team/) - Every agent verified, every action in a hash-chained audit trail
 
+*   [🌟 KinetAios — Four-Engine Agent Arena](https://github.com/phinn/KinetAios) <sub>↗ external</sub> - Local-first macOS dashboard that runs Claude Code, Codex CLI, and two more engines side-by-side on the same task, with per-turn token/cost audits (found 7.5% of calls burning 63% of budget) and SQLite-only storage. Free tier forever.
+
 ### 🛰️ Always-on Agents
 
 *Background agents that run on schedules or events, monitor changing context, decide what needs attention, and proactively deliver updates, artifacts, or actions.*
