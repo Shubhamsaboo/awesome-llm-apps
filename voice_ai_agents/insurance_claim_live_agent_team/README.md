@@ -4,7 +4,7 @@ A voice-first insurance claim intake app built on Gemini 3.8 Live, where the cla
 
 This is designed as a realistic first notice of loss (FNOL) workflow: the claimant does not need to fill out a rigid form, the operator sees a page they can read at a glance, and the adjuster still gets a structured packet.
 
-![Insurance Claim Live Agent Team architecture](assets/insurance-claim-live-agent-team-architecture.png)
+![Insurance Claim Live Agent Team notebook during a live call, with camera frames pinned and marked not confirmed](assets/insurance-claim-live-agent-team-notebook.png)
 
 ## What Gemini 3.8 Live makes possible
 
@@ -128,7 +128,7 @@ insurance_claim_live_agent_team/
 |-- requirements.txt
 |-- .env.example
 |-- assets/
-|   `-- insurance-claim-live-agent-team-architecture.png
+|   `-- insurance-claim-live-agent-team-notebook.png
 |-- live_demo/
 |   |-- index.html
 |   |-- styles.css
