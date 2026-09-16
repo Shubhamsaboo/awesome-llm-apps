@@ -16,6 +16,8 @@ Every model is called through OpenRouter with the OpenAI SDK, so one key covers 
 
     export OPENROUTER_API_KEY=sk-or-...
     python llm_panel_agent_team.py --file sample_diff.patch --rebut
+
+Model ids come from https://openrouter.ai/models; --models takes any of them.
 """
 
 import argparse
@@ -30,11 +32,19 @@ from dataclasses import dataclass, field
 
 from openai import OpenAI
 
+# One cheap model per vendor, named by OpenRouter's rolling aliases rather than by a
+# version. A pinned id (`openai/gpt-5.4-mini`) is the version that was current the day this
+# was written, and providers retire versions: the pin would fail for whoever clones this
+# months from now, before they ever saw the panel work. Each `-latest` alias "always
+# redirects to the latest model in the family", so a default roster keeps resolving. Pin a
+# version with --models when you want a run to be reproducible instead of current.
 DEFAULT_MODELS = [
-    "openai/gpt-5.4-mini",
-    "anthropic/claude-haiku-4.5",
-    "google/gemini-3.8-flash",
+    "~openai/gpt-mini-latest",
+    "~anthropic/claude-haiku-latest",
+    "~google/gemini-flash-latest",
 ]
+
+MODEL_CATALOG = "https://openrouter.ai/models"
 
 REVIEW_TASK = (
     "Review the following change. Report defects only, as a numbered list, each with the "
@@ -66,7 +76,21 @@ REBUT_INSTRUCTIONS = (
     "Reviews from the other reviewers follow.\n\n"
 )
 
-POSITION = re.compile(r"^\s*\**\s*(UPHOLD|REJECT|CONCEDE|MISSED)\s*\**\s*:?\s*\**\s*([A-Z]\d+)", re.M)
+# A position is a line that OPENS with one of the four labels; the findings it argues
+# about are every reference on that line. Models write the label in whatever markdown they
+# favour ("* **UPHOLD: A1**", "1. UPHOLD: Reviewer A1 / Reviewer B3"), so the label match
+# tolerates bullets and bold, and the references are collected from the rest of the line
+# instead of having to sit immediately after the colon. One line may cite two findings.
+POSITION = re.compile(r"^[\s>*\-\d.)]*\**\s*(UPHOLD|REJECT|CONCEDE|MISSED)\b\**\s*:?(.*)$", re.M)
+REFERENCE = re.compile(r"\b([A-Z]\d+)\b")
+
+
+def parse_positions(text: str) -> list:
+    """(label, reference) for every finding each position line argues about."""
+    out = []
+    for label, rest in POSITION.findall(text):
+        out += [(label, ref) for ref in REFERENCE.findall(rest)]
+    return out
 
 
 @dataclass
@@ -103,7 +127,12 @@ def ask(client: OpenAI, model: str, prompt: str, timeout: float) -> Answer:
                       getattr(u, "prompt_tokens", 0) or 0, getattr(u, "completion_tokens", 0) or 0,
                       float(getattr(u, "cost", 0.0) or 0.0))
     except Exception as e:  # reported, not swallowed: the row says what happened
-        return Answer(model, "error", f"{type(e).__name__}: {e}", time.time() - t0)
+        msg = f"{type(e).__name__}: {e}"
+        if getattr(e, "status_code", None) in (400, 404) and "model" in str(e).lower():
+            # The one failure a reader hits before they have seen the tool work at all:
+            # say where the current ids live rather than leaving them with a raw 404.
+            msg += f"\n  -> `{model}` is not a model id OpenRouter serves. Pick a current one from {MODEL_CATALOG}."
+        return Answer(model, "error", msg, time.time() - t0)
 
 
 def round_one(client, models, prompt, timeout) -> list[Answer]:
@@ -136,7 +165,7 @@ def round_two(client, answers, prompt, timeout) -> None:
         p = f"{prompt}\n\n---\n\nYour own review was:\n\n{me.text}\n\n---\n\n{REBUT_INSTRUCTIONS}{blocks}"
         me.rebuttal = ask(client, me.model, p, timeout)
         if me.rebuttal.status == "ok":
-            me.positions = [(lab, ref) for lab, ref in POSITION.findall(me.rebuttal.text)]
+            me.positions = parse_positions(me.rebuttal.text)
 
     with ThreadPoolExecutor(len(ok)) as ex:
         list(ex.map(one, ok))
@@ -153,15 +182,22 @@ def grouped_positions(answers) -> list[str]:
             author = a.letters.get(ref[0])
             if author is None:
                 continue          # a letter that was not in this model's packet
-            rows.setdefault((author, int(ref[1:])), []).append((lab, a.model))
+            row = rows.setdefault((author, int(ref[1:])), [])
+            if (lab, a.model) not in row:   # one model arguing a finding twice is one position
+                row.append((lab, a.model))
+    # A rebuttal that arrived but parsed to nothing is reported, not dropped: otherwise a
+    # model whose formatting the parser missed looks exactly like a model that stayed quiet.
+    unparsed = [a.model for a in answers if a.rebuttal and a.rebuttal.status == "ok" and not a.positions]
+    note = ([f"_No position could be read from the rebuttal of: {', '.join(unparsed)}. "
+             "Their round-two text is still in full above._"] if unparsed else [])
     if not rows:
-        return ["_No position cited a finding reference, so there is nothing to group._"]
+        return ["_No position cited a finding reference, so there is nothing to group._", *note]
     out = ["| finding | positions | contested |", "|---|---|---|"]
     for (author, n), ps in sorted(rows.items()):
         labels = {lab for lab, _ in ps}
         contested = "CONTESTED" if labels & {"REJECT"} and labels & {"UPHOLD", "MISSED"} else ""
         out.append(f"| {author} #{n} | " + "; ".join(f"{lab} ({by})" for lab, by in ps) + f" | {contested} |")
-    return out
+    return out + ([""] + note if note else [])
 
 
 def scoreboard(answers) -> list[str]:
@@ -194,7 +230,8 @@ def main():
     src.add_argument("--question", help="ask the panel this")
     src.add_argument("--file", help="review this file (a diff, a design doc, a function...)")
     ap.add_argument("--models", default=",".join(DEFAULT_MODELS),
-                    help="comma-separated OpenRouter model ids (default: one per vendor)")
+                    help=f"comma-separated model ids from {MODEL_CATALOG} "
+                         "(default: one rolling `-latest` alias per vendor)")
     ap.add_argument("--rebut", action="store_true", help="add the anonymised rebuttal round")
     ap.add_argument("--timeout", type=float, default=300, help="seconds per model per round")
     ap.add_argument("--out", default="panel.md", help="where the full panel is written")

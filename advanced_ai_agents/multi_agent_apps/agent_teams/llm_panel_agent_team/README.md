@@ -16,13 +16,14 @@ wrong finding that has to survive being argued with.
 ## How it works
 
 ```
-                 ┌──────────────────┐
-   same prompt ─▶│ gpt-5.4-mini     │──▶ answer 1 ─┐
-                 ├──────────────────┤              │   round 2 (--rebut):
-   same prompt ─▶│ claude-haiku-4.5 │──▶ answer 2 ─┼─▶ each model sees the OTHER answers
-                 ├──────────────────┤              │   as "Reviewer A", "Reviewer B" ...
-   same prompt ─▶│ gemini-3.8-flash │──▶ answer 3 ─┘   (shuffled per model) and takes a
-                 └──────────────────┘                   position on each finding
+                 ┌───────────────────────┐
+   same prompt ─▶│ ~openai/gpt-mini-...  │──▶ answer 1 ─┐
+                 ├───────────────────────┤              │  round 2 (--rebut):
+   same prompt ─▶│ ~anthropic/claude-... │──▶ answer 2 ─┼▶ each model sees the OTHER
+                 ├───────────────────────┤              │  answers as "Reviewer A",
+   same prompt ─▶│ ~google/gemini-...    │──▶ answer 3 ─┘  "Reviewer B" ... (shuffled
+                 └───────────────────────┘                 per model) and takes a
+                                                           position on each finding
       round 1: parallel, no model                             │
       sees another's answer                                   ▼
                                               positions regrouped BY FINDING,
@@ -71,98 +72,119 @@ Ask a question instead of reviewing a file, or pick your own roster:
 ```bash
 python llm_panel_agent_team.py --question "Is optimistic locking or a queue the better fit for a booking system, and why?"
 python llm_panel_agent_team.py --file my_change.diff --rebut \
-    --models openai/gpt-5.4,anthropic/claude-sonnet-5,google/gemini-3.8-pro,deepseek/deepseek-v4-flash
+    --models openai/gpt-5.4,anthropic/claude-sonnet-5,google/gemini-3.8-flash,deepseek/deepseek-v4-flash
 ```
 
 Any [OpenRouter model id](https://openrouter.ai/models) works. The full panel, including
 both rounds in full, is written to `panel.md` (`--out` to change that).
 
+**On the default roster.** The defaults are OpenRouter's rolling aliases —
+`~openai/gpt-mini-latest`, `~anthropic/claude-haiku-latest`, `~google/gemini-flash-latest`
+— each of which always redirects to the current model in that vendor's family. A pinned
+id like `openai/gpt-5.4-mini` is whichever version was current the day it was written, and
+providers retire versions, so a pinned default would eventually greet a new reader with a
+"not a valid model ID" error before they ever saw the panel work. Pin ids yourself, as in
+the command above, when you want a run to be reproducible rather than current — and if any
+id ever stops resolving, the run reports it per model and points you at the catalogue:
+
+```
+## openai/gpt-5.4-mini-retired-example  (error, 0.5s)
+
+BadRequestError: Error code: 400 - {'error': {'message': 'openai/gpt-5.4-mini-retired-example
+is not a valid model ID', 'code': 400}, ...}
+  -> `openai/gpt-5.4-mini-retired-example` is not a model id OpenRouter serves. Pick a
+     current one from https://openrouter.ai/models.
+```
+
 ## Example output
 
-A real run on `sample_diff.patch`, shortened. Round one, all three landing within ten
+A real run on `sample_diff.patch`, shortened. Round one, all three landing within eight
 seconds:
 
 ```
-## anthropic/claude-haiku-4.5  (ok, 2.5s)
+## ~openai/gpt-mini-latest  (ok, 3.0s)
 
-1. **orders.py, line 17**: The mutable default argument `seen=[]` will be shared across
-   all function calls ...
-2. **orders.py, line 11**: The condition changed from `>=` to `>`, which changes the
-   discount logic so orders exactly at a threshold no longer qualify ...
-3. **orders.py, line 21**: Bare `except Exception` is too broad and will catch and
-   suppress unexpected errors like `KeyboardInterrupt` or `SystemExit` ...
+1. `orders.py:12-16` -- `discount_for()` now uses `total > threshold` instead of `>=`, so
+   orders exactly at a discount threshold (e.g. 100, 500, 1000) no longer receive ...
+2. `orders.py:12-16` -- Reversing `DISCOUNT_TIERS` and returning on the first match ...
+3. `orders.py:19-27` -- `load_orders()` catches all exceptions and silently returns `[]` ...
+4. `orders.py:19-27` -- The default argument `seen=[]` is a mutable shared list ...
+5. `orders.py:28-31` -- `recent()` now excludes orders with `ts == cutoff` ...
 
-## openai/gpt-5.4-mini  (ok, 2.9s)
+## ~anthropic/claude-haiku-latest  (ok, 2.5s)
 
-1. ... `>` instead of `>=`, so totals exactly on a tier threshold ... receive no discount.
-2. ... Reversing the tiers and returning on the first match ... can skip the correct
-   highest applicable tier if the list is not strictly ordered as expected.
-3. ... catches all exceptions and returns `[]`, which hides real failures ...
-4. ... `seen=[]` default argument is mutable and persists across calls ...
-5. ... `seen` parameter is never used by callers ... making the new side effect dead code.
-6. ... `recent()` now excludes cancelled orders and changes the cutoff comparison ...
+1. **orders.py, line 17**: The `seen=[]` default argument uses a mutable list that will be
+   shared across all function calls ...
+2. **orders.py, line 11**: The condition changed from `total >= threshold` to
+   `total > threshold` ... may break existing behavior at exact threshold boundaries.
+3. **orders.py, line 21**: Bare `except Exception` silently catches all exceptions ...
 
-## google/gemini-3.8-flash  (ok, 10.5s)
+## ~google/gemini-flash-latest  (ok, 7.3s)
 
-1. `orders.py`, line 13: Using `total > threshold` instead of `>=` incorrectly excludes ...
-2. `orders.py`, line 18: `seen=[]` uses a mutable default argument ...
+1. `orders.py`, line 13: The comparison `total > threshold` excludes totals that equal the
+   threshold, whereas tier thresholds should be inclusive (`>=`).
+2. `orders.py`, line 18: Using a mutable default argument (`seen=[]`) ...
 ```
 
-Round two. Note the third finding from claude-haiku: both other models reject it, and
-they are right, since `KeyboardInterrupt` and `SystemExit` derive from `BaseException`
-and are not caught by `except Exception`. That is the round doing its job.
+Round two. The models disagree about the broad `except`, and about whether the `>` on the
+`recent()` cutoff matters at all:
 
 ```
-## openai/gpt-5.4-mini rebuts  (ok, 3.7s)
+## ~anthropic/claude-haiku-latest rebuts  (ok)
 
-UPHOLD: A2 -- `discount_for()` now uses `total > threshold` on line 13, so values exactly
-equal to 100, 500, or 1000 no longer get the tier they previously qualified for.
-UPHOLD: A1 -- `load_orders(path, seen=[])` on line 17 uses a mutable default list ...
-REJECT: A3 -- The code catches `Exception`, which does not include `KeyboardInterrupt`
-or `SystemExit`, so the claim that it suppresses those is incorrect.
+UPHOLD: A1 -- The change from `>=` to `>` at line 11 is a logic error. An order totaling
+exactly 100 should qualify for the 0.05 discount tier, but `total > threshold` excludes it.
+REJECT: B2 -- This is overstated. The code uses `reversed(tiers)` to iterate from highest
+to lowest threshold, which is a valid approach *if* the input `tiers` are sorted ascending
+(as `DISCOUNT_TIERS` is) ... This is sound logic, not a defect.
 ...
 
-## google/gemini-3.8-flash rebuts  (ok, 21.2s)
+## ~google/gemini-flash-latest rebuts  (ok)
 
-* REJECT: B2 -- The original implementation already assumed ascending tier order by
-  iterating forward and overwriting `rate`, so traversing in reverse does not introduce
-  an ordering dependency that wasn't already present.
-* REJECT: B5 -- Callers can pass an explicit list to `seen` to track loaded paths, so
-  appending to `seen` is not dead code; the issue is solely the mutable default argument.
+* **REJECT: A3** -- The catch block is not silent since it logs via `log.warning()`, and
+  catching `Exception` to return a fallback empty list is a design strategy rather than a
+  functional defect.
+* **REJECT: B5** -- `cutoff` is computed from `datetime.now().timestamp()`, a microsecond-
+  precision float, making exact equality essentially impossible in real data and the
+  difference between `>` and `>=` inconsequential.
 ...
 ```
 
 The positions regrouped by the finding under dispute, and the bill:
 
 ```
-| finding                       | positions                                              | contested |
-|-------------------------------|--------------------------------------------------------|-----------|
-| anthropic/claude-haiku-4.5 #1 | UPHOLD (gpt-5.4-mini); UPHOLD (gemini-3.8-flash)       |           |
-| anthropic/claude-haiku-4.5 #2 | UPHOLD (gpt-5.4-mini); UPHOLD (gemini-3.8-flash)       |           |
-| anthropic/claude-haiku-4.5 #3 | REJECT (gpt-5.4-mini); REJECT (gemini-3.8-flash)       |           |
-| google/gemini-3.8-flash #1    | UPHOLD (gpt-5.4-mini); UPHOLD (claude-haiku-4.5)       |           |
-| google/gemini-3.8-flash #2    | UPHOLD (gpt-5.4-mini); UPHOLD (claude-haiku-4.5)       |           |
-| openai/gpt-5.4-mini #1        | UPHOLD (claude-haiku-4.5); UPHOLD (gemini-3.8-flash)   |           |
-| openai/gpt-5.4-mini #2        | REJECT (claude-haiku-4.5); REJECT (gemini-3.8-flash)   |           |
-| openai/gpt-5.4-mini #3        | UPHOLD (claude-haiku-4.5); REJECT (gemini-3.8-flash)   | CONTESTED |
-| openai/gpt-5.4-mini #4        | UPHOLD (claude-haiku-4.5); UPHOLD (gemini-3.8-flash)   |           |
-| openai/gpt-5.4-mini #5        | UPHOLD (claude-haiku-4.5); REJECT (gemini-3.8-flash)   | CONTESTED |
-| openai/gpt-5.4-mini #6        | UPHOLD (claude-haiku-4.5); REJECT (gemini-3.8-flash)   | CONTESTED |
+| finding                          | positions                            | contested |
+|----------------------------------|--------------------------------------|-----------|
+| ~anthropic/claude-haiku-latest #1 | MISSED (gpt-mini); UPHOLD (gemini)  |           |
+| ~anthropic/claude-haiku-latest #2 | UPHOLD (gpt-mini); UPHOLD (gemini)  |           |
+| ~anthropic/claude-haiku-latest #3 | MISSED (gpt-mini); REJECT (gemini)  | CONTESTED |
+| ~google/gemini-flash-latest #1    | UPHOLD (claude-haiku)               |           |
+| ~google/gemini-flash-latest #2    | UPHOLD (claude-haiku)               |           |
+| ~openai/gpt-mini-latest #1        | UPHOLD (claude-haiku); UPHOLD (gemini) |        |
+| ~openai/gpt-mini-latest #2        | REJECT (claude-haiku); REJECT (gemini) |        |
+| ~openai/gpt-mini-latest #3        | UPHOLD (claude-haiku); REJECT (gemini) | CONTESTED |
+| ~openai/gpt-mini-latest #4        | UPHOLD (claude-haiku); UPHOLD (gemini) |        |
+| ~openai/gpt-mini-latest #5        | UPHOLD (claude-haiku); REJECT (gemini) | CONTESTED |
 
-| model                      | status | time  | tokens in/out | cost    |
-|----------------------------|--------|-------|---------------|---------|
-| openai/gpt-5.4-mini        | ok     | 2.9s  | 1,599/466     | $0.0033 |
-| anthropic/claude-haiku-4.5 | ok     | 2.5s  | 1,881/684     | $0.0053 |
-| google/gemini-3.8-flash    | ok     | 10.5s | 1,813/5,245   | $0.0210 |
-| total                      |        |       |               | $0.0296 |
+| model                         | status | time | tokens in/out | cost    |
+|-------------------------------|--------|------|---------------|---------|
+| ~openai/gpt-mini-latest       | ok     | 3.0s | 1,573/374     | $0.0029 |
+| ~anthropic/claude-haiku-latest| ok     | 2.5s | 1,848/519     | $0.0044 |
+| ~google/gemini-flash-latest   | ok     | 7.3s | 1,786/4,989   | $0.0200 |
+| total                         |        |      |               | $0.0274 |
 ```
 
+(The `positions` column is abbreviated here to fit the page; the script prints the full
+model id.)
+
 Reading it: the two planted bugs (`>` for `>=` on the tier threshold, the mutable default
-`seen=[]`) were found by all three and upheld by all. One false finding was rejected by
-both peers. Three findings are contested, and those are the ones a human should look at:
-one of them (the broad `except` that hides malformed data) is a real problem that
-gemini-3.8-flash talked itself out of. The panel points at where to look; it does not
-decide for you.
+`seen=[]`) were found by all three and upheld by all. Three findings are contested, and
+those are the ones a human should look at. One of them is the broad `except` that hides
+malformed data: claude-haiku called it a defect, gpt-mini had missed it and agreed once
+shown, and gemini rejected it twice on the grounds that `log.warning()` makes it not
+silent. Whether that is a defect depends on what the caller does with an empty list, which
+is exactly the kind of question a panel surfaces and does not settle. The panel points at
+where to look; it does not decide for you.
 
 ## Things worth knowing
 
@@ -173,7 +195,9 @@ decide for you.
   the round-one prompt. Costs scale with that.
 - **Grouping only sees positions that cite a reference.** A position that restates a
   finding in its own words without `B3` is still printed but cannot be matched, so it
-  argues with nobody. The instructions say this to the model; some ignore it.
+  argues with nobody. The instructions say this to the model; some ignore it. When a
+  rebuttal arrives but yields no readable position at all, the grouping says so by name
+  rather than leaving the model quietly out of the table.
 - **One key, many vendors.** OpenRouter is used so the roster can mix vendors without a
   key per vendor. Any OpenAI-compatible endpoint works if you change `base_url`, but then
   the `cost` column depends on that endpoint reporting it.
