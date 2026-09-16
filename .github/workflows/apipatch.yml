@@ -1,0 +1,26 @@
+name: 'ApiPatch Codebase Maintenance'
+
+on:
+  schedule:
+    - cron: '0 3 * * 1' # Runs weekly on Mondays at 03:00 UTC
+  workflow_dispatch: # Allows manual trigger from Actions tab
+
+jobs:
+  apipatch-maintenance:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run ApiPatch Autonomous Maintenance
+        uses: MoradMoqbel/apipatch@v0.9.0
+        with:
+          mode: 'fix'
+          provider: 'gemini'
+          api_key: ${{ secrets.GEMINI_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          auto_pr: 'true'
+          pr_title: '[ApiPatch] Autonomous API Breaking Changes Migration'
