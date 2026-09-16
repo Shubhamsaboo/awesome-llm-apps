@@ -13,6 +13,7 @@ import logging
 import os
 import re
 import sys
+import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -58,10 +59,25 @@ from agent import (  # noqa: E402
     run_claim_workflow,
 )
 from schemas import ClaimClassification, ClaimNarrative  # noqa: E402
+from policy_directory import lookup_policy, policy_status_headline  # noqa: E402
 
-LIVE_MODEL = os.getenv("FNOL_GEMINI_LIVE_MODEL", "gemini-3.1-flash-live-preview")
+if str(DEMO_DIR) not in sys.path:
+    sys.path.insert(0, str(DEMO_DIR))
+
+from live_tools import (  # noqa: E402
+    LIVE_MODEL_ID,
+    SKETCH_MODEL_ID,
+    TOOL_NAMES,
+    build_live_config,
+    scheduling_for,
+    sketch_prompt,
+    summarize_workflow_for_voice,
+    tool_headline,
+)
+
 GENAI_CLIENT = None
 logger = logging.getLogger(__name__)
+FRAME_MAX_AGE_SECONDS = 12.0
 
 
 class MessageRequest(BaseModel):
@@ -83,6 +99,16 @@ class IntakeSession:
     normalized_claim: dict[str, Any] | None = None
     classification: dict[str, Any] | None = None
     route: str = "needs_docs"
+    policy_record: dict[str, Any] | None = None
+    live_model: str | None = None
+    tool_activity: list[dict[str, Any]] = field(default_factory=list)
+    last_workflow_key: str | None = None
+    last_workflow: dict[str, Any] | None = None
+    evidence_photos: list[dict[str, Any]] = field(default_factory=list)
+    camera_notes: list[str] = field(default_factory=list)
+    sketch: dict[str, Any] | None = None
+    last_frame: bytes | None = None
+    last_frame_at: float = 0.0
 
 
 sessions: dict[str, IntakeSession] = {}
@@ -132,6 +158,20 @@ def _claimant_text(session: IntakeSession) -> str:
     return "\n".join(
         turn["text"] for turn in session.transcript if turn["speaker"] == "Claimant"
     )
+
+
+def _intake_text(session: IntakeSession) -> str:
+    """Claimant transcript plus what the agent observed on camera, for the claim graph."""
+
+    text = _claimant_text(session)
+    if session.camera_notes:
+        notes = "\n".join(f"- {note}" for note in session.camera_notes)
+        text = f"{text}\n\nEvidence the intake agent observed on the claimant's camera:\n{notes}"
+    return text.strip()
+
+
+def _data_url(data: bytes, mime_type: str) -> str:
+    return f"data:{mime_type};base64,{base64.b64encode(data).decode('ascii')}"
 
 
 def _status(value: Any, urgent: bool = False) -> str:
@@ -335,6 +375,7 @@ def _ui_state(
         "photos": counted(_field("Evidence available", evidence_text)),
         "tow": counted(_field("Tow info", _find_text(claim, ["tow", "storage"]))),
         "otherDriver": counted(_field("Other driver info", _find_text(claim, ["other driver", "driver", "plate", "witness"]))),
+        **_policy_fields(session, counted),
     }
 
     progress = max(12, round(completed / len(fields) * 100))
@@ -344,6 +385,16 @@ def _ui_state(
         "fields": fields,
         "transcript": session.transcript,
         "events": events,
+        "policy": session.policy_record,
+        "tool_activity": session.tool_activity[-12:],
+        "live_model": session.live_model,
+        "missing_blockers": validation.get("missing_fields", []),
+        "documents": checklist.get("items", []),
+        "evidence_photos": session.evidence_photos,
+        "camera_notes": session.camera_notes,
+        "sketch": session.sketch,
+        "severity": classification.severity,
+        "claim_type": classification.claim_type.replace("_", " "),
         "handoff": {
             "Summary": packet["adjuster_handoff_summary"],
             "Priority": f"{classification.severity.title()} - {classification.severity_rationale}",
@@ -353,6 +404,43 @@ def _ui_state(
         },
         "packet_markdown": packet["markdown"],
         "model": MODEL,
+    }
+
+
+def _policy_fields(session: IntakeSession, counted) -> dict[str, dict[str, str]]:
+    """Policy verification rows sourced from the background lookup_policy tool."""
+
+    record = session.policy_record
+    source = "Policy directory lookup"
+    if not record:
+        return {
+            "policyStatus": counted(_field("Policy status", "")),
+            "policyLine": counted(_field("Policy line", "")),
+            "deductible": counted(_field("Deductibles", "")),
+            "coverages": counted(_field("Coverages on file", "")),
+        }
+    if not record.get("found"):
+        return {
+            "policyStatus": counted(_field("Policy status", "Not found - confirm number", source=source, urgent=True)),
+            "policyLine": counted(_field("Policy line", "")),
+            "deductible": counted(_field("Deductibles", "")),
+            "coverages": counted(_field("Coverages on file", "")),
+        }
+    deductibles = ", ".join(
+        f"{name.replace('_', ' ')} ${int(amount):,}" for name, amount in record.get("deductibles", {}).items()
+    )
+    return {
+        "policyStatus": counted(
+            _field(
+                "Policy status",
+                policy_status_headline(record),
+                source=source,
+                urgent=str(record.get("status")) != "active",
+            )
+        ),
+        "policyLine": counted(_field("Policy line", record.get("policy_line", ""), source=source)),
+        "deductible": counted(_field("Deductibles", deductibles or "None listed", source=source)),
+        "coverages": counted(_field("Coverages on file", "; ".join(record.get("coverages", [])), source=source)),
     }
 
 
@@ -387,15 +475,38 @@ def _state_from_workflow(session: IntakeSession, workflow: dict[str, Any]) -> di
     return _ui_state(session, validation, coverage, checklist, fraud_gate, packet, events)
 
 
+def _attach_policy_from_claim(session: IntakeSession, workflow: dict[str, Any]) -> None:
+    """Verify an extracted policy number against the directory if the voice agent has not yet."""
+
+    if session.policy_record and session.policy_record.get("found"):
+        return
+    number = str(workflow["normalized_claim"].get("policy_number", "")).strip()
+    if not number or number.lower() in {"not specified", "unknown"}:
+        return
+    record = lookup_policy(number)
+    if record.get("found") or session.policy_record is None:
+        session.policy_record = record
+
+
+async def _run_workflow_cached(session: IntakeSession) -> dict[str, Any]:
+    """Run the ADK graph for the current claimant transcript, reusing the last result if unchanged."""
+
+    text = _intake_text(session)
+    if session.last_workflow is not None and session.last_workflow_key == text:
+        return session.last_workflow
+    workflow = await run_claim_workflow(text, session_id=session.session_id)
+    session.last_workflow_key = text
+    session.last_workflow = workflow
+    _attach_policy_from_claim(session, workflow)
+    return workflow
+
+
 async def _process_with_adk_graph(
     session: IntakeSession,
     *,
     add_claimant_facing_reply: bool,
 ) -> dict[str, Any]:
-    workflow = await run_claim_workflow(
-        _claimant_text(session),
-        session_id=session.session_id,
-    )
+    workflow = await _run_workflow_cached(session)
     if add_claimant_facing_reply:
         packet = workflow["claim_intake_packet"]
         session.transcript.append({"speaker": "Agent", "text": packet["claimant_next_message"]})
@@ -404,7 +515,14 @@ async def _process_with_adk_graph(
 
 @app.get("/api/health")
 def health() -> dict[str, Any]:
-    return {"ok": True, "model": MODEL, "has_api_key": _has_api_key()}
+    return {
+        "ok": True,
+        "model": MODEL,
+        "has_api_key": _has_api_key(),
+        "live_model": LIVE_MODEL_ID,
+        "sketch_model": SKETCH_MODEL_ID,
+        "tools": TOOL_NAMES,
+    }
 
 
 @app.post("/api/sessions", response_model=SessionResponse)
@@ -463,11 +581,102 @@ async def message(request: MessageRequest) -> SessionResponse:
     )
 
 
+def _pin_evidence_photo(session: IntakeSession, args: dict[str, Any]) -> dict[str, Any]:
+    """Tape the most recent camera frame into the notebook with the agent's caption."""
+
+    observation = str(args.get("observation") or args.get("caption") or "").strip()
+    claimant_said = str(args.get("claimant_description", "")).strip()
+    confirmed = bool(args.get("confirmed", False))
+    if not observation:
+        return {"pinned": False, "message": "An observation describing what you can see in the frame is required."}
+    if session.last_frame is None:
+        return {
+            "pinned": False,
+            "message": "No camera frame has arrived yet. Ask the claimant to turn on the camera and show the damage.",
+        }
+    if time.monotonic() - session.last_frame_at > FRAME_MAX_AGE_SECONDS:
+        return {
+            "pinned": False,
+            "message": "The camera stopped sending frames. Ask the claimant to turn the camera back on.",
+        }
+    photo = {
+        "id": uuid.uuid4().hex,
+        "data_url": _data_url(session.last_frame, "image/jpeg"),
+        "caption": observation,
+        "claimant_description": claimant_said,
+        "confirmed": confirmed,
+        "evidence_type": str(args.get("evidence_type", "damage")).strip() or "damage",
+        "captured_at": time.strftime("%H:%M"),
+    }
+    session.evidence_photos.append(photo)
+    note = f"Agent saw on camera: {observation}"
+    if claimant_said:
+        note += f" Claimant described it as: {claimant_said}."
+        note += " Confirmed on camera." if confirmed else " Not confirmed on camera; needs a clearer photo."
+    session.camera_notes.append(note)
+    return {
+        "pinned": True,
+        "confirmed": confirmed,
+        "photo_count": len(session.evidence_photos),
+        "message": (
+            "Frame taped into the notebook as confirmed evidence."
+            if confirmed
+            else "Frame taped into the notebook marked as not confirmed. Ask for a closer or brighter view, then pin again."
+        ),
+    }
+
+
+async def _draw_incident_sketch(session: IntakeSession, args: dict[str, Any]) -> dict[str, Any]:
+    """Generate a pen sketch of the incident scene with the image model."""
+
+    brief = str(args.get("scene_description", "")).strip()
+    if not brief:
+        return {"sketched": False, "message": "A scene description is required."}
+    from google.genai import types
+
+    response = await _client().aio.models.generate_content(
+        model=SKETCH_MODEL_ID,
+        contents=sketch_prompt(brief),
+        config=types.GenerateContentConfig(response_modalities=["IMAGE"]),
+    )
+    image_part = next(
+        (
+            part
+            for candidate in response.candidates or []
+            for part in (candidate.content.parts if candidate.content else [])
+            if part.inline_data and part.inline_data.data
+        ),
+        None,
+    )
+    if image_part is None:
+        return {"sketched": False, "message": "The sketch model returned no image. Continue without it."}
+    version = (session.sketch or {}).get("version", 0) + 1
+    session.sketch = {
+        "data_url": _data_url(image_part.inline_data.data, image_part.inline_data.mime_type or "image/png"),
+        "brief": brief,
+        "version": version,
+        "confirmed": False,
+    }
+    return {
+        "sketched": True,
+        "version": version,
+        "next_step": "Tell the claimant the sketch is in the notebook and ask if it looks right.",
+    }
+
+
+def _current_ui_state(session: IntakeSession) -> dict[str, Any]:
+    """Rebuild the UI state from the cached workflow without re-running the graph."""
+
+    workflow = session.last_workflow or build_initial_workflow_state()
+    return _state_from_workflow(session, workflow)
+
+
 @app.websocket("/ws/live")
 async def live_voice(websocket: WebSocket) -> None:
     await websocket.accept()
+    live_model = LIVE_MODEL_ID
     session_id = str(uuid.uuid4())
-    session = IntakeSession(session_id=session_id)
+    session = IntakeSession(session_id=session_id, live_model=live_model)
     session.transcript.append(
         {
             "speaker": "Agent",
@@ -499,40 +708,27 @@ async def live_voice(websocket: WebSocket) -> None:
         {
             "type": "session",
             "session_id": session_id,
-            "model": LIVE_MODEL,
-            "message": "Gemini Live voice session connected.",
+            "model": live_model,
+            "sketch_model": SKETCH_MODEL_ID,
+            "tools": TOOL_NAMES,
+            "message": "Gemini 3.8 Live voice session connected.",
         }
     )
 
-    config = types.LiveConnectConfig(
-        response_modalities=["AUDIO"],
-        system_instruction=(
-            "You are a voice insurance FNOL intake agent. Speak naturally and briefly. "
-            "Your job is to collect enough blocking intake facts for a smooth adjuster handoff, "
-            "not to end the call after the claimant's first narrative. If injury, unsafe housing, "
-            "or immediate danger is mentioned, prioritize safety and human escalation. Otherwise, "
-            "keep asking for missing blockers one step at a time: claimant name, contact method, "
-            "policy number if available, date and location of loss, what happened, safety/injury "
-            "status, evidence, documents, reports, tow details, or other involved parties. Do not "
-            "promise coverage, payment, liability, benefits, or approval. Ask only one or two "
-            "focused follow-up questions at a time."
-        ),
-        speech_config=types.SpeechConfig(
-            voice_config=types.VoiceConfig(
-                prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name="Kore")
-            )
-        ),
-        input_audio_transcription=types.AudioTranscriptionConfig(),
-        output_audio_transcription=types.AudioTranscriptionConfig(),
-    )
+    config = build_live_config()
 
     state_lock = asyncio.Lock()
     background_tasks: set[asyncio.Task] = set()
+    tool_tasks: dict[str, asyncio.Task] = {}
+    pending_input = ""
+    pending_output = ""
 
-    def schedule_state_update(text: str) -> None:
-        task = asyncio.create_task(update_claim_state(text))
+    def track(task: asyncio.Task) -> None:
         background_tasks.add(task)
         task.add_done_callback(background_tasks.discard)
+
+    def schedule_state_update(text: str) -> None:
+        track(asyncio.create_task(update_claim_state(text)))
 
     async def update_claim_state(text: str) -> None:
         if not text.strip():
@@ -545,8 +741,120 @@ async def live_voice(websocket: WebSocket) -> None:
             except Exception as exc:
                 await websocket.send_json({"type": "error", "message": f"Claim state update failed: {exc}"})
 
+    async def finalize_input(reason: str) -> None:
+        nonlocal pending_input
+        finished = pending_input.strip()
+        if not finished:
+            return
+        pending_input = ""
+        await websocket.send_json(
+            {"type": "transcript", "speaker": "Claimant", "text": finished, "final": True, "reason": reason}
+        )
+        schedule_state_update(finished)
+
+    async def finalize_output(reason: str) -> None:
+        nonlocal pending_output
+        finished = pending_output.strip()
+        if not finished:
+            return
+        pending_output = ""
+        session.transcript.append({"speaker": "Agent", "text": finished})
+        await websocket.send_json(
+            {"type": "transcript", "speaker": "Agent", "text": finished, "final": True, "reason": reason}
+        )
+
+    def record_activity(entry: dict[str, Any]) -> None:
+        session.tool_activity = [item for item in session.tool_activity if item["id"] != entry["id"]]
+        session.tool_activity.append(entry)
+        session.tool_activity = session.tool_activity[-30:]
+
+    async def publish_tool(entry: dict[str, Any]) -> None:
+        record_activity(entry)
+        await websocket.send_json({"type": "tool", **entry})
+
+    async def execute_tool(fc: Any, live_session: Any) -> None:
+        """Run one background tool call and hand the result back to Gemini Live."""
+
+        started = time.monotonic()
+        name = str(fc.name or "")
+        args = dict(fc.args or {})
+        call_id = str(fc.id or uuid.uuid4())
+        entry: dict[str, Any] = {
+            "id": call_id,
+            "name": name,
+            "args": args,
+            "phase": "running",
+            "headline": tool_headline(name, args, None),
+            "model": live_model,
+        }
+        await publish_tool(entry)
+
+        urgent = False
+        refresh_ui_after_response = False
+        try:
+            if name == "lookup_policy":
+                result = lookup_policy(str(args.get("policy_number", "")))
+                session.policy_record = result
+                urgent = bool(result.get("found") and str(result.get("status")) != "active")
+                refresh_ui_after_response = True
+            elif name == "sync_claim_packet":
+                await finalize_input("tool_call")
+                async with state_lock:
+                    workflow = await _run_workflow_cached(session)
+                    await websocket.send_json(
+                        {"type": "state", "state": _state_from_workflow(session, workflow)}
+                    )
+                result = summarize_workflow_for_voice(workflow)
+                urgent = bool(result["safety_escalation"])
+            elif name == "pin_evidence_photo":
+                result = _pin_evidence_photo(session, args)
+                refresh_ui_after_response = True
+            elif name == "draw_incident_sketch":
+                result = await _draw_incident_sketch(session, args)
+                refresh_ui_after_response = True
+            else:
+                result = {"error": f"Unknown tool: {name}"}
+        except asyncio.CancelledError:
+            entry.update(phase="cancelled", headline="Cancelled by the model", duration_ms=int((time.monotonic() - started) * 1000))
+            await publish_tool(entry)
+            raise
+        except Exception as exc:
+            logger.exception("Tool %s failed", name)
+            result = {"error": str(exc)}
+
+        scheduling = scheduling_for(urgent=urgent)
+        await live_session.send_tool_response(
+            function_responses=[
+                types.FunctionResponse(
+                    id=fc.id,
+                    name=name,
+                    response=result,
+                    scheduling=scheduling,
+                )
+            ]
+        )
+        entry.update(
+            phase="error" if "error" in result else "done",
+            headline=result["error"] if "error" in result else tool_headline(name, args, result),
+            scheduling=scheduling.value if scheduling else None,
+            urgent=urgent,
+            duration_ms=int((time.monotonic() - started) * 1000),
+            result=result,
+        )
+        await publish_tool(entry)
+        if refresh_ui_after_response:
+            # The model already has its answer; the operator UI can wait for the state lock.
+            async with state_lock:
+                await websocket.send_json({"type": "state", "state": _current_ui_state(session)})
+
+    def launch_tool(fc: Any, live_session: Any) -> None:
+        task = asyncio.create_task(execute_tool(fc, live_session))
+        tool_tasks[str(fc.id)] = task
+        task.add_done_callback(lambda done, key=str(fc.id): tool_tasks.pop(key, None))
+        track(task)
+
     try:
-        async with _client().aio.live.connect(model=LIVE_MODEL, config=config) as live_session:
+        async with _client().aio.live.connect(model=live_model, config=config) as live_session:
             async def client_to_gemini() -> None:
                 while True:
                     message = await websocket.receive_json()
@@ -556,58 +864,45 @@ async def live_voice(websocket: WebSocket) -> None:
                         await live_session.send_realtime_input(
                             audio=types.Blob(data=data, mime_type="audio/pcm;rate=16000")
                         )
+                    elif msg_type == "video":
+                        frame = base64.b64decode(message["data"])
+                        session.last_frame = frame
+                        session.last_frame_at = time.monotonic()
+                        await live_session.send_realtime_input(
+                            video=types.Blob(data=frame, mime_type="image/jpeg")
+                        )
                     elif msg_type == "text":
                         text = str(message.get("text", "")).strip()
                         if text:
-                            session.transcript.append({"speaker": "Claimant", "text": text})
-                            await live_session.send(input=text, end_of_turn=True)
-                            state = await _process_with_adk_graph(session, add_claimant_facing_reply=False)
-                            await websocket.send_json({"type": "state", "state": state})
+                            async with state_lock:
+                                session.transcript.append({"speaker": "Claimant", "text": text})
+                            await live_session.send_client_content(
+                                turns=types.Content(role="user", parts=[types.Part(text=text)]),
+                                turn_complete=True,
+                            )
+                            async with state_lock:
+                                state = await _process_with_adk_graph(session, add_claimant_facing_reply=False)
+                                await websocket.send_json({"type": "state", "state": state})
                     elif msg_type == "close":
                         await websocket.close()
                         return
 
             async def gemini_to_client() -> None:
-                pending_input = ""
-                pending_output = ""
-
-                async def finalize_input(reason: str) -> None:
-                    nonlocal pending_input
-                    finished = pending_input.strip()
-                    if not finished:
-                        return
-                    pending_input = ""
-                    await websocket.send_json(
-                        {
-                            "type": "transcript",
-                            "speaker": "Claimant",
-                            "text": finished,
-                            "final": True,
-                            "reason": reason,
-                        }
-                    )
-                    schedule_state_update(finished)
-
-                async def finalize_output(reason: str) -> None:
-                    nonlocal pending_output
-                    finished = pending_output.strip()
-                    if not finished:
-                        return
-                    pending_output = ""
-                    session.transcript.append({"speaker": "Agent", "text": finished})
-                    await websocket.send_json(
-                        {
-                            "type": "transcript",
-                            "speaker": "Agent",
-                            "text": finished,
-                            "final": True,
-                            "reason": reason,
-                        }
-                    )
-
+                nonlocal pending_input, pending_output
                 while True:
                     turn = live_session.receive()
                     async for response in turn:
+                        if response.tool_call and response.tool_call.function_calls:
+                            await finalize_input("tool_call")
+                            for fc in response.tool_call.function_calls:
+                                launch_tool(fc, live_session)
+
+                        if response.tool_call_cancellation and response.tool_call_cancellation.ids:
+                            for call_id in response.tool_call_cancellation.ids:
+                                task = tool_tasks.get(str(call_id))
+                                if task:
+                                    task.cancel()
+
                         server_content = response.server_content
                         if not server_content:
                             continue
@@ -646,6 +941,9 @@ async def live_voice(websocket: WebSocket) -> None:
                         if server_content.model_turn:
                             await finalize_input("model_audio_started")
                             for part in server_content.model_turn.parts or []:
+                                if getattr(part, "thought", False) and part.text:
+                                    await websocket.send_json({"type": "thought", "text": part.text})
+                                    continue
                                 if part.inline_data and isinstance(part.inline_data.data, bytes):
                                     await websocket.send_json(
                                         {

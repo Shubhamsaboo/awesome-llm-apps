@@ -52,7 +52,7 @@ except ImportError:
     )
 
 
-MODEL = "gemini-3-flash-preview"
+MODEL = "gemini-3.8-flash"
 APP_NAME = "insurance_claim_live_agent_team"
 
 

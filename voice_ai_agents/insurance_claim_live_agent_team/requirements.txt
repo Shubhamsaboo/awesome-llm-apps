@@ -1,5 +1,5 @@
 google-adk>=2.0.0a1
-google-genai>=1.0.0
+google-genai>=1.75.0
 fastapi>=0.115
 uvicorn[standard]>=0.30
 pydantic>=2.7

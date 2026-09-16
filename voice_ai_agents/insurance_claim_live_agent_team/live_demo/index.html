@@ -7,52 +7,52 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400&family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&family=Patrick+Hand&family=Inter:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=dark-editorial-1" />
+    <link rel="stylesheet" href="./styles.css?v=notebook-1" />
   </head>
   <body>
-    <div class="app-shell">
-      <main class="workspace">
-        <header class="topbar">
-          <div class="title-group">
+    <div class="desk">
+      <header class="desk-bar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <div>
             <h1>Insurance Claim Live Agent Team</h1>
-            <span id="modelLabel" class="live-model"><span class="dot ok"></span> Connecting to Gemini API</span>
+            <p id="modelLabel" class="brand-sub">Connecting to Gemini</p>
           </div>
-        </header>
+        </div>
+        <button id="openPacket" class="ghost-button" type="button">Adjuster packet</button>
+      </header>
 
-        <section class="dashboard" aria-label="Live intake cockpit">
-          <section class="panel call-panel">
-            <div class="panel-header">
-              <div>
-                <p class="panel-kicker">Live call</p>
-                <h2>Voice and transcript</h2>
-              </div>
-              <span id="callStatus" class="status-pill active">Active - listening</span>
+      <main class="desk-layout">
+        <aside class="side">
+          <section class="card call-card">
+            <div class="card-head">
+              <span class="card-kicker">Live call</span>
+              <span id="callStatus" class="pill">Connecting</span>
             </div>
 
-            <div class="voice-stage">
-              <div class="wave left" aria-hidden="true">
-                <span></span><span></span><span></span><span></span><span></span><span></span>
-              </div>
-              <button id="micButton" class="mic-button" type="button" aria-label="Start voice recording">
-                <span class="mic-icon" aria-hidden="true"></span>
+            <div class="controls">
+              <button id="micButton" class="round-button" type="button" aria-label="Start live voice">
+                <span class="icon-mic" aria-hidden="true"></span>
+                <span class="round-label">Talk</span>
               </button>
-              <div class="wave right" aria-hidden="true">
-                <span></span><span></span><span></span><span></span><span></span><span></span>
-              </div>
+              <button id="cameraButton" class="round-button" type="button" aria-label="Show the damage on camera">
+                <span class="icon-camera" aria-hidden="true"></span>
+                <span class="round-label">Show camera</span>
+              </button>
+              <button id="newIntakeButton" class="round-button subtle" type="button" aria-label="Start a new intake">
+                <span class="icon-new" aria-hidden="true"></span>
+                <span class="round-label">New intake</span>
+              </button>
             </div>
 
-            <div class="call-actions">
-              <button id="newIntakeButton" class="primary-action" type="button">New live intake</button>
-              <button id="resetButton" class="secondary-action" type="button">Reset</button>
+            <div id="cameraStage" class="camera-stage" hidden>
+              <video id="cameraPreview" autoplay muted playsinline></video>
+              <span class="camera-tag"><span class="rec-dot" aria-hidden="true"></span> Agent is watching</span>
             </div>
 
-            <div class="transcript-header">
-              <h3>Live transcript</h3>
-              <span id="streamingLabel">Streaming</span>
-            </div>
             <div id="transcript" class="transcript" aria-live="polite"></div>
 
             <form id="textForm" class="text-entry">
@@ -60,60 +60,55 @@
                 id="textInput"
                 type="text"
                 autocomplete="off"
-                placeholder="Type a claimant response..."
+                placeholder="Or type what the claimant says..."
                 aria-label="Type a claimant response"
               />
-              <button type="submit" aria-label="Send response">Send</button>
+              <button type="submit">Send</button>
             </form>
           </section>
 
-          <section class="panel claim-panel">
-            <div class="panel-header">
-              <div>
-                <p class="panel-kicker">Claim packet live</p>
-                <h2>Claim state</h2>
-              </div>
-              <span id="autosave" class="status-line"><span class="dot ok"></span> Auto-saving</span>
+          <section class="card needed-card">
+            <div class="card-head">
+              <span class="card-kicker">Still needed</span>
+              <span id="readiness" class="pill neutral">0% ready</span>
             </div>
-            <div id="claimFields" class="claim-sections"></div>
+            <ul id="neededList" class="needed-list"></ul>
           </section>
 
-          <section class="right-rail">
-            <section class="panel timeline-panel">
-              <div class="panel-header compact">
-                <div>
-                  <p class="panel-kicker">Operator guidance</p>
-                  <h2>Next best action</h2>
-                </div>
-                <span class="status-line"><span class="dot neutral"></span> Live</span>
-              </div>
-              <div id="timeline" class="operator-workbench" aria-live="polite"></div>
-            </section>
-
-            <section class="panel handoff-panel">
-              <div class="panel-header compact">
-                <div>
-                  <p class="panel-kicker">Human handoff</p>
-                  <h2>Adjuster packet forming</h2>
-                </div>
-                <div id="packetProgress" class="progress-ring" aria-label="Packet completion">32%</div>
-              </div>
-              <dl id="handoff" class="handoff-list"></dl>
-              <button id="openPacket" class="packet-button" type="button">Open packet preview</button>
-            </section>
+          <section class="card team-card">
+            <div class="card-head">
+              <span class="card-kicker">Claim team</span>
+              <span class="card-hint">Working in the background while the call continues</span>
+            </div>
+            <ul id="teamFeed" class="team-feed"></ul>
           </section>
+        </aside>
+
+        <section class="notebook-wrap" aria-label="Field notebook">
+          <div class="notebook">
+            <div class="holes" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="page-head">
+              <span id="pageDate">Claim intake notes</span>
+              <span id="pageAgent">Gemini 3.8 Live, field notes</span>
+            </div>
+            <div id="notes" class="notes"></div>
+            <div id="pinboard" class="pinboard"></div>
+            <div id="stamp" class="stamp" hidden></div>
+            <div id="pen" class="pen" hidden><span class="pen-nib" aria-hidden="true"></span> writing</div>
+          </div>
         </section>
       </main>
     </div>
 
     <dialog id="packetDialog" class="packet-dialog">
       <div class="dialog-header">
-        <h2>Initial Adjuster Handoff</h2>
+        <h2>Adjuster handoff packet</h2>
         <button id="closePacket" type="button" aria-label="Close packet">Close</button>
       </div>
       <pre id="packetMarkdown"></pre>
     </dialog>
 
-    <script src="./app.js?v=gemini-live-clean-shell-1"></script>
+    <canvas id="frameCanvas" hidden></canvas>
+    <script src="./app.js?v=notebook-1"></script>
   </body>
 </html>
