@@ -1,4 +1,0 @@
-agno>=2.2.10
-mcp
-openai
-python-dotenv
