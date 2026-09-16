@@ -1,20 +1,18 @@
 # Insurance Claim Live Agent Team
 
-A voice-first insurance claim intake app built on Gemini 3.8 Live. The claim is not a form but a field notebook that writes itself while the claimant talks. Turn on the camera and the agent looks at the damage, says what it sees, and tapes the frame into the notebook. Once it understands the scene, it draws a pen sketch of the incident and asks whether it looks right. Behind the page, a background agent team verifies the policy, extracts the facts, applies deterministic intake rules, and builds an adjuster-ready packet.
-
-It is a realistic first notice of loss (FNOL) workflow: no rigid form for the claimant, a page the operator can read at a glance, and a structured packet for the adjuster.
+A voice-first insurance claim intake app on Gemini 3.8 Live. The claim is not a form but a field notebook that writes itself while the claimant talks. Turn on the camera and the agent looks at the damage, says what it sees, and tapes the frame into the notebook. Once it understands the scene, it sketches the incident and asks whether it looks right. Behind the page, a background agent team verifies the policy, applies the intake rules, and builds the adjuster packet.
 
 ![Insurance Claim Live Agent Team notebook during a live call, with camera frames pinned and marked not confirmed](assets/insurance-claim-live-agent-team-notebook.png)
 
 ## What Gemini 3.8 Live makes possible
 
-Gemini 3.8 Live takes audio and camera frames in one session, speaks back, and runs function calls in the background while the conversation continues. The app uses all three:
+Audio and camera frames in one session, spoken replies, and function calls that run in the background while the conversation continues.
 
-- **It listens and writes.** Extracted facts appear on the page as handwritten lines. Blockers become red questions with a blank to fill. The routing decision is a rubber stamp.
-- **It looks.** Camera frames stream into the session at one per second. When the agent sees something relevant, it says so and calls `pin_evidence_photo`. The frame is taped into the notebook with the agent's own observation underneath, and that observation feeds the claim team as evidence.
-- **It draws.** Once it knows where and what happened, it calls `draw_incident_sketch`. An image model draws a rough pen sketch, the agent asks "does this look right?", and corrections by voice trigger a redraw. Confirming a picture catches misunderstandings a form never surfaces.
-- **It reports only what it sees.** Told "you can see the big crack, right?" while looking at a smudge, the agent says it sees a small dark mark, asks for a closer view, and pins the frame marked not confirmed. The adjuster sees both the claim and the observation.
-- **It never stops talking to wait.** Every tool is `NON_BLOCKING`. Routine results are scheduled `WHEN_IDLE` and land between turns. Injury or an unsafe home comes back as `INTERRUPT`, so the agent stops mid-sentence and escalates to a human.
+- **It listens and writes.** Extracted facts appear as handwritten lines, blockers as red blanks, the routing decision as a rubber stamp.
+- **It looks.** Camera frames stream in at one per second. When the agent sees something relevant, it says so and calls `pin_evidence_photo`. The frame is taped into the notebook with the agent's own observation underneath.
+- **It draws.** Once it knows where and what happened, it calls `draw_incident_sketch`. An image model draws a pen sketch and the agent asks "does this look right?" Corrections by voice trigger a redraw.
+- **It reports only what it sees.** Told "you can see the big crack, right?" while looking at a smudge, the agent says it sees a small dark mark, asks for a closer view, and pins the frame marked not confirmed.
+- **It never stops talking to wait.** Every tool is `NON_BLOCKING`. Results land `WHEN_IDLE`; injury or an unsafe home comes back as `INTERRUPT`, and the agent stops to escalate to a human.
 
 ## Features
 
