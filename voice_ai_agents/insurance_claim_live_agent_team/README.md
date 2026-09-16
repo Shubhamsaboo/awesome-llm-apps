@@ -1,35 +1,48 @@
 # Insurance Claim Live Agent Team
 
-A voice-first insurance claim intake app that lets a claimant talk naturally while the agent builds a structured claim packet in real time. The UI shows the live conversation, extracted claim facts, operator guidance, missing items, and an adjuster-ready handoff.
+A voice-first insurance claim intake app on Gemini 3.8 Live. The claim is not a form but a field notebook that writes itself while the claimant talks. Turn on the camera and the agent looks at the damage, says what it sees, and tapes the frame into the notebook. Once it understands the scene, it sketches the incident and asks whether it looks right. Behind the page, a background agent team verifies the policy, applies the intake rules, and builds the adjuster packet.
 
-This is designed as a realistic first notice of loss (FNOL) workflow: the claimant does not need to fill out a rigid form, and the operator does not need to manually translate a messy conversation into claim fields.
+![Insurance Claim Live Agent Team notebook during a live call, with camera frames pinned and marked not confirmed](assets/insurance-claim-live-agent-team-notebook.png)
 
-![Insurance Claim Live Agent Team architecture](assets/insurance-claim-live-agent-team-architecture.png)
+## What Gemini 3.8 Live makes possible
+
+Audio and camera frames in one session, spoken replies, and function calls that run in the background while the conversation continues.
+
+- **It listens and writes.** Extracted facts appear as handwritten lines, blockers as red blanks, the routing decision as a rubber stamp.
+- **It looks.** Camera frames stream in at one per second. When the agent sees something relevant, it says so and calls `pin_evidence_photo`. The frame is taped into the notebook with the agent's own observation underneath.
+- **It draws.** Once it knows where and what happened, it calls `draw_incident_sketch`. An image model draws a pen sketch and the agent asks "does this look right?" Corrections by voice trigger a redraw.
+- **It reports only what it sees.** Told "you can see the big crack, right?" while looking at a smudge, the agent says it sees a small dark mark, asks for a closer view, and pins the frame marked not confirmed.
+- **It never stops talking to wait.** Every tool is `NON_BLOCKING`. Results land `WHEN_IDLE`; injury or an unsafe home comes back as `INTERRUPT`, and the agent stops to escalate to a human.
 
 ## Features
 
-### Voice + Text Claim Intake
+### Live call
 
-- Native voice conversation with the claim intake agent
-- Real-time transcript for claimant and agent turns
-- Text input fallback for typed claim details
-- Live audio responses from the agent
+- Native voice conversation with Gemini 3.8 Live, with audio replies and live transcripts
+- Webcam sharing so the agent can see the damage while you describe it
+- Typed turns go through the same live session, so the demo works without a microphone
+- A "still needed" checklist and a claim team activity feed beside the call
 
-### Real-Time Claim Packet
+### The notebook
 
-- Automatically extracts claimant name, contact method, policy number, loss type, date, location, description, safety details, evidence, and report numbers
-- Updates the claim state as the conversation progresses
-- Highlights missing or uncertain information
-- Builds an adjuster handoff packet while the call is still happening
+- Handwritten notes for name, policy, location, date, what happened, injuries, contact, and evidence
+- Policy verification as a green tick in the margin, or a red flag for lapsed or unknown policies
+- Red blanks for blocking intake items
+- Camera frames taped in as polaroids with the agent's captions
+- A pen sketch of the incident scene, redrawn when the claimant corrects it
+- A rubber stamp for the routing decision: needs docs, ready for adjuster, SIU review, or escalate to human
+- The full adjuster packet in Markdown behind one button
 
-### Operator Guidance
+### Background agent team
 
-- Shows the current claim disposition
-- Suggests the next best question or confirmation
-- Lists blocking items before handoff
-- Separates the operator-facing summary from the lower-level audit trail
+| Tool | What it does | Scheduling |
+| --- | --- | --- |
+| `lookup_policy` | Verifies the policy number against a mock policy directory | When idle, or interrupt if the policy is lapsed |
+| `sync_claim_packet` | Runs the ADK claim graph on the conversation plus camera observations and returns routing and the open items the packet still needs. The agent treats them as a checklist to raise when the current topic closes, not a script | When idle, or interrupt on safety escalation |
+| `pin_evidence_photo` | Tapes the current camera frame into the notebook with the agent's own observation, the claimant's description, and whether the frame confirms it | When idle |
+| `draw_incident_sketch` | Draws a pen sketch of the scene with the image model | When idle |
 
-### Insurance-Specific Routing
+### Insurance-specific routing
 
 - Handles home water damage, auto collision, theft/property loss, travel claims, medical reimbursement examples, and unclear claims
 - Applies deterministic evidence and document checks
@@ -38,40 +51,68 @@ This is designed as a realistic first notice of loss (FNOL) workflow: the claima
 
 ## App Engine
 
-The app combines live voice, an ADK graph, structured extraction, and deterministic insurance rules:
-
 | Layer | Model / Engine | Purpose |
 | --- | --- | --- |
-| Live voice | `gemini-3.1-flash-live-preview` | Voice-to-voice conversation, audio responses, and transcription |
+| Live voice and vision | `gemini-3.8-live` | Voice-to-voice conversation, camera frame understanding, transcription, background tool calling |
+| Sketches | `gemini-3.1-flash-image` | Pen sketch of the incident scene from the agent's brief |
+| Background tools | `live_demo/live_tools.py` | Declares the four `NON_BLOCKING` tools, the system instruction, and the sketch prompt |
+| Policy directory | `policy_directory.py` | Mock policy administration records used by `lookup_policy` |
 | ADK graph | `root_agent` in `agent.py` | Source of truth for claim normalization, classification, validation, routing, and packet generation |
-| Structured extraction | `gemini-3-flash-preview` | Converts messy claim language into structured claim facts inside the ADK graph |
+| Structured extraction | `gemini-3.8-flash` | Converts messy claim language and camera observations into structured claim facts inside the ADK graph |
 | Business rules | Python FunctionNodes + Pydantic | Deterministic missing-field checks, evidence gates, safety routing, SIU signals, and handoff packet output |
-| App backend | FastAPI | Serves the frontend, manages WebSocket audio, and calls `run_claim_workflow()` from `agent.py` after each claimant turn |
-| Frontend | HTML, CSS, JavaScript | Dark professional live cockpit for voice, transcript, claim state, and handoff |
+| App backend | FastAPI | Serves the frontend, manages the Gemini Live WebSocket, executes tool calls, and calls `run_claim_workflow()` |
+| Frontend | HTML, CSS, JavaScript | The desk: a call card, the notebook page, and the adjuster packet |
 
 ## How It Works
 
 `agent.py` owns the production claim workflow. It exposes the ADK `root_agent` and a `run_claim_workflow()` helper that runs the graph programmatically for the live app.
 
-`server.py` owns the live web transport. It manages the browser session, Gemini Live audio stream, transcripts, and FastAPI routes. It does not duplicate extraction, classification, evidence, routing, or packet logic.
+`live_demo/live_tools.py` owns the Gemini 3.8 Live configuration: the system instruction, the four background tool declarations, the sketch prompt, and the scheduling rules.
 
-The live app flow is:
+`live_demo/server.py` owns the live web transport. It manages the browser session, the Gemini Live audio and video stream, transcripts, tool execution, the pinned photos and sketch, and FastAPI routes. It does not duplicate extraction, classification, evidence, routing, or packet logic.
 
 ```text
-Claimant speaks or types
+Claimant talks, types, or shows the camera
         |
         v
-server.py captures the turn
+Gemini 3.8 Live keeps the conversation going
+        |                 \
+        |                  \  NON_BLOCKING tool calls
+        |                   v
+        |          lookup_policy        -> policy_directory.py
+        |          sync_claim_packet    -> run_claim_workflow() -> ADK graph
+        |          pin_evidence_photo   -> latest camera frame + observation
+        |          draw_incident_sketch -> gemini-3.1-flash-image
+        |                   |
+        |                   v
+        |          FunctionResponse with scheduling
+        |          (INTERRUPT on safety escalation, WHEN_IDLE otherwise)
+        v                   |
+Agent confirms the policy, describes the photo, asks about the sketch, or escalates
         |
         v
-run_claim_workflow() executes root_agent
+server.py streams transcript, tool activity, photos, sketch, and claim state
         |
         v
-ADK graph runs LLM nodes + deterministic FunctionNodes
-        |
-        v
-server.py renders the returned claim state in the UI
+The notebook page writes, tapes, pins, and stamps
 ```
+
+The claim graph also runs automatically after every finalized claimant turn, so the notebook stays current even if the model has not called `sync_claim_packet` yet. Results are cached per transcript snapshot, so a tool call that lands right after an automatic run reuses it instead of paying for a second extraction. Camera observations from `pin_evidence_photo` are appended to the text the graph reads, so the claim writer treats them as evidence.
+
+## Demo Policy Numbers
+
+The mock policy directory lines up with the prompts in `examples.py`. Say one of these on the call to see the policy desk in action:
+
+| Policy number | Policyholder | Line | Status |
+| --- | --- | --- | --- |
+| H0-44721 | Maya Singh | Homeowners with water backup endorsement | Active |
+| AUTO-90210 | Jordan Lee | Personal auto with medical payments | Active |
+| RNT-3008 | Priya Shah | Renters | Active |
+| TRV-7711 | Alex Chen | Single trip travel | Active |
+| MED-5520 | Sam Rivera | Supplemental medical reimbursement | Active |
+| AUTO-11111 | Chris Park | Personal auto | Lapsed, routes to human review |
+
+Any other number returns a not-found result and the agent asks the claimant to confirm it.
 
 ## Project Structure
 
@@ -80,15 +121,17 @@ insurance_claim_live_agent_team/
 |-- agent.py
 |-- schemas.py
 |-- policies.py
+|-- policy_directory.py
 |-- examples.py
 |-- requirements.txt
 |-- .env.example
 |-- assets/
-|   `-- insurance-claim-live-agent-team-architecture.png
+|   `-- insurance-claim-live-agent-team-notebook.png
 |-- live_demo/
 |   |-- index.html
 |   |-- styles.css
 |   |-- app.js
+|   |-- live_tools.py
 |   `-- server.py
 `-- README.md
 ```
@@ -112,6 +155,14 @@ GOOGLE_GENAI_USE_VERTEXAI=False
 GOOGLE_API_KEY=your-google-api-key
 ```
 
+Optional settings:
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `FNOL_GEMINI_LIVE_MODEL` | `gemini-3.8-live` | Live voice and vision model |
+| `FNOL_SKETCH_MODEL` | `gemini-3.1-flash-image` | Image model for the incident sketch |
+| `FNOL_VOICE` | `Kore` | Prebuilt voice for audio responses |
+
 ## Run the App
 
 Start the backend and frontend server:
@@ -126,4 +177,12 @@ Open the app:
 http://127.0.0.1:4177/index.html
 ```
 
-Use the microphone button to start a live claim conversation, or type into the text box if microphone access is unavailable.
+Tap "Talk" to start the live call, or type a claimant turn into the text box; typed turns go through the same live session, so you still hear the agent and see the notebook fill in. Tap "Show camera" to let the agent see the damage. Point it at a wet wall, a dented bumper, a receipt, or even a sketch on paper, and the agent will describe what it sees and tape the frame into the notebook.
+
+Try this opening line to see the whole team run at once:
+
+```text
+Hi, this is Maya Singh, policy H0-44721. Our finished basement in Denver flooded last night when the sump pump failed. Nobody is hurt. The water came in by the stairs and spread across the carpet toward the boxes.
+```
+
+The agent confirms the homeowners policy while the claim writer extracts the facts, draws a floor plan of the basement, and asks whether the sketch looks right, then asks for the best contact method because that is the first blocking item the rules report.

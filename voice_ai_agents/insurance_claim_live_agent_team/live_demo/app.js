@@ -1,21 +1,30 @@
 const transcriptEl = document.querySelector("#transcript");
-const claimFieldsEl = document.querySelector("#claimFields");
-const timelineEl = document.querySelector("#timeline");
-const handoffEl = document.querySelector("#handoff");
-const packetMarkdownEl = document.querySelector("#packetMarkdown");
-const packetDialog = document.querySelector("#packetDialog");
-const packetProgress = document.querySelector("#packetProgress");
+const notesEl = document.querySelector("#notes");
+const pinboardEl = document.querySelector("#pinboard");
+const stampEl = document.querySelector("#stamp");
+const penEl = document.querySelector("#pen");
+const neededListEl = document.querySelector("#neededList");
+const teamFeedEl = document.querySelector("#teamFeed");
+const readinessEl = document.querySelector("#readiness");
 const callStatus = document.querySelector("#callStatus");
+const modelLabel = document.querySelector("#modelLabel");
+const pageDate = document.querySelector("#pageDate");
 const micButton = document.querySelector("#micButton");
+const cameraButton = document.querySelector("#cameraButton");
+const cameraStage = document.querySelector("#cameraStage");
+const cameraPreview = document.querySelector("#cameraPreview");
+const frameCanvas = document.querySelector("#frameCanvas");
 const newIntakeButton = document.querySelector("#newIntakeButton");
-const resetButton = document.querySelector("#resetButton");
 const textForm = document.querySelector("#textForm");
 const textInput = document.querySelector("#textInput");
-const modelLabel = document.querySelector("#modelLabel");
+const packetDialog = document.querySelector("#packetDialog");
+const packetMarkdownEl = document.querySelector("#packetMarkdown");
 
 const DEFAULT_API_ORIGIN = "http://127.0.0.1:4177";
 const API_ORIGIN = window.location.protocol === "file:" ? DEFAULT_API_ORIGIN : window.location.origin;
 const WS_ORIGIN = API_ORIGIN.replace(/^http/, "ws");
+const FRAME_INTERVAL_MS = 1000;
+const FRAME_WIDTH = 512;
 
 if (window.location.protocol === "file:") {
   window.location.replace(`${API_ORIGIN}/index.html`);
@@ -26,47 +35,53 @@ let audioContext = null;
 let inputProcessor = null;
 let inputSource = null;
 let audioStream = null;
+let cameraStream = null;
+let frameTimer = null;
 let isRecording = false;
 let nextPlaybackTime = 0;
 let sessionId = null;
 let state = null;
-let closeAfterAgentTurn = false;
+let writing = false;
+const seenNotes = new Set();
 
-const initialFields = [
-  { title: "Identity", fields: [["claimant", "Claimant name"], ["policy", "Policy number"], ["contact", "Contact method"]] },
-  { title: "Loss", fields: [["type", "Claim type"], ["date", "Date of loss"], ["time", "Reported date"], ["location", "Location"], ["description", "Loss description"]] },
-  { title: "Safety", fields: [["injuries", "Injuries"], ["hazards", "Hazards present"], ["medical", "Medical attention"]] },
-  { title: "Evidence", fields: [["police", "Report number"], ["photos", "Evidence available"], ["tow", "Tow info"], ["otherDriver", "Other driver info"]] },
-];
+const routeLabels = {
+  emergency_escalation: ["Escalate to human", "danger"],
+  needs_docs: ["Needs docs", "warning"],
+  special_investigation: ["SIU review", "info"],
+  ready_for_adjuster: ["Ready for adjuster", "success"],
+};
+
+const blockerQuestions = {
+  policyholder_name: "Name?",
+  policy_number: "Policy number?",
+  contact_method: "Best contact?",
+  date_of_loss: "When did it happen?",
+  loss_location: "Where?",
+  loss_description: "What happened?",
+};
+
+const teamLabels = {
+  lookup_policy: "Policy desk",
+  sync_claim_packet: "Claim writer",
+  pin_evidence_photo: "Evidence",
+  draw_incident_sketch: "Sketch artist",
+};
 
 const emptyState = {
   route: "needs_docs",
   progress: 0,
-  fields: Object.fromEntries(
-    initialFields.flatMap((group) =>
-      group.fields.map(([id, label]) => [
-        id,
-        { label, value: `Missing: ${label.toLowerCase()}`, status: "missing", source: "-" },
-      ])
-    )
-  ),
-  transcript: [{ speaker: "Agent", text: `Connecting to the live intake backend at ${API_ORIGIN}...` }],
-  events: [{ tone: "warning", title: "Connecting", detail: `Waiting for ${API_ORIGIN}/api/sessions.`, rule: "API-000" }],
-  handoff: {
-    Summary: "Backend session not started yet.",
-    Priority: "Pending",
-    "Required actions": "Start a live intake session.",
-    Attachments: "None",
-    "Next best action": "Connect to the backend API.",
-  },
-  packet_markdown: "# Initial Adjuster Handoff\n\nWaiting for backend session.",
-};
-
-const routeLabels = {
-  emergency_escalation: "Emergency escalation",
-  needs_docs: "Needs documents",
-  special_investigation: "Special investigation",
-  ready_for_adjuster: "Ready for adjuster",
+  fields: {},
+  transcript: [],
+  events: [],
+  tool_activity: [],
+  missing_blockers: [],
+  documents: [],
+  evidence_photos: [],
+  camera_notes: [],
+  sketch: null,
+  policy: null,
+  handoff: {},
+  packet_markdown: "# Adjuster handoff\n\nNo packet yet.",
 };
 
 function escapeHtml(value) {
@@ -79,409 +94,350 @@ function escapeHtml(value) {
 }
 
 function now() {
-  return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
+function isFilled(field) {
+  if (!field || field.status === "missing") return false;
+  return !/^(missing:|not captured|not specified|unknown|none)/i.test(String(field.value || "").trim());
+}
+
+function shortBlocker(blocker) {
+  if (blockerQuestions[blocker]) return blockerQuestions[blocker];
+  let text = String(blocker).replace(/\s*\([^)]*\)/g, "").trim();
+  if (text.length > 42) text = `${text.slice(0, 40).trim()}...`;
+  return text.endsWith("?") ? text : `${text}?`;
+}
+
+function setStatus(text, tone = "") {
+  callStatus.textContent = text;
+  callStatus.className = `pill ${tone}`.trim();
+}
+
+function setWriting(next) {
+  writing = next;
+  penEl.hidden = !next;
 }
 
 function setState(nextState) {
-  state = nextState || emptyState;
-  if (state.model) {
-    modelLabel.innerHTML = `<span class="dot ok"></span> ${escapeHtml(state.model)}`;
-  }
+  const previous = state || emptyState;
+  state = {
+    ...emptyState,
+    ...nextState,
+    tool_activity: nextState.tool_activity ?? previous.tool_activity,
+  };
   render();
 }
 
 function render() {
   renderTranscript();
-  renderFields();
-  renderTimeline();
-  renderHandoff();
-  renderPacket();
+  renderNotes();
+  renderPinboard();
+  renderStamp();
+  renderNeeded();
+  renderTeam();
+  packetMarkdownEl.textContent = state.packet_markdown || emptyState.packet_markdown;
 }
 
 function renderTranscript() {
-  transcriptEl.innerHTML = state.transcript
+  transcriptEl.innerHTML = (state.transcript || [])
     .map((turn) => {
-      const initials = turn.speaker === "Agent" ? "AI" : "CL";
-      return `
-        <article class="turn ${turn.speaker === "Agent" ? "agent" : "claimant"}">
-          <div class="speaker-icon">${initials}</div>
-          <div class="bubble">
-            <strong>${escapeHtml(turn.speaker)}</strong><time>${escapeHtml(turn.time || now())}</time>
-            <p>${escapeHtml(turn.text)}</p>
-          </div>
-        </article>
-      `;
+      const cls = turn.speaker === "Agent" ? "agent" : turn.speaker === "System" ? "system" : "claimant";
+      const who = turn.speaker === "Agent" ? "AI" : turn.speaker === "System" ? "!" : "You";
+      return `<article class="turn ${cls} ${turn.streaming ? "streaming" : ""}"><span class="who">${who}</span><p>${escapeHtml(turn.text)}</p></article>`;
     })
     .join("");
   transcriptEl.scrollTop = transcriptEl.scrollHeight;
 }
 
-function renderFields() {
-  claimFieldsEl.innerHTML = initialFields
-    .map((group) => {
-      const rows = group.fields
-        .map(([id, label]) => {
-          const field = state.fields[id] || { label, value: `Missing: ${label.toLowerCase()}`, status: "missing", source: "-" };
-          return `
-            <div class="field-row">
-              <div class="field-label">${escapeHtml(field.label)}</div>
-              <div class="field-value ${escapeHtml(field.status)}">${escapeHtml(field.value)}</div>
-              <div class="field-source">${escapeHtml(field.source)}</div>
-            </div>
-          `;
-        })
-        .join("");
-      return `
-        <section class="field-group">
-          <div class="group-title"><h3>${escapeHtml(group.title)}</h3><span class="status-line">Live</span></div>
-          ${rows}
-        </section>
-      `;
+function buildNotes() {
+  const f = state.fields || {};
+  const notes = [];
+  const name = isFilled(f.claimant) ? f.claimant.value : "";
+  const policy = isFilled(f.policy) ? f.policy.value : "";
+  if (name || policy) {
+    notes.push({ key: `title:${name}|${policy}`, cls: "title", text: [name, policy].filter(Boolean).join("  ·  ") });
+  }
+  const record = state.policy;
+  if (record) {
+    if (record.found) {
+      const active = record.status === "active";
+      const extras = (record.coverages || []).slice(0, 1).join("");
+      notes.push({
+        key: `policy:${record.policy_number}:${record.status}`,
+        cls: active ? "check" : "flag urgent",
+        text: active
+          ? `${record.policy_line}, active. ${extras}`
+          : `${record.policy_line}, ${record.status}. Human review before anything else.`,
+      });
+    } else {
+      notes.push({ key: `policy:notfound:${record.policy_number}`, cls: "flag urgent", text: `Policy ${record.policy_number || ""} not found, confirm the number.` });
+    }
+  }
+  const when = isFilled(f.date) ? f.date.value : "";
+  const where = isFilled(f.location) ? f.location.value : "";
+  if (when || where) {
+    notes.push({ key: `whenwhere:${when}|${where}`, cls: "", text: [where, when].filter(Boolean).join(", ") });
+  }
+  if (isFilled(f.description)) {
+    notes.push({ key: `desc:${f.description.value}`, cls: "", text: f.description.value });
+  }
+  if (isFilled(f.injuries)) {
+    const urgent = f.injuries.status === "urgent";
+    notes.push({ key: `inj:${f.injuries.value}`, cls: urgent ? "flag urgent" : "", text: urgent ? `Injury: ${f.injuries.value}` : f.injuries.value });
+  }
+  if (isFilled(f.contact)) {
+    notes.push({ key: `contact:${f.contact.value}`, cls: "aside", text: `Reach at ${f.contact.value}` });
+  }
+  if (isFilled(f.photos)) {
+    notes.push({ key: `ev:${f.photos.value}`, cls: "aside", text: `Has: ${f.photos.value}` });
+  }
+  if (isFilled(f.police)) {
+    notes.push({ key: `rep:${f.police.value}`, cls: "aside", text: `Report: ${f.police.value}` });
+  }
+  if (claimantHasSpoken()) {
+    const seenQuestions = new Set();
+    for (const blocker of state.missing_blockers || []) {
+      const question = shortBlocker(blocker);
+      const dedupe = question.toLowerCase().replace(/[^a-z]/g, "");
+      if (seenQuestions.has(dedupe) || seenQuestions.size >= 3) continue;
+      seenQuestions.add(dedupe);
+      notes.push({ key: `blank:${blocker}`, cls: "blank", text: question, blank: true });
+    }
+  }
+  if (!notes.length) {
+    notes.push({ key: "empty", cls: "aside", text: "Waiting for the claimant. Tap Talk, show the camera, or type below." });
+  }
+  return notes;
+}
+
+function claimantHasSpoken() {
+  return (state.transcript || []).some((turn) => turn.speaker === "Claimant" && String(turn.text || "").trim());
+}
+
+function renderNotes() {
+  const notes = buildNotes();
+  notesEl.innerHTML = notes
+    .map((note) => {
+      const fresh = !seenNotes.has(note.key);
+      seenNotes.add(note.key);
+      return `<div class="note ${note.cls} ${fresh ? "ink-in" : ""}">${escapeHtml(note.text)}${note.blank ? '<span class="blank-line"></span>' : ""}</div>`;
     })
     .join("");
 }
 
-function renderTimeline() {
-  const guidance = buildOperatorGuidance();
-  timelineEl.innerHTML = `
-    <section class="decision-card ${escapeHtml(guidance.routeTone)}">
-      <div class="decision-label">Current disposition</div>
-      <strong>${escapeHtml(guidance.routeLabel)}</strong>
-      <p>${escapeHtml(guidance.priority)}</p>
-    </section>
-
-    <section class="operator-card ask-card">
-      <div class="operator-card-label">Ask or confirm next</div>
-      <p>${escapeHtml(guidance.nextAction)}</p>
-    </section>
-
-    <section class="operator-card">
-      <div class="operator-card-label">Blocking items</div>
-      <div class="missing-chips">
-        ${guidance.missingItems.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}
-      </div>
-    </section>
-
-    <section class="operator-card">
-      <div class="operator-card-label">Handoff readiness</div>
-      <div class="readiness-meter" aria-label="Packet completion ${escapeHtml(String(state.progress || 0))}%">
-        <div style="width: ${Math.max(0, Math.min(100, Number(state.progress || 0)))}%"></div>
-      </div>
-      <p class="readiness-copy">${escapeHtml(guidance.readinessCopy)}</p>
-    </section>
-
-    <details class="audit-details">
-      <summary>Audit trail</summary>
-      <div class="audit-list">
-        ${guidance.auditEvents
-          .map(
-            (event) => `
-              <article class="event ${escapeHtml(event.tone || "")}">
-                <div class="event-time">${escapeHtml(event.time || now())}</div>
-                <div class="event-body">
-                  <div class="event-title">${escapeHtml(event.title)}</div>
-                  <div class="event-detail">${escapeHtml(event.detail)}</div>
-                </div>
-                <div class="rule-id">${escapeHtml(event.rule || "")}</div>
-              </article>
-            `
-          )
-          .join("")}
-      </div>
-    </details>
-  `;
-  timelineEl.scrollTop = timelineEl.scrollHeight;
+function renderPinboard() {
+  const photos = state.evidence_photos || [];
+  const sketch = state.sketch;
+  const cards = photos.map(
+    (photo, index) => `
+      <figure class="polaroid" style="--tilt: ${index % 2 ? 2 : -2.5}deg" data-key="${escapeHtml(photo.id)}">
+        <img src="${photo.data_url}" alt="Camera frame pinned as evidence" />
+        <figcaption>${escapeHtml(photo.caption)}</figcaption>
+        ${photo.claimant_description ? `<span class="tag ${photo.confirmed ? "" : "unconfirmed"}">Claimant says: ${escapeHtml(photo.claimant_description)}${photo.confirmed ? ", confirmed" : ", not confirmed on camera"}</span>` : ""}
+        <span class="tag">Seen on camera ${escapeHtml(photo.captured_at || "")} · ${escapeHtml(photo.evidence_type || "evidence")}</span>
+      </figure>`
+  );
+  if (sketch) {
+    cards.push(`
+      <figure class="polaroid sketch" style="--tilt: 1.5deg" data-key="sketch-${sketch.version}">
+        <img src="${sketch.data_url}" alt="Hand drawn sketch of the incident scene" />
+        <figcaption>Does this look right?</figcaption>
+        <span class="tag">Sketch ${sketch.version}, drawn from what you described</span>
+      </figure>`);
+  }
+  const currentKeys = [...pinboardEl.querySelectorAll("[data-key]")].map((el) => el.dataset.key).join("|");
+  const nextKeys = [...photos.map((p) => p.id), sketch ? `sketch-${sketch.version}` : ""].filter(Boolean).join("|");
+  if (currentKeys !== nextKeys) pinboardEl.innerHTML = cards.join("");
 }
 
-function buildOperatorGuidance() {
-  const route = state.route || "needs_docs";
-  const handoff = state.handoff || {};
-  const missingEvent = [...(state.events || [])].reverse().find((event) => event.rule === "INTAKE-001" && event.title === "Missing intake facts");
-  const missingItems = missingEvent?.detail
-    ? missingEvent.detail.split(",").map((item) => item.trim()).filter(Boolean)
-    : Object.values(state.fields || {})
-        .filter((field) => field.status === "missing")
-        .map((field) => field.label)
-        .slice(0, 6);
-  const requiredActions = splitList(handoff["Required actions"]);
-  const routeTone = route === "emergency_escalation" ? "danger" : route === "ready_for_adjuster" ? "success" : "warning";
-  const readinessCopy =
-    route === "ready_for_adjuster"
-      ? "Core intake is ready for assignment."
-      : requiredActions.length
-        ? `Collect or confirm: ${requiredActions.slice(0, 2).join(", ")}.`
-        : "Continue collecting the highlighted intake facts.";
-  return {
-    routeLabel: routeLabels[route] || route,
-    routeTone,
-    priority: handoff.Priority || "Waiting for claim facts.",
-    nextAction: handoff["Next best action"] || "Ask for the next missing intake fact.",
-    missingItems: missingItems.length ? missingItems : ["No blocking intake items"],
-    readinessCopy,
-    auditEvents: state.events || [],
-  };
+function renderStamp() {
+  const route = state.route;
+  const [label, tone] = routeLabels[route] || [route, "warning"];
+  stampEl.hidden = !claimantHasSpoken() || writing;
+  stampEl.textContent = label;
+  if (stampEl.dataset.route !== route) {
+    stampEl.dataset.route = route;
+    stampEl.className = `stamp ${tone}`;
+    stampEl.style.animation = "none";
+    void stampEl.offsetWidth;
+    stampEl.style.animation = "";
+  }
 }
 
-function splitList(value) {
-  return String(value || "")
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
+function renderNeeded() {
+  const items = [];
+  for (const blocker of state.missing_blockers || []) {
+    items.push({ text: shortBlocker(blocker).replace(/\?$/, ""), cls: "blocker" });
+  }
+  for (const doc of state.documents || []) {
+    items.push({ text: doc.item, cls: doc.already_provided ? "done" : "" });
+  }
+  neededListEl.innerHTML = items.length
+    ? items.map((item) => `<li class="${item.cls}"><span class="tick-box"></span><span>${escapeHtml(item.text)}</span></li>`).join("")
+    : `<li class="empty">Nothing yet. The list fills in as the claim team reads the call.</li>`;
+  const progress = Number(state.progress || 0);
+  readinessEl.textContent = `${progress}% ready`;
+  readinessEl.className = `pill ${progress >= 80 ? "" : progress >= 40 ? "warning" : "neutral"}`;
 }
 
-function renderHandoff() {
-  handoffEl.innerHTML = Object.entries(state.handoff)
-    .map(([label, value]) => `<div class="handoff-row"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`)
-    .join("");
-  packetProgress.textContent = `${state.progress}%`;
+function renderTeam() {
+  const activity = [...(state.tool_activity || [])].slice(-6).reverse();
+  teamFeedEl.innerHTML = activity.length
+    ? activity
+        .map((item) => {
+          const phase = item.phase || "running";
+          const meta = phase === "running" ? "working" : item.scheduling === "INTERRUPT" ? "interrupted the agent" : item.duration_ms != null ? `${item.duration_ms} ms` : "";
+          return `<li><span class="team-dot ${phase}"></span><span><span class="team-name">${escapeHtml(teamLabels[item.name] || item.name)}</span> · ${escapeHtml(item.headline || "")}</span><span class="team-meta ${item.scheduling === "INTERRUPT" ? "interrupt" : ""}">${escapeHtml(meta)}</span></li>`;
+        })
+        .join("")
+    : `<li class="empty">Policy desk, claim writer, evidence, and sketch artist will show up here as the agent calls them.</li>`;
+  setWriting(activity.some((item) => item.phase === "running" && item.name !== "lookup_policy") || writing);
 }
 
-function renderPacket() {
-  packetMarkdownEl.textContent = state.packet_markdown || "# Initial Adjuster Handoff\n\nNo packet generated yet.";
+function appendSystem(text) {
+  setState({ ...state, transcript: [...(state.transcript || []), { speaker: "System", text }] });
 }
 
-function appendLocalError(message) {
-  setState({
-    ...state,
-    transcript: [...state.transcript, { speaker: "Agent", text: message, time: now() }],
-    events: [...state.events, { tone: "danger", title: "Backend API error", detail: message, rule: "API-ERR", time: now() }],
-  });
+function sameTurn(left, right) {
+  const a = String(left?.text || "").trim();
+  const b = String(right?.text || "").trim();
+  if (!a || !b || left?.speaker !== right?.speaker) return false;
+  return a === b || a.includes(b) || b.includes(a);
 }
 
-function sameTranscriptTurn(left, right) {
-  const leftText = String(left?.text || "").trim();
-  const rightText = String(right?.text || "").trim();
-  if (!leftText || !rightText || left?.speaker !== right?.speaker) return false;
-  return leftText === rightText || leftText.includes(rightText) || rightText.includes(leftText);
-}
-
-function mergeLiveTranscript(authoritative, local) {
+function mergeTranscript(authoritative, local) {
   const merged = [...(authoritative || [])];
   for (const turn of local || []) {
-    if (!turn.streaming || !String(turn.text || "").trim()) continue;
-    if (merged.some((item) => sameTranscriptTurn(item, turn))) continue;
+    if ((!turn.streaming && turn.speaker !== "System") || !String(turn.text || "").trim()) continue;
+    if (merged.some((item) => sameTurn(item, turn))) continue;
     merged.push(turn);
   }
   return merged;
 }
 
 function applyServerState(nextState) {
+  setWriting(false);
   setState({
     ...nextState,
-    transcript: mergeLiveTranscript(nextState.transcript, state?.transcript),
+    transcript: mergeTranscript(nextState.transcript, state?.transcript),
+    tool_activity: mergeToolActivity(nextState.tool_activity, state?.tool_activity),
   });
+}
+
+function mergeToolActivity(authoritative, local) {
+  const finished = new Set(["done", "error", "cancelled"]);
+  const byId = new Map();
+  for (const item of authoritative || []) byId.set(item.id, item);
+  for (const item of local || []) {
+    const current = byId.get(item.id);
+    if (!current || (finished.has(item.phase) && !finished.has(current.phase))) byId.set(item.id, item);
+  }
+  return [...byId.values()];
+}
+
+function applyToolEvent(message) {
+  const { type, ...entry } = message;
+  const others = (state.tool_activity || []).filter((item) => item.id !== entry.id);
+  setState({ ...state, tool_activity: [...others, entry] });
 }
 
 function upsertStreamingTurn(speaker, text, final = false) {
   if (!String(text || "").trim()) return;
-  const transcript = [...state.transcript];
+  const transcript = [...(state.transcript || [])];
   const last = transcript[transcript.length - 1];
   if (last && last.speaker === speaker && last.streaming) {
-    transcript[transcript.length - 1] = { speaker, text, time: last.time, streaming: !final };
-  } else if (final && last && !last.streaming && sameTranscriptTurn(last, { speaker, text })) {
+    transcript[transcript.length - 1] = { speaker, text, streaming: !final };
+  } else if (final && last && !last.streaming && sameTurn(last, { speaker, text })) {
     return;
   } else {
-    transcript.push({ speaker, text, time: now(), streaming: !final });
+    transcript.push({ speaker, text, streaming: !final });
   }
   setState({ ...state, transcript });
 }
 
-function claimantAskedToClose(text) {
-  return /\b(that'?s all|nothing else|no,?\s*that'?s it|that is it|i'?m done|goodbye|bye)\b/i.test(text);
-}
-
-function agentClosedConversation(text) {
-  return /\b(have a good|adjuster will|will be in touch|claim packet|initial intake|next steps)\b/i.test(text);
-}
-
-function applyRealtimeHints(text) {
-  const lower = text.toLowerCase();
-  const nextFields = { ...state.fields };
-  const nextEvents = [...state.events];
-  let nextRoute = state.route;
-  let changed = false;
-
-  const update = (id, value, status = "pending", source = "live audio") => {
-    const current = nextFields[id];
-    if (!current || current.value === value) return;
-    nextFields[id] = { ...current, value, status, source };
-    changed = true;
-  };
-
-  const event = (rule, title, detail, tone = "warning") => {
-    const key = `${rule}:${title}`;
-    if (nextEvents.some((item) => `${item.rule}:${item.title}` === key)) return;
-    nextEvents.push({ rule, title, detail, tone, time: now() });
-    changed = true;
-  };
-
-  const phone = text.match(/\b(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]\d{3}[-.\s]\d{4}\b/);
-  if (phone) {
-    update("contact", phone[0], "pending", "live transcript");
-    event("LIVE-INFO", "Contact detected", "Phone number heard in live audio.", "success");
-  }
-
-  const policy = text.match(/\b(?:policy|auto|home|claim)\s*(?:number|#|is|:)?\s*([A-Z0-9][A-Z0-9-]{3,})\b/i);
-  if (policy && /\d/.test(policy[1])) {
-    update("policy", policy[1].toUpperCase(), "pending", "live transcript");
-    event("LIVE-INFO", "Policy candidate detected", "Policy-like identifier heard in live audio.", "success");
-  }
-
-  const name = text.match(/\b(?:my name is|this is)\s+([a-z]+(?:\s+[a-z]+){0,1})(?=\s+(?:and|with|from|calling|phone|policy|$))/i)
-    || text.match(/\b(?:i am|i'm)\s+([a-z]+(?:\s+[a-z]+){0,1})(?=\s+(?:and|with|from|calling|phone|policy|$))/i);
-  if (name) {
-    update("claimant", toTitleCase(name[1]), "pending", "live transcript");
-    event("LIVE-INFO", "Claimant name detected", "Name candidate heard in live audio.", "success");
-  }
-
-  if (/\b(hit|rear ended|rear-ended|crash|accident|collision|side[- ]?swiped)\b/.test(lower)) {
-    update("type", "auto collision", "pending", "live transcript");
-    update("description", compactText(text), "pending", "live transcript");
-    event("LIVE-CLASSIFY", "Auto collision signal", "Crash language detected before final extraction.", "warning");
-  } else if (/\b(flood|water|leak|pipe|basement|sump)\b/.test(lower)) {
-    update("type", "home water damage", "pending", "live transcript");
-    update("description", compactText(text), "pending", "live transcript");
-    event("LIVE-CLASSIFY", "Home water signal", "Water damage language detected before final extraction.", "warning");
-  } else if (/\b(stolen|theft|robbed|missing laptop|taken)\b/.test(lower)) {
-    update("type", "theft property loss", "pending", "live transcript");
-    update("description", compactText(text), "pending", "live transcript");
-    event("LIVE-CLASSIFY", "Theft signal", "Theft language detected before final extraction.", "warning");
-  }
-
-  const safetyText = stripNegatedSafety(lower);
-  if (/\b(neck pain|injur|hurt|ambulance|hospital|urgent care|bleeding|pain)\b/.test(safetyText)) {
-    update("injuries", compactText(text), "urgent", "live transcript");
-    event("SAFE-002", "Injury signal detected", "Live audio mentions injury or medical concern.", "danger");
-    nextRoute = "emergency_escalation";
-    changed = true;
-  } else if (safetyText !== lower) {
-    update("injuries", "No injuries reported", "pending", "live transcript");
-    event("SAFE-OK", "No injury reported", "Live audio negated injury or medical concern.", "success");
-  }
-
-  if (/\b(police|officer|report|case number|incident number)\b/.test(lower)) {
-    update("police", compactText(text), "pending", "live transcript");
-    event("DOC-001", "Police/report signal detected", "Police or report language heard in live audio.", "warning");
-  }
-
-  if (/\b(photo|photos|picture|video|receipt|estimate|tow|towed|storage)\b/.test(lower)) {
-    update("photos", compactText(text), "pending", "live transcript");
-    if (/\b(tow|towed|storage)\b/.test(lower)) {
-      update("tow", compactText(text), "pending", "live transcript");
-    }
-    event("DOC-001", "Evidence signal detected", "Document or evidence language heard in live audio.", "warning");
-  }
-
-  const location = text.match(/\b(?:on|at|near)\s+([A-Z0-9][A-Za-z0-9 .'-]*(?:street|st|road|rd|avenue|ave|highway|hwy|i-\d+|mile marker \d+|intersection|exit \d+))/i);
-  if (location) {
-    update("location", location[1].trim(), "pending", "live transcript");
-    event("LIVE-INFO", "Location candidate detected", "Location heard in live audio.", "success");
-  }
-
-  if (/\b(today|yesterday|last night|this morning|minutes ago|\d{1,2}:\d{2})\b/.test(lower)) {
-    update("date", compactText(text), "pending", "live transcript");
-    event("LIVE-INFO", "Loss timing detected", "Date or time language heard in live audio.", "success");
-  }
-
-  if (changed) {
-    const completed = Object.values(nextFields).filter((field) => field.status === "complete" || field.status === "urgent" || field.status === "pending").length;
-    setState({
-      ...state,
-      route: nextRoute,
-      fields: nextFields,
-      events: nextEvents.slice(-14),
-      progress: Math.max(state.progress, Math.round((completed / Object.keys(nextFields).length) * 100)),
-    });
-  }
-}
-
-function stripNegatedSafety(text) {
-  return text
-    .replace(/\b(?:no|not|none|without|denies|denied)\s+(?:one\s+)?(?:was\s+)?(?:injur\w*|hurt|pain|medical attention|ambulance|hospital|unsafe|hazard\w*|danger)\b/gi, " ")
-    .replace(/\b(?:injur\w*|hurt|pain|medical attention|ambulance|hospital|unsafe|hazard\w*|danger)\s+(?:was|were|is|are)?\s*(?:reported\s+)?(?:no|none|not reported|denied)\b/gi, " ");
-}
-
-function compactText(text) {
-  const trimmed = text.trim().replace(/\s+/g, " ");
-  return trimmed.length > 96 ? `${trimmed.slice(0, 93)}...` : trimmed;
-}
-
-function toTitleCase(value) {
-  return value
-    .trim()
-    .split(/\s+/)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
-    .join(" ");
-}
-
 async function api(path, options = {}) {
-  const response = await fetch(`${API_ORIGIN}${path}`, {
-    headers: { "Content-Type": "application/json" },
-    ...options,
-  });
+  const response = await fetch(`${API_ORIGIN}${path}`, { headers: { "Content-Type": "application/json" }, ...options });
   const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(payload.detail || `Request failed with status ${response.status}`);
-  }
+  if (!response.ok) throw new Error(payload.detail || `Request failed with status ${response.status}`);
   return payload;
 }
 
 async function createSession() {
   stopLiveVoice(false);
-  callStatus.textContent = "Connecting to backend";
-  textInput.disabled = true;
+  stopCamera();
+  seenNotes.clear();
+  setWriting(false);
+  setStatus("Connecting", "neutral");
   setState(emptyState);
+  pageDate.textContent = `Claim intake notes · ${new Date().toLocaleDateString([], { month: "short", day: "numeric" })}`;
   try {
     const payload = await api("/api/sessions", { method: "POST" });
     sessionId = payload.session_id;
     setState(payload.state);
-    modelLabel.innerHTML = `<span class="dot ok"></span> ${escapeHtml(payload.model)}`;
-    callStatus.textContent = payload.has_api_key ? "Active - API connected" : "API key required";
-    textInput.disabled = false;
+    const health = await api("/api/health");
+    modelLabel.textContent = `${health.live_model} · sketches by ${health.sketch_model}`;
+    setStatus(payload.has_api_key ? "Ready" : "API key required", payload.has_api_key ? "" : "danger");
     textInput.focus();
   } catch (error) {
-    callStatus.textContent = "Backend unavailable";
-    appendLocalError(error.message);
+    setStatus("Backend unavailable", "danger");
+    appendSystem(error.message);
   }
 }
 
+async function connectLive() {
+  if (liveSocket && liveSocket.readyState === WebSocket.OPEN) return;
+  liveSocket = new WebSocket(`${WS_ORIGIN}/ws/live`);
+  liveSocket.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+    if (message.type === "session") {
+      sessionId = message.session_id;
+      modelLabel.textContent = `${message.model} · sketches by ${message.sketch_model}`;
+      setStatus("Live", "");
+    } else if (message.type === "transcript") {
+      upsertStreamingTurn(message.speaker, message.text, message.final);
+      if (message.speaker === "Claimant" && message.final) setWriting(true);
+    } else if (message.type === "tool") {
+      applyToolEvent(message);
+    } else if (message.type === "audio") {
+      playPcm24(message.data);
+    } else if (message.type === "state") {
+      applyServerState(message.state);
+    } else if (message.type === "interrupted") {
+      nextPlaybackTime = audioContext?.currentTime || 0;
+    } else if (message.type === "error") {
+      appendSystem(message.message);
+    }
+  };
+  liveSocket.onclose = () => {
+    if (isRecording || cameraStream) setStatus("Live session ended", "warning");
+  };
+  await new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error("Live connection timed out.")), 8000);
+    liveSocket.addEventListener("open", () => { clearTimeout(timeout); resolve(); }, { once: true });
+    liveSocket.addEventListener("error", () => { clearTimeout(timeout); reject(new Error("Live connection failed.")); }, { once: true });
+  });
+}
+
 async function sendClaimantTurn(text) {
-  if (liveSocket && liveSocket.readyState === WebSocket.OPEN) {
-    liveSocket.send(JSON.stringify({ type: "text", text }));
-    upsertStreamingTurn("Claimant", text, true);
-    return;
-  }
-  if (!sessionId) {
-    appendLocalError("No backend session is active. Start a new intake first.");
-    return;
-  }
-  upsertStreamingTurn("Claimant", text, true);
-  callStatus.textContent = "Processing with Gemini";
-  textInput.disabled = true;
   try {
-    const payload = await api("/api/message", {
-      method: "POST",
-      body: JSON.stringify({ session_id: sessionId, text }),
-    });
-    setState(payload.state);
-    modelLabel.innerHTML = `<span class="dot ok"></span> ${escapeHtml(payload.model)}`;
-    callStatus.textContent = "Active - API connected";
+    await connectLive();
   } catch (error) {
-    callStatus.textContent = "API error";
-    appendLocalError(error.message);
-  } finally {
-    textInput.disabled = false;
-    textInput.focus();
+    appendSystem(error.message);
+    return;
   }
+  liveSocket.send(JSON.stringify({ type: "text", text }));
+  upsertStreamingTurn("Claimant", text, true);
+  setWriting(true);
 }
 
 async function startLiveVoice() {
   if (!navigator.mediaDevices?.getUserMedia || !window.AudioContext) {
-    appendLocalError("This browser cannot capture microphone audio. Type the claimant turn instead.");
+    appendSystem("This browser cannot capture microphone audio. Type instead.");
     return;
   }
   try {
-    await connectLiveVoice();
+    await connectLive();
     audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
     audioContext = audioContext || new AudioContext();
     await audioContext.resume();
@@ -490,114 +446,95 @@ async function startLiveVoice() {
     inputProcessor.onaudioprocess = (event) => {
       event.outputBuffer.getChannelData(0).fill(0);
       if (!liveSocket || liveSocket.readyState !== WebSocket.OPEN) return;
-      const input = event.inputBuffer.getChannelData(0);
-      const pcm16 = resampleToPcm16(input, audioContext.sampleRate, 16000);
+      const pcm16 = resampleToPcm16(event.inputBuffer.getChannelData(0), audioContext.sampleRate, 16000);
       liveSocket.send(JSON.stringify({ type: "audio", data: arrayBufferToBase64(pcm16.buffer) }));
     };
     inputSource.connect(inputProcessor);
     inputProcessor.connect(audioContext.destination);
     isRecording = true;
-    micButton.classList.add("recording");
-    micButton.setAttribute("aria-label", "Stop live voice");
-    callStatus.textContent = "Live voice streaming";
+    micButton.classList.add("active");
+    micButton.querySelector(".round-label").textContent = "Listening";
+    setStatus("Live, listening", "");
   } catch (error) {
     const denied = error.name === "NotAllowedError" || /denied|permission/i.test(error.message);
-    appendLocalError(
-      denied
-        ? "Microphone access was denied by the browser or macOS. Allow microphone access for http://127.0.0.1:4177, or use the text box for this turn."
-        : `Live voice failed: ${error.message}`
-    );
+    appendSystem(denied ? "Microphone access was denied. Allow it for this site or type instead." : `Voice failed: ${error.message}`);
     stopLiveVoice(false);
   }
 }
 
-function stopLiveVoice(sendClose = true) {
+function stopLiveVoice(closeSocket = true) {
   isRecording = false;
-  closeAfterAgentTurn = false;
-  micButton.classList.remove("recording");
-  micButton.setAttribute("aria-label", "Start live voice");
+  micButton.classList.remove("active");
+  micButton.querySelector(".round-label").textContent = "Talk";
   inputProcessor?.disconnect();
   inputSource?.disconnect();
   audioStream?.getTracks().forEach((track) => track.stop());
   inputProcessor = null;
   inputSource = null;
   audioStream = null;
-  if (sendClose) {
+  if (closeSocket) {
+    stopCamera();
     liveSocket?.send(JSON.stringify({ type: "close" }));
+    liveSocket?.close();
+    liveSocket = null;
+    setStatus("Call ended", "neutral");
   }
-  liveSocket?.close();
-  liveSocket = null;
-  if (sendClose) callStatus.textContent = "Live voice stopped";
 }
 
-async function connectLiveVoice() {
-  if (liveSocket && liveSocket.readyState === WebSocket.OPEN) return;
-  liveSocket = new WebSocket(`${WS_ORIGIN}/ws/live`);
-  liveSocket.onopen = () => {
-    callStatus.textContent = "Gemini Live connected";
-    modelLabel.innerHTML = '<span class="dot ok"></span> Gemini Live connecting';
-  };
-  liveSocket.onmessage = (event) => {
-    const message = JSON.parse(event.data);
-    if (message.type === "session") {
-      sessionId = message.session_id;
-      modelLabel.innerHTML = `<span class="dot ok"></span> ${escapeHtml(message.model)}`;
-    } else if (message.type === "transcript") {
-      upsertStreamingTurn(message.speaker, message.text, message.final);
-      if (message.speaker === "Claimant") {
-        applyRealtimeHints(message.text);
-        if (message.final && claimantAskedToClose(message.text)) {
-          closeAfterAgentTurn = true;
-        }
-      }
-      if (message.speaker === "Agent" && message.final && closeAfterAgentTurn && agentClosedConversation(message.text)) {
-        window.setTimeout(() => stopLiveVoice(), 800);
-      }
-    } else if (message.type === "audio") {
-      playPcm24(message.data);
-    } else if (message.type === "state") {
-      applyServerState(message.state);
-    } else if (message.type === "interrupted") {
-      nextPlaybackTime = audioContext?.currentTime || 0;
-    } else if (message.type === "error") {
-      appendLocalError(message.message);
-    }
-  };
-  liveSocket.onclose = () => {
-    if (isRecording) callStatus.textContent = "Live voice disconnected";
-  };
-  liveSocket.onerror = () => appendLocalError("Live voice WebSocket failed. Check the backend server.");
-  await new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => reject(new Error("Live voice connection timed out.")), 8000);
-    liveSocket.addEventListener("open", () => {
-      clearTimeout(timeout);
-      resolve();
-    }, { once: true });
-    liveSocket.addEventListener("error", () => {
-      clearTimeout(timeout);
-      reject(new Error("Live voice connection failed."));
-    }, { once: true });
-  });
+async function startCamera() {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    appendSystem("This browser cannot access a camera.");
+    return;
+  }
+  try {
+    await connectLive();
+    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: "environment" } });
+    cameraPreview.srcObject = cameraStream;
+    cameraStage.hidden = false;
+    cameraButton.classList.add("active");
+    cameraButton.querySelector(".round-label").textContent = "Stop camera";
+    frameTimer = window.setInterval(sendFrame, FRAME_INTERVAL_MS);
+    if (!isRecording) setStatus("Camera on, agent can see", "");
+  } catch (error) {
+    const denied = error.name === "NotAllowedError" || /denied|permission/i.test(error.message);
+    appendSystem(denied ? "Camera access was denied. Allow it for this site to show the damage." : `Camera failed: ${error.message}`);
+    stopCamera();
+  }
+}
+
+function stopCamera() {
+  if (frameTimer) window.clearInterval(frameTimer);
+  frameTimer = null;
+  cameraStream?.getTracks().forEach((track) => track.stop());
+  cameraStream = null;
+  cameraPreview.srcObject = null;
+  cameraStage.hidden = true;
+  cameraButton.classList.remove("active");
+  cameraButton.querySelector(".round-label").textContent = "Show camera";
+}
+
+function sendFrame() {
+  if (!cameraStream || !liveSocket || liveSocket.readyState !== WebSocket.OPEN) return;
+  if (!cameraPreview.videoWidth) return;
+  const scale = FRAME_WIDTH / cameraPreview.videoWidth;
+  frameCanvas.width = FRAME_WIDTH;
+  frameCanvas.height = Math.round(cameraPreview.videoHeight * scale);
+  const ctx = frameCanvas.getContext("2d");
+  ctx.drawImage(cameraPreview, 0, 0, frameCanvas.width, frameCanvas.height);
+  const dataUrl = frameCanvas.toDataURL("image/jpeg", 0.6);
+  liveSocket.send(JSON.stringify({ type: "video", data: dataUrl.split(",")[1] }));
 }
 
 function resampleToPcm16(input, inputRate, outputRate) {
   const ratio = inputRate / outputRate;
   const outputLength = Math.floor(input.length / ratio);
-  const output = new Float32Array(outputLength);
+  const pcm = new Int16Array(outputLength);
   for (let i = 0; i < outputLength; i += 1) {
     const index = i * ratio;
     const before = Math.floor(index);
     const after = Math.min(before + 1, input.length - 1);
     const weight = index - before;
-    output[i] = input[before] * (1 - weight) + input[after] * weight;
-  }
-  return floatToPcm16(output);
-}
-
-function floatToPcm16(float32) {
-  const pcm = new Int16Array(float32.length);
-  for (let i = 0; i < float32.length; i += 1) {
-    const sample = Math.max(-1, Math.min(1, float32[i]));
+    const sample = Math.max(-1, Math.min(1, input[before] * (1 - weight) + input[after] * weight));
     pcm[i] = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
   }
   return pcm;
@@ -610,16 +547,12 @@ function arrayBufferToBase64(buffer) {
   return btoa(binary);
 }
 
-function base64ToInt16Array(base64) {
+function playPcm24(base64) {
+  audioContext = audioContext || new AudioContext();
   const binary = atob(base64);
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
-  return new Int16Array(bytes.buffer);
-}
-
-function playPcm24(base64) {
-  audioContext = audioContext || new AudioContext();
-  const pcm = base64ToInt16Array(base64);
+  const pcm = new Int16Array(bytes.buffer);
   const audioBuffer = audioContext.createBuffer(1, pcm.length, 24000);
   const channel = audioBuffer.getChannelData(0);
   for (let i = 0; i < pcm.length; i += 1) channel[i] = pcm[i] / 32768;
@@ -631,14 +564,9 @@ function playPcm24(base64) {
   nextPlaybackTime = startAt + audioBuffer.duration;
 }
 
-micButton.addEventListener("click", () => {
-  if (isRecording) stopLiveVoice();
-  else startLiveVoice();
-});
-
+micButton.addEventListener("click", () => (isRecording ? stopLiveVoice() : startLiveVoice()));
+cameraButton.addEventListener("click", () => (cameraStream ? stopCamera() : startCamera()));
 newIntakeButton.addEventListener("click", createSession);
-resetButton.addEventListener("click", createSession);
-
 textForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const value = textInput.value.trim();
@@ -646,7 +574,6 @@ textForm.addEventListener("submit", (event) => {
   textInput.value = "";
   sendClaimantTurn(value);
 });
-
 document.querySelector("#openPacket").addEventListener("click", () => packetDialog.showModal());
 document.querySelector("#closePacket").addEventListener("click", () => packetDialog.close());
 
