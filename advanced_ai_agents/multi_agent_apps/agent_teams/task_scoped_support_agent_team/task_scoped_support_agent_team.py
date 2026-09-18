@@ -363,7 +363,13 @@ def show_what_the_warrant_adds(billing: Specialist, service: BillingService, pla
          .holder(billing.key.public_key).ttl(60).grant(billing.key))
         print("      -> UNEXPECTED: widened")
     except MonotonicityError as exc:
-        print(f"      -> MonotonicityError: {exc}")
+        # The exception carries structured details; format them rather than the raw message.
+        d = getattr(exc, "details", {}) or {}
+        if {"bound", "child_value", "parent_value"} <= d.keys():
+            print(f"      -> {type(exc).__name__}: child {d['bound']} {d['child_value']} "
+                  f"exceeds parent {d['bound']} {d['parent_value']}; a holder can only narrow its warrant")
+        else:
+            print(f"      -> {type(exc).__name__}: {d.get('reason', exc)}")
 
     print("\n   c) A warrant minted by a key the billing service has never heard of:")
     rogue = SigningKey.generate()

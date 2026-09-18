@@ -104,7 +104,7 @@ A well-aligned model may ignore the injected instruction on its own. That is fin
    a) The billing warrant leaks. Someone replays it with their own key:
       -> SignatureInvalid: Proof-of-Possession verification failed
    b) The billing agent tries to grant itself a bigger refund cap:
-      -> MonotonicityError: Child max (5000) exceeds parent max (50)
+      -> RangeExpanded: child max 5000 exceeds parent max 50; a holder can only narrow its warrant
    c) A warrant minted by a key the billing service has never heard of:
       -> UntrustedRoot: Root warrant issuer is not trusted
 
