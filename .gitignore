@@ -2,6 +2,10 @@
 __pycache__/
 *.pyc
 *.pyo
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
 
 # Environment files
 .env
