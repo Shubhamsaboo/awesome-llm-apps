@@ -256,6 +256,7 @@ streamlit run travel_agent.py
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30-60% using TOON format
 *   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50-90%
+*   [🛡️ AgentSentry Autonomous Agent Circuit Breaker](advanced_llm_apps/llm_optimization_tools/agentsentry_circuit_breaker/) - Prevent runaway token costs and recursive tool loops in coding agents
 
 ### 🔧 LLM Fine-tuning
 

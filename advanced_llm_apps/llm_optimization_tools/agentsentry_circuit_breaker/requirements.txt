@@ -1,0 +1,2 @@
+# AgentSentry Circuit Breaker requires ZERO pip packages!
+# Pure Python 3.8+ standard library (socket, http.server, difflib, sqlite3).
