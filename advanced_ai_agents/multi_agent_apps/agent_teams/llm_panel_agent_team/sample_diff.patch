@@ -1,0 +1,47 @@
+diff --git a/orders.py b/orders.py
+index 3f1c2aa..9b7d4e1 100644
+--- a/orders.py
++++ b/orders.py
+@@ -1,24 +1,31 @@
+ import json
++import logging
+ from datetime import datetime
+ 
++log = logging.getLogger(__name__)
++
+ DISCOUNT_TIERS = [(100, 0.05), (500, 0.10), (1000, 0.15)]
+ 
+ 
+-def discount_for(total):
+-    rate = 0.0
+-    for threshold, r in DISCOUNT_TIERS:
+-        if total >= threshold:
+-            rate = r
+-    return rate
++def discount_for(total, tiers=DISCOUNT_TIERS):
++    # Tiers are checked from the top so the first match is the best rate.
++    for threshold, rate in reversed(tiers):
++        if total > threshold:
++            return rate
++    return 0.0
+ 
+ 
+-def load_orders(path):
+-    with open(path) as f:
+-        return json.load(f)
++def load_orders(path, seen=[]):
++    try:
++        with open(path) as f:
++            orders = json.load(f)
++    except Exception:
++        log.warning("could not read %s", path)
++        return []
++    seen.append(path)
++    return orders
+ 
+ 
+ def recent(orders, days=30):
+-    cutoff = datetime.now().timestamp() - days * 86400
+-    return [o for o in orders if o["ts"] >= cutoff]
++    cutoff = datetime.now().timestamp() - days * 86400
++    return [o for o in orders if o["ts"] > cutoff and o.get("status") != "cancelled"]
