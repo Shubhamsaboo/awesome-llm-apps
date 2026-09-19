@@ -70,7 +70,7 @@
           <section class="card needed-card">
             <div class="card-head">
               <span class="card-kicker">Still needed</span>
-              <span id="readiness" class="pill neutral">0% ready</span>
+              <span id="readiness" class="pill neutral">0% collected</span>
             </div>
             <ul id="neededList" class="needed-list"></ul>
           </section>
@@ -103,9 +103,9 @@
     <dialog id="packetDialog" class="packet-dialog">
       <div class="dialog-header">
         <h2>Adjuster handoff packet</h2>
-        <button id="closePacket" type="button" aria-label="Close packet">Close</button>
+        <a id="downloadPacket" class="text-button" href="#" download>Download packet + evidence</a><button id="closePacket" type="button" aria-label="Close packet">Close</button>
       </div>
-      <pre id="packetMarkdown"></pre>
+      <pre id="packetMarkdown"></pre><p>Local demo: nothing is sent to an adjuster. Intakes expire after 30 minutes without activity. Download to keep a copy.</p>
     </dialog>
 
     <canvas id="frameCanvas" hidden></canvas>

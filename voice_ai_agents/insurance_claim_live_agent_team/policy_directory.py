@@ -8,6 +8,7 @@ claimant mentions while the conversation keeps going.
 from __future__ import annotations
 
 import re
+from datetime import datetime
 from typing import Any
 
 POLICY_RECORDS: dict[str, dict[str, Any]] = {
@@ -97,6 +98,33 @@ POLICY_RECORDS: dict[str, dict[str, Any]] = {
         ],
     },
 }
+
+
+# Structured periods are assessed against the loss date, never inferred from today's date.
+for _record in POLICY_RECORDS.values():
+    _dates = re.findall(r"\d{4}-\d{2}-\d{2}", _record["effective_period"])
+    _record["effective_start"], _record["effective_end"] = _dates[:2]
+
+
+def policy_review(claim) -> list[str]:
+    record = lookup_policy(claim.policy_number)
+    if not record.get("found"):
+        return ["Policy number needs verification"]
+    issues = []
+    try:
+        loss = datetime.strptime(claim.date_of_loss, "%Y-%m-%d").date()
+        start = datetime.strptime(record["effective_start"], "%Y-%m-%d").date()
+        end = datetime.strptime(record["effective_end"], "%Y-%m-%d").date()
+        if not start <= loss <= end:
+            issues.append("Loss date falls outside the recorded policy period")
+    except ValueError:
+        issues.append("Confirm an exact loss date for policy review")
+    if record["status"] != "active":
+        issues.append("Policy status needs human review")
+    normalize = lambda text: re.sub(r"[^a-z]", "", text.lower())
+    if normalize(claim.policyholder_name) != normalize(record["policyholder_name"]):
+        issues.append("Claimant name differs from the mock policyholder record")
+    return issues
 
 
 def normalize_policy_number(value: str) -> str:

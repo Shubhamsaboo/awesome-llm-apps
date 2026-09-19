@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime
+from datetime import datetime, date
 from typing import Any
 
 try:
+    from .policy_directory import policy_review
     from .schemas import (
         ClaimClassification,
         ClaimIntakePacket,
@@ -20,6 +21,7 @@ try:
         FraudSafetySignal,
     )
 except ImportError:
+    from policy_directory import policy_review
     from schemas import (
         ClaimClassification,
         ClaimIntakePacket,
@@ -125,49 +127,89 @@ def _has_any(text: str, patterns: list[str]) -> bool:
     return any(re.search(pattern, text, flags=re.IGNORECASE) for pattern in patterns)
 
 
+# Every checklist item has a stable type. Similar words never satisfy a different document.
+DOCUMENT_KEYS = {
+    "Photos or video of damaged areas before cleanup": "damage_photo",
+    "Mitigation or drying invoice": "drying_invoice",
+    "Repair estimate or contractor assessment": "repair_estimate",
+    "Receipts for damaged personal property": "ownership_receipt",
+    "Photos of vehicles and scene": "damage_photo",
+    "Police report or incident exchange form": "police_report",
+    "Repair estimate or tow/storage invoice": "repair_estimate",
+    "Medical documentation for any injuries": "medical_bill",
+    "Other driver and witness information": "witness_details",
+    "Police report number or theft report": "police_report",
+    "Receipts, serial numbers, or ownership proof": "ownership_receipt",
+    "Photos of the item or packaging if available": "damage_photo",
+    "Location timeline and access details": "timeline",
+    "Itemized provider bill": "medical_bill",
+    "Explanation of benefits or denial notice": "eob",
+    "Proof of payment": "payment_proof",
+    "Provider name and diagnosis or treatment summary": "treatment_summary",
+    "Carrier cancellation or delay notice": "carrier_notice",
+    "Original itinerary and booking confirmation": "itinerary",
+    "Receipts for prepaid nonrefundable expenses": "expense_receipt",
+    "Refund, voucher, or credit documentation": "refund_document",
+    "Weather, emergency, or event documentation if available": "event_document",
+    "Photos or available proof of loss": "damage_photo",
+    "Receipts, estimates, or invoices": "ownership_receipt",
+    "Any third-party report or confirmation": "third_party_report",
+}
+
+
 def _without_negated_safety_mentions(text: str) -> str:
-    """Remove phrases like "no injuries" before positive safety regex checks."""
-
-    negated_patterns = [
-        r"\b(?:no|not|none|without|denies|denied)\s+(?:one\s+)?(?:was\s+)?(?:injur\w*|hurt|pain|medical attention|ambulance|hospital|unsafe|hazard\w*|danger)\b",
-        r"\b(?:injur\w*|hurt|pain|medical attention|ambulance|hospital|unsafe|hazard\w*|danger)\s+(?:was|were|is|are)?\s*(?:reported\s+)?(?:no|none|not reported|denied)\b",
-    ]
-    cleaned = text
-    for pattern in negated_patterns:
-        cleaned = re.sub(pattern, " ", cleaned, flags=re.IGNORECASE)
-    return cleaned
-
-
-def _positive_safety_concerns(claim: ClaimNarrative) -> list[str]:
-    return [item for item in claim.injuries_or_safety_concerns if _has_positive_safety_language(item)]
+    """Conservative fallback for legacy callers; structured facts are authoritative."""
+    clauses = re.split(r"[.;!?]|\bbut\b|\bhowever\b", str(text), flags=re.I)
+    result = []
+    for clause in clauses:
+        # Split conjunctions so 'no injuries and electrical hazard' keeps the hazard.
+        for part in re.split(r"\band\b", clause, flags=re.I):
+            part = re.sub(r"\bno (?:safe )?place to (?:live|stay)\b", "unsafe housing", part, flags=re.I)
+            part = re.sub(r"\bnot safe\b", "unsafe", part, flags=re.I)
+            if re.search(r"\b(no|not|none|nobody|neither|without|denies|denied|ruled out)\b", part, re.I):
+                continue
+            result.append(part)
+    return ". ".join(result)
 
 
 def _has_positive_safety_language(text: str) -> bool:
-    cleaned = _without_negated_safety_mentions(text)
-    return _has_any(
-        cleaned,
-        [r"\binjur", r"\bhurt\b", r"\bneck pain\b", r"\bhospital\b", r"\burgent care\b", r"\bambulance\b"],
-    )
+    return bool(re.search(r"\b(injur\w*|hurt|pain|fractur\w*|bleeding|hospital|urgent care|ambulance|unsafe|electrical|sewage|mold|hazard\w*|danger|no place to live)\b", _without_negated_safety_mentions(text), re.I))
+
+
+def _positive_safety_concerns(claim: ClaimNarrative) -> list[str]:
+    if claim.safety_facts:
+        return [f.description for f in claim.safety_facts if f.status in {"present", "uncertain"}]
+    values = [*claim.injuries_or_safety_concerns, claim.loss_description, claim.raw_narrative_summary]
+    return [text for text in values if _has_positive_safety_language(text)]
+
+
+def _document_record(document: str, claim: ClaimNarrative):
+    key = DOCUMENT_KEYS.get(document, document)
+    records = [r for r in claim.evidence_records if r.document_type == key]
+    received = [r for r in records if r.status == "received" and r.evidence_ids]
+    return received[-1] if received else records[-1] if records else None
 
 
 def _document_provided(document: str, claim: ClaimNarrative) -> bool:
-    evidence = _all_evidence_text(claim)
-    doc = document.lower()
-    keyword_groups = [
-        ["photo", "picture", "video"],
-        ["police", "report number", "incident report"],
-        ["receipt", "invoice", "proof of payment", "credit card"],
-        ["estimate", "contractor", "repair"],
-        ["medical", "urgent care", "hospital", "provider", "bill"],
-        ["airline", "carrier", "cancellation", "delay notice"],
-        ["itinerary", "booking", "confirmation"],
-        ["serial", "ownership", "purchase"],
-        ["tow", "storage"],
-    ]
-    for keywords in keyword_groups:
-        if any(keyword in doc for keyword in keywords):
-            return any(keyword in evidence for keyword in keywords)
-    return any(word in evidence for word in doc.split()[:3])
+    record = _document_record(document, claim)
+    return bool(record and record.status == "received" and record.evidence_ids)
+
+
+def prepare_claim(claim_value, received_evidence=()):
+    """Only the server capture registry can mint received evidence, never an LLM."""
+    claim = _as_model(ClaimNarrative, claim_value)
+    records = []
+    for record in claim.evidence_records:
+        data = record.model_dump()
+        data["evidence_ids"] = []
+        if data["status"] == "received":
+            data["status"] = "available"
+        records.append(data)
+    for evidence in received_evidence:
+        for kind in evidence.get("document_types", []):
+            if kind in DOCUMENT_KEYS.values():
+                records.append({"document_type": kind, "status": "received", "evidence_ids": [evidence["id"]]})
+    return claim.model_copy(update={"evidence_records": []}).model_dump() | {"evidence_records": records}
 
 
 def _parse_date(value: str) -> datetime | None:
@@ -176,7 +218,7 @@ def _parse_date(value: str) -> datetime | None:
         return None
 
     cleaned = re.sub(r"(\d+)(st|nd|rd|th)", r"\1", text, flags=re.IGNORECASE)
-    candidates = [cleaned[:10], cleaned]
+    candidates = [cleaned]
     formats = [
         "%Y-%m-%d",
         "%m/%d/%Y",
@@ -205,6 +247,9 @@ def _next_claimant_message(
             "Your claim mentions injury, safety, or habitability concerns. A human representative "
             "should review this immediately. If anyone is in danger, contact local emergency services first."
         )
+
+    if route == "policy_review":
+        return "The policy details need human review. Please confirm the policy number, policyholder, and loss date. This demo prepares a packet; it does not contact an adjuster."
 
     for field_name in missing:
         if field_name in BLOCKING_FIELD_QUESTIONS:
@@ -246,6 +291,15 @@ def validate_required_claim_fields(claim_value: Any) -> dict[str, Any]:
     for field_name, value in required_fields.items():
         if _blank(value):
             missing.append(field_name)
+
+    for name in ("date_of_loss", "reported_date"):
+        value = getattr(claim, name)
+        if not _blank(value):
+            parsed = _parse_date(value)
+            if parsed is None:
+                missing.append(f"Confirm a valid calendar date for {name.replace('_', ' ')}")
+            elif parsed.date() > date.today():
+                missing.append(f"Confirm the future date for {name.replace('_', ' ')}")
 
     if claim.estimated_loss_usd is None:
         warnings.append("Estimated loss amount was not supplied.")
@@ -330,13 +384,6 @@ def apply_coverage_and_evidence_rules(
                 "Do not promise coverage until policy forms, endorsements, cause of loss, and mitigation facts are reviewed.",
             ]
         )
-        if _has_any(evidence_text, [r"\bunsafe\b", r"\belectrical\b", r"\bsewage\b", r"\bmold\b", r"\bno place to live\b"]):
-            add(
-                "SAFE-001",
-                "urgent",
-                "Unsafe living condition or potential health hazard was mentioned.",
-                "emergency_escalation",
-            )
 
     elif classification.claim_type == "auto_collision":
         coverage_notes.extend(
@@ -345,8 +392,6 @@ def apply_coverage_and_evidence_rules(
                 "Injury claims require immediate human handling and no medical coverage promises in the intake response.",
             ]
         )
-        if _positive_safety_concerns(claim) or _has_positive_safety_language(evidence_text):
-            add("SAFE-002", "urgent", "Injury or medical attention was mentioned.", "emergency_escalation")
 
     elif classification.claim_type == "theft_property_loss":
         coverage_notes.extend(
@@ -355,7 +400,7 @@ def apply_coverage_and_evidence_rules(
                 "High-value electronics or jewelry may have sublimits or scheduled-property requirements.",
             ]
         )
-        if not _has_any(evidence_text, [r"\bpolice\b", r"\breport number\b", r"\bcase number\b"]):
+        if not _document_provided("Police report number or theft report", claim):
             add(
                 "THEFT-001",
                 "medium",
@@ -385,10 +430,18 @@ def apply_coverage_and_evidence_rules(
             "Claim type is unclear; route for human triage after collecting minimum loss facts and proof of loss."
         )
 
+    if _positive_safety_concerns(claim):
+        add("SAFE-001", "urgent", "A present or uncertain safety concern needs immediate human review.", "emergency_escalation")
+    review = policy_review(claim)
+    for issue in review:
+        add("POLICY-001", "high", issue, "adjuster_review")
+
     if any(f.required_action == "emergency_escalation" for f in findings):
         route = "emergency_escalation"
     elif any(f.required_action == "siu_review" for f in findings):
         route = "special_investigation"
+    elif review:
+        route = "policy_review"
     elif validation.missing_fields or any(f.required_action == "collect_document" for f in findings):
         route = "needs_docs"
     else:
@@ -431,6 +484,8 @@ def generate_document_checklist(
                 reason=reason,
                 priority=priority,
                 already_provided=provided,
+                status=(_document_record(document, claim).status if _document_record(document, claim) else "unknown"),
+                evidence_ids=(_document_record(document, claim).evidence_ids if provided else []),
             )
         )
 
@@ -440,14 +495,15 @@ def generate_document_checklist(
                 item="Names of injured people and treatment locations",
                 reason="Supports urgent injury claim assignment.",
                 priority="required",
-                already_provided=_has_any(_all_evidence_text(claim), [r"\burgent care\b", r"\bhospital\b"]),
+                already_provided=False,
+                status="unknown",
             )
         )
 
     checklist = DocumentChecklist(
         items=items,
         claimant_tip=(
-            "Upload clear copies when available. If a document is not available yet, explain why "
+            "Show clear copies on camera when available. If a document is not available yet, explain why "
             "and provide the expected date."
         ),
     )
@@ -517,8 +573,7 @@ def fraud_signal_and_safety_gate(
     if (
         claim.estimated_loss_usd is not None
         and claim.estimated_loss_usd >= 10000
-        and not claim.evidence_available
-        and not claim.documents_mentioned
+        and not any(r.status in {"available", "received"} for r in claim.evidence_records)
     ):
         signal(
             "EVID-001",
@@ -597,7 +652,7 @@ def build_claim_intake_packet(
 
     checklist_lines = []
     for item in checklist.items:
-        status = "already provided" if item.already_provided else item.priority
+        status = item.status
         checklist_lines.append(f"- [{status}] **{item.item}** - {item.reason}")
 
     if not checklist_lines:

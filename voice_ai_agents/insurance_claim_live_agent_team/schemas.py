@@ -23,7 +23,27 @@ RoutingDecision = Literal[
     "needs_docs",
     "special_investigation",
     "emergency_escalation",
+    "policy_review",
 ]
+
+
+class EvidenceRecord(BaseModel):
+    document_type: str = Field(description="Canonical document key from the extraction instructions.")
+    status: Literal["unknown", "missing", "planned", "available", "received"] = "unknown"
+    source_turn_ids: list[str] = Field(default_factory=list)
+    evidence_ids: list[str] = Field(default_factory=list)
+
+
+class SafetyFact(BaseModel):
+    category: str = Field(description="injury, electrical, unsafe_housing, sewage, mold, or other immediate hazard")
+    status: Literal["present", "absent", "uncertain"]
+    description: str
+    source_turn_ids: list[str] = Field(default_factory=list)
+
+
+class FactSource(BaseModel):
+    field: str
+    source_turn_ids: list[str] = Field(default_factory=list)
 
 
 class ClaimNarrative(BaseModel):
@@ -32,12 +52,12 @@ class ClaimNarrative(BaseModel):
     policyholder_name: str = Field(description="Name of the policyholder or claimant.")
     policy_number: str = Field(description="Policy or member number if supplied.")
     contact_method: str = Field(description="Best available phone, email, or mailing contact.")
-    date_of_loss: str = Field(description="Date or date range when the loss occurred.")
+    date_of_loss: str = Field(description="Exact loss date in YYYY-MM-DD format, or not specified.")
     reported_date: str = Field(description="Date the claimant says they are reporting, if supplied.")
     loss_location: str = Field(description="City, address, intersection, facility, or travel route.")
     loss_description: str = Field(description="Plain-language description of what happened.")
     estimated_loss_usd: Optional[float] = Field(
-        default=None,
+        default=None, ge=0, allow_inf_nan=False,
         description="Estimated financial loss in USD when supplied.",
     )
     injuries_or_safety_concerns: list[str] = Field(default_factory=list)
@@ -47,6 +67,9 @@ class ClaimNarrative(BaseModel):
     missing_or_uncertain_facts: list[str] = Field(default_factory=list)
     raw_narrative_summary: str = Field(description="Short factual summary of the source narrative.")
     assumptions: list[str] = Field(default_factory=list)
+    evidence_records: list[EvidenceRecord] = Field(default_factory=list)
+    safety_facts: list[SafetyFact] = Field(default_factory=list)
+    fact_sources: list[FactSource] = Field(default_factory=list)
 
 
 class FieldValidation(BaseModel):
@@ -102,6 +125,8 @@ class DocumentChecklistItem(BaseModel):
     reason: str
     priority: Literal["required", "recommended", "conditional"]
     already_provided: bool = False
+    status: Literal["unknown", "missing", "planned", "available", "received"] = "unknown"
+    evidence_ids: list[str] = Field(default_factory=list)
 
 
 class DocumentChecklist(BaseModel):
