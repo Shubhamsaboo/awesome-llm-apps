@@ -201,13 +201,3 @@ where to look; it does not decide for you.
 - **One key, many vendors.** OpenRouter is used so the roster can mix vendors without a
   key per vendor. Any OpenAI-compatible endpoint works if you change `base_url`, but then
   the `cost` column depends on that endpoint reporting it.
-
-## The full tool
-
-This folder is the idea in one file. The same design, grown up, is
-[llm-panel](https://github.com/musharna/llm-panel) (`pip install llm-panel`), which
-drives the coding-agent CLIs you already have (Codex, Claude Code, opencode, ollama) so
-the judges can read your whole repository rather than a pasted diff, renders the rebuttal
-round as one HTML page grouped by finding, runs as a GitHub Action on every pull request,
-and ships a recall benchmark that measures what a panel misses on real PRs. Disclosure:
-the author of this tutorial is the author of llm-panel.
