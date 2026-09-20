@@ -129,7 +129,6 @@ needle/
 |-- public/               App assets and generated extension download
 |-- scripts/              Extension ZIP packaging
 |-- tests/                Search, sentence, access and packaging checks
-|-- docs/DISTRIBUTION.md   Repository packaging instructions
 |-- .env.example          API key and optional settings
 `-- README.md
 ```
@@ -160,5 +159,7 @@ Stop the dev server before running preview on the same port, or choose another `
 - `public/needle-extension.zip` for the app’s download link; production builds copy it to `dist/`.
 
 ZIP packaging uses an explicit file allowlist and does not include the backend, `.env`, dependencies or development output. Build artifacts are not committed. CI runs tests, formatting and a build for changes to this project and retains the ZIP as a workflow artifact; it does not publish a release.
+
+Before sharing a package, load it in Chrome and check the connection, search, highlights and navigation. Automated tests do not cover Chrome’s installation and permission prompts.
 
 Licensed under the repository’s [Apache-2.0 license](../../LICENSE).
