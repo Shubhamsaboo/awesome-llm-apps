@@ -79,6 +79,8 @@ streamlit run travel_agent.py
 
 ## 📂 Browse all templates
 
+[Machine catalog (JSON)](catalog/templates.json)
+
 ### 🧩 Agent Skills
 
 *Give your coding agent new abilities. One command to install, plain English to use. Every skill ships real code and passes a security + eval CI gate. Works with Claude Code, Codex, Cursor, and other coding agents. [Browse all skills →](agent_skills/)*
