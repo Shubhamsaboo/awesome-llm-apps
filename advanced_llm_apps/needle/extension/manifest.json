@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Needle: A new way to find",
+  "version": "1.1.1",
+  "description": "Find ideas in the page, even when you don't know the exact words. Powered by TypeSafe Jev.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": ["http://127.0.0.1/*", "http://localhost/*"],
+  "optional_host_permissions": ["https://*/*", "http://*/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Find with Needle",
+    "default_icon": {
+      "16": "icons/needle-16.png",
+      "32": "icons/needle-32.png"
+    }
+  },
+  "options_page": "options.html",
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+F",
+        "mac": "Command+Shift+F"
+      },
+      "description": "Find with Needle"
+    }
+  },
+  "icons": {
+    "16": "icons/needle-16.png",
+    "32": "icons/needle-32.png",
+    "48": "icons/needle-48.png",
+    "128": "icons/needle-128.png"
+  },
+  "minimum_chrome_version": "105"
+}

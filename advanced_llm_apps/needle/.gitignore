@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env*
+!.env.example
+.vercel/
+output/
+artifacts/
+public/needle-extension.zip
+*.log
+.DS_Store
