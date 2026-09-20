@@ -158,7 +158,7 @@ Stop the dev server before running preview on the same port, or choose another `
 - `artifacts/needle-extension-v1.1.1.zip` for release attachment.
 - `public/needle-extension.zip` for the app’s download link; production builds copy it to `dist/`.
 
-ZIP packaging uses an explicit file allowlist and does not include the backend, `.env`, dependencies or development output. Build artifacts are not committed. CI runs tests, formatting and a build for changes to this project and retains the ZIP as a workflow artifact; it does not publish a release.
+ZIP packaging uses an explicit file allowlist and does not include the backend, `.env`, dependencies or development output. Build artifacts are not committed.
 
 Before sharing a package, load it in Chrome and check the connection, search, highlights and navigation. Automated tests do not cover Chrome’s installation and permission prompts.
 
