@@ -229,6 +229,12 @@ streamlit run travel_agent.py
 *   [🩺 RAG Failure Diagnostics Clinic](rag_tutorials/rag_failure_diagnostics_clinic/) - Find out why your RAG pipeline is wrong, systematically
 *   [🕸️ Knowledge Graph RAG with Citations](rag_tutorials/knowledge_graph_rag_citations/) - Multi-hop answers with verifiable source attribution
 
+### 🔎 AI Browser Tools
+
+*Small tools that bring AI into everyday browsing.*
+
+*   [🪡 Needle: A New Way to Find](advanced_llm_apps/needle/) - Search webpages by meaning and highlight the strongest source sentence, using a Chrome extension powered by TypeSafe Jev
+
 ### 💾 LLM Apps with Memory
 
 *Agents and chatbots that remember conversations and user state across sessions.*

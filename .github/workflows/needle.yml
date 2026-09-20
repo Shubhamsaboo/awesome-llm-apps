@@ -1,0 +1,36 @@
+name: Needle checks
+on:
+  pull_request:
+    paths:
+      - "advanced_llm_apps/needle/**"
+      - ".github/workflows/needle.yml"
+  push:
+    branches: [main]
+    paths:
+      - "advanced_llm_apps/needle/**"
+      - ".github/workflows/needle.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: advanced_llm_apps/needle
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: advanced_llm_apps/needle/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run format:check
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: needle-chrome-extension
+          path: advanced_llm_apps/needle/artifacts/needle-extension-v*.zip
+          if-no-files-found: error
