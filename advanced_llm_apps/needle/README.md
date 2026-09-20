@@ -63,7 +63,7 @@ No separate extension build is needed to load the source:
 2. Choose **Load unpacked** and select **`awesome-llm-apps/advanced_llm_apps/needle/extension/`** folder. This is the folder containing `manifest.json`. Do not select the repository root or a ZIP file.
 3. Pin Needle from Chrome’s puzzle-piece menu. The settings page opens on first installation; you can also right-click the icon and choose **Options**.
 4. Set **Needle server URL** to `http://127.0.0.1:4199`. Leave **Server access token** blank for the default local setup. Click **Save connection**.
-5. Open a normal webpage and click the Needle icon, or press **Cmd+Shift+F** on macOS / **Ctrl+Shift+F** elsewhere. Type what you want to find.
+5. Open a normal webpage and click the Needle icon, or press **Cmd+F** on macOS / **Ctrl+F** elsewhere. Type what you want to find.
 
 If the shortcut is already in use, assign one at `chrome://extensions/shortcuts`.
 
@@ -75,11 +75,11 @@ If the shortcut is already in use, assign one at `chrome://extensions/shortcuts`
 
 ### On a webpage
 
-Keep `npm run dev` running, open the webpage you want to search, and click the pinned Needle icon. Type what you mean, such as “costs beyond the advertised price” or “what happens if I cancel?” Needle searches after a short pause and highlights relevant source sentences. Use the arrows or **Enter / Shift+Enter** to move between results. Press **Escape** to close Needle and remove its highlights.
+Keep `npm run dev` running, open the webpage you want to search, and click the pinned Needle icon. Type what you mean, such as “costs beyond the advertised price” or “what happens if I cancel?” Needle searches after a short pause and highlights relevant source sentences. 
 
 ### In the React app
 
-Open **http://127.0.0.1:4199**, choose a document from the library, and type your query. To search your own content, open the library with the top-left toggle if it is hidden, choose **Bring your own text**, enter a title and the text, then select **Start exploring**. Click a result to jump to its source. Use **Cmd/Ctrl+Enter** for the next result and add **Shift** for the previous one.
+Open **http://127.0.0.1:4199**, choose a document from the library, and type your query. To search your own content, open the library with the top-left toggle if it is hidden, choose **Bring your own text**, enter a title and the text, then select **Start exploring**. Click a result to jump to its source.
 
 ### PDFs
 
