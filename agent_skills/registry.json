@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "skills": [
+    {
+      "name": "advisor-orchestrator-worker",
+      "path": "agent_skills/advisor-orchestrator-worker",
+      "description": "Use when a task is too large for one model pass, needs parallel research or generation across many subtasks (like researching a dozen competitors at once), or the user asks to orchestrate multiple models, split work across a model team, run an advisor-worker loop, have a stronger model review the plan while cheap workers execute, or says \"too big for one model\" or \"fan this out\". Not for single-file edits or tasks one model handles in one pass.",
+      "license": "Apache-2.0",
+      "metadata": {
+        "author": "Shubham Saboo",
+        "version": "1.0.0",
+        "source": "https://github.com/Shubhamsaboo/awesome-llm-apps"
+      },
+      "install": "npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/advisor-orchestrator-worker",
+      "evals_dir": "agent_skills/evals/advisor-orchestrator-worker"
+    },
+    {
+      "name": "commit-archaeologist",
+      "path": "agent_skills/commit-archaeologist",
+      "description": "Reconstructs why code exists from local git history, including the introducing commit, later changes, current authors, repeated companion files, and likely intent. Use when the user asks \"why does this code exist\", \"who wrote this function and why\", or to \"explain the history of this function\" before a rewrite, refactor, or risky edit. Runs entirely locally.",
+      "license": "Apache-2.0",
+      "metadata": {
+        "author": "Matt Van Horn",
+        "version": "1.0.0",
+        "source": "https://github.com/Shubhamsaboo/awesome-llm-apps"
+      },
+      "install": "npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/commit-archaeologist",
+      "evals_dir": "agent_skills/evals/commit-archaeologist"
+    },
+    {
+      "name": "dependency-doctor",
+      "path": "agent_skills/dependency-doctor",
+      "description": "Checks requirements.txt, pyproject.toml, and package.json dependency manifests for surface-level direct-dependency footguns: standard-library shadowing pins, abandoned backports, unpinned dependencies, and obvious intra-manifest conflicts, plus opt-in PyPI yanked releases. Use when the user asks to check a manifest for dependency problems, asks why dependencies won't install or whether anything is wrong with their dependencies, wants a dependency autopsy, or suspects dependency manifest rot. Runs offline by default as a local tool for the user's own project, not repository CI.",
+      "license": "Apache-2.0",
+      "metadata": {
+        "author": "Matt Van Horn",
+        "version": "1.0.0",
+        "source": "https://github.com/Shubhamsaboo/awesome-llm-apps"
+      },
+      "install": "npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/dependency-doctor",
+      "evals_dir": "agent_skills/evals/dependency-doctor"
+    },
+    {
+      "name": "first-reader",
+      "path": "agent_skills/first-reader",
+      "description": "Beta readers for any draft, run by simulating how a real reader experiences it, moment by moment. A skim gate, a no-lookahead timed read producing an attention transcript with quit points, a recall test of what a reader remembers the next day, and a trust ledger of the implied author. Use when the user asks for a beta read, beta readers, test readers, human review, reader review, to read something like a human, to be a first reader, whether a piece holds attention or will actually get read, for a quick read of whether a busy skimmer would even open a post, what readers will remember or take away tomorrow, where readers stop reading or bounce, or why a draft still feels off or hollow after anti-slop or humanizer edits. Final gate before publishing; reports where the reading broke; never rewrites.",
+      "license": "",
+      "metadata": {},
+      "install": "npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/first-reader",
+      "evals_dir": "agent_skills/evals/first-reader"
+    },
+    {
+      "name": "project-graveyard",
+      "path": "agent_skills/project-graveyard",
+      "description": "Scans the developer's machine for dead side projects, autopsies each one from its git history (died at the payments wall, killed by a newer project, finished but never shipped), surfaces their personal death patterns, and picks the corpse most worth resurrecting — then helps ship it. Use when the user mentions abandoned, unfinished, or old side projects, asks \"what should I finish\", wants to revive or resurrect a project, says \"run the graveyard\", wonders why they never finish anything, or is about to start a new project that sounds like one they already built. Runs entirely locally.",
+      "license": "Apache-2.0",
+      "metadata": {
+        "author": "Shubham Saboo",
+        "version": "1.0.0",
+        "source": "https://github.com/Shubhamsaboo/awesome-llm-apps"
+      },
+      "install": "npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/project-graveyard",
+      "evals_dir": "agent_skills/evals/project-graveyard"
+    },
+    {
+      "name": "scope-creep-detector",
+      "path": "agent_skills/scope-creep-detector",
+      "description": "Analyzes git diffs against a stated intent to detect scope creep, unrelated files, broad pull requests, changes that grew beyond a fix, dependency additions, public API renames, config or CI edits, oversized hunks, and formatting-only files. Use when the user asks whether a change grew beyond the fix, a PR is too broad, or what unrelated stuff they touched, and wants keep, split, or justify guidance. Operates locally and offline.",
+      "license": "Apache-2.0",
+      "metadata": {
+        "author": "Matt Van Horn",
+        "version": "1.0.0",
+        "source": "https://github.com/Shubhamsaboo/awesome-llm-apps"
+      },
+      "install": "npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/scope-creep-detector",
+      "evals_dir": "agent_skills/evals/scope-creep-detector"
+    },
+    {
+      "name": "thinking-out-loud",
+      "path": "agent_skills/thinking-out-loud",
+      "description": "A contract for what the agent does when a long, messy, stream-of-consciousness ramble arrives (usually voice dictation): act on nothing until the echo brief is approved. The echo audits the entire transfer, mission, locked decisions and constraints, open questions, flips and parked tangents, with the model's inferences and guesses quarantined away from the user's own phrasing, so the user verifies what the model believes, not just what it doubts. Use when the user says \"let me think out loud\" or wants to ramble a bit before building anything, when a message opens with a speech-to-text preamble like \"switching to voice, sorry for typos\", when input is a long weakly punctuated stream with restarts and mid-message reversals (\"actually no, wait, scrap that idea entirely\"), or when the user asks to be interviewed about a fuzzy half-formed idea. Includes an optional capture mode for rambles spread across several messages and an optional targeted interview.",
+      "license": "Apache-2.0",
+      "metadata": {
+        "author": "Shubham Saboo",
+        "version": "1.3.0",
+        "source": "https://github.com/Shubhamsaboo/awesome-llm-apps"
+      },
+      "install": "npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/thinking-out-loud",
+      "evals_dir": "agent_skills/evals/thinking-out-loud"
+    }
+  ]
+}

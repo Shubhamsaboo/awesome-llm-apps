@@ -37,6 +37,8 @@ One command, any agent. The [skills CLI](https://skills.sh) detects what you hav
 npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/<skill>
 ```
 
+A machine-readable listing of every installable skill lives in [`registry.json`](registry.json).
+
 Prefer manual? Clone the repo and copy the skill folder into your agent's skills dir:
 
 | Agent | Skills dir |
