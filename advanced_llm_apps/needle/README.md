@@ -1,6 +1,9 @@
-# Needle - A New Way to Find
+# 🪡 Needle - A New Way to Find
 
 **A new way to find.** Find what you mean, not just what matches. Describe what you are looking for in your own words, without knowing the words the page uses. Needle finds relevant passages and highlights the sentence that matters, right in the original text. Use it on webpages with the Chrome extension or explore your own text in the React app. **Powered by TypeSafe Jev.**
+
+<img width="1379" height="685" alt="Screenshot 2026-09-20 at 12 28 10 AM" src="https://github.com/user-attachments/assets/1058589f-d686-4b3d-8873-5eb800ba35b3" />
+
 
 ## Features
 
