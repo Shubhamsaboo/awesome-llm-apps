@@ -4,10 +4,12 @@ on:
   pull_request:
     paths:
       - "agent_skills/**"
+      - "README.md"
   push:
     branches: [main]
     paths:
       - "agent_skills/**"
+      - "README.md"
 
 jobs:
   evals:
@@ -76,3 +78,17 @@ jobs:
           python-version: "3.11"
       - name: Positives must clear near-misses on description vocabulary
         run: python3 agent_skills/evals/tools/run_trigger_evals.py
+
+  registry:
+    name: skill registry
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check registry membership and README listings
+        run: |
+          set -e
+          python3 agent_skills/evals/tools/test_registry_lint.py
+          python3 agent_skills/evals/tools/registry_lint.py --check
