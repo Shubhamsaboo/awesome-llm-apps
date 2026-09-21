@@ -1,0 +1,3 @@
+streamlit
+swarms>=8.0.0
+openai
