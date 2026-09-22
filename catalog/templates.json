@@ -616,6 +616,17 @@
       }
     },
     {
+      "path": "agent_skills/thinking-out-loud",
+      "title": "🎙️ Thinking Out Loud",
+      "description": "Echoes a voice ramble back as a scannable brief, with the model's guesses quarantined and your reversals flagged",
+      "category": "agent-skills",
+      "kind": "skill",
+      "readme": "README.md",
+      "tags": {
+        "entrypoint": "SKILL.md"
+      }
+    },
+    {
       "path": "ai_agent_framework_crash_course/google_adk_crash_course",
       "title": "Google ADK Crash Course",
       "description": "Starter agent, structured outputs, tools (built-in, function, third-party, MCP), memory, callbacks, plugins, and multi-agent patterns. Model-agnostic.",

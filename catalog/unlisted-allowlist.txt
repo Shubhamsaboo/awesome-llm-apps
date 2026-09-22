@@ -3,9 +3,6 @@
 # Nested crash-course lessons belong here so a README walk does not promote them.
 # This is not a contributing guide; adding a real app still means a README bullet.
 
-# listed by the skills registry PR; remove from allowlist when root README has the bullet
-agent_skills/thinking-out-loud
-
 # Listed as a skill in the root README; it is a Next.js + ADK app with no SKILL.md.
 agent_skills/self-improving-agent-skills
 
