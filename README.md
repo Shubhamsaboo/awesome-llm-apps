@@ -235,6 +235,7 @@ streamlit run travel_agent.py
 *Small tools that bring AI into everyday browsing.*
 
 *   [🪡 Needle - A New Way to Find](advanced_llm_apps/needle/) - Search webpages by meaning and highlight the strongest source sentence, using a Chrome extension powered by TypeSafe Jev
+*   [🌀 Ripple - Change One Thing, Find What Else Needs to Change](advanced_llm_apps/ripple/) - Find related inconsistencies and suggested fixes as you edit a Google Doc, using TypeSafe Jev and Gemini
 
 ### 💾 LLM Apps with Memory
 
