@@ -136,6 +136,8 @@ streamlit run travel_agent.py
 *   [🎧 AI Social Media News and Podcast Agent](advanced_ai_agents/multi_agent_apps/ai_news_and_podcast_agents/) - Curates your trusted sources into briefs and generated podcasts
 *   [🌐 Openwork - Open Browser Automation Agent](https://github.com/accomplish-ai/coworker) <sub>↗ external</sub> - Open-source agent that operates a real browser
 *   [🛡️ Trust-Gated Multi-Agent Research Team](advanced_ai_agents/multi_agent_apps/trust_gated_agent_team/) - Every agent verified, every action in a hash-chained audit trail
+*   [☀️ sunshine](https://github.com/jajmangold/sunshine) <sub>↗ external</sub> - Local LLM substrate with argmax scoring for structured decisions, memory, verification, and kernel orchestration
+*   [🔧 forge0](https://github.com/jajmangold/forge0) <sub>↗ external</sub> - Self-hosted AI dev platform: Gitea + LLM chat + SearXNG + self-extension (issues to draft PRs)
 
 ### 🛰️ Always-on Agents
 
