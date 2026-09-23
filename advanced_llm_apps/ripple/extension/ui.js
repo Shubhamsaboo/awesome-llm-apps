@@ -120,6 +120,7 @@ export function createUI(actions) {
       deleting = row.suggestion?.action === "delete";
     applying = true;
     get("apply").disabled = true;
+    get("keep").disabled = true;
     get("apply").textContent = deleting ? "Removing…" : "Applying…";
     let result;
     try {
@@ -136,7 +137,8 @@ export function createUI(actions) {
       };
     }
     applying = false;
-    get("apply").textContent = deleting ? "Remove sentence" : "Apply change";
+    get("keep").disabled = false;
+    if (active) renderSuggestion(active);
     if (result.ok) {
       drafts.delete(row.key);
       if (active?.key === row.key && !card.hidden) {
@@ -152,6 +154,7 @@ export function createUI(actions) {
     }
   };
   get("keep").onclick = () => {
+    if (applying) return;
     if (active) {
       actions.keep(active);
       close();

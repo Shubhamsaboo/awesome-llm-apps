@@ -21,6 +21,7 @@ const origin = "chrome-extension://" + id;
 const active = { check: 0, suggest: 0 };
 const server = http.createServer(async (req, res) => {
   const json = (code, value) => {
+    if (res.destroyed) return;
     res.writeHead(code, {
       "Content-Type": "application/json",
       "Cache-Control": "no-store",
@@ -62,9 +63,15 @@ const server = http.createServer(async (req, res) => {
   const route = req.url === "/check" ? "check" : "suggest";
   if (active[route] >= (route === "check" ? 1 : 2))
     return json(429, {
-      error: "Another request is running. Retrying shortly.",
+      error: "Another request is running. Ripple will retry automatically.",
+      retryable: true,
     });
   active[route]++;
+  const controller = new AbortController();
+  const disconnected = () => {
+    if (!res.writableEnded) controller.abort(new Error("Client disconnected."));
+  };
+  res.on("close", disconnected);
   try {
     let bytes = 0,
       parts = [];
@@ -75,7 +82,9 @@ const server = http.createServer(async (req, res) => {
       parts.push(chunk);
     }
     const input = JSON.parse(Buffer.concat(parts).toString());
-    const result = await (route === "check" ? evaluate(input) : suggest(input));
+    const result = await (route === "check"
+      ? evaluate(input, { signal: controller.signal })
+      : suggest(input, { signal: controller.signal }));
     json(200, result);
   } catch (error) {
     json(400, {
@@ -87,6 +96,7 @@ const server = http.createServer(async (req, res) => {
           : error.message,
     });
   } finally {
+    res.off("close", disconnected);
     active[route]--;
   }
 });

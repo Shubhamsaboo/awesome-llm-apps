@@ -27,7 +27,11 @@ const edited = original.replace(
   "Attendance is online.",
   "Attendance is in person only.",
 );
-async function harness({ deferSuggestions = false, baseline = original } = {}) {
+async function harness({
+  deferSuggestions = false,
+  baseline = original,
+  busyChecks = 0,
+} = {}) {
   let actions,
     listener,
     rows = [],
@@ -54,6 +58,8 @@ async function harness({ deferSuggestions = false, baseline = original } = {}) {
   const rpc = async (message) => {
     calls.push(message);
     if (message.type === "health") return { ok: true, ready: true };
+    if (message.type === "check" && busyChecks-- > 0)
+      return { ok: false, retryable: true, error: "Busy" };
     if (message.type === "check")
       return {
         ok: true,
@@ -337,4 +343,43 @@ test("paragraph-start smart deletion advances the actual baseline without cleari
   await h.runTimers();
   assert.equal(h.rows()[0], other);
   assert.equal(h.calls.length, count);
+});
+
+test("replacement Undo and Redo preserve the original governing source", async () => {
+  const h = await harness();
+  const row = h.rows().find((r) => r.text.includes("anywhere"));
+  const pending = h.actions.apply(row, "Attend in person.");
+  const applied = h.confirm(h.request());
+  await pending;
+  for (const text of [edited, applied, edited]) {
+    const start = h.calls.length;
+    h.snapshot(text);
+    await h.runTimers();
+    const checks = h.calls.slice(start).filter((c) => c.type === "check");
+    assert.equal(checks.length, 1);
+    assert.deepEqual(JSON.parse(JSON.stringify(checks[0].input.source)), {
+      before: "Attendance is online.",
+      after: "Attendance is in person only.",
+    });
+  }
+});
+test("invalid replacement text is rejected before sending an editor operation", async () => {
+  const h = await harness();
+  for (const text of ["First line.\nSecond line.", "x".repeat(2501)]) {
+    const result = await h.actions.apply(h.rows()[1], text);
+    assert.equal(result.ok, false);
+    assert.match(result.error, /single line.*2,500/);
+    assert.equal(h.request(), undefined);
+  }
+});
+test("busy backend automatically rechecks unchanged text and respects Pause", async () => {
+  const h = await harness({ busyChecks: 1 });
+  assert.equal(h.rows().length, 0);
+  await h.runTimers();
+  assert.equal(h.rows().length, 2);
+  assert.equal(h.calls.filter((c) => c.type === "check").length, 2);
+  const paused = await harness({ busyChecks: 1 });
+  await paused.actions.toggle(false);
+  await paused.runTimers();
+  assert.equal(paused.calls.filter((c) => c.type === "check").length, 1);
 });

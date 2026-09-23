@@ -106,7 +106,7 @@ export function parseSuggestions(data, input) {
     reason,
   }));
 }
-export async function suggest(input) {
+export async function suggest(input, { signal } = {}) {
   const body = validateSuggestionInput(input),
     key = getGeminiKey();
   if (!key)
@@ -119,7 +119,10 @@ export async function suggest(input) {
     {
       method: "POST",
       headers: { "x-goog-api-key": key, "Content-Type": "application/json" },
-      signal: AbortSignal.timeout(18000),
+      signal: AbortSignal.any([
+        AbortSignal.timeout(18000),
+        ...(signal ? [signal] : []),
+      ]),
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: instruction }] },
         contents: [{ role: "user", parts: [{ text: JSON.stringify(body) }] }],

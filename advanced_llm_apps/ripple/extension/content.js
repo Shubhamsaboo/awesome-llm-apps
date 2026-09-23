@@ -23,6 +23,7 @@
     snapshotValid = false;
   const pendingApplies = new Map();
   let activeApply = null;
+  let corrections = [];
   const docId = location.pathname.match(/\/document\/d\/([^/]+)/)?.[1];
   const storageKey = "enabled:" + docId;
   const send = (message) =>
@@ -78,6 +79,7 @@
     current = "";
     processed = "";
     sources = [];
+    corrections = [];
     findings = [];
     visible = [];
     kept.clear();
@@ -149,7 +151,17 @@
     const rev = revision,
       snapshot = current;
     try {
-      sources = reconcile(processed, snapshot, sources, findings);
+      const undo = corrections.findLast(
+        (c) => c.after === processed && c.before === snapshot,
+      );
+      const redo = corrections.findLast(
+        (c) => c.before === processed && c.after === snapshot,
+      );
+      sources = undo
+        ? [...undo.sourcesBefore]
+        : redo
+          ? [...redo.sourcesAfter]
+          : reconcile(processed, snapshot, sources, findings);
       processed = snapshot;
       if (!sources.length) {
         findings = [];
@@ -198,7 +210,11 @@
           },
         });
         if (rev !== revision || !enabled || !snapshotValid) return;
-        if (!answer.ok) throw new Error(answer.error);
+        if (!answer.ok) {
+          const failure = new Error(answer.error);
+          failure.retryable = answer.retryable === true;
+          throw failure;
+        }
         for (const result of answer.results || []) {
           if (result.status !== "likely_conflict") continue;
           const s = candidates.find((s) => s.id === result.id);
@@ -222,7 +238,10 @@
         error = e.message;
         ui.results([]);
         ui.draw(new Map());
-        state("Could not check", { detail: error });
+        state(e.retryable ? "Waiting for another check…" : "Could not check", {
+          detail: error,
+        });
+        if (e.retryable) schedule(3000, true);
       }
     } finally {
       running = false;
@@ -306,6 +325,12 @@
       (action === "delete" ? replacement !== "" : !replacement.trim())
     )
       return { ok: false, error: "Invalid correction action." };
+    if (replacement.length > 2500 || /[\r\n\u0000-\u001f]/.test(replacement))
+      return {
+        ok: false,
+        error:
+          "Use a single line of at most 2,500 characters for a correction.",
+      };
     const requestId = crypto.randomUUID();
     const span = uniqueSpan(current, row.text);
     const transaction = {
@@ -353,7 +378,15 @@
               uniqueSpan(result.text, f.source.after)
             );
           });
+          const sourcesBefore = [...sources];
           sources = sources.filter((s) => uniqueSpan(result.text, s.after));
+          corrections.push({
+            before: transaction.baseText,
+            after: result.text,
+            sourcesBefore,
+            sourcesAfter: [...sources],
+          });
+          corrections = corrections.slice(-20);
           current = processed = result.text;
           error = "";
           publish();
@@ -462,6 +495,7 @@
       current = "";
       processed = "";
       sources = [];
+      corrections = [];
       findings = [];
       visible = [];
       error = "";

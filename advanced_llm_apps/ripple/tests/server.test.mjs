@@ -77,3 +77,123 @@ test("direct TypeSafe transport uses Jev model, Bearer auth, and typed answers",
     else process.env.TYPESAFE_API_KEY = originalKey;
   }
 });
+
+test("failed Jev batches abort siblings and start no remaining work", async () => {
+  const { evaluate } = await import("../jev.mjs");
+  const originalFetch = globalThis.fetch,
+    key = process.env.TYPESAFE_API_KEY;
+  process.env.TYPESAFE_API_KEY = "synthetic";
+  let calls = 0,
+    aborted = false;
+  globalThis.fetch = async (_url, { signal }) => {
+    calls++;
+    if (calls === 1) return new Response("{}", { status: 403 });
+    return new Promise((_resolve, reject) =>
+      signal.addEventListener(
+        "abort",
+        () => {
+          aborted = true;
+          reject(signal.reason);
+        },
+        { once: true },
+      ),
+    );
+  };
+  try {
+    await assert.rejects(
+      evaluate({
+        source: { before: "Online.", after: "In person." },
+        sentences: Array.from({ length: 36 }, (_, i) => ({
+          id: `b0s${i}`,
+          text: `Sentence ${i}.`,
+          section: "",
+        })),
+      }),
+      /cannot access/,
+    );
+    assert.equal(calls, 2);
+    assert.equal(aborted, true);
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (key === undefined) delete process.env.TYPESAFE_API_KEY;
+    else process.env.TYPESAFE_API_KEY = key;
+  }
+});
+test("a shared deadline and caller cancellation stop all 120-sentence work", async () => {
+  const { evaluate } = await import("../jev.mjs");
+  const originalFetch = globalThis.fetch,
+    key = process.env.TYPESAFE_API_KEY;
+  process.env.TYPESAFE_API_KEY = "synthetic";
+  const input = {
+    source: { before: "Online.", after: "In person." },
+    sentences: Array.from({ length: 120 }, (_, i) => ({
+      id: `b0s${i}`,
+      text: `Sentence ${i}.`,
+      section: "",
+    })),
+  };
+  const keepAlive = setInterval(() => {}, 1000);
+  try {
+    for (const mode of ["deadline", "disconnect"]) {
+      let calls = 0,
+        aborted = 0;
+      const controller = new AbortController();
+      globalThis.fetch = async (_url, { signal }) => {
+        calls++;
+        const result = new Promise((_resolve, reject) =>
+          signal.addEventListener(
+            "abort",
+            () => {
+              aborted++;
+              reject(signal.reason);
+            },
+            { once: true },
+          ),
+        );
+        if (mode === "disconnect" && calls === 2)
+          queueMicrotask(() => controller.abort(new Error("Disconnected")));
+        return result;
+      };
+      await assert.rejects(
+        evaluate(input, { timeoutMs: 30, signal: controller.signal }),
+        mode === "deadline" ? { name: "TimeoutError" } : /Disconnected/,
+      );
+      assert.equal(calls, 2);
+      assert.equal(aborted, 2);
+    }
+  } finally {
+    clearInterval(keepAlive);
+    globalThis.fetch = originalFetch;
+    if (key === undefined) delete process.env.TYPESAFE_API_KEY;
+    else process.env.TYPESAFE_API_KEY = key;
+  }
+});
+
+test("shared deadline also interrupts retry backoff", async () => {
+  const { evaluate } = await import("../jev.mjs");
+  const originalFetch = globalThis.fetch,
+    key = process.env.TYPESAFE_API_KEY;
+  process.env.TYPESAFE_API_KEY = "synthetic";
+  let calls = 0;
+  globalThis.fetch = async () => {
+    calls++;
+    return new Response("{}", { status: 503 });
+  };
+  try {
+    await assert.rejects(
+      evaluate(
+        {
+          source: { before: "Online.", after: "In person." },
+          sentences: [{ id: "b0s0", text: "Join remotely.", section: "" }],
+        },
+        { timeoutMs: 30 },
+      ),
+      { name: "TimeoutError" },
+    );
+    assert.equal(calls, 1);
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (key === undefined) delete process.env.TYPESAFE_API_KEY;
+    else process.env.TYPESAFE_API_KEY = key;
+  }
+});

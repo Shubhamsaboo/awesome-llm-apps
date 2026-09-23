@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import { getApiKey } from "./config.mjs";
 
 const MODEL = "jev-latest";
@@ -64,7 +65,7 @@ export function payload(input) {
   };
 }
 
-export async function evaluate(input) {
+export async function evaluate(input, { signal, timeoutMs = 75000 } = {}) {
   const body = payload(input);
   const key = getApiKey();
   if (!key)
@@ -75,43 +76,62 @@ export async function evaluate(input) {
   const batches = [];
   for (let i = 0; i < entries.length; i += 12)
     batches.push(entries.slice(i, i + 12));
-  let cursor = 0;
-  await Promise.all(
+  let cursor = 0,
+    failure;
+  const controller = new AbortController();
+  const sharedSignal = AbortSignal.any([
+    controller.signal,
+    AbortSignal.timeout(timeoutMs),
+    ...(signal ? [signal] : []),
+  ]);
+  await Promise.allSettled(
     [0, 1].map(async () => {
-      while (cursor < batches.length) {
-        const batch = batches[cursor++];
-        let response;
-        for (let attempt = 0; attempt < 3; attempt++) {
-          if (attempt)
-            await new Promise((resolve) => setTimeout(resolve, attempt * 600));
-          response = await fetch("https://api.typesafe.ai/v1/systemone", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${key}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              ...body,
-              questions: Object.fromEntries(batch),
-            }),
-            signal: AbortSignal.timeout(12000),
-          });
-          if (![502, 503, 504, 429].includes(response.status)) break;
+      try {
+        while (cursor < batches.length) {
+          sharedSignal.throwIfAborted();
+          const batch = batches[cursor++];
+          let response;
+          for (let attempt = 0; attempt < 3; attempt++) {
+            if (attempt)
+              await sleep(attempt * 600, undefined, { signal: sharedSignal });
+            response = await fetch("https://api.typesafe.ai/v1/systemone", {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${key}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                ...body,
+                questions: Object.fromEntries(batch),
+              }),
+              signal: AbortSignal.any([
+                sharedSignal,
+                AbortSignal.timeout(12000),
+              ]),
+            });
+            if (![502, 503, 504, 429].includes(response.status)) break;
+          }
+          if (!response.ok)
+            throw new Error(
+              {
+                401: "The TypeSafe API key was rejected.",
+                403: "This TypeSafe account cannot access Jev.",
+                429: "Jev is rate limited. Try again in a moment.",
+              }[response.status] ||
+                `Jev could not complete this check (${response.status}).`,
+            );
+          const data = await response.json();
+          Object.assign(answers, data.answers);
         }
-        if (!response.ok)
-          throw new Error(
-            {
-              401: "The TypeSafe API key was rejected.",
-              403: "This TypeSafe account cannot access Jev.",
-              429: "Jev is rate limited. Try again in a moment.",
-            }[response.status] ||
-              `Jev could not complete this check (${response.status}).`,
-          );
-        const data = await response.json();
-        Object.assign(answers, data.answers);
+      } catch (error) {
+        failure ??= sharedSignal.aborted ? sharedSignal.reason : error;
+        controller.abort(failure);
+        throw error;
       }
     }),
   );
+  if (failure) throw failure;
+  sharedSignal.throwIfAborted();
   const results = input.sentences.map((s) => {
     const answer = answers[s.id];
     if (!statuses.includes(answer?.choice))

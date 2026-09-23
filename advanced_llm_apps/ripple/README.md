@@ -81,7 +81,7 @@ Click a numbered margin marker or **Review changes** to inspect a finding. The c
 - **Keep original** dismisses the finding without changing the document.
 - **Next suggestion** lets you move through the review without applying anything.
 
-After an applied correction, the next suggestion stays open. Once all visible findings are resolved, the card closes. Use Google Docs' normal **Undo** to reverse an edit. Manual edits and Undo trigger a fresh check; confirmed Ripple corrections preserve the current review.
+After an applied correction, the next suggestion stays open. Once all visible findings are resolved, the card closes. Use Google Docs' normal **Undo** to reverse an edit. Manual edits and Undo trigger a fresh check; confirmed Ripple corrections preserve the current review. Ripple remembers the last 20 confirmed corrections in tab memory so Undo and Redo can recheck against your original fact changes. Pause, refresh, or switching document tabs clears that history.
 
 Open the settings button beside the status chip to pause Ripple or restore kept findings. Pause and resume when you want to capture a fresh starting point.
 
@@ -149,6 +149,7 @@ ripple/
 - Both API keys stay in the local backend. The backend does not intentionally save or log document text. Model-provider policies still apply.
 - Starting text, findings, and drafts are held in tab memory and reset on refresh. Only the per-document enabled preference is stored locally.
 - Up to **120 sentences / 30,000 characters** in the active tab, with a maximum of **2,500 characters per sentence**. Request metadata can reduce the usable limit. Oversized checks report an error.
+- Checks have a 75-second total deadline. Failed or disconnected checks cancel remaining Jev requests. When another Doc is checking, Ripple retries automatically until the service is available or you pause it.
 - Up to **four source edits** can be tracked in one session. Pure insertions or deletions without both previous and replacement wording are not checked. Pause and resume after a large rewrite to capture a fresh starting point.
 - Images, drawings, footnotes, comments, and other document tabs are not checked. Collaborative edits may be detected without reliable attribution to an author.
 - Ripple uses extension-facing Google Docs interfaces that Google can change. Plain-text fixes can affect inline formatting; complex formatting, tables, and Suggesting mode need broader validation. Sentence removal preserves paragraph breaks and can leave an empty paragraph.

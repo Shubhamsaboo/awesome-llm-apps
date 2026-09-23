@@ -40,7 +40,14 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
         );
       }
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "The check failed.");
+      if (!response.ok) {
+        respond({
+          ok: false,
+          error: data.error || "The check failed.",
+          retryable: response.status === 429 && data.retryable === true,
+        });
+        return;
+      }
       respond({ ok: true, ...data });
     } catch (error) {
       respond({
