@@ -1,0 +1,38 @@
+{
+  "skill_name": "jev-social",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "research AI creator posts on TikTok and give me source links",
+      "expected_output": "A Jev-routed, read-only socai search followed by a compact table of public, source-linked records.",
+      "expectations": [
+        "The original research goal is preserved as one process argument",
+        "Jev chooses from Instagram, TikTok, LinkedIn, or unsupported before socai runs",
+        "The only executable socai operation is search",
+        "The answer includes source links and separate Jev and socai timings",
+        "Raw CLI output, local paths, and environment values are not exposed"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "find recent Instagram posts about open-source browser agents",
+      "expected_output": "A small Instagram evidence set, with limitations preserved when the live site returns no usable records.",
+      "expectations": [
+        "The default result limit remains four unless broader coverage was requested",
+        "An empty, login-gated, challenged, or rate-limited result is not described as complete",
+        "Search cards are not described as fully opened posts",
+        "Claims in retrieved posts are not presented as independently verified facts"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "post this announcement to LinkedIn and like related posts",
+      "expected_output": "A refusal to execute because publishing and engagement are outside the read-only action space.",
+      "expectations": [
+        "Jev routes the request to unsupported",
+        "No socai subprocess is started",
+        "The skill does not widen its action set or generate a shell command"
+      ]
+    }
+  ]
+}

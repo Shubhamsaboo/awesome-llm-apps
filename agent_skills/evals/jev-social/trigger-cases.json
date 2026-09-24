@@ -1,0 +1,42 @@
+{
+  "skill": "jev-social",
+  "purpose": "Trigger behavior spec. CI checks lexical routing; behavioral expectations live in evals.json.",
+  "cases": [
+    {
+      "id": "tiktok-research",
+      "prompt": "research AI creator posts on TikTok",
+      "should_trigger": true,
+      "assert": "Routes the social-media research request through Jev and runs a read-only TikTok search."
+    },
+    {
+      "id": "instagram-posts",
+      "prompt": "find Instagram posts about browser agents",
+      "should_trigger": true,
+      "assert": "Uses Jev Social to gather source-linked Instagram evidence."
+    },
+    {
+      "id": "linkedin-trend",
+      "prompt": "gather LinkedIn evidence about this professional trend",
+      "should_trigger": true,
+      "assert": "Runs the bounded LinkedIn research path."
+    },
+    {
+      "id": "near-miss-web",
+      "prompt": "search the web for browser automation frameworks",
+      "should_trigger": false,
+      "assert": "Does not trigger for general web research."
+    },
+    {
+      "id": "near-miss-post",
+      "prompt": "publish this post to my social accounts",
+      "should_trigger": false,
+      "assert": "Does not trigger for social publishing."
+    },
+    {
+      "id": "near-miss-engage",
+      "prompt": "like and follow everyone in this thread",
+      "should_trigger": false,
+      "assert": "Does not trigger for engagement or account mutation."
+    }
+  ]
+}

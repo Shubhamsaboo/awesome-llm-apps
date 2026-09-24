@@ -50,6 +50,19 @@
       "evals_dir": "agent_skills/evals/first-reader"
     },
     {
+      "name": "jev-social",
+      "path": "agent_skills/jev-social",
+      "description": "Routes a read-only Instagram, TikTok, or LinkedIn research request through Jev, then runs the matching local socai CLI search and returns compact, source-linked evidence. Use when the user asks to research social media, find posts or creators, inspect a social trend, or gather Instagram, TikTok, or LinkedIn evidence. Not for posting, liking, following, messaging, or general web search.",
+      "license": "Apache-2.0",
+      "metadata": {
+        "author": "socai-io",
+        "version": "1.0.0",
+        "source": "https://github.com/socai-io/jev-social"
+      },
+      "install": "npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/jev-social",
+      "evals_dir": "agent_skills/evals/jev-social"
+    },
+    {
       "name": "project-graveyard",
       "path": "agent_skills/project-graveyard",
       "description": "Scans the developer's machine for dead side projects, autopsies each one from its git history (died at the payments wall, killed by a newer project, finished but never shipped), surfaces their personal death patterns, and picks the corpse most worth resurrecting — then helps ship it. Use when the user mentions abandoned, unfinished, or old side projects, asks \"what should I finish\", wants to revive or resurrect a project, says \"run the graveyard\", wonders why they never finish anything, or is about to start a new project that sounds like one they already built. Runs entirely locally.",

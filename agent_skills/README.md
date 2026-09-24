@@ -22,6 +22,7 @@ Most "skills" on registries are text-only prompt dumps: advice the model already
 | [🏺 commit-archaeologist](commit-archaeologist/) | Reconstructs why a file or code region exists from local git history, including its introducing commit, later edits, repeated companion files, current authorship, and intent clues |
 | [🩺 dependency-doctor](dependency-doctor/) | Autopsies a dependency manifest for standard-library shadowing pins, obsolete backports, unpinned entries, duplicate or conflicting constraints, and opt-in yanked PyPI releases |
 | [👁️ first-reader](first-reader/) | Simulates real readers going through your draft and reports where they lose interest, where they stop reading, and what they remember afterward, without rewriting a word |
+| [🔎 jev-social](jev-social/) | Uses Jev to choose a typed Instagram, TikTok, or LinkedIn route, then runs one read-only local socai search and returns source-linked evidence |
 | [🪦 project-graveyard](project-graveyard/) | Scans your machine for dead side projects, autopsies why each one died from its git history (deploy fear, payments wall, killed by a newer project), shows your personal death patterns, and resurrects the one with a pulse, then tracks relapses on every resurrection it prescribes |
 | [🔭 scope-creep-detector](scope-creep-detector/) | Checks a diff against its stated intent, flags unrelated files and scope signals, and recommends what to keep, split, or justify |
 | [♾️ self-improving-agent-skills](self-improving-agent-skills/) | Automatically optimizes agent skills using Gemini and ADK |
