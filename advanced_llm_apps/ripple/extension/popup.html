@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ripple</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      width: 344px;
+      padding: 24px;
+      margin: 0;
+      font:
+        14px/1.55 -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      color: #233c3e;
+      background: #fff;
+      color-scheme: light;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      margin-bottom: 24px;
+    }
+    .brand img {
+      width: 42px;
+      height: 42px;
+    }
+    .brand h1 {
+      font-size: 23px;
+      letter-spacing: -0.8px;
+      margin: 0;
+      line-height: 1.2;
+      font-weight: 650;
+    }
+    .brand span {
+      display: block;
+      font-size: 11px;
+      color: #5d6e70;
+      margin-top: 2px;
+    }
+    h2 {
+      font-size: 21px;
+      line-height: 1.3;
+      letter-spacing: -0.5px;
+      margin: 0 0 10px;
+      font-weight: 650;
+    }
+    p {
+      color: #5d6e70;
+      margin: 0 0 20px;
+      font-size: 13px;
+    }
+    .preview {
+      border: 1px solid #e3e9e7;
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 0 0 16px;
+    }
+    .preview div {
+      padding: 12px 14px;
+      font-size: 13px;
+    }
+    .preview small {
+      display: block;
+      font-size: 10px;
+      font-weight: 650;
+      letter-spacing: 0.03em;
+      margin-bottom: 4px;
+    }
+    .old {
+      background: #fff5f1;
+      color: #9b473a;
+    }
+    .old s {
+      text-decoration-color: #d28f7e;
+    }
+    .new {
+      background: #edf7f2;
+      color: #176c62;
+      border-top: 1px solid #d9e9df;
+    }
+    button {
+      font: inherit;
+      font-weight: 600;
+      background: #176c62;
+      color: #fff;
+      border: 0;
+      border-radius: 10px;
+      min-height: 44px;
+      padding: 10px 14px;
+      width: 100%;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #10594f;
+    }
+    button:active {
+      transform: translateY(1px);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+    button:focus-visible {
+      outline: 3px solid #21887b;
+      outline-offset: 3px;
+    }
+    #status {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin: 16px 0;
+      font-size: 12px;
+      color: #5d6e70;
+    }
+    #status::before {
+      content: "";
+      height: 7px;
+      width: 7px;
+      min-width: 7px;
+      background: #c18726;
+      border-radius: 50%;
+      margin-top: 5px;
+    }
+    #status[data-state="ready"]::before {
+      background: #176c62;
+    }
+    #status[data-state="error"]::before {
+      background: #ac493b;
+    }
+    details {
+      font-size: 11px;
+      color: #5d6e70;
+      margin-top: 18px;
+      border-top: 1px solid #e3e9e7;
+      padding-top: 12px;
+    }
+    summary {
+      cursor: pointer;
+      min-height: 28px;
+      padding: 4px 0;
+    }
+    summary:focus-visible {
+      outline: 2px solid #21887b;
+      outline-offset: 2px;
+    }
+    details p {
+      font-size: 11px;
+      line-height: 1.7;
+      margin: 6px 0 0;
+    }
+    footer {
+      margin-top: 16px;
+      color: #607b76;
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+    }
+    footer span {
+      color: #7c8d8c;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      button {
+        transition:
+          background 0.15s,
+          transform 0.15s;
+      }
+    }
+  </style>
+  <header class="brand">
+    <img src="icons/icon-128.png" alt="" />
+    <div>
+      <h1>ripple</h1>
+      <span>For Google Docs</span>
+    </div>
+  </header>
+  <h2>One edit.<br />Everything connected.</h2>
+  <p>
+    Edit normally. Find what else needs updating, then review a suggested fix.
+  </p>
+  <div class="preview" aria-label="Example of a suggested correction">
+    <div class="old">
+      <small>− Current wording · example</small
+      ><s>Join from anywhere in the world.</s>
+    </div>
+    <div class="new">
+      <small>+ After switching to in person</small>Join us in person at the
+      workshop.
+    </div>
+  </div>
+  <div id="status" role="status">Connecting to your local service…</div>
+  <button id="enable" disabled>Enable in this Doc</button>
+  <details>
+    <summary>What gets shared?</summary>
+    <p>
+      Jev checks document text. Gemini drafts corrections using flagged passages
+      and nearby context. Both keys stay on your local server. Nothing is
+      applied without your click.
+    </p>
+  </details>
+  <footer>Jev + Gemini<span>0.0.1</span></footer>
+  <script src="popup.js"></script>
+</html>
