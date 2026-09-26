@@ -249,7 +249,7 @@ def _next_claimant_message(
         )
 
     if route == "policy_review":
-        return "The policy details need human review. Please confirm the policy number, policyholder, and loss date. This demo prepares a packet; it does not contact an adjuster."
+        return "The policy details need human review. Please confirm the policy number, policyholder, and loss date. Your packet has not been submitted to an adjuster yet."
 
     for field_name in missing:
         if field_name in BLOCKING_FIELD_QUESTIONS:

@@ -366,6 +366,7 @@ async function api(path, options = {}) {
 }
 
 function stopPlayback() {
+  window.claimAvatar?.interrupt();
   for (const source of playbackSources) { try { source.stop(); } catch (_) {} }
   playbackSources.clear();
   nextPlaybackTime = audioContext?.currentTime || 0;
@@ -385,6 +386,7 @@ function disconnectLive() {
   stopLiveVoice(false);
   stopCamera();
   stopPlayback();
+  window.claimAvatar?.reset();
   if (socket) socket.close();
   if (state) clearBusy();
 }
@@ -414,6 +416,7 @@ async function createSession(resume = false) {
     sessionStorage.setItem("intakeSession", sessionId);
     setState(payload.state);
     const health = await api("/api/health");
+    window.claimAvatar?.configure(health.avatar);
     modelLabel.textContent = `${health.live_model} · sketches by ${health.sketch_model}`;
     setStatus(payload.has_api_key ? "Ready" : "API key required", payload.has_api_key ? "" : "danger");
     textInput.focus();
@@ -430,7 +433,9 @@ function connectLive() {
   if (connectionPromise) return connectionPromise;
   if (!sessionId || resetting) return Promise.reject(new Error("Wait for the intake to be ready."));
   const epoch = generation;
-  const socket = new WebSocket(`${WS_ORIGIN}/ws/live?session_id=${encodeURIComponent(sessionId)}`);
+  const avatarMode = window.claimAvatar?.supported === false ? "&avatar=off" : "";
+  window.claimAvatar?.connecting();
+  const socket = new WebSocket(`${WS_ORIGIN}/ws/live?session_id=${encodeURIComponent(sessionId)}${avatarMode}`);
   liveSocket = socket;
   connectionPromise = new Promise((resolve, reject) => {
     let ready = false;
@@ -446,6 +451,7 @@ function connectLive() {
         setStatus("Live", "");
         resolve();
       } else if (message.type === "session") {
+        window.claimAvatar?.configure(message.avatar);
         modelLabel.textContent = `${message.model} · sketches by ${message.sketch_model}`;
       } else if (message.type === "processing") {
         processing = message.active;
@@ -456,6 +462,10 @@ function connectLive() {
         applyToolEvent(message);
       } else if (message.type === "audio") {
         playPcm24(message.data);
+      } else if (message.type === "avatar_video") {
+        window.claimAvatar?.append(message.data);
+      } else if (message.type === "turn_complete") {
+        window.claimAvatar?.finishTurn();
       } else if (message.type === "state") {
         applyServerState(message.state);
       } else if (message.type === "interrupted") {
@@ -476,6 +486,7 @@ function connectLive() {
       stopLiveVoice(false);
       stopCamera();
       stopPlayback();
+      window.claimAvatar?.reset();
       clearBusy();
       setStatus("Disconnected — reconnect to continue", "warning");
     };
@@ -493,6 +504,7 @@ async function unlockAudio() {
 async function sendClaimantTurn(text) {
   const epoch = generation;
   try {
+    stopPlayback();
     await unlockAudio();
     await connectLive();
     if (epoch !== generation) return;
@@ -519,7 +531,9 @@ async function startLiveVoice() {
     micPending = true;
     await unlockAudio();
     await connectLive();
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+    });
     if (epoch !== generation || !liveSocket || liveSocket.readyState !== WebSocket.OPEN) { stream.getTracks().forEach(track => track.stop()); return; }
     audioStream = stream;
     audioContext = audioContext || new AudioContext();
@@ -672,5 +686,11 @@ textForm.addEventListener("submit", (event) => {
 });
 document.querySelector("#openPacket").addEventListener("click", () => packetDialog.showModal());
 document.querySelector("#closePacket").addEventListener("click", () => packetDialog.close());
+if (window.claimAvatar) {
+  window.claimAvatar.onFallback = () => {
+    disconnectLive();
+    setStatus("Voice mode — tap Talk to reconnect", "neutral");
+  };
+}
 
 createSession(true);

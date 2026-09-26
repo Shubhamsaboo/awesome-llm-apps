@@ -886,3 +886,185 @@ h1 {
     padding-left: 78px;
   }
 }
+
+/* Live avatar uses the existing desk palette. */
+.avatar-stage {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  border: 1px solid var(--card-line);
+  border-radius: 12px;
+  background: var(--desk-edge);
+}
+.avatar-poster,
+#avatarVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 35%;
+}
+.avatar-disclosure {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 5px 9px;
+  border: 1px solid var(--card-line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--chrome-body);
+  font-size: 11px;
+  font-weight: 500;
+}
+.avatar-identity {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--card-line);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--chrome-ink);
+}
+#avatarName { font-size: 13px; font-weight: 600; }
+#avatarStatus { font-size: 11px; color: var(--chrome-body); }
+.avatar-stage[data-state="error"] #avatarStatus { color: var(--danger); }
+.avatar-resume {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: calc(100% - 24px);
+  padding: 9px 16px;
+  border: 1px solid var(--card-line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--chrome-ink);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.avatar-resume:hover { background: var(--desk); }
+.avatar-resume:focus-visible { outline: 2px solid var(--paper); outline-offset: 3px; }
+.avatar-stage [hidden] { display: none; }
+
+/* Keep the call, field notes, and conversation visible together. */
+.transcript-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.transcript-card .transcript { flex: 1; min-height: 0; }
+.transcript-card .text-entry { flex-shrink: 0; }
+.turn p { min-width: 0; overflow-wrap: anywhere; }
+.notebook-wrap:focus-visible,
+.transcript:focus-visible,
+.needed-list:focus-visible,
+.team-feed:focus-visible {
+  outline: 2px solid var(--chrome-muted);
+  outline-offset: -2px;
+}
+
+@media (min-width: 900px) {
+  .desk { height: 100dvh; min-height: 0; }
+  .desk-bar { flex-shrink: 0; padding: 16px 20px 8px; }
+  .desk-layout {
+    min-height: 0;
+    grid-template-columns: clamp(220px, 23vw, 310px) minmax(0, 1fr) clamp(270px, 27vw, 360px);
+    grid-template-rows: minmax(0, 1fr);
+    gap: 16px;
+    padding: 10px 20px 20px;
+  }
+  .side { min-height: 0; gap: 14px; }
+  .card { padding: 14px; }
+  .media-column {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) minmax(100px, 0.24fr);
+  }
+  .media-column:has(.avatar-stage[hidden]) {
+    grid-template-rows: auto minmax(100px, 1fr);
+  }
+  .call-card {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: auto;
+  }
+  .call-card .card-head { margin-bottom: 0; flex-shrink: 0; }
+  .call-card .avatar-stage {
+    flex: 1 0 120px;
+    height: auto;
+    margin-bottom: 0;
+  }
+  .call-card .camera-stage {
+    flex: 0 0 clamp(100px, 21dvh, 180px);
+    aspect-ratio: auto;
+    margin-bottom: 0;
+  }
+  .call-card .controls { margin-bottom: 0; flex-shrink: 0; gap: 6px; }
+  .call-card .round-button { padding: 10px 4px; }
+  .call-card .round-label { font-size: 11px; }
+  .avatar-identity { right: 6px; bottom: 6px; left: 6px; padding: 8px; }
+  .team-card,
+  .needed-card { min-height: 0; display: flex; flex-direction: column; }
+  .team-card .card-head { align-items: flex-start; gap: 8px; }
+  .team-card .card-hint { max-width: 150px; }
+  .team-feed,
+  .needed-list { min-height: 0; overflow: auto; }
+  .conversation-column {
+    display: grid;
+    grid-template-rows: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  }
+  .transcript-card .transcript { max-height: none; }
+  .notebook-wrap { min-height: 0; overflow: auto; display: block; border-radius: 6px 12px 12px 6px; }
+  .notebook { width: 100%; min-height: 100%; padding: 24px 24px 90px 76px; }
+  .page-head { flex-wrap: wrap; gap: 4px 12px; }
+}
+
+@media (min-width: 900px) and (max-height: 750px) {
+  .call-card { gap: 8px; padding: 12px; }
+  .call-card .avatar-stage { flex-basis: 180px; }
+  .call-card .camera-stage { flex-basis: 100px; }
+  .call-card .round-button { padding: 6px 2px; gap: 4px; }
+  .avatar-identity { padding: 6px; gap: 2px; }
+  #avatarName { font-size: 11px; }
+  #avatarStatus { font-size: 10px; }
+}
+
+@media (min-width: 900px) and (max-width: 1200px) {
+  .desk-layout { gap: 12px; padding-inline: 16px; }
+  .notebook {
+    padding-left: 52px;
+    padding-right: 16px;
+    background-image:
+      linear-gradient(90deg, transparent 36px, var(--paper-margin) 36px, var(--paper-margin) 38px, transparent 38px),
+      repeating-linear-gradient(transparent 0 33px, var(--paper-line) 33px 34px);
+  }
+  .holes { left: 10px; }
+  .holes span { width: 14px; height: 14px; }
+  .team-card .card-hint { display: none; }
+}
+
+@media (max-width: 899px) {
+  .desk-bar { padding: 16px; gap: 12px; }
+  .brand { gap: 10px; min-width: 0; }
+  .brand-mark { flex-shrink: 0; }
+  h1 { font-size: 16px; }
+  .desk-bar .ghost-button { flex-shrink: 0; padding: 9px 12px; }
+  .desk-layout { grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 0 16px 20px; }
+  .media-column { grid-row: 1; }
+  .conversation-column { grid-row: 2; }
+  .notebook-wrap { grid-row: 3; }
+  .avatar-stage { height: 320px; }
+  .camera-stage { max-height: 220px; }
+  .team-feed { max-height: 160px; overflow: auto; }
+  .notebook { min-height: 600px; padding-right: 20px; }
+}

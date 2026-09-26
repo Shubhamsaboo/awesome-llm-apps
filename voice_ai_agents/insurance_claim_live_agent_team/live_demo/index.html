@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&family=Patrick+Hand&family=Inter:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=notebook-1" />
+    <link rel="stylesheet" href="./styles.css?v=three-column-3" />
   </head>
   <body>
     <div class="desk">
@@ -26,11 +26,27 @@
       </header>
 
       <main class="desk-layout">
-        <aside class="side">
+        <aside class="side media-column" aria-label="Live call and camera">
           <section class="card call-card">
             <div class="card-head">
               <span class="card-kicker">Live call</span>
               <span id="callStatus" class="pill">Connecting</span>
+            </div>
+
+            <div id="avatarStage" class="avatar-stage" data-state="idle" hidden>
+              <img id="avatarPoster" class="avatar-poster" alt="" hidden />
+              <video id="avatarVideo" playsinline aria-label="Live AI claim assistant" hidden></video>
+              <span class="avatar-disclosure">AI avatar</span>
+              <div class="avatar-identity">
+                <span id="avatarName">Claim assistant</span>
+                <span id="avatarStatus" role="status">Start a conversation when you’re ready</span>
+              </div>
+              <button id="resumeAvatar" class="avatar-resume" type="button" hidden>Play voice and video</button>
+            </div>
+
+            <div id="cameraStage" class="camera-stage" hidden>
+              <video id="cameraPreview" autoplay muted playsinline></video>
+              <span class="camera-tag"><span class="rec-dot" aria-hidden="true"></span> Agent is watching</span>
             </div>
 
             <div class="controls">
@@ -47,13 +63,35 @@
                 <span class="round-label">New intake</span>
               </button>
             </div>
-
-            <div id="cameraStage" class="camera-stage" hidden>
-              <video id="cameraPreview" autoplay muted playsinline></video>
-              <span class="camera-tag"><span class="rec-dot" aria-hidden="true"></span> Agent is watching</span>
+          </section>
+          <section class="card team-card">
+            <div class="card-head">
+              <span class="card-kicker">Claim team</span>
+              <span class="card-hint">Working in the background while the call continues</span>
             </div>
+            <ul id="teamFeed" class="team-feed" tabindex="0" aria-label="Claim team activity"></ul>
+          </section>
+        </aside>
 
-            <div id="transcript" class="transcript" aria-live="polite"></div>
+        <section class="notebook-wrap" aria-label="Field notebook" tabindex="0">
+          <div class="notebook">
+            <div class="holes" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="page-head">
+              <span id="pageDate">Claim intake notes</span>
+              <span id="pageAgent">Gemini 3.8 Live, field notes</span>
+            </div>
+            <div id="notes" class="notes"></div>
+            <div id="pinboard" class="pinboard"></div>
+            <div id="stamp" class="stamp" hidden></div>
+            <div id="pen" class="pen" hidden><span class="pen-nib" aria-hidden="true"></span> writing</div>
+          </div>
+        </section>
+        <aside class="side conversation-column" aria-label="Transcript and claim checklist">
+          <section class="card transcript-card">
+            <div class="card-head">
+              <span class="card-kicker">Transcript</span>
+            </div>
+            <div id="transcript" class="transcript" aria-live="polite" tabindex="0" role="region" aria-label="Conversation transcript"></div>
 
             <form id="textForm" class="text-entry">
               <input
@@ -72,31 +110,10 @@
               <span class="card-kicker">Still needed</span>
               <span id="readiness" class="pill neutral">0% collected</span>
             </div>
-            <ul id="neededList" class="needed-list"></ul>
+            <ul id="neededList" class="needed-list" tabindex="0" aria-label="Information still needed"></ul>
           </section>
 
-          <section class="card team-card">
-            <div class="card-head">
-              <span class="card-kicker">Claim team</span>
-              <span class="card-hint">Working in the background while the call continues</span>
-            </div>
-            <ul id="teamFeed" class="team-feed"></ul>
-          </section>
         </aside>
-
-        <section class="notebook-wrap" aria-label="Field notebook">
-          <div class="notebook">
-            <div class="holes" aria-hidden="true"><span></span><span></span><span></span></div>
-            <div class="page-head">
-              <span id="pageDate">Claim intake notes</span>
-              <span id="pageAgent">Gemini 3.8 Live, field notes</span>
-            </div>
-            <div id="notes" class="notes"></div>
-            <div id="pinboard" class="pinboard"></div>
-            <div id="stamp" class="stamp" hidden></div>
-            <div id="pen" class="pen" hidden><span class="pen-nib" aria-hidden="true"></span> writing</div>
-          </div>
-        </section>
       </main>
     </div>
 
@@ -109,6 +126,7 @@
     </dialog>
 
     <canvas id="frameCanvas" hidden></canvas>
-    <script src="./app.js?v=notebook-1"></script>
+    <script src="./avatar.js?v=3"></script>
+    <script src="./app.js?v=voice-turns-2"></script>
   </body>
 </html>
