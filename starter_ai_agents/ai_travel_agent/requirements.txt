@@ -1,5 +1,8 @@
 streamlit 
 agno>=2.2.10
+pydantic
+python-dotenv
+tiktoken
 google-genai
 openai
 ollama

@@ -16,10 +16,17 @@ This Streamlit app is an AI-powered travel Agent that generates personalized tra
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
 cd awesome-llm-apps/starter_ai_agents/ai_travel_agent
 ```
-2. Install the required dependencies:
+2. Activate your existing virtual environment in Windows PowerShell. Replace the path below if your environment is located elsewhere:
 
-```bash
-pip install -r requirements.txt
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+& "D:\venvs\llmpoc\Scripts\Activate.ps1"
+```
+
+The execution policy change applies only to the current PowerShell session. After activation, install the required dependencies:
+
+```powershell
+python -m pip install -r requirements.txt
 ```
 3. Get your OpenAI API Key
 
@@ -51,7 +58,29 @@ For the Gemini Agent Platform version:
 streamlit run agent_platform_travel_agent.py
 ```
 
+For the OpenAI Platform API version, add these settings to the local `.env` file in this directory (the file is ignored by Git):
+
+```dotenv
+OPENAI_API_KEY=your-openai-api-key
+OPENAI_MODEL_ID=gpt-4o
+SERPAPI_API_KEY=your-serpapi-api-key
+```
+
+Create an API key in the [OpenAI Platform](https://platform.openai.com/api-keys). The app also lets you enter the keys in the UI. Then run:
+
+```bash
+streamlit run openai_platform_travel_agent.py
+```
+
+The planner returns a structured itinerary with destination, trip length, overview, and day-by-day activities, dining, accommodation, and source URLs. The same response is shown in the app and can be downloaded as JSON or as an `.ics` calendar.
+
 For local LLM usage (with Ollama):
+Make sure Ollama is running, then download the model used by the app:
+```bash
+ollama pull llama3.2:1b
+```
+
+Run the app:
 ```bash
 streamlit run local_travel_agent.py
 ```

@@ -1,0 +1,6 @@
+{
+  "python.terminal.useEnvFile": true,
+  "python-envs.defaultEnvManager": "ms-python.python:system",
+  "python.defaultInterpreterPath": "D:\\venvs\\llmpoc\\Scripts\\python.exe",
+  "python.terminal.activateEnvironment": true
+}
