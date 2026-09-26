@@ -7,6 +7,7 @@ import { Loader2, StopCircle } from "lucide-react";
 interface RunningStepProps {
   sessionId: string;
   apiKey: string;
+  model: string; // Gemini model id; "" means the backend's default
   scenarios: any[];
   evals: any[];
   onComplete: (result: any) => void;
@@ -25,6 +26,7 @@ interface Experiment {
 export default function RunningStep({
   sessionId,
   apiKey,
+  model,
   scenarios,
   evals,
   onComplete,
@@ -33,6 +35,7 @@ export default function RunningStep({
   const [currentScore, setCurrentScore] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [currentExperiment, setCurrentExperiment] = useState<string>("");
+  const [activeModel, setActiveModel] = useState<string>(""); // as the backend reports it
   const [started, setStarted] = useState(false);
 
   useEffect(() => {
@@ -56,6 +59,7 @@ export default function RunningStep({
           body: JSON.stringify({
             gemini_api_key: apiKey,
             max_rounds: 20,
+            model: model.trim() || undefined,
           }),
         }
       );
@@ -77,6 +81,9 @@ export default function RunningStep({
             const res = await fetch(`${API_BASE}/api/status/${sessionId}`);
             if (!res.ok) continue;
             const data = await res.json();
+            if (typeof data.model === "string" && data.model) {
+              setActiveModel(data.model);
+            }
 
             // Update experiments if new ones arrived
             if (data.experiments && data.experiments.length > lastExpCount) {
@@ -168,6 +175,9 @@ export default function RunningStep({
               <span className="text-lg text-zinc-500">%</span>
             </h2>
             <p className="text-zinc-400">{currentExperiment}</p>
+            {activeModel && (
+              <p className="text-xs text-zinc-500 mt-1 font-mono">model: {activeModel}</p>
+            )}
           </div>
 
           {isRunning && (
