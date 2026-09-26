@@ -66,8 +66,7 @@ class AvatarConfigTests(unittest.TestCase):
             reference = Path(directory) / 'reference.png'
             reference.write_bytes(png)
             with patch.dict(os.environ, {'FNOL_AVATAR_IMAGE': str(reference)}):
-                path, data = server.avatar_reference()
-            self.assertEqual(path, reference.resolve())
+                data = server.avatar_reference()
             self.assertEqual(data, png)
 
 

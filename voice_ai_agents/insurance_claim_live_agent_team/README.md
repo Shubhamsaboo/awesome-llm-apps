@@ -86,7 +86,7 @@ FNOL_AVATAR_VOICE=Kore
 
 * Supply a PNG under 5 MB, at least 704 × 1280 pixels.
 * Paths can be absolute or relative to the app directory.
-* The image overrides `FNOL_AVATAR_NAME` and also serves as the waiting portrait.
+* The image overrides `FNOL_AVATAR_NAME` as the API's avatar reference.
 * Stock-avatar clothing cannot be changed through a prompt.
 
 ## Configuration

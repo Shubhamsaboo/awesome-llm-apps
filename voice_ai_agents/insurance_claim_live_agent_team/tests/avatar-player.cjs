@@ -23,7 +23,7 @@ function env(supported = true) {
   const context = vm.createContext({window:{MediaSource:Media}, document:{querySelector(id){if(!elements.has(id))elements.set(id,element());return elements.get(id);}}, URL:{createObjectURL:()=>`blob:${sources.length}`,revokeObjectURL:url=>revoked.push(url)}, atob:s=>global.Buffer.from(s,'base64').toString('binary'), console});
   vm.runInContext(source, context);
   const player = context.window.claimAvatar;
-  player.configure({enabled:true,name:'Ben',poster:'/avatar-assets/ben.jpg'});
+  player.configure({enabled:true,name:'Kira'});
   return {player,elements,sources,revoked};
 }
 function box(type, payload = []) { const b = global.Buffer.alloc(8 + payload.length); b.writeUInt32BE(b.length); b.write(type,4); global.Buffer.from(payload).copy(b,8); return b; }
@@ -72,7 +72,7 @@ test('unsupported browsers select voice mode without a decoder', () => {
 test('voice-only configuration hides the unused avatar frame', () => {
   const e=env();
   assert.equal(e.elements.get('#avatarStage').hidden,false);
-  e.player.configure({enabled:false,name:'',poster:''});
+  e.player.configure({enabled:false,name:''});
   assert.equal(e.elements.get('#avatarStage').hidden,true);
 });
 for(const [name,fn]of tests){fn();console.log('PASS '+name);}

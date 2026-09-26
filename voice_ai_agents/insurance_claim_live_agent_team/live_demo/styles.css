@@ -898,7 +898,6 @@ h1 {
   border-radius: 12px;
   background: var(--desk-edge);
 }
-.avatar-poster,
 #avatarVideo {
   position: absolute;
   inset: 0;

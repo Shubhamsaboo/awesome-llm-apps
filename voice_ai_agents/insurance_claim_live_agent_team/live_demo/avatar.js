@@ -5,7 +5,6 @@
   const status = document.querySelector('#avatarStatus');
   const resume = document.querySelector('#resumeAvatar');
   const name = document.querySelector('#avatarName');
-  const poster = document.querySelector('#avatarPoster');
   const MediaSourceClass = window.MediaSource || window.ManagedMediaSource;
   const defaultCodec = 'video/mp4; codecs="avc1.42c020, mp4a.40.2"';
   const MAX_BYTES = 16 * 1024 * 1024;
@@ -155,9 +154,6 @@
       enabled = Boolean(settings?.enabled && supported);
       stage.hidden = !enabled;
       name.textContent = enabled ? `${settings.name} · Claim assistant` : 'Claim assistant';
-      poster.hidden = !enabled || !settings?.poster;
-      if (settings?.poster) poster.src = settings.poster;
-      poster.alt = enabled ? `${settings.name}, AI claim assistant` : '';
       label(enabled ? 'Start a conversation when you’re ready' : 'Voice assistant · ready when you are');
     },
     connecting() { label(enabled ? 'Connecting your avatar…' : 'Connecting…', 'connecting'); },

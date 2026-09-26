@@ -30,7 +30,6 @@ from typing import Any
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 APP_DIR = Path(__file__).resolve().parents[1]
@@ -87,11 +86,6 @@ from live_tools import (  # noqa: E402
 
 GENAI_CLIENT = None
 AVATAR_CLIENT = None
-AVATAR_POSTERS = {
-    "Ben": "/avatar-assets/ben.jpg",
-    "Ingrid": "/avatar-assets/ingrid.jpg",
-    "Kira": "/avatar-assets/kira.jpg",
-}
 logger = logging.getLogger(__name__)
 FRAME_MAX_AGE_SECONDS = 12.0
 
@@ -113,11 +107,10 @@ def avatar_description(enabled: bool | None = None) -> dict[str, Any]:
     return {
         "enabled": configured if enabled is None else enabled,
         "name": "Claim advisor" if settings["image"] else settings["name"],
-        "poster": "/avatar-reference" if settings["image"] else AVATAR_POSTERS.get(settings["name"], ""),
     }
 
 
-def avatar_reference() -> tuple[Path, bytes]:
+def avatar_reference() -> bytes:
     path = (APP_DIR / avatar_settings()["image"]).resolve()
     data = path.read_bytes()
     if len(data) >= 5 * 1024 * 1024 or not data.startswith(b"\x89PNG\r\n\x1a\n"):
@@ -125,7 +118,7 @@ def avatar_reference() -> tuple[Path, bytes]:
     width, height = int.from_bytes(data[16:20], "big"), int.from_bytes(data[20:24], "big")
     if width < 704 or height < 1280:
         raise ValueError("Custom avatar must be at least 704 x 1280")
-    return path, data
+    return data
 
 
 def live_media_message(blob):
@@ -977,7 +970,7 @@ async def live_voice(websocket: WebSocket) -> None:
         settings = avatar_settings()
         avatar_enabled = avatar_description()["enabled"] and websocket.query_params.get("avatar") != "off"
         avatar_name = settings["name"] if avatar_enabled else ""
-        avatar_image = avatar_reference()[1] if avatar_enabled and settings["image"] else None
+        avatar_image = avatar_reference() if avatar_enabled and settings["image"] else None
         history = [
             types.Content(
                 role="user" if turn["speaker"] == "Claimant" else "model",
@@ -1172,17 +1165,3 @@ def styles():
 @app.get("/avatar.js")
 def avatar_javascript():
     return FileResponse(DEMO_DIR / "avatar.js", media_type="text/javascript")
-
-
-app.mount("/avatar-assets", StaticFiles(directory=DEMO_DIR / "avatar-assets"), name="avatar-assets")
-
-
-@app.get("/avatar-reference")
-def avatar_reference_image():
-    if not avatar_settings()["image"]:
-        raise HTTPException(status_code=404)
-    try:
-        path, _ = avatar_reference()
-    except (OSError, ValueError):
-        raise HTTPException(status_code=404) from None
-    return FileResponse(path, media_type="image/png")
