@@ -172,6 +172,7 @@ streamlit run travel_agent.py
 *   [🛡️ Insurance Claim Live Agent Team](voice_ai_agents/insurance_claim_live_agent_team/) - Voice claim intake on Gemini 3.8 Live that writes a field notebook, looks at damage through the webcam, and sketches the incident
 *   [🔊 Voice RAG Agent (OpenAI SDK)](voice_ai_agents/voice_rag_openaisdk/) - Ask your PDFs questions, hear the answers
 *   [🎙️ OpenSource Voice Dictation Agent (Wispr Flow clone)](https://github.com/akshayaggarwal99/jarvis-ai-assistant) <sub>↗ external</sub> - Open-source dictation that types where you talk
+*   [📞 CallRec — Offline Phone Call Archive](https://github.com/RevolutionLA/call-recording-archive) <sub>↗ external</sub> - Transcribes folders of call recordings, splits “me vs. them” by voiceprint, and summarizes with local Ollama models
 
 ### 🖼️ Generative UI and Agentic Frontends
 
