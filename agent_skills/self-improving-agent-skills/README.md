@@ -200,7 +200,7 @@ The Gemini API key is passed from the frontend with each request. Optionally set
 The Gemini model is chosen per request: the UI sends the id from its model field, and a request without one runs on the server default. That default is `gemini-3.8-flash`, or whatever `GEMINI_MODEL` is set to when the server starts:
 
 ```bash
-GEMINI_MODEL=gemini-3-pro-preview python app.py
+GEMINI_MODEL=gemini-3.1-pro-preview python app.py
 ```
 
 Any Gemini model id is accepted; a value that does not look like one is refused with a 400 rather than replaced. `GET /api/models` reports the current default, which the UI shows in the field.

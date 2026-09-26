@@ -84,11 +84,11 @@ def test_models_endpoint_reports_default_and_env_override(client, monkeypatch):
 
 def test_analyze_runs_on_the_requested_model(client):
     sid = new_session()
-    res = analyze(client, sid, model=" gemini-3-pro-preview ")
+    res = analyze(client, sid, model=" gemini-3.1-pro-preview ")
     assert res.status_code == 200, res.text
-    assert res.json()["model"] == "gemini-3-pro-preview"
-    assert FakeOptimizer.built == ["gemini-3-pro-preview"]
-    assert backend.sessions[sid]["model"] == "gemini-3-pro-preview"
+    assert res.json()["model"] == "gemini-3.1-pro-preview"
+    assert FakeOptimizer.built == ["gemini-3.1-pro-preview"]
+    assert backend.sessions[sid]["model"] == "gemini-3.1-pro-preview"
     assert backend.sessions[sid]["status"] == "analyzed"
 
 
@@ -152,15 +152,15 @@ def test_start_refuses_a_bad_model_before_marking_the_session_running(client):
 
 def test_start_runs_on_the_requested_model_and_status_reports_it(client):
     sid = configured_session(client)
-    res = client.post(f"/api/start/{sid}", json={"gemini_api_key": "k", "model": "gemini-3-pro-preview"})
+    res = client.post(f"/api/start/{sid}", json={"gemini_api_key": "k", "model": "gemini-3.1-pro-preview"})
     assert res.status_code == 200, res.text
-    assert res.json() == {"status": "started", "model": "gemini-3-pro-preview"}
-    assert client.get(f"/api/status/{sid}").json()["model"] == "gemini-3-pro-preview"
+    assert res.json() == {"status": "started", "model": "gemini-3.1-pro-preview"}
+    assert client.get(f"/api/status/{sid}").json()["model"] == "gemini-3.1-pro-preview"
     # The optimizer is built inside the background task.
     deadline = time.time() + 5
-    while FakeOptimizer.built != ["gemini-3-pro-preview"] and time.time() < deadline:
+    while FakeOptimizer.built != ["gemini-3.1-pro-preview"] and time.time() < deadline:
         time.sleep(0.05)
-    assert FakeOptimizer.built == ["gemini-3-pro-preview"]
+    assert FakeOptimizer.built == ["gemini-3.1-pro-preview"]
 
 
 def test_start_without_a_model_uses_the_env_default(client, monkeypatch):

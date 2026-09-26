@@ -36,7 +36,7 @@ sessions: Dict[str, dict] = {}
 # model. Otherwise the server default applies: GEMINI_MODEL when set, else
 # DEFAULT_MODEL. The suggestions are ids known to work with this app and are
 # offered in the UI; any Gemini model id is accepted.
-MODEL_SUGGESTIONS = ["gemini-3.8-flash", "gemini-3-flash-preview", "gemini-3-pro-preview"]
+MODEL_SUGGESTIONS = ["gemini-3.8-flash", "gemini-3-flash-preview", "gemini-3.1-pro-preview"]
 MODEL_NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._\-/]{0,127}")
 
 
