@@ -18,6 +18,12 @@ from google.adk.sessions import InMemorySessionService
 from google.genai import types
 
 
+# The Gemini model the agents run on when a request names none. Change it
+# without editing code: set GEMINI_MODEL on the server, or pick a model in
+# the UI, which sends it with each request (see app.py).
+DEFAULT_MODEL = "gemini-3.8-flash"
+
+
 # -- Pydantic schemas for structured agent output ----------------------------
 
 
@@ -40,7 +46,7 @@ class SkillMutation(BaseModel):
 
 
 class SkillOptimizer:
-    def __init__(self, api_key: str, model: str = "gemini-3-flash-preview"):
+    def __init__(self, api_key: str, model: str = DEFAULT_MODEL):
         # ADK agents authenticate via this env var
         os.environ["GOOGLE_API_KEY"] = api_key
         self.model = model

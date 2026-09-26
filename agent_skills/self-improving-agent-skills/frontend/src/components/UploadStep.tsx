@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Upload, FileText, Loader2, Sparkles, FolderOpen } from "lucide-react";
 
 interface UploadStepProps {
   onComplete: (
     sessionId: string,
     apiKey: string,
+    model: string,
     metadata: any,
     scenarios: any[],
     evals: any[]
@@ -14,6 +15,40 @@ interface UploadStepProps {
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8891";
+
+// Shown in the model field until the backend reports its default. The
+// backend decides the real default; an empty field means "use it".
+const MODEL_PLACEHOLDER = "gemini-3.8-flash";
+const MODEL_LIST_ID = "gemini-model-suggestions";
+
+function ModelField({
+  value,
+  onChange,
+  className = "block mt-4",
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  className?: string;
+}) {
+  return (
+    <label className={className}>
+      <span className="text-sm font-medium text-zinc-400 mb-2 block">Gemini Model</span>
+      <input
+        type="text"
+        list={MODEL_LIST_ID}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={MODEL_PLACEHOLDER}
+        autoComplete="off"
+        spellCheck={false}
+        className="w-full px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-lg focus:outline-none focus:border-violet-500 transition-colors font-mono text-sm"
+      />
+      <span className="text-xs text-zinc-500 mt-1 block">
+        Any Gemini model id. Leave empty for the server default (GEMINI_MODEL, else {MODEL_PLACEHOLDER}).
+      </span>
+    </label>
+  );
+}
 
 const EXAMPLE_SKILLS = [
   {
@@ -31,12 +66,37 @@ const EXAMPLE_SKILLS = [
 export default function UploadStep({ onComplete }: UploadStepProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [apiKey, setApiKey] = useState("");
+  const [model, setModel] = useState("");
+  const [modelSuggestions, setModelSuggestions] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [fileList, setFileList] = useState<string[]>([]);
   const [metadata, setMetadata] = useState<any>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
+
+  // Ask the backend which model it defaults to and which it suggests, so the
+  // field shows the real default (GEMINI_MODEL, if set). A backend that
+  // predates the endpoint leaves the field empty, which also means default.
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${API_BASE}/api/models`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (cancelled || !data) return;
+        setModelSuggestions(Array.isArray(data.suggestions) ? data.suggestions : []);
+        if (typeof data.default === "string") {
+          setModel((current) => current || data.default);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // "" is left out of the request body, so the backend applies its default.
+  const modelForRequest = () => model.trim() || undefined;
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -131,14 +191,14 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
       const response = await fetch(`${API_BASE}/api/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ session_id: sessionId, gemini_api_key: apiKey }),
+        body: JSON.stringify({ session_id: sessionId, gemini_api_key: apiKey, model: modelForRequest() }),
       });
       if (!response.ok) {
         const err = await response.json().catch(() => ({}));
         throw new Error(err.detail || "Analysis failed");
       }
       const data = await response.json();
-      onComplete(sessionId, apiKey, metadata, data.scenarios, data.evals);
+      onComplete(sessionId, apiKey, model.trim(), metadata, data.scenarios, data.evals);
     } catch (error: any) {
       alert(error.message || "Analysis failed. Check your API key.");
     } finally {
@@ -167,14 +227,14 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
       const analyzeResponse = await fetch(`${API_BASE}/api/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ session_id: loadData.session_id, gemini_api_key: apiKey }),
+        body: JSON.stringify({ session_id: loadData.session_id, gemini_api_key: apiKey, model: modelForRequest() }),
       });
       if (!analyzeResponse.ok) {
         const err = await analyzeResponse.json().catch(() => ({}));
         throw new Error(err.detail || "Analysis failed");
       }
       const analyzeData = await analyzeResponse.json();
-      onComplete(loadData.session_id, apiKey, loadData.metadata, analyzeData.scenarios, analyzeData.evals);
+      onComplete(loadData.session_id, apiKey, model.trim(), loadData.metadata, analyzeData.scenarios, analyzeData.evals);
     } catch (error: any) {
       alert(error.message || "Failed to load example skill.");
       setSessionId(null);
@@ -186,6 +246,11 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
+      <datalist id={MODEL_LIST_ID}>
+        {modelSuggestions.map((m) => (
+          <option key={m} value={m} />
+        ))}
+      </datalist>
       {!sessionId ? (
         <>
           <div
@@ -252,6 +317,7 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
                 Required for analysis. Stored locally, sent only to the backend.
               </span>
             </label>
+            <ModelField value={model} onChange={setModel} />
           </div>
 
           <div>
@@ -313,6 +379,7 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
                 className="w-full px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-lg focus:outline-none focus:border-violet-500 transition-colors"
               />
             </label>
+            <ModelField value={model} onChange={setModel} className="block mb-4" />
             <button
               onClick={handleAnalyze}
               disabled={!apiKey || isAnalyzing}

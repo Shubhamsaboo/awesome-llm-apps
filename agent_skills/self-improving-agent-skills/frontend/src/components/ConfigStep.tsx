@@ -6,6 +6,7 @@ import { CheckSquare, Square, Plus, X, RefreshCw, ArrowRight } from "lucide-reac
 interface ConfigStepProps {
   sessionId: string;
   apiKey: string;
+  model: string; // Gemini model id; "" means the backend's default
   scenarios: any[];
   evals: any[];
   onScenariosChange: (scenarios: any[]) => void;
@@ -16,6 +17,7 @@ interface ConfigStepProps {
 export default function ConfigStep({
   sessionId,
   apiKey,
+  model,
   scenarios: initialScenarios,
   evals: initialEvals,
   onScenariosChange,
@@ -104,7 +106,11 @@ export default function ConfigStep({
       const response = await fetch(`${API_BASE}/api/regenerate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ session_id: sessionId, gemini_api_key: apiKey }),
+        body: JSON.stringify({
+          session_id: sessionId,
+          gemini_api_key: apiKey,
+          model: model.trim() || undefined,
+        }),
       });
 
       if (!response.ok) {

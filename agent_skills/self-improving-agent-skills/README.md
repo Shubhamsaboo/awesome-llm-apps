@@ -55,7 +55,7 @@ self-improving-agent-skills/
 
 - **Backend**: Python 3.10+, FastAPI, Google ADK, Pydantic
 - **Frontend**: Next.js 15, React 19, Tailwind CSS v4, Recharts
-- **AI**: Google ADK multi-agent system with Gemini (`gemini-3-flash-preview`) — structured output via `output_schema` on Analyst and Mutator agents
+- **AI**: Google ADK multi-agent system with Gemini (`gemini-3.8-flash` by default; pick another model in the UI or set `GEMINI_MODEL`) — structured output via `output_schema` on Analyst and Mutator agents
 - **Real-time**: Server-Sent Events (SSE) for live optimization progress
 
 ## Quick Start
@@ -99,7 +99,7 @@ npm run dev
 1. Get a Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey)
 2. Open http://localhost:3000
 3. Upload a skill folder as a .zip file (or try an example)
-4. Enter your Gemini API key
+4. Enter your Gemini API key, and optionally the Gemini model to use (the field suggests known-good ids; empty means the server default)
 5. Review and edit the generated test scenarios and evaluation criteria
 6. Click "Start Optimization" and watch the agents collaborate to improve your skill
 7. Download your improved skill when complete
@@ -178,10 +178,11 @@ For each round, the three agents collaborate:
 |--------|----------|-------------|
 | `POST` | `/api/upload` | Upload skill zip file (max 10MB, text files only) |
 | `POST` | `/api/upload-files` | Upload multiple files (folder upload) |
-| `POST` | `/api/analyze` | Generate scenarios and evals (requires Gemini API key) |
-| `POST` | `/api/regenerate` | Regenerate scenarios and evals |
+| `GET` | `/api/models` | The default Gemini model and suggested alternatives |
+| `POST` | `/api/analyze` | Generate scenarios and evals (requires Gemini API key; optional `model`) |
+| `POST` | `/api/regenerate` | Regenerate scenarios and evals (optional `model`) |
 | `POST` | `/api/update-config` | Save user's selected/edited config |
-| `POST` | `/api/start/{session_id}` | Start optimization |
+| `POST` | `/api/start/{session_id}` | Start optimization (optional `model`) |
 | `GET` | `/api/stream/{session_id}` | SSE stream of optimization progress |
 | `POST` | `/api/stop/{session_id}` | Stop optimization |
 | `GET` | `/api/download/{session_id}` | Download improved skill |
@@ -195,6 +196,14 @@ For each round, the three agents collaborate:
 ### Backend
 
 The Gemini API key is passed from the frontend with each request. Optionally set `GOOGLE_API_KEY` in `.env` for local development. Server runs on port **8891**.
+
+The Gemini model is chosen per request: the UI sends the id from its model field, and a request without one runs on the server default. That default is `gemini-3.8-flash`, or whatever `GEMINI_MODEL` is set to when the server starts:
+
+```bash
+GEMINI_MODEL=gemini-3-pro-preview python app.py
+```
+
+Any Gemini model id is accepted; a value that does not look like one is refused with a 400 rather than replaced. `GET /api/models` reports the current default, which the UI shows in the field.
 
 Upload limits:
 - **10MB** max total upload size
@@ -218,19 +227,22 @@ body: JSON.stringify({
 }),
 ```
 
-In `adk_optimizer.py`, adjust the model:
+The model comes from the UI field or `GEMINI_MODEL` (see Configuration above); `DEFAULT_MODEL` in `adk_optimizer.py` is the last resort:
 
 ```python
-def __init__(self, api_key: str, model: str = "gemini-3-flash-preview"):
+DEFAULT_MODEL = "gemini-3.8-flash"
 ```
 
 ## Development
 
 ### Backend Tests
 
+The tests replace the optimizer with a fake, so they need no API key and make no Gemini calls:
+
 ```bash
 cd backend
-python -c "from adk_optimizer import SkillOptimizer; print('OK')"
+pip install pytest httpx
+pytest
 ```
 
 ### Frontend Build
