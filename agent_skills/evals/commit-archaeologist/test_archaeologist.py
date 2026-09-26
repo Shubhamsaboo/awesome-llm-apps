@@ -129,6 +129,50 @@ def run(repo, *args, file_path="src/calculator.py"):
     )
 
 
+def check_quoted_paths(root, label, old_path, new_path, companion):
+    repo = os.path.join(root, label)
+    os.makedirs(repo)
+    git(repo, "init", "-q")
+    git(repo, "config", "user.name", "Ada Archaeologist")
+    git(repo, "config", "user.email", EMAIL)
+    git(repo, "config", "core.quotePath", "true")
+    commit(repo, "2026-01-01T10:00:00+0000", "feat: add module", {
+        old_path: "value = 1\n", companion: "First notes.\n",
+    })
+    commit(repo, "2026-01-02T10:00:00+0000", "fix: update module", {
+        old_path: "value = 2\n", companion: "Updated notes.\n",
+    })
+    git(repo, "mv", old_path, new_path)
+    git(repo, "commit", "-m", "refactor: rename module")
+
+    result = run(repo, "--json", file_path=new_path)
+    check(label + ": report exits cleanly", result.returncode == 0, result.stderr)
+    if result.returncode != 0:
+        return
+    report = json.loads(result.stdout)
+    check(
+        label + ": changed files preserve literal names",
+        set(report["introduced_by"]["changed_files"]) == {old_path, companion},
+        str(report["introduced_by"]["changed_files"]),
+    )
+    check(
+        label + ": rename preserves both paths",
+        report["timeline"][-1]["renames"] == [{"from": old_path, "to": new_path}],
+        str(report["timeline"][-1]["renames"]),
+    )
+    check(
+        label + ": historical aliases include the original name",
+        set(report["region"]["historical_paths"]) == {old_path, new_path},
+        str(report["region"]["historical_paths"]),
+    )
+    check(
+        label + ": only the companion is a repeated co-change",
+        [(item["file"], item["count"]) for item in report["co_changed"]]
+        == [(companion, 2)],
+        str(report["co_changed"]),
+    )
+
+
 def main():
     root = tempfile.mkdtemp(prefix="commit-archaeologist-eval-")
     try:
@@ -232,6 +276,16 @@ def main():
             "line range" in invalid.stderr.lower() and "traceback" not in invalid.stderr.lower(),
             invalid.stderr,
         )
+
+        print("quoted filenames:")
+        check_quoted_paths(
+            root, "unicode", "src/café.py", "src/résumé.py", "docs/使用说明.md",
+        )
+        if os.name != "nt":
+            check_quoted_paths(
+                root, "control-characters", "src/tab\tand\nnewline.py",
+                'src/quote"and\\slash\r.py', "docs/notes\tand\r\n.md",
+            )
 
         print()
         if all(checks):
