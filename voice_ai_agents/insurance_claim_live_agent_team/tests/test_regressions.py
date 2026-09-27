@@ -252,7 +252,7 @@ class AsyncTests(unittest.IsolatedAsyncioTestCase):
             async def __aenter__(self):return Live()
             async def __aexit__(self,*args):pass
         fake=NS(aio=NS(live=NS(connect=lambda **kw:CM())))
-        with patch.object(s,'_has_api_key',return_value=True),patch.object(s,'_client',return_value=fake):
+        with patch.object(s,'_has_api_key',return_value=True),patch.object(s,'_live_client',return_value=fake):
             await asyncio.wait_for(s.live_voice(WS()),1)
         self.assertEqual([x['turn_complete'] for x in delivered],[False,False])
         self.assertIn('STATE: ON',delivered[0]['turns'].parts[0].text)
@@ -301,7 +301,7 @@ class AsyncTests(unittest.IsolatedAsyncioTestCase):
             async def __aexit__(self,*args):pass
         async def run(*args,**kw):started.set();await asyncio.Event().wait()
         fake=NS(aio=NS(live=NS(connect=lambda **kw:CM())))
-        with patch.object(s,'_has_api_key',return_value=True),patch.object(s,'_client',return_value=fake),patch.object(s,'run_claim_workflow',side_effect=run):
+        with patch.object(s,'_has_api_key',return_value=True),patch.object(s,'_live_client',return_value=fake),patch.object(s,'run_claim_workflow',side_effect=run):
             ws=WS();await asyncio.wait_for(s.live_voice(ws),1)
         self.assertEqual(media,['video','audio']);self.assertFalse(session.camera_enabled);self.assertIsNone(session.live_socket);self.assertEqual(session.transcript[0]['id'],'1')
         s.sessions.pop('transport')

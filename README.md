@@ -89,6 +89,7 @@ streamlit run travel_agent.py
 *   [🏺 Commit Archaeologist](agent_skills/commit-archaeologist/) - Reconstructs why a file or code region exists from its introducing commit, later edits, co-changes, and intent clues
 *   [🩺 Dependency Doctor](agent_skills/dependency-doctor/) - Checks a dependency manifest for standard-library pins, obsolete backports, unpinned entries, duplicate constraints, and yanked releases
 *   [🧠 Advisor Orchestrator Worker](agent_skills/advisor-orchestrator-worker/) - Meta Loop with Claude Fable 5.1 as advisor, GPT-6 Astra as orchestrator, and Gemini 3.8 Flash as worker
+*   [🎙️ Thinking Out Loud](agent_skills/thinking-out-loud/) - Echoes a voice ramble back as a scannable brief, with the model's guesses quarantined and your reversals flagged
 *   [♾️ Self-Improving Agent Skills](agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
 
 ### 🌱 Starter AI Agents
@@ -234,6 +235,7 @@ streamlit run travel_agent.py
 *Small tools that bring AI into everyday browsing.*
 
 *   [🪡 Needle - A New Way to Find](advanced_llm_apps/needle/) - Search webpages by meaning and highlight the strongest source sentence, using a Chrome extension powered by TypeSafe Jev
+*   [🌀 Ripple - Change One Thing, Find What Else Needs to Change](advanced_llm_apps/ripple/) - Find related inconsistencies and suggested fixes as you edit a Google Doc, using TypeSafe Jev and Gemini
 
 ### 💾 LLM Apps with Memory
 

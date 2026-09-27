@@ -30,7 +30,6 @@ from typing import Any
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 APP_DIR = Path(__file__).resolve().parents[1]
@@ -86,8 +85,65 @@ from live_tools import (  # noqa: E402
 )
 
 GENAI_CLIENT = None
+AVATAR_CLIENT = None
 logger = logging.getLogger(__name__)
 FRAME_MAX_AGE_SECONDS = 12.0
+
+
+def avatar_settings() -> dict[str, str]:
+    """Keep the optional Cloud avatar transport separate from claim model auth."""
+    return {
+        "name": os.getenv("FNOL_AVATAR_NAME", "").strip(),
+        "project": os.getenv("FNOL_AVATAR_PROJECT", "").strip(),
+        "location": os.getenv("FNOL_AVATAR_LOCATION", "us-central1").strip(),
+        "image": os.getenv("FNOL_AVATAR_IMAGE", "").strip(),
+        "voice": os.getenv("FNOL_AVATAR_VOICE", "Kore").strip(),
+    }
+
+
+def avatar_description(enabled: bool | None = None) -> dict[str, Any]:
+    settings = avatar_settings()
+    configured = bool(settings["project"] and (settings["name"] or settings["image"]))
+    return {
+        "enabled": configured if enabled is None else enabled,
+        "name": "Claim advisor" if settings["image"] else settings["name"],
+    }
+
+
+def avatar_reference() -> bytes:
+    path = (APP_DIR / avatar_settings()["image"]).resolve()
+    data = path.read_bytes()
+    if len(data) >= 5 * 1024 * 1024 or not data.startswith(b"\x89PNG\r\n\x1a\n"):
+        raise ValueError("Custom avatar must be a PNG under 5 MB")
+    width, height = int.from_bytes(data[16:20], "big"), int.from_bytes(data[20:24], "big")
+    if width < 704 or height < 1280:
+        raise ValueError("Custom avatar must be at least 704 x 1280")
+    return data
+
+
+def live_media_message(blob):
+    """Never interpret the avatar's muxed video/voice bytes as raw PCM."""
+    mime = blob.mime_type or ""
+    if not isinstance(blob.data, bytes) or not mime.startswith(("video/mp4", "audio/pcm")):
+        return None
+    return {
+        "type": "avatar_video" if mime.startswith("video/") else "audio",
+        "data": base64.b64encode(blob.data).decode("ascii"),
+        "mime_type": mime,
+    }
+
+
+def _live_client(avatar_enabled: bool = False):
+    if not avatar_enabled:
+        return _client()
+    global AVATAR_CLIENT
+    if AVATAR_CLIENT is None:
+        from google import genai
+        settings = avatar_settings()
+        AVATAR_CLIENT = genai.Client(
+            vertexai=True, project=settings["project"], location=settings["location"],
+        )
+    return AVATAR_CLIENT
 
 
 class MessageRequest(BaseModel):
@@ -388,7 +444,7 @@ def _ui_state(
         packet_markdown += f"- [Generated sketch v{session.sketch['version']}](sketch.png): illustration, not a captured photograph.\n"
     if not manifest and not session.sketch:
         packet_markdown += "No evidence captured.\n"
-    packet_markdown += "\nThis demo prepares a packet only; it has not been sent to an adjuster.\n"
+    packet_markdown += "\nThis packet has not been submitted to an adjuster yet.\n"
     return {
         "session_id": session.session_id,
         "revision": session.revision,
@@ -535,6 +591,7 @@ def health() -> dict[str, Any]:
         "live_model": LIVE_MODEL_ID,
         "sketch_model": SKETCH_MODEL_ID,
         "tools": TOOL_NAMES,
+        "avatar": avatar_description(),
     }
 
 
@@ -910,13 +967,30 @@ async def live_voice(websocket: WebSocket) -> None:
         if not _has_api_key():
             await send({"type": "error", "message": "A Google API key is required in the server environment."})
             return
-        config = build_live_config(camera_enabled=session.camera_enabled)
+        settings = avatar_settings()
+        avatar_enabled = avatar_description()["enabled"] and websocket.query_params.get("avatar") != "off"
+        avatar_name = settings["name"] if avatar_enabled else ""
+        avatar_image = avatar_reference() if avatar_enabled and settings["image"] else None
+        history = [
+            types.Content(
+                role="user" if turn["speaker"] == "Claimant" else "model",
+                parts=[types.Part(text=turn["text"])],
+            )
+            for turn in session.transcript
+            if turn["speaker"] in {"Claimant", "Agent"}
+        ]
+        config = build_live_config(
+            camera_enabled=session.camera_enabled, avatar_name=avatar_name,
+            avatar_image=avatar_image, avatar_voice=settings["voice"] if avatar_enabled else None,
+            seed_history=bool(history),
+        )
         # Restore dialogue as context before accepting another turn on reconnect.
-        async with _client().aio.live.connect(model=LIVE_MODEL_ID, config=config) as live_session:
-            history = [types.Content(role="user" if t["speaker"] == "Claimant" else "model", parts=[types.Part(text=t["text"])]) for t in session.transcript if t["speaker"] in {"Claimant", "Agent"}]
-            if any(t["speaker"] == "Claimant" for t in session.transcript):
-                await live_session.send_client_content(turns=history, turn_complete=False)
-            await send({"type": "session", "model": LIVE_MODEL_ID, "sketch_model": SKETCH_MODEL_ID, "tools": TOOL_NAMES})
+        async with _live_client(avatar_enabled).aio.live.connect(model=LIVE_MODEL_ID, config=config) as live_session:
+            if history:
+                # The SDK has awaited setup_complete. Close the initial-history
+                # batch without treating it as a new request for speech.
+                await live_session.send_client_content(turns=history, turn_complete=True)
+            await send({"type": "session", "model": LIVE_MODEL_ID, "sketch_model": SKETCH_MODEL_ID, "tools": TOOL_NAMES, "avatar": avatar_description(avatar_enabled)})
             await send({"type": "state", "state": _current_ui_state(session)})
             await send({"type": "ready"})
 
@@ -1011,26 +1085,36 @@ async def live_voice(websocket: WebSocket) -> None:
                         content = response.server_content
                         if not content:
                             continue
+                        # Clear queued voice/video before forwarding any more content.
+                        # An interrupted payload can still contain cancelled output.
+                        if content.interrupted:
+                            await send({"type": "interrupted"})
+                            await finalize("Agent")
                         for speaker, chunk in (("Claimant", content.input_transcription), ("Agent", content.output_transcription)):
+                            if speaker == "Agent" and content.interrupted:
+                                continue
                             if chunk and chunk.text:
                                 if speaker == "Agent":
                                     await finalize("Claimant")
                                 if chunk.text != pending[speaker]["text"] or speaker == "Claimant":
                                     pending[speaker]["text"] += chunk.text
                                 await send({"type": "transcript", "speaker": speaker, **pending[speaker], "final": False})
-                            if speaker == "Claimant" and chunk and getattr(chunk, "finished", False):
+                            if chunk and getattr(chunk, "finished", False):
                                 await finalize(speaker)
-                        if content.model_turn:
-                            await finalize("Claimant")
+                        if content.model_turn and not content.interrupted:
                             for part in content.model_turn.parts or []:
-                                if part.inline_data and isinstance(part.inline_data.data, bytes):
-                                    await send({"type": "audio", "data": base64.b64encode(part.inline_data.data).decode("ascii"), "mime_type": part.inline_data.mime_type})
-                        if content.interrupted:
-                            await finalize("Agent")
-                            await send({"type": "interrupted"})
+                                if part.inline_data:
+                                    media = live_media_message(part.inline_data)
+                                    if media:
+                                        # Avatar video also streams while listening;
+                                        # idle frames must not split the claimant's turn.
+                                        if media["type"] == "audio":
+                                            await finalize("Claimant")
+                                        await send(media)
                         if getattr(content, "turn_complete", False):
                             await finalize("Claimant")
                             await finalize("Agent")
+                            await send({"type": "turn_complete"})
 
             pair = [track(asyncio.create_task(client_to_gemini())), track(asyncio.create_task(gemini_to_client()))]
             done, _ = await asyncio.wait(pair, timeout=20 * 60, return_when=asyncio.FIRST_COMPLETED)
@@ -1076,3 +1160,8 @@ def javascript():
 @app.get("/styles.css")
 def styles():
     return FileResponse(DEMO_DIR / "styles.css", media_type="text/css")
+
+
+@app.get("/avatar.js")
+def avatar_javascript():
+    return FileResponse(DEMO_DIR / "avatar.js", media_type="text/javascript")

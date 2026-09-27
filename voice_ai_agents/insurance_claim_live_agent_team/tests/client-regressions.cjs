@@ -15,6 +15,14 @@ test('concurrent connects share a socket',async()=>{const e=env();await Promise.
 test('reconnect uses the same claim session',async()=>{const e=env();await e.run('connectLive()');e.run('stopLiveVoice()');await e.run('connectLive()');assert.equal(e.sockets[0].url,e.sockets[1].url);e.run('disconnectLive()');});
 test('interruption stops all scheduled audio',async()=>{const e=env();await e.run('connectLive()');e.run('playPcm24(btoa("\\0\\0".repeat(24000)));playPcm24(btoa("\\0\\0".repeat(24000)))');e.sockets[0].onmessage({data:JSON.stringify({type:'interrupted',session_id:'initial'})});assert.equal(e.sources.filter(x=>x.stopped).length,2);e.run('disconnectLive()');});
 test('reset stops queued speech',async()=>{const e=env();e.run('playPcm24(btoa("\\0\\0".repeat(24000)))');await e.run('createSession(false)');assert(e.sources[0].stopped);});
+test('typed interruption stops playback before sending the new turn',async()=>{
+ const e=env();await e.run('connectLive()');
+ e.run('playPcm24(btoa("\\0\\0".repeat(24000)))');
+ const socket=e.sockets[0],send=socket.send.bind(socket);
+ socket.send=message=>{assert(e.sources[0].stopped);send(message)};
+ await e.run('sendClaimantTurn("Stop, please wait.")');
+ assert.equal(socket.sent.at(-1).text,'Stop, please wait.');e.run('disconnectLive()');
+});
 test('disconnect releases microphone and camera',async()=>{const e=env();await e.run('connectLive()');e.run('let stopped=0;isRecording=true;audioStream={getTracks:()=>[{stop(){stopped++}}]};cameraStream={getTracks:()=>[{stop(){stopped++}}]};');e.sockets[0].close();assert.equal(e.run('stopped'),2);assert.equal(e.run('isRecording'),false);assert.equal(e.run('cameraStream'),null);});
 test('state merge preserves final turns not yet in snapshot',()=>{const e=env();assert.equal(e.run('mergeTranscript([{id:"1",speaker:"Agent",text:"Earlier reply"}],[{id:"2",speaker:"Claimant",text:"Correction",streaming:false}]).length'),2);});
 test('short answers are distinct; repeated final ID is idempotent',()=>{const e=env();e.run('upsertStreamingTurn("Claimant","No injuries",true,"a");upsertStreamingTurn("Claimant","No",true,"b");upsertStreamingTurn("Claimant","No",true,"b")');assert.equal(e.run('state.transcript.length'),2);});
@@ -34,5 +42,16 @@ test('camera device ending turns mode off',async()=>{
 test('denied camera does not announce camera on',async()=>{
  const e=env();e.run('navigator.mediaDevices={getUserMedia:async()=>{throw new Error("Permission denied")}}');
  await e.run('startCamera()');assert.equal(e.sockets[0].sent,undefined);assert.equal(e.run('cameraStream'),null);e.run('disconnectLive()');
+});
+test('avatar messages use video playback and interruption resets it',async()=>{
+ const e=env();e.run('let avatarCalls=[];window.claimAvatar={supported:true,connecting(){},configure(){},append(data){avatarCalls.push(data)},finishTurn(){avatarCalls.push("done")},interrupt(){avatarCalls.push("interrupt")},reset(){avatarCalls.push("reset")}}');
+ await e.run('connectLive()');const ws=e.sockets[0];
+ for(const m of [{type:'avatar_video',data:'VIDEO'},{type:'turn_complete'},{type:'interrupted'}])ws.onmessage({data:JSON.stringify({...m,session_id:'initial'})});
+ assert.equal(e.run('avatarCalls.join(",")'),'VIDEO,done,interrupt');assert.equal(e.sources.length,0);
+ e.run('disconnectLive()');assert.equal(e.run('avatarCalls.at(-1)'),'reset');
+});
+test('unsupported avatar browser keeps the original voice connection',async()=>{
+ const e=env();e.run('window.claimAvatar={supported:false,connecting(){},interrupt(){},reset(){}}');
+ await e.run('connectLive()');assert.equal(new URL(e.sockets[0].url).searchParams.get('avatar'),'off');e.run('disconnectLive()');
 });
 (async()=>{for(const [name,fn]of tests){await fn();console.log('PASS '+name)}console.log(`${tests.length} client regression tests passed`)})().catch(e=>{console.error(e);process.exitCode=1});
