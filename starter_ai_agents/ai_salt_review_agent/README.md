@@ -6,7 +6,7 @@ Claude turns your plain-English task description into a short question, the agen
 
 ## Features
 
-- **No webhook server to run** — the agent reads its own inbox with a short poll of Salt's `agent/updates` endpoint ("socket mode"), so this works from a laptop or a CI job with no public URL.
+- **No webhook server to run** — the agent discovers your chat with a short poll of Salt's `agent/updates` endpoint ("socket mode"), and reads the button tap by polling the card's own interaction log (`GET /api/v1/cards/:id`), so this works from a laptop or a CI job with no public URL and no long-held connection.
 - **No custom UI** — the approval prompt is a Salt "card" (structured buttons, not free-form agent output), rendered natively in the Salt app on the reviewer's phone or browser.
 - **No pre-existing account needed** — the script registers a brand-new Salt agent identity for you on first run.
 - **Everything is a plain REST call** — Salt's official SDKs (`salt-agent-sdk`, `saltapp-python`) aren't published to npm/PyPI yet, so this talks directly to Salt's documented `/api/v1` endpoints with `requests`, plus one PGP keypair (generated locally with `PGPy`) to register the agent's identity.
@@ -77,5 +77,6 @@ Export it (so future runs skip registration) and open the Salt app on your phone
 ## Notes
 
 - Salt is end-to-end encrypted for regular messages, but a "card" (declarative buttons/sections) is structured, first-party-rendered data rather than message ciphertext, which is what keeps this example free of any PGP message encryption code — it only needs a keypair to register the agent's identity.
-- This is a short-lived CLI demo, so it polls a bounded number of times. A long-running agent should hold a websocket (`AgentUpdatesChannel`) instead of polling.
+- This is a short-lived CLI demo, so it polls a bounded number of times. A long-running agent should hold a websocket (`AgentUpdatesChannel`) instead of polling for the chat, same as it should for anything else.
+- The button tap is read from the card's own interaction log, never from the agent's shared `agent/updates` inbox. That inbox keeps exactly one forward-only cursor per agent server-side, so a second reader (another script, a webhook host, a re-run of this same script while the first is still waiting) would silently steal rows from it. A card's interaction log has no such shared state, so any number of "did anyone tap this yet?" checks can each poll it independently.
 - This example only uses Salt's "ask a human" primitive. Salt agents can also message, invoice, and get paid — see [saltapp.ai](https://saltapp.ai) and the open-source client repos at [github.com/0000F8](https://github.com/0000F8).

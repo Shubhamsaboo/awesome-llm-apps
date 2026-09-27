@@ -19,11 +19,18 @@ How it works:
    salt-api repo). Cards are structured data, not end-to-end-encrypted
    message ciphertext, which is what makes this simple: no PGP needed to
    post one.
-4. The agent has no public webhook, so it runs in Salt's "socket mode":
-   it reads its own inbox with a short, bounded poll of
-   GET /api/v1/agent/updates instead of receiving a POST. When you tap a
-   button in the Salt app, the tap shows up there as a `card_interaction`
-   event and the script prints your decision.
+4. The agent has no public webhook, so it discovers your chat by reading
+   its own inbox with a short, bounded poll of GET /api/v1/agent/updates
+   ("socket mode"). The button tap itself is read a different way: the
+   script polls the card's OWN interaction log (GET /api/v1/cards/:id)
+   instead. That inbox keeps exactly one forward-only cursor per agent
+   server-side, so a second reader of the same agent's inbox (another
+   script, a webhook host, a re-run while the first is still waiting)
+   would silently steal rows from it and permanently advance the ack --
+   a card's own interaction log has no such shared cursor, so any number
+   of concurrent "did anyone tap this card yet?" checks can each poll it
+   without interfering with one another or with anything else reading
+   this agent's inbox.
 
 Everything here is plain REST + one Claude call. There is no Salt SDK
 dependency (salt-agent-sdk/saltapp-python are not yet on npm/PyPI) --
@@ -72,6 +79,13 @@ AUTH_BASE = os.environ.get("SALT_AUTH_BASE", "https://saltapp.ai/auth")
 POLL_TIMEOUT_SECONDS = 2  # server clamps this to 2s anyway
 MAX_WAIT_SECONDS = 300
 POLL_PAUSE_SECONDS = 2
+
+# Neither GET /api/v1/cards/:id nor the agent inbox holds a request open the
+# way the old (removed) card_interaction-over-agent/updates approach could,
+# so this loop paces its own empty iterations with a real sleep rather than
+# spinning as fast as the network round-trip allows. Mirrors salt-mcp's
+# MIN_EMPTY_POLL_MS / saltapp-agentkit's MIN_EMPTY_POLL_SECONDS (both 1s).
+MIN_EMPTY_POLL_SECONDS = 1.0
 
 
 def generate_agent_keypair(display_name: str):
@@ -142,8 +156,14 @@ def poll_updates(api_key: str, after: int, timeout: int = POLL_TIMEOUT_SECONDS):
 def wait_for_chat_opened(api_key: str):
     """Blocks (with a bounded, printed-progress poll) until a human opens a chat.
 
-    Returns (chat_id, opener_display_name, cursor) -- the cursor is threaded
-    into the next poll so we never re-read the same update twice.
+    This is the one thing this example still reads from the agent's own
+    inbox (GET /api/v1/agent/updates, Salt's "socket mode"): a brand-new,
+    single-purpose demo agent like this one has no other consumer racing
+    it for that inbox's one forward-only cursor, so it's the right tool
+    for "has anyone shown up yet?" -- unlike the card-tap wait below,
+    which needs to survive being run more than once against the same card.
+
+    Returns (chat_id, opener_id, opener_display_name).
     """
     after = 0
     deadline = time.monotonic() + MAX_WAIT_SECONDS
@@ -153,7 +173,8 @@ def wait_for_chat_opened(api_key: str):
         for update in data["updates"]:
             if update["event"] == "chat_opened":
                 body = json.loads(update["body"])
-                return body["chat"]["id"], body["opened_by"]["display_name"], after
+                opener = body["opened_by"]
+                return body["chat"]["id"], opener["id"], opener["display_name"]
         print(".", end="", flush=True)
         time.sleep(POLL_PAUSE_SECONDS)
     raise TimeoutError("Nobody opened a chat with the agent in time. Try again.")
@@ -209,20 +230,76 @@ def post_review_card(api_key: str, chat_id: int, question: str) -> int:
     return resp.json()["resource_id"]  # the card's id
 
 
-def wait_for_decision(api_key: str, card_id: int, after: int):
-    """Polls the agent's inbox for the card_interaction event on this card."""
+class _RateLimited(Exception):
+    def __init__(self, retry_after_seconds: int):
+        self.retry_after_seconds = retry_after_seconds
+
+
+def get_card(api_key: str, card_id: int, after=None) -> dict:
+    """GET /api/v1/cards/:id -- one card's own interaction log, owner-only.
+
+    ``interactions`` comes back newest first, capped at 50 server-side.
+    ``after`` is either another interaction's id or an ISO 8601 timestamp;
+    an unrecognised value fails OPEN server-side (the full list, never a
+    500), so this never needs to validate its own cursor before sending it.
+    """
+    resp = requests.get(
+        f"{API_BASE}/cards/{card_id}",
+        params={"after": after} if after is not None else None,
+        headers={"api-key": api_key},
+        timeout=15,
+    )
+    if resp.status_code == 429:
+        raise _RateLimited(int(resp.headers.get("Retry-After", "1")))
+    resp.raise_for_status()
+    return resp.json()
+
+
+def wait_for_decision(api_key: str, card_id: int, expected_user_id):
+    """Polls the card's OWN interaction log for a tap on one of its buttons.
+
+    Deliberately does not touch GET /api/v1/agent/updates: that inbox
+    keeps exactly one forward-only cursor PER AGENT, so a second consumer
+    of the same agent's inbox -- another script, a webhook host, this
+    same function being called again after a timeout -- would silently
+    lose rows, and every ``after`` sent there advances the agent's ack for
+    good. Reading one card by id has no such shared state: any number of
+    concurrent "did anyone tap this card yet?" checks, for this ask or any
+    other, can each resolve independently. Mirrors salt-mcp's
+    ``pollForCardInteraction`` and saltapp-agentkit's ``poll_for_answer``.
+    """
     deadline = time.monotonic() + MAX_WAIT_SECONDS
+    after = None
     while time.monotonic() < deadline:
-        data = poll_updates(api_key, after)
-        after = data["cursor"]
-        for update in data["updates"]:
-            if update["event"] != "card_interaction":
-                continue
-            body = json.loads(update["body"])
-            if body["card_id"] == card_id:
-                return body["action_id"], body["user"]["display_name"]
+        try:
+            card = get_card(api_key, card_id, after=after)
+        except _RateLimited as e:
+            time.sleep(e.retry_after_seconds)
+            continue
+
+        started_at = time.monotonic()
+        interactions = card.get("interactions") or []
+        # Newest first, per the route's contract -- advance the cursor to
+        # the newest interaction id seen regardless of whether it matches,
+        # so a resumed poll never re-reads a row it has already rejected.
+        if interactions and interactions[0].get("id") is not None:
+            after = interactions[0]["id"]
+
+        match = next(
+            (
+                i for i in interactions
+                if i.get("action_id") in ("approve", "deny")
+                and str(i.get("user_id", "")).lower() == str(expected_user_id).lower()
+            ),
+            None,
+        )
+        if match:
+            return match["action_id"]
+
+        elapsed = time.monotonic() - started_at
         print(".", end="", flush=True)
-        time.sleep(POLL_PAUSE_SECONDS)
+        if elapsed < MIN_EMPTY_POLL_SECONDS:
+            time.sleep(MIN_EMPTY_POLL_SECONDS - elapsed)
     raise TimeoutError("Nobody tapped a button in time. The card is still open in the chat.")
 
 
@@ -239,7 +316,7 @@ def main():
         print(f"Registered. Save this for next time:\n\n  export SALT_API_KEY=\"{api_key}\"\n")
 
     print(f"Waiting for you to open a chat with @{args.username} in the Salt app...", end="", flush=True)
-    chat_id, opener_name, cursor = wait_for_chat_opened(api_key)
+    chat_id, opener_id, opener_name = wait_for_chat_opened(api_key)
     print(f"\n{opener_name} opened a chat. Composing the question with Claude...")
 
     question = compose_prompt(args.task)
@@ -248,8 +325,8 @@ def main():
     card_id = post_review_card(api_key, chat_id, question)
     print("Card posted. Waiting for a tap...", end="", flush=True)
 
-    decision, decider_name = wait_for_decision(api_key, card_id, after=cursor)
-    print(f"\n{decider_name} tapped: {decision.upper()}")
+    decision = wait_for_decision(api_key, card_id, expected_user_id=opener_id)
+    print(f"\n{opener_name} tapped: {decision.upper()}")
 
 
 if __name__ == "__main__":
