@@ -8,3 +8,4 @@ openai
 ollama
 google-search-results
 icalendar
+boto3>=1.39.0
