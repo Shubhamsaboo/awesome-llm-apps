@@ -1,6 +1,8 @@
 streamlit==1.41.1
-openai==1.58.1
+openai>=1.106.0
 duckdb>=1.4.1
 pandas
-numpy==1.26.4
+numpy==1.26.4; python_version < "3.13"
+numpy>=2.1.0,<3; python_version >= "3.13"
 agno>=2.2.10
+python-dotenv>=1.0.0
