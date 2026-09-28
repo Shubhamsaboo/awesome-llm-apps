@@ -50,6 +50,19 @@
       "evals_dir": "agent_skills/evals/first-reader"
     },
     {
+      "name": "pdf-translate",
+      "path": "agent_skills/pdf-translate",
+      "description": "Translates PDF documents across languages while strictly preserving original visual layout, typography, tables, and signatures. Reconstructs layout using HTML/CSS print paged media and vector rendering, with automated 1:1 page-by-page audit and zero-hallucination contracts. Use when the user asks to translate a PDF while keeping the original formatting, preserve layout on translated documents, convert documents with strict layout fidelity, or audit translated PDF geometry against the source.",
+      "license": "Apache-2.0",
+      "metadata": {
+        "author": "lxsssssss",
+        "version": "2.3.0",
+        "source": "https://github.com/lxsssssss/pdf-translate"
+      },
+      "install": "npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/pdf-translate",
+      "evals_dir": "agent_skills/evals/pdf-translate"
+    },
+    {
       "name": "project-graveyard",
       "path": "agent_skills/project-graveyard",
       "description": "Scans the developer's machine for dead side projects, autopsies each one from its git history (died at the payments wall, killed by a newer project, finished but never shipped), surfaces their personal death patterns, and picks the corpse most worth resurrecting — then helps ship it. Use when the user mentions abandoned, unfinished, or old side projects, asks \"what should I finish\", wants to revive or resurrect a project, says \"run the graveyard\", wonders why they never finish anything, or is about to start a new project that sounds like one they already built. Runs entirely locally.",

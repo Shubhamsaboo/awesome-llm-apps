@@ -1,0 +1,42 @@
+{
+  "skill": "pdf-translate",
+  "purpose": "Trigger behavior spec. CI checks lexical routing from these cases; behavioral expectations live in evals.json.",
+  "cases": [
+    {
+      "id": "translate-pdf-preserve-layout",
+      "prompt": "translate this PDF document while preserving original visual layout and typography",
+      "should_trigger": true,
+      "assert": "Triggers pdf-translate to inspect physical dimensions, extract translation contracts, and render publication-grade vector PDF."
+    },
+    {
+      "id": "translate-keep-formatting",
+      "prompt": "translate this PDF to Chinese while keeping the original formatting and tables",
+      "should_trigger": true,
+      "assert": "Uses pdf-translate two-stage translation and HTML print paged media reconstruction."
+    },
+    {
+      "id": "audit-pdf-geometry",
+      "prompt": "audit translated PDF geometry and layout against the source document",
+      "should_trigger": true,
+      "assert": "Invokes the automated 1:1 audit engine to compare page counts, vector layers, and clause alignment."
+    },
+    {
+      "id": "near-miss-plain-text",
+      "prompt": "translate this short plain text paragraph into French",
+      "should_trigger": false,
+      "assert": "Does not trigger because the user requested quick plain text translation without PDF layout preservation."
+    },
+    {
+      "id": "near-miss-compress",
+      "prompt": "compress this PDF file to make the file size smaller",
+      "should_trigger": false,
+      "assert": "Does not trigger because PDF compression is outside the translation scope."
+    },
+    {
+      "id": "near-miss-split",
+      "prompt": "split this multi-page PDF into separate single page files",
+      "should_trigger": false,
+      "assert": "Does not trigger because PDF splitting is a file utility operation, not translation."
+    }
+  ]
+}
