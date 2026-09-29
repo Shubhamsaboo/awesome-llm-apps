@@ -36,23 +36,20 @@ def git(repo, args, required=True):
         result = subprocess.run(
             ["git", "-C", repo, *args],
             capture_output=True,
-            text=True,
-            # Decode git output as UTF-8. With text=True and no encoding, Python
-            # uses the locale default (cp1252 on Windows), which raises
-            # UnicodeDecodeError on non-Latin-1 bytes in commit messages or file
-            # content (emoji, em-dashes, …).
-            encoding="utf-8",
-            errors="replace",
             timeout=30,
         )
     except FileNotFoundError as exc:
         raise ArchaeologistError("git is not installed or is not on PATH") from exc
     except subprocess.TimeoutExpired as exc:
         raise ArchaeologistError("git command timed out") from exc
+    # Explicit UTF-8 decoding avoids locale-dependent failures on Windows and
+    # preserves carriage returns in NUL-delimited paths (text mode changes them).
+    stdout = result.stdout.decode("utf-8", errors="replace")
+    stderr = result.stderr.decode("utf-8", errors="replace")
     if result.returncode != 0 and required:
-        detail = result.stderr.strip() or result.stdout.strip() or "git command failed"
+        detail = stderr.strip() or stdout.strip() or "git command failed"
         raise ArchaeologistError(detail)
-    return result.stdout if result.returncode == 0 else ""
+    return stdout if result.returncode == 0 else ""
 
 
 def normalize_inputs(repo_arg, file_arg):
@@ -149,20 +146,25 @@ def changed_file_details(repo, commit_hash):
     output = git(
         repo,
         [
-            "diff-tree", "--root", "--no-commit-id", "--name-status", "-r",
+            "diff-tree", "--root", "--no-commit-id", "--name-status", "-z", "-r",
             "-M", commit_hash, "--",
         ],
     )
     paths = set()
     renames = []
-    for line in output.splitlines():
-        fields = line.split("\t")
-        if len(fields) >= 3 and fields[0].startswith("R"):
-            old_path, new_path = fields[1], fields[2]
-            paths.update((old_path, new_path))
-            renames.append({"from": old_path, "to": new_path})
-        elif len(fields) >= 2:
-            paths.add(fields[-1])
+    fields = iter(output.split("\0"))
+    for status in fields:
+        if not status:
+            continue
+        path = next(fields)
+        if status.startswith(("R", "C")):
+            new_path = next(fields)
+            paths.add(new_path)
+            if status.startswith("R"):
+                paths.add(path)
+                renames.append({"from": path, "to": new_path})
+        else:
+            paths.add(path)
     return sorted(paths), renames
 
 
