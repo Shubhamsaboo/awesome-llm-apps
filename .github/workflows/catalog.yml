@@ -1,0 +1,48 @@
+name: catalog
+
+on:
+  pull_request:
+    paths:
+      - "README.md"
+      - "catalog/**"
+      - ".github/workflows/catalog.yml"
+      - "starter_ai_agents/**"
+      - "advanced_ai_agents/**"
+      - "agent_skills/**"
+      - "rag_tutorials/**"
+      - "mcp_ai_agents/**"
+      - "voice_ai_agents/**"
+      - "generative_ui_agents/**"
+      - "always_on_agents/**"
+      - "advanced_llm_apps/**"
+      - "ai_agent_framework_crash_course/**"
+  push:
+    branches: [main]
+    paths:
+      - "README.md"
+      - "catalog/**"
+      - ".github/workflows/catalog.yml"
+      - "starter_ai_agents/**"
+      - "advanced_ai_agents/**"
+      - "agent_skills/**"
+      - "rag_tutorials/**"
+      - "mcp_ai_agents/**"
+      - "voice_ai_agents/**"
+      - "generative_ui_agents/**"
+      - "always_on_agents/**"
+      - "advanced_llm_apps/**"
+      - "ai_agent_framework_crash_course/**"
+
+jobs:
+  catalog-lint:
+    name: catalog lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run catalog unit tests
+        run: python3 catalog/test_lint.py
+      - name: Check catalog against README and disk
+        run: python3 catalog/lint.py --check --strict

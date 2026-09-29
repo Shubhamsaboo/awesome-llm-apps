@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "awesome-llm-apps template catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "source_readme", "templates"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "source_readme": {
+      "type": "string",
+      "const": "README.md"
+    },
+    "templates": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/template" }
+    }
+  },
+  "definitions": {
+    "template": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "title", "description", "category", "kind"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!\\./)[A-Za-z0-9][A-Za-z0-9._/-]*$"
+        },
+        "title": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["app", "skill", "crash_course"]
+        },
+        "readme": { "type": "string", "minLength": 1 },
+        "tags": { "$ref": "#/definitions/tags" }
+      }
+    },
+    "tags": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "frameworks": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "models": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "local": { "type": "boolean" },
+        "entrypoint": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

@@ -1,0 +1,1214 @@
+{
+  "version": 1,
+  "source_readme": "README.md",
+  "templates": [
+    {
+      "path": "advanced_ai_agents/autonomous_game_playing_agent_apps/ai_3dpygame_r1",
+      "title": "🎮 AI 3D Pygame Agent",
+      "description": "DeepSeek R1 writes PyGame code, browser agents run it live",
+      "category": "autonomous-game-playing-agents",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "deepseek"
+        ]
+      }
+    },
+    {
+      "path": "advanced_ai_agents/autonomous_game_playing_agent_apps/ai_chess_agent",
+      "title": "♜ AI Chess Agent",
+      "description": "Agent White vs Agent Black with validated moves",
+      "category": "autonomous-game-playing-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/autonomous_game_playing_agent_apps/ai_tic_tac_toe_agent",
+      "title": "🎲 AI Tic-Tac-Toe Agent",
+      "description": "Two different LLMs battle it out, move by move",
+      "category": "autonomous-game-playing-agents",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "entrypoint": "app.py"
+      }
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/agent_teams/ag2_adaptive_research_team",
+      "title": "🧭 AG2 Adaptive Research Team",
+      "description": "Agent teamwork with routing and fallback, built on AG2",
+      "category": "multi-agent-teams",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "ag2"
+        ],
+        "entrypoint": "app.py"
+      }
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/agent_teams/ai_competitor_intelligence_agent_team",
+      "title": "🧲 AI Competitor Intelligence Agent Team",
+      "description": "Structured competitor teardowns built from their own websites",
+      "category": "multi-agent-teams",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/agent_teams/ai_finance_agent_team",
+      "title": "💲 AI Finance Agent Team",
+      "description": "A financial analyst team in 20 lines of Python",
+      "category": "multi-agent-teams",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/agent_teams/ai_game_design_agent_team",
+      "title": "🎨 AI Game Design Agent Team",
+      "description": "Full game concepts from a swarm of design specialists",
+      "category": "multi-agent-teams",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/agent_teams/ai_legal_agent_team",
+      "title": "👨‍⚖️ AI Legal Agent Team (Cloud & Local)",
+      "description": "Research, contract analysis, and strategy from a full legal bench",
+      "category": "multi-agent-teams",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "local": true
+      }
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/agent_teams/ai_real_estate_agent_team",
+      "title": "🏠 AI Real Estate Agent Team",
+      "description": "Property search, market analysis, and recommendations",
+      "category": "multi-agent-teams",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/agent_teams/ai_recruitment_agent_team",
+      "title": "💼 AI Recruitment Agent Team",
+      "description": "Resume screening to interview scheduling, end to end",
+      "category": "multi-agent-teams",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/agent_teams/ai_sales_intelligence_agent_team",
+      "title": "👨🏻‍💼 AI Sales Intelligence Agent Team",
+      "description": "Generates competitive sales battle cards in real time",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/agent_teams/ai_services_agency",
+      "title": "👨‍💼 AI Services Agency (CrewAI)",
+      "description": "A digital agency that scopes and plans your software project",
+      "category": "multi-agent-teams",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "crewai"
+        ]
+      }
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/agent_teams/ai_teaching_agent_team",
+      "title": "👨‍🏫 AI Teaching Agent Team",
+      "description": "A faculty of agents that builds your complete learning path",
+      "category": "multi-agent-teams",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team",
+      "title": "🌏 AI Travel Planner Agent Team",
+      "description": "A complete trip itinerary, crafted by a team",
+      "category": "multi-agent-teams",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/agent_teams/ai_vc_due_diligence_agent_team",
+      "title": "📊 AI VC Due Diligence Agent Team",
+      "description": "Multi-agent startup investment analysis with Gemini 3",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "gemini"
+        ]
+      }
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/agent_teams/llm_panel_agent_team",
+      "title": "⚖️ LLM Panel Agent Team",
+      "description": "Three vendors review the same diff blind, then argue it out anonymously",
+      "category": "multi-agent-teams",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_coding_agent_team",
+      "title": "💻 Multimodal Coding Agent Team",
+      "description": "Snap a photo of a coding problem, get a sandboxed solution",
+      "category": "multi-agent-teams",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_design_agent_team",
+      "title": "✨ Multimodal Design Agent Team",
+      "description": "Design critiques from a Gemini-powered expert panel",
+      "category": "multi-agent-teams",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "gemini"
+        ]
+      }
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_uiux_feedback_agent_team",
+      "title": "🎨 🍌 Multimodal UI/UX Feedback Agent Team",
+      "description": "Landing page feedback plus an auto-generated improved version",
+      "category": "multi-agent-teams",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/ai_financial_coach_agent",
+      "title": "💰 AI Financial Coach Agent",
+      "description": "Personalized budget, debt, and savings analysis",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent",
+      "title": "🏚️ 🍌 AI Home Renovation Agent with Nano Banana Pro",
+      "description": "Photos of your space in, renovation plan and photorealistic renders out",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/ai_mental_wellbeing_agent",
+      "title": "🧠 AI Mental Wellbeing Agent",
+      "description": "A coordinated agent team for mental health support plans",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/ai_news_and_podcast_agents",
+      "title": "🎧 AI Social Media News and Podcast Agent",
+      "description": "Curates your trusted sources into briefs and generated podcasts",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "readme.md"
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/ai_self_evolving_agent",
+      "title": "🧬 AI Self-Evolving Agent",
+      "description": "Agents that rewrite their own workflows with EvoAgentX",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "evoagentx"
+        ]
+      }
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/devpulse_ai",
+      "title": "🧠 DevPulse AI - Multi-Agent Signal Intelligence",
+      "description": "Aggregates and scores technical signals into a daily intelligence digest",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "streamlit"
+        ],
+        "entrypoint": "streamlit_app.py"
+      }
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/product_launch_intelligence_agent",
+      "title": "🚀 AI Product Launch Intelligence Agent",
+      "description": "Go-to-market intelligence on competitor launches",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/multi_agent_apps/trust_gated_agent_team",
+      "title": "🛡️ Trust-Gated Multi-Agent Research Team",
+      "description": "Every agent verified, every action in a hash-chained audit trail",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/single_agent_apps/ai_consultant_agent",
+      "title": "🤝 AI Consultant Agent",
+      "description": "Market analysis and strategy recommendations with live web research",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/single_agent_apps/ai_deep_research_agent",
+      "title": "🔍 AI Deep Research Agent",
+      "description": "Comprehensive web research with the OpenAI Agents SDK and Firecrawl",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "openai-agents-sdk"
+        ]
+      }
+    },
+    {
+      "path": "advanced_ai_agents/single_agent_apps/ai_fraud_investigation_agent",
+      "title": "🔍 AI Fraud Investigation Agent",
+      "description": "Cross-references public records to flag facilities that don't add up",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/single_agent_apps/ai_health_fitness_agent",
+      "title": "🏋️‍♂️ AI Health & Fitness Agent",
+      "description": "Tailored diet and workout plans from your goals",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/single_agent_apps/ai_investment_agent",
+      "title": "📈 AI Investment Agent",
+      "description": "Stock comparison reports built on Yahoo Finance data",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/single_agent_apps/ai_journalist_agent",
+      "title": "🗞️ AI Journalist Agent",
+      "description": "Researches, writes, and edits articles on any topic",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/single_agent_apps/ai_meeting_agent",
+      "title": "📑 AI Meeting Agent",
+      "description": "Context, industry insights, and strategy briefs before you walk in",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/single_agent_apps/ai_movie_production_agent",
+      "title": "🎬 AI Movie Production Agent",
+      "description": "Script drafts and casting ideas from a one-line movie concept",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/single_agent_apps/ai_system_architect_r1",
+      "title": "🏗️ AI System Architect Agent",
+      "description": "Architecture reviews using DeepSeek R1 reasoning plus Claude",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "claude",
+          "deepseek"
+        ]
+      }
+    },
+    {
+      "path": "advanced_ai_agents/single_agent_apps/earnings_call_analyst_agent",
+      "title": "📡 Earnings Call Analyst Agent",
+      "description": "Turns YouTube earnings calls into a playback-synced analyst workspace",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_ai_agents/single_agent_apps/research_agent_gemini_interaction_api",
+      "title": "🔬 AI Research Planner & Executor (Google Interactions API)",
+      "description": "Multi-phase research with stateful conversations and auto-generated infographics",
+      "category": "advanced-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_llm_apps/chat_with_X_tutorials/chat_with_github",
+      "title": "💬 Chat with GitHub (GPT & Llama3)",
+      "description": "Any repo, answered in 30 lines of RAG",
+      "category": "chat-with-x",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "gpt"
+        ]
+      }
+    },
+    {
+      "path": "advanced_llm_apps/chat_with_X_tutorials/chat_with_gmail",
+      "title": "📨 Chat with Gmail",
+      "description": "Ask your inbox questions",
+      "category": "chat-with-x",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_llm_apps/chat_with_X_tutorials/chat_with_pdf",
+      "title": "📄 Chat with PDF (GPT & Llama3)",
+      "description": "The classic, in 30 lines of Python",
+      "category": "chat-with-x",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "gpt"
+        ]
+      }
+    },
+    {
+      "path": "advanced_llm_apps/chat_with_X_tutorials/chat_with_research_papers",
+      "title": "📚 Chat with Research Papers (ArXiv) (GPT & Llama3)",
+      "description": "Explore arXiv conversationally with GPT-4o",
+      "category": "chat-with-x",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "gpt"
+        ]
+      }
+    },
+    {
+      "path": "advanced_llm_apps/chat_with_X_tutorials/chat_with_substack",
+      "title": "📝 Chat with Substack",
+      "description": "Chat with any newsletter's archive",
+      "category": "chat-with-x",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_llm_apps/chat_with_X_tutorials/chat_with_youtube_videos",
+      "title": "📽️ Chat with YouTube Videos",
+      "description": "Ask videos questions via their transcripts",
+      "category": "chat-with-x",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_llm_apps/llm_apps_with_memory_tutorials/ai_arxiv_agent_memory",
+      "title": "💾 AI ArXiv Agent with Memory",
+      "description": "Paper search that remembers your research interests",
+      "category": "llm-apps-with-memory",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory",
+      "title": "🛩️ AI Travel Agent with Memory",
+      "description": "A travel assistant that remembers your preferences",
+      "category": "llm-apps-with-memory",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_llm_apps/llm_apps_with_memory_tutorials/llama3_stateful_chat",
+      "title": "💬 Llama3 Stateful Chat",
+      "description": "Session-persistent chat with Llama 3",
+      "category": "llm-apps-with-memory",
+      "kind": "app",
+      "tags": {
+        "models": [
+          "llama"
+        ]
+      }
+    },
+    {
+      "path": "advanced_llm_apps/llm_apps_with_memory_tutorials/llm_app_personalized_memory",
+      "title": "📝 LLM App with Personalized Memory",
+      "description": "A chatbot that keeps context across conversations",
+      "category": "llm-apps-with-memory",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_llm_apps/llm_apps_with_memory_tutorials/local_chatgpt_with_memory",
+      "title": "🗄️ Local ChatGPT Clone with Memory",
+      "description": "Fully local, with a personal memory per user",
+      "category": "llm-apps-with-memory",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "local": true
+      }
+    },
+    {
+      "path": "advanced_llm_apps/llm_apps_with_memory_tutorials/multi_llm_memory",
+      "title": "🧠 Multi-LLM Application with Shared Memory",
+      "description": "Different models, one shared conversation memory",
+      "category": "llm-apps-with-memory",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_llm_apps/llm_finetuning_tutorials/gemma3_finetuning",
+      "title": "🦥 Gemma 3 Fine-tuning",
+      "description": "4-bit LoRA with Unsloth, small and readable",
+      "category": "llm-fine-tuning",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "gemma"
+        ]
+      }
+    },
+    {
+      "path": "advanced_llm_apps/llm_finetuning_tutorials/llama3.2_finetuning",
+      "title": "🦙 Llama 3.2 Fine-tuning",
+      "description": "Fine-tune in 30 lines, free on Colab",
+      "category": "llm-fine-tuning",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "llama"
+        ]
+      }
+    },
+    {
+      "path": "advanced_llm_apps/llm_optimization_tools/headroom_context_optimization",
+      "title": "🧠 Headroom Context Optimization",
+      "description": "Reduce LLM API costs by 50-90%",
+      "category": "llm-optimization-tools",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_llm_apps/llm_optimization_tools/toonify_token_optimization",
+      "title": "🎯 Toonify Token Optimization",
+      "description": "Reduce LLM API costs by 30-60% using TOON format",
+      "category": "llm-optimization-tools",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "advanced_llm_apps/needle",
+      "title": "🪡 Needle - A New Way to Find",
+      "description": "Search webpages by meaning and highlight the strongest source sentence, using a Chrome extension powered by TypeSafe Jev",
+      "category": "ai-browser-tools",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "agent_skills/advisor-orchestrator-worker",
+      "title": "🧠 Advisor Orchestrator Worker",
+      "description": "Meta Loop with Claude Fable 5.1 as advisor, GPT-6 Astra as orchestrator, and Gemini 3.8 Flash as worker",
+      "category": "agent-skills",
+      "kind": "skill",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "gpt",
+          "claude",
+          "gemini"
+        ],
+        "entrypoint": "SKILL.md"
+      }
+    },
+    {
+      "path": "agent_skills/commit-archaeologist",
+      "title": "🏺 Commit Archaeologist",
+      "description": "Reconstructs why a file or code region exists from its introducing commit, later edits, co-changes, and intent clues",
+      "category": "agent-skills",
+      "kind": "skill",
+      "readme": "README.md",
+      "tags": {
+        "entrypoint": "SKILL.md"
+      }
+    },
+    {
+      "path": "agent_skills/dependency-doctor",
+      "title": "🩺 Dependency Doctor",
+      "description": "Checks a dependency manifest for standard-library pins, obsolete backports, unpinned entries, duplicate constraints, and yanked releases",
+      "category": "agent-skills",
+      "kind": "skill",
+      "readme": "README.md",
+      "tags": {
+        "entrypoint": "SKILL.md"
+      }
+    },
+    {
+      "path": "agent_skills/first-reader",
+      "title": "👁️ First Reader",
+      "description": "Simulates real readers going through your draft and reports where they lose interest, where they stop reading, and what they remember afterward, without rewriting a word",
+      "category": "agent-skills",
+      "kind": "skill",
+      "readme": "README.md",
+      "tags": {
+        "entrypoint": "SKILL.md"
+      }
+    },
+    {
+      "path": "agent_skills/project-graveyard",
+      "title": "⚰️ Project Graveyard",
+      "description": "Finds every side project you abandoned, tells you why each one died, and helps you finish the one worth going back to",
+      "category": "agent-skills",
+      "kind": "skill",
+      "readme": "README.md",
+      "tags": {
+        "entrypoint": "SKILL.md"
+      }
+    },
+    {
+      "path": "agent_skills/scope-creep-detector",
+      "title": "🔭 Scope Creep Detector",
+      "description": "Checks whether a diff grew beyond its stated intent and recommends what to keep, split, or justify",
+      "category": "agent-skills",
+      "kind": "skill",
+      "readme": "README.md",
+      "tags": {
+        "entrypoint": "SKILL.md"
+      }
+    },
+    {
+      "path": "agent_skills/self-improving-agent-skills",
+      "title": "♾️ Self-Improving Agent Skills",
+      "description": "Automatically optimize agent skills using Gemini and ADK",
+      "category": "agent-skills",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "google-adk"
+        ],
+        "models": [
+          "gemini"
+        ]
+      }
+    },
+    {
+      "path": "agent_skills/thinking-out-loud",
+      "title": "🎙️ Thinking Out Loud",
+      "description": "Echoes a voice ramble back as a scannable brief, with the model's guesses quarantined and your reversals flagged",
+      "category": "agent-skills",
+      "kind": "skill",
+      "readme": "README.md",
+      "tags": {
+        "entrypoint": "SKILL.md"
+      }
+    },
+    {
+      "path": "ai_agent_framework_crash_course/google_adk_crash_course",
+      "title": "Google ADK Crash Course",
+      "description": "Starter agent, structured outputs, tools (built-in, function, third-party, MCP), memory, callbacks, plugins, and multi-agent patterns. Model-agnostic.",
+      "category": "ai-agent-framework-crash-courses",
+      "kind": "crash_course",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "google-adk",
+          "mcp"
+        ]
+      }
+    },
+    {
+      "path": "ai_agent_framework_crash_course/openai_sdk_crash_course",
+      "title": "OpenAI Agents SDK Crash Course",
+      "description": "Starter agent, function calling, structured outputs, tools, memory, evaluation, handoffs, swarm orchestration, and routing logic.",
+      "category": "ai-agent-framework-crash-courses",
+      "kind": "crash_course",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "openai-agents-sdk"
+        ]
+      }
+    },
+    {
+      "path": "always_on_agents/always_on_hn_briefing_agent",
+      "title": "📰 Always-on Hacker News Briefing Agent",
+      "description": "A scheduled scout that ships a ranked daily brief to Slack or email",
+      "category": "always-on-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "always_on_agents/release_radar_agent",
+      "title": "📡 Release Radar Agent",
+      "description": "Watches dependency releases and briefs you on breaking, deprecated, security, and major-version changes",
+      "category": "always-on-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "generative_ui_agents/ai-dashboard-canvas-agent",
+      "title": "📊 AI Dashboard Canvas Agent",
+      "description": "Describe a dashboard in chat, charts assemble on a live canvas",
+      "category": "generative-ui-and-agentic-frontends",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "generative_ui_agents/ai-deep-research-agent",
+      "title": "🔍 AI Deep Research Agent",
+      "description": "Research where every tool call renders as a live workspace card",
+      "category": "generative-ui-and-agentic-frontends",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "generative_ui_agents/ai-financial-coach-agent",
+      "title": "🪙 AI Financial Coach Agent",
+      "description": "Budget, savings, and debt plans rendered as interactive cards",
+      "category": "generative-ui-and-agentic-frontends",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "generative_ui_agents/ai-mcp-app-builder",
+      "title": "🛠️ AI MCP App Builder",
+      "description": "Describe an MCP app, get a live sandboxed instance back",
+      "category": "generative-ui-and-agentic-frontends",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "mcp"
+        ]
+      }
+    },
+    {
+      "path": "generative_ui_agents/ai-shadcn-component-generator",
+      "title": "🎛️ AI Shadcn Component Generator",
+      "description": "Chat your way to production-ready shadcn components",
+      "category": "generative-ui-and-agentic-frontends",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "generative_ui_agents/generative-ui-starter-project",
+      "title": "🗂️ Generative UI Starter Project",
+      "description": "A chat-driven kanban board you and the agent work together",
+      "category": "generative-ui-and-agentic-frontends",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "generative_ui_agents/mcp-apps-generative-ui-showcase",
+      "title": "✈️ MCP Apps Generative UI Showcase",
+      "description": "MCP apps that render real interactive UI, flight search included",
+      "category": "generative-ui-and-agentic-frontends",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "mcp"
+        ]
+      }
+    },
+    {
+      "path": "mcp_ai_agents/ai_travel_planner_mcp_agent_team",
+      "title": "🌍 AI Travel Planner MCP Agent",
+      "description": "Itineraries built on live Airbnb and Google Maps data",
+      "category": "mcp-ai-agents",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "mcp"
+        ],
+        "entrypoint": "app.py"
+      }
+    },
+    {
+      "path": "mcp_ai_agents/browser_mcp_agent",
+      "title": "♾️ Browser MCP Agent",
+      "description": "Drive a real browser with natural language over MCP",
+      "category": "mcp-ai-agents",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "mcp"
+        ],
+        "entrypoint": "main.py"
+      }
+    },
+    {
+      "path": "mcp_ai_agents/github_mcp_agent",
+      "title": "🐙 GitHub MCP Agent",
+      "description": "Explore and analyze any repo in plain English",
+      "category": "mcp-ai-agents",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "mcp"
+        ]
+      }
+    },
+    {
+      "path": "mcp_ai_agents/multi_mcp_agent_router",
+      "title": "🔀 Multi-MCP Agent Router",
+      "description": "Specialist agents, each wired to its own MCP server",
+      "category": "mcp-ai-agents",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "mcp"
+        ]
+      }
+    },
+    {
+      "path": "mcp_ai_agents/notion_mcp_agent",
+      "title": "📑 Notion MCP Agent",
+      "description": "Talk to your Notion pages from the terminal",
+      "category": "mcp-ai-agents",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "mcp"
+        ]
+      }
+    },
+    {
+      "path": "mcp_ai_agents/openai_remote_mcp_bridge",
+      "title": "🔌 OpenAI Remote MCP Tool Bridge",
+      "description": "Connect OpenAI function calling directly to a remote MCP server",
+      "category": "mcp-ai-agents",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "mcp"
+        ]
+      }
+    },
+    {
+      "path": "rag_tutorials/agentic_rag_embedding_gemma",
+      "title": "🔥 Agentic RAG with Embedding Gemma",
+      "description": "Fully local agentic RAG with EmbeddingGemma and Llama 3.2",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "llama",
+          "gemma"
+        ],
+        "local": true
+      }
+    },
+    {
+      "path": "rag_tutorials/agentic_rag_with_reasoning",
+      "title": "🧐 Agentic RAG with Reasoning",
+      "description": "Watch the agent's step-by-step reasoning as it retrieves",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "rag_tutorials/agentic_typed_rag_pydanticai",
+      "title": "📎 Typed Agentic RAG with Pydantic AI",
+      "description": "Validated answers with exact citations, or a refusal when evidence is weak",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "pydantic-ai"
+        ],
+        "entrypoint": "app.py"
+      }
+    },
+    {
+      "path": "rag_tutorials/ai_blog_search",
+      "title": "📰 AI Blog Search (RAG)",
+      "description": "Agentic search over blog content, built on LangGraph",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "langgraph"
+        ],
+        "entrypoint": "app.py"
+      }
+    },
+    {
+      "path": "rag_tutorials/autonomous_rag",
+      "title": "🔍 Autonomous RAG",
+      "description": "GPT-4o answers from your PDFs, falls back to web search",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "gpt"
+        ]
+      }
+    },
+    {
+      "path": "rag_tutorials/contextualai_rag_agent",
+      "title": "🔄 Contextual AI RAG Agent",
+      "description": "Managed RAG: datastore to grounded chat in minutes",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "rag_tutorials/corrective_rag",
+      "title": "🔄 Corrective RAG (CRAG)",
+      "description": "Retrieval that grades itself and retries before answering",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "rag_tutorials/deepseek_local_rag_agent",
+      "title": "🐋 Deepseek Local RAG Agent",
+      "description": "Local DeepSeek reasoning over your own documents",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "deepseek"
+        ],
+        "local": true
+      }
+    },
+    {
+      "path": "rag_tutorials/gemini_agentic_rag",
+      "title": "🤔 Gemini Agentic RAG",
+      "description": "Query rewriting and web fallback with Gemini Flash Thinking",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "gemini"
+        ]
+      }
+    },
+    {
+      "path": "rag_tutorials/hybrid_search_rag",
+      "title": "👀 Hybrid Search RAG (Cloud)",
+      "description": "Keyword plus vector search feeding Claude",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "claude"
+        ],
+        "entrypoint": "main.py"
+      }
+    },
+    {
+      "path": "rag_tutorials/knowledge_graph_rag_citations",
+      "title": "🕸️ Knowledge Graph RAG with Citations",
+      "description": "Multi-hop answers with verifiable source attribution",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "rag_tutorials/llama3.1_local_rag",
+      "title": "🔄 Llama 3.1 Local RAG",
+      "description": "Chat with any webpage, fully offline",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "llama"
+        ],
+        "local": true
+      }
+    },
+    {
+      "path": "rag_tutorials/local_hybrid_search_rag",
+      "title": "🖥️ Local Hybrid Search RAG",
+      "description": "Hybrid search with everything running on your machine",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "local": true
+      }
+    },
+    {
+      "path": "rag_tutorials/local_rag_agent",
+      "title": "🦙 Local RAG Agent",
+      "description": "Llama 3.2 and Qdrant, no API keys required",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "llama"
+        ],
+        "local": true
+      }
+    },
+    {
+      "path": "rag_tutorials/multimodal_agentic_rag",
+      "title": "🧬 Multimodal Agentic RAG",
+      "description": "Text, PDFs, images, audio, and video, answered with citations",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "rag_tutorials/rag-as-a-service",
+      "title": "🧩 RAG-as-a-Service",
+      "description": "A production RAG service in under 50 lines",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "rag_tutorials/rag_agent_cohere",
+      "title": "✨ RAG Agent with Cohere",
+      "description": "Command R7B retrieval with web-search fallback",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "command-r"
+        ]
+      }
+    },
+    {
+      "path": "rag_tutorials/rag_chain",
+      "title": "⛓️ Basic RAG Chain",
+      "description": "The minimal retrieval pipeline, applied to pharma research",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "entrypoint": "app.py"
+      }
+    },
+    {
+      "path": "rag_tutorials/rag_database_routing",
+      "title": "📠 RAG with Database Routing",
+      "description": "Routes each question to the right database automatically",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "rag_tutorials/rag_failure_diagnostics_clinic",
+      "title": "🩺 RAG Failure Diagnostics Clinic",
+      "description": "Find out why your RAG pipeline is wrong, systematically",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "rag_tutorials/vision_rag",
+      "title": "🖼️ Vision RAG",
+      "description": "Ask questions about images and PDF pages with Embed-4",
+      "category": "rag-retrieval-augmented-generation",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "starter_ai_agents/ai_blog_to_podcast_agent",
+      "title": "🎙️ AI Blog to Podcast Agent",
+      "description": "Turn any blog URL into a narrated podcast episode",
+      "category": "starter-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "starter_ai_agents/ai_breakup_recovery_agent",
+      "title": "❤️‍🩹 AI Breakup Recovery Agent",
+      "description": "An agent team that talks you through the post-breakup spiral",
+      "category": "starter-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "starter_ai_agents/ai_data_analysis_agent",
+      "title": "📊 AI Data Analysis Agent",
+      "description": "Ask questions of any CSV or Excel file in plain English",
+      "category": "starter-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "starter_ai_agents/ai_medical_imaging_agent",
+      "title": "🩻 AI Medical Imaging Agent",
+      "description": "Diagnostic analysis of X-rays and scans with Gemini",
+      "category": "starter-ai-agents",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "gemini"
+        ]
+      }
+    },
+    {
+      "path": "starter_ai_agents/ai_meme_generator_agent_browseruse",
+      "title": "😂 AI Meme Generator Agent (Browser)",
+      "description": "Makes memes by driving a real browser, not an image API",
+      "category": "starter-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "starter_ai_agents/ai_music_generator_agent",
+      "title": "🎵 AI Music Generator Agent",
+      "description": "Prompt in, MP3 track out",
+      "category": "starter-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "starter_ai_agents/ai_travel_agent",
+      "title": "🛫 AI Travel Agent (Local & Cloud)",
+      "description": "Personalized day-by-day travel itineraries",
+      "category": "starter-ai-agents",
+      "kind": "app",
+      "readme": "README.MD",
+      "tags": {
+        "local": true
+      }
+    },
+    {
+      "path": "starter_ai_agents/ai_x402_paying_agent",
+      "title": "💸 AI x402 Paying Agent",
+      "description": "An agent with a wallet that pays per-call for the data it needs — no API keys",
+      "category": "starter-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "starter_ai_agents/mixture_of_agents",
+      "title": "🔄 Mixture of Agents",
+      "description": "Multiple LLMs answer, one aggregates the best response",
+      "category": "starter-ai-agents",
+      "kind": "app"
+    },
+    {
+      "path": "starter_ai_agents/multimodal_ai_agent",
+      "title": "✨ Gemini Multimodal Agent",
+      "description": "Video analysis plus web search in one agent",
+      "category": "starter-ai-agents",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "gemini"
+        ]
+      }
+    },
+    {
+      "path": "starter_ai_agents/openai_research_agent",
+      "title": "🔍 OpenAI Research Agent",
+      "description": "Multi-agent topic research with the OpenAI Agents SDK",
+      "category": "starter-ai-agents",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "frameworks": [
+          "openai-agents-sdk"
+        ]
+      }
+    },
+    {
+      "path": "starter_ai_agents/web_scraping_ai_agent",
+      "title": "🕸️ Web Scraping AI Agent",
+      "description": "Describe what to extract and the agent scrapes it",
+      "category": "starter-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "starter_ai_agents/xai_finance_agent",
+      "title": "📊 xAI Finance Agent",
+      "description": "Real-time stock analysis powered by Grok",
+      "category": "starter-ai-agents",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "grok"
+        ]
+      }
+    },
+    {
+      "path": "voice_ai_agents/ai_audio_tour_agent",
+      "title": "🗣️ AI Audio Tour Agent",
+      "description": "Self-guided audio tours from your location, interests, and pace",
+      "category": "voice-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "voice_ai_agents/customer_support_voice_agent",
+      "title": "📞 Customer Support Voice Agent",
+      "description": "Voice answers grounded in your own docs",
+      "category": "voice-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    },
+    {
+      "path": "voice_ai_agents/insurance_claim_live_agent_team",
+      "title": "🛡️ Insurance Claim Live Agent Team",
+      "description": "Voice claim intake on Gemini 3.8 Live that writes a field notebook, looks at damage through the webcam, and sketches the incident",
+      "category": "voice-ai-agents",
+      "kind": "app",
+      "readme": "README.md",
+      "tags": {
+        "models": [
+          "gemini"
+        ]
+      }
+    },
+    {
+      "path": "voice_ai_agents/voice_rag_openaisdk",
+      "title": "🔊 Voice RAG Agent (OpenAI SDK)",
+      "description": "Ask your PDFs questions, hear the answers",
+      "category": "voice-ai-agents",
+      "kind": "app",
+      "readme": "README.md"
+    }
+  ]
+}
