@@ -73,13 +73,28 @@ streamlit run travel_agent.py
 
 ## 🙏 Thanks to our sponsors
 
-<p align="center">
-  <a href="https://www.tinyfish.ai/ambassadors" target="_blank" rel="noopener" title="TinyFish Community Programs">
-    <img src="docs/banner/sponsors/tinyfish_community.png" width="900px" alt="TinyFish Community Programs: join the Students and Ambassadors programs for free credits, bounties, gift cards, swag, certifications, and event budget">
-  </a>
-</p>
-
-<p align="center"><sub><b>TinyFish Community Programs:</b> <a href="https://www.tinyfish.ai/students">Students</a> · <a href="https://www.tinyfish.ai/ambassadors">Ambassadors</a> · <a href="https://sponsorunwindai.com/">Become a sponsor</a></sub></p>
+<table align="center" cellpadding="16" cellspacing="12">
+  <tr>
+    <td align="center">
+      <a href="https://www.tinyfish.ai/ambassadors" target="_blank" rel="noopener" title="TinyFish">
+        <img src="docs/banner/sponsors/tinyfish_community.png" alt="TinyFish Community Programs: join the Students and Ambassadors programs" width="500">
+      </a>
+      <br>
+      <a href="https://www.tinyfish.ai/ambassadors" target="_blank" rel="noopener" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
+        TinyFish
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://sponsorunwindai.com/" title="Become a Sponsor">
+        <img src="docs/banner/sponsor_awesome_llm_apps.png" alt="Become a Sponsor" width="500">
+      </a>
+      <br>
+      <a href="https://sponsorunwindai.com/" style="text-decoration: none; color: #333; font-weight: bold; font-size: 18px;">
+        Become a Sponsor
+      </a>
+    </td>
+  </tr>
+</table>
 
 ## 📂 Browse all templates
 
