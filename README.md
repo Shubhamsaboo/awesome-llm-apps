@@ -109,6 +109,7 @@ streamlit run travel_agent.py
 *   [🩺 Dependency Doctor](agent_skills/dependency-doctor/) - Checks a dependency manifest for standard-library pins, obsolete backports, unpinned entries, duplicate constraints, and yanked releases
 *   [🧠 Advisor Orchestrator Worker](agent_skills/advisor-orchestrator-worker/) - Meta Loop with Claude Fable 5.1 as advisor, GPT-6 Astra as orchestrator, and Gemini 3.8 Flash as worker
 *   [🎙️ Thinking Out Loud](agent_skills/thinking-out-loud/) - Echoes a voice ramble back as a scannable brief, with the model's guesses quarantined and your reversals flagged
+*   [🦊 MetaMask Agent Wallet](agent_skills/metamask-agent-wallet/) - Runs a crypto wallet through the MetaMask `mm` CLI: balances, transfers, swaps, bridges, perps, prediction markets, and x402 payments, confirming every action that moves funds
 *   [♾️ Self-Improving Agent Skills](agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
 
 ### 🌱 Starter AI Agents

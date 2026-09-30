@@ -50,6 +50,19 @@
       "evals_dir": "agent_skills/evals/first-reader"
     },
     {
+      "name": "metamask-agent-wallet",
+      "path": "agent_skills/metamask-agent-wallet",
+      "description": "Use when the user asks anything about blockchain wallets, transactions, signing, token transfers, supported chains, wallet balances, perpetual futures trading, prediction markets, token swaps, cross-chain bridges, market data, token discovery, decoding EVM calldata, DeFi earn/yield vaults, installing or removing third-party `mm` CLI plugins, or authentication via the MetaMask Agentic CLI; also when an HTTP request returns 402 Payment Required / x402, when an MCP tool call returns an x402 payment-required result, or the agent needs to pay for a paywalled API, endpoint, file, tool, or resource. Single entry point for all mm CLI operations.",
+      "license": "MIT",
+      "metadata": {
+        "author": "metamask",
+        "version": "7.7.2",
+        "cliVersion": "7.0.0"
+      },
+      "install": "npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/metamask-agent-wallet",
+      "evals_dir": "agent_skills/evals/metamask-agent-wallet"
+    },
+    {
       "name": "project-graveyard",
       "path": "agent_skills/project-graveyard",
       "description": "Scans the developer's machine for dead side projects, autopsies each one from its git history (died at the payments wall, killed by a newer project, finished but never shipped), surfaces their personal death patterns, and picks the corpse most worth resurrecting — then helps ship it. Use when the user mentions abandoned, unfinished, or old side projects, asks \"what should I finish\", wants to revive or resurrect a project, says \"run the graveyard\", wonders why they never finish anything, or is about to start a new project that sounds like one they already built. Runs entirely locally.",

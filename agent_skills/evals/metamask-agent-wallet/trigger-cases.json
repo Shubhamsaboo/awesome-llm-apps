@@ -1,0 +1,66 @@
+{
+  "skill": "metamask-agent-wallet",
+  "purpose": "Trigger behavior spec. CI checks that positive prompts match the skill description more strongly than near-misses.",
+  "cases": [
+    {
+      "id": "wallet-balance",
+      "prompt": "check my wallet balances on every chain",
+      "should_trigger": true,
+      "assert": "Runs the mm readiness gate, then reads balances with the mm CLI and reports them per chain."
+    },
+    {
+      "id": "token-swap",
+      "prompt": "swap 100 USDC for ETH with my MetaMask wallet",
+      "should_trigger": true,
+      "assert": "Gets a swap quote, shows from/to tokens, amount, chain, slippage, and quoted output, and executes only after the user confirms."
+    },
+    {
+      "id": "cross-chain-bridge",
+      "prompt": "move my tokens from Base to Arbitrum using cross-chain bridges",
+      "should_trigger": true,
+      "assert": "Quotes the bridge, confirms source and destination chains and amounts, and executes only after approval."
+    },
+    {
+      "id": "x402-paywall",
+      "prompt": "this API endpoint returned 402 Payment Required, pay for it",
+      "should_trigger": true,
+      "assert": "Runs x402_pay.py inspect, shows the terms, and pays with --confirm --approved only after the user approves that option."
+    },
+    {
+      "id": "decode-calldata",
+      "prompt": "decode this EVM calldata for me",
+      "should_trigger": true,
+      "assert": "Uses the mm decode command and explains the decoded function and arguments."
+    },
+    {
+      "id": "prediction-market",
+      "prompt": "show me open prediction markets I can trade",
+      "should_trigger": true,
+      "assert": "Lists prediction markets through the mm CLI without placing any order."
+    },
+    {
+      "id": "near-miss-solidity",
+      "prompt": "write a Solidity smart contract for an NFT collection",
+      "should_trigger": false,
+      "assert": "Does not trigger for smart contract authoring, which the mm CLI does not do."
+    },
+    {
+      "id": "near-miss-explain-gas",
+      "prompt": "explain how gas fees work conceptually",
+      "should_trigger": false,
+      "assert": "Does not trigger for a conceptual explanation that needs no wallet."
+    },
+    {
+      "id": "near-miss-react-button",
+      "prompt": "add a connect button to my React app",
+      "should_trigger": false,
+      "assert": "Does not trigger for building a dapp frontend."
+    },
+    {
+      "id": "near-miss-npm-install",
+      "prompt": "install lodash with npm",
+      "should_trigger": false,
+      "assert": "Does not trigger for installing an unrelated package."
+    }
+  ]
+}
