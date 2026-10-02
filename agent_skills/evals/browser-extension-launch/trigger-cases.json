@@ -1,0 +1,36 @@
+{
+  "skill": "browser-extension-launch",
+  "purpose": "Trigger-behavior spec for browser-extension creation, release, and recovery requests.",
+  "cases": [
+    {
+      "id": "create-extension",
+      "prompt": "help me build a browser extension",
+      "should_trigger": true,
+      "assert": "Starts the browser-extension product, development, and acceptance workflow."
+    },
+    {
+      "id": "publish-extension",
+      "prompt": "prepare my Chrome extension for Web Store submission",
+      "should_trigger": true,
+      "assert": "Runs release, evidence, permissions, privacy, and store-material preparation."
+    },
+    {
+      "id": "continue-extension",
+      "prompt": "continue my existing extension and fix the failed browser test",
+      "should_trigger": true,
+      "assert": "Resumes recorded state and enters diagnosis before re-running acceptance."
+    },
+    {
+      "id": "near-miss-website",
+      "prompt": "build me a normal marketing website",
+      "should_trigger": false,
+      "assert": "Does not trigger for ordinary website development."
+    },
+    {
+      "id": "near-miss-knowledge",
+      "prompt": "what is a Chrome content script",
+      "should_trigger": false,
+      "assert": "Does not trigger the delivery workflow for a knowledge-only question."
+    }
+  ]
+}

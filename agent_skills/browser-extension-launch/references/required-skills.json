@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "verified_at": "2026-09-11",
+  "skills": [
+    {
+      "name": "chrome-extensions",
+      "required_when": "extension-development-and-publishing",
+      "bundled_substitute_allowed": false,
+      "source": {
+        "repo": "GoogleChrome/modern-web-guidance",
+        "path": "skills/chrome-extensions",
+        "ref": "bfd8c8dded770f3ba07a518e28991a32df40f902",
+        "license": "Apache-2.0",
+        "entry_sha256": "c67d9e4ba9da93ed0da8b0147235e5890aa24e659548f65b7765c5af0a470c3f"
+      },
+      "verified_local_entry_sha256": "c67d9e4ba9da93ed0da8b0147235e5890aa24e659548f65b7765c5af0a470c3f",
+      "local_version_policy": "reuse compatible installed copy; do not assume local copy equals upstream revision"
+    },
+    {
+      "name": "extension-create",
+      "required_when": "new-project",
+      "bundled_substitute_allowed": false,
+      "source": {
+        "repo": "quangpl/browser-extension-skills",
+        "path": "skills/extension-create",
+        "ref": "249886cf8137086792b6c3a5a2f7adce117a9f8d",
+        "license": "MIT",
+        "entry_sha256": "579b05e875ae6b63ce98aad54e4e0a4ad0b55afb3779e77f3d9cc511e99fc1f2"
+      },
+      "verified_local_entry_sha256": "579b05e875ae6b63ce98aad54e4e0a4ad0b55afb3779e77f3d9cc511e99fc1f2",
+      "local_version_policy": "reuse compatible installed copy; do not assume local copy equals upstream revision"
+    },
+    {
+      "name": "setup-matt-pocock-skills",
+      "required_when": "complex-project-setup",
+      "bundled_substitute_allowed": false,
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/engineering/setup-matt-pocock-skills",
+        "ref": "3cca18b368ae95cdbdebbff572ccafa662551015",
+        "license": "MIT",
+        "entry_sha256": "2bcd89e97777cdb705914424e39c97d5db524c8eb4eafac8120778a07774f0ec"
+      },
+      "verified_local_entry_sha256": "310fb1a73c0467e617e17d7c41d4a2278b5405c4a27f36d7cd22bb4599aee6bb",
+      "local_version_policy": "reuse compatible installed copy; do not assume local copy equals upstream revision"
+    },
+    {
+      "name": "to-spec",
+      "required_when": "complex-spec-and-parent-ticket",
+      "bundled_substitute_allowed": false,
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/engineering/to-spec",
+        "ref": "3cca18b368ae95cdbdebbff572ccafa662551015",
+        "license": "MIT",
+        "entry_sha256": "43ad9cf318e5e7d3d1fa360253a37021796dc87a0c2e595ad262661a10f85088"
+      },
+      "verified_local_entry_sha256": "5d26479544b08048d3a8f79d937b39bc613a617f026b3fd083bafc1e99a7b811",
+      "local_version_policy": "reuse compatible installed copy; do not assume local copy equals upstream revision"
+    },
+    {
+      "name": "to-tickets",
+      "required_when": "complex-ticket-splitting",
+      "bundled_substitute_allowed": false,
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/engineering/to-tickets",
+        "ref": "3cca18b368ae95cdbdebbff572ccafa662551015",
+        "license": "MIT",
+        "entry_sha256": "5c9fba69845c2519b9b35b9af42ae5142c21f8ca15ac2123dc2722002c8058ae"
+      },
+      "verified_local_entry_sha256": "5ecdf1d4df8a360ed39df21a2347f97ba177afd449a577da4f6b6ea8e1ebb808",
+      "local_version_policy": "reuse compatible installed copy; do not assume local copy equals upstream revision"
+    },
+    {
+      "name": "implement",
+      "required_when": "complex-ticket-implementation",
+      "bundled_substitute_allowed": false,
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/engineering/implement",
+        "ref": "3cca18b368ae95cdbdebbff572ccafa662551015",
+        "license": "MIT",
+        "entry_sha256": "6d3fd9e83b8f36e5213854779db49b256a457a7ebb4a503e53fa7dcff696adc3"
+      },
+      "verified_local_entry_sha256": "6d3fd9e83b8f36e5213854779db49b256a457a7ebb4a503e53fa7dcff696adc3",
+      "local_version_policy": "reuse compatible installed copy; do not assume local copy equals upstream revision"
+    },
+    {
+      "name": "diagnosing-bugs",
+      "required_when": "on-failure",
+      "bundled_substitute_allowed": false,
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/engineering/diagnosing-bugs",
+        "ref": "3cca18b368ae95cdbdebbff572ccafa662551015",
+        "license": "MIT",
+        "entry_sha256": "77f3cf31bc99b2f49af943222526531fcc9fc41d047626d3640e875e85af3e84"
+      },
+      "verified_local_entry_sha256": "b9339b09ee3980808d8c5a35c7251b891b8b1e0036ec4ca37812b976ebddf6b6",
+      "local_version_policy": "reuse compatible installed copy; do not assume local copy equals upstream revision"
+    },
+    {
+      "name": "code-review",
+      "required_when": "implementation-and-release-review",
+      "bundled_substitute_allowed": false,
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/engineering/code-review",
+        "ref": "3cca18b368ae95cdbdebbff572ccafa662551015",
+        "license": "MIT",
+        "entry_sha256": "47f4e52c21694def9c7c11cbfbf891ca35eac7a93e395797515be3c8a409ae50"
+      },
+      "verified_local_entry_sha256": "9cf46653dd9c710ea1e6c22423caf31a794c88773bc94bdaa23140277f470442",
+      "local_version_policy": "reuse compatible installed copy; do not assume local copy equals upstream revision"
+    }
+  ],
+  "conditional_host_skills": [
+    "tdd",
+    "triage",
+    "domain-modeling",
+    "ui-designer",
+    "motion-designer",
+    "imagegen",
+    "modern-web-guidance"
+  ],
+  "mcp": {
+    "preferred_provider": "playwright-mcp",
+    "package": "@playwright/mcp",
+    "version": "0.0.80",
+    "repo": "microsoft/playwright-mcp",
+    "ref": "8a13ef8e9f7385a0f89477922127f31cbfde9761",
+    "license": "Apache-2.0",
+    "node_requirement": ">=18",
+    "environment_fallback_requires_user_decision": true,
+    "configuration_reference": "playwright-mcp.md"
+  },
+  "required_host_skills": [
+    {
+      "name": "product-designer",
+      "required_when": "new_or_changed_user_flow_and_experience_acceptance",
+      "bundled_substitute_allowed": true,
+      "source": {
+        "kind": "host-installed",
+        "entry": "product-designer/SKILL.md",
+        "upstream_status": "not_verified"
+      },
+      "verified_local_entry_sha256": "d0995fcc2a4accdb7df4a47d01a7263af6423298db95b76f8eb186a7b95caf74",
+      "portable_fallback": "product-loop.md",
+      "missing_policy": "prefer verified host skill; otherwise execute and record the bundled product-loop portable fallback, never invent a repository"
+    }
+  ]
+}
