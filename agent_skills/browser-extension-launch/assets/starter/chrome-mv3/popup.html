@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>摘一句</title>
+    <link rel="stylesheet" href="popup.css">
+    <script src="popup.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <header class="page-header">
+        <img src="icons/icon-48.png" width="36" height="36" alt="">
+        <div>
+          <h1>摘一句</h1>
+          <p class="subtitle">把喜欢的话，留给下一次的自己。</p>
+        </div>
+      </header>
+
+      <form id="note-form">
+        <div class="label-row">
+          <label for="note-input">记下一句话</label>
+          <span id="input-hint">最多 500 字</span>
+        </div>
+        <textarea id="note-input" name="note" rows="4" maxlength="500"
+          placeholder="手动输入或粘贴一句话……" aria-describedby="input-hint" required disabled></textarea>
+        <button id="save-button" class="primary-button" type="submit" disabled>保存这句话</button>
+      </form>
+
+      <div class="feedback">
+        <p id="status" role="status" aria-live="polite" aria-atomic="true">正在读取已保存的句子……</p>
+        <button id="retry-button" class="text-button" type="button" hidden>重新读取</button>
+      </div>
+
+      <section aria-labelledby="saved-heading">
+        <div class="section-heading">
+          <h2 id="saved-heading">已保存</h2>
+          <span id="note-count">0 句</span>
+        </div>
+        <p id="empty-state" class="empty-state" hidden>还没有句子。<br>在上面记下第一句吧。</p>
+        <ul id="note-list" class="note-list"></ul>
+      </section>
+
+      <footer>只保存在当前浏览器，不上传。<br>卸载插件或清除插件数据后，句子会丢失。</footer>
+    </main>
+  </body>
+</html>

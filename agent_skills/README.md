@@ -19,6 +19,7 @@ Most "skills" on registries are text-only prompt dumps: advice the model already
 | Skill | What it does |
 |---|---|
 | [🧠 advisor-orchestrator-worker](advisor-orchestrator-worker/) | Turns your agent into the orchestrator of a three-tier model team: cheap stateless workers in parallel, expensive advisor consulted only at commitment boundaries, verification gates between every step, all budgeted so a run can't burn a hole in your API bill |
+| [🧩 browser-extension-launch](browser-extension-launch/) | Turns a plain-language idea into a Chrome Manifest V3 extension with resumable project state, deterministic release checks, real-browser acceptance gates, and store-submission preparation |
 | [🏺 commit-archaeologist](commit-archaeologist/) | Reconstructs why a file or code region exists from local git history, including its introducing commit, later edits, repeated companion files, current authorship, and intent clues |
 | [🩺 dependency-doctor](dependency-doctor/) | Autopsies a dependency manifest for standard-library shadowing pins, obsolete backports, unpinned entries, duplicate or conflicting constraints, and opt-in yanked PyPI releases |
 | [👁️ first-reader](first-reader/) | Simulates real readers going through your draft and reports where they lose interest, where they stop reading, and what they remember afterward, without rewriting a word |

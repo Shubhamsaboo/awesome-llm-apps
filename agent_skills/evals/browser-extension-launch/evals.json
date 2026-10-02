@@ -1,0 +1,27 @@
+{
+  "skill_name": "browser-extension-launch",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Build me a Chrome extension that saves selected text locally. I do not code and want to try it on my own computer first.",
+      "expected_output": "A resumable local project with an implemented Manifest V3 extension, a real-browser acceptance record, and clear local installation instructions.",
+      "expectations": [
+        "The skill records a local goal instead of assuming store publication",
+        "The workflow covers entry, core action, repeated use, exit, and recovery",
+        "The current unpacked extension is exercised through a native browser entry point before it is called usable",
+        "Static checks and real-browser evidence remain separate"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Package my existing browser extension and prepare everything needed for Chrome Web Store review.",
+      "expected_output": "A versioned release bundle, permission and privacy explanations, store copy, and explicit status for acceptance versus submission versus publication.",
+      "expectations": [
+        "The release candidate is fingerprinted before acceptance evidence is checked",
+        "The ZIP is inspected without treating packaging as browser acceptance",
+        "Account, fee, identity, and final submission decisions remain with the user",
+        "The result never claims the extension is live without a public store listing"
+      ]
+    }
+  ]
+}

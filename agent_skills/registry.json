@@ -15,6 +15,19 @@
       "evals_dir": "agent_skills/evals/advisor-orchestrator-worker"
     },
     {
+      "name": "browser-extension-launch",
+      "path": "agent_skills/browser-extension-launch",
+      "description": "Builds, tests, packages, and prepares Chrome Manifest V3 extensions for store launch from a plain-language idea. Use when the user asks to create a browser extension, continue an existing extension, debug failures, prepare a release, or recover from Chrome Web Store review feedback.",
+      "license": "MIT",
+      "metadata": {
+        "author": "xiehuan123",
+        "version": "1.0.0",
+        "source": "https://github.com/xiehuan123/browser-extension-launch"
+      },
+      "install": "npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/browser-extension-launch",
+      "evals_dir": "agent_skills/evals/browser-extension-launch"
+    },
+    {
       "name": "commit-archaeologist",
       "path": "agent_skills/commit-archaeologist",
       "description": "Reconstructs why code exists from local git history, including the introducing commit, later changes, current authors, repeated companion files, and likely intent. Use when the user asks \"why does this code exist\", \"who wrote this function and why\", or to \"explain the history of this function\" before a rewrite, refactor, or risky edit. Runs entirely locally.",
