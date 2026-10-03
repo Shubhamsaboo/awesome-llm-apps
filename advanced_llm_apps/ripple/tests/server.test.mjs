@@ -78,6 +78,47 @@ test("direct TypeSafe transport uses Jev model, Bearer auth, and typed answers",
   }
 });
 
+test("TYPESAFE_BASE_URL sends Jev checks to another host", async () => {
+  const { evaluate } = await import("../jev.mjs");
+  const originalFetch = globalThis.fetch,
+    originalKey = process.env.TYPESAFE_API_KEY,
+    originalBase = process.env.TYPESAFE_BASE_URL;
+  process.env.TYPESAFE_API_KEY = "synthetic";
+  process.env.TYPESAFE_BASE_URL = "http://127.0.0.1:8766/";
+  let seen;
+  globalThis.fetch = async (url) => {
+    seen = url;
+    return new Response(
+      JSON.stringify({
+        answers: {
+          b0s0: {
+            choice: "unaffected",
+            probabilities: {
+              likely_conflict: 0.02,
+              worth_reviewing: 0.08,
+              unaffected: 0.9,
+            },
+          },
+        },
+      }),
+      { status: 200 },
+    );
+  };
+  try {
+    await evaluate({
+      source: { before: "Online.", after: "In person." },
+      sentences: [{ id: "b0s0", text: "Bring a laptop.", section: "" }],
+    });
+    assert.equal(seen, "http://127.0.0.1:8766/v1/systemone");
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (originalKey === undefined) delete process.env.TYPESAFE_API_KEY;
+    else process.env.TYPESAFE_API_KEY = originalKey;
+    if (originalBase === undefined) delete process.env.TYPESAFE_BASE_URL;
+    else process.env.TYPESAFE_BASE_URL = originalBase;
+  }
+});
+
 test("failed Jev batches abort siblings and start no remaining work", async () => {
   const { evaluate } = await import("../jev.mjs");
   const originalFetch = globalThis.fetch,

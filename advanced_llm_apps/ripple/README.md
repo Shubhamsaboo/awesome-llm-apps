@@ -117,12 +117,13 @@ The remote-attendance and Zoom-link sentences should be flagged for review. Ripp
 
 ## API Key and Connection Settings
 
-| Setting            | Where to put it                                                             | Purpose                                                     |
-| ------------------ | --------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `TYPESAFE_API_KEY` | Backend `.env` or server environment                                        | Authenticates Jev checks through the direct TypeSafe API    |
-| `GEMINI_API_KEY`   | Backend `.env` or server environment                                        | Authenticates suggested fixes through the direct Gemini API |
-| `GOOGLE_API_KEY`   | Backend `.env` or server environment, as an alternative to `GEMINI_API_KEY` | Uses an existing Google API key for suggestions             |
-| Backend address    | Fixed at `http://127.0.0.1:4212`                                            | Connects the extension to the backend on your computer      |
+| Setting             | Where to put it                                                             | Purpose                                                     |
+| ------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `TYPESAFE_API_KEY`  | Backend `.env` or server environment                                        | Authenticates Jev checks through the direct TypeSafe API    |
+| `TYPESAFE_BASE_URL` | Backend `.env` or server environment (optional)                             | Points Jev checks elsewhere, e.g. a local WaterSheep server |
+| `GEMINI_API_KEY`    | Backend `.env` or server environment                                        | Authenticates suggested fixes through the direct Gemini API |
+| `GOOGLE_API_KEY`    | Backend `.env` or server environment, as an alternative to `GEMINI_API_KEY` | Uses an existing Google API key for suggestions             |
+| Backend address     | Fixed at `http://127.0.0.1:4212`                                            | Connects the extension to the backend on your computer      |
 
 Ordinary setup only needs the two keys in `.env`. Whoever owns those keys pays for model usage. The extension has no API-key field and does not receive either key. This version runs locally and does not include a hosted deployment or a configurable remote backend.
 
