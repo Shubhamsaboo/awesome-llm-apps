@@ -11,12 +11,12 @@ These are measurements, not verdicts. A poem scores zero specifics and is
 not worse for it; a launch post scoring zero specifics is a finding. The
 skill decides what a number means for this genre; this script only counts.
 
-Usage: python3 signals.py <draft> [--json]
+Usage: python3 signals.py <draft> [--lang ja] [--json]
 """
+import argparse
 import json
 import re
 import statistics
-import sys
 from pathlib import Path
 
 HEDGES = r"\b(might|may|could|perhaps|possibly|arguably|potentially|seems?|somewhat|likely|probably|tend(?:s)? to|in some cases|to some extent|it could be argued)\b"
@@ -31,9 +31,14 @@ def clean(text):
     return re.sub(r"^#{1,6}\s.*$", " ", text, flags=re.M)
 
 
-def sentences(text):
-    parts = re.split(r"(?<=[.!?])\s+", clean(text).replace("\n", " "))
-    return [s.strip() for s in parts if len(s.split()) >= 3]
+def sentences(text, lang="en"):
+    if lang in ("ja", "zh", "cjk"):
+        # Split on Japanese/Chinese sentence terminators or English punctuation
+        parts = re.split(r"(?<=[。！？.!?])\s*", clean(text).replace("\n", " "))
+        return [s.strip() for s in parts if len(s.strip()) >= 5]
+    else:
+        parts = re.split(r"(?<=[.!?])\s+", clean(text).replace("\n", " "))
+        return [s.strip() for s in parts if len(s.split()) >= 3]
 
 
 def proper_nouns(text):
@@ -44,50 +49,75 @@ def proper_nouns(text):
 
 
 def main():
-    argv = sys.argv[1:]
-    as_json = "--json" in argv
-    argv = [a for a in argv if a != "--json"]
-    if len(argv) != 1:
-        sys.exit(__doc__)
-    text = Path(argv[0]).read_text(encoding="utf-8")
-    sents = sentences(text)
-    if not sents:
-        sys.exit("No prose sentences found.")
-    lens = [len(s.split()) for s in sents]
-    words = sum(lens)
-    per100 = lambda n: round(n * 100 / max(words, 1), 2)
+    parser = argparse.ArgumentParser(description="Measure trust signals in a draft.")
+    parser.add_argument("file", help="Path to draft markdown or text file")
+    parser.add_argument("--lang", default="en", help="Language code (e.g. 'en', 'ja', 'zh')")
+    parser.add_argument("--json", action="store_true", help="Output results in JSON format")
+    args = parser.parse_args()
 
-    # any token carrying a digit counts as a checkable specific: 4,100, $3M,
-    # 90-second, v2.3, 48MB, 2:47am all expose the writer to being wrong
-    numbers = re.findall(r"\b[\w$][\w.,:%$-]*\d[\w.,:%$-]*", clean(text))
-    quotes = re.findall(r"[\"“]([^\"”]{10,200})[\"”]", text)
+    draft_path = Path(args.file)
+    if not draft_path.exists():
+        parser.error(f"File not found: {args.file}")
+
+    text = draft_path.read_text(encoding="utf-8")
+    lang = args.lang.lower()
+    sents = sentences(text, lang=lang)
+    
+    if not sents:
+        sys_exit_msg = "No prose sentences found."
+        if args.json:
+            print(json.dumps({"error": sys_exit_msg}))
+            return
+        print(sys_exit_msg)
+        return
+
+    is_cjk = lang in ("ja", "zh", "cjk")
+    if is_cjk:
+        lens = [len(s) for s in sents]
+        unit = "chars"
+    else:
+        lens = [len(s.split()) for s in sents]
+        unit = "words"
+
+    total_units = sum(lens)
+    per100 = lambda n: round(n * 100 / max(total_units, 1), 2)
+
+    # Unicode-friendly number detection
+    numbers = re.findall(r"(?<![a-zA-Z0-9./-])(?:\$[\d,.]+[kKmMbB]?|\d+(?:[.,]\d+)*%?|\d{2,4})", clean(text))
+    quotes = re.findall(r"[\"“「『]([^\"”」』]{5,200})[\"”」』]", text)
     hedged = [s for s in sents if re.search(HEDGES, s, re.I)]
     certain = [s for s in sents if re.search(CERTAINTY, s, re.I)]
     admissions = [s for s in sents if re.search(ADMISSION, s, re.I)]
     nouns = proper_nouns(clean(text))
-    tokens = re.findall(r"[a-zA-Z']+", text.lower())
+    
+    if is_cjk:
+        tokens = list(re.sub(r"\s+", "", text.lower()))
+    else:
+        tokens = re.findall(r"[a-zA-Z']+", text.lower())
+    
     ttr = round(len(set(tokens)) / max(len(tokens), 1), 3)
 
-    # portable sentences: no digit, no named entity, no first person: could
-    # move unchanged into any other document on the topic
+    # portable sentences: no digit, no named entity, no first person
     portable = [s for s in sents
                 if not re.search(r"\d", s)
                 and not re.search(FIRST_PERSON, s)
                 and not any(n in s for n in set(nouns))]
 
-    # epistemic temperature: share of sentences carrying ANY marker of how
-    # sure the writer is; near-zero variance in commitment is the machine tell
     marked = len(set(hedged) | set(certain))
 
     result = {
-        "words": words, "sentences": len(sents),
-        "sentence_len": {"mean": round(statistics.mean(lens), 1),
-                          "sd": round(statistics.pstdev(lens), 1),
-                          "burstiness": round(statistics.pstdev(lens) / max(statistics.mean(lens), 1), 2),
-                          "max": max(lens), "min": min(lens)},
+        unit: total_units,
+        "sentences": len(sents),
+        "sentence_len": {
+            "mean": round(statistics.mean(lens), 1),
+            "sd": round(statistics.pstdev(lens), 1),
+            "burstiness": round(statistics.pstdev(lens) / max(statistics.mean(lens), 1), 2),
+            "max": max(lens),
+            "min": min(lens)
+        },
         "costly": {
-            "numbers": {"count": len(numbers), "per100w": per100(len(numbers)), "sample": numbers[:10]},
-            "named_entities": {"count": len(nouns), "per100w": per100(len(nouns)), "sample": list(dict.fromkeys(nouns))[:10]},
+            "numbers": {"count": len(numbers), "per100": per100(len(numbers)), "sample": numbers[:10]},
+            "named_entities": {"count": len(nouns), "per100": per100(len(nouns)), "sample": list(dict.fromkeys(nouns))[:10]},
             "direct_quotes": len(quotes),
             "admissions_against_interest": {"count": len(admissions), "sample": admissions[:3]},
             "first_person_sentences": sum(1 for s in sents if re.search(FIRST_PERSON, s)),
@@ -97,15 +127,20 @@ def main():
             "certainty_sentences": {"count": len(certain), "share": round(len(certain) / len(sents), 2)},
             "epistemically_marked_share": round(marked / len(sents), 2),
         },
-        "portable_sentences": {"count": len(portable), "share": round(len(portable) / len(sents), 2),
-                                "sample": portable[:5]},
+        "portable_sentences": {
+            "count": len(portable),
+            "share": round(len(portable) / len(sents), 2),
+            "sample": portable[:5]
+        },
         "type_token_ratio": ttr,
     }
-    if as_json:
-        print(json.dumps(result, indent=2))
+
+    if args.json:
+        print(json.dumps(result, indent=2, ensure_ascii=False))
         return
+
     print("TRUST SIGNAL MEASUREMENTS (counts, not verdicts; genre decides meaning)")
-    print(json.dumps(result, indent=2))
+    print(json.dumps(result, indent=2, ensure_ascii=False))
     print("\nReading notes: costly signals expose the writer and buy trust; "
           "portable sentences fit any document and buy nothing. A piece where "
           "most sentences are portable and unmarked is committing to nothing.")
