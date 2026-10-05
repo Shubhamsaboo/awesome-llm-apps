@@ -3,7 +3,7 @@
 ### 🎓 FREE Step-by-Step Tutorial 
 **👉 [Click here to follow our complete step-by-step tutorial](https://www.theunwindai.com/p/build-a-deep-research-agent-with-openai-agents-sdk-and-firecrawl) and learn how to build this from scratch with detailed code walkthroughs, explanations, and best practices.**
 
-A powerful research assistant that leverages OpenAI's Agents SDK and Firecrawl's deep research capabilities to perform comprehensive web research on any topic and any question.
+A powerful research assistant that leverages OpenAI's Agents SDK and Firecrawl's search to perform comprehensive web research on any topic and any question.
 
 ## Features
 
@@ -69,9 +69,9 @@ A powerful research assistant that leverages OpenAI's Agents SDK and Firecrawl's
 
 The application uses two specialized agents:
 
-1. **Research Agent**: Utilizes Firecrawl's deep research endpoint to gather comprehensive information from multiple web sources.
+1. **Research Agent**: Utilizes [Firecrawl Search](https://docs.firecrawl.dev/features/search?utm_source=awesome-llm-apps&utm_medium=integration) to gather comprehensive information from multiple web sources.
 
 2. **Elaboration Agent**: Enhances the initial research by adding detailed explanations, examples, case studies, and practical implications.
 
-The Firecrawl deep research tool performs multiple iterations of web searches, content extraction, and analysis to provide thorough coverage of the topic.
+The research agent runs several Firecrawl searches from different angles. Each search returns the result pages as markdown, and the agent runs follow-up searches where it finds gaps before writing the report.
 

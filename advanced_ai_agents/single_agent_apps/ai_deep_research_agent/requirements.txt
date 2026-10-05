@@ -1,4 +1,3 @@
 openai-agents
-firecrawl
 streamlit
-firecrawl-py
+firecrawl-py>=4.46.0
