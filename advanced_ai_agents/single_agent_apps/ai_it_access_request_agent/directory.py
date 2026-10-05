@@ -5,7 +5,7 @@ tested without touching a real identity provider.
 """
 
 EMPLOYEES = {
-    "E101": {"name": "Priya Nair", "title": "Backend Engineer", "department": "Engineering", "manager": "E201"},
+    "E101": {"name": "Harish", "title": "Backend Engineer", "department": "Engineering", "manager": "E201"},
     "E102": {"name": "Marco Silva", "title": "Account Executive", "department": "Sales", "manager": "E202"},
     "E103": {"name": "Aisha Khan", "title": "Financial Analyst", "department": "Finance", "manager": "E203"},
     "E201": {"name": "Dana Lee", "title": "Engineering Manager", "department": "Engineering", "manager": None},

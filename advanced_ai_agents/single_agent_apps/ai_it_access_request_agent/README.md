@@ -79,7 +79,7 @@ The policy:
 | prod-database | high | Engineering | read, admin |
 | netsuite | high | Finance | user, admin |
 
-High-sensitivity apps and every `admin` role need a recorded manager approval. Two are on file: `APR-1042` (Priya Nair, prod-database, read) and `APR-1077` (Aisha Khan, netsuite, user).
+High-sensitivity apps and every `admin` role need a recorded manager approval. Two are on file: `APR-1042` (Harish, prod-database, read) and `APR-1077` (Aisha Khan, netsuite, user).
 
 All employees, apps and approvals are fictional and live in memory in `directory.py`. To connect a real identity provider, replace that module and the tool bodies in `access_agent.py`.
 

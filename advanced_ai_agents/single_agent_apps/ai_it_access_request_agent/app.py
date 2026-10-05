@@ -19,7 +19,7 @@ with st.sidebar:
     requester = st.selectbox(
         "Signed in as",
         sorted(EMPLOYEES),
-        format_func=lambda e: f"{e} · {EMPLOYEES[e]['name']} ({EMPLOYEES[e]['department']})",
+        format_func=lambda e: f"{e} · {EMPLOYEES[e]['name']}",
     )
     if DEMO_DEFECT:
         st.warning("DEMO_DEFECT=1: approval checks are deliberately broken.")
