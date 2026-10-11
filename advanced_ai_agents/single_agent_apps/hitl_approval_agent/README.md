@@ -1,14 +1,14 @@
-# Human in the Loop Approval Agent
+# Human-in-the-Loop Approval Agent
 
-A refund agent built with Google ADK that pauses and asks a human before doing anything risky, using ADK's native tool confirmation. This is not about scoring an agent's reliability before letting it run. One human approves one specific high value action, and the agent gets a scoped, short lived credential for exactly that action. The tool that actually issues the refund verifies that credential at the moment it acts, so a revoked approval fails closed even though a human already said yes, instead of only showing up in a log afterward.
+A refund agent built with Google ADK that pauses and asks a human before doing anything risky, using ADK's native tool confirmation. This is not about scoring an agent's reliability before letting it run. One human approves one specific high-value action, and the agent gets a scoped, short-lived credential for exactly that action. The tool that actually issues the refund verifies that credential at the moment it acts, so a revoked approval fails closed even though a human already said yes, instead of only showing up in a log afterward.
 
 ## Features
 
 - Assesses each refund request for risk (new account, repeat refunds, undelivered order) and computes a confidence score.
-- Auto approves small, confident refunds. Pauses for human approval when the amount is large, confidence is low, or no assessment exists.
+- Auto-approves small, confident refunds. Pauses for human approval when the amount is large, confidence is low, or no assessment exists.
 - On resume, validates the approval payload (named approver, approved amount within the request) before anything executes.
 - Mints a VAID credential scoped to exactly the approved order and the `refund.issue` capability, held by the approver, with a short TTL. The refund tool verifies that credential (signature, expiry, revocation, scope, capability) before it acts. An approval revoked before execution fails closed, even though a human already said yes.
-- Every step, including the mint and the verify result, is written to a hash chained, tamper evident audit log.
+- Every step, including the mint and the verify result, is written to a hash-chained, tamper-evident audit log.
 
 ## Why the credential
 
@@ -41,7 +41,7 @@ This agent lives in `advanced_ai_agents/single_agent_apps/hitl_approval_agent`.
 
 Open the URL ADK prints, pick "hitl_approval_agent" from the list of available agents, and try:
 
-- `refund ORD-1001 45`: small and confident, auto approved.
+- `refund ORD-1001 45`: small and confident, auto-approved.
 - `refund ORD-1002 480`: pauses for approval. Approve with a payload like `{"approver": "ops-lead", "approved_amount": 300}` and it refunds 300, not 480.
 - Reject the same request and it reports `rejected_by_human` without touching anything.
 
@@ -51,7 +51,7 @@ Open the URL ADK prints, pick "hitl_approval_agent" from the list of available a
 pytest tests
 ```
 
-The suite is fully offline: a scripted fake model drives the ADK runner end to end, and the VAID flows (approve, deny, expired, revoked, out of scope) are tested directly against the credential module, no network or live model needed.
+The suite is fully offline: a scripted fake model drives the ADK runner end to end, and the VAID flows (approve, deny, expired, revoked, out-of-scope) are tested directly against the credential module, no network or live model needed.
 
 ## Known limitation
 
