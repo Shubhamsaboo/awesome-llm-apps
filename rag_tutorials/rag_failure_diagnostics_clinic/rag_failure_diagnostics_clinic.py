@@ -237,6 +237,27 @@ def choose_bug_description() -> str:
     return user_bug
 
 
+def extract_diagnosis(completion) -> tuple:
+    """Return (reply, problem). problem is None only for a usable diagnosis."""
+    choices = getattr(completion, "choices", None)
+    if not choices:
+        return "", "The model response contained no choices."
+
+    choice = choices[0]
+    message = getattr(choice, "message", None)
+    reply = (getattr(message, "content", None) or "").strip()
+    if not reply:
+        return "", "The model returned an empty reply."
+
+    if getattr(choice, "finish_reason", None) == "length":
+        return reply, "The reply was cut off by the token limit."
+
+    if "primary pattern" not in reply.lower():
+        return reply, "The reply has no 'Primary pattern' section."
+
+    return reply, None
+
+
 def run_once(client: OpenAI, model_name: str, system_prompt: str) -> None:
     """Run one diagnosis round."""
     bug = choose_bug_description()
@@ -265,8 +286,12 @@ def run_once(client: OpenAI, model_name: str, system_prompt: str) -> None:
         print(f"Error while calling the model: {exc}")
         return
 
-    reply = completion.choices[0].message.content or ""
-    print(reply)
+    reply, problem = extract_diagnosis(completion)
+    if reply:
+        print(reply)
+    if problem:
+        print(f"\n{problem} Report not saved.\n")
+        return
 
     report = {
         "bug_description": bug,
