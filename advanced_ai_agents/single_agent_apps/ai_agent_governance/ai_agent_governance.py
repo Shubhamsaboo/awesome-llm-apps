@@ -12,6 +12,7 @@ Key concepts:
 """
 
 import os
+import ast
 import json
 import yaml
 import logging
@@ -372,8 +373,21 @@ def governed_tool(policy_engine: PolicyEngine, require_interactive_approval: boo
             
             elif result.decision == Decision.REQUIRE_APPROVAL:
                 if require_interactive_approval:
-                    if not get_human_approval(action):
-                        raise PolicyViolation("❌ DENIED: Human rejected the action")
+                    try:
+                        approved = get_human_approval(action)
+                        reason = "Human approved the action" if approved else "Human rejected the action"
+                    except EOFError:
+                        # No stdin (server, cron, container): nobody can approve
+                        approved = False
+                        reason = "No human available to approve (no interactive input)"
+                    # Record the outcome, not just the REQUIRE_APPROVAL decision
+                    policy_engine._log_audit(action, PolicyResult(
+                        decision=Decision.ALLOW if approved else Decision.DENY,
+                        reason=reason,
+                        policy_name="human_approval"
+                    ))
+                    if not approved:
+                        raise PolicyViolation(f"❌ DENIED: {reason}")
                 else:
                     raise PolicyViolation(f"⏸️ PENDING: {result.reason}")
             
@@ -459,15 +473,19 @@ Format: TOOL: tool_name(arg1="value1", arg2="value2")
 If no tool is needed, just respond normally."""
         
         # Get LLM response
-        response = self.client.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_request}
-            ],
-            max_tokens=500
-        )
-        
+        try:
+            response = self.client.chat.completions.create(
+                model=os.getenv("OPENAI_MODEL", "gpt-4"),
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_request}
+                ],
+                max_tokens=500
+            )
+        except Exception as e:
+            logger.error(f"Model call failed: {type(e).__name__}: {e}")
+            return f"Model call failed: {type(e).__name__}: {e}"
+
         llm_response = response.choices[0].message.content
         print(f"\n🤖 Agent response: {llm_response}")
         
@@ -480,21 +498,21 @@ If no tool is needed, just respond normally."""
     
     def _execute_tool_call(self, tool_call: str) -> str:
         """Parse and execute a tool call string"""
-        # Simple parser for tool_name(kwargs)
-        match = re.match(r"(\w+)\((.*)\)", tool_call)
-        if not match:
-            return f"Could not parse tool call: {tool_call}"
-        
-        tool_name = match.group(1)
-        args_str = match.group(2)
-        
-        # Parse kwargs
-        kwargs = {}
-        for arg in args_str.split(", "):
-            if "=" in arg:
-                key, value = arg.split("=", 1)
-                kwargs[key.strip()] = value.strip().strip('"\'')
-        
+        # Parse tool_name(key="value", ...) as a Python call expression so that
+        # commas, quotes and spaces inside string values are kept intact.
+        # Only literal keyword arguments are accepted: positional args would
+        # not reach the policies, which look up kwargs like "path" and "url".
+        try:
+            call = ast.parse(tool_call.strip(), mode="eval").body
+            if not isinstance(call, ast.Call) or not isinstance(call.func, ast.Name):
+                raise ValueError("expected tool_name(key=value, ...)")
+            if call.args or any(kw.arg is None for kw in call.keywords):
+                raise ValueError("only keyword arguments are supported")
+            tool_name = call.func.id
+            kwargs = {kw.arg: ast.literal_eval(kw.value) for kw in call.keywords}
+        except (SyntaxError, ValueError) as e:
+            return f"Could not parse tool call: {tool_call} ({e})"
+
         if tool_name not in self.tools:
             return f"Unknown tool: {tool_name}"
         
@@ -504,7 +522,7 @@ If no tool is needed, just respond normally."""
         except PolicyViolation as e:
             return str(e)
         except Exception as e:
-            return f"Tool error: {e}"
+            return f"Tool error: {type(e).__name__}: {e}"
 
 
 # ============================================================================
