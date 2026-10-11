@@ -1,5 +1,7 @@
 @echo off
 cd /d "D:\AgentDev\repos\starter_ai_agents\ai_travel_agent"
+echo Cleaning up old program on port 8501 ...
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":8501 " ^| findstr "LISTENING"') do taskkill /f /pid %%a >nul 2>&1
 echo ============================================
 echo   Starting AI Travel Agent...
 echo   Browser will open at: http://127.0.0.1:8501
