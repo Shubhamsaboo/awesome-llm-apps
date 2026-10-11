@@ -133,6 +133,7 @@ streamlit run travel_agent.py
 
 *Production-style agents with tools, memory, and multi-step reasoning.*
 
+*   [🤝 Human in the Loop Approval Agent](advanced_ai_agents/single_agent_apps/hitl_approval_agent/) - Refund agent with Google ADK tool confirmation and a scoped, revocable VAID credential per approved action
 *   [🏚️ 🍌 AI Home Renovation Agent with Nano Banana Pro](advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent) - Photos of your space in, renovation plan and photorealistic renders out
 *   [🧠 DevPulse AI - Multi-Agent Signal Intelligence](advanced_ai_agents/multi_agent_apps/devpulse_ai/) - Aggregates and scores technical signals into a daily intelligence digest
 *   [🔍 AI Deep Research Agent](advanced_ai_agents/single_agent_apps/ai_deep_research_agent/) - Comprehensive web research with the OpenAI Agents SDK and Firecrawl
