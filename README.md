@@ -181,6 +181,7 @@ streamlit run travel_agent.py
 *   [🎨 🍌 Multimodal UI/UX Feedback Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_uiux_feedback_agent_team/) - Landing page feedback plus an auto-generated improved version
 *   [🌏 AI Travel Planner Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/) - A complete trip itinerary, crafted by a team
 *   [⚖️ LLM Panel Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/llm_panel_agent_team/) - Three vendors review the same diff blind, then argue it out anonymously
+*   [📖 AI Novel Writing Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_novel_writing_agent_team/) - Five agents write a novel chapter by chapter against one shared story bible
 
 ### 🗣️ Voice AI Agents
 
