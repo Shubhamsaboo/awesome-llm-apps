@@ -75,25 +75,26 @@ def main():
     if is_cjk:
         lens = [len(s) for s in sents]
         unit = "chars"
+        rate_key = "per100"
+        numbers = re.findall(r"(?<![a-zA-Z0-9./-])(?:\$[\d,.]+[kKmMbB]?|\d+(?:[.,]\d+)*%?|\d{2,4})", clean(text))
+        tokens = list(re.sub(r"\s+", "", text.lower()))
     else:
         lens = [len(s.split()) for s in sents]
         unit = "words"
+        rate_key = "per100w"
+        # any token carrying a digit counts as a checkable specific: 4,100, $3M,
+        # 90-second, v2.3, 48MB, 2:47am all expose the writer to being wrong
+        numbers = re.findall(r"\b[\w$][\w.,:%$-]*\d[\w.,:%$-]*", clean(text))
+        tokens = re.findall(r"[a-zA-Z']+", text.lower())
 
     total_units = sum(lens)
     per100 = lambda n: round(n * 100 / max(total_units, 1), 2)
 
-    # Unicode-friendly number detection
-    numbers = re.findall(r"(?<![a-zA-Z0-9./-])(?:\$[\d,.]+[kKmMbB]?|\d+(?:[.,]\d+)*%?|\d{2,4})", clean(text))
     quotes = re.findall(r"[\"“「『]([^\"”」』]{5,200})[\"”」』]", text)
     hedged = [s for s in sents if re.search(HEDGES, s, re.I)]
     certain = [s for s in sents if re.search(CERTAINTY, s, re.I)]
     admissions = [s for s in sents if re.search(ADMISSION, s, re.I)]
     nouns = proper_nouns(clean(text))
-    
-    if is_cjk:
-        tokens = list(re.sub(r"\s+", "", text.lower()))
-    else:
-        tokens = re.findall(r"[a-zA-Z']+", text.lower())
     
     ttr = round(len(set(tokens)) / max(len(tokens), 1), 3)
 
@@ -116,8 +117,8 @@ def main():
             "min": min(lens)
         },
         "costly": {
-            "numbers": {"count": len(numbers), "per100": per100(len(numbers)), "sample": numbers[:10]},
-            "named_entities": {"count": len(nouns), "per100": per100(len(nouns)), "sample": list(dict.fromkeys(nouns))[:10]},
+            "numbers": {"count": len(numbers), rate_key: per100(len(numbers)), "sample": numbers[:10]},
+            "named_entities": {"count": len(nouns), rate_key: per100(len(nouns)), "sample": list(dict.fromkeys(nouns))[:10]},
             "direct_quotes": len(quotes),
             "admissions_against_interest": {"count": len(admissions), "sample": admissions[:3]},
             "first_person_sentences": sum(1 for s in sents if re.search(FIRST_PERSON, s)),

@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python3
 """Produce the scanner's view of a draft: what a skimming reader actually
 fixates on, and nothing else.
 
@@ -85,9 +85,15 @@ def main():
     bold = re.findall(r"\*\*(.+?)\*\*|__(.+?)__", text)
     bold = [a or b for a, b in bold]
     links = re.findall(r"\[([^\]]+)\]\(", text)
-    numbers = re.findall(
-    r"(?<![a-zA-Z0-9./-])(?:\$[\d,.]+[kKmMbB]?|\d+(?:[.,]\d+)*%?|\d{2,4})", text
-)
+    
+    if lang in ("ja", "zh", "cjk"):
+        numbers = re.findall(
+            r"(?<![a-zA-Z0-9./-])(?:\$[\d,.]+[kKmMbB]?|\d+(?:[.,]\d+)*%?|\d{2,4})", text
+        )
+    else:
+        numbers = re.findall(
+            r"(?<![\w./-])(?:\$[\d,.]+[kKmMbB]?|\d+(?:[.,]\d+)*%?|\d{4})(?![\w/-])", text
+        )
     
     screens = max(1, round(len(text) / (MOBILE_CHARS_PER_LINE * MOBILE_LINES_PER_SCREEN)))
 
