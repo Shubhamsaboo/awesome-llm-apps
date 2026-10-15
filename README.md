@@ -203,6 +203,7 @@ streamlit run travel_agent.py
 *   [✈️ MCP Apps Generative UI Showcase](generative_ui_agents/mcp-apps-generative-ui-showcase/) - MCP apps that render real interactive UI, flight search included
 *   [🎛️ AI Shadcn Component Generator](generative_ui_agents/ai-shadcn-component-generator/) - Chat your way to production-ready shadcn components
 *   [🔍 AI Deep Research Agent](generative_ui_agents/ai-deep-research-agent/) - Research where every tool call renders as a live workspace card
+*   [✏️ Excaliflow](generative_ui_agents/excaliflow/) - Hand-drawn system diagrams with live animated flows and video export
 
 ### 🎮 Autonomous Game-Playing Agents
 
