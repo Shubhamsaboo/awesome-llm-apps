@@ -2751,10 +2751,12 @@
 
       ctx.save();
 
+      const elementsMap = getElementMap();
+
       // 1. Magnetic snap target outline, center-to-perimeter angle ray & glowing ring
       if (state.snapPreview) {
         const sp = state.snapPreview;
-        const targetShape = state.elements.find(e => e.id === sp.shapeId);
+        const targetShape = elementsMap.get(sp.shapeId);
         if (targetShape) {
           const paths = ShapeCache.get(targetShape);
           const scx = targetShape.x + targetShape.width / 2;
@@ -2792,7 +2794,7 @@
 
       // 2. Subtle hover cue on hovered unselected node
       if (state.hoveredId && !state.selectedIds.has(state.hoveredId) && !state.drag) {
-        const hovEl = state.elements.find(e => e.id === state.hoveredId);
+        const hovEl = elementsMap.get(state.hoveredId);
         if (hovEl && isNodeElement(hovEl) && hovEl.type !== 'text') {
           ctx.save();
           ctx.strokeStyle = accent;
@@ -2809,7 +2811,7 @@
       if (state.hoveredId) portOwnerIds.add(state.hoveredId);
 
       for (const id of state.selectedIds) {
-        const el = state.elements.find(e => e.id === id);
+        const el = elementsMap.get(id);
         if (!el || el.type === 'arrow') continue;
         ctx.save();
         ctx.strokeStyle = accent;
@@ -2835,7 +2837,7 @@
 
       if (state.activeTool === 'select') {
         for (const id of portOwnerIds) {
-          const el = state.elements.find(e => e.id === id);
+          const el = elementsMap.get(id);
           if (!el || !isNodeElement(el) || el.type === 'text') continue;
           const ports = getQuickConnectPorts(el);
           for (const p of ports) {
@@ -3386,15 +3388,7 @@
             state.snapPreview = null;
           }
         } else if (d.handle === 'curve') {
-          const elementsMap = getElementMap();
-          const startShape = arrow.startBinding?.elementId ? elementsMap.get(arrow.startBinding.elementId) : null;
-          const endShape = arrow.endBinding?.elementId ? elementsMap.get(arrow.endBinding.elementId) : null;
-          const p0 = startShape
-            ? getBindingBoundaryPoint(startShape, arrow.startBinding, { x: arrow.x2, y: arrow.y2 }, 4)
-            : { x: arrow.x, y: arrow.y };
-          const p1 = endShape
-            ? getBindingBoundaryPoint(endShape, arrow.endBinding, p0, 4)
-            : { x: arrow.x2, y: arrow.y2 };
+          const { p0, p1 } = getArrowGeometry(arrow);
           const chordDx = p1.x - p0.x;
           const chordDy = p1.y - p0.y;
           const chordLen = Math.hypot(chordDx, chordDy) || 1;
@@ -3732,6 +3726,10 @@
       }
       if (meta && key === 'c') {
         e.preventDefault?.();
+        if (e.shiftKey) {
+          copy2xPng();
+          return;
+        }
         state.clipboard = JSON.parse(JSON.stringify(
           state.elements.filter(el => state.selectedIds.has(el.id))
         ));
@@ -3806,6 +3804,9 @@
     /* -------------------------------------------------------------------------
      * 14. Studio Exports (2x Retina PNG, Clipboard, 60fps WebM Video, JSON)
      * ------------------------------------------------------------------------- */
+    const ALLOWED_ELEMENT_TYPES = new Set(['rectangle', 'ellipse', 'diamond', 'arrow', 'line', 'freedraw', 'text', 'sticky']);
+    const ALLOWED_FLOW_MODES = new Set(['comets', 'pulses', 'neon', 'dashed']);
+
     function getDiagramExportBounds(padding = 48) {
       if (state.elements.length === 0) {
         return { x: 0, y: 0, width: 800, height: 500 };
@@ -3848,13 +3849,7 @@
       };
     }
 
-    function renderCroppedOffscreenCanvas(scale = 2, timeSec = performance.now() / 1000) {
-      const bounds = getDiagramExportBounds(48);
-      const offCanvas = document.createElement('canvas');
-      offCanvas.width = bounds.width * scale;
-      offCanvas.height = bounds.height * scale;
-      const offCtx = offCanvas.getContext('2d');
-
+    function renderSceneToExportCtx(offCtx, offCanvas, bounds, scale, timeSec) {
       offCtx.save();
       offCtx.fillStyle = state.canvasBg;
       offCtx.fillRect(0, 0, offCanvas.width, offCanvas.height);
@@ -3862,7 +3857,26 @@
       offCtx.translate(-bounds.x, -bounds.y);
       renderScenePasses(offCtx, timeSec, { canvasBg: state.canvasBg, forExport: true });
       offCtx.restore();
+    }
+
+    function renderCroppedOffscreenCanvas(scale = 2, timeSec = performance.now() / 1000) {
+      const bounds = getDiagramExportBounds(48);
+      const offCanvas = document.createElement('canvas');
+      offCanvas.width = bounds.width * scale;
+      offCanvas.height = bounds.height * scale;
+      const offCtx = offCanvas.getContext('2d');
+      renderSceneToExportCtx(offCtx, offCanvas, bounds, scale, timeSec);
       return offCanvas;
+    }
+
+    function downloadBlob(blob, filename) {
+      if (!blob || typeof URL === 'undefined' || typeof document === 'undefined') return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
     }
 
     function showToast(msg) {
@@ -3880,12 +3894,7 @@
       const offCanvas = renderCroppedOffscreenCanvas(2);
       offCanvas.toBlob(blob => {
         if (!blob) return;
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'excaliflow-2x.png';
-        a.click();
-        URL.revokeObjectURL(url);
+        downloadBlob(blob, 'excaliflow-2x.png');
         showToast('Saved 2x Retina PNG (excaliflow-2x.png)');
       }, 'image/png');
     }
@@ -3906,10 +3915,15 @@
 
     function recordWebmVideo() {
       closeAllDropdowns();
+      if (state.isRecording) {
+        showToast('Recording already in progress...');
+        return;
+      }
       if (typeof MediaRecorder === 'undefined') {
         showToast('MediaRecorder is not supported in this browser');
         return;
       }
+      state.isRecording = true;
       const bounds = getDiagramExportBounds(48);
       const scale = 2;
       const offCanvas = document.createElement('canvas');
@@ -3927,14 +3941,13 @@
       recorder.ondataavailable = e => {
         if (e.data && e.data.size > 0) chunks.push(e.data);
       };
+      recorder.onerror = () => {
+        state.isRecording = false;
+      };
       recorder.onstop = () => {
+        state.isRecording = false;
         const blob = new Blob(chunks, { type: 'video/webm' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'excaliflow-flow.webm';
-        a.click();
-        URL.revokeObjectURL(url);
+        downloadBlob(blob, 'excaliflow-flow.webm');
         showToast('Exported 60fps Video Loop (excaliflow-flow.webm)');
       };
 
@@ -3946,13 +3959,7 @@
       const baseTime = performance.now() / 1000;
       const interval = setInterval(() => {
         const simTime = baseTime + frame / 60;
-        offCtx.save();
-        offCtx.fillStyle = state.canvasBg;
-        offCtx.fillRect(0, 0, offCanvas.width, offCanvas.height);
-        offCtx.scale(scale, scale);
-        offCtx.translate(-bounds.x, -bounds.y);
-        renderScenePasses(offCtx, simTime, { canvasBg: state.canvasBg, forExport: true });
-        offCtx.restore();
+        renderSceneToExportCtx(offCtx, offCanvas, bounds, scale, simTime);
 
         frame++;
         if (frame >= totalFrames) {
@@ -3980,12 +3987,7 @@
         }
       };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'diagram.excaliflow';
-      a.click();
-      URL.revokeObjectURL(url);
+      downloadBlob(blob, 'diagram.excaliflow');
       showToast('Saved diagram.excaliflow');
     }
 
@@ -3993,18 +3995,40 @@
       closeAllDropdowns();
       try {
         const data = JSON.parse(jsonString);
-        if (Array.isArray(data.elements)) {
+        if (data && Array.isArray(data.elements)) {
+          const validRaw = data.elements.filter(
+            el => el && !el.isDeleted && typeof el.type === 'string' && ALLOWED_ELEMENT_TYPES.has(el.type)
+          );
           pushHistory();
-          state.elements = data.elements
-            .filter(el => el && !el.isDeleted && typeof el.type === 'string')
-            .map(el => createElement(el.type === 'line' ? 'arrow' : el.type, {
+          state.elements = validRaw.map(el => {
+            const normType = el.type === 'line' ? 'arrow' : el.type;
+            let resolvedX2 = el.x2;
+            let resolvedY2 = el.y2;
+            if (normType === 'arrow' && typeof resolvedX2 !== 'number' && Array.isArray(el.points) && el.points.length > 1) {
+              const lastPt = el.points[el.points.length - 1];
+              if (Array.isArray(lastPt) && lastPt.length >= 2) {
+                resolvedX2 = (Number(el.x) || 0) + (Number(lastPt[0]) || 0);
+                resolvedY2 = (Number(el.y) || 0) + (Number(lastPt[1]) || 0);
+              }
+            }
+            return createElement(normType, {
               ...el,
-              text: el.type === 'arrow' ? '' : (el.text ?? '')
-            }));
-          if (data.appState) {
+              x2: resolvedX2,
+              y2: resolvedY2,
+              text: normType === 'arrow' ? '' : String(el.text ?? '')
+            });
+          });
+          if (data.appState && typeof data.appState === 'object') {
             if (data.appState.viewBackgroundColor) setCanvasBackground(data.appState.viewBackgroundColor);
-            if (data.appState.flowMode) state.flowMode = data.appState.flowMode;
-            if (data.appState.flowSpeed) state.flowSpeed = Number(data.appState.flowSpeed) || 1;
+            if (typeof data.appState.flowMode === 'string' && ALLOWED_FLOW_MODES.has(data.appState.flowMode)) {
+              state.flowMode = data.appState.flowMode;
+            }
+            if (data.appState.flowSpeed !== undefined) {
+              const spd = Number(data.appState.flowSpeed);
+              if (Number.isFinite(spd) && spd > 0) {
+                state.flowSpeed = Math.max(0.2, Math.min(5.0, spd));
+              }
+            }
           }
           state.selectedIds.clear();
           ShapeCache.clear();
@@ -4393,6 +4417,7 @@
         const reader = new FileReader();
         reader.onload = ev => importExcalidrawJson(String(ev.target?.result || ''));
         reader.readAsText(file);
+        e.target.value = '';
       });
       document.getElementById('btnClearScene')?.addEventListener('click', () => {
         closeAllDropdowns();

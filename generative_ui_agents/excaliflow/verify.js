@@ -345,4 +345,59 @@ const clonedArrow = cloned.find(c => c.type === 'arrow');
 assert(clonedArrow.startBinding.elementId !== 'node_A' && clonedArrow.endBinding.elementId !== 'node_C', 'Cloned arrow bindings must remap to cloned node IDs');
 console.log('[PASS] 6. Port-wire drag to empty canvas, no-op click undo guard, and subgraph binding clone verified');
 
-console.log('\nALL EXCALIFLOW VERIFICATION CHECKS PASSED SUCCESSFULLY!');
+// 7. Verify Untrusted JSON Import Validation, Excalidraw points[] Arrow Import, and server.js Security Guards
+const importedOk = app.importExcalidrawJson(JSON.stringify({
+  elements: [
+    { id: 'imp_box', type: 'rectangle', x: 100, y: 100, width: 140, height: 70, text: 'Valid' },
+    { id: 'imp_bad', type: 'script_injection', x: 0, y: 0, width: 50, height: 50 },
+    { id: 'imp_arr', type: 'arrow', x: 300, y: 200, points: [[0, 0], [-120, 60]] }
+  ],
+  appState: {
+    flowMode: 'invalid_mode_xyz',
+    flowSpeed: 9999
+  }
+}));
+assert.strictEqual(importedOk, true, 'importExcalidrawJson should succeed on valid JSON payload');
+assert.strictEqual(app.state.elements.length, 2, 'Untrusted element types must be filtered out on import');
+const impArr = app.state.elements.find(e => e.id === 'imp_arr');
+assert.strictEqual(impArr.x2, 180, 'Excalidraw arrow points[[0,0],[-120,60]] must resolve x2 = x - 120');
+assert.strictEqual(impArr.y2, 260, 'Excalidraw arrow points[[0,0],[-120,60]] must resolve y2 = y + 60');
+assert.notStrictEqual(app.state.flowMode, 'invalid_mode_xyz', 'Invalid flowMode must be rejected');
+assert.strictEqual(app.state.flowSpeed, 5, 'Out-of-bounds flowSpeed must be clamped to <= 5.0');
+
+// Test server.js request handling & security guards in-memory
+const server = require('./server.js');
+function runMockReq(method, url) {
+  let statusCode = 200;
+  let headers = {};
+  let body = '';
+  const req = { method, url };
+  const res = {
+    writeHead(code, hdrs) { statusCode = code; headers = hdrs || {}; },
+    end(chunk) { if (chunk) body += Buffer.isBuffer(chunk) ? chunk.toString('utf8') : String(chunk); }
+  };
+  server.emit('request', req, res);
+  return new Promise(resolve => setTimeout(() => resolve({ statusCode, headers, body }), 25));
+}
+
+(async () => {
+  const postRes = await runMockReq('POST', '/index.html');
+  assert.strictEqual(postRes.statusCode, 405, 'POST requests must be rejected with 405');
+
+  const badUriRes = await runMockReq('GET', '/%E0%A4%A');
+  assert.strictEqual(badUriRes.statusCode, 400, 'Malformed URI encoding must return 400');
+
+  const travRes = await runMockReq('GET', '/../package.json');
+  assert.strictEqual(travRes.statusCode, 403, 'Path traversal outside ROOT must return 403');
+
+  const headRes = await runMockReq('HEAD', '/');
+  assert.strictEqual(headRes.statusCode, 200, 'HEAD / must return 200');
+  assert.strictEqual(headRes.body, '', 'HEAD / response must have empty body');
+  assert(Number(headRes.headers['Content-Length']) > 1000, 'HEAD / must include Content-Length');
+
+  console.log('[PASS] 7. Untrusted JSON import validation, Excalidraw arrow points[] import, and server.js security verified');
+  console.log('\nALL EXCALIFLOW VERIFICATION CHECKS PASSED SUCCESSFULLY!');
+})().catch(err => {
+  console.error(err);
+  process.exit(1);
+});
