@@ -1247,17 +1247,22 @@
       const ny = dx / len;
       const isCartoon = r > 1.2;
       const passes = isCartoon ? 3 : 2;
-      const endJit = isCartoon ? 3.2 : 1.1 * r;
-      const bowAmp = isCartoon ? Math.min(7.5, Math.max(2.8, len * 0.032)) : Math.min(2.8, Math.max(0.9, len * 0.014)) * r;
+      const endJit = isCartoon ? 4.8 : 1.6 * r;
+      const bowMag = isCartoon
+        ? Math.min(11.0, Math.max(4.8, len * 0.055))
+        : Math.min(4.8, Math.max(2.2, len * 0.025)) * r;
 
       for (let pass = 0; pass < passes; pass++) {
-        const pScale = pass === 0 ? 1 : (pass === 1 ? 0.72 : 0.5);
-        const sx = x1 + (rng() - 0.5) * endJit * pScale;
-        const sy = y1 + (rng() - 0.5) * endJit * pScale;
-        const ex = x2 + (rng() - 0.5) * endJit * pScale;
-        const ey = y2 + (rng() - 0.5) * endJit * pScale;
-        const bow1 = (rng() - 0.5) * 2 * bowAmp * pScale;
-        const bow2 = (rng() - 0.5) * 2 * bowAmp * pScale;
+        const sign = pass === 0 ? 1 : (pass === 1 ? -0.9 : 0.55);
+        const overshoot = isCartoon ? (pass === 0 ? 3.5 : -2.0) : 0;
+        const ux = dx / len;
+        const uy = dy / len;
+        const sx = x1 - ux * overshoot + (rng() - 0.5) * endJit;
+        const sy = y1 - uy * overshoot + (rng() - 0.5) * endJit;
+        const ex = x2 + ux * overshoot + (rng() - 0.5) * endJit;
+        const ey = y2 + uy * overshoot + (rng() - 0.5) * endJit;
+        const bow1 = sign * bowMag * (0.75 + rng() * 0.5);
+        const bow2 = (isCartoon && pass === 2 ? -sign : sign) * bowMag * (0.65 + rng() * 0.5);
         const cp1x = x1 + dx * 0.33 + nx * bow1;
         const cp1y = y1 + dy * 0.33 + ny * bow1;
         const cp2x = x1 + dx * 0.67 + nx * bow2;
@@ -1290,11 +1295,11 @@
       const isCartoon = roughness > 1.2;
       const passes = isCartoon ? 3 : 2;
       for (let p = 0; p < passes; p++) {
-        const pScale = p === 0 ? 1 : (p === 1 ? 0.72 : 0.5);
-        const jit = (isCartoon ? 3.4 : 1.15 * roughness) * pScale;
-        const bow = (isCartoon ? 5.2 : 1.75 * roughness) * pScale;
+        const sign = p === 0 ? 1 : (p === 1 ? -0.95 : 0.6);
+        const jit = isCartoon ? 4.5 : 1.6 * roughness;
+        const bow = (isCartoon ? 9.5 : 3.8 * roughness) * sign;
         const j = () => (rng() - 0.5) * jit;
-        const b = () => (rng() - 0.5) * 2 * bow;
+        const b = () => bow * (0.75 + rng() * 0.5);
 
         const t1x = x + cr + j(), t1y = y + j();
         const t2x = x + w - cr + j(), t2y = y + j();
@@ -1306,13 +1311,13 @@
         const l2x = x + j(), l2y = y + cr + j();
 
         path.moveTo(t1x, t1y);
-        path.quadraticCurveTo((t1x + t2x) / 2 + j(), (t1y + t2y) / 2 + b(), t2x, t2y);
+        path.quadraticCurveTo((t1x + t2x) / 2 + j(), (t1y + t2y) / 2 - b(), t2x, t2y);
         path.quadraticCurveTo(x + w + j(), y + j(), r1x, r1y);
         path.quadraticCurveTo((r1x + r2x) / 2 + b(), (r1y + r2y) / 2 + j(), r2x, r2y);
         path.quadraticCurveTo(x + w + j(), y + h + j(), b1x, b1y);
         path.quadraticCurveTo((b1x + b2x) / 2 + j(), (b1y + b2y) / 2 + b(), b2x, b2y);
         path.quadraticCurveTo(x + j(), y + h + j(), l1x, l1y);
-        path.quadraticCurveTo((l1x + l2x) / 2 + b(), (l1y + l2y) / 2 + j(), l2x, l2y);
+        path.quadraticCurveTo((l1x + l2x) / 2 - b(), (l1y + l2y) / 2 + j(), l2x, l2y);
         path.quadraticCurveTo(x + j(), y + j(), t1x, t1y);
       }
     }
@@ -1326,20 +1331,28 @@
       const steps = 16;
       const passes = isCartoon ? 3 : 2;
       for (let pass = 0; pass < passes; pass++) {
-        const pScale = pass === 0 ? 1 : (pass === 1 ? 0.72 : 0.48);
-        const amp = (isCartoon ? 4.8 : 1.65 * roughness) * pScale;
+        const sign = pass === 0 ? 1 : (pass === 1 ? -1 : 0.65);
+        const waveAmp = isCartoon ? 5.8 : 2.4 * roughness;
+        const jitAmp = isCartoon ? 3.6 : 1.2 * roughness;
+        const phase = rng() * Math.PI * 2 + pass * 1.7;
+        const cxShift = sign * (isCartoon ? 2.4 : 0.9 * roughness);
+        const cyShift = -sign * (isCartoon ? 2.0 : 0.8 * roughness);
         const pts = [];
         for (let i = 0; i < steps; i++) {
           const theta = (i / steps) * Math.PI * 2;
-          const px = cx + Math.cos(theta) * rx + (rng() - 0.5) * amp;
-          const py = cy + Math.sin(theta) * ry + (rng() - 0.5) * amp;
+          const radialWave = Math.sin(theta * 2 + phase) * waveAmp * sign;
+          const curRx = Math.max(2, rx + radialWave);
+          const curRy = Math.max(2, ry - radialWave * 0.75);
+          const px = cx + cxShift + Math.cos(theta) * curRx + (rng() - 0.5) * jitAmp;
+          const py = cy + cyShift + Math.sin(theta) * curRy + (rng() - 0.5) * jitAmp;
           pts.push([px, py]);
         }
         const firstMidX = (pts[steps - 1][0] + pts[0][0]) / 2;
         const firstMidY = (pts[steps - 1][1] + pts[0][1]) / 2;
         path.moveTo(firstMidX, firstMidY);
-        for (let i = 0; i < steps; i++) {
-          const curr = pts[i];
+        const totalSteps = isCartoon && pass === 0 ? steps + 1 : steps;
+        for (let i = 0; i < totalSteps; i++) {
+          const curr = pts[i % steps];
           const next = pts[(i + 1) % steps];
           const midX = (curr[0] + next[0]) / 2;
           const midY = (curr[1] + next[1]) / 2;
@@ -1404,17 +1417,17 @@
         } else if (el.type === 'rectangle' || el.type === 'sticky') {
           const r = el.type === 'sticky' ? 4 : Math.min(14, w / 4, h / 4);
           buildCleanRoundRectPath(fillPath, x, y, w, h, r);
-          roughRoundRect(strokePath, x, y, w, h, r, rng, el.type === 'sticky' ? roughness * 0.55 : roughness);
+          roughRoundRect(strokePath, x, y, w, h, r, rng, el.type === 'sticky' ? roughness * 0.65 : roughness);
         }
 
         const fillStyle = el.fillStyle || 'hachure';
         if ((fillStyle === 'hachure' || fillStyle === 'cross-hatch') &&
             (el.type === 'rectangle' || el.type === 'ellipse' || el.type === 'diamond' || el.type === 'sticky')) {
           const isCartoon = roughness > 1.2;
-          const spacing = isCartoon ? 9.5 : 8.5;
+          const spacing = roughness <= 0.001 ? 8.0 : (isCartoon ? 11.0 : 8.5);
           const inset = Math.max(2.2, (Number(el.strokeWidth) || 2) * 0.9);
           const diag = w + h;
-          const hatchBow = roughness <= 0.001 ? 0 : (isCartoon ? 5.2 : roughness * 2.1);
+          const hatchBow = roughness <= 0.001 ? 0 : (isCartoon ? 12.0 : roughness * 4.5);
 
           const addClippedHatchSegment = (rawX1, rawY1, rawX2, rawY2) => {
             const clipped = clipSegmentToShape(el, rawX1, rawY1, rawX2, rawY2, inset);
@@ -1426,21 +1439,22 @@
               hachurePath.lineTo(cx2, cy2);
               return;
             }
-            const rawMx = (cx1 + cx2) / 2 + (rng() - 0.5) * hatchBow;
-            const rawMy = (cy1 + cy2) / 2 + (rng() - 0.5) * hatchBow;
+            const sign = rng() > 0.5 ? 1 : -1;
+            const rawMx = (cx1 + cx2) / 2 + sign * hatchBow * (0.6 + rng() * 0.4);
+            const rawMy = (cy1 + cy2) / 2 - sign * hatchBow * (0.6 + rng() * 0.4);
             const [mx, my] = clampPointToShapeInterior(el, rawMx, rawMy, inset);
             hachurePath.moveTo(cx1, cy1);
             hachurePath.quadraticCurveTo(mx, my, cx2, cy2);
           };
 
           for (let d = -diag; d <= diag; d += spacing) {
-            const jStep = isCartoon ? (rng() - 0.5) * 2.4 : 0;
+            const jStep = isCartoon ? (rng() - 0.5) * 3.5 : 0;
             addClippedHatchSegment(x + d + jStep, y + h, x + d + h + jStep, y);
           }
 
           if (fillStyle === 'cross-hatch') {
             for (let d = -diag; d <= diag; d += spacing * 1.05) {
-              const jStep = isCartoon ? (rng() - 0.5) * 2.4 : 0;
+              const jStep = isCartoon ? (rng() - 0.5) * 3.5 : 0;
               addClippedHatchSegment(x + d + jStep, y, x + d + h + jStep, y + h);
             }
           }
@@ -2138,34 +2152,80 @@
       }
 
       const curveType = el.curveType || 'curved';
+      const roughness = Number(el.roughness ?? 0.85);
+      const isCartoon = roughness > 1.2;
       const samples = geom.samples;
-      ctx.beginPath();
-      if (curveType === 'elbow' && geom.waypoints && geom.waypoints.length >= 2) {
-        const pts = geom.waypoints;
-        ctx.moveTo(pts[0].x, pts[0].y);
-        for (let i = 1; i < pts.length - 1; i++) {
-          const prev = pts[i - 1];
-          const curr = pts[i];
-          const next = pts[i + 1];
-          const d1 = Math.hypot(curr.x - prev.x, curr.y - prev.y);
-          const d2 = Math.hypot(next.x - curr.x, next.y - curr.y);
-          const cornerR = Math.min(8, d1 * 0.35, d2 * 0.35);
-          if (cornerR > 1.5 && typeof ctx.arcTo === 'function') {
-            ctx.arcTo(curr.x, curr.y, next.x, next.y, cornerR);
-          } else {
-            ctx.lineTo(curr.x, curr.y);
+
+      const strokeShaftPass = (offsetX, offsetY, cpBowOffset) => {
+        ctx.beginPath();
+        if (curveType === 'elbow' && geom.waypoints && geom.waypoints.length >= 2) {
+          const pts = geom.waypoints;
+          ctx.moveTo(pts[0].x + offsetX * 0.3, pts[0].y + offsetY * 0.3);
+          for (let i = 1; i < pts.length - 1; i++) {
+            const prev = pts[i - 1];
+            const curr = pts[i];
+            const next = pts[i + 1];
+            const d1 = Math.hypot(curr.x - prev.x, curr.y - prev.y);
+            const d2 = Math.hypot(next.x - curr.x, next.y - curr.y);
+            const cornerR = Math.min(8, d1 * 0.35, d2 * 0.35);
+            const cx = curr.x + offsetX;
+            const cy = curr.y + offsetY;
+            if (cornerR > 1.5 && typeof ctx.arcTo === 'function') {
+              ctx.arcTo(cx, cy, next.x + offsetX, next.y + offsetY, cornerR);
+            } else {
+              ctx.lineTo(cx, cy);
+            }
           }
+          const lastPt = pts[pts.length - 1];
+          ctx.lineTo(lastPt.x, lastPt.y);
+        } else if (curveType === 'straight' || Math.abs(Number(el.curveOffset) || 0) < 0.5) {
+          if (Math.abs(cpBowOffset) < 0.05) {
+            ctx.moveTo(geom.p0.x, geom.p0.y);
+            ctx.lineTo(geom.p1.x, geom.p1.y);
+          } else {
+            const dx = geom.p1.x - geom.p0.x;
+            const dy = geom.p1.y - geom.p0.y;
+            const len = Math.hypot(dx, dy) || 1;
+            const nx = -dy / len;
+            const ny = dx / len;
+            const midX = (geom.p0.x + geom.p1.x) / 2 + nx * cpBowOffset;
+            const midY = (geom.p0.y + geom.p1.y) / 2 + ny * cpBowOffset;
+            ctx.moveTo(geom.p0.x + offsetX * 0.3, geom.p0.y + offsetY * 0.3);
+            ctx.quadraticCurveTo(midX, midY, geom.p1.x, geom.p1.y);
+          }
+        } else {
+          const dx = geom.p1.x - geom.p0.x;
+          const dy = geom.p1.y - geom.p0.y;
+          const len = Math.hypot(dx, dy) || 1;
+          const nx = -dy / len;
+          const ny = dx / len;
+          ctx.moveTo(geom.p0.x + offsetX * 0.3, geom.p0.y + offsetY * 0.3);
+          ctx.quadraticCurveTo(
+            geom.cp.x + nx * cpBowOffset + offsetX,
+            geom.cp.y + ny * cpBowOffset + offsetY,
+            geom.p1.x,
+            geom.p1.y
+          );
         }
-        const lastPt = pts[pts.length - 1];
-        ctx.lineTo(lastPt.x, lastPt.y);
-      } else if (curveType === 'straight' || Math.abs(Number(el.curveOffset) || 0) < 0.5) {
-        ctx.moveTo(geom.p0.x, geom.p0.y);
-        ctx.lineTo(geom.p1.x, geom.p1.y);
-      } else {
-        ctx.moveTo(geom.p0.x, geom.p0.y);
-        ctx.quadraticCurveTo(geom.cp.x, geom.cp.y, geom.p1.x, geom.p1.y);
+        ctx.stroke();
+      };
+
+      strokeShaftPass(0, 0, 0);
+
+      if (roughness > 0.01 && (!el.strokeStyle || el.strokeStyle === 'solid')) {
+        const rng = mulberry32((Number(el.seed) || 1) + 77);
+        const extraPasses = isCartoon ? 2 : 1;
+        ctx.save();
+        ctx.lineWidth = Math.max(1.2, sw * (isCartoon ? 0.9 : 0.8));
+        ctx.globalAlpha = isCartoon ? 0.88 : 0.72;
+        for (let p = 0; p < extraPasses; p++) {
+          const sign = p === 0 ? 1 : -1;
+          const off = (isCartoon ? 3.2 : 1.4) * sign;
+          const bow = (isCartoon ? 6.5 : 2.6) * sign * (0.7 + rng() * 0.5);
+          strokeShaftPass(off * (rng() - 0.2), -off * (rng() - 0.2), bow);
+        }
+        ctx.restore();
       }
-      ctx.stroke();
 
       // Excalidraw solid arrowhead cap (~25 degree spread)
       ctx.setLineDash([]);
@@ -2186,6 +2246,24 @@
         geom.p1.y - headLen * Math.sin(tipAngle + spread)
       );
       ctx.stroke();
+
+      if (isCartoon) {
+        ctx.save();
+        ctx.lineWidth = Math.max(1.2, sw * 0.85);
+        ctx.globalAlpha = 0.82;
+        ctx.beginPath();
+        ctx.moveTo(
+          geom.p1.x - (headLen + 2.5) * Math.cos(tipAngle - spread - 0.08),
+          geom.p1.y - (headLen + 2.5) * Math.sin(tipAngle - spread - 0.08)
+        );
+        ctx.lineTo(geom.p1.x + 1.5, geom.p1.y - 1.5);
+        ctx.lineTo(
+          geom.p1.x - (headLen + 2.5) * Math.cos(tipAngle + spread + 0.08),
+          geom.p1.y - (headLen + 2.5) * Math.sin(tipAngle + spread + 0.08)
+        );
+        ctx.stroke();
+        ctx.restore();
+      }
 
       const arrowFlowActive = state.flowEnabled && (el.flowEnabled !== false);
       if (arrowFlowActive && geom.totalLen > 24) {
@@ -4493,9 +4571,11 @@
         state.defaults.curveOffset = 0;
       }
 
-      const targets = state.selectedIds.size > 0
-        ? state.elements.filter(el => state.selectedIds.has(el.id))
-        : ((prop === 'roughness' || prop === 'fontFamily') ? state.elements : []);
+      const targets = prop === 'roughness'
+        ? state.elements
+        : (state.selectedIds.size > 0
+            ? state.elements.filter(el => state.selectedIds.has(el.id))
+            : (prop === 'fontFamily' ? state.elements : []));
 
       if (targets.length > 0) {
         pushHistory();
