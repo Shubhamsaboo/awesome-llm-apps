@@ -281,11 +281,35 @@ const lBendGeom = app.getArrowGeometry(arrowAB);
 assert.strictEqual(lBendGeom.waypoints.length, 3, 'L-bend elbow should collapse degenerate final segment into 3 waypoints');
 assert(Math.abs(lBendGeom.tipAngle - Math.PI / 2) < 0.01, `L-bend vertical shaft must have downward tipAngle (+PI/2), got ${lBendGeom.tipAngle}`);
 
+// Verify dragging elbow handle over startShape (User Task Spec scenario) exits bottom instead of cutting backwards through the shape
+app.applyStyleProperty('curveType', 'elbow');
+const gBefore = app.getArrowGeometry(arrowAB);
+app.pointerDownWorld(gBefore.curveHandlePt.x, gBefore.curveHandlePt.y);
+app.pointerMoveWorld(boxA.x + boxA.width / 2, gBefore.curveHandlePt.y);
+app.pointerUpWorld(boxA.x + boxA.width / 2, gBefore.curveHandlePt.y);
+const gOverStart = app.getArrowGeometry(arrowAB);
+assert(Math.abs(gOverStart.p0.y - (boxA.y + boxA.height + 4)) < 2, `Elbow arrow dragged over startShape must exit from bottom of startShape, got p0=(${gOverStart.p0.x}, ${gOverStart.p0.y})`);
+for (const wp of gOverStart.waypoints) {
+  const insideBoxA = wp.x > boxA.x + 2 && wp.x < boxA.x + boxA.width - 2 && wp.y > boxA.y + 2 && wp.y < boxA.y + boxA.height - 2;
+  assert(!insideBoxA, `Elbow waypoint (${wp.x}, ${wp.y}) must never cut through interior of startShape`);
+}
+
+// Verify Clean (0), Artist (0.85), and Cartoon (1.75) sloppiness produce clearly distinct multi-pass geometry & apply globally when unselected
+const cleanRect = app.ShapeCache.generate(app.createElement('rectangle', { x: 0, y: 0, width: 140, height: 70, roughness: 0 }));
+const artistRect = app.ShapeCache.generate(app.createElement('rectangle', { x: 0, y: 0, width: 140, height: 70, roughness: 0.85 }));
+const cartoonRect = app.ShapeCache.generate(app.createElement('rectangle', { x: 0, y: 0, width: 140, height: 70, roughness: 1.75 }));
+assert(cleanRect.strokePath.ops.length < artistRect.strokePath.ops.length, 'Artist rectangle must have more sketch passes than Clean');
+assert(artistRect.strokePath.ops.length < cartoonRect.strokePath.ops.length, 'Cartoon rectangle must have more sketch passes than Artist');
+app.state.selectedIds.clear();
+app.applyStyleProperty('roughness', 1.75);
+assert.strictEqual(boxA.roughness, 1.75, 'Clicking Cartoon with no selection must apply roughness=1.75 to existing canvas shapes');
+
 // Switching from elbow (curveOffset=0) to curved should apply a visible curveOffset
+app.state.selectedIds.add(arrowAB.id);
 app.applyStyleProperty('curveType', 'straight');
 app.applyStyleProperty('curveType', 'curved');
 assert(Math.abs(arrowAB.curveOffset) >= 20, `Switching to curved from 0 offset should apply default curveOffset, got ${arrowAB.curveOffset}`);
-console.log('[PASS] 4. Direct bound-arrow middle shaft drag + Straight, Elbow (L-bend & 1:1 handle), and Curved modes verified');
+console.log('[PASS] 4. Direct bound-arrow middle shaft drag + Straight, Elbow (no shape-cutting, L-bend & 1:1 handle), Curved, and Clean/Artist/Cartoon verified');
 
 // 5. Verify Excalidraw Font Families (Excalifont/Virgil, Assistant/Nunito, Cascadia), Unbroken Arrows (no text/gaps), Tool Lock (Q), Laser Pointer (K), Number Shortcuts (1-9, 0), and triggerNodePulse
 const fontTestCtx = createMockCtx();

@@ -1240,18 +1240,28 @@
         path.lineTo(x2, y2);
         return;
       }
-      const len = Math.hypot(x2 - x1, y2 - y1);
-      const amp = Math.min(2.6, Math.max(0.4, len * 0.012)) * r;
-      for (let pass = 0; pass < 2; pass++) {
-        const pScale = pass === 0 ? 1 : 0.65;
-        const sx = x1 + (rng() - 0.5) * amp * pScale;
-        const sy = y1 + (rng() - 0.5) * amp * pScale;
-        const ex = x2 + (rng() - 0.5) * amp * pScale;
-        const ey = y2 + (rng() - 0.5) * amp * pScale;
-        const cp1x = x1 + (x2 - x1) * 0.33 + (rng() - 0.5) * amp * 1.5;
-        const cp1y = y1 + (y2 - y1) * 0.33 + (rng() - 0.5) * amp * 1.5;
-        const cp2x = x1 + (x2 - x1) * 0.67 + (rng() - 0.5) * amp * 1.5;
-        const cp2y = y1 + (y2 - y1) * 0.67 + (rng() - 0.5) * amp * 1.5;
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const len = Math.hypot(dx, dy) || 1;
+      const nx = -dy / len;
+      const ny = dx / len;
+      const isCartoon = r > 1.2;
+      const passes = isCartoon ? 3 : 2;
+      const endJit = isCartoon ? 3.2 : 1.1 * r;
+      const bowAmp = isCartoon ? Math.min(7.5, Math.max(2.8, len * 0.032)) : Math.min(2.8, Math.max(0.9, len * 0.014)) * r;
+
+      for (let pass = 0; pass < passes; pass++) {
+        const pScale = pass === 0 ? 1 : (pass === 1 ? 0.72 : 0.5);
+        const sx = x1 + (rng() - 0.5) * endJit * pScale;
+        const sy = y1 + (rng() - 0.5) * endJit * pScale;
+        const ex = x2 + (rng() - 0.5) * endJit * pScale;
+        const ey = y2 + (rng() - 0.5) * endJit * pScale;
+        const bow1 = (rng() - 0.5) * 2 * bowAmp * pScale;
+        const bow2 = (rng() - 0.5) * 2 * bowAmp * pScale;
+        const cp1x = x1 + dx * 0.33 + nx * bow1;
+        const cp1y = y1 + dy * 0.33 + ny * bow1;
+        const cp2x = x1 + dx * 0.67 + nx * bow2;
+        const cp2y = y1 + dy * 0.67 + ny * bow2;
         path.moveTo(sx, sy);
         path.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, ex, ey);
       }
@@ -1277,19 +1287,33 @@
         buildCleanRoundRectPath(path, x, y, w, h, cr);
         return;
       }
-      const passes = 2;
+      const isCartoon = roughness > 1.2;
+      const passes = isCartoon ? 3 : 2;
       for (let p = 0; p < passes; p++) {
-        const jit = ((p === 0 ? 1 : 0.65) * roughness * 1.15);
+        const pScale = p === 0 ? 1 : (p === 1 ? 0.72 : 0.5);
+        const jit = (isCartoon ? 3.4 : 1.15 * roughness) * pScale;
+        const bow = (isCartoon ? 5.2 : 1.75 * roughness) * pScale;
         const j = () => (rng() - 0.5) * jit;
-        path.moveTo(x + cr + j(), y + j());
-        path.lineTo(x + w - cr + j(), y + j());
-        path.quadraticCurveTo(x + w + j(), y + j(), x + w + j(), y + cr + j());
-        path.lineTo(x + w + j(), y + h - cr + j());
-        path.quadraticCurveTo(x + w + j(), y + h + j(), x + w - cr + j(), y + h + j());
-        path.lineTo(x + cr + j(), y + h + j());
-        path.quadraticCurveTo(x + j(), y + h + j(), x + j(), y + h - cr + j());
-        path.lineTo(x + j(), y + cr + j());
-        path.quadraticCurveTo(x + j(), y + j(), x + cr + j(), y + j());
+        const b = () => (rng() - 0.5) * 2 * bow;
+
+        const t1x = x + cr + j(), t1y = y + j();
+        const t2x = x + w - cr + j(), t2y = y + j();
+        const r1x = x + w + j(), r1y = y + cr + j();
+        const r2x = x + w + j(), r2y = y + h - cr + j();
+        const b1x = x + w - cr + j(), b1y = y + h + j();
+        const b2x = x + cr + j(), b2y = y + h + j();
+        const l1x = x + j(), l1y = y + h - cr + j();
+        const l2x = x + j(), l2y = y + cr + j();
+
+        path.moveTo(t1x, t1y);
+        path.quadraticCurveTo((t1x + t2x) / 2 + j(), (t1y + t2y) / 2 + b(), t2x, t2y);
+        path.quadraticCurveTo(x + w + j(), y + j(), r1x, r1y);
+        path.quadraticCurveTo((r1x + r2x) / 2 + b(), (r1y + r2y) / 2 + j(), r2x, r2y);
+        path.quadraticCurveTo(x + w + j(), y + h + j(), b1x, b1y);
+        path.quadraticCurveTo((b1x + b2x) / 2 + j(), (b1y + b2y) / 2 + b(), b2x, b2y);
+        path.quadraticCurveTo(x + j(), y + h + j(), l1x, l1y);
+        path.quadraticCurveTo((l1x + l2x) / 2 + b(), (l1y + l2y) / 2 + j(), l2x, l2y);
+        path.quadraticCurveTo(x + j(), y + j(), t1x, t1y);
       }
     }
 
@@ -1298,9 +1322,12 @@
         path.ellipse(cx, cy, Math.max(1, rx), Math.max(1, ry), 0, 0, Math.PI * 2);
         return;
       }
+      const isCartoon = roughness > 1.2;
       const steps = 16;
-      for (let pass = 0; pass < 2; pass++) {
-        const amp = (pass === 0 ? 1 : 0.6) * roughness * 1.25;
+      const passes = isCartoon ? 3 : 2;
+      for (let pass = 0; pass < passes; pass++) {
+        const pScale = pass === 0 ? 1 : (pass === 1 ? 0.72 : 0.48);
+        const amp = (isCartoon ? 4.8 : 1.65 * roughness) * pScale;
         const pts = [];
         for (let i = 0; i < steps; i++) {
           const theta = (i / steps) * Math.PI * 2;
@@ -1377,35 +1404,44 @@
         } else if (el.type === 'rectangle' || el.type === 'sticky') {
           const r = el.type === 'sticky' ? 4 : Math.min(14, w / 4, h / 4);
           buildCleanRoundRectPath(fillPath, x, y, w, h, r);
-          roughRoundRect(strokePath, x, y, w, h, r, rng, el.type === 'sticky' ? roughness * 0.45 : roughness);
+          roughRoundRect(strokePath, x, y, w, h, r, rng, el.type === 'sticky' ? roughness * 0.55 : roughness);
         }
 
         const fillStyle = el.fillStyle || 'hachure';
         if ((fillStyle === 'hachure' || fillStyle === 'cross-hatch') &&
             (el.type === 'rectangle' || el.type === 'ellipse' || el.type === 'diamond' || el.type === 'sticky')) {
-          const spacing = 8.5;
+          const isCartoon = roughness > 1.2;
+          const spacing = isCartoon ? 9.5 : 8.5;
           const inset = Math.max(2.2, (Number(el.strokeWidth) || 2) * 0.9);
           const diag = w + h;
+          const hatchBow = roughness <= 0.001 ? 0 : (isCartoon ? 5.2 : roughness * 2.1);
 
           const addClippedHatchSegment = (rawX1, rawY1, rawX2, rawY2) => {
             const clipped = clipSegmentToShape(el, rawX1, rawY1, rawX2, rawY2, inset);
             if (!clipped) return;
             const [cx1, cy1, cx2, cy2] = clipped;
             if (Math.hypot(cx2 - cx1, cy2 - cy1) <= 1.5) return;
-            const rawMx = (cx1 + cx2) / 2 + (rng() - 0.5) * roughness * 0.9;
-            const rawMy = (cy1 + cy2) / 2 + (rng() - 0.5) * roughness * 0.9;
+            if (hatchBow <= 0.001) {
+              hachurePath.moveTo(cx1, cy1);
+              hachurePath.lineTo(cx2, cy2);
+              return;
+            }
+            const rawMx = (cx1 + cx2) / 2 + (rng() - 0.5) * hatchBow;
+            const rawMy = (cy1 + cy2) / 2 + (rng() - 0.5) * hatchBow;
             const [mx, my] = clampPointToShapeInterior(el, rawMx, rawMy, inset);
             hachurePath.moveTo(cx1, cy1);
             hachurePath.quadraticCurveTo(mx, my, cx2, cy2);
           };
 
           for (let d = -diag; d <= diag; d += spacing) {
-            addClippedHatchSegment(x + d, y + h, x + d + h, y);
+            const jStep = isCartoon ? (rng() - 0.5) * 2.4 : 0;
+            addClippedHatchSegment(x + d + jStep, y + h, x + d + h + jStep, y);
           }
 
           if (fillStyle === 'cross-hatch') {
             for (let d = -diag; d <= diag; d += spacing * 1.05) {
-              addClippedHatchSegment(x + d, y, x + d + h, y + h);
+              const jStep = isCartoon ? (rng() - 0.5) * 2.4 : 0;
+              addClippedHatchSegment(x + d + jStep, y, x + d + h + jStep, y + h);
             }
           }
         }
@@ -1587,12 +1623,156 @@
         ? { x: endShape.x + endShape.width / 2, y: endShape.y + endShape.height / 2 }
         : rawP1;
 
-      const p0 = startShape
+      if (startShape && el.startBinding && typeof el.startBinding.focusAngle === 'number') {
+        const natAng = Math.atan2(endCenter.y - startCenter.y, endCenter.x - startCenter.x);
+        const diff = Math.abs(Math.atan2(Math.sin(natAng - el.startBinding.focusAngle), Math.cos(natAng - el.startBinding.focusAngle)));
+        if (diff > Math.PI * 0.55) {
+          el.startBinding.focusAngle = natAng;
+          el.startBinding.side = angleToSide(natAng);
+        }
+      }
+      if (endShape && el.endBinding && typeof el.endBinding.focusAngle === 'number') {
+        const natAng = Math.atan2(startCenter.y - endCenter.y, startCenter.x - endCenter.x);
+        const diff = Math.abs(Math.atan2(Math.sin(natAng - el.endBinding.focusAngle), Math.cos(natAng - el.endBinding.focusAngle)));
+        if (diff > Math.PI * 0.55) {
+          el.endBinding.focusAngle = natAng;
+          el.endBinding.side = angleToSide(natAng);
+        }
+      }
+
+      let p0 = startShape
         ? getBindingBoundaryPoint(startShape, el.startBinding, endShape ? endCenter : rawP1, 4)
         : rawP0;
-      const p1 = endShape
+      let p1 = endShape
         ? getBindingBoundaryPoint(endShape, el.endBinding, startShape ? startCenter : p0, 4)
         : rawP1;
+
+      const curveType = el.curveType || 'curved';
+      const curveOffset = curveType === 'straight' ? 0 : (Number(el.curveOffset) || 0);
+
+      const N = 40;
+      const samples = [];
+      const cumLenArr = [0];
+      let totalLen = 0;
+      let waypoints = [p0, p1];
+      let elbowAxis = 'x';
+
+      if (curveType === 'elbow') {
+        const dx = endCenter.x - startCenter.x;
+        const dy = endCenter.y - startCenter.y;
+        const shw = startShape ? startShape.width / 2 + 4 : 0;
+        const shh = startShape ? startShape.height / 2 + 4 : 0;
+        const ehw = endShape ? endShape.width / 2 + 4 : 0;
+        const ehh = endShape ? endShape.height / 2 + 4 : 0;
+
+        const normDx = Math.abs(dx) / Math.max(40, shw + ehw);
+        const normDy = Math.abs(dy) / Math.max(40, shh + ehh);
+        const verticalFirst = normDy > normDx * 1.15;
+
+        const p0H = startShape
+          ? getBindingBoundaryPoint(startShape, { focusAngle: dx >= 0 ? 0 : Math.PI, gap: 4 }, endCenter, 4)
+          : rawP0;
+        const p0V = startShape
+          ? getBindingBoundaryPoint(startShape, { focusAngle: dy >= 0 ? Math.PI / 2 : -Math.PI / 2, gap: 4 }, endCenter, 4)
+          : rawP0;
+        var elbowBaseMid = { x: (p0H.x + p1.x) / 2, y: (p0V.y + p1.y) / 2 };
+
+        let rawWaypoints;
+        let handlePt;
+        if (verticalFirst) {
+          elbowAxis = 'y';
+          p0 = p0V;
+          const midY0 = (p0.y + p1.y) / 2;
+          const rawElbowY = midY0 + curveOffset * 0.5;
+          const goesIntoStart = startShape && (dy >= 0 ? rawElbowY < p0.y + 8 : rawElbowY > p0.y - 8);
+
+          if (goesIntoStart && Math.abs(p1.x - p0H.x) > 12) {
+            p0 = p0H;
+            rawWaypoints = [
+              { x: p0.x, y: p0.y },
+              { x: p1.x, y: p0.y },
+              { x: p1.x, y: p1.y }
+            ];
+            handlePt = { x: (p0.x + p1.x) / 2, y: p0.y };
+          } else if (Math.abs(rawElbowY - p1.y) < 16 && Math.abs(p1.x - p0.x) > 14) {
+            rawWaypoints = [
+              { x: p0.x, y: p0.y },
+              { x: p0.x, y: p1.y },
+              { x: p1.x, y: p1.y }
+            ];
+            handlePt = { x: p0.x, y: p1.y };
+          } else {
+            let elbowY = rawElbowY;
+            if (startShape) {
+              elbowY = dy >= 0 ? Math.max(p0.y + 12, elbowY) : Math.min(p0.y - 12, elbowY);
+            }
+            rawWaypoints = [
+              { x: p0.x, y: p0.y },
+              { x: p0.x, y: elbowY },
+              { x: p1.x, y: elbowY },
+              { x: p1.x, y: p1.y }
+            ];
+            handlePt = { x: (p0.x + p1.x) / 2, y: elbowY };
+          }
+        } else {
+          elbowAxis = 'x';
+          p0 = p0H;
+          const midX0 = (p0.x + p1.x) / 2;
+          const rawElbowX = midX0 + curveOffset * 0.5;
+          const goesIntoStart = startShape && (dx >= 0 ? rawElbowX < p0.x + 8 : rawElbowX > p0.x - 8);
+
+          if (goesIntoStart && Math.abs(p1.y - p0V.y) > 12) {
+            p0 = p0V;
+            rawWaypoints = [
+              { x: p0.x, y: p0.y },
+              { x: p0.x, y: p1.y },
+              { x: p1.x, y: p1.y }
+            ];
+            handlePt = { x: p0.x, y: (p0.y + p1.y) / 2 };
+          } else if (Math.abs(rawElbowX - p1.x) < 16 && Math.abs(p1.y - p0.y) > 14) {
+            rawWaypoints = [
+              { x: p0.x, y: p0.y },
+              { x: p1.x, y: p0.y },
+              { x: p1.x, y: p1.y }
+            ];
+            handlePt = { x: p1.x, y: (p0.y + p1.y) / 2 };
+          } else {
+            let elbowX = rawElbowX;
+            if (startShape) {
+              elbowX = dx >= 0 ? Math.max(p0.x + 12, elbowX) : Math.min(p0.x - 12, elbowX);
+            }
+            rawWaypoints = [
+              { x: p0.x, y: p0.y },
+              { x: elbowX, y: p0.y },
+              { x: elbowX, y: p1.y },
+              { x: p1.x, y: p1.y }
+            ];
+            handlePt = { x: elbowX, y: (p0.y + p1.y) / 2 };
+          }
+        }
+
+        el.x = p0.x;
+        el.y = p0.y;
+        el.x2 = p1.x;
+        el.y2 = p1.y;
+        el.width = p1.x - p0.x;
+        el.height = p1.y - p0.y;
+
+        waypoints = [rawWaypoints[0]];
+        for (let i = 1; i < rawWaypoints.length; i++) {
+          const prev = waypoints[waypoints.length - 1];
+          const curr = rawWaypoints[i];
+          if (Math.hypot(curr.x - prev.x, curr.y - prev.y) > 0.5) {
+            waypoints.push(curr);
+          }
+        }
+        if (waypoints.length < 2) {
+          waypoints = [{ x: p0.x, y: p0.y }, { x: p1.x, y: p1.y }];
+        } else {
+          waypoints[waypoints.length - 1] = { x: p1.x, y: p1.y };
+        }
+        var elbowHandleOverride = handlePt;
+      }
 
       el.x = p0.x;
       el.y = p0.y;
@@ -1608,105 +1788,20 @@
       const ny = chordDx / chordLen;
       const midX = (p0.x + p1.x) / 2;
       const midY = (p0.y + p1.y) / 2;
+      let tipAngle = Math.atan2(chordDy, chordDx);
 
-      const curveType = el.curveType || 'curved';
-      const curveOffset = curveType === 'straight' ? 0 : (Number(el.curveOffset) || 0);
       const cp = {
         x: midX + nx * curveOffset,
         y: midY + ny * curveOffset
       };
-      const curveHandlePt = {
-        x: midX + nx * (curveOffset * 0.5),
-        y: midY + ny * (curveOffset * 0.5)
-      };
-
-      const N = 40;
-      const samples = [];
-      const cumLenArr = [0];
-      let totalLen = 0;
-      let waypoints = [p0, p1];
-      let elbowAxis = 'x';
-      let tipAngle = Math.atan2(chordDy, chordDx);
+      const curveHandlePt = curveType === 'elbow' && elbowHandleOverride
+        ? elbowHandleOverride
+        : {
+            x: midX + nx * (curveOffset * 0.5),
+            y: midY + ny * (curveOffset * 0.5)
+          };
 
       if (curveType === 'elbow') {
-        const startSide = el.startBinding?.side;
-        const endSide = el.endBinding?.side;
-        const verticalFirst =
-          startSide === 'top' || startSide === 'bottom' ||
-          (!startSide && (endSide === 'top' || endSide === 'bottom') && Math.abs(chordDy) > Math.abs(chordDx));
-
-        let rawWaypoints;
-        if (verticalFirst) {
-          elbowAxis = 'y';
-          const rawElbowY = midY + (Number(el.curveOffset) || 0) * 0.5;
-          let elbowY = rawElbowY;
-          if (Math.abs(rawElbowY - p1.y) < 14 && Math.abs(p1.x - p0.x) > 14) {
-            elbowY = p1.y;
-            rawWaypoints = [
-              { x: p0.x, y: p0.y },
-              { x: p0.x, y: p1.y },
-              { x: p1.x, y: p1.y }
-            ];
-          } else if (Math.abs(rawElbowY - p0.y) < 14 && Math.abs(p1.x - p0.x) > 14) {
-            elbowY = p0.y;
-            rawWaypoints = [
-              { x: p0.x, y: p0.y },
-              { x: p1.x, y: p0.y },
-              { x: p1.x, y: p1.y }
-            ];
-          } else {
-            rawWaypoints = [
-              { x: p0.x, y: p0.y },
-              { x: p0.x, y: elbowY },
-              { x: p1.x, y: elbowY },
-              { x: p1.x, y: p1.y }
-            ];
-          }
-          curveHandlePt.x = (p0.x + p1.x) / 2;
-          curveHandlePt.y = elbowY;
-        } else {
-          elbowAxis = 'x';
-          const rawElbowX = midX + (Number(el.curveOffset) || 0) * 0.5;
-          let elbowX = rawElbowX;
-          if (Math.abs(rawElbowX - p1.x) < 14 && Math.abs(p1.y - p0.y) > 14) {
-            elbowX = p1.x;
-            rawWaypoints = [
-              { x: p0.x, y: p0.y },
-              { x: p1.x, y: p0.y },
-              { x: p1.x, y: p1.y }
-            ];
-          } else if (Math.abs(rawElbowX - p0.x) < 14 && Math.abs(p1.y - p0.y) > 14) {
-            elbowX = p0.x;
-            rawWaypoints = [
-              { x: p0.x, y: p0.y },
-              { x: p0.x, y: p1.y },
-              { x: p1.x, y: p1.y }
-            ];
-          } else {
-            rawWaypoints = [
-              { x: p0.x, y: p0.y },
-              { x: elbowX, y: p0.y },
-              { x: elbowX, y: p1.y },
-              { x: p1.x, y: p1.y }
-            ];
-          }
-          curveHandlePt.x = elbowX;
-          curveHandlePt.y = (p0.y + p1.y) / 2;
-        }
-
-        waypoints = [rawWaypoints[0]];
-        for (let i = 1; i < rawWaypoints.length; i++) {
-          const prev = waypoints[waypoints.length - 1];
-          const curr = rawWaypoints[i];
-          if (Math.hypot(curr.x - prev.x, curr.y - prev.y) > 0.5) {
-            waypoints.push(curr);
-          }
-        }
-        if (waypoints.length < 2) {
-          waypoints = [{ x: p0.x, y: p0.y }, { x: p1.x, y: p1.y }];
-        } else {
-          waypoints[waypoints.length - 1] = { x: p1.x, y: p1.y };
-        }
 
         const segs = [];
         let polyLen = 0;
@@ -1784,6 +1879,7 @@
         curveHandlePt,
         waypoints,
         elbowAxis,
+        elbowBaseMid: elbowBaseMid || { x: midX, y: midY },
         tipAngle,
         samples,
         cumLen,
@@ -2361,7 +2457,7 @@
         if (Math.hypot(wx - geom.p1.x, wy - geom.p1.y) <= radius) {
           return { elementId: arr.id, handle: 'end', point: geom.p1 };
         }
-        if (Math.hypot(wx - geom.curveHandlePt.x, wy - geom.curveHandlePt.y) <= radius) {
+        if ((arr.curveType || 'curved') !== 'straight' && Math.hypot(wx - geom.curveHandlePt.x, wy - geom.curveHandlePt.y) <= radius) {
           return { elementId: arr.id, handle: 'curve', point: geom.curveHandlePt };
         }
       }
@@ -2965,7 +3061,7 @@
         const geom = arrowGeoms.get(el.id) || getArrowGeometry(el);
         const handles = [
           { name: 'start', pt: geom.p0, bound: Boolean(el.startBinding?.elementId) },
-          { name: 'curve', pt: geom.curveHandlePt, bound: false },
+          ...((el.curveType || 'curved') !== 'straight' ? [{ name: 'curve', pt: geom.curveHandlePt, bound: false }] : []),
           { name: 'end',   pt: geom.p1, bound: Boolean(el.endBinding?.elementId) }
         ];
 
@@ -2979,7 +3075,16 @@
           ctx.fillStyle = h.bound ? accent : (isDark ? '#18181f' : '#ffffff');
           ctx.strokeStyle = accent;
           ctx.lineWidth = 2 / zoom;
-          ctx.arc(h.pt.x, h.pt.y, r, 0, Math.PI * 2);
+          if (h.name === 'curve') {
+            const d = r * 1.15;
+            ctx.moveTo(h.pt.x, h.pt.y - d);
+            ctx.lineTo(h.pt.x + d, h.pt.y);
+            ctx.lineTo(h.pt.x, h.pt.y + d);
+            ctx.lineTo(h.pt.x - d, h.pt.y);
+            ctx.closePath();
+          } else {
+            ctx.arc(h.pt.x, h.pt.y, r, 0, Math.PI * 2);
+          }
           ctx.fill();
           ctx.stroke();
           ctx.restore();
@@ -3293,17 +3398,47 @@
 
         if (hitEl.type === 'arrow' && !altKey) {
           const geom = getArrowGeometry(hitEl);
-          const endGrabRadius = 28 / (state.zoom || 1);
+          const endGrabRadius = 32 / (state.zoom || 1);
           const nearStart = Math.hypot(wx - geom.p0.x, wy - geom.p0.y) <= endGrabRadius;
           const nearEnd = Math.hypot(wx - geom.p1.x, wy - geom.p1.y) <= endGrabRadius;
-          const isBound = Boolean(hitEl.startBinding?.elementId || hitEl.endBinding?.elementId);
+          const hasStartBind = Boolean(hitEl.startBinding?.elementId);
+          const hasEndBind = Boolean(hitEl.endBinding?.elementId);
+          const isStraight = (hitEl.curveType || 'curved') === 'straight';
 
-          if (nearStart || nearEnd || isBound) {
+          if (nearStart || nearEnd) {
             state.selectedIds.clear();
             state.selectedIds.add(hitEl.id);
             syncUIWithSelection();
-            const handle = nearStart ? 'start' : (nearEnd ? 'end' : 'curve');
-            state.drag = { mode: 'arrow-handle', arrow: hitEl, handle };
+            state.drag = { mode: 'arrow-handle', arrow: hitEl, handle: nearStart ? 'start' : 'end' };
+            updateInteractiveCursor();
+            return;
+          }
+
+          if (hasStartBind && !hasEndBind) {
+            state.selectedIds.clear();
+            state.selectedIds.add(hitEl.id);
+            syncUIWithSelection();
+            state.drag = { mode: 'arrow-handle', arrow: hitEl, handle: 'end' };
+            updateInteractiveCursor();
+            return;
+          }
+
+          if (!hasStartBind && hasEndBind) {
+            state.selectedIds.clear();
+            state.selectedIds.add(hitEl.id);
+            syncUIWithSelection();
+            state.drag = { mode: 'arrow-handle', arrow: hitEl, handle: 'start' };
+            updateInteractiveCursor();
+            return;
+          }
+
+          if (hasStartBind && hasEndBind) {
+            state.selectedIds.clear();
+            state.selectedIds.add(hitEl.id);
+            syncUIWithSelection();
+            if (!isStraight) {
+              state.drag = { mode: 'arrow-handle', arrow: hitEl, handle: 'curve' };
+            }
             updateInteractiveCursor();
             return;
           }
@@ -3495,7 +3630,10 @@
           const mx = (p0.x + p1.x) / 2;
           const my = (p0.y + p1.y) / 2;
           if ((arrow.curveType || 'curved') === 'elbow') {
-            arrow.curveOffset = geom.elbowAxis === 'y' ? (wy - my) * 2 : (wx - mx) * 2;
+            const baseMid = geom.elbowBaseMid || { x: mx, y: my };
+            arrow.curveOffset = geom.elbowAxis === 'y' ? (wy - baseMid.y) * 2 : (wx - baseMid.x) * 2;
+          } else if (arrow.curveType === 'straight') {
+            arrow.curveOffset = 0;
           } else {
             const chordDx = p1.x - p0.x;
             const chordDy = p1.y - p0.y;
@@ -3503,16 +3641,7 @@
             const nx = -chordDy / chordLen;
             const ny = chordDx / chordLen;
             const proj = (wx - mx) * nx + (wy - my) * ny;
-            if (arrow.curveType === 'straight') {
-              if (Math.abs(proj) > 10) {
-                arrow.curveType = 'curved';
-                arrow.curveOffset = proj * 2;
-              } else {
-                arrow.curveOffset = 0;
-              }
-            } else {
-              arrow.curveOffset = proj * 2;
-            }
+            arrow.curveOffset = proj * 2;
           }
         }
         updateQuickHudPosition();
@@ -4364,11 +4493,13 @@
         state.defaults.curveOffset = 0;
       }
 
-      if (state.selectedIds.size > 0) {
+      const targets = state.selectedIds.size > 0
+        ? state.elements.filter(el => state.selectedIds.has(el.id))
+        : ((prop === 'roughness' || prop === 'fontFamily') ? state.elements : []);
+
+      if (targets.length > 0) {
         pushHistory();
-        for (const id of state.selectedIds) {
-          const el = state.elements.find(e => e.id === id);
-          if (!el) continue;
+        for (const el of targets) {
           el[prop] = value;
           if (prop === 'curveType') {
             if (value === 'straight' || value === 'elbow') {
