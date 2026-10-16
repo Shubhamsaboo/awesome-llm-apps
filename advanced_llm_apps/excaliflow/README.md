@@ -17,7 +17,7 @@ Requires **Node.js 18+** (or open `index.html` directly in any modern browser). 
 
 ```sh
 git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-cd awesome-llm-apps/generative_ui_agents/excaliflow
+cd awesome-llm-apps/advanced_llm_apps/excaliflow
 npm start
 ```
 

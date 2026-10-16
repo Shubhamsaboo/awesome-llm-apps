@@ -203,7 +203,6 @@ streamlit run travel_agent.py
 *   [✈️ MCP Apps Generative UI Showcase](generative_ui_agents/mcp-apps-generative-ui-showcase/) - MCP apps that render real interactive UI, flight search included
 *   [🎛️ AI Shadcn Component Generator](generative_ui_agents/ai-shadcn-component-generator/) - Chat your way to production-ready shadcn components
 *   [🔍 AI Deep Research Agent](generative_ui_agents/ai-deep-research-agent/) - Research where every tool call renders as a live workspace card
-*   [✏️ Excaliflow](generative_ui_agents/excaliflow/) - Hand-drawn system diagrams with live animated flows and video export
 
 ### 🎮 Autonomous Game-Playing Agents
 
@@ -250,12 +249,13 @@ streamlit run travel_agent.py
 *   [🩺 RAG Failure Diagnostics Clinic](rag_tutorials/rag_failure_diagnostics_clinic/) - Find out why your RAG pipeline is wrong, systematically
 *   [🕸️ Knowledge Graph RAG with Citations](rag_tutorials/knowledge_graph_rag_citations/) - Multi-hop answers with verifiable source attribution
 
-### 🔎 AI Browser Tools
+### 🛠️ Standalone Apps & Tools
 
-*Small tools that bring AI into everyday browsing.*
+*Standalone web apps, creative tools, and browser extensions for everyday workflows.*
 
 *   [🪡 Needle - A New Way to Find](advanced_llm_apps/needle/) - Search webpages by meaning and highlight the strongest source sentence, using a Chrome extension powered by TypeSafe Jev
 *   [🌀 Ripple - Change One Thing, Find What Else Needs to Change](advanced_llm_apps/ripple/) - Find related inconsistencies and suggested fixes as you edit a Google Doc, using TypeSafe Jev and Gemini
+*   [✏️ Excaliflow - Hand-Drawn Diagrams with Live Animated Flows](advanced_llm_apps/excaliflow/) - Sketch system architectures and AI agent workflows on an Excalidraw-style canvas with live animated arrows and video export
 
 ### 💾 LLM Apps with Memory
 
