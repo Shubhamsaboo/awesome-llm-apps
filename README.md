@@ -111,6 +111,14 @@ streamlit run travel_agent.py
 *   [🎙️ Thinking Out Loud](agent_skills/thinking-out-loud/) - Echoes a voice ramble back as a scannable brief, with the model's guesses quarantined and your reversals flagged
 *   [♾️ Self-Improving Agent Skills](agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
 
+### 🛠️ Standalone Apps & Tools
+
+*Standalone web apps, creative tools, and browser extensions for everyday workflows.*
+
+*   [✏️ Excaliflow - Hand-Drawn Diagrams with Live Animated Flows](advanced_llm_apps/excaliflow/) - Sketch system architectures and AI agent workflows on an Excalidraw-style canvas with live animated arrows and video export
+*   [🪡 Needle - A New Way to Find](advanced_llm_apps/needle/) - Search webpages by meaning and highlight the strongest source sentence, using a Chrome extension powered by TypeSafe Jev
+*   [🌀 Ripple - Change One Thing, Find What Else Needs to Change](advanced_llm_apps/ripple/) - Find related inconsistencies and suggested fixes as you edit a Google Doc, using TypeSafe Jev and Gemini
+
 ### 🌱 Starter AI Agents
 
 *Single-file agents that run with just an API key - a great place to start.*
@@ -248,13 +256,6 @@ streamlit run travel_agent.py
 *   [🖼️ Vision RAG](rag_tutorials/vision_rag/) - Ask questions about images and PDF pages with Embed-4
 *   [🩺 RAG Failure Diagnostics Clinic](rag_tutorials/rag_failure_diagnostics_clinic/) - Find out why your RAG pipeline is wrong, systematically
 *   [🕸️ Knowledge Graph RAG with Citations](rag_tutorials/knowledge_graph_rag_citations/) - Multi-hop answers with verifiable source attribution
-
-### 🔎 AI Browser Tools
-
-*Small tools that bring AI into everyday browsing.*
-
-*   [🪡 Needle - A New Way to Find](advanced_llm_apps/needle/) - Search webpages by meaning and highlight the strongest source sentence, using a Chrome extension powered by TypeSafe Jev
-*   [🌀 Ripple - Change One Thing, Find What Else Needs to Change](advanced_llm_apps/ripple/) - Find related inconsistencies and suggested fixes as you edit a Google Doc, using TypeSafe Jev and Gemini
 
 ### 💾 LLM Apps with Memory
 
