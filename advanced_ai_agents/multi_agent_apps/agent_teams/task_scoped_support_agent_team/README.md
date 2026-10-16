@@ -131,6 +131,7 @@ Two details worth copying into your own systems:
 
 ## Adapting this to your own team
 
+- **Make money movement idempotent.** A warrant decides who may ask for an effect, not whether that effect already happened. `Range.max_value(50.0)` caps each call, so three $29.99 refunds would each pass, and a retry after a lost response would refund twice. In production, bind the refund to a `charge_id` from the system of record, have the service store the first outcome per idempotency key, and if $50 is meant as a ticket-level budget, reserve it atomically in the service's own ledger.
 - **Put the service behind HTTP.** `BillingService.handle()` already takes a plain dict of strings. Mount it on a FastAPI route and the agents do not change.
 - **Keep the platform key out of the agent process.** Mint the role warrant in your control plane and pass the orchestrator the warrant, not the key. The service only needs the public key.
 - **Make the TTL match the work.** Ten minutes for a ticket, a few seconds for a single tool call. An expired warrant is refused like any other.
