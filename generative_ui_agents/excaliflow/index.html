@@ -1193,7 +1193,7 @@
         }
       }
 
-      const r = isStickyType(el.type) ? 4 : Math.max(0, Math.min(14, w / 4, h / 4) - ins * 0.5);
+      const r = el.type === 'sticky' ? 4 : Math.max(0, Math.min(14, w / 4, h / 4) - ins * 0.5);
       if (r > 0.5) {
         const clipCornerCircle = (tVal, isStart) => {
           const px = x1 + tVal * dx;
@@ -1230,10 +1230,6 @@
       const [cx1, cy1] = clampPointToShapeInterior(el, x1 + tMin * dx, y1 + tMin * dy, ins);
       const [cx2, cy2] = clampPointToShapeInterior(el, x1 + tMax * dx, y1 + tMax * dy, ins);
       return [cx1, cy1, cx2, cy2];
-    }
-
-    function isStickyType(type) {
-      return type === 'sticky';
     }
 
     function roughEdge(path, x1, y1, x2, y2, rng, roughness = 0.85) {
@@ -1390,41 +1386,25 @@
           const inset = Math.max(2.2, (Number(el.strokeWidth) || 2) * 0.9);
           const diag = w + h;
 
-          for (let d = -diag; d <= diag; d += spacing) {
-            const rawX1 = x + d;
-            const rawY1 = y + h;
-            const rawX2 = x + d + h;
-            const rawY2 = y;
+          const addClippedHatchSegment = (rawX1, rawY1, rawX2, rawY2) => {
             const clipped = clipSegmentToShape(el, rawX1, rawY1, rawX2, rawY2, inset);
-            if (clipped) {
-              const [cx1, cy1, cx2, cy2] = clipped;
-              if (Math.hypot(cx2 - cx1, cy2 - cy1) > 1.5) {
-                const rawMx = (cx1 + cx2) / 2 + (rng() - 0.5) * roughness * 0.9;
-                const rawMy = (cy1 + cy2) / 2 + (rng() - 0.5) * roughness * 0.9;
-                const [mx, my] = clampPointToShapeInterior(el, rawMx, rawMy, inset);
-                hachurePath.moveTo(cx1, cy1);
-                hachurePath.quadraticCurveTo(mx, my, cx2, cy2);
-              }
-            }
+            if (!clipped) return;
+            const [cx1, cy1, cx2, cy2] = clipped;
+            if (Math.hypot(cx2 - cx1, cy2 - cy1) <= 1.5) return;
+            const rawMx = (cx1 + cx2) / 2 + (rng() - 0.5) * roughness * 0.9;
+            const rawMy = (cy1 + cy2) / 2 + (rng() - 0.5) * roughness * 0.9;
+            const [mx, my] = clampPointToShapeInterior(el, rawMx, rawMy, inset);
+            hachurePath.moveTo(cx1, cy1);
+            hachurePath.quadraticCurveTo(mx, my, cx2, cy2);
+          };
+
+          for (let d = -diag; d <= diag; d += spacing) {
+            addClippedHatchSegment(x + d, y + h, x + d + h, y);
           }
 
           if (fillStyle === 'cross-hatch') {
             for (let d = -diag; d <= diag; d += spacing * 1.05) {
-              const rawX1 = x + d;
-              const rawY1 = y;
-              const rawX2 = x + d + h;
-              const rawY2 = y + h;
-              const clipped = clipSegmentToShape(el, rawX1, rawY1, rawX2, rawY2, inset);
-              if (clipped) {
-                const [cx1, cy1, cx2, cy2] = clipped;
-                if (Math.hypot(cx2 - cx1, cy2 - cy1) > 1.5) {
-                  const rawMx = (cx1 + cx2) / 2 + (rng() - 0.5) * roughness * 0.9;
-                  const rawMy = (cy1 + cy2) / 2 + (rng() - 0.5) * roughness * 0.9;
-                  const [mx, my] = clampPointToShapeInterior(el, rawMx, rawMy, inset);
-                  hachurePath.moveTo(cx1, cy1);
-                  hachurePath.quadraticCurveTo(mx, my, cx2, cy2);
-                }
-              }
+              addClippedHatchSegment(x + d, y, x + d + h, y + h);
             }
           }
         }
@@ -2444,8 +2424,14 @@
 
       const cx = el.x + el.width / 2;
       const cy = el.y + el.height / 2;
-      const padX = el.type === 'diamond' ? Math.max(56, maxLineW * 0.65) : (el.type === 'ellipse' ? 42 : 32);
-      const padY = el.type === 'diamond' ? Math.max(44, lines.length * lineHeight * 0.65) : 28;
+      let padX = 32;
+      let padY = 28;
+      if (el.type === 'diamond') {
+        padX = Math.max(56, maxLineW * 0.65);
+        padY = Math.max(44, lines.length * lineHeight * 0.65);
+      } else if (el.type === 'ellipse') {
+        padX = 42;
+      }
       const minW = el.type === 'text' ? 40 : 110;
       const minH = el.type === 'text' ? 26 : 54;
 
@@ -2461,16 +2447,27 @@
       }
     }
 
+    const DEFAULT_SHAPE_SIZES = {
+      sticky: { width: 150, height: 110 },
+      diamond: { width: 148, height: 86 },
+      default: { width: 144, height: 68 }
+    };
+
+    function getDefaultShapeSize(type) {
+      return DEFAULT_SHAPE_SIZES[type] || DEFAULT_SHAPE_SIZES.default;
+    }
+
     function createElement(type, props = {}) {
       const d = state.defaults;
       const seed = props.seed || Math.floor(Math.random() * 1000000) + 1;
+      const defaultSize = getDefaultShapeSize(type);
       const base = {
         id: props.id || nextId(type),
         type,
         x: props.x ?? 0,
         y: props.y ?? 0,
-        width: props.width ?? (type === 'sticky' ? 150 : (type === 'diamond' ? 148 : 144)),
-        height: props.height ?? (type === 'sticky' ? 110 : (type === 'diamond' ? 86 : 68)),
+        width: props.width ?? defaultSize.width,
+        height: props.height ?? defaultSize.height,
         strokeColor: props.strokeColor || d.strokeColor,
         fillStyle: props.fillStyle ?? (type === 'sticky' ? 'solid' : d.fillStyle),
         fontFamily: normalizeFontFamily(props.fontFamily || d.fontFamily),
@@ -2570,8 +2567,7 @@
       else if (dir === 'top') { ncx = scx; ncy = scy - stepY; outAngle = -Math.PI / 2; inAngle = Math.PI / 2; }
       else if (dir === 'bottom') { ncx = scx; ncy = scy + stepY; outAngle = Math.PI / 2; inAngle = -Math.PI / 2; }
 
-      const newW = targetType === 'diamond' ? 148 : 144;
-      const newH = targetType === 'diamond' ? 86 : 68;
+      const { width: newW, height: newH } = getDefaultShapeSize(targetType);
       const newNode = createElement(targetType, {
         x: ncx - newW / 2,
         y: ncy - newH / 2,
@@ -3355,37 +3351,32 @@
 
       if (d.mode === 'arrow-handle') {
         const arrow = d.arrow;
-        if (d.handle === 'start') {
-          const otherId = arrow.endBinding?.elementId || null;
-          const targetShape = findMagneticShape(wx, wy, otherId);
+        if (d.handle === 'start' || d.handle === 'end') {
+          const isStart = d.handle === 'start';
+          const otherBinding = isStart ? arrow.endBinding : arrow.startBinding;
+          const fallbackPt = isStart
+            ? { x: arrow.x2 || wx, y: arrow.y2 || wy }
+            : { x: arrow.x || wx, y: arrow.y || wy };
+          const targetShape = findMagneticShape(wx, wy, otherBinding?.elementId || null);
+
+          let binding = null;
+          let endPt = { x: wx, y: wy };
           if (targetShape) {
-            const binding = computeBindingForShape(targetShape, { x: wx, y: wy });
-            arrow.startBinding = binding;
-            const bPt = getBindingBoundaryPoint(targetShape, binding, { x: arrow.x2 || wx, y: arrow.y2 || wy }, 4);
-            arrow.x = bPt.x;
-            arrow.y = bPt.y;
-            state.snapPreview = { shapeId: targetShape.id, point: bPt, angle: binding.focusAngle };
+            binding = computeBindingForShape(targetShape, endPt);
+            endPt = getBindingBoundaryPoint(targetShape, binding, fallbackPt, 4);
+            state.snapPreview = { shapeId: targetShape.id, point: endPt, angle: binding.focusAngle };
           } else {
-            arrow.startBinding = null;
-            arrow.x = wx;
-            arrow.y = wy;
             state.snapPreview = null;
           }
-        } else if (d.handle === 'end') {
-          const otherId = arrow.startBinding?.elementId || null;
-          const targetShape = findMagneticShape(wx, wy, otherId);
-          if (targetShape) {
-            const binding = computeBindingForShape(targetShape, { x: wx, y: wy });
-            arrow.endBinding = binding;
-            const bPt = getBindingBoundaryPoint(targetShape, binding, { x: arrow.x || wx, y: arrow.y || wy }, 4);
-            arrow.x2 = bPt.x;
-            arrow.y2 = bPt.y;
-            state.snapPreview = { shapeId: targetShape.id, point: bPt, angle: binding.focusAngle };
+
+          if (isStart) {
+            arrow.startBinding = binding;
+            arrow.x = endPt.x;
+            arrow.y = endPt.y;
           } else {
-            arrow.endBinding = null;
-            arrow.x2 = wx;
-            arrow.y2 = wy;
-            state.snapPreview = null;
+            arrow.endBinding = binding;
+            arrow.x2 = endPt.x;
+            arrow.y2 = endPt.y;
           }
         } else if (d.handle === 'curve') {
           const { p0, p1 } = getArrowGeometry(arrow);
@@ -4059,6 +4050,14 @@
       document.getElementById('bgBlackBtn')?.classList.toggle('active', state.canvasBg === '#000000');
     }
 
+    function syncZoomReadout() {
+      if (typeof document !== 'undefined') {
+        const zBtn = document.getElementById('zoomResetBtn');
+        if (zBtn) zBtn.textContent = `${Math.round(state.zoom * 100)}%`;
+      }
+      updateQuickHudPosition();
+    }
+
     function setZoom(nextZoom, centerScreenX, centerScreenY) {
       const clamped = Math.max(0.25, Math.min(3.0, nextZoom));
       const vw = typeof window !== 'undefined' ? window.innerWidth : 1280;
@@ -4070,12 +4069,7 @@
       state.zoom = clamped;
       state.scrollX = sx / state.zoom - worldBefore.x;
       state.scrollY = sy / state.zoom - worldBefore.y;
-
-      if (typeof document !== 'undefined') {
-        const zBtn = document.getElementById('zoomResetBtn');
-        if (zBtn) zBtn.textContent = `${Math.round(state.zoom * 100)}%`;
-      }
-      updateQuickHudPosition();
+      syncZoomReadout();
     }
 
     function fitToScreen() {
@@ -4092,12 +4086,7 @@
       state.zoom = nextZoom;
       state.scrollX = (vw + sidebarOffset) / (2 * state.zoom) - (bounds.x + bounds.width / 2);
       state.scrollY = vh / (2 * state.zoom) - (bounds.y + bounds.height / 2);
-
-      if (typeof document !== 'undefined') {
-        const zBtn = document.getElementById('zoomResetBtn');
-        if (zBtn) zBtn.textContent = `${Math.round(state.zoom * 100)}%`;
-      }
-      updateQuickHudPosition();
+      syncZoomReadout();
     }
 
     function toggleSidebar() {
@@ -4183,6 +4172,19 @@
       }
     }
 
+    const STYLE_CONTROL_BINDINGS = [
+      { selector: '#sidebarSwatches .color-swatch', attr: 'data-color', prop: 'strokeColor' },
+      { selector: '#fillStyleRow .seg-btn', attr: 'data-fill-style', prop: 'fillStyle' },
+      { selector: '#fontFamilyRow .seg-btn', attr: 'data-font-family', prop: 'fontFamily' },
+      { selector: '#fontSizeRow .seg-btn', attr: 'data-font-size', prop: 'fontSize', numeric: true },
+      { selector: '#roughnessRow .seg-btn', attr: 'data-roughness', prop: 'roughness', numeric: true },
+      { selector: '#strokeWidthRow .seg-btn', attr: 'data-stroke-width', prop: 'strokeWidth', numeric: true },
+      { selector: '#strokeStyleRow .seg-btn', attr: 'data-stroke-style', prop: 'strokeStyle' },
+      { selector: '#curveTypeRow .seg-btn', attr: 'data-curve-type', prop: 'curveType' },
+      { selector: '#hudFontGroup .ui-btn', attr: 'data-hud-font', prop: 'fontFamily' },
+      { selector: '#hudArrowControls [data-hud-curve]', attr: 'data-hud-curve', prop: 'curveType' }
+    ];
+
     function syncUIWithSelection() {
       if (typeof document === 'undefined') return;
       const selected = state.elements.filter(el => state.selectedIds.has(el.id));
@@ -4194,16 +4196,11 @@
         });
       };
 
-      setActiveAttr('#sidebarSwatches .color-swatch', 'data-color', ref.strokeColor);
-      setActiveAttr('#fillStyleRow .seg-btn', 'data-fill-style', ref.fillStyle);
-      setActiveAttr('#fontFamilyRow .seg-btn', 'data-font-family', normalizeFontFamily(ref.fontFamily));
-      setActiveAttr('#fontSizeRow .seg-btn', 'data-font-size', ref.fontSize);
-      setActiveAttr('#roughnessRow .seg-btn', 'data-roughness', ref.roughness);
-      setActiveAttr('#strokeWidthRow .seg-btn', 'data-stroke-width', ref.strokeWidth);
-      setActiveAttr('#strokeStyleRow .seg-btn', 'data-stroke-style', ref.strokeStyle);
-      setActiveAttr('#curveTypeRow .seg-btn', 'data-curve-type', ref.curveType);
+      for (const { selector, attr, prop } of STYLE_CONTROL_BINDINGS) {
+        const val = prop === 'fontFamily' ? normalizeFontFamily(ref.fontFamily) : ref[prop];
+        setActiveAttr(selector, attr, val);
+      }
       setActiveAttr('#hudColorDots .hud-dot', 'data-color', ref.strokeColor);
-      setActiveAttr('#hudFontGroup .ui-btn', 'data-hud-font', normalizeFontFamily(ref.fontFamily));
 
       updateHeaderButtons();
       updateQuickHudPosition();
@@ -4452,30 +4449,15 @@
         });
       });
 
-      document.querySelectorAll('#sidebarSwatches .color-swatch').forEach(btn => {
-        btn.addEventListener('click', () => applyStyleProperty('strokeColor', btn.getAttribute('data-color')));
-      });
-      document.querySelectorAll('#fillStyleRow .seg-btn').forEach(btn => {
-        btn.addEventListener('click', () => applyStyleProperty('fillStyle', btn.getAttribute('data-fill-style')));
-      });
-      document.querySelectorAll('#fontFamilyRow .seg-btn').forEach(btn => {
-        btn.addEventListener('click', () => applyStyleProperty('fontFamily', btn.getAttribute('data-font-family')));
-      });
-      document.querySelectorAll('#fontSizeRow .seg-btn').forEach(btn => {
-        btn.addEventListener('click', () => applyStyleProperty('fontSize', Number(btn.getAttribute('data-font-size'))));
-      });
-      document.querySelectorAll('#roughnessRow .seg-btn').forEach(btn => {
-        btn.addEventListener('click', () => applyStyleProperty('roughness', Number(btn.getAttribute('data-roughness'))));
-      });
-      document.querySelectorAll('#strokeWidthRow .seg-btn').forEach(btn => {
-        btn.addEventListener('click', () => applyStyleProperty('strokeWidth', Number(btn.getAttribute('data-stroke-width'))));
-      });
-      document.querySelectorAll('#strokeStyleRow .seg-btn').forEach(btn => {
-        btn.addEventListener('click', () => applyStyleProperty('strokeStyle', btn.getAttribute('data-stroke-style')));
-      });
-      document.querySelectorAll('#curveTypeRow .seg-btn').forEach(btn => {
-        btn.addEventListener('click', () => applyStyleProperty('curveType', btn.getAttribute('data-curve-type')));
-      });
+      for (const { selector, attr, prop, numeric } of STYLE_CONTROL_BINDINGS) {
+        document.querySelectorAll(selector).forEach(btn => {
+          btn.addEventListener('click', () => {
+            const raw = btn.getAttribute(attr);
+            applyStyleProperty(prop, numeric ? Number(raw) : raw);
+          });
+        });
+      }
+
       document.querySelectorAll('[data-template]').forEach(btn => {
         btn.addEventListener('click', () => {
           closeAllDropdowns();
@@ -4483,9 +4465,6 @@
         });
       });
 
-      document.querySelectorAll('#hudFontGroup [data-hud-font]').forEach(btn => {
-        btn.addEventListener('click', () => applyStyleProperty('fontFamily', btn.getAttribute('data-hud-font')));
-      });
       document.querySelectorAll('#hudNodeControls [data-hud-morph]').forEach(btn => {
         btn.addEventListener('click', () => {
           const newType = btn.getAttribute('data-hud-morph');
@@ -4506,9 +4485,6 @@
         const firstId = Array.from(state.selectedIds)[0];
         const el = state.elements.find(e => e.id === firstId);
         if (el && isNodeElement(el)) chainNodeFrom(el, 'right', null, true);
-      });
-      document.querySelectorAll('#hudArrowControls [data-hud-curve]').forEach(btn => {
-        btn.addEventListener('click', () => applyStyleProperty('curveType', btn.getAttribute('data-hud-curve')));
       });
       document.getElementById('hudArrowFlowBtn')?.addEventListener('click', () => {
         pushHistory();
