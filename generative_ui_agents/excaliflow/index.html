@@ -865,6 +865,7 @@
     <!-- Arrow-specific actions -->
     <div id="hudArrowControls" style="display:none;align-items:center;gap:2px">
       <button class="ui-btn" data-hud-curve="curved">Curved</button>
+      <button class="ui-btn" data-hud-curve="elbow">Elbow</button>
       <button class="ui-btn" data-hud-curve="straight">Straight</button>
       <button id="hudArrowFlowBtn" class="ui-btn">Flow ON</button>
       <button id="hudFlipArrowBtn" class="ui-btn" title="Reverse Arrow Direction">⇄</button>
@@ -1621,56 +1622,136 @@
 
       const N = 40;
       const samples = [];
-      const cumLen = new Float64Array(N + 1);
+      const cumLenArr = [0];
       let totalLen = 0;
+      let waypoints = [p0, p1];
+      let elbowAxis = 'x';
+      let tipAngle = Math.atan2(chordDy, chordDx);
 
       if (curveType === 'elbow') {
-        const elbowX = midX + (Number(el.curveOffset) || 0) * 0.5;
-        const waypoints = [
-          { x: p0.x, y: p0.y },
-          { x: elbowX, y: p0.y },
-          { x: elbowX, y: p1.y },
-          { x: p1.x, y: p1.y }
-        ];
-        const segLens = [];
+        const startSide = el.startBinding?.side;
+        const endSide = el.endBinding?.side;
+        const verticalFirst =
+          startSide === 'top' || startSide === 'bottom' ||
+          (!startSide && (endSide === 'top' || endSide === 'bottom') && Math.abs(chordDy) > Math.abs(chordDx));
+
+        let rawWaypoints;
+        if (verticalFirst) {
+          elbowAxis = 'y';
+          const rawElbowY = midY + (Number(el.curveOffset) || 0) * 0.5;
+          let elbowY = rawElbowY;
+          if (Math.abs(rawElbowY - p1.y) < 14 && Math.abs(p1.x - p0.x) > 14) {
+            elbowY = p1.y;
+            rawWaypoints = [
+              { x: p0.x, y: p0.y },
+              { x: p0.x, y: p1.y },
+              { x: p1.x, y: p1.y }
+            ];
+          } else if (Math.abs(rawElbowY - p0.y) < 14 && Math.abs(p1.x - p0.x) > 14) {
+            elbowY = p0.y;
+            rawWaypoints = [
+              { x: p0.x, y: p0.y },
+              { x: p1.x, y: p0.y },
+              { x: p1.x, y: p1.y }
+            ];
+          } else {
+            rawWaypoints = [
+              { x: p0.x, y: p0.y },
+              { x: p0.x, y: elbowY },
+              { x: p1.x, y: elbowY },
+              { x: p1.x, y: p1.y }
+            ];
+          }
+          curveHandlePt.x = (p0.x + p1.x) / 2;
+          curveHandlePt.y = elbowY;
+        } else {
+          elbowAxis = 'x';
+          const rawElbowX = midX + (Number(el.curveOffset) || 0) * 0.5;
+          let elbowX = rawElbowX;
+          if (Math.abs(rawElbowX - p1.x) < 14 && Math.abs(p1.y - p0.y) > 14) {
+            elbowX = p1.x;
+            rawWaypoints = [
+              { x: p0.x, y: p0.y },
+              { x: p1.x, y: p0.y },
+              { x: p1.x, y: p1.y }
+            ];
+          } else if (Math.abs(rawElbowX - p0.x) < 14 && Math.abs(p1.y - p0.y) > 14) {
+            elbowX = p0.x;
+            rawWaypoints = [
+              { x: p0.x, y: p0.y },
+              { x: p0.x, y: p1.y },
+              { x: p1.x, y: p1.y }
+            ];
+          } else {
+            rawWaypoints = [
+              { x: p0.x, y: p0.y },
+              { x: elbowX, y: p0.y },
+              { x: elbowX, y: p1.y },
+              { x: p1.x, y: p1.y }
+            ];
+          }
+          curveHandlePt.x = elbowX;
+          curveHandlePt.y = (p0.y + p1.y) / 2;
+        }
+
+        waypoints = [rawWaypoints[0]];
+        for (let i = 1; i < rawWaypoints.length; i++) {
+          const prev = waypoints[waypoints.length - 1];
+          const curr = rawWaypoints[i];
+          if (Math.hypot(curr.x - prev.x, curr.y - prev.y) > 0.5) {
+            waypoints.push(curr);
+          }
+        }
+        if (waypoints.length < 2) {
+          waypoints = [{ x: p0.x, y: p0.y }, { x: p1.x, y: p1.y }];
+        } else {
+          waypoints[waypoints.length - 1] = { x: p1.x, y: p1.y };
+        }
+
+        const segs = [];
         let polyLen = 0;
         for (let i = 0; i < waypoints.length - 1; i++) {
-          const sl = Math.hypot(waypoints[i + 1].x - waypoints[i].x, waypoints[i + 1].y - waypoints[i].y);
-          segLens.push(sl);
-          polyLen += sl;
+          const a = waypoints[i];
+          const b = waypoints[i + 1];
+          const sl = Math.hypot(b.x - a.x, b.y - a.y);
+          if (sl > 1e-6) {
+            segs.push({ a, b, sl, tx: (b.x - a.x) / sl, ty: (b.y - a.y) / sl });
+            polyLen += sl;
+          }
         }
-        polyLen = Math.max(1, polyLen);
 
-        for (let i = 0; i <= N; i++) {
-          const targetD = (i / N) * polyLen;
-          let acc = 0;
-          let pt = { x: p1.x, y: p1.y, tx: 1, ty: 0 };
-          for (let s = 0; s < segLens.length; s++) {
-            const sl = segLens[s];
-            if (acc + sl >= targetD || s === segLens.length - 1) {
-              const localT = sl > 1e-6 ? Math.max(0, Math.min(1, (targetD - acc) / sl)) : 0;
-              const a = waypoints[s];
-              const b = waypoints[s + 1];
-              const tx = sl > 1e-6 ? (b.x - a.x) / sl : 1;
-              const ty = sl > 1e-6 ? (b.y - a.y) / sl : 0;
-              pt = {
-                x: a.x + (b.x - a.x) * localT,
-                y: a.y + (b.y - a.y) * localT,
-                tx,
-                ty
+        if (segs.length === 0) {
+          const tx = chordDx / chordLen;
+          const ty = chordDy / chordLen;
+          samples.push({ x: p0.x, y: p0.y, tx, ty });
+          samples.push({ x: p1.x, y: p1.y, tx, ty });
+          cumLenArr.push(chordLen);
+          totalLen = chordLen;
+          tipAngle = Math.atan2(ty, tx);
+        } else {
+          for (let s = 0; s < segs.length; s++) {
+            const seg = segs[s];
+            const steps = Math.max(2, Math.round((seg.sl / Math.max(1, polyLen)) * N));
+            const startStep = s === 0 ? 0 : 1;
+            for (let k = startStep; k <= steps; k++) {
+              const localT = k / steps;
+              const pt = {
+                x: seg.a.x + (seg.b.x - seg.a.x) * localT,
+                y: seg.a.y + (seg.b.y - seg.a.y) * localT,
+                tx: seg.tx,
+                ty: seg.ty
               };
-              break;
+              if (samples.length > 0) {
+                const prev = samples[samples.length - 1];
+                totalLen += Math.hypot(pt.x - prev.x, pt.y - prev.y);
+                cumLenArr.push(totalLen);
+              }
+              samples.push(pt);
             }
-            acc += sl;
           }
-          samples.push(pt);
-          if (i > 0) {
-            totalLen += Math.hypot(pt.x - samples[i - 1].x, pt.y - samples[i - 1].y);
-          }
-          cumLen[i] = totalLen;
+          const lastSeg = segs[segs.length - 1];
+          tipAngle = Math.atan2(lastSeg.ty, lastSeg.tx);
         }
-        curveHandlePt.x = elbowX;
-        curveHandlePt.y = (p0.y + p1.y) / 2;
       } else {
         for (let i = 0; i <= N; i++) {
           const t = i / N;
@@ -1681,14 +1762,17 @@
           const dydt = 2 * mt * (cp.y - p0.y) + 2 * t * (p1.y - cp.y);
           const dLen = Math.hypot(dxdt, dydt) || 1;
           const pt = { x, y, tx: dxdt / dLen, ty: dydt / dLen };
-          samples.push(pt);
           if (i > 0) {
             totalLen += Math.hypot(x - samples[i - 1].x, y - samples[i - 1].y);
+            cumLenArr.push(totalLen);
           }
-          cumLen[i] = totalLen;
+          samples.push(pt);
         }
+        const endSample = samples[samples.length - 1];
+        tipAngle = Math.atan2(endSample.ty, endSample.tx);
       }
 
+      const cumLen = Float64Array.from(cumLenArr);
       const midDist = totalLen * 0.5;
       const labelPt = pointAtArcLength({ samples, cumLen, totalLen }, midDist);
 
@@ -1698,6 +1782,9 @@
         p1,
         cp,
         curveHandlePt,
+        waypoints,
+        elbowAxis,
+        tipAngle,
         samples,
         cumLen,
         totalLen: Math.max(1, totalLen),
@@ -1954,38 +2041,42 @@
         ctx.shadowBlur = 12;
       }
 
+      const curveType = el.curveType || 'curved';
       const samples = geom.samples;
       ctx.beginPath();
-      for (let i = 0; i < samples.length; i++) {
-        if (i === 0) ctx.moveTo(samples[i].x, samples[i].y);
-        else ctx.lineTo(samples[i].x, samples[i].y);
+      if (curveType === 'elbow' && geom.waypoints && geom.waypoints.length >= 2) {
+        const pts = geom.waypoints;
+        ctx.moveTo(pts[0].x, pts[0].y);
+        for (let i = 1; i < pts.length - 1; i++) {
+          const prev = pts[i - 1];
+          const curr = pts[i];
+          const next = pts[i + 1];
+          const d1 = Math.hypot(curr.x - prev.x, curr.y - prev.y);
+          const d2 = Math.hypot(next.x - curr.x, next.y - curr.y);
+          const cornerR = Math.min(8, d1 * 0.35, d2 * 0.35);
+          if (cornerR > 1.5 && typeof ctx.arcTo === 'function') {
+            ctx.arcTo(curr.x, curr.y, next.x, next.y, cornerR);
+          } else {
+            ctx.lineTo(curr.x, curr.y);
+          }
+        }
+        const lastPt = pts[pts.length - 1];
+        ctx.lineTo(lastPt.x, lastPt.y);
+      } else if (curveType === 'straight' || Math.abs(Number(el.curveOffset) || 0) < 0.5) {
+        ctx.moveTo(geom.p0.x, geom.p0.y);
+        ctx.lineTo(geom.p1.x, geom.p1.y);
+      } else {
+        ctx.moveTo(geom.p0.x, geom.p0.y);
+        ctx.quadraticCurveTo(geom.cp.x, geom.cp.y, geom.p1.x, geom.p1.y);
       }
       ctx.stroke();
 
-      // Excalidraw solid hand-drawn arrows have a subtle organic second pass
-      const roughness = el.roughness ?? 0.85;
-      if (roughness > 0.01 && (!el.strokeStyle || el.strokeStyle === 'solid') && (el.curveType || 'curved') !== 'elbow') {
-        const rng = mulberry32((Number(el.seed) || 1) + 77);
-        const jit = roughness * 1.1;
-        ctx.save();
-        ctx.lineWidth = Math.max(1.2, sw * 0.85);
-        ctx.globalAlpha = 0.78;
-        ctx.beginPath();
-        ctx.moveTo(geom.p0.x + (rng() - 0.5) * jit, geom.p0.y + (rng() - 0.5) * jit);
-        ctx.quadraticCurveTo(
-          geom.cp.x + (rng() - 0.5) * jit * 2.2,
-          geom.cp.y + (rng() - 0.5) * jit * 2.2,
-          geom.p1.x + (rng() - 0.5) * jit * 0.5,
-          geom.p1.y + (rng() - 0.5) * jit * 0.5
-        );
-        ctx.stroke();
-        ctx.restore();
-      }
-
       // Excalidraw solid arrowhead cap (~25 degree spread)
       ctx.setLineDash([]);
-      const endSample = samples[samples.length - 1];
-      const tipAngle = Math.atan2(endSample.ty, endSample.tx);
+      const endSample = samples[samples.length - 1] || { tx: 1, ty: 0 };
+      const tipAngle = typeof geom.tipAngle === 'number'
+        ? geom.tipAngle
+        : Math.atan2(endSample.ty, endSample.tx);
       const headLen = Math.max(11, sw * 4.6);
       const spread = 0.44;
       ctx.beginPath();
@@ -3135,7 +3226,7 @@
         state.elements.push(arrow);
         state.selectedIds.clear();
         state.selectedIds.add(arrow.id);
-        state.drag = { mode: 'arrow-handle', arrow, handle: 'end' };
+        state.drag = { mode: 'arrow-handle', arrow, handle: 'end', isNewArrow: true };
         return;
       }
 
@@ -3201,21 +3292,21 @@
         pushHistory();
 
         if (hitEl.type === 'arrow' && !altKey) {
-          state.selectedIds.clear();
-          state.selectedIds.add(hitEl.id);
-          syncUIWithSelection();
-
           const geom = getArrowGeometry(hitEl);
-          const endGrabRadius = 32 / (state.zoom || 1);
-          let handle = 'curve';
-          if (Math.hypot(wx - geom.p0.x, wy - geom.p0.y) <= endGrabRadius) {
-            handle = 'start';
-          } else if (Math.hypot(wx - geom.p1.x, wy - geom.p1.y) <= endGrabRadius) {
-            handle = 'end';
+          const endGrabRadius = 28 / (state.zoom || 1);
+          const nearStart = Math.hypot(wx - geom.p0.x, wy - geom.p0.y) <= endGrabRadius;
+          const nearEnd = Math.hypot(wx - geom.p1.x, wy - geom.p1.y) <= endGrabRadius;
+          const isBound = Boolean(hitEl.startBinding?.elementId || hitEl.endBinding?.elementId);
+
+          if (nearStart || nearEnd || isBound) {
+            state.selectedIds.clear();
+            state.selectedIds.add(hitEl.id);
+            syncUIWithSelection();
+            const handle = nearStart ? 'start' : (nearEnd ? 'end' : 'curve');
+            state.drag = { mode: 'arrow-handle', arrow: hitEl, handle };
+            updateInteractiveCursor();
+            return;
           }
-          state.drag = { mode: 'arrow-handle', arrow: hitEl, handle };
-          updateInteractiveCursor();
-          return;
         }
 
         if (shiftKey) {
@@ -3369,6 +3460,26 @@
             state.snapPreview = null;
           }
 
+          if (otherBinding?.elementId) {
+            const otherShape = state.elements.find(e => e.id === otherBinding.elementId);
+            if (otherShape) {
+              const ocx = otherShape.x + otherShape.width / 2;
+              const ocy = otherShape.y + otherShape.height / 2;
+              const angleToTarget = Math.atan2(endPt.y - ocy, endPt.x - ocx);
+              if (d.isNewArrow && !isStart) {
+                otherBinding.focusAngle = angleToTarget;
+              } else if (!otherBinding.side && typeof otherBinding.focusAngle === 'number') {
+                const diff = Math.abs(Math.atan2(
+                  Math.sin(angleToTarget - otherBinding.focusAngle),
+                  Math.cos(angleToTarget - otherBinding.focusAngle)
+                ));
+                if (diff > Math.PI * 0.52) {
+                  otherBinding.focusAngle = angleToTarget;
+                }
+              }
+            }
+          }
+
           if (isStart) {
             arrow.startBinding = binding;
             arrow.x = endPt.x;
@@ -3379,19 +3490,30 @@
             arrow.y2 = endPt.y;
           }
         } else if (d.handle === 'curve') {
-          const { p0, p1 } = getArrowGeometry(arrow);
-          const chordDx = p1.x - p0.x;
-          const chordDy = p1.y - p0.y;
-          const chordLen = Math.hypot(chordDx, chordDy) || 1;
-          const nx = -chordDy / chordLen;
-          const ny = chordDx / chordLen;
+          const geom = getArrowGeometry(arrow);
+          const { p0, p1 } = geom;
           const mx = (p0.x + p1.x) / 2;
           const my = (p0.y + p1.y) / 2;
-          const proj = (wx - mx) * nx + (wy - my) * ny;
-          if (arrow.curveType === 'straight' && Math.abs(proj) > 4) {
-            arrow.curveType = 'curved';
+          if ((arrow.curveType || 'curved') === 'elbow') {
+            arrow.curveOffset = geom.elbowAxis === 'y' ? (wy - my) * 2 : (wx - mx) * 2;
+          } else {
+            const chordDx = p1.x - p0.x;
+            const chordDy = p1.y - p0.y;
+            const chordLen = Math.hypot(chordDx, chordDy) || 1;
+            const nx = -chordDy / chordLen;
+            const ny = chordDx / chordLen;
+            const proj = (wx - mx) * nx + (wy - my) * ny;
+            if (arrow.curveType === 'straight') {
+              if (Math.abs(proj) > 10) {
+                arrow.curveType = 'curved';
+                arrow.curveOffset = proj * 2;
+              } else {
+                arrow.curveOffset = 0;
+              }
+            } else {
+              arrow.curveOffset = proj * 2;
+            }
           }
-          arrow.curveOffset = proj * 2;
         }
         updateQuickHudPosition();
         return;
@@ -3434,6 +3556,35 @@
             if (d.initialPositions.size === 1 && isNodeElement(el)) {
               singleNode = el;
             }
+          }
+        }
+
+        // Re-orient unpinned bindings when connected nodes cross past each other
+        for (const el of state.elements) {
+          if (el.type !== 'arrow') continue;
+          const sId = el.startBinding?.elementId;
+          const eId = el.endBinding?.elementId;
+          if (!sId && !eId) continue;
+          if (!d.initialPositions.has(sId) && !d.initialPositions.has(eId)) continue;
+
+          const sShape = sId ? state.elements.find(n => n.id === sId) : null;
+          const eShape = eId ? state.elements.find(n => n.id === eId) : null;
+          const sCenter = sShape
+            ? { x: sShape.x + sShape.width / 2, y: sShape.y + sShape.height / 2 }
+            : { x: el.x, y: el.y };
+          const eCenter = eShape
+            ? { x: eShape.x + eShape.width / 2, y: eShape.y + eShape.height / 2 }
+            : { x: el.x2 ?? el.x, y: el.y2 ?? el.y };
+
+          if (sShape && !el.startBinding.side && typeof el.startBinding.focusAngle === 'number') {
+            const ang = Math.atan2(eCenter.y - sCenter.y, eCenter.x - sCenter.x);
+            const diff = Math.abs(Math.atan2(Math.sin(ang - el.startBinding.focusAngle), Math.cos(ang - el.startBinding.focusAngle)));
+            if (diff > Math.PI * 0.52) el.startBinding.focusAngle = ang;
+          }
+          if (eShape && !el.endBinding.side && typeof el.endBinding.focusAngle === 'number') {
+            const ang = Math.atan2(sCenter.y - eCenter.y, sCenter.x - eCenter.x);
+            const diff = Math.abs(Math.atan2(Math.sin(ang - el.endBinding.focusAngle), Math.cos(ang - el.endBinding.focusAngle)));
+            if (diff > Math.PI * 0.52) el.endBinding.focusAngle = ang;
           }
         }
 
@@ -4209,6 +4360,9 @@
     function applyStyleProperty(prop, value) {
       if (prop === 'fontFamily') value = normalizeFontFamily(value);
       state.defaults[prop] = value;
+      if (prop === 'curveType' && (value === 'straight' || value === 'elbow')) {
+        state.defaults.curveOffset = 0;
+      }
 
       if (state.selectedIds.size > 0) {
         pushHistory();
@@ -4216,6 +4370,13 @@
           const el = state.elements.find(e => e.id === id);
           if (!el) continue;
           el[prop] = value;
+          if (prop === 'curveType') {
+            if (value === 'straight' || value === 'elbow') {
+              el.curveOffset = 0;
+            } else if (value === 'curved' && Math.abs(Number(el.curveOffset) || 0) < 2) {
+              el.curveOffset = -36;
+            }
+          }
           if (prop === 'fontFamily' || prop === 'fontSize') {
             autoFitElementToText(el, el.text);
           }
@@ -4615,7 +4776,8 @@
         cloneElementsWithBindings,
         undo,
         redo,
-        importExcalidrawJson
+        importExcalidrawJson,
+        applyStyleProperty
       });
       window.addEventListener('DOMContentLoaded', initStudioDOM);
     }

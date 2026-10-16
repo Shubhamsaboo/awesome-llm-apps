@@ -57,6 +57,7 @@ function createMockCtx() {
     lineTo(x, y) { calls.push({ fn: 'lineTo', x, y }); },
     quadraticCurveTo(cpx, cpy, x, y) { calls.push({ fn: 'quadraticCurveTo', cpx, cpy, x, y }); },
     bezierCurveTo(a, b, c, d, e, f) { calls.push({ fn: 'bezierCurveTo', a, b, c, d, e, f }); },
+    arcTo(x1, y1, x2, y2, r) { calls.push({ fn: 'arcTo', x1, y1, x2, y2, r }); },
     arc(x, y, r, s, e) { calls.push({ fn: 'arc', x, y, r, s, e }); },
     ellipse(x, y, rx, ry) { calls.push({ fn: 'ellipse', x, y, rx, ry }); },
     fill(pathObj) { calls.push({ fn: 'fill', pathObj }); },
@@ -252,7 +253,39 @@ app.pointerDownWorld(midPt.x, midPt.y);
 app.pointerMoveWorld(midPt.x - 50, midPt.y + 50);
 app.pointerUpWorld(midPt.x - 50, midPt.y + 50);
 assert(Math.abs(arrowAB.curveOffset) > 40, `Expected arrow.curveOffset to update when dragging middle shaft, got ${arrowAB.curveOffset}`);
-console.log('[PASS] 4. Direct bound-arrow middle shaft drag in Select mode updates arrow.curveOffset');
+
+// Verify Straight, Elbow (including L-bend arrowhead angle & 1:1 handle tracking), and Curved switching
+app.state.selectedIds.clear();
+app.state.selectedIds.add(arrowAB.id);
+app.applyStyleProperty('curveType', 'straight');
+assert.strictEqual(arrowAB.curveType, 'straight', 'Arrow should switch to straight');
+assert.strictEqual(arrowAB.curveOffset, 0, 'Switching to straight must reset curveOffset to 0');
+
+app.applyStyleProperty('curveType', 'elbow');
+assert.strictEqual(arrowAB.curveType, 'elbow', 'Arrow should switch to elbow');
+assert.strictEqual(arrowAB.curveOffset, 0, 'Switching to elbow must reset curveOffset to 0');
+
+// Drag elbow handle to x = 460 and verify 1:1 horizontal tracking (not inverted)
+const elbowGeom0 = app.getArrowGeometry(arrowAB);
+app.pointerDownWorld(elbowGeom0.curveHandlePt.x, elbowGeom0.curveHandlePt.y);
+app.pointerMoveWorld(460, elbowGeom0.curveHandlePt.y);
+app.pointerUpWorld(460, elbowGeom0.curveHandlePt.y);
+const elbowGeomDragged = app.getArrowGeometry(arrowAB);
+assert(Math.abs(elbowGeomDragged.curveHandlePt.x - 460) < 2, `Elbow handle must track cursor X (460), got ${elbowGeomDragged.curveHandlePt.x}`);
+
+// Drag elbow handle to align with p1.x (forming a 90-degree L-bend going right then straight down)
+app.pointerDownWorld(elbowGeomDragged.curveHandlePt.x, elbowGeomDragged.curveHandlePt.y);
+app.pointerMoveWorld(elbowGeomDragged.p1.x, elbowGeomDragged.curveHandlePt.y);
+app.pointerUpWorld(elbowGeomDragged.p1.x, elbowGeomDragged.curveHandlePt.y);
+const lBendGeom = app.getArrowGeometry(arrowAB);
+assert.strictEqual(lBendGeom.waypoints.length, 3, 'L-bend elbow should collapse degenerate final segment into 3 waypoints');
+assert(Math.abs(lBendGeom.tipAngle - Math.PI / 2) < 0.01, `L-bend vertical shaft must have downward tipAngle (+PI/2), got ${lBendGeom.tipAngle}`);
+
+// Switching from elbow (curveOffset=0) to curved should apply a visible curveOffset
+app.applyStyleProperty('curveType', 'straight');
+app.applyStyleProperty('curveType', 'curved');
+assert(Math.abs(arrowAB.curveOffset) >= 20, `Switching to curved from 0 offset should apply default curveOffset, got ${arrowAB.curveOffset}`);
+console.log('[PASS] 4. Direct bound-arrow middle shaft drag + Straight, Elbow (L-bend & 1:1 handle), and Curved modes verified');
 
 // 5. Verify Excalidraw Font Families (Excalifont/Virgil, Assistant/Nunito, Cascadia), Unbroken Arrows (no text/gaps), Tool Lock (Q), Laser Pointer (K), Number Shortcuts (1-9, 0), and triggerNodePulse
 const fontTestCtx = createMockCtx();
