@@ -46,6 +46,12 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-langgraph.txt
 ```
 
+如果国内网络导致下载很慢，或出现 `HASHES DO NOT MATCH`，改用清华镜像重试：
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install --no-cache-dir --index-url https://pypi.tuna.tsinghua.edu.cn/simple -r requirements-langgraph.txt
+```
+
 如果把命令提示符里的路径写错了，先执行：
 
 ```powershell
