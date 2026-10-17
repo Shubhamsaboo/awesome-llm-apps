@@ -468,7 +468,7 @@ If no tool is needed, just respond normally."""
             max_tokens=500
         )
         
-        llm_response = response.choices[0].message.content
+        llm_response = response.choices[0].message.content or ""
         print(f"\n🤖 Agent response: {llm_response}")
         
         # Parse and execute tool call if present
