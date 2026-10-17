@@ -3,11 +3,22 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+import re
 import pandas as pd
 import time
 from datetime import datetime
 from rag.query_router import answer_math_question
 from data.load_gsm8k_data import load_jeebench_dataset
+
+def is_answer_correct(expected, response: str) -> bool:
+    """Check that the gold answer appears as a standalone token in the response.
+
+    A plain substring test counts gold "C" as correct for any reply containing
+    the letter c, and gold "12" as correct inside "112" or "0.12".
+    """
+    pattern = rf"(?<![A-Za-z0-9.]){re.escape(str(expected).strip())}(?![A-Za-z0-9]|\.\d)"
+    return re.search(pattern, response) is not None
+
 
 def benchmark_math_agent(limit: int = 10):
     # ✅ Always filter math-only questions
@@ -25,7 +36,7 @@ def benchmark_math_agent(limit: int = 10):
 
         try:
             response = answer_math_question(question)
-            is_correct = expected.lower() in response.lower()
+            is_correct = is_answer_correct(expected, response)
             if is_correct:
                 correct += 1
 
