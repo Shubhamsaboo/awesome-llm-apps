@@ -19,3 +19,5 @@ dist/
 
 # JetBrains IDEs
 .idea/
+
+rag_tutorials/rag_chain/pharma_db/
