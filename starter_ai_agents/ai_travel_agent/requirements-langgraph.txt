@@ -1,0 +1,6 @@
+streamlit==1.65.0
+openai==3.28.0
+icalendar==7.3.0
+langchain-core
+langchain-openai
+langgraph
