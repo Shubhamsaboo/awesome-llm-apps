@@ -25,3 +25,12 @@ export function getGeminiKey() {
   if (key?.trim()) return key.trim();
   return "";
 }
+
+// Same variable TypeSafe's SDK reads. Handy for a proxy or a self-hosted Jev-compatible server.
+export function getBaseUrl() {
+  const env = existsSync(localEnv)
+    ? parseEnv(readFileSync(localEnv, "utf8"))
+    : {};
+  const url = process.env.TYPESAFE_BASE_URL || env.TYPESAFE_BASE_URL;
+  return (url?.trim() || "https://api.typesafe.ai").replace(/\/+$/, "");
+}

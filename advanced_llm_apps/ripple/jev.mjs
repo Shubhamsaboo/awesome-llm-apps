@@ -1,5 +1,5 @@
 import { setTimeout as sleep } from "node:timers/promises";
-import { getApiKey } from "./config.mjs";
+import { getApiKey, getBaseUrl } from "./config.mjs";
 
 const MODEL = "jev-latest";
 const statuses = ["likely_conflict", "worth_reviewing", "unaffected"];
@@ -70,6 +70,7 @@ export async function evaluate(input, { signal, timeoutMs = 75000 } = {}) {
   const key = getApiKey();
   if (!key)
     throw new Error("Add TYPESAFE_API_KEY to Ripple’s local .env file.");
+  const url = `${getBaseUrl()}/v1/systemone`;
   const start = performance.now();
   const entries = Object.entries(body.questions),
     answers = {};
@@ -94,7 +95,7 @@ export async function evaluate(input, { signal, timeoutMs = 75000 } = {}) {
           for (let attempt = 0; attempt < 3; attempt++) {
             if (attempt)
               await sleep(attempt * 600, undefined, { signal: sharedSignal });
-            response = await fetch("https://api.typesafe.ai/v1/systemone", {
+            response = await fetch(url, {
               method: "POST",
               headers: {
                 Authorization: `Bearer ${key}`,
