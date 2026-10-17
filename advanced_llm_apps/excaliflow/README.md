@@ -8,6 +8,7 @@
 - **Live animated arrows.** Connect any two shapes and watch comets, pulses, neon streaks, or dashed streams travel along your arrows in order from start to finish.
 - **Easy arrow editing.** Drag any arrow endpoint around the edge of a shape, pull the middle of an arrow to curve it, or double-click an arrow to straighten it.
 - **Fast diagram building.** Press `Tab` or click a `+` port on any selected shape to add and connect the next step automatically, or drop a shape onto an existing arrow to split it in two.
+- **Multi-canvas tabs & auto-save.** Work across multiple canvas tabs in the bottom tab dock or top-left canvas switcher—create new tabs (`+ New` / `+ Canvas`), fork/duplicate a diagram (`⧉`) to compare architectures side-by-side, step between tabs (`‹` / `›`), double-click to rename, and have every tab auto-saved to your browser.
 - **Ready-made starter templates.** Load built-in diagrams for **AI Agent Swarm**, **RAG Pipeline**, **How Browsers Work**, and **Microservices** in one click.
 - **Light & dark canvas + instant export.** Switch between a clean white canvas and a pitch-black neon canvas, then export a cropped 2x PNG, copy to clipboard, record a `.webm` video loop, or save and load `.excaliflow` / `.excalidraw` JSON files.
 
@@ -42,6 +43,9 @@ Open **http://localhost:3000** in your browser.
 | `Tab` | Add and connect the next shape |
 | `Double-click` | Add a node on empty canvas, edit text, or straighten an arrow |
 | `Alt / Option + Drag` | Duplicate selection while dragging |
+| `⌥T` (`Alt + T`) | Create a new blank canvas tab |
+| `⌥[` / `⌥]` (`Alt + [` / `]`) | Step to previous / next canvas tab |
+| `⌥1` – `⌥9` (`Alt + 1..9`) | Switch directly to canvas tab 1–9 |
 | `⌘Z` / `⇧⌘Z` | Undo / Redo |
 | `⌘D` | Duplicate selection |
 | `⌘\` | Show or hide the left style panel |

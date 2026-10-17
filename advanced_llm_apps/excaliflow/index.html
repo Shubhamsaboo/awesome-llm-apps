@@ -185,6 +185,180 @@
       margin: 0 3px;
     }
 
+    /* Multi-Canvas Tab Bar & Top Canvas Switcher */
+    #bottomCanvasDock {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 22;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 6px;
+      pointer-events: auto;
+      max-width: calc(100vw - 340px);
+    }
+
+    .canvas-tab-strip {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      max-width: calc(100vw - 470px);
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 2px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--divider);
+      border-radius: 8px;
+    }
+
+    .canvas-tab-strip::-webkit-scrollbar {
+      display: none;
+    }
+
+    .canvas-tab-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 28px;
+      padding: 0 9px;
+      border: 1px solid var(--divider);
+      border-radius: 6px;
+      background: var(--panel-bg);
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      max-width: 210px;
+      transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    .canvas-tab-pill:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+      border-color: rgba(105, 101, 219, 0.3);
+    }
+
+    .canvas-tab-pill.active {
+      background: #6965db;
+      color: #ffffff;
+      font-weight: 600;
+      border-color: #5753d0;
+      box-shadow: 0 2px 6px rgba(105, 101, 219, 0.34);
+    }
+
+    .tab-num-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      background: rgba(15, 23, 42, 0.07);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    body.dark-canvas .tab-num-badge {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-secondary);
+    }
+
+    .canvas-tab-pill.active .tab-num-badge {
+      background: rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+    }
+
+    .canvas-tab-pill .tab-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 145px;
+      pointer-events: none;
+    }
+
+    .canvas-tab-pill .tab-close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      font-size: 12px;
+      line-height: 1;
+      opacity: 0.6;
+      transition: opacity 0.12s ease, background 0.12s ease, color 0.12s ease;
+    }
+
+    .canvas-tab-pill.active .tab-close {
+      color: #ffffff;
+      opacity: 0.8;
+    }
+
+    .canvas-tab-pill:hover .tab-close {
+      opacity: 0.95;
+    }
+
+    .canvas-tab-pill .tab-close:hover {
+      opacity: 1;
+      background: rgba(224, 49, 49, 0.22);
+      color: #ff6b6b;
+    }
+
+    .tab-rename-input {
+      width: 120px;
+      height: 22px;
+      padding: 0 6px;
+      border: 1.5px solid #ffffff;
+      border-radius: 4px;
+      background: var(--panel-bg);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 600;
+      outline: none;
+    }
+
+    .tab-action-btn {
+      height: 28px;
+      padding: 0 8px;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    #canvasSwitcherBtn {
+      background: var(--surface-subtle);
+      border: 1px solid var(--divider);
+      font-weight: 600;
+      color: var(--text-primary);
+      padding: 0 10px;
+      max-width: 210px;
+    }
+
+    #canvasSwitcherBtn:hover {
+      background: var(--surface-hover);
+      border-color: rgba(105, 101, 219, 0.35);
+    }
+
+    .switcher-count-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: var(--surface-active);
+      color: var(--accent);
+    }
+
     .ui-btn {
       display: inline-flex;
       align-items: center;
@@ -638,7 +812,7 @@
 
   <!-- Top Bar: Left Brand/Templates | Center Excaliflow Tool Island | Right Flow/Theme/Export -->
   <header id="topHeaderBar">
-    <!-- Left Island -->
+    <!-- Left Island: Brand + Active Canvas Switcher + Templates -->
     <div class="header-group glass-panel">
       <button id="sidebarToggleBtn" class="ui-btn" title="Toggle Properties Panel (⌘\)">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -647,6 +821,19 @@
         <span class="brand-icon">E</span>
         <span>Excaliflow</span>
       </div>
+      <div class="v-divider"></div>
+      <button id="prevCanvasBtn" class="ui-btn tab-action-btn" title="Previous Canvas (⌥[)">‹</button>
+      <div class="dropdown-wrap">
+        <button id="canvasSwitcherBtn" class="ui-btn" title="Switch or Manage Canvases">
+          <span id="activeCanvasLabel">AI Agent Swarm</span>
+          <span id="activeCanvasCount" class="switcher-count-badge">1/1</span>
+          <span style="font-size:9px;opacity:0.65">▾</span>
+        </button>
+        <div id="canvasesDropdown" class="dropdown-menu align-left glass-panel" style="min-width:240px"></div>
+      </div>
+      <button id="nextCanvasBtn" class="ui-btn tab-action-btn" title="Next Canvas (⌥])">›</button>
+      <button id="addCanvasTabBtn" class="ui-btn tab-action-btn" title="New Blank Canvas Tab (⌥T)">+ New</button>
+      <button id="forkCanvasTabBtn" class="ui-btn tab-action-btn" title="Duplicate Active Canvas Tab">⧉</button>
       <div class="v-divider"></div>
       <div class="dropdown-wrap">
         <button id="templatesMenuBtn" class="ui-btn" title="Starter Architecture Templates">
@@ -881,11 +1068,12 @@
     <button id="btnRedo" class="ui-btn" title="Redo (⇧⌘Z)">↷</button>
   </div>
 
-  <!-- Subtle Canvas Interaction Hint -->
-  <div id="canvasHintPill" class="glass-panel">
-    <span><span class="hint-key">Double-click</span> canvas to add node</span>
-    <span><span class="hint-key">Drag</span> arrow ends to slide around shapes</span>
-    <span><span class="hint-key">Tab</span> to chain</span>
+  <!-- Bottom-Center Multi-Canvas Tab Bar (Figma / Excalidraw Pages Style) -->
+  <div id="bottomCanvasDock" class="glass-panel">
+    <div id="canvasTabStrip" class="canvas-tab-strip" role="tablist" aria-label="Canvas Tabs"></div>
+    <div class="v-divider"></div>
+    <button id="bottomAddTabBtn" class="ui-btn tab-action-btn" title="New Blank Canvas Tab (⌥T)">+ Canvas</button>
+    <button id="bottomForkTabBtn" class="ui-btn tab-action-btn" title="Duplicate Current Canvas">⧉</button>
   </div>
 
   <!-- Bottom-Right Zoom Pill -->
@@ -993,10 +1181,22 @@
       return `${prefix}_${idCounter}_${Math.floor(Math.random() * 9000 + 1000)}`;
     }
 
+    function syncIdCounterWithId(rawId) {
+      if (typeof rawId !== 'string') return;
+      const m = rawId.match(/_(\d+)_/);
+      if (m) {
+        const n = Number(m[1]);
+        if (Number.isFinite(n) && n > idCounter) idCounter = n;
+      }
+    }
+
     /* -------------------------------------------------------------------------
      * 2. Scene State
      * ------------------------------------------------------------------------- */
     const state = {
+      tabs: [],
+      activeTabId: null,
+      editingTabId: null,
       elements: [],
       selectedIds: new Set(),
       hoveredId: null,
@@ -2985,6 +3185,12 @@
       }
 
       fitToScreen();
+      if (state.tabs.length > 0) {
+        const activeTab = state.tabs.find(t => t.id === state.activeTabId);
+        if (activeTab) {
+          activeTab.name = templateName || 'AI Agent Swarm';
+        }
+      }
       syncUIWithSelection();
     }
 
@@ -3223,6 +3429,26 @@
           ctx.lineTo(p1.x, p1.y);
           ctx.stroke();
         }
+        ctx.restore();
+      }
+
+      // 8. Empty Canvas Watermark Guide (when switching to a newly created blank tab)
+      if (state.elements.length === 0 && !state.drag) {
+        const vw = typeof window !== 'undefined' ? window.innerWidth : 1280;
+        const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
+        const centerW = screenToWorld(vw / 2, vh / 2);
+        const activeTab = state.tabs.find(t => t.id === state.activeTabId);
+        const tabIdx = Math.max(0, state.tabs.findIndex(t => t.id === state.activeTabId));
+        const tabTitle = activeTab ? activeTab.name : `Canvas ${tabIdx + 1}`;
+        ctx.save();
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = isDark ? 'rgba(244, 244, 248, 0.72)' : 'rgba(27, 27, 31, 0.68)';
+        ctx.font = `600 ${Math.round(18 / zoom)}px Assistant, system-ui, sans-serif`;
+        ctx.fillText(`${tabTitle} — Empty Canvas`, centerW.x, centerW.y - 14 / zoom);
+        ctx.fillStyle = isDark ? 'rgba(244, 244, 248, 0.44)' : 'rgba(27, 27, 31, 0.44)';
+        ctx.font = `500 ${Math.round(13 / zoom)}px Assistant, system-ui, sans-serif`;
+        ctx.fillText('Double-click anywhere to add a node, draw with tools above, or pick a Template', centerW.x, centerW.y + 14 / zoom);
         ctx.restore();
       }
 
@@ -4017,6 +4243,7 @@
     }
 
     function handleKeyDown(e) {
+      if (state.editingTabId) return;
       const isEditing = Boolean(state.editingId);
       if (isEditing) {
         if (e.key === 'Escape') {
@@ -4050,6 +4277,32 @@
 
       const meta = e.metaKey || e.ctrlKey;
       const key = String(e.key || '').toLowerCase();
+
+      if (e.altKey && !meta) {
+        if (/^[1-9]$/.test(String(e.key || ''))) {
+          const idx = Number(e.key) - 1;
+          if (state.tabs[idx]) {
+            e.preventDefault?.();
+            switchCanvasTab(state.tabs[idx].id);
+            return;
+          }
+        }
+        if (e.key === '[' || e.code === 'BracketLeft') {
+          e.preventDefault?.();
+          stepCanvasTab(-1);
+          return;
+        }
+        if (e.key === ']' || e.code === 'BracketRight') {
+          e.preventDefault?.();
+          stepCanvasTab(1);
+          return;
+        }
+        if (key === 't' || e.code === 'KeyT') {
+          e.preventDefault?.();
+          createCanvasTab();
+          return;
+        }
+      }
 
       if (meta && key === '\\') {
         e.preventDefault?.();
@@ -4318,12 +4571,137 @@
       }, 1000 / 60);
     }
 
-    function exportExcalidrawJson() {
-      closeAllDropdowns();
-      const payload = {
+    function sanitizeElementsArray(rawElements) {
+      if (!Array.isArray(rawElements)) return [];
+      const validRaw = rawElements.filter(
+        el => el && !el.isDeleted && typeof el.type === 'string' && ALLOWED_ELEMENT_TYPES.has(el.type)
+      );
+      return validRaw.map(el => {
+        syncIdCounterWithId(el.id);
+        const normType = el.type === 'line' ? 'arrow' : el.type;
+        let resolvedX2 = el.x2;
+        let resolvedY2 = el.y2;
+        if (normType === 'arrow' && typeof resolvedX2 !== 'number' && Array.isArray(el.points) && el.points.length > 1) {
+          const lastPt = el.points[el.points.length - 1];
+          if (Array.isArray(lastPt) && lastPt.length >= 2) {
+            resolvedX2 = (Number(el.x) || 0) + (Number(lastPt[0]) || 0);
+            resolvedY2 = (Number(el.y) || 0) + (Number(lastPt[1]) || 0);
+          }
+        }
+        return createElement(normType, {
+          ...el,
+          x2: resolvedX2,
+          y2: resolvedY2,
+          text: normType === 'arrow' ? '' : String(el.text ?? '')
+        });
+      });
+    }
+
+    /* -------------------------------------------------------------------------
+     * 14b. Multi-Canvas Workspace Tabs & LocalStorage Auto-Save
+     * ------------------------------------------------------------------------- */
+    const WORKSPACE_STORAGE_KEY = 'excaliflow_workspace_v1';
+    let workspaceSaveTimer = null;
+
+    function getBrowserStorage() {
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) return window.localStorage;
+        if (typeof localStorage !== 'undefined') return localStorage;
+      } catch (err) {
+        return null;
+      }
+      return null;
+    }
+
+    function syncActiveTabFromState() {
+      if (state.tabs.length === 0) return;
+      const tab = state.tabs.find(t => t.id === state.activeTabId) || state.tabs[0];
+      if (!tab) return;
+      state.activeTabId = tab.id;
+      tab.elements = state.elements;
+      tab.scrollX = state.scrollX;
+      tab.scrollY = state.scrollY;
+      tab.zoom = state.zoom;
+      tab.canvasBg = state.canvasBg;
+      tab.flowEnabled = state.flowEnabled;
+      tab.flowMode = state.flowMode;
+      tab.flowSpeed = state.flowSpeed;
+      tab.history = {
+        undoStack: [...state.history.undoStack],
+        redoStack: [...state.history.redoStack]
+      };
+    }
+
+    function ensureInitialTab(defaultName = 'AI Agent Swarm') {
+      if (state.tabs.length > 0) {
+        if (!state.activeTabId || !state.tabs.some(t => t.id === state.activeTabId)) {
+          state.activeTabId = state.tabs[0].id;
+        }
+        return state.tabs.find(t => t.id === state.activeTabId);
+      }
+      const tab = {
+        id: nextId('tab'),
+        name: defaultName,
+        elements: state.elements,
+        scrollX: state.scrollX,
+        scrollY: state.scrollY,
+        zoom: state.zoom,
+        canvasBg: state.canvasBg,
+        flowEnabled: state.flowEnabled,
+        flowMode: state.flowMode,
+        flowSpeed: state.flowSpeed,
+        history: {
+          undoStack: [...state.history.undoStack],
+          redoStack: [...state.history.redoStack]
+        }
+      };
+      state.tabs.push(tab);
+      state.activeTabId = tab.id;
+      renderCanvasTabs();
+      return tab;
+    }
+
+    function applyTabToState(tab) {
+      if (!tab) return;
+      state.activeTabId = tab.id;
+      state.elements = Array.isArray(tab.elements) ? tab.elements : [];
+      state.scrollX = Number.isFinite(tab.scrollX) ? tab.scrollX : 0;
+      state.scrollY = Number.isFinite(tab.scrollY) ? tab.scrollY : 0;
+      state.zoom = Number.isFinite(tab.zoom) && tab.zoom > 0 ? tab.zoom : 1;
+      state.flowEnabled = tab.flowEnabled !== false;
+      state.flowMode = ALLOWED_FLOW_MODES.has(tab.flowMode) ? tab.flowMode : 'comets';
+      state.flowSpeed = Number.isFinite(Number(tab.flowSpeed)) && Number(tab.flowSpeed) > 0
+        ? Math.max(0.2, Math.min(5.0, Number(tab.flowSpeed)))
+        : 1.0;
+      state.history = {
+        undoStack: Array.isArray(tab.history?.undoStack) ? [...tab.history.undoStack] : [],
+        redoStack: Array.isArray(tab.history?.redoStack) ? [...tab.history.redoStack] : []
+      };
+      state.selectedIds.clear();
+      state.activePulses = [];
+      ShapeCache.clear();
+      setCanvasBackground(tab.canvasBg === '#000000' ? '#000000' : '#ffffff');
+      syncZoomReadout();
+      if (typeof document !== 'undefined') {
+        document.querySelectorAll('#flowModeGrid [data-flow-mode]').forEach(b => {
+          b.classList.toggle('active', b.getAttribute('data-flow-mode') === state.flowMode);
+        });
+        document.querySelectorAll('#flowSpeedRow [data-flow-speed]').forEach(b => {
+          b.classList.toggle('active', Number(b.getAttribute('data-flow-speed')) === state.flowSpeed);
+        });
+      }
+      syncUIWithSelection();
+      renderCanvasTabs();
+    }
+
+    function serializeWorkspace() {
+      ensureInitialTab();
+      syncActiveTabFromState();
+      return {
         type: 'excaliflow',
         version: 2,
         source: 'Excaliflow',
+        activeTabId: state.activeTabId,
         elements: state.elements,
         appState: {
           viewBackgroundColor: state.canvasBg,
@@ -4333,8 +4711,411 @@
           flowEnabled: state.flowEnabled,
           flowMode: state.flowMode,
           flowSpeed: state.flowSpeed
-        }
+        },
+        tabs: state.tabs.map(t => ({
+          id: t.id,
+          name: t.name,
+          elements: t.elements,
+          scrollX: t.scrollX,
+          scrollY: t.scrollY,
+          zoom: t.zoom,
+          canvasBg: t.canvasBg,
+          flowEnabled: t.flowEnabled,
+          flowMode: t.flowMode,
+          flowSpeed: t.flowSpeed
+        }))
       };
+    }
+
+    function saveWorkspaceToStorage() {
+      if (state.tabs.length === 0) return false;
+      const storage = getBrowserStorage();
+      if (!storage || typeof storage.setItem !== 'function') return false;
+      try {
+        storage.setItem(WORKSPACE_STORAGE_KEY, JSON.stringify(serializeWorkspace()));
+        return true;
+      } catch (err) {
+        return false;
+      }
+    }
+
+    function scheduleWorkspaceSave() {
+      if (state.tabs.length === 0) return;
+      syncActiveTabFromState();
+      clearTimeout(workspaceSaveTimer);
+      workspaceSaveTimer = setTimeout(() => {
+        saveWorkspaceToStorage();
+      }, 150);
+    }
+
+    function restoreWorkspaceData(data) {
+      if (!data || !Array.isArray(data.tabs) || data.tabs.length === 0) return false;
+      const restoredTabs = [];
+      for (let i = 0; i < data.tabs.length; i++) {
+        const rawTab = data.tabs[i];
+        if (!rawTab || typeof rawTab !== 'object') continue;
+        const tabId = typeof rawTab.id === 'string' && rawTab.id.trim() ? rawTab.id.trim() : nextId('tab');
+        syncIdCounterWithId(tabId);
+        const name = typeof rawTab.name === 'string' && rawTab.name.trim()
+          ? rawTab.name.trim().slice(0, 48)
+          : `Canvas ${i + 1}`;
+        const elements = sanitizeElementsArray(rawTab.elements || []);
+        restoredTabs.push({
+          id: tabId,
+          name,
+          elements,
+          scrollX: Number.isFinite(rawTab.scrollX) ? rawTab.scrollX : 0,
+          scrollY: Number.isFinite(rawTab.scrollY) ? rawTab.scrollY : 0,
+          zoom: Number.isFinite(rawTab.zoom) && rawTab.zoom > 0 ? Math.max(0.25, Math.min(3.0, rawTab.zoom)) : 1,
+          canvasBg: rawTab.canvasBg === '#000000' ? '#000000' : '#ffffff',
+          flowEnabled: rawTab.flowEnabled !== false,
+          flowMode: ALLOWED_FLOW_MODES.has(rawTab.flowMode) ? rawTab.flowMode : 'comets',
+          flowSpeed: Number.isFinite(Number(rawTab.flowSpeed)) && Number(rawTab.flowSpeed) > 0
+            ? Math.max(0.2, Math.min(5.0, Number(rawTab.flowSpeed)))
+            : 1.0,
+          history: { undoStack: [], redoStack: [] }
+        });
+      }
+      if (restoredTabs.length === 0) return false;
+      state.tabs = restoredTabs;
+      const targetActive = restoredTabs.find(t => t.id === data.activeTabId) || restoredTabs[0];
+      applyTabToState(targetActive);
+      return true;
+    }
+
+    function loadWorkspaceFromStorage() {
+      const storage = getBrowserStorage();
+      if (!storage || typeof storage.getItem !== 'function') return false;
+      try {
+        const raw = storage.getItem(WORKSPACE_STORAGE_KEY);
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        return restoreWorkspaceData(data);
+      } catch (err) {
+        return false;
+      }
+    }
+
+    let lastRenderedTabSig = '';
+    let lastScrolledActiveTabId = null;
+
+    function renderCanvasTabs(force = false) {
+      if (typeof document === 'undefined') return;
+      const activeIdx = Math.max(0, state.tabs.findIndex(t => t.id === state.activeTabId));
+      const activeTab = state.tabs[activeIdx] || state.tabs[0];
+
+      const labelEl = document.getElementById('activeCanvasLabel');
+      if (labelEl && activeTab) labelEl.textContent = activeTab.name;
+      const countEl = document.getElementById('activeCanvasCount');
+      if (countEl) countEl.textContent = `${activeIdx + 1}/${Math.max(1, state.tabs.length)}`;
+
+      const strip = document.getElementById('canvasTabStrip');
+      if (!strip || typeof strip.appendChild !== 'function') return;
+
+      const sig = state.tabs.map(t => {
+        const elCount = (t.id === state.activeTabId ? state.elements : t.elements)?.length || 0;
+        return `${t.id}:${t.name}:${elCount}`;
+      }).join('|') + '::' + state.activeTabId + '::' + (state.editingTabId || '');
+
+      if (!force && sig === lastRenderedTabSig && strip.children && strip.children.length === state.tabs.length) {
+        return;
+      }
+      lastRenderedTabSig = sig;
+
+      strip.innerHTML = '';
+      if (Array.isArray(strip.children)) strip.children.length = 0;
+
+      for (let i = 0; i < state.tabs.length; i++) {
+        const tab = state.tabs[i];
+        const isActive = tab.id === state.activeTabId;
+        const pill = document.createElement('div');
+        pill.className = `canvas-tab-pill${isActive ? ' active' : ''}`;
+        pill.setAttribute?.('role', 'tab');
+        pill.setAttribute?.('aria-selected', isActive ? 'true' : 'false');
+        pill.setAttribute?.('data-tab-id', tab.id);
+        pill.title = `${tab.name} (Click to switch · Double-click to rename · ⌥${i + 1})`;
+
+        const numBadge = document.createElement('span');
+        numBadge.className = 'tab-num-badge';
+        numBadge.textContent = String(i + 1);
+        pill.appendChild?.(numBadge);
+
+        if (state.editingTabId === tab.id) {
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'tab-rename-input';
+          input.value = tab.name;
+          input.addEventListener?.('click', e => e.stopPropagation?.());
+          input.addEventListener?.('keydown', e => {
+            e.stopPropagation?.();
+            if (e.key === 'Enter') {
+              e.preventDefault?.();
+              renameCanvasTab(tab.id, input.value);
+            } else if (e.key === 'Escape') {
+              e.preventDefault?.();
+              state.editingTabId = null;
+              renderCanvasTabs(true);
+            }
+          });
+          input.addEventListener?.('blur', () => {
+            if (state.editingTabId === tab.id) {
+              renameCanvasTab(tab.id, input.value);
+            }
+          });
+          pill.appendChild?.(input);
+          setTimeout(() => {
+            input.focus?.();
+            input.select?.();
+          }, 0);
+        } else {
+          const label = document.createElement('span');
+          label.className = 'tab-label';
+          label.textContent = tab.name;
+          pill.appendChild?.(label);
+
+          if (state.tabs.length > 1) {
+            const closeBtn = document.createElement('span');
+            closeBtn.className = 'tab-close';
+            closeBtn.textContent = '×';
+            closeBtn.title = `Close ${tab.name}`;
+            closeBtn.addEventListener?.('click', e => {
+              e.stopPropagation?.();
+              closeCanvasTab(tab.id);
+            });
+            pill.appendChild?.(closeBtn);
+          }
+
+          pill.addEventListener?.('click', () => {
+            if (state.activeTabId !== tab.id) {
+              switchCanvasTab(tab.id);
+            }
+          });
+          pill.addEventListener?.('dblclick', e => {
+            e.stopPropagation?.();
+            state.editingTabId = tab.id;
+            renderCanvasTabs(true);
+          });
+        }
+
+        strip.appendChild?.(pill);
+        if (isActive && state.activeTabId !== lastScrolledActiveTabId) {
+          lastScrolledActiveTabId = state.activeTabId;
+          setTimeout(() => {
+            pill.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+          }, 0);
+        }
+      }
+
+      // Populate top-left #canvasesDropdown menu for quick vertical switching
+      const dropdown = document.getElementById('canvasesDropdown');
+      if (dropdown && typeof dropdown.appendChild === 'function') {
+        dropdown.innerHTML = '';
+        if (Array.isArray(dropdown.children)) dropdown.children.length = 0;
+        for (let i = 0; i < state.tabs.length; i++) {
+          const tab = state.tabs[i];
+          const isActive = tab.id === state.activeTabId;
+          const elCount = (isActive ? state.elements : tab.elements)?.length || 0;
+          const item = document.createElement('button');
+          item.className = `ui-btn menu-item${isActive ? ' active' : ''}`;
+          const leftSpan = document.createElement('span');
+          leftSpan.textContent = `${i + 1}. ${tab.name}`;
+          const rightSpan = document.createElement('span');
+          rightSpan.textContent = `${elCount} item${elCount === 1 ? '' : 's'} · ⌥${i + 1}`;
+          item.appendChild?.(leftSpan);
+          item.appendChild?.(rightSpan);
+          item.addEventListener?.('click', e => {
+            e.stopPropagation?.();
+            closeAllDropdowns();
+            if (!isActive) switchCanvasTab(tab.id);
+          });
+          dropdown.appendChild?.(item);
+        }
+        const sep = document.createElement('div');
+        sep.className = 'menu-sep';
+        dropdown.appendChild?.(sep);
+
+        const newBtn = document.createElement('button');
+        newBtn.className = 'ui-btn menu-item';
+        const nl = document.createElement('span');
+        nl.textContent = '+ New Blank Canvas';
+        const nr = document.createElement('span');
+        nr.textContent = '⌥T';
+        newBtn.appendChild?.(nl);
+        newBtn.appendChild?.(nr);
+        newBtn.addEventListener?.('click', e => {
+          e.stopPropagation?.();
+          closeAllDropdowns();
+          createCanvasTab();
+        });
+        dropdown.appendChild?.(newBtn);
+
+        const forkBtn = document.createElement('button');
+        forkBtn.className = 'ui-btn menu-item';
+        const fl = document.createElement('span');
+        fl.textContent = '⧉ Duplicate Current Canvas';
+        const fr = document.createElement('span');
+        fr.textContent = 'Fork';
+        forkBtn.appendChild?.(fl);
+        forkBtn.appendChild?.(fr);
+        forkBtn.addEventListener?.('click', e => {
+          e.stopPropagation?.();
+          closeAllDropdowns();
+          duplicateCanvasTab();
+        });
+        dropdown.appendChild?.(forkBtn);
+      }
+    }
+
+    function createCanvasTab(opts = {}) {
+      if (state.editingId) commitInlineEditor();
+      ensureInitialTab();
+      syncActiveTabFromState();
+      const nextIndex = state.tabs.length + 1;
+      const name = (typeof opts.name === 'string' && opts.name.trim())
+        ? opts.name.trim().slice(0, 48)
+        : `Canvas ${nextIndex}`;
+      const newTab = {
+        id: nextId('tab'),
+        name,
+        elements: Array.isArray(opts.elements) ? sanitizeElementsArray(opts.elements) : [],
+        scrollX: Number.isFinite(opts.scrollX) ? opts.scrollX : 0,
+        scrollY: Number.isFinite(opts.scrollY) ? opts.scrollY : 0,
+        zoom: Number.isFinite(opts.zoom) && opts.zoom > 0 ? opts.zoom : 1,
+        canvasBg: opts.canvasBg === '#000000' ? '#000000' : state.canvasBg,
+        flowEnabled: opts.flowEnabled !== undefined ? Boolean(opts.flowEnabled) : state.flowEnabled,
+        flowMode: ALLOWED_FLOW_MODES.has(opts.flowMode) ? opts.flowMode : state.flowMode,
+        flowSpeed: Number.isFinite(Number(opts.flowSpeed)) ? Number(opts.flowSpeed) : state.flowSpeed,
+        history: { undoStack: [], redoStack: [] }
+      };
+      state.tabs.push(newTab);
+      applyTabToState(newTab);
+      if (opts.templateName) {
+        loadTemplate(opts.templateName);
+        state.history.undoStack = [];
+        updateHeaderButtons();
+      }
+      renderCanvasTabs(true);
+      saveWorkspaceToStorage();
+      showToast(`Created "${newTab.name}" (${state.tabs.length}/${state.tabs.length})`);
+      return newTab;
+    }
+
+    function duplicateCanvasTab(tabId = state.activeTabId) {
+      if (state.editingId) commitInlineEditor();
+      ensureInitialTab();
+      syncActiveTabFromState();
+      const sourceIdx = state.tabs.findIndex(t => t.id === tabId);
+      const sourceTab = sourceIdx >= 0 ? state.tabs[sourceIdx] : state.tabs[state.tabs.length - 1];
+      if (!sourceTab) return null;
+
+      const idMap = new Map();
+      const clonedElements = sourceTab.elements.map(el => {
+        const newId = nextId(el.type);
+        idMap.set(el.id, newId);
+        const copy = JSON.parse(JSON.stringify(el));
+        copy.id = newId;
+        copy.seed = Math.floor(Math.random() * 1000000) + 1;
+        return copy;
+      });
+      for (const c of clonedElements) {
+        if (c.startBinding?.elementId && idMap.has(c.startBinding.elementId)) {
+          c.startBinding.elementId = idMap.get(c.startBinding.elementId);
+        }
+        if (c.endBinding?.elementId && idMap.has(c.endBinding.elementId)) {
+          c.endBinding.elementId = idMap.get(c.endBinding.elementId);
+        }
+      }
+
+      const newTab = {
+        id: nextId('tab'),
+        name: `${sourceTab.name} Copy`.slice(0, 48),
+        elements: clonedElements,
+        scrollX: sourceTab.scrollX,
+        scrollY: sourceTab.scrollY,
+        zoom: sourceTab.zoom,
+        canvasBg: sourceTab.canvasBg,
+        flowEnabled: sourceTab.flowEnabled,
+        flowMode: sourceTab.flowMode,
+        flowSpeed: sourceTab.flowSpeed,
+        history: { undoStack: [], redoStack: [] }
+      };
+      const insertAt = sourceIdx >= 0 ? sourceIdx + 1 : state.tabs.length;
+      state.tabs.splice(insertAt, 0, newTab);
+      applyTabToState(newTab);
+      renderCanvasTabs(true);
+      saveWorkspaceToStorage();
+      showToast(`Duplicated "${sourceTab.name}"`);
+      return newTab;
+    }
+
+    function switchCanvasTab(tabId) {
+      if (!tabId || tabId === state.activeTabId) return false;
+      if (state.editingId) commitInlineEditor();
+      ensureInitialTab();
+      syncActiveTabFromState();
+      const targetIdx = state.tabs.findIndex(t => t.id === tabId);
+      const target = targetIdx >= 0 ? state.tabs[targetIdx] : null;
+      if (!target) return false;
+      applyTabToState(target);
+      renderCanvasTabs(true);
+      saveWorkspaceToStorage();
+      showToast(`Canvas ${targetIdx + 1}/${state.tabs.length} · ${target.name}`);
+      return true;
+    }
+
+    function stepCanvasTab(delta = 1) {
+      ensureInitialTab();
+      if (state.tabs.length <= 1) return false;
+      const curIdx = Math.max(0, state.tabs.findIndex(t => t.id === state.activeTabId));
+      const nextIdx = (curIdx + delta + state.tabs.length) % state.tabs.length;
+      return switchCanvasTab(state.tabs[nextIdx].id);
+    }
+
+    function renameCanvasTab(tabId, newName) {
+      ensureInitialTab();
+      const tab = state.tabs.find(t => t.id === tabId);
+      if (!tab) return false;
+      const cleaned = String(newName ?? '').trim().slice(0, 48);
+      if (cleaned.length > 0) {
+        tab.name = cleaned;
+      }
+      state.editingTabId = null;
+      renderCanvasTabs();
+      saveWorkspaceToStorage();
+      return true;
+    }
+
+    function closeCanvasTab(tabId) {
+      if (state.editingId) commitInlineEditor();
+      ensureInitialTab();
+      const idx = state.tabs.findIndex(t => t.id === tabId);
+      if (idx === -1) return false;
+      if (state.tabs.length <= 1) {
+        pushHistory();
+        state.elements = [];
+        state.selectedIds.clear();
+        state.tabs[0].name = 'Canvas 1';
+        ShapeCache.clear();
+        syncUIWithSelection();
+        renderCanvasTabs();
+        saveWorkspaceToStorage();
+        return true;
+      }
+      const wasActive = state.activeTabId === tabId;
+      state.tabs.splice(idx, 1);
+      if (wasActive) {
+        const nextTab = state.tabs[Math.min(idx, state.tabs.length - 1)];
+        applyTabToState(nextTab);
+      } else {
+        renderCanvasTabs();
+      }
+      saveWorkspaceToStorage();
+      return true;
+    }
+
+    function exportExcalidrawJson() {
+      closeAllDropdowns();
+      const payload = serializeWorkspace();
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
       downloadBlob(blob, 'diagram.excaliflow');
       showToast('Saved diagram.excaliflow');
@@ -4344,29 +5125,16 @@
       closeAllDropdowns();
       try {
         const data = JSON.parse(jsonString);
+        if (data && Array.isArray(data.tabs) && data.tabs.length > 0) {
+          if (restoreWorkspaceData(data)) {
+            saveWorkspaceToStorage();
+            showToast(`Loaded ${state.tabs.length} canvas tab${state.tabs.length > 1 ? 's' : ''}`);
+            return true;
+          }
+        }
         if (data && Array.isArray(data.elements)) {
-          const validRaw = data.elements.filter(
-            el => el && !el.isDeleted && typeof el.type === 'string' && ALLOWED_ELEMENT_TYPES.has(el.type)
-          );
           pushHistory();
-          state.elements = validRaw.map(el => {
-            const normType = el.type === 'line' ? 'arrow' : el.type;
-            let resolvedX2 = el.x2;
-            let resolvedY2 = el.y2;
-            if (normType === 'arrow' && typeof resolvedX2 !== 'number' && Array.isArray(el.points) && el.points.length > 1) {
-              const lastPt = el.points[el.points.length - 1];
-              if (Array.isArray(lastPt) && lastPt.length >= 2) {
-                resolvedX2 = (Number(el.x) || 0) + (Number(lastPt[0]) || 0);
-                resolvedY2 = (Number(el.y) || 0) + (Number(lastPt[1]) || 0);
-              }
-            }
-            return createElement(normType, {
-              ...el,
-              x2: resolvedX2,
-              y2: resolvedY2,
-              text: normType === 'arrow' ? '' : String(el.text ?? '')
-            });
-          });
+          state.elements = sanitizeElementsArray(data.elements);
           if (data.appState && typeof data.appState === 'object') {
             if (data.appState.viewBackgroundColor) setCanvasBackground(data.appState.viewBackgroundColor);
             if (typeof data.appState.flowMode === 'string' && ALLOWED_FLOW_MODES.has(data.appState.flowMode)) {
@@ -4383,6 +5151,7 @@
           ShapeCache.clear();
           fitToScreen();
           syncUIWithSelection();
+          saveWorkspaceToStorage();
           showToast('Loaded Excaliflow scene');
           return true;
         }
@@ -4406,6 +5175,7 @@
       document.body.classList.toggle('dark-canvas', state.canvasBg === '#000000');
       document.getElementById('bgWhiteBtn')?.classList.toggle('active', state.canvasBg === '#ffffff');
       document.getElementById('bgBlackBtn')?.classList.toggle('active', state.canvasBg === '#000000');
+      scheduleWorkspaceSave();
     }
 
     function syncZoomReadout() {
@@ -4414,6 +5184,7 @@
         if (zBtn) zBtn.textContent = `${Math.round(state.zoom * 100)}%`;
       }
       updateQuickHudPosition();
+      scheduleWorkspaceSave();
     }
 
     function setZoom(nextZoom, centerScreenX, centerScreenY) {
@@ -4471,6 +5242,7 @@
       if (badge) {
         badge.textContent = `${state.flowMode.toUpperCase()} · ${state.flowSpeed}X`;
       }
+      scheduleWorkspaceSave();
     }
 
     function updateQuickHudPosition() {
@@ -4560,8 +5332,10 @@
       }
       setActiveAttr('#hudColorDots .hud-dot', 'data-color', ref.strokeColor);
 
+      renderCanvasTabs();
       updateHeaderButtons();
       updateQuickHudPosition();
+      scheduleWorkspaceSave();
     }
 
     function applyStyleProperty(prop, value) {
@@ -4746,6 +5520,16 @@
       });
 
       // Dropdown toggles
+      document.getElementById('canvasSwitcherBtn')?.addEventListener('click', e => {
+        e.stopPropagation();
+        const menu = document.getElementById('canvasesDropdown');
+        const wasOpen = menu?.classList.contains('open');
+        closeAllDropdowns();
+        if (!wasOpen) {
+          renderCanvasTabs(true);
+          menu?.classList.add('open');
+        }
+      });
       document.getElementById('templatesMenuBtn')?.addEventListener('click', e => {
         e.stopPropagation();
         const menu = document.getElementById('templatesDropdown');
@@ -4763,6 +5547,13 @@
       window.addEventListener('click', () => closeAllDropdowns());
 
       document.getElementById('sidebarToggleBtn')?.addEventListener('click', toggleSidebar);
+      document.getElementById('prevCanvasBtn')?.addEventListener('click', () => stepCanvasTab(-1));
+      document.getElementById('nextCanvasBtn')?.addEventListener('click', () => stepCanvasTab(1));
+      document.getElementById('addCanvasTabBtn')?.addEventListener('click', () => createCanvasTab());
+      document.getElementById('forkCanvasTabBtn')?.addEventListener('click', () => duplicateCanvasTab());
+      document.getElementById('bottomAddTabBtn')?.addEventListener('click', () => createCanvasTab());
+      document.getElementById('bottomForkTabBtn')?.addEventListener('click', () => duplicateCanvasTab());
+      window.addEventListener('beforeunload', () => saveWorkspaceToStorage());
       document.getElementById('btnUndo')?.addEventListener('click', undo);
       document.getElementById('btnRedo')?.addEventListener('click', redo);
       document.getElementById('bgWhiteBtn')?.addEventListener('click', () => setCanvasBackground('#ffffff'));
@@ -4905,8 +5696,12 @@
         ]);
       }
 
-      loadTemplate('AI Agent Swarm');
-      state.history.undoStack = [];
+      if (!loadWorkspaceFromStorage()) {
+        loadTemplate('AI Agent Swarm');
+        state.history.undoStack = [];
+        ensureInitialTab('AI Agent Swarm');
+        saveWorkspaceToStorage();
+      }
       updateHeaderButtons();
 
       let lastFrameTime = performance.now() / 1000;
@@ -4952,6 +5747,7 @@
     if (typeof window !== 'undefined') {
       Object.assign(window, {
         state,
+        WORKSPACE_STORAGE_KEY,
         mulberry32,
         clipSegmentToShape,
         clampPointToShapeInterior,
@@ -4988,7 +5784,17 @@
         undo,
         redo,
         importExcalidrawJson,
-        applyStyleProperty
+        applyStyleProperty,
+        createCanvasTab,
+        duplicateCanvasTab,
+        switchCanvasTab,
+        stepCanvasTab,
+        renameCanvasTab,
+        closeCanvasTab,
+        saveWorkspaceToStorage,
+        loadWorkspaceFromStorage,
+        serializeWorkspace,
+        restoreWorkspaceData
       });
       window.addEventListener('DOMContentLoaded', initStudioDOM);
     }

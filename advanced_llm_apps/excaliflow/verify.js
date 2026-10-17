@@ -109,7 +109,13 @@ const sandbox = {
     innerWidth: 1440,
     innerHeight: 900,
     devicePixelRatio: 2,
-    addEventListener: () => {}
+    addEventListener: () => {},
+    localStorage: {
+      _store: new Map(),
+      getItem(k) { return this._store.has(k) ? this._store.get(k) : null; },
+      setItem(k, v) { this._store.set(k, String(v)); },
+      removeItem(k) { this._store.delete(k); }
+    }
   },
   document: {
     body: { classList: { toggle: () => {} } },
@@ -453,6 +459,63 @@ function runMockReq(method, url) {
   assert(Number(headRes.headers['Content-Length']) > 1000, 'HEAD / must include Content-Length');
 
   console.log('[PASS] 7. Untrusted JSON import validation, Excalidraw arrow points[] import, and server.js security verified');
+
+  // 8. Verify Multi-Canvas Tabs, Fork/Duplicate, Shortcuts, LocalStorage Auto-Save & Multi-Tab JSON
+  assert(app.state.tabs.length >= 1, 'Workspace should initialize with at least 1 tab');
+  const firstTabId = app.state.activeTabId;
+  app.renameCanvasTab(firstTabId, 'System Overview');
+  assert.strictEqual(app.state.tabs[0].name, 'System Overview', 'renameCanvasTab should update tab name');
+  const firstTabElemCount = app.state.elements.length;
+
+  // Create a second blank tab and add a node in dark mode
+  const secondTab = app.createCanvasTab({ name: 'Worker Subflow', canvasBg: '#000000' });
+  assert.strictEqual(app.state.tabs.length, 2, 'createCanvasTab should add a second tab');
+  assert.strictEqual(app.state.activeTabId, secondTab.id, 'New tab should become active');
+  assert.strictEqual(app.state.elements.length, 0, 'New blank tab should start with 0 elements');
+  assert.strictEqual(app.state.canvasBg, '#000000', 'New tab should apply its canvasBg');
+  app.quickAddShape('diamond');
+  assert.strictEqual(app.state.elements.length, 1, 'Adding a shape on Tab 2 should populate Tab 2');
+
+  // Duplicate / Fork Tab 2 -> Tab 3
+  const forkedTab = app.duplicateCanvasTab(secondTab.id);
+  assert.strictEqual(app.state.tabs.length, 3, 'duplicateCanvasTab should create a third tab');
+  assert.strictEqual(app.state.activeTabId, forkedTab.id, 'Forked tab should become active');
+  assert.strictEqual(app.state.elements.length, 1, 'Forked tab should have cloned element');
+  assert.notStrictEqual(app.state.elements[0].id, secondTab.elements[0].id, 'Forked tab elements must have distinct IDs');
+
+  // Mutate forked tab and verify Tab 2 and Tab 1 are untouched
+  app.quickAddShape('rectangle');
+  assert.strictEqual(app.state.elements.length, 2, 'Forked tab now has 2 elements');
+
+  // Switch back to Tab 1 via Alt+1 shortcut
+  app.handleKeyDown({ key: '1', altKey: true });
+  assert.strictEqual(app.state.activeTabId, firstTabId, 'Alt+1 should switch back to Tab 1');
+  assert.strictEqual(app.state.elements.length, firstTabElemCount, 'Tab 1 should retain its original elements');
+
+  // Switch to Tab 2 and verify it still has 1 element and dark background
+  app.switchCanvasTab(secondTab.id);
+  assert.strictEqual(app.state.elements.length, 1, 'Tab 2 must remain isolated from Tab 3 edits');
+  assert.strictEqual(app.state.canvasBg, '#000000', 'Tab 2 should restore its dark canvas background');
+
+  // Step forward and backward between canvases via stepCanvasTab / Alt+] / Alt+[
+  app.handleKeyDown({ key: ']', altKey: true });
+  assert.strictEqual(app.state.activeTabId, forkedTab.id, 'Alt+] should step forward to Tab 3');
+  app.handleKeyDown({ key: '[', altKey: true });
+  assert.strictEqual(app.state.activeTabId, secondTab.id, 'Alt+[ should step back to Tab 2');
+
+  // Verify localStorage persistence & reload
+  app.saveWorkspaceToStorage();
+  const savedRaw = sandbox.window.localStorage.getItem(app.WORKSPACE_STORAGE_KEY);
+  assert(savedRaw && savedRaw.includes('Worker Subflow'), 'localStorage should persist multi-tab workspace JSON');
+
+  // Close Tab 3 and then restore from savedRaw via importExcalidrawJson
+  app.closeCanvasTab(forkedTab.id);
+  assert.strictEqual(app.state.tabs.length, 2, 'closeCanvasTab should remove Tab 3');
+  const restoredOk = app.importExcalidrawJson(savedRaw);
+  assert.strictEqual(restoredOk, true, 'importExcalidrawJson should restore multi-tab workspace JSON');
+  assert.strictEqual(app.state.tabs.length, 3, 'Restoring workspace JSON should bring back all 3 tabs');
+  console.log('[PASS] 8. Multi-canvas tabs (create, switch, fork/duplicate, rename, close, Alt+1..9, localStorage & multi-tab JSON) verified');
+
   console.log('\nALL EXCALIFLOW VERIFICATION CHECKS PASSED SUCCESSFULLY!');
 })().catch(err => {
   console.error(err);
