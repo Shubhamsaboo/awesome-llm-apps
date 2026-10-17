@@ -293,6 +293,6 @@ streamlit run travel_agent.py
 <a href="https://www.readme-i18n.com/Shubhamsaboo/awesome-llm-apps?lang=zh">中文</a>
 </sub>
 
-<sub>Apache-2.0 · See <a href="LICENSE">LICENSE</a> · Fork it, ship it, sell it.</sub>
+<sub>Apache-2.0 · See <a href="LICENSE">LICENSE</a> · <a href="CONTRIBUTING.md">Contribute</a> · Fork it, ship it, sell it.</sub>
 
 </div>
