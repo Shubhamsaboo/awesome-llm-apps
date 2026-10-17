@@ -1,0 +1,2 @@
+playwright>=1.40.0
+pymupdf>=1.23.0
