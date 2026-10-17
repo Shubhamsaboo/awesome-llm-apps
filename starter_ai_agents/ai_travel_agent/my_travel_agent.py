@@ -84,6 +84,9 @@ if result:
     if result.error:
         st.error(result.error)
     else:
+        if result.planning_date:
+            st.info(f"规划日期：{result.planning_date}")
+
         if result.total_budget is not None:
             st.success(f"💰 工具计算的全程预算约 ¥{result.total_budget:.0f}")
             breakdown = result.budget_breakdown

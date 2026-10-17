@@ -1,16 +1,24 @@
 import json
 import unittest
+from datetime import date
 
 from langchain_core.messages import ToolMessage
 
 from travel_graph import (
     extract_budget_result,
+    extract_planning_date,
+    get_current_date,
     route_after_validation,
     validate_request,
 )
 
 
 class TravelGraphTests(unittest.TestCase):
+    def test_current_date_uses_system_date(self) -> None:
+        result = json.loads(get_current_date.invoke({}))
+        self.assertEqual(result["date"], date.today().isoformat())
+        self.assertIn("星期", result["weekday"])
+
     def test_budget_is_summed_deterministically(self) -> None:
         from travel_graph import calculate_trip_budget
 
@@ -60,6 +68,20 @@ class TravelGraphTests(unittest.TestCase):
         total, breakdown = extract_budget_result([message])
         self.assertEqual(total, 800)
         self.assertEqual(breakdown["hotel"], 400)
+
+    def test_planning_date_is_read_from_tool_message(self) -> None:
+        message = ToolMessage(
+            content=json.dumps(
+                {
+                    "date": "2026-10-17",
+                    "weekday": "星期六",
+                },
+                ensure_ascii=False,
+            ),
+            tool_call_id="date-1",
+            name="get_current_date",
+        )
+        self.assertEqual(extract_planning_date([message]), "2026-10-17（星期六）")
 
 
 if __name__ == "__main__":

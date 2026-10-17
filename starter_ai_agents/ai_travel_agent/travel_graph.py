@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass, field
+from datetime import date
 from typing import Annotated, Any, Literal, TypedDict
 
 from langchain_core.messages import (
@@ -24,6 +25,25 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode
 from pydantic import BaseModel, Field
+
+
+@tool("get_current_date")
+def get_current_date() -> str:
+    """Return the current local date and weekday.
+
+    Call this tool before planning so the itinerary uses the real current date
+    instead of relying on the model's memory.
+    """
+
+    today = date.today()
+    weekdays = ("星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日")
+    return json.dumps(
+        {
+            "date": today.isoformat(),
+            "weekday": weekdays[today.weekday()],
+        },
+        ensure_ascii=False,
+    )
 
 
 class BudgetInput(BaseModel):
@@ -74,7 +94,7 @@ def calculate_trip_budget(
     )
 
 
-TOOLS = [calculate_trip_budget]
+TOOLS = [get_current_date, calculate_trip_budget]
 
 
 class TravelState(TypedDict):
@@ -91,6 +111,7 @@ class TravelResult:
     """Result returned to the UI layer."""
 
     itinerary: str = ""
+    planning_date: str = ""
     total_budget: float | None = None
     budget_breakdown: dict[str, float] = field(default_factory=dict)
     error: str = ""
@@ -99,11 +120,14 @@ class TravelResult:
 SYSTEM_PROMPT = """你是一位资深旅行规划师。
 
 工作流程：
-1. 根据用户提供的目的地和天数，先估算住宿、餐饮、交通和门票费用。
-2. 必须调用 calculate_trip_budget 工具一次，由代码计算总预算。
-3. 拿到工具结果后，再输出完整行程。不要把工具返回的总价自行改动。
+1. 必须先调用 get_current_date 工具一次，取得真实规划日期。
+2. 根据用户提供的目的地和天数，估算住宿、餐饮、交通和门票费用。
+3. 必须调用 calculate_trip_budget 工具一次，由代码计算总预算。
+4. 拿到工具结果后，再输出完整行程。不要把工具返回的总价自行改动。
 
 最终输出格式（严格照做）：
+**规划日期**：工具返回的日期（星期X）
+
 ## 第X天：主题
 **🌅 上午**：活动安排
 
@@ -233,6 +257,22 @@ def extract_budget_result(messages: list[BaseMessage]) -> tuple[float | None, di
     return None, {}
 
 
+def extract_planning_date(messages: list[BaseMessage]) -> str:
+    """Read the date-tool observation from the graph messages."""
+
+    for message in reversed(messages):
+        if not isinstance(message, ToolMessage):
+            continue
+        if getattr(message, "name", "") != "get_current_date":
+            continue
+        try:
+            payload = json.loads(content_to_text(message.content))
+            return f"{payload['date']}（{payload['weekday']}）"
+        except (KeyError, TypeError, ValueError, json.JSONDecodeError):
+            break
+    return ""
+
+
 def extract_itinerary(messages: list[BaseMessage]) -> str:
     """Return the final assistant text, excluding tool-call messages."""
 
@@ -280,15 +320,18 @@ def run_travel_agent(api_key: str, destination: str, num_days: int) -> TravelRes
 
     messages = final_state["messages"]
     itinerary = extract_itinerary(messages)
+    planning_date = extract_planning_date(messages)
     total_budget, breakdown = extract_budget_result(messages)
     if not itinerary:
         return TravelResult(
+            planning_date=planning_date,
             total_budget=total_budget,
             budget_breakdown=breakdown,
             error="模型没有返回可用行程，请稍后重试。",
         )
     return TravelResult(
         itinerary=itinerary,
+        planning_date=planning_date,
         total_budget=total_budget,
         budget_breakdown=breakdown,
     )
