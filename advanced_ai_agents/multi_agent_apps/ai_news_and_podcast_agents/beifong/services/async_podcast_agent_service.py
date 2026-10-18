@@ -112,6 +112,7 @@ class PodcastAgentService:
             return None
 
     async def check_result_status(self, request):
+        browser_recording_path = None
         try:
             if not request.session_id:
                 return JSONResponse(
