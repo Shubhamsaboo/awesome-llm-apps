@@ -1,5 +1,7 @@
 import dspy
 import os
+import re
+from typing import Optional
 from dotenv import load_dotenv
 
 # Load API key
@@ -24,58 +26,77 @@ class ClassifyMath(dspy.Signature):
 
 
 
+def parse_verdict(verdict) -> Optional[bool]:
+    """Read a Yes/No verdict from the model.
+
+    Accepts "Yes", "yes.", "**Yes**", "Yes, this is math." etc. Returns None
+    when the reply is neither, so callers can log it instead of guessing.
+    """
+    match = re.match(r"\W*(yes|no)\b", str(verdict or ""), re.IGNORECASE)
+    if not match:
+        return None
+    return match.group(1).lower() == "yes"
+
+
+# Few-shot examples for the input guard
+MATH_CLASSIFIER_EXAMPLES = [
+    ("What is the derivative of x^2?", "Yes"),
+    ("Explain the chain rule in calculus.", "Yes"),
+    ("Why do I need to learn algebra?", "Yes"),
+    ("What is the Pythagorean theorem?", "Yes"),
+    ("How do I solve a quadratic equation?", "Yes"),
+    ("What is the area of a circle?", "Yes"),
+    ("How is math used in real life?", "Yes"),
+    ("What is the purpose of trigonometry?", "Yes"),
+    ("What is the Fibonacci sequence?", "Yes"),
+    ("can you tell me about rhombus?", "Yes"),
+    ("what is a circle?", "Yes"),
+    ("What is the formula for the area of a circle?", "Yes"),
+    ("What is the formula for the circumference of a circle?", "Yes"),
+    ("What is the formula for the volume of a cone?", "Yes"),
+    ("What is the formula for the area of a parallelogram?", "Yes"),
+    ("What is the formula for the area of a trapezoid?", "Yes"),
+    ("What is the formula for the surface area of a cube?", "Yes"),
+    ("What is the area of parallelogram?", "Yes"),
+    ("What is a square?", "Yes"),
+    ("Explain rectangle?", "Yes"),
+    ("can you tell me about pentagon?", "Yes"),
+    ("What is the formula for the volume of a sphere?", "Yes"),
+    ("What is the formula for the area of a triangle?", "Yes"),
+    ("What is the difference between a permutation and a combination?", "Yes"),
+    ("What is the formula for the slope of a line?", "Yes"),
+    ("What is the difference between a rational and irrational number?", "Yes"),
+    ("What is the formula for the area of a rectangle?", "Yes"),
+    ("What is the formula for the volume of a cylinder?", "Yes"),
+    ("What is the formula for the surface area of a sphere?", "Yes"),
+    ("What is the formula for the surface area of a cylinder?", "Yes"),
+    ("What is the integral of sin(x)?", "Yes"),
+    ("What is the difference between mean and median?", "Yes"),
+    ("What is the quadratic formula?", "Yes"),
+    ("Tell me a good movie to watch.", "No"),
+    ("What is AI?", "No"),
+]
+
+
 # ✅ Input Validator
 class InputValidator(dspy.Module):
     def __init__(self):
         super().__init__()
         self.classifier = dspy.Predict(ClassifyMath)
-        self.validate_question = dspy.ChainOfThought(
-            ClassifyMath,
-            examples=[
-                {"question": "What is the derivative of x^2?", "verdict": "Yes"},
-                {"question": "Explain the chain rule in calculus.", "verdict": "Yes"},
-                {"question": "Why do I need to learn algebra?", "verdict": "Yes"},
-                {"question": "What is the Pythagorean theorem?", "verdict": "Yes"},
-                {"question": "How do I solve a quadratic equation?", "verdict": "Yes"},
-                {"question": "What is the area of a circle?", "verdict": "Yes"},
-                {"question": "How is math used in real life?", "verdict": "Yes"},
-                {"question": "What is the purpose of trigonometry?", "verdict": "Yes"},
-                {"question": "What is the Fibonacci sequence?", "verdict": "Yes"},
-                {"question": "can you tell me about rhombus?", "verdict": "Yes"},
-                {"question": "what is a circle?", "verdict": "Yes"},
-                {"question": "What is the formula for the area of a circle?", "verdict": "Yes"},
-                {"question": "What is the formula for the circumference of a circle?", "verdict": "Yes"},
-                {"question": "What is the formula for the volume of a cone?", "verdict": "Yes"},
-                {"question": "What is the formula for the area of a parallelogram?", "verdict": "Yes"},
-                {"question": "What is the formula for the area of a trapezoid?", "verdict": "Yes"},
-                {"question": "What is the formula for the surface area of a cube?", "verdict": "Yes"},
-                {"question": "What is the area of parallelogram?", "verdict": "Yes"},
-                {"question": "What is a square?", "verdict": "Yes"},
-                {"question": "Explain rectangle?", "verdict": "Yes"},
-                {"question": "can you tell me about pentagon?", "verdict": "Yes"},
-                {"question": "What is the formula for the volume of a sphere?", "verdict": "Yes"},
-                {"question": "What is the difference between a mean and median?", "verdict": "Yes"},
-                {"question": "What is the formula for the area of a triangle?", "verdict": "Yes"},
-                {"question": "What is the difference between a permutation and a combination?", "verdict": "Yes"},
-                {"question": "What is the formula for the slope of a line?", "verdict": "Yes"},
-                {"question": "What is the difference between a rational and irrational number?", "verdict": "Yes"},
-                {"question": "What is the formula for the area of a rectangle?", "verdict": "Yes"},
-                {"question": "What is the formula for the volume of a cylinder?", "verdict": "Yes"},
-                {"question": "What is the formula for the area of a trapezoid?", "verdict": "Yes"},
-                {"question": "What is the formula for the surface area of a sphere?", "verdict": "Yes"},
-                {"question": "What is the formula for the surface area of a cylinder?", "verdict": "Yes"},
-                {"question": "What is the integral of sin(x)?", "verdict": "Yes"},
-                {"question": "What is the difference between mean and median?", "verdict": "Yes"},
-                {"question": "What is the formula for the circumference of a circle?", "verdict": "Yes"},
-                {"question": "What is the quadratic formula?", "verdict": "Yes"},   
-                {"question": "Tell me a good movie to watch.", "verdict": "No"},
-                {"question": "What is AI?", "verdict": "No"},
-            ]
-        )
+        # Attach the examples as demos so they are actually sent to the model
+        self.classifier.demos = [
+            dspy.Example(question=q, verdict=v).with_inputs("question")
+            for q, v in MATH_CLASSIFIER_EXAMPLES
+        ]
+
     def forward(self, question):
         response = self.classifier(question=question)
         print("🧠 InputValidator Response:", response.verdict)
-        return response.verdict.lower().strip() == "yes"
+        is_math = parse_verdict(response.verdict)
+        if is_math is None:
+            print(f"⚠️ InputValidator got an unclear verdict {response.verdict!r}; treating as not math.")
+            return False
+        return is_math
 
 # ✅ Output Validator (no change unless needed)
 class OutputValidator(dspy.Module):
@@ -95,7 +116,11 @@ class OutputValidator(dspy.Module):
             answer=answer
         )
         print("🧠 OutputValidator Response:", response.verdict)
-        return response.verdict.lower().strip() == "yes"
+        is_valid = parse_verdict(response.verdict)
+        if is_valid is None:
+            print(f"⚠️ OutputValidator got an unclear verdict {response.verdict!r}; treating as failed.")
+            return False
+        return is_valid
 
 # Initialize validators
 input_validator = InputValidator()
