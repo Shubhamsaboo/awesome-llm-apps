@@ -45,9 +45,10 @@ def google_news_discovery_run(
         max_results=max_results,
         exclude_websites=[],
     )
+    results = []
     if top_news:
         results = get_top_news(google_news)
-    if keyword:
+    elif keyword:
         results = search_news(google_news, keyword)
     print('google news search found:', len(results))
     return f"for all results is_scrapping_required: True, results: {json.dumps(results)}"
