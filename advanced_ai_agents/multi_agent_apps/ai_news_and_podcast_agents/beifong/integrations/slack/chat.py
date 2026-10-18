@@ -713,6 +713,7 @@ def handle_confirm_sources(ack, body, client):
     ack()
 
     def process_confirmation():
+        thread_key = None
         try:
             thread_key = body["actions"][0]["value"]
             user_id = body["user"]["id"]
@@ -778,7 +779,7 @@ def handle_confirm_sources(ack, body, client):
             print(f"Error in confirm_sources: {e}")
             client.chat_postMessage(
                 channel=body["channel"]["id"],
-                thread_ts=thread_key if not thread_key.startswith("dm_") else None,
+                thread_ts=thread_key if thread_key and not thread_key.startswith("dm_") else None,
                 text="❌ Error processing your selection. Please try again.",
             )
 
@@ -1045,6 +1046,7 @@ def handle_new_podcast(ack, body, client):
 
 
 async def process_approval_action(body, approval_message: str):
+    thread_key = None
     try:
         thread_key = body["actions"][0]["value"]
         app.client.chat_postMessage(
@@ -1066,7 +1068,8 @@ async def process_approval_action(body, approval_message: str):
             await send_slack_message(thread_key, response_text)
     except Exception as e:
         print(f"Error processing approval: {e}")
-        await send_slack_message(thread_key, "❌ Error processing approval. Please try again.")
+        if thread_key:
+            await send_slack_message(thread_key, "❌ Error processing approval. Please try again.")
 
 
 @app.event("app_mention")
