@@ -17,6 +17,7 @@ import argparse
 import json
 import re
 import statistics
+import sys
 from pathlib import Path
 
 HEDGES = r"\b(might|may|could|perhaps|possibly|arguably|potentially|seems?|somewhat|likely|probably|tend(?:s)? to|in some cases|to some extent|it could be argued)\b"
@@ -62,14 +63,11 @@ def main():
     text = draft_path.read_text(encoding="utf-8")
     lang = args.lang.lower()
     sents = sentences(text, lang=lang)
-    
     if not sents:
-        sys_exit_msg = "No prose sentences found."
         if args.json:
-            print(json.dumps({"error": sys_exit_msg}))
+            print(json.dumps({"error": "No prose sentences found."}))
             return
-        print(sys_exit_msg)
-        return
+        sys.exit("No prose sentences found.")
 
     is_cjk = lang in ("ja", "zh", "cjk")
     if is_cjk:
@@ -77,6 +75,7 @@ def main():
         unit = "chars"
         rate_key = "per100"
         numbers = re.findall(r"(?<![a-zA-Z0-9./-])(?:\$[\d,.]+[kKmMbB]?|\d+(?:[.,]\d+)*%?|\d{2,4})", clean(text))
+        quotes = re.findall(r"[\"“「『]([^\"”」』]{5,200})[\"”」』]", text)
         tokens = list(re.sub(r"\s+", "", text.lower()))
     else:
         lens = [len(s.split()) for s in sents]
@@ -85,25 +84,27 @@ def main():
         # any token carrying a digit counts as a checkable specific: 4,100, $3M,
         # 90-second, v2.3, 48MB, 2:47am all expose the writer to being wrong
         numbers = re.findall(r"\b[\w$][\w.,:%$-]*\d[\w.,:%$-]*", clean(text))
+        quotes = re.findall(r"[\"“]([^\"”]{10,200})[\"”]", text)
         tokens = re.findall(r"[a-zA-Z']+", text.lower())
 
     total_units = sum(lens)
     per100 = lambda n: round(n * 100 / max(total_units, 1), 2)
 
-    quotes = re.findall(r"[\"“「『]([^\"”」』]{5,200})[\"”」』]", text)
     hedged = [s for s in sents if re.search(HEDGES, s, re.I)]
     certain = [s for s in sents if re.search(CERTAINTY, s, re.I)]
     admissions = [s for s in sents if re.search(ADMISSION, s, re.I)]
     nouns = proper_nouns(clean(text))
-    
     ttr = round(len(set(tokens)) / max(len(tokens), 1), 3)
 
-    # portable sentences: no digit, no named entity, no first person
+    # portable sentences: no digit, no named entity, no first person: could
+    # move unchanged into any other document on the topic
     portable = [s for s in sents
                 if not re.search(r"\d", s)
                 and not re.search(FIRST_PERSON, s)
                 and not any(n in s for n in set(nouns))]
 
+    # epistemic temperature: share of sentences carrying ANY marker of how
+    # sure the writer is; near-zero variance in commitment is the machine tell
     marked = len(set(hedged) | set(certain))
 
     result = {
@@ -114,7 +115,7 @@ def main():
             "sd": round(statistics.pstdev(lens), 1),
             "burstiness": round(statistics.pstdev(lens) / max(statistics.mean(lens), 1), 2),
             "max": max(lens),
-            "min": min(lens)
+            "min": min(lens),
         },
         "costly": {
             "numbers": {"count": len(numbers), rate_key: per100(len(numbers)), "sample": numbers[:10]},
@@ -131,15 +132,13 @@ def main():
         "portable_sentences": {
             "count": len(portable),
             "share": round(len(portable) / len(sents), 2),
-            "sample": portable[:5]
+            "sample": portable[:5],
         },
         "type_token_ratio": ttr,
     }
-
     if args.json:
         print(json.dumps(result, indent=2, ensure_ascii=False))
         return
-
     print("TRUST SIGNAL MEASUREMENTS (counts, not verdicts; genre decides meaning)")
     print(json.dumps(result, indent=2, ensure_ascii=False))
     print("\nReading notes: costly signals expose the writer and buy trust; "
