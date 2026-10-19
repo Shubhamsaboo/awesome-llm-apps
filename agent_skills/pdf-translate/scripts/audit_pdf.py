@@ -20,32 +20,33 @@ if sys.platform == "win32":
 try:
     import fitz  # PyMuPDF
 except ImportError:
-    print("Error: PyMuPDF (fitz) is required. Install via `pip install pymupdf`")
+    print("Error: PyMuPDF (fitz) is required. Please install dependencies from scripts/requirements.txt")
     sys.exit(1)
 
-# Common AI hallucination / placeholder trigger words
-HALLUCINATION_KEYWORDS = [
-    "技术规范编制综述",
-    "综述与准则",
-    "核对清单 (Checklist)",
-    "资质申报审查核对清单",
-    "文件装订、密封与递交程序规范",
-    "暂缺",
+# Default language-agnostic hallucination and placeholder trigger words
+DEFAULT_HALLUCINATION_KEYWORDS = [
+    "TODO",
+    "TBD",
+    "FIXME",
+    "[omitted]",
+    "[placeholder]",
+    "omitted due to space",
+    "refer to original",
+    "as above",
+    "not translated",
     "待补充",
     "待确认",
     "此处略",
     "因篇幅省略",
-    "同上",
-    "详见英文原版",
-    "TBD",
-    "TODO",
+    "详见原版",
+    "暂缺",
 ]
 
 CLAUSE_REGEX = re.compile(
-    r'(?:Section\s*(?:\(\s*\d+\s*\)|\d+)|'
-    r'第\s*(?:\(\s*\d+\s*\)|\d+)\s*部分|'
-    r'Appendix\s*[-–—]?\s*\d+|'
-    r'附录\s*[-–—]?\s*[一二三四五六七八九十\d]+|'
+    r'(?:Section\s*(?:\(\s*[\d\.]+\s*\)|[\d\.]+)|'
+    r'第\s*(?:\(\s*[\d\.]+\s*\)|[\d\.]+)\s*部分|'
+    r'Appendix\s*[-–—]?\s*[A-Za-z0-9\.]+|'
+    r'附录\s*[-–—]?\s*[一二三四五六七八九十A-Za-z\d\.]+|'
     r'Table\s*[-–—\.]?\s*[A-Za-z0-9]+|'
     r'表\s*[-–—\.]?\s*[A-Za-z0-9\u4e00-\u9fa5]+|'
     r'(?<!\w)\d+\.\d+(?:\.\d+)*(?!\w))',
@@ -68,7 +69,14 @@ def extract_clauses(text: str):
             res.append(m.strip())
     return res
 
-def audit_document(src_path: str, tgt_path: str, strict: bool = False, json_out: str = None):
+def audit_document(
+    src_path: str,
+    tgt_path: str,
+    strict: bool = False,
+    json_out: str = None,
+    hallucination_keywords: list = None,
+    ignore_clauses: list = None,
+):
     print("=" * 70)
     print("  PDF-TRANSLATE AUTOMATED AUDIT ENGINE")
     print(f"  Source:     {src_path}")
@@ -165,8 +173,9 @@ def audit_document(src_path: str, tgt_path: str, strict: bool = False, json_out:
             page_info["status"] = "WARNING"
             report["summary"]["warnings"] += 1
 
-        # Check for AI hallucination keywords
-        found_hallucinations = [kw for kw in HALLUCINATION_KEYWORDS if kw in tgt_text]
+        # Check for AI hallucination / placeholder keywords
+        active_keywords = hallucination_keywords if hallucination_keywords is not None else DEFAULT_HALLUCINATION_KEYWORDS
+        found_hallucinations = [kw for kw in active_keywords if kw in tgt_text]
         if found_hallucinations:
             for h in found_hallucinations:
                 msg = f"Hallucination keyword detected: '{h}'"
@@ -182,7 +191,8 @@ def audit_document(src_path: str, tgt_path: str, strict: bool = False, json_out:
         tgt_norm = {normalize_clause(c): c for c in tgt_clauses}
 
         missing_clauses = [src_norm[k] for k in src_norm if k not in tgt_norm and re.search(r'\d+\.\d+', k)]
-        missing_clauses = [c for c in missing_clauses if not any(ign in c for ign in ["2026", "2531", "1998", "2009", "2010", "2016"])]
+        if ignore_clauses:
+            missing_clauses = [c for c in missing_clauses if not any(ign.lower() in c.lower() for ign in ignore_clauses)]
 
         if missing_clauses:
             page_info["issues"].append(f"Missing clauses in target: {missing_clauses}")
@@ -219,7 +229,19 @@ if __name__ == "__main__":
     parser.add_argument("--tgt", required=True, help="Path to translated target PDF")
     parser.add_argument("--strict", action="store_true", help="Treat missing subclause warnings as critical")
     parser.add_argument("--json", default=None, help="Optional output path for JSON audit report")
+    parser.add_argument("--hallucination-keywords", default=None, help="Optional comma-separated list of placeholder/hallucination keywords to detect")
+    parser.add_argument("--ignore-clauses", default=None, help="Optional comma-separated list of clause numbers or patterns to ignore")
 
     args = parser.parse_args()
-    success = audit_document(args.src, args.tgt, strict=args.strict, json_out=args.json)
+    custom_keywords = [k.strip() for k in args.hallucination_keywords.split(",")] if args.hallucination_keywords else None
+    ignore_list = [c.strip() for c in args.ignore_clauses.split(",")] if args.ignore_clauses else None
+
+    success = audit_document(
+        args.src,
+        args.tgt,
+        strict=args.strict,
+        json_out=args.json,
+        hallucination_keywords=custom_keywords,
+        ignore_clauses=ignore_list,
+    )
     sys.exit(0 if success else 1)

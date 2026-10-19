@@ -7,7 +7,7 @@ compatibility: "Python 3.8+. Requires Playwright and PyMuPDF. Completely local a
 metadata:
   author: "lxsssssss"
   version: "2.3.0"
-  source: "https://github.com/lxsssssss/pdf-translate"
+  source: "https://github.com/Shubhamsaboo/awesome-llm-apps"
 ---
 
 # PDF Layout-Preserving Translation Skill

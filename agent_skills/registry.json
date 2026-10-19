@@ -57,7 +57,7 @@
       "metadata": {
         "author": "lxsssssss",
         "version": "2.3.0",
-        "source": "https://github.com/lxsssssss/pdf-translate"
+        "source": "https://github.com/Shubhamsaboo/awesome-llm-apps"
       },
       "install": "npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/pdf-translate",
       "evals_dir": "agent_skills/evals/pdf-translate"

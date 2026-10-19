@@ -21,9 +21,9 @@ def render_html_to_pdf(html_path: str, output_pdf_path: str, strict_overflow: bo
 
     os.makedirs(os.path.dirname(output_abs), exist_ok=True)
 
-    print(f"Launching Playwright (Edge/Chromium) for vector PDF rendering...")
+    print(f"Launching Playwright Chromium for vector PDF rendering...")
     with sync_playwright() as p:
-        browser = p.chromium.launch(channel="msedge", headless=True)
+        browser = p.chromium.launch(headless=True)
         context = browser.new_context()
         page = context.new_page()
 

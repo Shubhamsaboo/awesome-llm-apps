@@ -38,7 +38,3 @@ Audits the output PDF against the original document across page counts, clause n
 ```bash
 python agent_skills/pdf-translate/scripts/audit_pdf.py --src original.pdf --tgt output.pdf
 ```
-
-## Reference Repository
-
-Developed and maintained at [lxsssssss/pdf-translate](https://github.com/lxsssssss/pdf-translate).
