@@ -1,0 +1,5 @@
+streamlit>=1.28.0
+strands-agents>=1.61.0
+strands-agents[openai]>=1.61.0
+mcp>=2.1.0
+openai>=2.0.0
