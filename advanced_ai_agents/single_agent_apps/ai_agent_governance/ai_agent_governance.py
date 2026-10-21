@@ -486,7 +486,7 @@ If no tool is needed, just respond normally."""
             logger.error(f"Model call failed: {type(e).__name__}: {e}")
             return f"Model call failed: {type(e).__name__}: {e}"
 
-        llm_response = response.choices[0].message.content
+        llm_response = response.choices[0].message.content or ""
         print(f"\n🤖 Agent response: {llm_response}")
         
         # Parse and execute tool call if present
