@@ -801,6 +801,84 @@
       opacity: 1;
       transform: translateX(-50%) translateY(0);
     }
+
+    /* Multi-Agent MCP Presence & Avatar Stack */
+    .agent-avatar-stack {
+      display: inline-flex;
+      align-items: center;
+      margin-right: 2px;
+    }
+
+    .agent-avatar-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #ffffff;
+      border: 1.5px solid var(--panel-bg);
+      margin-left: -5px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+      transition: transform 0.15s ease;
+    }
+
+    .agent-avatar-dot:first-child {
+      margin-left: 0;
+    }
+
+    #btnAgentJam {
+      background: linear-gradient(135deg, rgba(105, 101, 219, 0.15), rgba(217, 119, 87, 0.15));
+      border: 1px solid rgba(105, 101, 219, 0.35);
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    #btnAgentJam.active {
+      background: linear-gradient(135deg, #6965db, #d97757);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 2px 10px rgba(105, 101, 219, 0.38);
+    }
+
+    .agent-roster-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 7px;
+      font-size: 11.5px;
+    }
+
+    .agent-roster-row:hover {
+      background: var(--btn-hover);
+    }
+
+    .agent-roster-left {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .agent-roster-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .agent-roster-status {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      max-width: 145px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   </style>
 </head>
 <body>
@@ -902,8 +980,29 @@
       </button>
     </nav>
 
-    <!-- Right Island: Live Flow Pill + Canvas Theme + Share/Export -->
+    <!-- Right Island: Multi-Agent MCP Collab + Live Flow Pill + Theme + Export -->
     <div class="header-group glass-panel">
+      <button id="btnAgentJam" class="ui-btn" title="Simulate Claude Code, Antigravity, Codex &amp; Grok Collaborating Live on Canvas">⚡ Agent Jam</button>
+      <div class="dropdown-wrap">
+        <button id="agentsMenuBtn" class="ui-btn" title="Live Multi-Agent MCP Presence &amp; Setup">
+          <span id="agentAvatarStack" class="agent-avatar-stack"></span>
+          <span id="agentsMenuLabel">MCP Agents</span>
+          <span id="agentsCountBadge" class="switcher-count-badge">4</span>
+          <span style="font-size:9px;opacity:0.65">▾</span>
+        </button>
+        <div id="agentsDropdown" class="dropdown-menu glass-panel" style="min-width:305px">
+          <div style="padding:5px 8px 3px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);display:flex;justify-content:space-between">
+            <span>Live MCP Agent Cursors</span>
+            <span id="mcpHubStatusBadge" style="color:#10b981">● MCP Ready</span>
+          </div>
+          <div id="agentRosterList"></div>
+          <div class="menu-sep"></div>
+          <button id="btnDropMentionSticky" class="ui-btn menu-item"><span>+ Drop @Agent Task Sticky</span><span>@mention</span></button>
+          <button id="btnStepAgentJam" class="ui-btn menu-item"><span>Run Single Multi-Agent Wave</span><span>1-Step</span></button>
+          <button id="btnCopyMcpCmd" class="ui-btn menu-item"><span>Copy Claude / AGY MCP Command</span><span>stdio</span></button>
+        </div>
+      </div>
+      <div class="v-divider"></div>
       <div id="masterFlowPill">
         <span id="flowStatusDot" class="flow-status-dot"></span>
         <button id="masterFlowBtn" class="ui-btn active" title="Toggle Live 60fps Causal Data Flow">Flow: ON</button>
@@ -1235,7 +1334,10 @@
       pasteCount: 0,
       drag: null,
       editingId: null,
-      isSpacePanning: false
+      isSpacePanning: false,
+      agents: new Map(),
+      agentJamActive: false,
+      mcpConnected: false
     };
 
     /* -------------------------------------------------------------------------
@@ -2329,6 +2431,35 @@
       applyDashStyle(ctx, el.strokeStyle, sw);
       ctx.stroke(paths.strokePath);
 
+      // Author Attribution Badge for Agent-Created Nodes & Spatial @Mention Tag
+      const badgeLabel = el.createdBy
+        ? String(el.createdBy)
+        : (/@([a-zA-Z0-9_-]+)/.test(String(el.text || '')) ? '⚡ @Agent Task' : '');
+      if (badgeLabel && isNodeElement(el) && el.type !== 'text') {
+        const badgeColor = el.authorColor || strokeColor;
+        ctx.save();
+        ctx.setLineDash([]);
+        ctx.font = '600 9.5px Assistant, system-ui, sans-serif';
+        const tw = typeof ctx.measureText === 'function' ? ctx.measureText(badgeLabel).width : badgeLabel.length * 5.4;
+        const bw = tw + 12;
+        const bh = 16;
+        const bx = el.x + (el.width || 120) - bw + 4;
+        const by = el.y - bh * 0.65;
+        ctx.fillStyle = badgeColor;
+        ctx.beginPath();
+        if (typeof ctx.roundRect === 'function') {
+          ctx.roundRect(bx, by, bw, bh, 8);
+        } else {
+          ctx.rect(bx, by, bw, bh);
+        }
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(badgeLabel, bx + bw / 2, by + bh / 2 + 0.5);
+        ctx.restore();
+      }
+
       ctx.restore();
     }
 
@@ -2950,7 +3081,9 @@
         endBinding: props.endBinding || null,
         x2: props.x2,
         y2: props.y2,
-        points: props.points || []
+        points: props.points || [],
+        createdBy: props.createdBy ? String(props.createdBy).slice(0, 36) : undefined,
+        authorColor: props.authorColor ? String(props.authorColor).slice(0, 16) : undefined
       };
       if (base.text && isNodeElement(base)) {
         autoFitElementToText(base, base.text);
@@ -3450,6 +3583,94 @@
         ctx.font = `500 ${Math.round(13 / zoom)}px Assistant, system-ui, sans-serif`;
         ctx.fillText('Double-click anywhere to add a node, draw with tools above, or pick a Template', centerW.x, centerW.y + 14 / zoom);
         ctx.restore();
+      }
+
+      // 9. Live Multi-Agent Collaborator Cursors, Motion Trails, Ripples & Action Bubbles
+      if (state.agents && state.agents.size > 0) {
+        for (const ag of state.agents.values()) {
+          if (ag.activeTabId && state.activeTabId && ag.activeTabId !== state.activeTabId) continue;
+          const ax = Number(ag.x) || 0;
+          const ay = Number(ag.y) || 0;
+          const agColor = ag.color || '#6965db';
+
+          ctx.save();
+          // 9a. Glowing comet trail behind moving agent cursor
+          if (Array.isArray(ag.trail) && ag.trail.length > 1) {
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            for (let i = 1; i < ag.trail.length; i++) {
+              const p0 = ag.trail[i - 1];
+              const p1 = ag.trail[i];
+              const age = (nowMs - p1.t) / 650;
+              if (age >= 1) continue;
+              const alpha = Math.max(0, (1 - age) * 0.45);
+              ctx.beginPath();
+              ctx.strokeStyle = agColor;
+              ctx.globalAlpha = alpha;
+              ctx.lineWidth = (3.5 * (1 - age)) / zoom;
+              ctx.moveTo(p0.x, p0.y);
+              ctx.lineTo(p1.x, p1.y);
+              ctx.stroke();
+            }
+          }
+
+          // 9b. Expanding action ripple ring when agent sketches or wires
+          if ((ag.ripple || 0) > 0.02) {
+            const prog = 1 - ag.ripple;
+            ctx.beginPath();
+            ctx.strokeStyle = agColor;
+            ctx.globalAlpha = Math.max(0, ag.ripple * 0.65);
+            ctx.lineWidth = 2.2 / zoom;
+            ctx.arc(ax, ay, (8 + prog * 28) / zoom, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+
+          // 9c. Crisp Multiplayer Pointer Arrow at (ax, ay)
+          ctx.globalAlpha = 1;
+          const s = 1 / zoom;
+          ctx.beginPath();
+          ctx.moveTo(ax, ay);
+          ctx.lineTo(ax + 4.5 * s, ay + 16.5 * s);
+          ctx.lineTo(ax + 8.5 * s, ay + 11.2 * s);
+          ctx.lineTo(ax + 15.5 * s, ay + 10.2 * s);
+          ctx.closePath();
+          ctx.fillStyle = agColor;
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1.6 * s;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.24)';
+          ctx.shadowBlur = 6;
+          ctx.fill();
+          ctx.stroke();
+
+          // 9d. Agent Name & Live Action Status Pill
+          const status = ag.statusText ? ` · ${ag.statusText}` : '';
+          const pillText = `${ag.name || 'Agent'}${status}`;
+          ctx.font = `600 ${Math.round(11 * s)}px Assistant, system-ui, sans-serif`;
+          const textW = typeof ctx.measureText === 'function' ? ctx.measureText(pillText).width : pillText.length * 6 * s;
+          const pw = textW + 14 * s;
+          const ph = 20 * s;
+          const px = ax + 11 * s;
+          const py = ay + 14 * s;
+
+          ctx.beginPath();
+          ctx.fillStyle = agColor;
+          if (typeof ctx.roundRect === 'function') {
+            ctx.roundRect(px, py, pw, ph, 10 * s);
+          } else {
+            ctx.rect(px, py, pw, ph);
+          }
+          ctx.fill();
+          ctx.shadowBlur = 0;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+          ctx.lineWidth = 1.1 * s;
+          ctx.stroke();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(pillText, px + 7 * s, py + ph / 2 + 0.5 * s);
+          ctx.restore();
+        }
       }
 
       ctx.restore();
@@ -4745,6 +4966,7 @@
       clearTimeout(workspaceSaveTimer);
       workspaceSaveTimer = setTimeout(() => {
         saveWorkspaceToStorage();
+        syncWorkspaceToMcpServer();
       }, 150);
     }
 
@@ -5162,6 +5384,568 @@
     }
 
     /* -------------------------------------------------------------------------
+     * 14c. Multi-Agent MCP Collaboration Engine, Live Cursors & Swarm Jam
+     * ------------------------------------------------------------------------- */
+    const DEFAULT_COLLAB_AGENTS = [
+      { id: 'agent_claude_code', name: 'Claude Code', color: '#d97757', role: 'Lead Architect', x: 180, y: 140, statusText: 'Ready (MCP)' },
+      { id: 'agent_antigravity', name: 'Antigravity', color: '#6965db', role: 'Systems & Flow', x: 420, y: 135, statusText: 'Ready (MCP)' },
+      { id: 'agent_codex',       name: 'Codex',       color: '#10b981', role: 'Infra & Runtime', x: 640, y: 145, statusText: 'Ready (MCP)' },
+      { id: 'agent_grok_bot',    name: 'Grok Bot',    color: '#06b6d4', role: 'Chaos & Red-Team', x: 820, y: 155, statusText: 'Ready (MCP)' }
+    ];
+
+    let agentJamTimer = null;
+    let agentJamStepCounter = 0;
+
+    function ensureDefaultAgents() {
+      if (state.agents.size > 0) return;
+      const now = performance.now();
+      for (const preset of DEFAULT_COLLAB_AGENTS) {
+        state.agents.set(preset.id, {
+          ...preset,
+          targetX: preset.x,
+          targetY: preset.y,
+          activeTabId: state.activeTabId,
+          trail: [{ x: preset.x, y: preset.y, t: now }],
+          ripple: 0,
+          actionCount: 0,
+          lastActiveAt: Date.now()
+        });
+      }
+      renderAgentPresenceUI();
+    }
+
+    function upsertAgentCursor(agentData, startFromPt = null) {
+      if (!agentData || typeof agentData !== 'object') return null;
+      ensureDefaultAgents();
+      const rawName = String(agentData.name || agentData.agentName || 'AI Agent').trim();
+      const id = agentData.id || ('agent_' + rawName.toLowerCase().replace(/[^a-z0-9]+/g, '_'));
+      const existing = state.agents.get(id);
+      const nowMs = performance.now();
+      const nextX = Number.isFinite(Number(agentData.x)) ? Number(agentData.x) : (existing ? existing.targetX : 280);
+      const nextY = Number.isFinite(Number(agentData.y)) ? Number(agentData.y) : (existing ? existing.targetY : 200);
+      const startX = startFromPt && Number.isFinite(startFromPt.x)
+        ? startFromPt.x
+        : (existing ? existing.x : nextX - 60);
+      const startY = startFromPt && Number.isFinite(startFromPt.y)
+        ? startFromPt.y
+        : (existing ? existing.y : nextY - 40);
+
+      const merged = {
+        id,
+        name: rawName,
+        color: agentData.color || (existing ? existing.color : '#6965db'),
+        role: agentData.role || (existing ? existing.role : 'MCP Collaborator'),
+        x: startX,
+        y: startY,
+        targetX: nextX,
+        targetY: nextY,
+        statusText: agentData.statusText !== undefined ? String(agentData.statusText) : (existing ? existing.statusText : 'Active'),
+        activeTabId: agentData.activeTabId || state.activeTabId,
+        trail: existing && Array.isArray(existing.trail)
+          ? [...existing.trail.slice(-18), { x: startX, y: startY, t: nowMs }]
+          : [{ x: startX, y: startY, t: nowMs }],
+        ripple: 1.0,
+        actionCount: Number.isFinite(agentData.actionCount)
+          ? agentData.actionCount
+          : ((existing?.actionCount || 0) + 1),
+        lastActiveAt: Date.now()
+      };
+      state.agents.set(id, merged);
+      renderAgentPresenceUI();
+      return merged;
+    }
+
+    function stepAgentCursors(dt, nowMs = performance.now()) {
+      if (!state.agents || state.agents.size === 0) return;
+      const alpha = Math.min(1, dt * 10.5);
+      for (const ag of state.agents.values()) {
+        const dx = (ag.targetX ?? ag.x) - ag.x;
+        const dy = (ag.targetY ?? ag.y) - ag.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist > 0.4) {
+          ag.x += dx * alpha;
+          ag.y += dy * alpha;
+          if (!Array.isArray(ag.trail)) ag.trail = [];
+          ag.trail.push({ x: ag.x, y: ag.y, t: nowMs });
+          if (ag.trail.length > 28) ag.trail.shift();
+        }
+        if (Array.isArray(ag.trail)) {
+          ag.trail = ag.trail.filter(p => nowMs - p.t < 650);
+        }
+        if ((ag.ripple || 0) > 0.01) {
+          ag.ripple = Math.max(0, ag.ripple - dt * 1.8);
+        }
+      }
+    }
+
+    function renderAgentPresenceUI() {
+      if (typeof document === 'undefined') return;
+      const stackEl = document.getElementById('agentAvatarStack');
+      const countEl = document.getElementById('agentsCountBadge');
+      const rosterEl = document.getElementById('agentRosterList');
+      const jamBtn = document.getElementById('btnAgentJam');
+      const agentsArr = Array.from(state.agents.values());
+
+      if (countEl) countEl.textContent = String(agentsArr.length || 4);
+      if (jamBtn) {
+        jamBtn.classList.toggle('active', Boolean(state.agentJamActive));
+        jamBtn.textContent = state.agentJamActive ? '⚡ Jamming (Stop)' : '⚡ Agent Jam';
+      }
+
+      if (stackEl && typeof stackEl.appendChild === 'function') {
+        stackEl.innerHTML = '';
+        if (Array.isArray(stackEl.children)) stackEl.children.length = 0;
+        for (const ag of agentsArr.slice(0, 5)) {
+          const dot = document.createElement('span');
+          dot.className = 'agent-avatar-dot';
+          dot.style.background = ag.color || '#6965db';
+          dot.textContent = String(ag.name || 'A').charAt(0).toUpperCase();
+          dot.title = `${ag.name}: ${ag.statusText || 'Ready'}`;
+          stackEl.appendChild?.(dot);
+        }
+      }
+
+      if (rosterEl && typeof rosterEl.appendChild === 'function') {
+        rosterEl.innerHTML = '';
+        if (Array.isArray(rosterEl.children)) rosterEl.children.length = 0;
+        for (const ag of agentsArr) {
+          const row = document.createElement('div');
+          row.className = 'agent-roster-row';
+          const left = document.createElement('div');
+          left.className = 'agent-roster-left';
+          const dot = document.createElement('span');
+          dot.className = 'agent-roster-dot';
+          dot.style.background = ag.color || '#6965db';
+          const nameSpan = document.createElement('span');
+          nameSpan.style.fontWeight = '600';
+          nameSpan.textContent = ag.name;
+          left.appendChild?.(dot);
+          left.appendChild?.(nameSpan);
+
+          const statusSpan = document.createElement('span');
+          statusSpan.className = 'agent-roster-status';
+          statusSpan.textContent = ag.statusText || 'Ready';
+          row.appendChild?.(left);
+          row.appendChild?.(statusSpan);
+          rosterEl.appendChild?.(row);
+        }
+      }
+    }
+
+    function extractSpatialMentions() {
+      const mentions = [];
+      for (const el of state.elements) {
+        const text = String(el.text || '');
+        const match = text.match(/@(claude|antigravity|agy|codex|grok|chatgpt|agent)/i);
+        if (match) {
+          mentions.push({
+            elementId: el.id,
+            handle: match[1].toLowerCase(),
+            text,
+            x: el.x,
+            y: el.y,
+            resolvedByAgent: Boolean(el.resolvedByAgent)
+          });
+        }
+      }
+      return mentions;
+    }
+
+    function dropAgentMentionSticky(customText = null) {
+      closeAllDropdowns();
+      pushHistory();
+      const vw = typeof window !== 'undefined' ? window.innerWidth : 1280;
+      const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
+      const centerW = screenToWorld(vw / 2, vh / 2);
+      const offset = (state.elements.length % 4) * 26;
+      const sticky = createElement('sticky', {
+        x: Math.round(centerW.x - 95 + offset),
+        y: Math.round(centerW.y - 170 + offset),
+        width: 196,
+        height: 108,
+        strokeColor: '#f59e0b',
+        fillStyle: 'solid',
+        text: customText || '@Claude @Antigravity\nAdd Redis Cache & Rate Limiter guard'
+      });
+      state.elements.push(sticky);
+      state.selectedIds.clear();
+      state.selectedIds.add(sticky.id);
+      syncUIWithSelection();
+      showToast('Dropped @Agent task sticky — click "⚡ Agent Jam" or call MCP to execute!');
+      return sticky;
+    }
+
+    function applyMcpAgentAction(payload) {
+      if (!payload || typeof payload !== 'object') return false;
+      if (payload.agent) {
+        upsertAgentCursor(payload.agent, payload.fromPt || null);
+      }
+
+      const actionType = payload.actionType;
+      if (actionType === 'tab_create' || actionType === 'tab_fork' || actionType === 'tab_switch' || actionType === 'tab_rename') {
+        if (payload.workspace && Array.isArray(payload.workspace.tabs)) {
+          restoreWorkspaceData(payload.workspace);
+          renderCanvasTabs(true);
+          saveWorkspaceToStorage();
+          if (payload.agent) {
+            showToast(`${payload.agent.name}: ${payload.agent.statusText || actionType}`);
+          }
+          return true;
+        }
+      }
+
+      const targetTabId = payload.tabId || state.activeTabId;
+      const upsertIntoElements = (arr, rawEl) => {
+        if (!rawEl || !rawEl.id) return null;
+        syncIdCounterWithId(rawEl.id);
+        const normEl = createElement(rawEl.type || 'rectangle', rawEl);
+        const idx = arr.findIndex(e => e.id === normEl.id);
+        if (idx >= 0) arr[idx] = normEl;
+        else arr.push(normEl);
+        state.nodeArrivalEnergy.set(normEl.id, 1.0);
+        return normEl;
+      };
+
+      const activeList = (!targetTabId || targetTabId === state.activeTabId)
+        ? state.elements
+        : (state.tabs.find(t => t.id === targetTabId)?.elements || state.elements);
+
+      if (actionType === 'insert_between' && Array.isArray(payload.arrows) && payload.element) {
+        // Remove direct arrow between the two endpoints if present
+        const uId = payload.arrows[0]?.startBinding?.elementId;
+        const vId = payload.arrows[1]?.endBinding?.elementId;
+        if (uId && vId) {
+          const oldIdx = activeList.findIndex(
+            e => e.type === 'arrow' && e.startBinding?.elementId === uId && e.endBinding?.elementId === vId
+          );
+          if (oldIdx !== -1) activeList.splice(oldIdx, 1);
+        }
+      }
+
+      if (payload.element) {
+        upsertIntoElements(activeList, payload.element);
+      }
+      if (payload.arrow) {
+        upsertIntoElements(activeList, payload.arrow);
+      }
+      if (Array.isArray(payload.arrows)) {
+        for (const a of payload.arrows) upsertIntoElements(activeList, a);
+      }
+
+      if (payload.pulse && payload.pulse.nodeId) {
+        triggerNodePulse(payload.pulse.nodeId);
+      }
+
+      ShapeCache.clear();
+      syncUIWithSelection();
+      saveWorkspaceToStorage();
+      return true;
+    }
+
+    function findFreeSpotClient(prefX, prefY, w = 156, h = 70) {
+      const nodes = state.elements.filter(e => e.type !== 'arrow');
+      let cx = prefX;
+      let cy = prefY;
+      const pad = 24;
+      for (let i = 0; i < 20; i++) {
+        const hit = nodes.find(n => (
+          cx < n.x + (n.width || 144) + pad &&
+          cx + w + pad > n.x &&
+          cy < n.y + (n.height || 68) + pad &&
+          cy + h + pad > n.y
+        ));
+        if (!hit) break;
+        if (i % 2 === 0) cy = hit.y + (hit.height || 68) + 44;
+        else cx = hit.x + (hit.width || 144) + 58;
+      }
+      return { x: Math.round(cx), y: Math.round(cy) };
+    }
+
+    function runMultiAgentJamStep() {
+      ensureDefaultAgents();
+      const nodes = state.elements.filter(e => isNodeElement(e) && e.type !== 'text');
+      if (nodes.length === 0) {
+        loadTemplate('AI Agent Swarm');
+      }
+
+      // 1. Check if there is an unresolved human @mention sticky note first!
+      const unresolvedMention = state.elements.find(
+        el => !el.resolvedByAgent && /@(claude|antigravity|agy|codex|grok|chatgpt|agent)/i.test(String(el.text || ''))
+      );
+      if (unresolvedMention) {
+        const m = String(unresolvedMention.text).match(/@(claude|antigravity|agy|codex|grok|chatgpt|agent)/i);
+        const handle = m ? m[1].toLowerCase() : 'claude';
+        const agentMap = {
+          claude: { name: 'Claude Code', color: '#d97757' },
+          antigravity: { name: 'Antigravity', color: '#6965db' },
+          agy: { name: 'Antigravity', color: '#6965db' },
+          codex: { name: 'Codex', color: '#10b981' },
+          grok: { name: 'Grok Bot', color: '#06b6d4' },
+          chatgpt: { name: 'ChatGPT', color: '#14b8a6' }
+        };
+        const chosen = agentMap[handle] || agentMap.claude;
+        unresolvedMention.resolvedByAgent = true;
+
+        const cleanTask = String(unresolvedMention.text)
+          .replace(/@[a-zA-Z0-9_-]+/g, '')
+          .trim()
+          .slice(0, 34) || 'Agent Module';
+
+        const spot = findFreeSpotClient(unresolvedMention.x + 225, unresolvedMention.y, 160, 72);
+        const newNode = createElement('rectangle', {
+          x: spot.x,
+          y: spot.y,
+          width: 160,
+          height: 72,
+          text: cleanTask,
+          strokeColor: chosen.color,
+          createdBy: chosen.name,
+          authorColor: chosen.color
+        });
+        const scx = unresolvedMention.x + (unresolvedMention.width || 150) / 2;
+        const scy = unresolvedMention.y + (unresolvedMention.height || 100) / 2;
+        const ncx = newNode.x + newNode.width / 2;
+        const ncy = newNode.y + newNode.height / 2;
+        const newArrow = createElement('arrow', {
+          x: scx,
+          y: scy,
+          x2: ncx,
+          y2: ncy,
+          strokeColor: chosen.color,
+          createdBy: chosen.name,
+          startBinding: { elementId: unresolvedMention.id, focusAngle: Math.atan2(ncy - scy, ncx - scx), gap: 4 },
+          endBinding: { elementId: newNode.id, focusAngle: Math.atan2(scy - ncy, scx - ncx), gap: 4 }
+        });
+        applyMcpAgentAction({
+          actionType: 'branch_from',
+          agent: {
+            name: chosen.name,
+            color: chosen.color,
+            x: ncx,
+            y: ncy,
+            statusText: `Fulfilled @mention: "${cleanTask.split('\n')[0]}"`
+          },
+          fromPt: { x: scx, y: scy },
+          element: newNode,
+          arrow: newArrow,
+          pulse: { nodeId: unresolvedMention.id, color: chosen.color }
+        });
+        return { step: 'mention_resolved', agent: chosen.name, element: newNode };
+      }
+
+      // 2. Otherwise cycle through the 4 collaborating agents co-architecting on the canvas
+      const currentNodes = state.elements.filter(e => isNodeElement(e) && e.type !== 'sticky' && e.type !== 'text');
+      const stepIdx = agentJamStepCounter % 4;
+      agentJamStepCounter += 1;
+
+      if (stepIdx === 0) {
+        // Claude Code branches an architectural component
+        const anchor = currentNodes[0] || currentNodes[currentNodes.length - 1];
+        const scx = anchor.x + (anchor.width || 144) / 2;
+        const scy = anchor.y + (anchor.height || 68) / 2;
+        const spot = findFreeSpotClient(anchor.x + 210, anchor.y - 135, 162, 72);
+        const node = createElement('rectangle', {
+          x: spot.x,
+          y: spot.y,
+          width: 162,
+          height: 72,
+          text: 'Context Cache\nKV Store',
+          strokeColor: '#d97757',
+          createdBy: 'Claude Code',
+          authorColor: '#d97757'
+        });
+        const ncx = node.x + node.width / 2;
+        const ncy = node.y + node.height / 2;
+        const arr = createElement('arrow', {
+          x: scx, y: scy, x2: ncx, y2: ncy,
+          strokeColor: '#d97757',
+          curveOffset: -22,
+          createdBy: 'Claude Code',
+          startBinding: { elementId: anchor.id, focusAngle: Math.atan2(ncy - scy, ncx - scx), gap: 4 },
+          endBinding: { elementId: node.id, focusAngle: Math.atan2(scy - ncy, scx - ncx), gap: 4 }
+        });
+        applyMcpAgentAction({
+          actionType: 'branch_from',
+          agent: { name: 'Claude Code', color: '#d97757', x: ncx, y: ncy, statusText: 'Branched Context Cache' },
+          fromPt: { x: scx, y: scy },
+          element: node,
+          arrow: arr,
+          pulse: { nodeId: anchor.id, color: '#d97757' }
+        });
+        return { step: stepIdx, agent: 'Claude Code', element: node };
+      }
+
+      if (stepIdx === 1) {
+        // Antigravity adds a causal routing decision diamond & connects flow
+        const anchor = currentNodes[Math.min(1, currentNodes.length - 1)];
+        const scx = anchor.x + (anchor.width || 144) / 2;
+        const scy = anchor.y + (anchor.height || 68) / 2;
+        const spot = findFreeSpotClient(anchor.x + 230, anchor.y + 145, 168, 92);
+        const node = createElement('diamond', {
+          x: spot.x,
+          y: spot.y,
+          width: 168,
+          height: 92,
+          text: 'Guardrail &\nEval Router',
+          strokeColor: '#6965db',
+          createdBy: 'Antigravity',
+          authorColor: '#6965db'
+        });
+        const ncx = node.x + node.width / 2;
+        const ncy = node.y + node.height / 2;
+        const arr = createElement('arrow', {
+          x: scx, y: scy, x2: ncx, y2: ncy,
+          strokeColor: '#6965db',
+          curveOffset: 18,
+          createdBy: 'Antigravity',
+          startBinding: { elementId: anchor.id, focusAngle: Math.atan2(ncy - scy, ncx - scx), gap: 4 },
+          endBinding: { elementId: node.id, focusAngle: Math.atan2(scy - ncy, scx - ncx), gap: 4 }
+        });
+        applyMcpAgentAction({
+          actionType: 'branch_from',
+          agent: { name: 'Antigravity', color: '#6965db', x: ncx, y: ncy, statusText: 'Wired Guardrail Router' },
+          fromPt: { x: scx, y: scy },
+          element: node,
+          arrow: arr,
+          pulse: { nodeId: anchor.id, color: '#6965db' }
+        });
+        return { step: stepIdx, agent: 'Antigravity', element: node };
+      }
+
+      if (stepIdx === 2) {
+        // Codex branches an execution sandbox / telemetry sink and connects to final node
+        const source = currentNodes[currentNodes.length - 1];
+        const target = currentNodes[Math.max(0, currentNodes.length - 2)];
+        const scx = source.x + (source.width || 144) / 2;
+        const scy = source.y + (source.height || 68) / 2;
+        const tcx = target.x + (target.width || 144) / 2;
+        const tcy = target.y + (target.height || 68) / 2;
+        const arr = createElement('arrow', {
+          x: scx, y: scy, x2: tcx, y2: tcy,
+          strokeColor: '#10b981',
+          curveType: 'curved',
+          curveOffset: -26,
+          createdBy: 'Codex',
+          startBinding: { elementId: source.id, focusAngle: Math.atan2(tcy - scy, tcx - scx), gap: 4 },
+          endBinding: { elementId: target.id, focusAngle: Math.atan2(scy - tcy, scx - tcx), gap: 4 }
+        });
+        applyMcpAgentAction({
+          actionType: 'connect_nodes',
+          agent: { name: 'Codex', color: '#10b981', x: tcx, y: tcy, statusText: 'Connected Feedback Loop' },
+          fromPt: { x: scx, y: scy },
+          arrow: arr,
+          pulse: { nodeId: source.id, color: '#10b981' }
+        });
+        return { step: stepIdx, agent: 'Codex', arrow: arr };
+      }
+
+      // Step 3: Grok Bot drops a red-team review sticky & triggers a multi-node pulse burst
+      const target = currentNodes[Math.floor(Math.random() * currentNodes.length)] || currentNodes[0];
+      const spot = findFreeSpotClient(target.x + 20, target.y - 128, 182, 98);
+      const sticky = createElement('sticky', {
+        x: spot.x,
+        y: spot.y,
+        width: 182,
+        height: 98,
+        strokeColor: '#06b6d4',
+        fillStyle: 'solid',
+        text: '⚡ Red-Team Check:\n latency < 45ms p99\nverified under burst',
+        createdBy: 'Grok Bot',
+        authorColor: '#06b6d4'
+      });
+      applyMcpAgentAction({
+        actionType: 'add_critique_sticky',
+        agent: {
+          name: 'Grok Bot',
+          color: '#06b6d4',
+          x: sticky.x + sticky.width / 2,
+          y: sticky.y + sticky.height / 2,
+          statusText: 'Added p99 latency audit'
+        },
+        fromPt: { x: target.x + (target.width || 144) / 2, y: target.y + (target.height || 68) / 2 },
+        element: sticky,
+        pulse: { nodeId: target.id, color: '#06b6d4' }
+      });
+      return { step: stepIdx, agent: 'Grok Bot', element: sticky };
+    }
+
+    function toggleMultiAgentJam(forceState) {
+      const next = typeof forceState === 'boolean' ? forceState : !state.agentJamActive;
+      state.agentJamActive = next;
+      clearInterval(agentJamTimer);
+      renderAgentPresenceUI();
+
+      if (state.agentJamActive) {
+        showToast('⚡ Multi-Agent Jam Live: Claude Code, Antigravity, Codex & Grok collaborating!');
+        runMultiAgentJamStep();
+        agentJamTimer = setInterval(() => {
+          if (!state.agentJamActive) {
+            clearInterval(agentJamTimer);
+            return;
+          }
+          // Every tick, also glide other idle agents subtly so all 4 cursors feel alive
+          for (const ag of state.agents.values()) {
+            if (Math.random() < 0.45) {
+              const jitterX = (Math.random() - 0.5) * 90;
+              const jitterY = (Math.random() - 0.5) * 65;
+              ag.targetX = Math.max(80, Math.min(920, (ag.targetX || ag.x) + jitterX));
+              ag.targetY = Math.max(90, Math.min(460, (ag.targetY || ag.y) + jitterY));
+            }
+          }
+          runMultiAgentJamStep();
+        }, 1650);
+      } else {
+        showToast('Paused Multi-Agent Jam');
+      }
+      return state.agentJamActive;
+    }
+
+    function connectMcpEventStream() {
+      if (typeof window === 'undefined' || typeof EventSource === 'undefined') return;
+      if (window.location.protocol !== 'http:' && window.location.protocol !== 'https:') return;
+      try {
+        const es = new EventSource('/api/events');
+        es.addEventListener('open', () => {
+          state.mcpConnected = true;
+          const badge = document.getElementById('mcpHubStatusBadge');
+          if (badge) badge.textContent = '● MCP Live (SSE)';
+        });
+        es.addEventListener('init', ev => {
+          try {
+            const data = JSON.parse(ev.data);
+            if (Array.isArray(data.agents)) {
+              for (const ag of data.agents) upsertAgentCursor(ag);
+            }
+          } catch {}
+        });
+        es.addEventListener('agent_cursor', ev => {
+          try {
+            const data = JSON.parse(ev.data);
+            if (data.agent) upsertAgentCursor(data.agent);
+          } catch {}
+        });
+        es.addEventListener('agent_action', ev => {
+          try {
+            const data = JSON.parse(ev.data);
+            applyMcpAgentAction(data);
+          } catch {}
+        });
+      } catch {}
+    }
+
+    function syncWorkspaceToMcpServer() {
+      if (typeof window === 'undefined' || typeof fetch !== 'function') return;
+      if (window.location.protocol !== 'http:' && window.location.protocol !== 'https:') return;
+      const payload = serializeWorkspace();
+      payload.selectedIds = Array.from(state.selectedIds);
+      fetch('/api/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(() => {});
+    }
+
+    /* -------------------------------------------------------------------------
      * 15. UI Chrome Synchronization & Viewport Controls
      * ------------------------------------------------------------------------- */
     function closeAllDropdowns() {
@@ -5544,6 +6328,31 @@
         closeAllDropdowns();
         if (!wasOpen) menu?.classList.add('open');
       });
+      document.getElementById('agentsMenuBtn')?.addEventListener('click', e => {
+        e.stopPropagation();
+        const menu = document.getElementById('agentsDropdown');
+        const wasOpen = menu?.classList.contains('open');
+        closeAllDropdowns();
+        if (!wasOpen) {
+          ensureDefaultAgents();
+          renderAgentPresenceUI();
+          menu?.classList.add('open');
+        }
+      });
+      document.getElementById('btnAgentJam')?.addEventListener('click', () => toggleMultiAgentJam());
+      document.getElementById('btnDropMentionSticky')?.addEventListener('click', () => dropAgentMentionSticky());
+      document.getElementById('btnStepAgentJam')?.addEventListener('click', () => {
+        closeAllDropdowns();
+        runMultiAgentJamStep();
+      });
+      document.getElementById('btnCopyMcpCmd')?.addEventListener('click', () => {
+        closeAllDropdowns();
+        const cmd = 'claude mcp add excaliflow -- node server.js --mcp-stdio --agent "Claude Code"';
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+          navigator.clipboard.writeText(cmd).catch(() => {});
+        }
+        showToast('Copied MCP stdio command to clipboard!');
+      });
       window.addEventListener('click', () => closeAllDropdowns());
 
       document.getElementById('sidebarToggleBtn')?.addEventListener('click', toggleSidebar);
@@ -5702,6 +6511,8 @@
         ensureInitialTab('AI Agent Swarm');
         saveWorkspaceToStorage();
       }
+      ensureDefaultAgents();
+      connectMcpEventStream();
       updateHeaderButtons();
 
       let lastFrameTime = performance.now() / 1000;
@@ -5709,6 +6520,8 @@
         const timeSec = nowMs / 1000;
         const dt = Math.min(0.05, Math.max(0.001, timeSec - lastFrameTime));
         lastFrameTime = timeSec;
+
+        stepAgentCursors(dt, nowMs);
 
         for (let i = state.activePulses.length - 1; i >= 0; i--) {
           const p = state.activePulses[i];
@@ -5794,7 +6607,15 @@
         saveWorkspaceToStorage,
         loadWorkspaceFromStorage,
         serializeWorkspace,
-        restoreWorkspaceData
+        restoreWorkspaceData,
+        ensureDefaultAgents,
+        upsertAgentCursor,
+        stepAgentCursors,
+        applyMcpAgentAction,
+        extractSpatialMentions,
+        dropAgentMentionSticky,
+        runMultiAgentJamStep,
+        toggleMultiAgentJam
       });
       window.addEventListener('DOMContentLoaded', initStudioDOM);
     }

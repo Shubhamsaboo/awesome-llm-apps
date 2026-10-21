@@ -516,6 +516,99 @@ function runMockReq(method, url) {
   assert.strictEqual(app.state.tabs.length, 3, 'Restoring workspace JSON should bring back all 3 tabs');
   console.log('[PASS] 8. Multi-canvas tabs (create, switch, fork/duplicate, rename, close, Alt+1..9, localStorage & multi-tab JSON) verified');
 
+  // 9. Verify Multi-Agent MCP Server (JSON-RPC 2.0), Concurrent Agent Cursors, Author Attribution & @Mention Jam
+  assert(typeof server.handleMcpRpc === 'function', 'server.js must export handleMcpRpc for MCP JSON-RPC 2.0');
+  const initRpc = server.handleMcpRpc({
+    jsonrpc: '2.0',
+    id: 1,
+    method: 'initialize',
+    params: { clientInfo: { name: 'Claude Code', version: '1.0.0' } }
+  });
+  assert.strictEqual(initRpc.result.serverInfo.name, 'excaliflow-multi-agent-mcp', 'MCP initialize should return serverInfo');
+
+  const listRpc = server.handleMcpRpc({ jsonrpc: '2.0', id: 2, method: 'tools/list' });
+  const toolNames = listRpc.result.tools.map(t => t.name);
+  for (const expectedTool of ['get_workspace_state', 'move_agent_cursor', 'draw_node', 'branch_from', 'connect_nodes', 'insert_between', 'add_critique_sticky', 'trigger_flow_pulse', 'manage_canvas_tab']) {
+    assert(toolNames.includes(expectedTool), `MCP tools/list must include ${expectedTool}`);
+  }
+
+  // Test Claude Code calling branch_from via MCP
+  const branchRpc = server.handleMcpRpc({
+    jsonrpc: '2.0',
+    id: 3,
+    method: 'tools/call',
+    params: {
+      name: 'branch_from',
+      arguments: {
+        agentName: 'Claude Code',
+        sourceIdOrText: 'Orchestrator',
+        text: 'Memory Vector\nIndex',
+        direction: 'bottom'
+      }
+    }
+  });
+  assert.strictEqual(branchRpc.result.isError, false, 'MCP branch_from should succeed');
+  const branchPayload = JSON.parse(branchRpc.result.content[0].text);
+  assert.strictEqual(branchPayload.element.createdBy, 'Claude Code', 'MCP branch_from must stamp createdBy attribution');
+  assert.strictEqual(branchPayload.agent.name, 'Claude Code', 'MCP branch_from must update Claude Code cursor presence');
+
+  // Test Antigravity calling insert_between via MCP
+  const insertRpc = server.handleMcpRpc({
+    jsonrpc: '2.0',
+    id: 4,
+    method: 'tools/call',
+    params: {
+      name: 'insert_between',
+      arguments: {
+        agentName: 'Antigravity',
+        fromIdOrText: 'User Task',
+        toIdOrText: 'Orchestrator',
+        text: 'Auth Guard\nRate Limit'
+      }
+    }
+  });
+  assert.strictEqual(insertRpc.result.isError, false, 'MCP insert_between should succeed');
+  const insertPayload = JSON.parse(insertRpc.result.content[0].text);
+  assert.strictEqual(insertPayload.element.createdBy, 'Antigravity', 'MCP insert_between must stamp Antigravity attribution');
+  assert.strictEqual(insertPayload.arrows.length, 2, 'MCP insert_between must split flow into 2 arrows');
+
+  // Test Grok Bot calling add_critique_sticky via MCP
+  const critiqueRpc = server.handleMcpRpc({
+    jsonrpc: '2.0',
+    id: 5,
+    method: 'tools/call',
+    params: {
+      name: 'add_critique_sticky',
+      arguments: {
+        agentName: 'Grok Bot',
+        targetIdOrText: 'Coder Agent',
+        note: 'Red-team check: sandbox memory cap',
+        severity: 'warning'
+      }
+    }
+  });
+  assert.strictEqual(critiqueRpc.result.isError, false, 'MCP add_critique_sticky should succeed');
+
+  // Test client-side live agent cursor interpolation, @mention task sticky & multi-agent jam step
+  app.switchCanvasTab(firstTabId);
+  app.ensureDefaultAgents();
+  assert(app.state.agents.size >= 4, 'Canvas should initialize 4 default agent collaborator personas');
+  app.upsertAgentCursor({ name: 'Codex', x: 520, y: 280, color: '#10b981', statusText: 'Wiring sandbox' }, { x: 200, y: 150 });
+  app.stepAgentCursors(0.05, 1000);
+  const codexCursor = app.state.agents.get('agent_codex');
+  assert(codexCursor && codexCursor.x > 200, 'stepAgentCursors should smoothly interpolate agent cursor toward targetX');
+
+  const mentionSticky = app.dropAgentMentionSticky('@Claude build Redis Stream Bus');
+  const mentionsBefore = app.extractSpatialMentions();
+  assert(mentionsBefore.some(m => m.elementId === mentionSticky.id && !m.resolvedByAgent), 'extractSpatialMentions should detect unresolved @Claude sticky');
+
+  const jamRes = app.runMultiAgentJamStep();
+  assert.strictEqual(jamRes.step, 'mention_resolved', 'runMultiAgentJamStep should prioritize resolving @mention sticky');
+  assert.strictEqual(jamRes.agent, 'Claude Code', '@Claude sticky should be fulfilled by Claude Code');
+  assert.strictEqual(jamRes.element.createdBy, 'Claude Code', 'Fulfilled node should carry Claude Code attribution badge');
+
+  console.log('[PASS] 9. Multi-Agent MCP Server (9 tools), live agent cursors, author attribution badges & @mention Jam verified');
+
   console.log('\nALL EXCALIFLOW VERIFICATION CHECKS PASSED SUCCESSFULLY!');
 })().catch(err => {
   console.error(err);
