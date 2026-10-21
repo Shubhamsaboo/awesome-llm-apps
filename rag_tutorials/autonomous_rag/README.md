@@ -47,3 +47,23 @@ docker run -d \
 ```bash
 streamlit run autorag.py
 ```
+
+### Option: Use Neon (free cloud Postgres + pgvector, no Docker)
+
+`autorag_neon.py` runs the same app against a hosted [Neon](https://neon.tech) database with Gemini for the LLM and embeddings.
+
+1. Create a free Neon project and copy the connection string from **Connect**.
+2. Enable pgvector: in the Neon dashboard open **SQL Editor**, select your database (e.g. `neondb`) and run:
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+
+-- Verify it is enabled
+SELECT extname, extversion FROM pg_extension WHERE extname = 'vector';
+```
+   The app also runs `CREATE EXTENSION IF NOT EXISTS vector` on startup, so this step is optional when connecting as the database owner (e.g. `neondb_owner`); run it manually if you use a role without permission to create extensions.
+3. Copy `.env.example` to `.env` and fill in `NEON_DATABASE_URL` and `GEMINI_API_KEY`.
+4. Run it (the `ai` schema and tables are created automatically on first run):
+```bash
+pip install -r requirements.txt
+streamlit run autorag_neon.py
+```
