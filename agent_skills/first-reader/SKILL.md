@@ -146,7 +146,8 @@ Have a fresh subagent playing the skeptical persona run
 `scripts/skim.py <draft>` itself and answer from that view alone; if you
 must run the script, redirect its output straight to a file you never
 open, because the scanner view quotes fragments of the draft and reading
-it contaminates you before the timed reads. It answers: what is this
+it contaminates you before the timed reads. Pass `--lang ja` or `--lang zh`
+for Japanese or Chinese drafts. It answers: what is this
 piece, do you commit to a full read, and what single element decided it.
 
 A scanner who cannot say what the piece is, or declines to commit, is the
@@ -209,7 +210,8 @@ finding about the piece, not about the reader.
 
 Run `scripts/signals.py <draft> --json`, but only after the timed reads
 are complete: its output quotes draft sentences, so reading it earlier
-contaminates you. Read the numbers through the genre: costly signals (checkable numbers, named entities, quotes,
+contaminates you. Pass `--lang ja` or `--lang zh` for Japanese or Chinese
+drafts. Read the numbers through the genre: costly signals (checkable numbers, named entities, quotes,
 admissions against interest, first-person experience) buy trust; free
 signals (hedges everywhere, certainty everywhere, portable sentences that
 fit any document) buy nothing. Near-zero variance in epistemic commitment
