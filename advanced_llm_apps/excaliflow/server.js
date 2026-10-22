@@ -2,9 +2,20 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
+const { spawn, execFileSync } = require('child_process');
 
 const PORT = Number(process.env.PORT) || 3000;
 const ROOT = path.resolve(__dirname);
+
+// Ensure common macOS/Linux user & Homebrew bin paths are available when spawning CLIs
+const EXTRA_PATHS = [
+  path.join(process.env.HOME || '', '.local', 'bin'),
+  '/opt/homebrew/bin',
+  '/usr/local/bin',
+  '/usr/bin',
+  '/bin'
+].filter(Boolean);
+const ENV_PATH = Array.from(new Set([...EXTRA_PATHS, ...(process.env.PATH || '').split(path.delimiter)])).join(path.delimiter);
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -25,14 +36,15 @@ const MIME_TYPES = {
 };
 
 const AGENT_PRESETS = {
-  'claude code': { name: 'Claude Code', color: '#d97757', role: 'Lead Architect' },
-  'claude':      { name: 'Claude Code', color: '#d97757', role: 'Lead Architect' },
-  'antigravity': { name: 'Antigravity', color: '#6965db', role: 'Systems & Flow' },
-  'agy':         { name: 'Antigravity', color: '#6965db', role: 'Systems & Flow' },
-  'codex':       { name: 'Codex',       color: '#10b981', role: 'Infra & Runtime' },
-  'chatgpt':     { name: 'ChatGPT',     color: '#14b8a6', role: 'Product & API' },
-  'grok':        { name: 'Grok Bot',    color: '#06b6d4', role: 'Chaos & Red-Team' },
-  'grok bot':    { name: 'Grok Bot',    color: '#06b6d4', role: 'Chaos & Red-Team' }
+  'claude':      { id: 'claude',      name: 'Claude Code', cli: 'claude', color: '#d97757', role: 'Core Architecture & Primary Flow' },
+  'claude code': { id: 'claude',      name: 'Claude Code', cli: 'claude', color: '#d97757', role: 'Core Architecture & Primary Flow' },
+  'codex':       { id: 'codex',       name: 'Codex',       cli: 'codex',  color: '#10b981', role: 'Infra, Workers, Queues & Storage' },
+  'gemini':      { id: 'gemini',      name: 'Gemini',      cli: 'gemini', color: '#6965db', role: 'Edge Cases, Routing & Critique' },
+  'antigravity': { id: 'antigravity', name: 'Antigravity', cli: 'agy',    color: '#6965db', role: 'Systems & Flow' },
+  'agy':         { id: 'antigravity', name: 'Antigravity', cli: 'agy',    color: '#6965db', role: 'Systems & Flow' },
+  'chatgpt':     { id: 'chatgpt',     name: 'ChatGPT',     cli: null,     color: '#14b8a6', role: 'Product & API' },
+  'grok':        { id: 'grok',        name: 'Grok Bot',    cli: null,     color: '#06b6d4', role: 'Red-Team & Stress Test' },
+  'grok bot':    { id: 'grok',        name: 'Grok Bot',    cli: null,     color: '#06b6d4', role: 'Red-Team & Stress Test' }
 };
 
 const FALLBACK_AGENT_COLORS = ['#6965db', '#d97757', '#10b981', '#06b6d4', '#f59e0b', '#ec4899', '#0070f3'];
@@ -43,18 +55,50 @@ function nextHubId(prefix = 'mcp') {
   return `${prefix}_${Date.now().toString(36)}_${idSeq}`;
 }
 
+function findBinaryPath(binName) {
+  if (!binName) return null;
+  for (const dir of ENV_PATH.split(path.delimiter)) {
+    if (!dir) continue;
+    const full = path.join(dir, binName);
+    try {
+      if (fs.existsSync(full) && fs.statSync(full).isFile()) return full;
+    } catch {}
+  }
+  try {
+    return execFileSync('which', [binName], { env: { ...process.env, PATH: ENV_PATH }, encoding: 'utf8' }).trim() || null;
+  } catch {
+    return null;
+  }
+}
+
+function detectInstalledAgentClis() {
+  const candidates = [
+    { id: 'claude', name: 'Claude Code', bin: 'claude', color: '#d97757', role: 'Core Architecture & Primary Flow' },
+    { id: 'codex',  name: 'Codex',       bin: 'codex',  color: '#10b981', role: 'Infra, Workers, Queues & Storage' },
+    { id: 'gemini', name: 'Gemini',      bin: 'gemini', color: '#6965db', role: 'Edge Cases, Routing & Critique' }
+  ];
+  return candidates.map(c => {
+    const binPath = findBinaryPath(c.bin);
+    return {
+      ...c,
+      binPath,
+      installed: Boolean(binPath)
+    };
+  });
+}
+
 function resolveAgentProfile(rawName, rawColor, rawRole) {
   const cleanName = String(rawName || process.env.EXCALIFLOW_AGENT || 'AI Agent').trim().slice(0, 36) || 'AI Agent';
   const key = cleanName.toLowerCase();
   const preset = AGENT_PRESETS[key];
   const hashIdx = Array.from(key).reduce((acc, ch) => acc + ch.charCodeAt(0), 0) % FALLBACK_AGENT_COLORS.length;
   return {
-    id: 'agent_' + key.replace(/[^a-z0-9]+/g, '_'),
+    id: 'agent_' + (preset ? preset.id : key.replace(/[^a-z0-9]+/g, '_')),
     name: preset ? preset.name : cleanName,
     color: (typeof rawColor === 'string' && /^#[0-9a-fA-F]{6}$/.test(rawColor))
       ? rawColor
       : (preset ? preset.color : FALLBACK_AGENT_COLORS[hashIdx]),
-    role: String(rawRole || (preset ? preset.role : 'Collaborator')).slice(0, 40)
+    role: String(rawRole || (preset ? preset.role : 'Collaborator')).slice(0, 48)
   };
 }
 
@@ -114,7 +158,8 @@ const hub = {
   workspace: createInitialWorkspace(),
   agents: new Map(),
   sseClients: new Set(),
-  actionLog: []
+  runningProcs: new Map(),
+  installedClis: detectInstalledAgentClis()
 };
 
 function getActiveTab(tabId = null) {
@@ -138,13 +183,13 @@ function findNodeInTab(tab, idOrText) {
   return tab.elements.find(el => el.type !== 'arrow' && String(el.text || '').toLowerCase().includes(qLower)) || null;
 }
 
-function resolveNonOverlappingSpot(tab, x, y, width = 152, height = 70) {
+function resolveNonOverlappingSpot(tab, x, y, width = 156, height = 72) {
   const nodes = (tab?.elements || []).filter(e => e.type !== 'arrow');
   let cx = Number.isFinite(Number(x)) ? Number(x) : 280;
   let cy = Number.isFinite(Number(y)) ? Number(y) : 220;
-  const pad = 26;
+  const pad = 28;
 
-  for (let attempt = 0; attempt < 24; attempt++) {
+  for (let attempt = 0; attempt < 28; attempt++) {
     const overlap = nodes.find(n => {
       const nw = Number(n.width) || 144;
       const nh = Number(n.height) || 68;
@@ -156,11 +201,10 @@ function resolveNonOverlappingSpot(tab, x, y, width = 152, height = 70) {
       );
     });
     if (!overlap) break;
-    // Fan out alternating vertically and horizontally
     if (attempt % 2 === 0) {
-      cy = overlap.y + (Number(overlap.height) || 68) + 46;
+      cy = overlap.y + (Number(overlap.height) || 68) + 48;
     } else {
-      cx = overlap.x + (Number(overlap.width) || 144) + 64;
+      cx = overlap.x + (Number(overlap.width) || 144) + 68;
     }
   }
   return { x: Math.round(cx), y: Math.round(cy) };
@@ -196,10 +240,11 @@ function updateAgentPresence(rawName, patch = {}) {
     name: profile.name,
     color: profile.color,
     role: profile.role,
-    x: 240,
-    y: 180,
-    statusText: 'Connected via MCP',
+    x: 220,
+    y: 160,
+    statusText: 'Connected',
     activeTabId: hub.workspace.activeTabId,
+    busy: false,
     actionCount: 0,
     lastActiveAt: Date.now()
   };
@@ -208,16 +253,23 @@ function updateAgentPresence(rawName, patch = {}) {
     ...existing,
     name: profile.name,
     color: patch.color && /^#[0-9a-fA-F]{6}$/.test(patch.color) ? patch.color : existing.color,
-    role: patch.role ? String(patch.role).slice(0, 40) : existing.role,
+    role: patch.role ? String(patch.role).slice(0, 48) : existing.role,
     x: Number.isFinite(Number(patch.x)) ? Math.round(Number(patch.x)) : existing.x,
     y: Number.isFinite(Number(patch.y)) ? Math.round(Number(patch.y)) : existing.y,
     statusText: patch.statusText !== undefined ? String(patch.statusText).slice(0, 80) : existing.statusText,
     activeTabId: patch.activeTabId || existing.activeTabId || hub.workspace.activeTabId,
+    busy: patch.busy !== undefined ? Boolean(patch.busy) : existing.busy,
     actionCount: existing.actionCount + (patch.incrementAction ? 1 : 0),
     lastActiveAt: Date.now()
   };
   hub.agents.set(profile.id, updated);
   return updated;
+}
+
+function removeAgentPresence(rawName) {
+  const profile = resolveAgentProfile(rawName);
+  hub.agents.delete(profile.id);
+  broadcastSse('agent_removed', { agentId: profile.id, name: profile.name });
 }
 
 function broadcastSse(eventType, payload) {
@@ -247,15 +299,15 @@ const MCP_TOOLS = [
   },
   {
     name: 'move_agent_cursor',
-    description: 'Smoothly glide your named agent cursor to (x, y) on the live canvas with a status bubble so the human and other agents see where you are working.',
+    description: 'Smoothly glide your named agent cursor to (x, y) on the live canvas with a status bubble.',
     inputSchema: {
       type: 'object',
       properties: {
-        agentName: { type: 'string', description: 'Your agent name (e.g. "Claude Code", "Antigravity", "Codex", "Grok").' },
+        agentName: { type: 'string', description: 'Your agent name (e.g. "Claude Code", "Codex", "Gemini", "Antigravity").' },
         x: { type: 'number', description: 'Target world X coordinate.' },
         y: { type: 'number', description: 'Target world Y coordinate.' },
         statusText: { type: 'string', description: 'Short status message shown next to your cursor.' },
-        color: { type: 'string', description: 'Optional hex color (#6965db, #d97757, #10b981, #06b6d4).' }
+        color: { type: 'string', description: 'Optional hex color.' }
       },
       required: ['agentName', 'x', 'y']
     }
@@ -266,7 +318,7 @@ const MCP_TOOLS = [
     inputSchema: {
       type: 'object',
       properties: {
-        agentName: { type: 'string', description: 'Your agent name (e.g. "Claude Code", "Antigravity", "Codex", "Grok").' },
+        agentName: { type: 'string', description: 'Your agent name.' },
         type: { type: 'string', enum: ['rectangle', 'ellipse', 'diamond', 'sticky', 'text'], description: 'Shape type.' },
         text: { type: 'string', description: 'Label text inside the node (use \\n for multi-line).' },
         x: { type: 'number', description: 'Preferred world X coordinate.' },
@@ -404,7 +456,7 @@ function executeMcpTool(toolName, args = {}) {
       x: args.x,
       y: args.y,
       color: args.color,
-      statusText: args.statusText || 'Exploring canvas...'
+      statusText: args.statusText || 'Moving cursor...'
     });
     broadcastSse('agent_cursor', { agent });
     return { ok: true, agent };
@@ -542,7 +594,16 @@ function executeMcpTool(toolName, args = {}) {
   if (toolName === 'branch_from') {
     const sourceNode = findNodeInTab(tab, args.sourceIdOrText) || tab.elements.find(e => e.type !== 'arrow');
     if (!sourceNode) {
-      throw new Error(`Source node "${args.sourceIdOrText}" not found on tab "${tab.name}".`);
+      // Fallback to draw_node if canvas is completely empty
+      return executeMcpTool('draw_node', {
+        agentName,
+        type: args.type || 'rectangle',
+        text: args.text || 'Root Node',
+        x: 120,
+        y: 220,
+        strokeColor: args.strokeColor,
+        tabId: tab.id
+      });
     }
     const dir = ['right', 'bottom', 'left', 'top'].includes(args.direction) ? args.direction : 'right';
     const type = ['rectangle', 'ellipse', 'diamond', 'sticky'].includes(args.type) ? args.type : 'rectangle';
@@ -773,7 +834,7 @@ function executeMcpTool(toolName, args = {}) {
     const color = severityColors[args.severity] || '#f59e0b';
     const prefX = targetNode ? targetNode.x + 10 : 320;
     const prefY = targetNode ? targetNode.y - 125 : 80;
-    const spot = resolveNonOverlappingSpot(tab, prefX, prefY, 176, 104);
+    const spot = resolveNonOverlappingSpot(tab, prefX, prefY, 184, 106);
     const profile = resolveAgentProfile(agentName);
 
     const sticky = {
@@ -781,8 +842,8 @@ function executeMcpTool(toolName, args = {}) {
       type: 'sticky',
       x: spot.x,
       y: spot.y,
-      width: 176,
-      height: 104,
+      width: 184,
+      height: 106,
       text: String(args.note || 'Review note'),
       strokeColor: color,
       fillStyle: 'solid',
@@ -841,6 +902,230 @@ function executeMcpTool(toolName, args = {}) {
   throw new Error(`Unknown MCP tool: ${toolName}`);
 }
 
+/* -------------------------------------------------------------------------
+ * Real Local CLI Agent Orchestrator (Spawns `claude`, `codex`, `gemini`)
+ * ------------------------------------------------------------------------- */
+function buildAgentCliPrompt(agentInfo, userPrompt, tab, totalAgentsCount, agentIdx) {
+  const nodesSummary = (tab.elements || [])
+    .filter(e => e.type !== 'arrow')
+    .map(n => `- id="${n.id}" type=${n.type} text=${JSON.stringify(n.text)} at (${Math.round(n.x)}, ${Math.round(n.y)})`)
+    .join('\n') || '(Canvas is currently empty)';
+
+  const roleGuidance = totalAgentsCount > 1
+    ? (agentInfo.id === 'claude'
+        ? `You are collaborating live with ${totalAgentsCount - 1} other AI agent(s) on the same Excaliflow canvas. Your role is CORE ARCHITECTURE & PRIMARY FLOW: draw or branch the main request/service/orchestration path (prefer y between 140 and 250).`
+        : agentInfo.id === 'codex'
+          ? `You are collaborating live with ${totalAgentsCount - 1} other AI agent(s) on the same Excaliflow canvas. Your role is INFRASTRUCTURE, QUEUES, WORKERS & DATA STORES: branch or insert caches, queues, workers, or databases (prefer direction="bottom" or y between 300 and 450) and connect them.`
+          : `You are collaborating live with ${totalAgentsCount - 1} other AI agent(s) on the same Excaliflow canvas. Your role is GUARDRAILS, OBSERVABILITY & RED-TEAM CRITIQUE: add auth/eval routers, connect feedback loops, and attach 1-2 sharp architectural review stickies using add_critique_sticky.`)
+    : `You are the architect on the Excaliflow canvas. Build or update the diagram to fulfill the user's request completely.`;
+
+  return `You are "${agentInfo.name}" acting live on the Excaliflow collaborative architecture canvas.
+${roleGuidance}
+
+Current Canvas Tab: "${tab.name}"
+Existing Nodes on Canvas:
+${nodesSummary}
+
+User Request:
+${userPrompt}
+
+IMPORTANT OUTPUT FORMAT:
+Output ONLY raw newline-delimited JSON objects (1 JSON object per line, NO markdown code fences, NO prose explanations).
+Emit between 3 and 7 JSON lines in sequence to move your cursor and build/annotate the diagram.
+Each line MUST be a valid JSON object with {"tool": "<tool_name>", "args": { ... }} from this list:
+1. {"tool":"move_agent_cursor","args":{"x":220,"y":180,"statusText":"Analyzing flow..."}}
+2. {"tool":"draw_node","args":{"type":"rectangle|ellipse|diamond|sticky","text":"Short Title\\nSubtitle","x":100,"y":220,"strokeColor":"#0070f3|#7928ca|#10b981|#f59e0b|#ef4444|#06b6d4"}}
+3. {"tool":"branch_from","args":{"sourceIdOrText":"<existing or newly drawn node text>","text":"Service Name\\nDetail","type":"rectangle|ellipse|diamond","direction":"right|bottom|top|left","strokeColor":"#10b981"}}
+4. {"tool":"insert_between","args":{"fromIdOrText":"<node A text>","toIdOrText":"<node B text>","text":"Intermediary\\nGuard/Cache","type":"diamond|rectangle","strokeColor":"#7928ca"}}
+5. {"tool":"connect_nodes","args":{"fromIdOrText":"<node A text>","toIdOrText":"<node B text>","curveType":"curved","curveOffset":-20,"strokeColor":"#06b6d4"}}
+6. {"tool":"add_critique_sticky","args":{"targetIdOrText":"<node text>","note":"Concise architectural review note","severity":"info|warning|critical"}}
+7. {"tool":"trigger_flow_pulse","args":{"nodeIdOrText":"<node text>"}}
+
+Keep node text concise (max 2 short lines separated by \\n). Start emitting JSON lines immediately:`;
+}
+
+function parseJsonLinesFromChunk(bufferStr) {
+  const results = [];
+  const lines = bufferStr.split('\n');
+  for (const rawLine of lines) {
+    const trimmed = rawLine.trim();
+    if (!trimmed) continue;
+    const startIdx = trimmed.indexOf('{');
+    const endIdx = trimmed.lastIndexOf('}');
+    if (startIdx !== -1 && endIdx > startIdx) {
+      const candidate = trimmed.slice(startIdx, endIdx + 1);
+      try {
+        const parsed = JSON.parse(candidate);
+        if (parsed && typeof parsed.tool === 'string') {
+          results.push(parsed);
+        }
+      } catch {}
+    }
+  }
+  return results;
+}
+
+function spawnRealCliAgent(agentId, userPrompt, tabId, totalAgentsCount, agentIdx) {
+  const cliMeta = hub.installedClis.find(c => c.id === agentId);
+  if (!cliMeta || !cliMeta.installed || !cliMeta.binPath) {
+    const errAgent = updateAgentPresence(agentId, {
+      statusText: `CLI "${agentId}" not found on PATH`,
+      busy: false
+    });
+    broadcastSse('agent_cursor', { agent: errAgent });
+    return null;
+  }
+
+  const tab = getActiveTab(tabId);
+  const startX = 180 + agentIdx * 240;
+  const startY = 120 + (agentIdx % 2) * 80;
+  const initialAgent = updateAgentPresence(cliMeta.name, {
+    x: startX,
+    y: startY,
+    color: cliMeta.color,
+    role: cliMeta.role,
+    activeTabId: tab.id,
+    busy: true,
+    statusText: 'Thinking...'
+  });
+  broadcastSse('agent_cursor', { agent: initialAgent });
+
+  const fullPrompt = buildAgentCliPrompt(cliMeta, userPrompt, tab, totalAgentsCount, agentIdx);
+
+  let cmd = cliMeta.binPath;
+  let args = [];
+  if (cliMeta.id === 'claude') {
+    args = ['-p', fullPrompt, '--tools', ''];
+  } else if (cliMeta.id === 'codex') {
+    args = ['exec', '--skip-git-repo-check', '--ephemeral', '-s', 'read-only', fullPrompt];
+  } else if (cliMeta.id === 'gemini') {
+    args = ['-p', fullPrompt];
+  }
+
+  const proc = spawn(cmd, args, {
+    cwd: ROOT,
+    env: { ...process.env, PATH: ENV_PATH, NO_COLOR: '1' },
+    stdio: ['ignore', 'pipe', 'pipe']
+  });
+
+  const procKey = `${cliMeta.id}_${Date.now()}`;
+  hub.runningProcs.set(procKey, { proc, agentName: cliMeta.name });
+
+  // Per-agent choreographed action queue so cursor glides are smooth and readable
+  const actionQueue = [];
+  let queueRunning = false;
+  let procExited = false;
+  const executedTools = new Set();
+
+  const drainActionQueue = async () => {
+    if (queueRunning) return;
+    queueRunning = true;
+    while (actionQueue.length > 0) {
+      const item = actionQueue.shift();
+      try {
+        const toolArgs = { ...(item.args || {}), agentName: cliMeta.name, tabId: tab.id };
+        // Pre-glide cursor if target coordinates or target node are known
+        if (item.tool !== 'move_agent_cursor') {
+          const refText = toolArgs.sourceIdOrText || toolArgs.fromIdOrText || toolArgs.targetIdOrText || toolArgs.nodeIdOrText;
+          const refNode = refText ? findNodeInTab(tab, refText) : null;
+          if (refNode) {
+            const gx = refNode.x + (refNode.width || 144) / 2;
+            const gy = refNode.y + (refNode.height || 68) / 2;
+            const gliding = updateAgentPresence(cliMeta.name, {
+              x: gx,
+              y: gy,
+              busy: true,
+              statusText: `${item.tool.replace(/_/g, ' ')}...`
+            });
+            broadcastSse('agent_cursor', { agent: gliding });
+            await new Promise(r => setTimeout(r, 320));
+          }
+        }
+        executeMcpTool(item.tool, toolArgs);
+      } catch (err) {
+        // Ignore single malformed tool step and continue
+      }
+      await new Promise(r => setTimeout(r, 480));
+    }
+    queueRunning = false;
+    if (procExited && actionQueue.length === 0) {
+      const doneAgent = updateAgentPresence(cliMeta.name, {
+        busy: false,
+        statusText: 'Done ✓'
+      });
+      broadcastSse('agent_cursor', { agent: doneAgent });
+      broadcastSse('agent_status', {
+        runningCount: hub.runningProcs.size,
+        agents: Array.from(hub.agents.values())
+      });
+    }
+  };
+
+  let lineBuf = '';
+  proc.stdout.on('data', chunk => {
+    lineBuf += chunk.toString('utf8');
+    const lines = lineBuf.split('\n');
+    lineBuf = lines.pop() || '';
+    for (const line of lines) {
+      const actions = parseJsonLinesFromChunk(line);
+      for (const act of actions) {
+        const dedupeKey = JSON.stringify(act);
+        if (!executedTools.has(dedupeKey)) {
+          executedTools.add(dedupeKey);
+          actionQueue.push(act);
+          drainActionQueue();
+        }
+      }
+    }
+  });
+
+  proc.on('close', () => {
+    hub.runningProcs.delete(procKey);
+    if (lineBuf.trim()) {
+      const remaining = parseJsonLinesFromChunk(lineBuf);
+      for (const act of remaining) {
+        const dedupeKey = JSON.stringify(act);
+        if (!executedTools.has(dedupeKey)) {
+          executedTools.add(dedupeKey);
+          actionQueue.push(act);
+        }
+      }
+    }
+    procExited = true;
+    drainActionQueue();
+  });
+
+  proc.on('error', err => {
+    hub.runningProcs.delete(procKey);
+    procExited = true;
+    const errAgent = updateAgentPresence(cliMeta.name, {
+      busy: false,
+      statusText: `Error: ${err.message.slice(0, 36)}`
+    });
+    broadcastSse('agent_cursor', { agent: errAgent });
+  });
+
+  return procKey;
+}
+
+function stopAllRunningAgents() {
+  for (const [key, entry] of hub.runningProcs.entries()) {
+    try {
+      entry.proc.kill('SIGTERM');
+    } catch {}
+    hub.runningProcs.delete(key);
+    const stopped = updateAgentPresence(entry.agentName, {
+      busy: false,
+      statusText: 'Stopped'
+    });
+    broadcastSse('agent_cursor', { agent: stopped });
+  }
+  broadcastSse('agent_status', {
+    runningCount: 0,
+    agents: Array.from(hub.agents.values())
+  });
+}
+
 function handleMcpRpc(rpcReq) {
   if (!rpcReq || typeof rpcReq !== 'object') {
     return { jsonrpc: '2.0', id: null, error: { code: -32600, message: 'Invalid Request' } };
@@ -848,7 +1133,7 @@ function handleMcpRpc(rpcReq) {
   const { id, method, params } = rpcReq;
 
   if (method === 'notifications/initialized' || method === 'notifications/cancelled') {
-    return null; // Notification requires no response
+    return null;
   }
 
   try {
@@ -917,7 +1202,7 @@ function handleMcpRpc(rpcReq) {
               uri: 'excaliflow://workspace/mentions',
               name: 'Spatial @Agent Sticky Mentions',
               mimeType: 'application/json',
-              description: 'Sticky notes or nodes containing @Claude, @Antigravity, @Codex, @Grok mentions.'
+              description: 'Sticky notes or nodes containing @claude, @codex, @gemini mentions.'
             }
           ]
         }
@@ -991,7 +1276,6 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // CORS headers for local multi-agent tools & browsers
   res.setHeader?.('Access-Control-Allow-Origin', '*');
   res.setHeader?.('Access-Control-Allow-Methods', 'GET, HEAD, POST, OPTIONS');
   res.setHeader?.('Access-Control-Allow-Headers', 'Content-Type');
@@ -1011,19 +1295,23 @@ const server = http.createServer(async (req, res) => {
     });
     res.write(`event: init\ndata: ${JSON.stringify({
       workspace: hub.workspace,
-      agents: Array.from(hub.agents.values())
+      agents: Array.from(hub.agents.values()),
+      installedClis: hub.installedClis,
+      runningCount: hub.runningProcs.size
     })}\n\n`);
     hub.sseClients.add(res);
     req.on('close', () => hub.sseClients.delete(res));
     return;
   }
 
-  // 2. Live Workspace & Agent State snapshot (/api/state)
-  if (req.method === 'GET' && decodedUrl === '/api/state') {
+  // 2. Live Workspace & Installed CLI Agent State (/api/state & /api/agents)
+  if (req.method === 'GET' && (decodedUrl === '/api/state' || decodedUrl === '/api/agents')) {
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
     res.end(JSON.stringify({
       workspace: hub.workspace,
       agents: Array.from(hub.agents.values()),
+      installedClis: hub.installedClis,
+      runningCount: hub.runningProcs.size,
       mentions: extractMentions(),
       mcpTools: MCP_TOOLS.map(t => t.name)
     }));
@@ -1050,7 +1338,76 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 4. Model Context Protocol (MCP) JSON-RPC 2.0 endpoint (/mcp or /api/mcp)
+  // 4. Dispatch Real Local Agent CLIs (`claude`, `codex`, `gemini`) onto the Canvas (/api/dispatch)
+  if (req.method === 'POST' && decodedUrl === '/api/dispatch') {
+    try {
+      const data = await readJsonBody(req);
+      if (data.workspace && Array.isArray(data.workspace.tabs)) {
+        hub.workspace.tabs = data.workspace.tabs;
+        hub.workspace.activeTabId = data.workspace.activeTabId || data.workspace.tabs[0]?.id;
+      }
+      const tab = getActiveTab(data.tabId);
+      if (data.clearFirst) {
+        tab.elements = [];
+        broadcastSse('agent_action', { actionType: 'tab_clear', tabId: tab.id, workspace: hub.workspace });
+      }
+
+      let promptText = String(data.prompt || '').trim();
+      let requestedAgents = Array.isArray(data.agents) && data.agents.length > 0
+        ? data.agents.map(a => String(a).toLowerCase())
+        : [];
+
+      // If prompt was omitted or contains @mentions on canvas stickies, harvest them!
+      const mentions = extractMentions().filter(m => m.tabId === tab.id);
+      if (!promptText && mentions.length > 0) {
+        promptText = mentions.map(m => m.text).join('\n');
+        for (const m of mentions) {
+          for (const h of m.mentionedHandles) {
+            if (['claude', 'codex', 'gemini'].includes(h) && !requestedAgents.includes(h)) {
+              requestedAgents.push(h);
+            }
+          }
+        }
+      }
+
+      if (!promptText) {
+        res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ ok: false, error: 'Provide a prompt or place an @claude / @codex / @gemini sticky note on the canvas.' }));
+        return;
+      }
+
+      if (requestedAgents.length === 0) {
+        requestedAgents = hub.installedClis.filter(c => c.installed).map(c => c.id);
+      }
+
+      const spawned = [];
+      requestedAgents.forEach((agId, idx) => {
+        const key = spawnRealCliAgent(agId, promptText, tab.id, requestedAgents.length, idx);
+        if (key) spawned.push(agId);
+      });
+
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({
+        ok: true,
+        spawnedAgents: spawned,
+        runningCount: hub.runningProcs.size
+      }));
+    } catch (err) {
+      res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ ok: false, error: err.message }));
+    }
+    return;
+  }
+
+  // 5. Stop running CLI agents (/api/stop-agents)
+  if (req.method === 'POST' && decodedUrl === '/api/stop-agents') {
+    stopAllRunningAgents();
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.end(JSON.stringify({ ok: true }));
+    return;
+  }
+
+  // 6. Model Context Protocol (MCP) JSON-RPC 2.0 endpoint (/mcp or /api/mcp)
   if (req.method === 'POST' && (decodedUrl === '/mcp' || decodedUrl === '/api/mcp')) {
     try {
       const rpcReq = await readJsonBody(req);
@@ -1073,7 +1430,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 5. Static file server (only GET and HEAD allowed)
+  // 7. Static file server (only GET and HEAD allowed)
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     res.writeHead(405, { 'Content-Type': 'text/plain; charset=utf-8' });
     res.end('405 Method Not Allowed');
@@ -1126,8 +1483,6 @@ const server = http.createServer(async (req, res) => {
 
 /* -------------------------------------------------------------------------
  * CLI Stdio MCP Bridge Mode: `node server.js --mcp-stdio [--agent "Claude Code"]`
- * Forwards JSON-RPC calls to localhost:3000/mcp so multiple CLI agent processes
- * share the exact same live browser canvas, or falls back to in-process execution.
  * ------------------------------------------------------------------------- */
 function startMcpStdioBridge() {
   const argIdx = process.argv.indexOf('--agent');
@@ -1166,7 +1521,6 @@ function startMcpStdioBridge() {
     req.end();
   });
 
-  // Also try to listen on PORT in background if no hub is running yet
   server.on('error', () => {});
   server.listen(PORT, '127.0.0.1');
 
@@ -1197,15 +1551,18 @@ server.hub = hub;
 server.MCP_TOOLS = MCP_TOOLS;
 server.handleMcpRpc = handleMcpRpc;
 server.executeMcpTool = executeMcpTool;
+server.parseJsonLinesFromChunk = parseJsonLinesFromChunk;
+server.detectInstalledAgentClis = detectInstalledAgentClis;
 
 if (require.main === module) {
   if (process.argv.includes('--mcp-stdio')) {
     startMcpStdioBridge();
   } else {
     server.listen(PORT, () => {
-      console.log(`Excaliflow Studio + Multi-Agent MCP Hub running at http://localhost:${PORT}`);
-      console.log(`MCP HTTP Endpoint:  http://localhost:${PORT}/mcp`);
-      console.log(`MCP Stdio Command:  node ${path.join(ROOT, 'server.js')} --mcp-stdio --agent "Claude Code"`);
+      const installedNames = hub.installedClis.filter(c => c.installed).map(c => c.name).join(', ') || 'None';
+      console.log(`Excaliflow Studio + Multi-Agent Hub running at http://localhost:${PORT}`);
+      console.log(`Detected Local Agent CLIs: ${installedNames}`);
+      console.log(`MCP Stdio Command: node ${path.join(ROOT, 'server.js')} --mcp-stdio --agent "Claude Code"`);
     });
   }
 }

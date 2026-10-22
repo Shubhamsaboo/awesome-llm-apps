@@ -516,8 +516,11 @@ function runMockReq(method, url) {
   assert.strictEqual(app.state.tabs.length, 3, 'Restoring workspace JSON should bring back all 3 tabs');
   console.log('[PASS] 8. Multi-canvas tabs (create, switch, fork/duplicate, rename, close, Alt+1..9, localStorage & multi-tab JSON) verified');
 
-  // 9. Verify Multi-Agent MCP Server (JSON-RPC 2.0), Concurrent Agent Cursors, Author Attribution & @Mention Jam
+  // 9. Verify Real Multi-Agent CLI Orchestrator, NDJSON Stream Parser, MCP Server (JSON-RPC 2.0) & Live Agent Cursors
   assert(typeof server.handleMcpRpc === 'function', 'server.js must export handleMcpRpc for MCP JSON-RPC 2.0');
+  assert(typeof server.parseJsonLinesFromChunk === 'function', 'server.js must export parseJsonLinesFromChunk for CLI stdout streaming');
+  assert(typeof server.detectInstalledAgentClis === 'function', 'server.js must export detectInstalledAgentClis');
+
   const initRpc = server.handleMcpRpc({
     jsonrpc: '2.0',
     id: 1,
@@ -531,6 +534,16 @@ function runMockReq(method, url) {
   for (const expectedTool of ['get_workspace_state', 'move_agent_cursor', 'draw_node', 'branch_from', 'connect_nodes', 'insert_between', 'add_critique_sticky', 'trigger_flow_pulse', 'manage_canvas_tab']) {
     assert(toolNames.includes(expectedTool), `MCP tools/list must include ${expectedTool}`);
   }
+
+  // Test streaming NDJSON parser used when spawning `claude -p`, `codex exec`, and `gemini -p`
+  const streamChunks = [
+    '{"tool":"draw_node","args":{"text":"API Gateway","shapeType":"ellipse","x":120,"y":220}}\n',
+    '```json\n{"tool":"branch_from","args":{"sourceIdOrText":"API Gateway","text":"Auth Worker","direction":"right"}}\n```'
+  ].join('');
+  const parsedActions = server.parseJsonLinesFromChunk(streamChunks);
+  assert.strictEqual(parsedActions.length, 2, 'parseJsonLinesFromChunk should extract both NDJSON tool objects even with markdown fences');
+  assert.strictEqual(parsedActions[0].tool, 'draw_node');
+  assert.strictEqual(parsedActions[1].tool, 'branch_from');
 
   // Test Claude Code calling branch_from via MCP
   const branchRpc = server.handleMcpRpc({
@@ -572,7 +585,7 @@ function runMockReq(method, url) {
   assert.strictEqual(insertPayload.element.createdBy, 'Antigravity', 'MCP insert_between must stamp Antigravity attribution');
   assert.strictEqual(insertPayload.arrows.length, 2, 'MCP insert_between must split flow into 2 arrows');
 
-  // Test Grok Bot calling add_critique_sticky via MCP
+  // Test Codex calling add_critique_sticky via MCP
   const critiqueRpc = server.handleMcpRpc({
     jsonrpc: '2.0',
     id: 5,
@@ -580,34 +593,32 @@ function runMockReq(method, url) {
     params: {
       name: 'add_critique_sticky',
       arguments: {
-        agentName: 'Grok Bot',
+        agentName: 'Codex',
         targetIdOrText: 'Coder Agent',
-        note: 'Red-team check: sandbox memory cap',
+        note: 'Verify sandbox memory cap',
         severity: 'warning'
       }
     }
   });
   assert.strictEqual(critiqueRpc.result.isError, false, 'MCP add_critique_sticky should succeed');
 
-  // Test client-side live agent cursor interpolation, @mention task sticky & multi-agent jam step
+  // Test client-side: zero canned agents initially, live agent cursor interpolation, applyMcpAgentAction & @mention sticky
   app.switchCanvasTab(firstTabId);
-  app.ensureDefaultAgents();
-  assert(app.state.agents.size >= 4, 'Canvas should initialize 4 default agent collaborator personas');
+  assert.strictEqual(app.state.agents.size, 0, 'Canvas must start with 0 fake/canned agent cursors when no agent is active');
   app.upsertAgentCursor({ name: 'Codex', x: 520, y: 280, color: '#10b981', statusText: 'Wiring sandbox' }, { x: 200, y: 150 });
   app.stepAgentCursors(0.05, 1000);
   const codexCursor = app.state.agents.get('agent_codex');
   assert(codexCursor && codexCursor.x > 200, 'stepAgentCursors should smoothly interpolate agent cursor toward targetX');
 
-  const mentionSticky = app.dropAgentMentionSticky('@Claude build Redis Stream Bus');
+  const elemCountBeforeMcp = app.state.elements.length;
+  app.applyMcpAgentAction(branchPayload);
+  assert.strictEqual(app.state.elements.length, elemCountBeforeMcp + 2, 'applyMcpAgentAction should apply real MCP node + arrow onto active canvas');
+
+  const mentionSticky = app.dropAgentMentionSticky('@Claude @Codex build Redis Stream Bus');
   const mentionsBefore = app.extractSpatialMentions();
-  assert(mentionsBefore.some(m => m.elementId === mentionSticky.id && !m.resolvedByAgent), 'extractSpatialMentions should detect unresolved @Claude sticky');
+  assert(mentionsBefore.some(m => m.elementId === mentionSticky.id && !m.resolvedByAgent), 'extractSpatialMentions should detect unresolved @Claude/@Codex sticky');
 
-  const jamRes = app.runMultiAgentJamStep();
-  assert.strictEqual(jamRes.step, 'mention_resolved', 'runMultiAgentJamStep should prioritize resolving @mention sticky');
-  assert.strictEqual(jamRes.agent, 'Claude Code', '@Claude sticky should be fulfilled by Claude Code');
-  assert.strictEqual(jamRes.element.createdBy, 'Claude Code', 'Fulfilled node should carry Claude Code attribution badge');
-
-  console.log('[PASS] 9. Multi-Agent MCP Server (9 tools), live agent cursors, author attribution badges & @mention Jam verified');
+  console.log('[PASS] 9. Real Multi-Agent CLI Orchestrator, NDJSON stream parser, MCP Server (9 tools), and zero-canned live agent cursors verified');
 
   console.log('\nALL EXCALIFLOW VERIFICATION CHECKS PASSED SUCCESSFULLY!');
 })().catch(err => {

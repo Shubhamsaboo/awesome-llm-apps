@@ -829,18 +829,145 @@
       margin-left: 0;
     }
 
-    #btnAgentJam {
-      background: linear-gradient(135deg, rgba(105, 101, 219, 0.15), rgba(217, 119, 87, 0.15));
-      border: 1px solid rgba(105, 101, 219, 0.35);
+    #btnToggleAgentBar {
+      background: linear-gradient(135deg, rgba(105, 101, 219, 0.16), rgba(217, 119, 87, 0.16));
+      border: 1px solid rgba(105, 101, 219, 0.38);
       color: var(--text-primary);
       font-weight: 600;
     }
 
-    #btnAgentJam.active {
+    #btnToggleAgentBar.active,
+    #btnToggleAgentBar.running {
       background: linear-gradient(135deg, #6965db, #d97757);
       color: #ffffff;
       border-color: transparent;
       box-shadow: 0 2px 10px rgba(105, 101, 219, 0.38);
+    }
+
+    /* Multi-Agent Real CLI Command Bar (#agentPromptBar) */
+    #agentPromptBar {
+      position: fixed;
+      top: 62px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 29;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      width: min(880px, calc(100vw - 32px));
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    #agentPromptBar.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-50%) translateY(-8px);
+    }
+
+    .agent-cli-pills {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .agent-cli-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      height: 28px;
+      padding: 0 9px;
+      border-radius: 7px;
+      border: 1px solid var(--panel-border);
+      background: var(--btn-hover);
+      color: var(--text-secondary);
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.14s ease;
+    }
+
+    .agent-cli-pill .cli-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      opacity: 0.45;
+    }
+
+    .agent-cli-pill.selected {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--text-primary);
+    }
+
+    .agent-cli-pill.selected .cli-dot {
+      opacity: 1;
+      box-shadow: 0 0 6px currentColor;
+    }
+
+    .agent-cli-pill.unavailable {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    #agentPromptInput {
+      flex: 1;
+      min-width: 180px;
+      height: 30px;
+      padding: 0 11px;
+      border-radius: 7px;
+      border: 1px solid var(--panel-border);
+      background: rgba(127, 127, 127, 0.06);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      outline: none;
+    }
+
+    #agentPromptInput:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-soft);
+    }
+
+    .agent-clear-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      padding: 0 4px;
+    }
+
+    #btnDispatchAgents {
+      background: linear-gradient(135deg, #6965db, #d97757);
+      color: #ffffff;
+      font-weight: 600;
+      padding: 0 12px;
+      height: 30px;
+      border-radius: 7px;
+      white-space: nowrap;
+    }
+
+    #btnDispatchAgents:disabled {
+      opacity: 0.55;
+      cursor: wait;
+    }
+
+    #btnStopAgents {
+      display: none;
+      height: 30px;
+      padding: 0 10px;
+      border-radius: 7px;
+      font-weight: 600;
+    }
+
+    #btnStopAgents.visible {
+      display: inline-flex;
     }
 
     .agent-roster-row {
@@ -874,7 +1001,7 @@
     .agent-roster-status {
       font-size: 10.5px;
       color: var(--text-muted);
-      max-width: 145px;
+      max-width: 155px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -980,25 +1107,24 @@
       </button>
     </nav>
 
-    <!-- Right Island: Multi-Agent MCP Collab + Live Flow Pill + Theme + Export -->
+    <!-- Right Island: Multi-Agent CLI Orchestrator + Live Flow Pill + Theme + Export -->
     <div class="header-group glass-panel">
-      <button id="btnAgentJam" class="ui-btn" title="Simulate Claude Code, Antigravity, Codex &amp; Grok Collaborating Live on Canvas">⚡ Agent Jam</button>
+      <button id="btnToggleAgentBar" class="ui-btn active" title="Dispatch your local Claude Code, Codex &amp; Gemini CLIs onto the canvas (⌘K)">✨ Ask Agents</button>
       <div class="dropdown-wrap">
-        <button id="agentsMenuBtn" class="ui-btn" title="Live Multi-Agent MCP Presence &amp; Setup">
+        <button id="agentsMenuBtn" class="ui-btn" title="Live Multi-Agent MCP Presence &amp; CLI Status">
           <span id="agentAvatarStack" class="agent-avatar-stack"></span>
           <span id="agentsMenuLabel">MCP Agents</span>
-          <span id="agentsCountBadge" class="switcher-count-badge">4</span>
+          <span id="agentsCountBadge" class="switcher-count-badge">0</span>
           <span style="font-size:9px;opacity:0.65">▾</span>
         </button>
-        <div id="agentsDropdown" class="dropdown-menu glass-panel" style="min-width:305px">
+        <div id="agentsDropdown" class="dropdown-menu glass-panel" style="min-width:315px">
           <div style="padding:5px 8px 3px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);display:flex;justify-content:space-between">
-            <span>Live MCP Agent Cursors</span>
+            <span>Active Agent Cursors</span>
             <span id="mcpHubStatusBadge" style="color:#10b981">● MCP Ready</span>
           </div>
           <div id="agentRosterList"></div>
           <div class="menu-sep"></div>
           <button id="btnDropMentionSticky" class="ui-btn menu-item"><span>+ Drop @Agent Task Sticky</span><span>@mention</span></button>
-          <button id="btnStepAgentJam" class="ui-btn menu-item"><span>Run Single Multi-Agent Wave</span><span>1-Step</span></button>
           <button id="btnCopyMcpCmd" class="ui-btn menu-item"><span>Copy Claude / AGY MCP Command</span><span>stdio</span></button>
         </div>
       </div>
@@ -1028,6 +1154,36 @@
       </div>
     </div>
   </header>
+
+  <!-- Floating Multi-Agent Canvas Command Bar (Spawns real local Claude Code, Codex & Gemini CLIs) -->
+  <div id="agentPromptBar" class="glass-panel" role="region" aria-label="Multi-Agent Canvas Command Bar">
+    <div id="agentCliPills" class="agent-cli-pills">
+      <button type="button" class="agent-cli-pill selected" data-agent-cli="claude" title="Claude Code CLI (Lead Architect)">
+        <span class="cli-dot" style="background:#d97757;color:#d97757"></span>
+        <span>Claude Code</span>
+      </button>
+      <button type="button" class="agent-cli-pill selected" data-agent-cli="codex" title="OpenAI Codex CLI (Systems, Scaling &amp; Failure Critique)">
+        <span class="cli-dot" style="background:#10b981;color:#10b981"></span>
+        <span>Codex</span>
+      </button>
+      <button type="button" class="agent-cli-pill" data-agent-cli="gemini" title="Gemini CLI (Data, Observability &amp; Verification)">
+        <span class="cli-dot" style="background:#6965db;color:#6965db"></span>
+        <span>Gemini</span>
+      </button>
+    </div>
+    <input
+      id="agentPromptInput"
+      type="text"
+      placeholder="Ask selected agents to design, expand, or critique this diagram (or leave blank to execute @Agent sticky notes)..."
+      autocomplete="off"
+    />
+    <label class="agent-clear-toggle" title="Clear current canvas before agents start drawing">
+      <input type="checkbox" id="agentClearFirstCheck" />
+      <span>Fresh canvas</span>
+    </label>
+    <button type="button" id="btnDispatchAgents" class="ui-btn" title="Spawn selected local CLI agents in parallel">Run Agents ↵</button>
+    <button type="button" id="btnStopAgents" class="ui-btn danger" title="Stop running CLI agents">■ Stop</button>
+  </div>
 
   <!-- Left Properties Inspector (#leftSidebar) -->
   <aside id="leftSidebar" class="glass-panel">
@@ -4465,6 +4621,9 @@
 
     function handleKeyDown(e) {
       if (state.editingTabId) return;
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && !state.editingId) {
+        return;
+      }
       const isEditing = Boolean(state.editingId);
       if (isEditing) {
         if (e.key === 'Escape') {
@@ -4528,6 +4687,16 @@
       if (meta && key === '\\') {
         e.preventDefault?.();
         toggleSidebar();
+        return;
+      }
+      if (meta && key === 'k') {
+        e.preventDefault?.();
+        const bar = typeof document !== 'undefined' ? document.getElementById('agentPromptBar') : null;
+        if (bar) {
+          bar.classList.remove('hidden');
+          document.getElementById('btnToggleAgentBar')?.classList.add('active');
+          document.getElementById('agentPromptInput')?.focus?.();
+        }
         return;
       }
       if (meta && key === 'z') {
@@ -5384,39 +5553,10 @@
     }
 
     /* -------------------------------------------------------------------------
-     * 14c. Multi-Agent MCP Collaboration Engine, Live Cursors & Swarm Jam
+     * 14c. Real Multi-Agent CLI Orchestrator & MCP Collaboration Engine
      * ------------------------------------------------------------------------- */
-    const DEFAULT_COLLAB_AGENTS = [
-      { id: 'agent_claude_code', name: 'Claude Code', color: '#d97757', role: 'Lead Architect', x: 180, y: 140, statusText: 'Ready (MCP)' },
-      { id: 'agent_antigravity', name: 'Antigravity', color: '#6965db', role: 'Systems & Flow', x: 420, y: 135, statusText: 'Ready (MCP)' },
-      { id: 'agent_codex',       name: 'Codex',       color: '#10b981', role: 'Infra & Runtime', x: 640, y: 145, statusText: 'Ready (MCP)' },
-      { id: 'agent_grok_bot',    name: 'Grok Bot',    color: '#06b6d4', role: 'Chaos & Red-Team', x: 820, y: 155, statusText: 'Ready (MCP)' }
-    ];
-
-    let agentJamTimer = null;
-    let agentJamStepCounter = 0;
-
-    function ensureDefaultAgents() {
-      if (state.agents.size > 0) return;
-      const now = performance.now();
-      for (const preset of DEFAULT_COLLAB_AGENTS) {
-        state.agents.set(preset.id, {
-          ...preset,
-          targetX: preset.x,
-          targetY: preset.y,
-          activeTabId: state.activeTabId,
-          trail: [{ x: preset.x, y: preset.y, t: now }],
-          ripple: 0,
-          actionCount: 0,
-          lastActiveAt: Date.now()
-        });
-      }
-      renderAgentPresenceUI();
-    }
-
     function upsertAgentCursor(agentData, startFromPt = null) {
       if (!agentData || typeof agentData !== 'object') return null;
-      ensureDefaultAgents();
       const rawName = String(agentData.name || agentData.agentName || 'AI Agent').trim();
       const id = agentData.id || ('agent_' + rawName.toLowerCase().replace(/[^a-z0-9]+/g, '_'));
       const existing = state.agents.get(id);
@@ -5483,14 +5623,9 @@
       const stackEl = document.getElementById('agentAvatarStack');
       const countEl = document.getElementById('agentsCountBadge');
       const rosterEl = document.getElementById('agentRosterList');
-      const jamBtn = document.getElementById('btnAgentJam');
       const agentsArr = Array.from(state.agents.values());
 
-      if (countEl) countEl.textContent = String(agentsArr.length || 4);
-      if (jamBtn) {
-        jamBtn.classList.toggle('active', Boolean(state.agentJamActive));
-        jamBtn.textContent = state.agentJamActive ? '⚡ Jamming (Stop)' : '⚡ Agent Jam';
-      }
+      if (countEl) countEl.textContent = String(agentsArr.length);
 
       if (stackEl && typeof stackEl.appendChild === 'function') {
         stackEl.innerHTML = '';
@@ -5500,7 +5635,7 @@
           dot.className = 'agent-avatar-dot';
           dot.style.background = ag.color || '#6965db';
           dot.textContent = String(ag.name || 'A').charAt(0).toUpperCase();
-          dot.title = `${ag.name}: ${ag.statusText || 'Ready'}`;
+          dot.title = `${ag.name}: ${ag.statusText || 'Active'}`;
           stackEl.appendChild?.(dot);
         }
       }
@@ -5508,26 +5643,33 @@
       if (rosterEl && typeof rosterEl.appendChild === 'function') {
         rosterEl.innerHTML = '';
         if (Array.isArray(rosterEl.children)) rosterEl.children.length = 0;
-        for (const ag of agentsArr) {
-          const row = document.createElement('div');
-          row.className = 'agent-roster-row';
-          const left = document.createElement('div');
-          left.className = 'agent-roster-left';
-          const dot = document.createElement('span');
-          dot.className = 'agent-roster-dot';
-          dot.style.background = ag.color || '#6965db';
-          const nameSpan = document.createElement('span');
-          nameSpan.style.fontWeight = '600';
-          nameSpan.textContent = ag.name;
-          left.appendChild?.(dot);
-          left.appendChild?.(nameSpan);
+        if (agentsArr.length === 0) {
+          const empty = document.createElement('div');
+          empty.style.cssText = 'padding:8px;font-size:11.5px;color:var(--text-muted)';
+          empty.textContent = 'No agents currently drawing. Type a prompt in the Ask Agents bar or connect via MCP!';
+          rosterEl.appendChild?.(empty);
+        } else {
+          for (const ag of agentsArr) {
+            const row = document.createElement('div');
+            row.className = 'agent-roster-row';
+            const left = document.createElement('div');
+            left.className = 'agent-roster-left';
+            const dot = document.createElement('span');
+            dot.className = 'agent-roster-dot';
+            dot.style.background = ag.color || '#6965db';
+            const nameSpan = document.createElement('span');
+            nameSpan.style.fontWeight = '600';
+            nameSpan.textContent = ag.name;
+            left.appendChild?.(dot);
+            left.appendChild?.(nameSpan);
 
-          const statusSpan = document.createElement('span');
-          statusSpan.className = 'agent-roster-status';
-          statusSpan.textContent = ag.statusText || 'Ready';
-          row.appendChild?.(left);
-          row.appendChild?.(statusSpan);
-          rosterEl.appendChild?.(row);
+            const statusSpan = document.createElement('span');
+            statusSpan.className = 'agent-roster-status';
+            statusSpan.textContent = ag.statusText || 'Active';
+            row.appendChild?.(left);
+            row.appendChild?.(statusSpan);
+            rosterEl.appendChild?.(row);
+          }
         }
       }
     }
@@ -5536,7 +5678,7 @@
       const mentions = [];
       for (const el of state.elements) {
         const text = String(el.text || '');
-        const match = text.match(/@(claude|antigravity|agy|codex|grok|chatgpt|agent)/i);
+        const match = text.match(/@(claude|antigravity|agy|codex|gemini|grok|chatgpt|agent)/i);
         if (match) {
           mentions.push({
             elementId: el.id,
@@ -5561,17 +5703,17 @@
       const sticky = createElement('sticky', {
         x: Math.round(centerW.x - 95 + offset),
         y: Math.round(centerW.y - 170 + offset),
-        width: 196,
+        width: 210,
         height: 108,
         strokeColor: '#f59e0b',
         fillStyle: 'solid',
-        text: customText || '@Claude @Antigravity\nAdd Redis Cache & Rate Limiter guard'
+        text: customText || '@Claude @Codex\nAdd Redis Cache & Rate Limiter guard'
       });
       state.elements.push(sticky);
       state.selectedIds.clear();
       state.selectedIds.add(sticky.id);
       syncUIWithSelection();
-      showToast('Dropped @Agent task sticky — click "⚡ Agent Jam" or call MCP to execute!');
+      showToast('Dropped @Agent task sticky — click "Run Agents ↵" to execute with your real CLI agents!');
       return sticky;
     }
 
@@ -5582,7 +5724,13 @@
       }
 
       const actionType = payload.actionType;
-      if (actionType === 'tab_create' || actionType === 'tab_fork' || actionType === 'tab_switch' || actionType === 'tab_rename') {
+      if (
+        actionType === 'tab_create' ||
+        actionType === 'tab_fork' ||
+        actionType === 'tab_switch' ||
+        actionType === 'tab_rename' ||
+        actionType === 'tab_clear'
+      ) {
         if (payload.workspace && Array.isArray(payload.workspace.tabs)) {
           restoreWorkspaceData(payload.workspace);
           renderCanvasTabs(true);
@@ -5611,7 +5759,6 @@
         : (state.tabs.find(t => t.id === targetTabId)?.elements || state.elements);
 
       if (actionType === 'insert_between' && Array.isArray(payload.arrows) && payload.element) {
-        // Remove direct arrow between the two endpoints if present
         const uId = payload.arrows[0]?.startBinding?.elementId;
         const vId = payload.arrows[1]?.endBinding?.elementId;
         if (uId && vId) {
@@ -5642,262 +5789,103 @@
       return true;
     }
 
-    function findFreeSpotClient(prefX, prefY, w = 156, h = 70) {
-      const nodes = state.elements.filter(e => e.type !== 'arrow');
-      let cx = prefX;
-      let cy = prefY;
-      const pad = 24;
-      for (let i = 0; i < 20; i++) {
-        const hit = nodes.find(n => (
-          cx < n.x + (n.width || 144) + pad &&
-          cx + w + pad > n.x &&
-          cy < n.y + (n.height || 68) + pad &&
-          cy + h + pad > n.y
-        ));
-        if (!hit) break;
-        if (i % 2 === 0) cy = hit.y + (hit.height || 68) + 44;
-        else cx = hit.x + (hit.width || 144) + 58;
+    function setAgentsRunningUI(isRunning) {
+      state.agentJamActive = Boolean(isRunning);
+      if (typeof document === 'undefined') return;
+      const runBtn = document.getElementById('btnDispatchAgents');
+      const stopBtn = document.getElementById('btnStopAgents');
+      const toggleBtn = document.getElementById('btnToggleAgentBar');
+      if (runBtn) {
+        runBtn.disabled = Boolean(isRunning);
+        runBtn.textContent = isRunning ? 'Agents Thinking…' : 'Run Agents ↵';
       }
-      return { x: Math.round(cx), y: Math.round(cy) };
+      if (stopBtn) {
+        stopBtn.classList.toggle('visible', Boolean(isRunning));
+      }
+      if (toggleBtn) {
+        toggleBtn.classList.toggle('running', Boolean(isRunning));
+      }
     }
 
-    function runMultiAgentJamStep() {
-      ensureDefaultAgents();
-      const nodes = state.elements.filter(e => isNodeElement(e) && e.type !== 'text');
-      if (nodes.length === 0) {
-        loadTemplate('AI Agent Swarm');
-      }
-
-      // 1. Check if there is an unresolved human @mention sticky note first!
-      const unresolvedMention = state.elements.find(
-        el => !el.resolvedByAgent && /@(claude|antigravity|agy|codex|grok|chatgpt|agent)/i.test(String(el.text || ''))
-      );
-      if (unresolvedMention) {
-        const m = String(unresolvedMention.text).match(/@(claude|antigravity|agy|codex|grok|chatgpt|agent)/i);
-        const handle = m ? m[1].toLowerCase() : 'claude';
-        const agentMap = {
-          claude: { name: 'Claude Code', color: '#d97757' },
-          antigravity: { name: 'Antigravity', color: '#6965db' },
-          agy: { name: 'Antigravity', color: '#6965db' },
-          codex: { name: 'Codex', color: '#10b981' },
-          grok: { name: 'Grok Bot', color: '#06b6d4' },
-          chatgpt: { name: 'ChatGPT', color: '#14b8a6' }
-        };
-        const chosen = agentMap[handle] || agentMap.claude;
-        unresolvedMention.resolvedByAgent = true;
-
-        const cleanTask = String(unresolvedMention.text)
-          .replace(/@[a-zA-Z0-9_-]+/g, '')
-          .trim()
-          .slice(0, 34) || 'Agent Module';
-
-        const spot = findFreeSpotClient(unresolvedMention.x + 225, unresolvedMention.y, 160, 72);
-        const newNode = createElement('rectangle', {
-          x: spot.x,
-          y: spot.y,
-          width: 160,
-          height: 72,
-          text: cleanTask,
-          strokeColor: chosen.color,
-          createdBy: chosen.name,
-          authorColor: chosen.color
-        });
-        const scx = unresolvedMention.x + (unresolvedMention.width || 150) / 2;
-        const scy = unresolvedMention.y + (unresolvedMention.height || 100) / 2;
-        const ncx = newNode.x + newNode.width / 2;
-        const ncy = newNode.y + newNode.height / 2;
-        const newArrow = createElement('arrow', {
-          x: scx,
-          y: scy,
-          x2: ncx,
-          y2: ncy,
-          strokeColor: chosen.color,
-          createdBy: chosen.name,
-          startBinding: { elementId: unresolvedMention.id, focusAngle: Math.atan2(ncy - scy, ncx - scx), gap: 4 },
-          endBinding: { elementId: newNode.id, focusAngle: Math.atan2(scy - ncy, scx - ncx), gap: 4 }
-        });
-        applyMcpAgentAction({
-          actionType: 'branch_from',
-          agent: {
-            name: chosen.name,
-            color: chosen.color,
-            x: ncx,
-            y: ncy,
-            statusText: `Fulfilled @mention: "${cleanTask.split('\n')[0]}"`
-          },
-          fromPt: { x: scx, y: scy },
-          element: newNode,
-          arrow: newArrow,
-          pulse: { nodeId: unresolvedMention.id, color: chosen.color }
-        });
-        return { step: 'mention_resolved', agent: chosen.name, element: newNode };
-      }
-
-      // 2. Otherwise cycle through the 4 collaborating agents co-architecting on the canvas
-      const currentNodes = state.elements.filter(e => isNodeElement(e) && e.type !== 'sticky' && e.type !== 'text');
-      const stepIdx = agentJamStepCounter % 4;
-      agentJamStepCounter += 1;
-
-      if (stepIdx === 0) {
-        // Claude Code branches an architectural component
-        const anchor = currentNodes[0] || currentNodes[currentNodes.length - 1];
-        const scx = anchor.x + (anchor.width || 144) / 2;
-        const scy = anchor.y + (anchor.height || 68) / 2;
-        const spot = findFreeSpotClient(anchor.x + 210, anchor.y - 135, 162, 72);
-        const node = createElement('rectangle', {
-          x: spot.x,
-          y: spot.y,
-          width: 162,
-          height: 72,
-          text: 'Context Cache\nKV Store',
-          strokeColor: '#d97757',
-          createdBy: 'Claude Code',
-          authorColor: '#d97757'
-        });
-        const ncx = node.x + node.width / 2;
-        const ncy = node.y + node.height / 2;
-        const arr = createElement('arrow', {
-          x: scx, y: scy, x2: ncx, y2: ncy,
-          strokeColor: '#d97757',
-          curveOffset: -22,
-          createdBy: 'Claude Code',
-          startBinding: { elementId: anchor.id, focusAngle: Math.atan2(ncy - scy, ncx - scx), gap: 4 },
-          endBinding: { elementId: node.id, focusAngle: Math.atan2(scy - ncy, scx - ncx), gap: 4 }
-        });
-        applyMcpAgentAction({
-          actionType: 'branch_from',
-          agent: { name: 'Claude Code', color: '#d97757', x: ncx, y: ncy, statusText: 'Branched Context Cache' },
-          fromPt: { x: scx, y: scy },
-          element: node,
-          arrow: arr,
-          pulse: { nodeId: anchor.id, color: '#d97757' }
-        });
-        return { step: stepIdx, agent: 'Claude Code', element: node };
-      }
-
-      if (stepIdx === 1) {
-        // Antigravity adds a causal routing decision diamond & connects flow
-        const anchor = currentNodes[Math.min(1, currentNodes.length - 1)];
-        const scx = anchor.x + (anchor.width || 144) / 2;
-        const scy = anchor.y + (anchor.height || 68) / 2;
-        const spot = findFreeSpotClient(anchor.x + 230, anchor.y + 145, 168, 92);
-        const node = createElement('diamond', {
-          x: spot.x,
-          y: spot.y,
-          width: 168,
-          height: 92,
-          text: 'Guardrail &\nEval Router',
-          strokeColor: '#6965db',
-          createdBy: 'Antigravity',
-          authorColor: '#6965db'
-        });
-        const ncx = node.x + node.width / 2;
-        const ncy = node.y + node.height / 2;
-        const arr = createElement('arrow', {
-          x: scx, y: scy, x2: ncx, y2: ncy,
-          strokeColor: '#6965db',
-          curveOffset: 18,
-          createdBy: 'Antigravity',
-          startBinding: { elementId: anchor.id, focusAngle: Math.atan2(ncy - scy, ncx - scx), gap: 4 },
-          endBinding: { elementId: node.id, focusAngle: Math.atan2(scy - ncy, scx - ncx), gap: 4 }
-        });
-        applyMcpAgentAction({
-          actionType: 'branch_from',
-          agent: { name: 'Antigravity', color: '#6965db', x: ncx, y: ncy, statusText: 'Wired Guardrail Router' },
-          fromPt: { x: scx, y: scy },
-          element: node,
-          arrow: arr,
-          pulse: { nodeId: anchor.id, color: '#6965db' }
-        });
-        return { step: stepIdx, agent: 'Antigravity', element: node };
-      }
-
-      if (stepIdx === 2) {
-        // Codex branches an execution sandbox / telemetry sink and connects to final node
-        const source = currentNodes[currentNodes.length - 1];
-        const target = currentNodes[Math.max(0, currentNodes.length - 2)];
-        const scx = source.x + (source.width || 144) / 2;
-        const scy = source.y + (source.height || 68) / 2;
-        const tcx = target.x + (target.width || 144) / 2;
-        const tcy = target.y + (target.height || 68) / 2;
-        const arr = createElement('arrow', {
-          x: scx, y: scy, x2: tcx, y2: tcy,
-          strokeColor: '#10b981',
-          curveType: 'curved',
-          curveOffset: -26,
-          createdBy: 'Codex',
-          startBinding: { elementId: source.id, focusAngle: Math.atan2(tcy - scy, tcx - scx), gap: 4 },
-          endBinding: { elementId: target.id, focusAngle: Math.atan2(scy - tcy, scx - tcx), gap: 4 }
-        });
-        applyMcpAgentAction({
-          actionType: 'connect_nodes',
-          agent: { name: 'Codex', color: '#10b981', x: tcx, y: tcy, statusText: 'Connected Feedback Loop' },
-          fromPt: { x: scx, y: scy },
-          arrow: arr,
-          pulse: { nodeId: source.id, color: '#10b981' }
-        });
-        return { step: stepIdx, agent: 'Codex', arrow: arr };
-      }
-
-      // Step 3: Grok Bot drops a red-team review sticky & triggers a multi-node pulse burst
-      const target = currentNodes[Math.floor(Math.random() * currentNodes.length)] || currentNodes[0];
-      const spot = findFreeSpotClient(target.x + 20, target.y - 128, 182, 98);
-      const sticky = createElement('sticky', {
-        x: spot.x,
-        y: spot.y,
-        width: 182,
-        height: 98,
-        strokeColor: '#06b6d4',
-        fillStyle: 'solid',
-        text: '⚡ Red-Team Check:\n latency < 45ms p99\nverified under burst',
-        createdBy: 'Grok Bot',
-        authorColor: '#06b6d4'
+    function getSelectedCliAgents() {
+      if (typeof document === 'undefined') return ['claude', 'codex'];
+      const pills = document.querySelectorAll('#agentCliPills .agent-cli-pill.selected:not(.unavailable)');
+      const list = [];
+      pills.forEach(p => {
+        const key = p.getAttribute('data-agent-cli');
+        if (key) list.push(key);
       });
-      applyMcpAgentAction({
-        actionType: 'add_critique_sticky',
-        agent: {
-          name: 'Grok Bot',
-          color: '#06b6d4',
-          x: sticky.x + sticky.width / 2,
-          y: sticky.y + sticky.height / 2,
-          statusText: 'Added p99 latency audit'
-        },
-        fromPt: { x: target.x + (target.width || 144) / 2, y: target.y + (target.height || 68) / 2 },
-        element: sticky,
-        pulse: { nodeId: target.id, color: '#06b6d4' }
-      });
-      return { step: stepIdx, agent: 'Grok Bot', element: sticky };
+      return list;
     }
 
-    function toggleMultiAgentJam(forceState) {
-      const next = typeof forceState === 'boolean' ? forceState : !state.agentJamActive;
-      state.agentJamActive = next;
-      clearInterval(agentJamTimer);
-      renderAgentPresenceUI();
+    async function dispatchRealAgents(customPrompt = null, customAgents = null, clearFirst = null) {
+      if (typeof fetch !== 'function') return { ok: false, error: 'Fetch unavailable' };
+      const inputEl = typeof document !== 'undefined' ? document.getElementById('agentPromptInput') : null;
+      const clearEl = typeof document !== 'undefined' ? document.getElementById('agentClearFirstCheck') : null;
 
-      if (state.agentJamActive) {
-        showToast('⚡ Multi-Agent Jam Live: Claude Code, Antigravity, Codex & Grok collaborating!');
-        runMultiAgentJamStep();
-        agentJamTimer = setInterval(() => {
-          if (!state.agentJamActive) {
-            clearInterval(agentJamTimer);
-            return;
-          }
-          // Every tick, also glide other idle agents subtly so all 4 cursors feel alive
-          for (const ag of state.agents.values()) {
-            if (Math.random() < 0.45) {
-              const jitterX = (Math.random() - 0.5) * 90;
-              const jitterY = (Math.random() - 0.5) * 65;
-              ag.targetX = Math.max(80, Math.min(920, (ag.targetX || ag.x) + jitterX));
-              ag.targetY = Math.max(90, Math.min(460, (ag.targetY || ag.y) + jitterY));
-            }
-          }
-          runMultiAgentJamStep();
-        }, 1650);
-      } else {
-        showToast('Paused Multi-Agent Jam');
+      let prompt = customPrompt !== null ? String(customPrompt).trim() : String(inputEl?.value || '').trim();
+      const agents = Array.isArray(customAgents) && customAgents.length > 0 ? customAgents : getSelectedCliAgents();
+      const shouldClear = clearFirst !== null ? Boolean(clearFirst) : Boolean(clearEl?.checked);
+
+      // If prompt is empty, check if there are @Agent sticky notes on the canvas
+      if (!prompt) {
+        const mentions = extractSpatialMentions();
+        if (mentions.length > 0) {
+          prompt = mentions.map(m => m.text).join(' | ');
+        }
       }
-      return state.agentJamActive;
+
+      if (!prompt) {
+        showToast('Type an architecture prompt or drop an @Agent sticky note on the canvas first!');
+        inputEl?.focus?.();
+        return { ok: false, error: 'Empty prompt' };
+      }
+
+      if (agents.length === 0) {
+        showToast('Select at least one CLI agent (Claude Code, Codex, or Gemini)');
+        return { ok: false, error: 'No agents selected' };
+      }
+
+      // Sync latest local canvas state to server before dispatching CLI agents
+      syncWorkspaceToMcpServer();
+      setAgentsRunningUI(true);
+      showToast(`🚀 Spawning real ${agents.join(' + ')} CLI processes on your canvas...`);
+
+      try {
+        const res = await fetch('/api/dispatch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt,
+            agents,
+            clearFirst: shouldClear
+          })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) {
+          setAgentsRunningUI(false);
+          showToast(data.error || 'Failed to dispatch CLI agents');
+          return data;
+        }
+        return data;
+      } catch (err) {
+        setAgentsRunningUI(false);
+        showToast('Could not reach local Excaliflow server (/api/dispatch)');
+        return { ok: false, error: String(err.message || err) };
+      }
+    }
+
+    async function stopRealAgents() {
+      if (typeof fetch !== 'function') return;
+      try {
+        await fetch('/api/stop-agents', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: '{}'
+        });
+      } catch {}
+      setAgentsRunningUI(false);
+      showToast('Stopped running CLI agents');
     }
 
     function connectMcpEventStream() {
@@ -5909,12 +5897,27 @@
           state.mcpConnected = true;
           const badge = document.getElementById('mcpHubStatusBadge');
           if (badge) badge.textContent = '● MCP Live (SSE)';
+          syncWorkspaceToMcpServer();
         });
         es.addEventListener('init', ev => {
           try {
             const data = JSON.parse(ev.data);
             if (Array.isArray(data.agents)) {
               for (const ag of data.agents) upsertAgentCursor(ag);
+            }
+            if (Array.isArray(data.installedClis) && typeof document !== 'undefined') {
+              for (const cliInfo of data.installedClis) {
+                const key = cliInfo.id || cliInfo.key;
+                const isAvail = Boolean(cliInfo.installed ?? cliInfo.available);
+                const pill = document.querySelector(`#agentCliPills [data-agent-cli="${key}"]`);
+                if (pill) {
+                  pill.classList.toggle('unavailable', !isAvail);
+                  if (!isAvail) {
+                    pill.classList.remove('selected');
+                    pill.title = `${cliInfo.name} CLI not found in PATH`;
+                  }
+                }
+              }
             }
           } catch {}
         });
@@ -5928,6 +5931,29 @@
           try {
             const data = JSON.parse(ev.data);
             applyMcpAgentAction(data);
+          } catch {}
+        });
+        es.addEventListener('agent_removed', ev => {
+          try {
+            const data = JSON.parse(ev.data);
+            if (data.id) {
+              state.agents.delete(data.id);
+              renderAgentPresenceUI();
+            }
+          } catch {}
+        });
+        es.addEventListener('agent_status', ev => {
+          try {
+            const data = JSON.parse(ev.data);
+            if (Array.isArray(data.agents)) {
+              for (const ag of data.agents) upsertAgentCursor(ag);
+            }
+            if (data.runningCount === 0 || data.status === 'finished' || data.status === 'stopped' || data.status === 'error') {
+              setTimeout(() => {
+                setAgentsRunningUI(false);
+                fitToScreen();
+              }, 600);
+            }
           } catch {}
         });
       } catch {}
@@ -6334,17 +6360,38 @@
         const wasOpen = menu?.classList.contains('open');
         closeAllDropdowns();
         if (!wasOpen) {
-          ensureDefaultAgents();
           renderAgentPresenceUI();
           menu?.classList.add('open');
         }
       });
-      document.getElementById('btnAgentJam')?.addEventListener('click', () => toggleMultiAgentJam());
-      document.getElementById('btnDropMentionSticky')?.addEventListener('click', () => dropAgentMentionSticky());
-      document.getElementById('btnStepAgentJam')?.addEventListener('click', () => {
-        closeAllDropdowns();
-        runMultiAgentJamStep();
+      document.getElementById('btnToggleAgentBar')?.addEventListener('click', () => {
+        const bar = document.getElementById('agentPromptBar');
+        const btn = document.getElementById('btnToggleAgentBar');
+        if (!bar) return;
+        const hidden = bar.classList.toggle('hidden');
+        btn?.classList.toggle('active', !hidden);
+        if (!hidden) {
+          document.getElementById('agentPromptInput')?.focus?.();
+        }
       });
+      document.querySelectorAll('#agentCliPills .agent-cli-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+          if (pill.classList.contains('unavailable')) return;
+          pill.classList.toggle('selected');
+        });
+      });
+      document.getElementById('agentPromptInput')?.addEventListener('keydown', e => {
+        e.stopPropagation();
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          dispatchRealAgents();
+        } else if (e.key === 'Escape') {
+          document.getElementById('agentPromptInput')?.blur?.();
+        }
+      });
+      document.getElementById('btnDispatchAgents')?.addEventListener('click', () => dispatchRealAgents());
+      document.getElementById('btnStopAgents')?.addEventListener('click', () => stopRealAgents());
+      document.getElementById('btnDropMentionSticky')?.addEventListener('click', () => dropAgentMentionSticky());
       document.getElementById('btnCopyMcpCmd')?.addEventListener('click', () => {
         closeAllDropdowns();
         const cmd = 'claude mcp add excaliflow -- node server.js --mcp-stdio --agent "Claude Code"';
@@ -6511,7 +6558,7 @@
         ensureInitialTab('AI Agent Swarm');
         saveWorkspaceToStorage();
       }
-      ensureDefaultAgents();
+      renderAgentPresenceUI();
       connectMcpEventStream();
       updateHeaderButtons();
 
@@ -6608,14 +6655,13 @@
         loadWorkspaceFromStorage,
         serializeWorkspace,
         restoreWorkspaceData,
-        ensureDefaultAgents,
         upsertAgentCursor,
         stepAgentCursors,
         applyMcpAgentAction,
         extractSpatialMentions,
         dropAgentMentionSticky,
-        runMultiAgentJamStep,
-        toggleMultiAgentJam
+        dispatchRealAgents,
+        stopRealAgents
       });
       window.addEventListener('DOMContentLoaded', initStudioDOM);
     }
