@@ -72,15 +72,18 @@ function findBinaryPath(binName) {
 }
 
 function detectInstalledAgentClis() {
+  const agyPath = findBinaryPath('agy');
   const candidates = [
-    { id: 'claude', name: 'Claude Code', bin: 'claude', color: '#d97757', role: 'Core Architecture & Primary Flow' },
-    { id: 'codex',  name: 'Codex',       bin: 'codex',  color: '#10b981', role: 'Infra, Workers, Queues & Storage' },
-    { id: 'gemini', name: 'Gemini',      bin: 'gemini', color: '#6965db', role: 'Edge Cases, Routing & Critique' }
+    { id: 'claude', name: 'Claude Code', bin: 'claude', fallbackBin: agyPath, fallbackModel: 'Claude Sonnet 5.5 (Low)', color: '#d97757', role: 'Core Architecture & Primary Flow' },
+    { id: 'codex',  name: 'Codex',       bin: 'codex',  fallbackBin: agyPath, fallbackModel: 'GPT-OSS 120B (Medium)',     color: '#10b981', role: 'Infra, Workers, Queues & Storage' },
+    { id: 'gemini', name: 'Gemini',      bin: 'gemini', fallbackBin: agyPath, fallbackModel: 'Gemini 3.8 Flash (Low)',  color: '#6965db', role: 'Edge Cases, Routing & Critique' }
   ];
   return candidates.map(c => {
-    const binPath = findBinaryPath(c.bin);
+    const primaryPath = findBinaryPath(c.bin);
+    const binPath = primaryPath || c.fallbackBin;
     return {
       ...c,
+      primaryPath,
       binPath,
       installed: Boolean(binPath)
     };
@@ -903,7 +906,7 @@ function executeMcpTool(toolName, args = {}) {
 }
 
 /* -------------------------------------------------------------------------
- * Real Local CLI Agent Orchestrator (Spawns `claude`, `codex`, `gemini`)
+ * Real Local CLI Agent Orchestrator (Spawns `claude`, `codex`, `gemini` / `agy`)
  * ------------------------------------------------------------------------- */
 function buildAgentCliPrompt(agentInfo, userPrompt, tab, totalAgentsCount, agentIdx) {
   const nodesSummary = (tab.elements || [])
@@ -931,15 +934,16 @@ ${userPrompt}
 
 IMPORTANT OUTPUT FORMAT:
 Output ONLY raw newline-delimited JSON objects (1 JSON object per line, NO markdown code fences, NO prose explanations).
-Emit between 3 and 7 JSON lines in sequence to move your cursor and build/annotate the diagram.
-Each line MUST be a valid JSON object with {"tool": "<tool_name>", "args": { ... }} from this list:
-1. {"tool":"move_agent_cursor","args":{"x":220,"y":180,"statusText":"Analyzing flow..."}}
-2. {"tool":"draw_node","args":{"type":"rectangle|ellipse|diamond|sticky","text":"Short Title\\nSubtitle","x":100,"y":220,"strokeColor":"#0070f3|#7928ca|#10b981|#f59e0b|#ef4444|#06b6d4"}}
-3. {"tool":"branch_from","args":{"sourceIdOrText":"<existing or newly drawn node text>","text":"Service Name\\nDetail","type":"rectangle|ellipse|diamond","direction":"right|bottom|top|left","strokeColor":"#10b981"}}
-4. {"tool":"insert_between","args":{"fromIdOrText":"<node A text>","toIdOrText":"<node B text>","text":"Intermediary\\nGuard/Cache","type":"diamond|rectangle","strokeColor":"#7928ca"}}
-5. {"tool":"connect_nodes","args":{"fromIdOrText":"<node A text>","toIdOrText":"<node B text>","curveType":"curved","curveOffset":-20,"strokeColor":"#06b6d4"}}
-6. {"tool":"add_critique_sticky","args":{"targetIdOrText":"<node text>","note":"Concise architectural review note","severity":"info|warning|critical"}}
-7. {"tool":"trigger_flow_pulse","args":{"nodeIdOrText":"<node text>"}}
+Emit between 4 and 7 JSON lines in sequence to move your cursor and build/annotate the diagram.
+Every line MUST be a single JSON object with keys "tool" (string) and "args" (object).
+Supported tools and their args fields:
+- tool="move_agent_cursor" -> args: { x: number, y: number, statusText: string }
+- tool="draw_node" -> args: { type: "rectangle"|"ellipse"|"diamond"|"sticky", text: "Line 1\\nLine 2", x: number, y: number, strokeColor: "#0070f3"|"#7928ca"|"#10b981"|"#f59e0b"|"#ef4444"|"#06b6d4" }
+- tool="branch_from" -> args: { sourceIdOrText: string, text: "Line 1\\nLine 2", type: "rectangle"|"ellipse"|"diamond", direction: "right"|"bottom"|"top"|"left", strokeColor: string }
+- tool="insert_between" -> args: { fromIdOrText: string, toIdOrText: string, text: "Line 1\\nLine 2", type: "diamond"|"rectangle", strokeColor: string }
+- tool="connect_nodes" -> args: { fromIdOrText: string, toIdOrText: string, curveType: "curved", curveOffset: number, strokeColor: string }
+- tool="add_critique_sticky" -> args: { targetIdOrText: string, note: string, severity: "info"|"warning"|"critical" }
+- tool="trigger_flow_pulse" -> args: { nodeIdOrText: string }
 
 Keep node text concise (max 2 short lines separated by \\n). Start emitting JSON lines immediately:`;
 }
@@ -950,19 +954,61 @@ function parseJsonLinesFromChunk(bufferStr) {
   for (const rawLine of lines) {
     const trimmed = rawLine.trim();
     if (!trimmed) continue;
+    // Ignore prompt instruction lines if a CLI echoes the prompt
+    if (trimmed.startsWith('- tool=') || trimmed.startsWith('Every line MUST')) continue;
     const startIdx = trimmed.indexOf('{');
     const endIdx = trimmed.lastIndexOf('}');
     if (startIdx !== -1 && endIdx > startIdx) {
       const candidate = trimmed.slice(startIdx, endIdx + 1);
       try {
         const parsed = JSON.parse(candidate);
-        if (parsed && typeof parsed.tool === 'string') {
+        if (parsed && typeof parsed.tool === 'string' && parsed.args && typeof parsed.args === 'object') {
           results.push(parsed);
         }
       } catch {}
     }
   }
   return results;
+}
+
+function resolveCliCommandAndArgs(cliMeta, fullPrompt, useFallback = false) {
+  // Use `agy` with the matching model for `gemini` and `claude` when standalone OAuth is unconfigured/expired,
+  // or when `useFallback` is requested.
+  if (useFallback && cliMeta.fallbackBin) {
+    return {
+      cmd: cliMeta.fallbackBin,
+      args: ['-p', fullPrompt, '--model', cliMeta.fallbackModel, '--disable-slash-commands'],
+      isCodexStdout: false
+    };
+  }
+  if (cliMeta.id === 'gemini') {
+    if (cliMeta.fallbackBin) {
+      return {
+        cmd: cliMeta.fallbackBin,
+        args: ['-p', fullPrompt, '--model', 'Gemini 3.8 Flash (Low)', '--disable-slash-commands'],
+        isCodexStdout: false
+      };
+    }
+    return { cmd: cliMeta.binPath, args: ['-p', fullPrompt], isCodexStdout: false };
+  }
+  if (cliMeta.id === 'claude') {
+    if (cliMeta.fallbackBin) {
+      return {
+        cmd: cliMeta.fallbackBin,
+        args: ['-p', fullPrompt, '--model', 'Claude Sonnet 5.5 (Low)', '--disable-slash-commands'],
+        isCodexStdout: false
+      };
+    }
+    return { cmd: cliMeta.binPath, args: ['-p', fullPrompt, '--tools', ''], isCodexStdout: false };
+  }
+  if (cliMeta.id === 'codex') {
+    return {
+      cmd: cliMeta.binPath,
+      args: ['exec', '--skip-git-repo-check', '--ephemeral', '-s', 'read-only', '--color', 'never', fullPrompt],
+      isCodexStdout: true
+    };
+  }
+  return { cmd: cliMeta.binPath, args: ['-p', fullPrompt], isCodexStdout: false };
 }
 
 function spawnRealCliAgent(agentId, userPrompt, tabId, totalAgentsCount, agentIdx) {
@@ -977,8 +1023,8 @@ function spawnRealCliAgent(agentId, userPrompt, tabId, totalAgentsCount, agentId
   }
 
   const tab = getActiveTab(tabId);
-  const startX = 180 + agentIdx * 240;
-  const startY = 120 + (agentIdx % 2) * 80;
+  const startX = 160 + agentIdx * 250;
+  const startY = 110 + (agentIdx % 2) * 90;
   const initialAgent = updateAgentPresence(cliMeta.name, {
     x: startX,
     y: startY,
@@ -986,37 +1032,57 @@ function spawnRealCliAgent(agentId, userPrompt, tabId, totalAgentsCount, agentId
     role: cliMeta.role,
     activeTabId: tab.id,
     busy: true,
-    statusText: 'Thinking...'
+    statusText: 'Inspecting canvas...'
   });
   broadcastSse('agent_cursor', { agent: initialAgent });
 
   const fullPrompt = buildAgentCliPrompt(cliMeta, userPrompt, tab, totalAgentsCount, agentIdx);
 
-  let cmd = cliMeta.binPath;
-  let args = [];
-  if (cliMeta.id === 'claude') {
-    args = ['-p', fullPrompt, '--tools', ''];
-  } else if (cliMeta.id === 'codex') {
-    args = ['exec', '--skip-git-repo-check', '--ephemeral', '-s', 'read-only', fullPrompt];
-  } else if (cliMeta.id === 'gemini') {
-    args = ['-p', fullPrompt];
-  }
-
-  const proc = spawn(cmd, args, {
-    cwd: ROOT,
-    env: { ...process.env, PATH: ENV_PATH, NO_COLOR: '1' },
-    stdio: ['ignore', 'pipe', 'pipe']
-  });
-
-  const procKey = `${cliMeta.id}_${Date.now()}`;
-  hub.runningProcs.set(procKey, { proc, agentName: cliMeta.name });
-
-  // Per-agent choreographed action queue so cursor glides are smooth and readable
+  // Per-agent choreographed action queue so cursor glides are smooth and visible
   const actionQueue = [];
   let queueRunning = false;
   let procExited = false;
+  let executedCount = 0;
   const executedTools = new Set();
 
+  // While the CLI LLM is thinking (before first JSON action arrives), smoothly glide the cursor
+  // across existing canvas nodes so the user sees the agent actively scanning the architecture.
+  let patrolIdx = agentIdx;
+  const patrolTimer = setInterval(() => {
+    if (procExited || actionQueue.length > 0 || executedCount > 0) return;
+    const nodes = (tab.elements || []).filter(e => e.type !== 'arrow');
+    if (nodes.length > 0) {
+      const target = nodes[patrolIdx % nodes.length];
+      patrolIdx += 1;
+      const gx = target.x + (target.width || 144) / 2 + ((agentIdx - 0.5) * 28);
+      const gy = target.y + (target.height || 68) / 2 - 18;
+      const label = String(target.text || 'node').split('\n')[0].slice(0, 20);
+      const scanning = updateAgentPresence(cliMeta.name, {
+        x: gx,
+        y: gy,
+        busy: true,
+        statusText: `Scanning "${label}"...`
+      });
+      broadcastSse('agent_cursor', { agent: scanning });
+    } else {
+      const waypoints = [
+        { x: 220, y: 180, label: 'Planning entry node...' },
+        { x: 460, y: 220, label: 'Designing core flow...' },
+        { x: 680, y: 190, label: 'Mapping connections...' }
+      ];
+      const wp = waypoints[patrolIdx % waypoints.length];
+      patrolIdx += 1;
+      const scanning = updateAgentPresence(cliMeta.name, {
+        x: wp.x,
+        y: wp.y + agentIdx * 50,
+        busy: true,
+        statusText: wp.label
+      });
+      broadcastSse('agent_cursor', { agent: scanning });
+    }
+  }, 850);
+
+  let activeProcKey = null;
   const drainActionQueue = async () => {
     if (queueRunning) return;
     queueRunning = true;
@@ -1024,34 +1090,43 @@ function spawnRealCliAgent(agentId, userPrompt, tabId, totalAgentsCount, agentId
       const item = actionQueue.shift();
       try {
         const toolArgs = { ...(item.args || {}), agentName: cliMeta.name, tabId: tab.id };
-        // Pre-glide cursor if target coordinates or target node are known
+        // Step 1: Glide the agent's cursor to the target node or coordinates BEFORE drawing
         if (item.tool !== 'move_agent_cursor') {
           const refText = toolArgs.sourceIdOrText || toolArgs.fromIdOrText || toolArgs.targetIdOrText || toolArgs.nodeIdOrText;
           const refNode = refText ? findNodeInTab(tab, refText) : null;
-          if (refNode) {
-            const gx = refNode.x + (refNode.width || 144) / 2;
-            const gy = refNode.y + (refNode.height || 68) / 2;
+          const gx = refNode
+            ? refNode.x + (refNode.width || 144) / 2
+            : (Number.isFinite(Number(toolArgs.x)) ? Number(toolArgs.x) + 72 : null);
+          const gy = refNode
+            ? refNode.y + (refNode.height || 68) / 2
+            : (Number.isFinite(Number(toolArgs.y)) ? Number(toolArgs.y) + 34 : null);
+          if (gx !== null && gy !== null) {
+            const previewLabel = String(toolArgs.text || toolArgs.note || refText || item.tool).split('\n')[0].slice(0, 24);
             const gliding = updateAgentPresence(cliMeta.name, {
               x: gx,
               y: gy,
               busy: true,
-              statusText: `${item.tool.replace(/_/g, ' ')}...`
+              statusText: `Drawing "${previewLabel}"...`
             });
             broadcastSse('agent_cursor', { agent: gliding });
-            await new Promise(r => setTimeout(r, 320));
+            await new Promise(r => setTimeout(r, 420));
           }
         }
+        // Step 2: Execute the MCP canvas mutation
         executeMcpTool(item.tool, toolArgs);
+        executedCount += 1;
       } catch (err) {
         // Ignore single malformed tool step and continue
       }
-      await new Promise(r => setTimeout(r, 480));
+      await new Promise(r => setTimeout(r, 520));
     }
     queueRunning = false;
     if (procExited && actionQueue.length === 0) {
+      clearInterval(patrolTimer);
+      if (activeProcKey) hub.runningProcs.delete(activeProcKey);
       const doneAgent = updateAgentPresence(cliMeta.name, {
         busy: false,
-        statusText: 'Done ✓'
+        statusText: executedCount > 0 ? `Done (${executedCount} actions) ✓` : 'No changes emitted'
       });
       broadcastSse('agent_cursor', { agent: doneAgent });
       broadcastSse('agent_status', {
@@ -1061,12 +1136,27 @@ function spawnRealCliAgent(agentId, userPrompt, tabId, totalAgentsCount, agentId
     }
   };
 
-  let lineBuf = '';
-  proc.stdout.on('data', chunk => {
-    lineBuf += chunk.toString('utf8');
-    const lines = lineBuf.split('\n');
-    lineBuf = lines.pop() || '';
-    for (const line of lines) {
+  const launchProcess = (useFallback = false) => {
+    const { cmd, args, isCodexStdout } = resolveCliCommandAndArgs(cliMeta, fullPrompt, useFallback);
+    const proc = spawn(cmd, args, {
+      cwd: ROOT,
+      env: { ...process.env, PATH: ENV_PATH, NO_COLOR: '1' },
+      stdio: ['ignore', 'pipe', 'pipe']
+    });
+
+    const procKey = `${cliMeta.id}_${Date.now()}`;
+    activeProcKey = procKey;
+    hub.runningProcs.set(procKey, { proc, agentName: cliMeta.name, patrolTimer });
+
+    let lineBuf = '';
+    let codexMarkerSeen = !isCodexStdout;
+    const enqueueParsedLine = (line) => {
+      if (!codexMarkerSeen) {
+        if (line.trim() === 'codex') {
+          codexMarkerSeen = true;
+        }
+        return;
+      }
       const actions = parseJsonLinesFromChunk(line);
       for (const act of actions) {
         const dedupeKey = JSON.stringify(act);
@@ -1076,40 +1166,55 @@ function spawnRealCliAgent(agentId, userPrompt, tabId, totalAgentsCount, agentId
           drainActionQueue();
         }
       }
-    }
-  });
+    };
 
-  proc.on('close', () => {
-    hub.runningProcs.delete(procKey);
-    if (lineBuf.trim()) {
-      const remaining = parseJsonLinesFromChunk(lineBuf);
-      for (const act of remaining) {
-        const dedupeKey = JSON.stringify(act);
-        if (!executedTools.has(dedupeKey)) {
-          executedTools.add(dedupeKey);
-          actionQueue.push(act);
-        }
+    proc.stdout.on('data', chunk => {
+      lineBuf += chunk.toString('utf8');
+      const lines = lineBuf.split('\n');
+      lineBuf = lines.pop() || '';
+      for (const line of lines) {
+        enqueueParsedLine(line);
       }
-    }
-    procExited = true;
-    drainActionQueue();
-  });
-
-  proc.on('error', err => {
-    hub.runningProcs.delete(procKey);
-    procExited = true;
-    const errAgent = updateAgentPresence(cliMeta.name, {
-      busy: false,
-      statusText: `Error: ${err.message.slice(0, 36)}`
     });
-    broadcastSse('agent_cursor', { agent: errAgent });
-  });
 
-  return procKey;
+    proc.on('close', (code) => {
+      if (lineBuf.trim()) {
+        enqueueParsedLine(lineBuf);
+      }
+      // If primary CLI exited with non-zero and 0 actions, automatically retry with fallback CLI
+      if (code !== 0 && executedTools.size === 0 && !useFallback && cliMeta.fallbackBin) {
+        hub.runningProcs.delete(procKey);
+        launchProcess(true);
+        return;
+      }
+      procExited = true;
+      drainActionQueue();
+    });
+
+    proc.on('error', err => {
+      hub.runningProcs.delete(procKey);
+      if (!useFallback && cliMeta.fallbackBin) {
+        launchProcess(true);
+        return;
+      }
+      clearInterval(patrolTimer);
+      procExited = true;
+      const errAgent = updateAgentPresence(cliMeta.name, {
+        busy: false,
+        statusText: `Error: ${err.message.slice(0, 36)}`
+      });
+      broadcastSse('agent_cursor', { agent: errAgent });
+    });
+
+    return procKey;
+  };
+
+  return launchProcess(false);
 }
 
 function stopAllRunningAgents() {
   for (const [key, entry] of hub.runningProcs.entries()) {
+    if (entry.patrolTimer) clearInterval(entry.patrolTimer);
     try {
       entry.proc.kill('SIGTERM');
     } catch {}
