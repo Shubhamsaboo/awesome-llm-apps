@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "mcp": "node server.js --mcp-stdio",
     "test": "node verify.js"
   },
   "engines": {
