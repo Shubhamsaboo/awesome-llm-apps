@@ -96,6 +96,47 @@ def tool_result_text(result: Any) -> str:
     return limit_text("\n\n".join(parts) or "(no text result)")
 
 
+JSON_TYPE_CHECKS: dict[str, Any] = {
+    "string": lambda value: isinstance(value, str),
+    "number": lambda value: isinstance(value, (int, float)) and not isinstance(value, bool),
+    "integer": lambda value: isinstance(value, int) and not isinstance(value, bool),
+    "boolean": lambda value: isinstance(value, bool),
+}
+
+
+def validate_tool_arguments(
+    name: str, arguments: dict[str, Any], schema: dict[str, Any]
+) -> str | None:
+    """Check arguments against the tool's inputSchema before dispatch.
+
+    Returns an error message when the arguments do not satisfy the schema,
+    or None when they are safe to send to the MCP server.
+    """
+    properties = schema.get("properties") or {}
+    required = schema.get("required") or []
+
+    missing = [key for key in required if key not in arguments]
+    if missing:
+        return f"tool {name!r} is missing required argument(s): {', '.join(missing)}"
+
+    if schema.get("additionalProperties") is False:
+        unknown = [key for key in arguments if key not in properties]
+        if unknown:
+            return f"tool {name!r} does not accept argument(s): {', '.join(unknown)}"
+
+    for key, value in arguments.items():
+        expected = (properties.get(key) or {}).get("type")
+        if expected == "object":
+            if not isinstance(value, dict):
+                return f"argument {key!r} of tool {name!r} must be an object"
+        elif expected == "array":
+            if not isinstance(value, list):
+                return f"argument {key!r} of tool {name!r} must be an array"
+        elif expected in JSON_TYPE_CHECKS and not JSON_TYPE_CHECKS[expected](value):
+            return f"argument {key!r} of tool {name!r} must be of type {expected}"
+    return None
+
+
 def select_tools(tools: list[Any], selected_names: list[str] | None) -> list[Any]:
     """Return all discovered tools or a validated caller-selected subset."""
     if not selected_names:
@@ -142,6 +183,9 @@ async def run_bridge(
                 raise ValueError("The MCP server did not expose any selected tools.")
 
             tool_names = {tool.name for tool in exposed}
+            tool_schemas = {
+                tool.name: (getattr(tool, "inputSchema", None) or {}) for tool in exposed
+            }
             print("[tools] " + ", ".join(sorted(tool_names)))
             print("[convert] MCP inputSchema -> OpenAI function parameters")
             messages: list[dict[str, Any]] = [
@@ -177,7 +221,7 @@ async def run_bridge(
                     for tool_call in tool_calls:
                         requested_calls += 1
                         name = tool_call.function.name
-                        raw_arguments = tool_call.function.arguments or "{}"
+                        raw_arguments = (tool_call.function.arguments or "").strip()
                         print(
                             f"[openai -> mcp] {name} {limit_text(raw_arguments, MAX_TRACE_CHARS)}"
                         )
@@ -188,21 +232,29 @@ async def run_bridge(
                             result_text = f"Error: unknown MCP tool {name!r}."
                         else:
                             try:
-                                arguments = json.loads(raw_arguments)
+                                arguments = json.loads(raw_arguments) if raw_arguments else {}
                                 if not isinstance(arguments, dict):
                                     raise ValueError("tool arguments must be a JSON object")
                             except (json.JSONDecodeError, ValueError) as exc:
                                 result_text = f"Error: invalid tool arguments: {exc}"
                             else:
-                                try:
-                                    result = await session.call_tool(name, arguments)
-                                    result_text = tool_result_text(result)
-                                    if getattr(result, "isError", False) or getattr(
-                                        result, "is_error", False
-                                    ):
-                                        result_text = "MCP tool error: " + result_text
-                                except Exception as exc:
-                                    result_text = f"Error calling MCP tool: {explain_error(exc)}"
+                                schema_error = validate_tool_arguments(
+                                    name, arguments, tool_schemas[name]
+                                )
+                                if schema_error:
+                                    result_text = f"Error: {schema_error}"
+                                else:
+                                    try:
+                                        result = await session.call_tool(name, arguments)
+                                        result_text = tool_result_text(result)
+                                        if getattr(result, "isError", False) or getattr(
+                                            result, "is_error", False
+                                        ):
+                                            result_text = "MCP tool error: " + result_text
+                                    except Exception as exc:
+                                        result_text = (
+                                            f"Error calling MCP tool: {explain_error(exc)}"
+                                        )
 
                         print(f"[mcp -> openai] {limit_text(result_text, MAX_TRACE_CHARS)}")
                         messages.append(
