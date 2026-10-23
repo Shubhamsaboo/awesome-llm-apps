@@ -12,10 +12,17 @@ whichever backend the logs came from.
 Supported inputs
   gcp  Logs Explorer JSON / `gcloud logging read --format=json`
   aws  CloudWatch Logs Insights `get-query-results`, or `filter-log-events`
+
+Attach the Logs Explorer links and code an RCA may cite (scored by grounding):
+
+    python scripts/normalize_evidence.py logs.json \
+        --link 'https://console.cloud.google.com/logs/query;query=...;startTime=...;endTime=...?project=p' \
+        --code checkout/orders/repository.py:18-29@4f2a9c1 -o bundle.json
 """
 
 import argparse
 import json
+import os
 import re
 import sys
 from datetime import datetime, timezone
@@ -213,7 +220,63 @@ def detect_vendor(payload) -> str:
     )
 
 
-def build_bundle(payload, vendor=None, query=None, symptom=None, deploys=None) -> dict:
+_CODE_SPEC = re.compile(r"^(?P<path>.+?)(?::(?P<start>\d+)(?:-(?P<end>\d+))?)?(?:@(?P<ref>[\w./-]+))?$")
+
+
+def parse_link_arg(url: str, label: Optional[str] = None) -> dict:
+    """A --link value, validated: a link that cannot be parsed cannot be graded."""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import log_links
+
+    if not log_links.parse_link(url):
+        raise ValueError(f"Not a recognised log-explorer link: {url[:80]}")
+    if not log_links.round_trips(url):
+        # e.g. a raw `"` or backtick: an RCA that pastes it would be cut short and
+        # flagged as inventing a link. Better to fail here, once, with the reason.
+        raise ValueError(f"Link would not survive being pasted into an RCA; "
+                         f"percent-encode its special characters: {url[:80]}")
+    return {"url": url, **({"label": label} if label else {})}
+
+
+def _read_at_ref(base_dir: str, path: str, ref: str) -> str:
+    """The file as it was at `ref`, so a snippet labelled with a commit comes from it."""
+    import subprocess
+
+    # `./` makes git resolve the path from base_dir, not the repo root, so --code-root
+    # means the same thing with and without @ref.
+    out = subprocess.run(["git", "-C", base_dir, "show", f"{ref}:./{path}"],
+                         capture_output=True, text=True)
+    if out.returncode != 0:
+        raise ValueError(f"git could not read {path} at {ref}: "
+                         f"{(out.stderr or '').strip().splitlines()[-1:] or ['unknown error']}")
+    return out.stdout
+
+
+def read_code_arg(spec: str, base_dir: str = ".") -> dict:
+    """`path[:start[-end]][@ref]` -> a code snippet with its starting line number.
+
+    With `@ref` the file is read from git at that ref; without it, from the
+    working tree under `base_dir`.
+    """
+    m = _CODE_SPEC.match(spec.strip())
+    if not m:
+        raise ValueError(f"Bad --code value {spec!r}; expected path[:start[-end]][@ref]")
+    path = m.group("path")
+    if m.group("ref"):
+        lines = _read_at_ref(base_dir, path, m.group("ref")).splitlines()
+    else:
+        with open(os.path.join(base_dir, path)) as f:
+            lines = f.read().splitlines()
+    start = int(m.group("start") or 1)
+    end = int(m.group("end") or (m.group("start") or len(lines)))
+    if not 1 <= start <= end <= len(lines):
+        raise ValueError(f"{path} has {len(lines)} lines; {start}-{end} is out of range")
+    return {"path": path, **({"ref": m.group("ref")} if m.group("ref") else {}),
+            "start_line": start, "text": "\n".join(lines[start - 1:end])}
+
+
+def build_bundle(payload, vendor=None, query=None, symptom=None, deploys=None,
+                 links=None, code=None) -> dict:
     vendor = vendor or detect_vendor(payload)
     if vendor not in ADAPTERS:
         raise ValueError(f"Unknown vendor {vendor!r}. Expected one of {sorted(ADAPTERS)}.")
@@ -233,6 +296,8 @@ def build_bundle(payload, vendor=None, query=None, symptom=None, deploys=None) -
         "trace_ids": sorted({e["trace_id"] for e in entries if e["trace_id"]}),
         "services": sorted({e["service"] for e in entries if e["service"]}),
         "deploys": deploys or [],
+        "links": links or [],
+        "code": code or [],
         "entries": entries,
     }
 
@@ -245,7 +310,19 @@ def main() -> int:
     p.add_argument("--query", default=None, help="The query that produced these logs.")
     p.add_argument("--symptom", default=None, help="One line on what looks wrong.")
     p.add_argument("-o", "--out", default=None, help="Write here instead of stdout.")
+    p.add_argument("--link", action="append", default=[], metavar="URL",
+                   help="Logs Explorer link to attach; repeatable. Use URL|label to name it.")
+    p.add_argument("--code", action="append", default=[], metavar="PATH[:A-B][@REF]",
+                   help="Code to attach, relative to --code-root; repeatable.")
+    p.add_argument("--code-root", default=".", help="Directory --code paths are read from.")
     args = p.parse_args()
+
+    try:
+        links = [parse_link_arg(*item.split("|", 1)) for item in args.link]
+        code = [read_code_arg(spec, args.code_root) for spec in args.code]
+    except (ValueError, OSError) as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 2
 
     raw = sys.stdin.read() if args.input == "-" else open(args.input).read()
     try:
@@ -254,7 +331,8 @@ def main() -> int:
         # Tolerate newline-delimited JSON, which both gcloud and aws can emit.
         payload = [json.loads(line) for line in raw.splitlines() if line.strip()]
 
-    bundle = build_bundle(payload, args.vendor, args.query, args.symptom)
+    bundle = build_bundle(payload, args.vendor, args.query, args.symptom,
+                          links=links, code=code)
     text = json.dumps(bundle, indent=2)
     if args.out:
         with open(args.out, "w") as f:
@@ -264,6 +342,8 @@ def main() -> int:
               f"{len(bundle['services'])} services · "
               f"{len(bundle['trace_ids'])} traces", file=sys.stderr)
         print(f"  window {w.get('start')} → {w.get('end')}", file=sys.stderr)
+        if links or code:
+            print(f"  attached {len(links)} link(s), {len(code)} code snippet(s)", file=sys.stderr)
         print(f"  wrote {args.out}", file=sys.stderr)
     else:
         print(text)

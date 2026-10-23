@@ -96,7 +96,7 @@ class Feedback(unittest.TestCase):
 
 class SessionListing(unittest.TestCase):
     def test_summary_counts_calls_tokens_and_ratings(self):
-        with telemetry.span("optimizer.session", **{"triage.model": "demo", "triage.backend": "copilot"}) as root:
+        with telemetry.span("optimizer.session", **{"triage.model": "demo", "triage.backend": "litellm"}) as root:
             for _ in range(2):
                 with telemetry.span("llm.call", **{"gen_ai.usage.input_tokens": 10,
                                                    "gen_ai.usage.output_tokens": 3}) as call:
@@ -105,7 +105,7 @@ class SessionListing(unittest.TestCase):
         telemetry.record_feedback(tid, _ids(call)[1], "call", 1)
         row = next(s for s in telemetry.store.sessions() if s["trace_id"] == tid)
         self.assertEqual((row["name"], row["model"], row["backend"]),
-                         ("optimizer.session", "demo", "copilot"))
+                         ("optimizer.session", "demo", "litellm"))
         self.assertEqual((row["calls"], row["input_tokens"], row["output_tokens"], row["rated"]),
                          (2, 20, 6, 1))
 

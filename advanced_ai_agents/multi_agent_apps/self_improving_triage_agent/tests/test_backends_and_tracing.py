@@ -1,4 +1,4 @@
-"""Backend selection (Copilot via LiteLLM vs Claude Code) and tracing of a full run.
+"""Backend selection (provider API via LiteLLM or Claude Code) and full-run tracing.
 
 No network and no subscription use: `claude` is replaced by a fake executable and
 `litellm.acompletion` by a stub.
@@ -192,10 +192,71 @@ class CliTrace(unittest.TestCase):
                          ("cli.score_routing", "claude_code", 2))
 
 
+_IMPORT_UNDER_LOGGING = """
+import logging, sys, threading, time
+sys.path.insert(0, {optimizer!r})
+stop = False
+
+def noisy():  # stands in for Streamlit's server thread logging asyncio errors
+    log = logging.getLogger("asyncio")
+    while not stop:
+        log.error("Exception in default exception handler")
+        time.sleep(0.005)
+
+threading.Thread(target=noisy, daemon=True).start()
+before = logging.root.manager.disable
+import triage_optimizer
+stop = True
+import litellm
+print("disable_restored", logging.root.manager.disable == before)
+print("redaction_on", litellm._logging._ENABLE_SECRET_REDACTION is True)
+"""
+
+
+class ImportDeadlock(unittest.TestCase):
+    def test_litellm_imports_while_another_thread_logs(self):
+        # Without TriageOptimizer's guarded import, LiteLLM's redaction filter ran on
+        # the logging thread, lazily imported a module the importing thread held, and
+        # Python raised _DeadlockError (4 of 4 runs when reproduced).
+        import subprocess
+
+        out = subprocess.run(
+            [sys.executable, "-c", _IMPORT_UNDER_LOGGING.format(
+                optimizer=os.path.join(ROOT, "optimizer"))],
+            capture_output=True, text=True, timeout=120)
+        self.assertEqual(out.returncode, 0, out.stderr[-1500:])
+        self.assertNotIn("DeadlockError", out.stderr)
+        self.assertIn("disable_restored True", out.stdout)  # logging not left switched off
+        self.assertIn("redaction_on True", out.stdout)  # the guard did not weaken redaction
+
+
+class ImportGuard(unittest.TestCase):
+    def test_works_when_litellm_lacks_the_private_filter(self):
+        # Review finding: on a LiteLLM without `_logging._secret_filter` the warm-up
+        # raised AttributeError and every entry point failed to import.
+        import logging
+        from types import SimpleNamespace
+
+        stub = SimpleNamespace(__name__="litellm")  # no _logging attribute at all
+        before = logging.root.manager.disable
+        with mock.patch.object(triage_optimizer.importlib, "import_module", return_value=stub):
+            self.assertIs(triage_optimizer._import_litellm(), stub)
+        self.assertEqual(logging.root.manager.disable, before)
+
+    def test_import_error_propagates_and_logging_is_restored(self):
+        import logging
+
+        before = logging.root.manager.disable
+        with mock.patch.object(triage_optimizer.importlib, "import_module",
+                               side_effect=ImportError("no litellm")):
+            with self.assertRaisesRegex(ImportError, "no litellm"):
+                triage_optimizer._import_litellm()
+        self.assertEqual(logging.root.manager.disable, before)
+
+
 class BackendNames(unittest.TestCase):
     def test_backend_per_model_prefix(self):
         self.assertEqual(TriageOptimizer(model="claude_code/sonnet").backend, "claude_code")
-        self.assertEqual(TriageOptimizer(model="github_copilot/gpt-4.1").backend, "github_copilot")
         self.assertEqual(TriageOptimizer(model="gpt-4o-mini").backend, "litellm")
 
     def test_claude_code_model_never_sets_an_api_key(self):
@@ -208,16 +269,16 @@ class BackendNames(unittest.TestCase):
                 os.environ["ANTHROPIC_API_KEY"] = saved
 
 
-class CopilotPathTracing(unittest.IsolatedAsyncioTestCase):
+class LiteLLMPathTracing(unittest.IsolatedAsyncioTestCase):
     async def test_litellm_path_records_usage_and_role(self):
         fake = _fake_completion(respond=lambda m: '{"ok": true}')
-        opt = TriageOptimizer(model="github_copilot/gpt-4.1")
+        opt = TriageOptimizer(model="gpt-4o-mini")
         with mock.patch.object(triage_optimizer.litellm, "acompletion", fake):
             with telemetry.span("test.root") as root:
                 out = await opt._ask_json("sys", "usr", role="analyst")
         self.assertEqual(out, {"ok": True})
         at = next(s for s in telemetry.store.spans(_trace_id(root)) if s["name"] == "llm.call")["attributes"]
-        self.assertEqual((at["triage.backend"], at["triage.role"]), ("github_copilot", "analyst"))
+        self.assertEqual((at["triage.backend"], at["triage.role"]), ("litellm", "analyst"))
         self.assertEqual((at["gen_ai.usage.input_tokens"], at["gen_ai.usage.output_tokens"]), (7, 3))
 
 
@@ -236,7 +297,7 @@ class FullRunTrace(unittest.IsolatedAsyncioTestCase):
                            "new_skill_md": "---\nname: s\n---\nFIXED"})
 
     async def test_run_produces_session_baseline_round_and_calls(self):
-        opt = TriageOptimizer(model="github_copilot/gpt-4.1", concurrency=2)
+        opt = TriageOptimizer(model="gpt-4o-mini", concurrency=2)
         scenarios = [{"id": 1, "name": "n", "input": "boom", "expected_team": "B",
                       "expected_severity": "P2"}]
         evals = [{"id": 1, "name": "team_correct"}]
@@ -266,7 +327,7 @@ class FullRunTrace(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(root["parent_id"])
         self.assertEqual(root["attributes"]["triage.baseline_score"], 0.0)
         self.assertEqual(root["attributes"]["triage.final_score"], 100.0)
-        self.assertEqual(root["attributes"]["triage.backend"], "github_copilot")
+        self.assertEqual(root["attributes"]["triage.backend"], "litellm")
 
         baseline = by_name["optimizer.baseline"][0]
         rnd = by_name["optimizer.round"][0]

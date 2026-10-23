@@ -50,9 +50,11 @@ RCA_ANALYST_SYSTEM = (
     "You diagnose why a triage skill produces weak or wrong RCAs. Given the "
     "checks that failed and the conclusions that missed the documented root "
     "cause, find the single root cause that explains the most failures, then "
-    "pick one mutation_strategy from: add_evidence_rule, add_causal_rule, "
-    "add_falsification_rule, add_template_section, add_worked_example, "
-    "restructure.\n\n"
+    "pick one mutation_strategy from: add_evidence_rule, add_citation_rule, "
+    "add_causal_rule, add_falsification_rule, add_template_section, "
+    "add_worked_example, restructure.\n\n"
+    "Citing a log link or code line that was never attached is as serious as a "
+    "wrong conclusion: the reader copies it into a fix.\n\n"
     "A wrong conclusion outranks a missing checkbox: if the skill reaches the "
     "wrong root cause, fix the reasoning, not the formatting. Prefer a rule "
     "that generalizes across cases over one that memorizes a single incident. "
@@ -74,6 +76,7 @@ class RcaOptimizer(TriageOptimizer):
         dim_totals = {d["id"]: {"passed": 0, "total": 0} for d in rubric["dimensions"]}
         failures, scored, correctness_points = [], 0.0, 0.0
         overconfident = []
+        grounding_scores, fabricated_cases = [], []
 
         for case, rca, detail in results:
             for d in detail["per_dimension"]:
@@ -83,6 +86,11 @@ class RcaOptimizer(TriageOptimizer):
             verdict = detail.get("correctness", "wrong")
             credit = correctness_credit(expected, verdict, rubric)
             correctness_points += credit
+            g = detail.get("grounding") or {}
+            if g.get("score") is not None:
+                grounding_scores.append(g["score"])
+            if g.get("hard_fail"):
+                fabricated_cases.append({"case_id": case["id"], "checks": g["fabricated"]})
             scored += detail["quality"]
 
             # Concluding anything on a case that should have declined is the
@@ -90,7 +98,12 @@ class RcaOptimizer(TriageOptimizer):
             if expected == "insufficient_evidence" and verdict != "insufficient_evidence":
                 overconfident.append({"case_id": case["id"], "concluded": verdict})
 
-            if credit < 1.0 or detail["quality"] < 100:
+            grounding_failed = [
+                {"id": c["id"], "question": c["question"], "detail": c["detail"],
+                 "hard_fail": c.get("hard_fail", False)}
+                for c in g.get("checks", []) if c["passed"] is False
+            ]
+            if credit < 1.0 or detail["quality"] < 100 or grounding_failed:
                 failures.append({
                     "case_id": case["id"],
                     "vendor": case.get("vendor"),
@@ -105,6 +118,8 @@ class RcaOptimizer(TriageOptimizer):
                         for c in detail["checks"]
                         if c["passed"] is not True and c["passed"] != "na"
                     ],
+                    "grounding": g.get("score"),
+                    "grounding_failed": grounding_failed,
                     "rca_excerpt": (rca or "")[:700],
                 })
 
@@ -128,6 +143,10 @@ class RcaOptimizer(TriageOptimizer):
             ),
             "total": len(scenarios),
             "overconfident": overconfident,
+            # Third score: reported, and guarded in _improves, never blended in.
+            "grounding_pct": (round(sum(grounding_scores) / len(grounding_scores), 1)
+                              if grounding_scores else None),
+            "fabricated": fabricated_cases,
             "per_eval": [
                 {"eval_id": k, "name": k, **v,
                  "pass_rate": round(100 * v["passed"] / max(v["total"], 1), 1)}
@@ -136,6 +155,40 @@ class RcaOptimizer(TriageOptimizer):
             "failures": failures,
             "confusion": [],
         }
+
+    @staticmethod
+    def _fabrications(result: dict) -> set:
+        return {(f["case_id"], check) for f in result.get("fabricated") or []
+                for check in (f.get("checks") or ["?"])}
+
+    def _improves(self, candidate: dict, best: dict) -> bool:
+        """Grounding is a constraint, not a term in the objective.
+
+        - Any fabrication the best did not have vetoes the edit, even if it fixes
+          a different one: swapping case A's invented line for case B's is not progress.
+        - Lower grounding vetoes the edit.
+        - Otherwise a higher objective is kept, as in the base loop, and so is an
+          equal objective that strictly removes fabrications. Without that, the
+          analyst's top-priority fix could never survive unless it also happened to
+          raise correctness or quality.
+        """
+        cand_f, best_f = self._fabrications(candidate), self._fabrications(best)
+        if cand_f - best_f:
+            return False
+        cg, bg = candidate.get("grounding_pct"), best.get("grounding_pct")
+        if cg is not None and bg is not None and cg < bg:
+            return False
+        if super()._improves(candidate, best):
+            return True
+        return candidate["pass_rate"] == best["pass_rate"] and cand_f < best_f
+
+    def _converged(self, best: dict) -> bool:
+        # A perfect objective with an invented citation still has work to do.
+        return super()._converged(best) and not best.get("fabricated")
+
+    def _extra_results(self, best: dict) -> dict:
+        return {"grounding_pct": best.get("grounding_pct"),
+                "fabricated": best.get("fabricated") or []}
 
     async def _score_one(self, skill_md, case, rubric, profile, runs):
         bundle = case.get("evidence")
@@ -191,6 +244,14 @@ class RcaOptimizer(TriageOptimizer):
                          and f.get("correctness") != "insufficient_evidence"]
         wrong = [f for f in failures
                  if f.get("credit", 0) == 0.0 and f not in overconfident]
+        # Which checks count as invention comes from the rubric (grounding.hard_fail),
+        # carried on each failed check, not from a list copied here.
+        invented = [
+            {"case_id": f["case_id"],
+             "invented": [g for g in f.get("grounding_failed", []) if g.get("hard_fail")]}
+            for f in failures
+            if any(g.get("hard_fail") for g in f.get("grounding_failed", []))
+        ]
         tried = [
             f"- [{m['strategy_type']}] {m['description']} "
             f"({m['score_before']} -> {m['score_after']}, "
@@ -209,6 +270,15 @@ class RcaOptimizer(TriageOptimizer):
                 f"whether there is enough evidence to conclude at all.\n"
                 f"{json.dumps(overconfident[:3], indent=2)}"
             )
+        if invented:
+            priority += (
+                f"\n\n# HIGH PRIORITY — cited evidence that was never attached\n"
+                f"These RCAs cite a log link, a code line, or a verbatim quote that is "
+                f"not in the attached links and code. Make the skill cite only what "
+                f"it was given, quote code verbatim, and say so when the code it "
+                f"needs is not attached.\n"
+                f"{json.dumps(invented[:3], indent=2)}"
+            )
         if wrong:
             priority += (
                 f"\n\n# Wrong conclusions — fix these before any formatting gap\n"
@@ -224,9 +294,9 @@ class RcaOptimizer(TriageOptimizer):
                 + (f"\n\n# Already attempted (do not repeat a discarded one)\n"
                    + "\n".join(tried) if tried else "")
                 + "\n\nReturn JSON: {\"diagnosis\": \"the one root cause\", "
-                  "\"mutation_strategy\": \"add_evidence_rule|add_causal_rule|"
-                  "add_falsification_rule|add_template_section|add_worked_example|"
-                  "restructure\", \"target_section\": \"heading to edit\", "
+                  "\"mutation_strategy\": \"add_evidence_rule|add_citation_rule|"
+                  "add_causal_rule|add_falsification_rule|add_template_section|"
+                  "add_worked_example|restructure\", \"target_section\": \"heading to edit\", "
                   "\"suggested_change\": \"the specific edit\"}"
             ),
             fallback={"diagnosis": "Unable to diagnose",

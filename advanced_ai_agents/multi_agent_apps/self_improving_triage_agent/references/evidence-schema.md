@@ -28,6 +28,9 @@ The vendor is auto-detected from the payload shape; pass `--vendor` to override.
   "trace_ids": ["7f3a9c1e88"],
   "services": ["checkout"],
   "deploys": [{"ts": "...", "ref": "svc@1.2.3", "note": "..."}],
+  "links": [{"url": "https://console.cloud.google.com/logs/query;...", "label": "the failing trace"}],
+  "code": [{"path": "checkout/orders/repository.py", "ref": "4f2a9c1",
+            "start_line": 18, "text": "class OrderRepository:\n    ..."}],
   "entries": [
     {
       "ts": "2026-09-18T14:02:11.123456+00:00",
@@ -43,6 +46,12 @@ The vendor is auto-detected from the payload shape; pass `--vendor` to override.
 
 Every entry has the same six keys on every vendor. Vendor-specific fields land
 in `attributes` rather than being dropped.
+
+`links` and `code` are what an RCA may cite, and both are optional. A link must
+parse (`scripts/log_links.py`); `start_line` is the real line number of the
+snippet's first line, so `path:line` citations can be checked. Attach them with
+`--link URL[|label]` and `--code path[:start-end][@ref]`. Grounding grades the
+citations; see `grounding.md`.
 
 ## What each adapter maps from
 

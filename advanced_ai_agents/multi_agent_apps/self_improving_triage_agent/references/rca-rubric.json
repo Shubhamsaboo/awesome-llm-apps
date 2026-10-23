@@ -231,5 +231,68 @@
         }
       ]
     }
-  ]
+  ],
+  "grounding": {
+    "description": "Third score, beside correctness and quality, never averaged into either. Is the RCA tied to the log links and code it was given? Deterministic checks are decided in code (scripts/grounding.py); judged ones go to the judge. A check is 'na' when its inputs are not attached, so a ticket-only case is not marked down for lacking links or code. A hard_fail check that fails means the RCA cites something that does not exist: it blocks handoff regardless of the other scores.",
+    "hard_fail": [
+      "gr_no_invented_link",
+      "gr_no_invented_code",
+      "gr_quotes_verbatim"
+    ],
+    "checks": [
+      {
+        "id": "gr_link_cited",
+        "kind": "deterministic",
+        "question": "Does the RCA cite at least one of the Logs Explorer links attached to the case, as a URL?"
+      },
+      {
+        "id": "gr_no_invented_link",
+        "kind": "deterministic",
+        "question": "Is every Logs Explorer link in the RCA one that was attached to the case? A link the RCA made up fails the whole RCA."
+      },
+      {
+        "id": "gr_link_pinned",
+        "kind": "deterministic",
+        "question": "Does every link the RCA relies on pin an absolute time window or timestamp, so it opens on the same logs next week? A relative range such as the last hour does not."
+      },
+      {
+        "id": "gr_link_scopes_evidence",
+        "kind": "deterministic",
+        "question": "Do the links the RCA relies on cover the symptom window and filter on traces that are in the evidence? A real link to the wrong day or the wrong trace is not evidence for this incident."
+      },
+      {
+        "id": "gr_code_cited",
+        "kind": "deterministic",
+        "question": "Does the RCA cite at least one location, as `path:line` or `path:start-end`, that falls inside the attached code?"
+      },
+      {
+        "id": "gr_no_invented_code",
+        "kind": "deterministic",
+        "question": "Does every `path:line` the RCA cites exist in the attached code? A file or line that is not attached fails the whole RCA."
+      },
+      {
+        "id": "gr_quotes_verbatim",
+        "kind": "deterministic",
+        "question": "Is every line quoted under ## Code verbatim in the attached code at the cited location? A paraphrase presented as a quote fails the whole RCA."
+      },
+      {
+        "id": "gr_code_supports_mechanism",
+        "kind": "judged",
+        "requires": "code",
+        "question": "Does the cited code actually contain the mechanism the RCA blames? Answer false if the cited lines are real but only related, so they do not explain the failure."
+      },
+      {
+        "id": "gr_log_to_code",
+        "kind": "judged",
+        "requires": "code",
+        "question": "Does the RCA tie a specific logged error, stack frame or attribute to a specific cited code location, rather than discussing the logs and the code separately?"
+      },
+      {
+        "id": "gr_link_claim_matches",
+        "kind": "judged",
+        "requires": "links",
+        "question": "For each Logs Explorer link the RCA relies on, is what the RCA says the link shows consistent with the logs in the evidence?"
+      }
+    ]
+  }
 }

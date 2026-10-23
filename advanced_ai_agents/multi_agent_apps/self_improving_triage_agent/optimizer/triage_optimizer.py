@@ -6,21 +6,51 @@
 
 Provider-agnostic via LiteLLM: pass any model string it understands
 ("gpt-4o-mini", "anthropic/claude-sonnet-5", "gemini/gemini-2.0-flash",
-"github_copilot/<model-id>", ...). Copilot models need no API key — run
-scripts/copilot_login.py once instead.
+...). Set the matching provider API key in the environment before running.
 """
 
 import asyncio
+import importlib
 import json
+import logging
 import os
 import re
 import tempfile
 from typing import Callable, Optional
 
-import litellm # pyright: ignore[reportMissingImports]
 from pydantic import BaseModel, Field
 
 import telemetry
+
+
+def _import_litellm():
+    """Import LiteLLM without the first-import deadlock.
+
+    LiteLLM attaches a secret-redaction filter to loggers such as `asyncio` early in
+    its (slow) import. If another thread logs on one of them before the import
+    finishes — Streamlit's server thread does — the filter lazily imports a module the
+    importing thread is holding, and Python raises `_DeadlockError` on
+    `litellm.types.secret_managers.main`. So: drop log records while importing, and
+    run the filter once so its lazy imports are already loaded. Redaction stays on.
+
+    The guard is process-wide: for the few seconds of the first import, records
+    from every thread are dropped. The warm-up uses a private LiteLLM attribute and
+    is skipped if a version lacks it; the guard alone prevents the race.
+    """
+    previous = logging.root.manager.disable
+    logging.disable(logging.CRITICAL)
+    try:
+        module = importlib.import_module("litellm")
+        secret_filter = getattr(getattr(module, "_logging", None), "_secret_filter", None)
+        if secret_filter is not None:
+            record = logging.LogRecord("asyncio", logging.ERROR, __file__, 0, "warm-up", None, None)
+            secret_filter.filter(record)
+    finally:
+        logging.disable(previous)
+    return module
+
+
+litellm = _import_litellm()
 
 litellm.suppress_debug_info = True
 # Newer models reject sampling params (e.g. Claude accepts only temperature=1).
@@ -110,10 +140,8 @@ class TriageOptimizer:
     ):
         self.model = model
         self._sem = asyncio.Semaphore(concurrency)
-        # Copilot and Claude Code authenticate through a login, not a key. Check
-        # them first: "github_copilot/claude-…" and "claude_code/…" would otherwise
-        # match the "claude" needle.
-        if api_key and not model.startswith(("github_copilot/", CLAUDE_CODE_PREFIX)):
+        # Claude Code authenticates through its CLI login, not an API key.
+        if api_key and not model.startswith(CLAUDE_CODE_PREFIX):
             for needles, env_var in _KEY_ENV:
                 if any(n in model.lower() for n in needles):
                     os.environ[env_var] = api_key
@@ -125,8 +153,6 @@ class TriageOptimizer:
     def backend(self) -> str:
         if self.model.startswith(CLAUDE_CODE_PREFIX):
             return "claude_code"
-        if self.model.startswith("github_copilot/"):
-            return "github_copilot"
         return "litellm"
 
     async def _ask(self, system: str, user: str, temperature: float = 0.2,
@@ -337,7 +363,7 @@ class TriageOptimizer:
         stale = 0
         for rnd in range(1, max_rounds + 1):
             with telemetry.span("optimizer.round", **{"triage.round": rnd}) as rsp:
-                if best_pct >= 100.0:
+                if self._converged(best):
                     await emit({"type": "converged", "data": {"round": rnd}})
                     break
                 if stale >= patience:
@@ -370,7 +396,7 @@ class TriageOptimizer:
                     continue
 
                 result = await self._score(candidate_md, scenarios, evals, context)
-                kept = result["pass_rate"] > best_pct
+                kept = self._improves(result, best)
                 rsp.set_attribute("triage.kept", kept)
                 rsp.set_attribute("triage.score_after", result["pass_rate"])
 
@@ -414,11 +440,25 @@ class TriageOptimizer:
             "strategy_stats": _strategy_stats(mutation_log),
             "remaining_failures": best["failures"],
             "confusion": best["confusion"],
+            **self._extra_results(best),
         }
         await emit({"type": "complete", "data": payload})
         return payload
 
     # -- Scoring -------------------------------------------------------------
+
+    def _converged(self, best: dict) -> bool:
+        """Nothing left to climb. Subclasses can demand more than a perfect score."""
+        return best["pass_rate"] >= 100.0
+
+    def _extra_results(self, best: dict) -> dict:
+        """Scorer-specific fields to add to the run's final results."""
+        return {}
+
+    def _improves(self, candidate: dict, best: dict) -> bool:
+        """Keep a mutation only if it beats the best so far. Subclasses add guards
+        for scores that must not regress but are not part of the objective."""
+        return candidate["pass_rate"] > best["pass_rate"]
 
     async def _score(self, skill_md, scenarios, evals, context) -> dict:
         results = await asyncio.gather(*[

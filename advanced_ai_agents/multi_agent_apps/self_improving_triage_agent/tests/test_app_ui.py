@@ -72,14 +72,14 @@ class BackendSwitch(unittest.TestCase):
         os.chmod(path, os.stat(path).st_mode | stat.S_IEXEC)
         return path
 
-    def test_three_backends_offered_copilot_default(self):
+    def test_api_key_backend_is_default(self):
         at = _app()
         self.assertFalse(at.exception)
         seg = at.button_group(key="backend")
-        self.assertEqual(seg.value, "GitHub Copilot")
+        self.assertEqual(seg.value, "API key")
         self.assertEqual(list(seg.options_labels) if hasattr(seg, "options_labels") else
                          [o.content for o in seg.proto.options],
-                         ["GitHub Copilot", "Claude Code", "API key"])
+                         ["API key", "Claude Code"])
 
     def test_claude_code_backend_ready_when_cli_found(self):
         with mock.patch.dict(os.environ, {"TRIAGE_CLAUDE_BIN": self._fake_claude()}):

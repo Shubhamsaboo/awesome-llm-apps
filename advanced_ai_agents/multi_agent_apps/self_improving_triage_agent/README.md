@@ -4,21 +4,16 @@ A triage skill that rewrites itself. Three agents run a measure → diagnose →
 mutate → re-measure loop over `SKILL.md`, and **only edits that raise the score
 survive**.
 
-Two things get measured:
+Three things get measured:
 
 | | Question | Scored by |
 |---|---|---|
 | **Routing** | did the issue reach the owning team? | `scripts/score_routing.py` |
 | **RCA** | did the analysis reach the real cause, and is it evidenced? | `scripts/score_rca.py` |
+| **Grounding** | does the RCA cite the attached log links and code, and only those? | `scripts/score_rca.py` |
 
 Provider-agnostic via **LiteLLM** — OpenAI, Anthropic, or Gemini with one string.
 Vendor-agnostic for logs — **GCP and AWS** normalize to one shape.
-
-![One triage, start to finish](assets/demo.gif)
-
-Open [`assets/demo.html`](assets/demo.html) in a browser for the interactive
-version, with chapters you can jump between and pause. The walkthrough uses
-cases from the evaluation set; the improvement-loop chart is an illustrative run.
 
 ---
 
@@ -64,6 +59,152 @@ formatted wrong RCA caps at 40.
 
 ---
 
+## Architecture
+
+The app is four layers. Each only talks to the one below it, and the model backend
+is the only part that knows which provider is in use.
+
+```
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │ Entry points                                                           │
+  │   optimizer/app.py (Streamlit)    scripts/score_routing.py             │
+  │   · backend switch                scripts/score_rca.py                 │
+  │   · golden set + loop controls    scripts/session_link.py              │
+  │   · Run / Results / Sessions tabs scripts/normalize_evidence.py        │
+  └───────────────┬────────────────────────────────────────────────────────┘
+                  │ one TriageOptimizer per run
+  ┌───────────────▼────────────────────────────────────────────────────────┐
+  │ Optimizer           optimizer/triage_optimizer.py, rca_optimizer.py    │
+  │   Executor  routes an issue (or writes an RCA) using the SKILL.md      │
+  │   Analyst   diagnoses the failures, picks ONE mutation strategy        │
+  │   Mutator   applies exactly one edit to the SKILL.md                   │
+  │   Scorer    deterministic checks in code, judge calls for the rest     │
+  └───────────────┬────────────────────────────────────────────────────────┘
+                  │ every model call goes through one method: _ask()
+  ┌───────────────▼────────────────────────────────────────────────────────┐
+  │ Model backends (picked by the model string's prefix)                   │
+  │   claude_code/<alias>   headless `claude -p`, your Claude Code login   │
+  │   anything else         LiteLLM: OpenAI, Anthropic, Gemini via API key │
+  └───────────────┬────────────────────────────────────────────────────────┘
+                  │ every call and every loop step emits a span
+  ┌───────────────▼────────────────────────────────────────────────────────┐
+  │ Telemetry          optimizer/telemetry.py                              │
+  │   OpenTelemetry spans → SQLite (.traces/) and, optionally, OTLP        │
+  │   human feedback stored beside the spans, re-emitted as spans          │
+  └────────────────────────────────────────────────────────────────────────┘
+```
+
+### The loop
+
+1. **Baseline.** Score the current `SKILL.md` over every golden-set scenario.
+2. **Round.** The Analyst reads the failures and the mutations already tried and
+   names one root cause. The Mutator makes one edit. The Scorer re-measures.
+3. **Keep or discard.** The edit survives only if the score rises. A discarded
+   edit goes into the "already attempted" list so the Analyst stops re-proposing it.
+4. **Stop** at 100%, after `patience` rounds without a gain, or at `max_rounds`.
+
+Routing and RCA share this loop. They differ only in the Scorer and the
+Analyst's strategy list (`rca_optimizer.py` overrides `_score` and `_analyze`),
+so a gain measured in the app reproduces under the CLI scorer.
+
+### One seam for every model call
+
+`TriageOptimizer._ask()` is the only place a model is called. It picks the
+backend from the model string, records a span, and returns text. That is why the
+rest of the code is provider-neutral, and why tracing needs no per-agent wiring.
+
+Provider API keys are the standard path. **Claude Code** is an optional local
+backend that runs `claude -p` as a subprocess from an empty directory with
+  no tools, skills, MCP servers, settings files or saved session. The executor
+  must route using only the skill under test, so none of your own Claude Code
+  setup (CLAUDE.md, hooks, memory) may reach it. `--bare` would be simpler, but it
+  accepts only an API key, which is exactly what this backend avoids.
+
+Sampling parameters can't be set through the Claude Code CLI, and some newer
+models reject them, so `litellm.drop_params` is on. The loop's temperatures are hints.
+
+### What a trace looks like
+
+```
+optimizer.session                   one run; final score, backend, model
+├─ optimizer.baseline               score of the starting skill
+│   └─ llm.call × scenarios         role, prompt, response, tokens, cost
+└─ optimizer.round × N              strategy, edit, score before → after, kept?
+    ├─ llm.call  analyst
+    ├─ llm.call  mutator
+    └─ llm.call  executor.route × scenarios
+```
+
+CLI runs and **Generate scenarios** are one trace each (`cli.score_routing`,
+`optimizer.generate`, ...). Calls inside `asyncio.gather` still nest under their
+step, because OpenTelemetry context follows asyncio tasks.
+
+Human feedback is keyed by span, so you can rate a single call, a round's edit or
+a whole session. Each rating is stored in SQLite and emitted as a `human.feedback`
+span under the span it rates, so an OTLP collector sees the verdict next to the
+trace it is about.
+
+### Log evidence flow (RCA path)
+
+```
+gcloud logging read / aws logs ──► normalize_evidence.py ──► evidence bundle (one shape)
+Logs Explorer links  --link ──────►      │                     + attached links + code
+code snippets        --code ──────►      │                                   │
+                                                                             │
+         incident writeup ───────────────────────────────────────────────────┤
+                                                                             ▼
+                                          score_rca.py: correctness · quality · grounding
+```
+
+Both vendors reduce to the same bundle (`references/evidence-schema.md`), so the
+rubric and golden set never branch on vendor. The three scores are reported
+separately and never averaged.
+
+### Grounding: evals for links and code
+
+When an incident comes with Logs Explorer links and related code, the RCA must
+cite them, and only them. `scripts/grounding.py` scores this as a third number.
+`references/grounding.md` has the full check list and the citation format.
+
+- **Checked in code, not by a judge.** Seven checks are string and structure
+  matches, so the result doesn't vary between runs. `scripts/log_links.py` parses
+  each link offline into its project, query, time window and trace IDs.
+  - Was an attached link cited?
+  - Is every cited link and `path:line` really attached?
+  - Is each code quote verbatim?
+  - Does each link pin an absolute time, cover the symptom window, and filter on a trace from the evidence?
+- **Judged.** Three checks need reading:
+  - Does the cited code contain the blamed mechanism?
+  - Is a logged error tied to a specific line?
+  - Does each link show what the RCA claims?
+- **Hard fail.** Citing a link or code line that was never attached, or a quote
+  that isn't verbatim, blocks handoff. `score_rca.py` exits 2, the same as a
+  wrong conclusion.
+- **In the optimizer,** grounding is a veto, not a term in the objective. An edit
+  that raises the score but invents a citation, or lowers grounding, is discarded.
+- **Golden cases.** Three GCP cases cover this: one fully grounded RCA, its twin
+  with one invented code line (must hard-fail while quality stays high), and one
+  citing a real link for the wrong day (loses points, not a fabrication). The
+  deterministic results are pinned by tests.
+
+### Where the pieces live
+
+| Concern | File |
+|---|---|
+| The loop, agents, `_ask()`, backends | `optimizer/triage_optimizer.py` |
+| RCA scorer and analyst | `optimizer/rca_optimizer.py` |
+| Spans, SQLite store, feedback, OTLP | `optimizer/telemetry.py` |
+| Sessions tab | `optimizer/sessions_view.py` |
+| UI | `optimizer/app.py` |
+| Judge, rubric, golden sets | `scripts/score_rca.py`, `references/` |
+
+LiteLLM is imported through `_import_litellm()`, not a bare `import litellm`.
+LiteLLM's first import is slow, and a log record from another thread during it
+(Streamlit's server thread does this) deadlocks its own redaction filter. The
+guard drops records for that window and keeps redaction on.
+
+---
+
 ## Structure
 
 `SKILL.md` is a thin router: it names which reference to load per path and
@@ -72,9 +213,6 @@ nothing loads up front.
 ```
 self_improving_triage_agent/
 ├── SKILL.md                      # router: intake → path → write → score
-├── assets/
-│   ├── demo.html                 # interactive walkthrough
-│   └── demo.gif                  # the same walkthrough, recorded
 ├── references/
 │   ├── intake-ticket.md          # Jira/GitHub path + per-vendor query templates
 │   ├── evidence-schema.md        # the one normalized log shape
@@ -86,17 +224,18 @@ self_improving_triage_agent/
 │   ├── rubric.md                 # why the rubric is shaped this way
 │   ├── judge-prompt.md           # judge templates + hygiene rules
 │   ├── validation-methods.md     # 8 techniques, and which settles which dispute
+│   ├── grounding.md              # how to cite links and code; the 10 checks
 │   └── rca-template.md           # RCA document format
 ├── scripts/
-│   ├── normalize_evidence.py     # GCP | AWS → one bundle
+│   ├── normalize_evidence.py     # GCP | AWS → one bundle; --link / --code attach
+│   ├── log_links.py              # parse Logs Explorer links offline
+│   ├── grounding.py              # third score: are links and code really cited?
 │   ├── session_link.py           # AgentsView replay link for the RCA header
 │   ├── score_routing.py          # routing accuracy (CI gate)
-│   ├── score_rca.py              # correctness + quality, or --calibrate
-│   └── copilot_login.py          # one-time GitHub Copilot sign-in
+│   └── score_rca.py              # correctness + quality + grounding, or --calibrate
 ├── optimizer/
 │   ├── triage_optimizer.py       # the loop; routing scorer; backends
 │   ├── rca_optimizer.py          # same loop, RCA scorer
-│   ├── copilot.py                # GitHub Copilot sign-in state + model list
 │   ├── telemetry.py              # OpenTelemetry traces + human feedback store
 │   ├── sessions_view.py          # Sessions tab: browse traces, give feedback
 │   └── app.py                    # Streamlit UI (routing)
@@ -105,37 +244,25 @@ self_improving_triage_agent/
 
 ## Setup
 
-```bash
-pip install -r requirements.txt
-export OPENAI_API_KEY=sk-...        # or ANTHROPIC_API_KEY / GEMINI_API_KEY
-```
-
-### Using GitHub Copilot (no API key)
-
-A Copilot subscription works instead of a provider key. The models on offer are
-whatever your Copilot plan and org policy enable.
+From this directory, create an environment, install dependencies, and configure a
+provider API key. The example uses OpenAI; set `ANTHROPIC_API_KEY` or
+`GEMINI_API_KEY` instead when choosing a model from those providers.
 
 ```bash
-python scripts/copilot_login.py     # one-time device sign-in; prints your models
-export TRIAGE_MODEL=github_copilot/<model-id>
-python scripts/score_routing.py     # CLIs read TRIAGE_MODEL or --model
-streamlit run optimizer/app.py      # pick "GitHub Copilot" — no key field
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+export OPENAI_API_KEY="your-api-key"
+python scripts/score_routing.py --model gpt-4o-mini
+streamlit run optimizer/app.py
 ```
-
-- The token is cached in `~/.config/litellm/github_copilot`.
-- Every call counts against your Copilot premium-request allowance. A routing
-  round is about (scenarios × 2) + 2 calls, so 10 rounds over 8 scenarios is
-  roughly 180 requests.
-- This goes through Copilot's editor API, the same way the VS Code extension
-  does. Use it for local experiments; don't build CI on it, because GitHub
-  supports that API for editors and can change it.
 
 ### Using your Claude Code login (no API key)
 
 Pick **Claude Code** in the app's sidebar, or pass `claude_code/<alias>` to the
 CLIs (`sonnet`, `opus`, `haiku`; each resolves to the latest model in that family
-on your plan). Run the same golden set on Copilot and on Claude Code, then
-compare the two sessions in the **Sessions** tab.
+on your plan). Run the same golden set on an API provider and on Claude Code,
+then compare the two sessions in the **Sessions** tab.
 
 ```bash
 python scripts/score_routing.py --model claude_code/sonnet
@@ -263,6 +390,9 @@ the OTLP test uses a throwaway local collector. They cover:
 - span nesting across parallel calls
 - feedback storage and the Sessions UI
 - a CLI run producing one trace
+- link parsing, every grounding check, and the third score in `score_rca.py`
+- the golden set's grounding labels, reproduced with no model
+- the optimizer's grounding veto
 
 ## Notes
 

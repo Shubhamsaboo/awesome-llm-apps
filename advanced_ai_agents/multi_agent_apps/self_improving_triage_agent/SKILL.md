@@ -70,10 +70,13 @@ it, the first non-retryable error in the trace decides.
   lives in `references/rca-rubric.json`; `references/rubric.md` explains it.
 - Two numbers come back and are never averaged: **correctness** (did it reach the
   documented cause?) and **quality** (weighted pass rate over the checks).
+- If Logs Explorer links or code were attached, a third comes back: **grounding**.
+  Load `references/grounding.md` before writing: it sets how to cite them.
 
 **Handoff gate** on quality: <60 send back · 60–80 conditional, flag gaps ·
 \>80 hand off with reproduction. Any `wrong` correctness verdict blocks handoff
-regardless of quality.
+regardless of quality, and so does citing a link or code line that was never
+attached.
 
 ### Profiles
 
@@ -107,6 +110,7 @@ Load on demand, not up front.
 | File | Load when |
 |---|---|
 | `references/evidence-schema.md` | normalizing or reading telemetry |
+| `references/grounding.md` | the case has Logs Explorer links or code attached |
 | `references/intake-ticket.md` | the input is a Jira/GitHub ticket |
 | `references/team-roster.md` | routing |
 | `references/validation-methods.md` | choosing how to confirm a hypothesis |

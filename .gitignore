@@ -19,7 +19,3 @@ dist/
 
 # JetBrains IDEs
 .idea/
-advanced_ai_agents/multi_agent_apps/self_improving_triage_agent/assets/demo.gif
-advanced_ai_agents/multi_agent_apps/self_improving_triage_agent/assets/demo.html
-.agents/skills/developing-with-streamlit
-.claude/skills/developing-with-streamlit

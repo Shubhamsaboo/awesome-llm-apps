@@ -42,6 +42,16 @@ What is observably wrong. No interpretation.
 
 Correlation IDs: `<ids>`
 
+In **Source**, paste the attached Logs Explorer link that shows the signal, not
+just "GCP Logs Explorer". Cite only attached links. See `grounding.md`.
+
+## Code
+Include only when code was attached. One line per location; the quote must be
+verbatim. If the code you need was not attached, name the file without a line
+number instead of reconstructing it.
+
+- `path:line` — `the exact line` — why it matters
+
 ## Hypothesis
 - **Observation:**
 - **Hypothesis:**

@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 """Score an RCA against the binary-check rubric.
 
-Two numbers, never averaged together:
+Three numbers, never averaged together:
 
   CORRECTNESS  did the RCA find the documented root cause?   (needs ground truth)
   QUALITY      weighted pass rate over the rubric's checks    (always available)
+  GROUNDING    is it tied to the log links and code it was given?  (when attached)
 
 A polished RCA with the wrong conclusion scores high on quality and fails
 correctness. Folding them into one number hides exactly the failure you care
-about most.
+about most. Grounding is likewise separate: an RCA can be right and well argued
+while citing a code line that does not exist, and that must not be averaged away.
+A fabricated link or code line is a hard fail that blocks handoff.
 
     python scripts/score_rca.py --rca incident.md --evidence bundle.json
     python scripts/score_rca.py --rca incident.md --profile returning-owner
@@ -23,7 +26,10 @@ import re
 import sys
 from collections import Counter
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "optimizer"))
+import grounding  # noqa: E402
+import log_links  # noqa: E402
 import telemetry  # noqa: E402
 from triage_optimizer import TriageOptimizer  # noqa: E402
 
@@ -58,9 +64,13 @@ def strip_session(rca: str) -> str:
 
 def _verdict(raw):
     """Coerce a judge answer to True, False, or the string "na"."""
-    if isinstance(raw, str) and raw.strip().lower() in {"na", "n/a", "not_applicable"}:
-        return "na"
-    return bool(raw)
+    if isinstance(raw, str):
+        word = raw.strip().lower()
+        if word in {"na", "n/a", "not_applicable"}:
+            return "na"
+        # bool("false") is True; an unrecognised word fails closed.
+        return word in {"true", "yes", "pass", "passed"}
+    return raw is True or (isinstance(raw, int) and raw == 1)
 
 
 def render_evidence(bundle, max_entries: int = 40) -> str:
@@ -98,14 +108,40 @@ def render_evidence(bundle, max_entries: int = 40) -> str:
     omitted = len(entries) - len(ranked)
     if omitted > 0:
         lines.append(f"  ... {omitted} lower-severity entries omitted")
-    return "\n".join(head) + "\n\nentries (most severe first):\n" + "\n".join(lines)
+    return ("\n".join(head) + "\n\nentries (most severe first):\n" + "\n".join(lines)
+            + _render_attachments(bundle))
+
+
+def _render_attachments(bundle, max_code_lines: int = 80) -> str:
+    """Attached log links and code, so a judge (and the skill under test) sees what
+    the RCA is allowed to cite. Code carries line numbers: a citation is only
+    checkable against numbered lines."""
+    out = []
+    for item in bundle.get("links") or []:
+        parsed = log_links.parse_link(item.get("url", ""))
+        label = f" ({item['label']})" if item.get("label") else ""
+        out.append(f"  - {item.get('url')}{label}\n      shows: "
+                   + (log_links.describe(parsed) if parsed else "unrecognised link"))
+    text = ("\n\nattached log links (an RCA may cite only these):\n" + "\n".join(out)) if out else ""
+
+    blocks, budget = [], max_code_lines
+    for s in grounding.snippets(bundle):
+        shown = s["lines"][:max(budget, 0)]
+        budget -= len(shown)
+        ref = f" @ {s['ref']}" if s["ref"] else ""
+        blocks.append(f"  {s['path']}{ref}, lines {s['start']}-{s['end']}:\n"
+                      + "\n".join(f"    {s['start'] + i:>4} | {ln}" for i, ln in enumerate(shown))
+                      + ("\n    ... truncated" if len(shown) < len(s["lines"]) else ""))
+    if blocks:
+        text += "\n\nattached code (an RCA may cite only these lines):\n" + "\n".join(blocks)
+    return text
 
 
 def all_checks(rubric) -> list:
     return [{**c, "dimension": d["id"]} for d in rubric["dimensions"] for c in d["checks"]]
 
 
-async def judge_once(opt, rca, evidence_text, checks):
+async def judge_once(opt, rca, evidence_text, checks, role="judge"):
     return await opt._ask_json(
         JUDGE_SYSTEM,
         (
@@ -118,7 +154,7 @@ async def judge_once(opt, rca, evidence_text, checks):
         ),
         fallback={"results": []},
         temperature=0.0,
-        role="judge",
+        role=role,
     )
 
 
@@ -138,19 +174,10 @@ async def judge_gate(opt, rca, true_root_cause, gate):
     )
 
 
-async def score_rca(opt, rca, bundle, rubric, profile="balanced", runs=3,
-                    true_root_cause=None):
-    rca = strip_session(rca)
-    checks = all_checks(rubric)
-    evidence_text = render_evidence(bundle)
-
-    passes = await asyncio.gather(
-        *[judge_once(opt, rca, evidence_text, checks) for _ in range(runs)]
-    )
-
-    # Majority vote per check rather than a median of composites: variance shows
-    # up on individual judgments, so that is where it should be suppressed.
-    votes: dict = {c["id"]: [] for c in checks}
+def _majority(passes, ids):
+    """Majority vote per check rather than a median of composites: variance shows
+    up on individual judgments, so that is where it should be suppressed."""
+    votes: dict = {cid: [] for cid in ids}
     quotes: dict = {}
     for p in passes:
         for r in (p.get("results") or []):
@@ -169,6 +196,46 @@ async def score_rca(opt, rca, bundle, rubric, profile="balanced", runs=3,
         verdicts[cid] = winner
         if count < len(vs):
             unstable.append(cid)
+    return verdicts, quotes, unstable
+
+
+async def score_grounding(opt, rca, bundle, rubric, evidence_text, runs=3):
+    """Third score: deterministic checks in code, the rest by the judge.
+
+    Returns None when the rubric has no grounding block. Judged checks run only
+    when their inputs (links or code) are attached; otherwise they are n/a.
+    """
+    spec = rubric.get("grounding")
+    if not spec:
+        return None
+    det = grounding.run_deterministic(rca, bundle, spec)
+    to_judge = grounding.applicable_judged(bundle, spec)
+    judged = []
+    if to_judge:
+        passes = await asyncio.gather(*[
+            judge_once(opt, rca, evidence_text, to_judge, role="judge.grounding")
+            for _ in range(runs)])
+        verdicts, quotes, unstable = _majority(passes, [c["id"] for c in to_judge])
+        judged = [{"id": cid, "passed": verdicts[cid], "quote": quotes.get(cid, "")}
+                  for cid in verdicts]
+    else:
+        unstable = []
+    result = grounding.summarize(det, judged, spec)
+    result["unstable_checks"] = unstable
+    return result
+
+
+async def score_rca(opt, rca, bundle, rubric, profile="balanced", runs=3,
+                    true_root_cause=None):
+    rca = strip_session(rca)
+    checks = all_checks(rubric)
+    evidence_text = render_evidence(bundle)
+
+    passes = await asyncio.gather(
+        *[judge_once(opt, rca, evidence_text, checks) for _ in range(runs)]
+    )
+
+    verdicts, quotes, unstable = _majority(passes, [c["id"] for c in checks])
 
     weights = rubric["profiles"][profile]["weights"]
     per_dimension, weighted, applicable_weight = [], 0.0, 0.0
@@ -210,6 +277,10 @@ async def score_rca(opt, rca, bundle, rubric, profile="balanced", runs=3,
         "runs": runs,
     }
 
+    grounded = await score_grounding(opt, rca, bundle, rubric, evidence_text, runs)
+    if grounded is not None:
+        result["grounding"] = grounded
+
     if true_root_cause:
         gate = await judge_gate(opt, rca, true_root_cause, rubric["gate"])
         result["correctness"] = gate.get("verdict", "wrong")
@@ -229,7 +300,17 @@ def report(r, rca_path):
         print(f"\n  CORRECTNESS  {mark.get(r['correctness'], '?')}  ({r['correctness']})")
         if r.get("correctness_reason"):
             print(f"               {r['correctness_reason'][:100]}")
-    print(f"  QUALITY      {r['quality']}/100  ->  {band}\n")
+    print(f"  QUALITY      {r['quality']}/100  ->  {band}")
+    g = r.get("grounding")
+    if g:
+        if g["hard_fail"]:
+            print(f"  GROUNDING    FAIL  cites something that was never attached "
+                  f"({', '.join(g['fabricated'])}) -> blocks handoff")
+        elif g["score"] is None:
+            print("  GROUNDING    n/a   (no log links or code attached)")
+        else:
+            print(f"  GROUNDING    {g['score']}/100  ({g['passed']}/{g['total']} checks)")
+    print()
 
     for d in r["per_dimension"]:
         if d["rate"] is None:
@@ -259,8 +340,17 @@ def report(r, rca_path):
     na = [c["id"] for c in r["checks"] if c["passed"] == "na"]
     if na:
         print(f"\n  Not applicable: {', '.join(na)}")
-    if r["unstable_checks"]:
-        print(f"\n  ⚠  Split votes across runs: {', '.join(r['unstable_checks'])}")
+    if g and g["total"]:
+        print("\n  Grounding checks")
+        for c in g["checks"]:
+            if c["passed"] == "na":
+                continue
+            mark = "✓" if c["passed"] is True else ("✗✗" if c["hard_fail"] else "✗")
+            kind = "code " if c["kind"] == "deterministic" else "judge"
+            print(f"    {mark:<2} {c['id']:<27} [{kind}] {str(c['detail'])[:80]}")
+    unstable = r["unstable_checks"] + ((g or {}).get("unstable_checks") or [])
+    if unstable:
+        print(f"\n  ⚠  Split votes across runs: {', '.join(unstable)}")
         print("     Those checks are ambiguous for this RCA — reword them or raise --runs.")
     print()
 
@@ -357,6 +447,8 @@ def main() -> int:
 
     if result.get("correctness") == "wrong":
         return 2
+    if (result.get("grounding") or {}).get("hard_fail"):
+        return 2  # cites a link or code line that was never attached
     return 0 if result["quality"] > 80 else 1
 
 

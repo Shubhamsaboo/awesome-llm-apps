@@ -13,8 +13,7 @@ import sys
 import streamlit as st
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from triage_optimizer import TriageOptimizer  # noqa: E402  (first litellm import; keep before copilot)
-import copilot  # noqa: E402
+from triage_optimizer import TriageOptimizer  # noqa: E402  (imports LiteLLM safely; see _import_litellm)
 import sessions_view  # noqa: E402
 import telemetry  # noqa: E402
 from triage_optimizer import CLAUDE_CODE_PREFIX  # noqa: E402
@@ -23,10 +22,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SKILL_PATH = os.path.join(ROOT, "SKILL.md")
 GOLDEN_PATH = os.path.join(ROOT, "references", "golden_set.json")
 
-COPILOT = "GitHub Copilot"
 CLAUDE_CODE = "Claude Code"
 API_KEY = "API key"
-BACKENDS = [COPILOT, CLAUDE_CODE, API_KEY]
+BACKENDS = [API_KEY, CLAUDE_CODE]
 # Aliases resolve to the latest model of each family on your Claude Code plan.
 CLAUDE_CODE_MODELS = ["sonnet", "opus", "haiku"]
 
@@ -47,11 +45,6 @@ def _load(path, default):
         return default
 
 
-@st.cache_data(ttl=600, show_spinner="Loading your Copilot models…")
-def _copilot_models():
-    return copilot.list_models()
-
-
 telemetry.init()
 golden = _load(GOLDEN_PATH, {"teams": [], "scenarios": [], "evals": []})
 
@@ -65,24 +58,12 @@ st.caption(
 with st.sidebar:
     st.header("Model")
     backend = st.segmented_control(
-        "Backend", BACKENDS, default=COPILOT, required=True, key="backend",
-        help="Copilot for cheap local experiments; Claude Code to compare against "
-             "your Claude Code login. Every run is traced in the Sessions tab.",
+        "Backend", BACKENDS, default=API_KEY, required=True, key="backend",
+        help="Use a provider API key for LiteLLM, or compare against your Claude Code login. "
+             "Every run is traced in the Sessions tab.",
     )
     api_key = None
-    if backend == COPILOT:
-        signed_in = copilot.is_signed_in()
-        if signed_in:
-            st.success("Signed in to GitHub Copilot", icon=":material/check_circle:")
-        else:
-            st.warning("Not signed in. In a terminal run:\n\n`python scripts/copilot_login.py`")
-        options = _copilot_models() if signed_in else []
-        model = st.selectbox("Model", options, key="copilot-model") if options else None
-        custom = st.text_input("…or a model ID", placeholder="github_copilot/<model-id>",
-                               key="copilot-custom")
-        model = custom.strip() or model
-        has_credential = bool(signed_in and model)
-    elif backend == CLAUDE_CODE:
+    if backend == CLAUDE_CODE:
         cli = shutil.which(os.environ.get("TRIAGE_CLAUDE_BIN", "claude"))
         if cli:
             st.success("Using your Claude Code login", icon=":material/check_circle:")
