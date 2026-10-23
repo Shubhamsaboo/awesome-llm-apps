@@ -10,8 +10,11 @@ and CLI argument parsing using only the Python standard library.
 import os
 import re
 import sys
+import tempfile
+import types
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 # Add scripts directory to path
 SCRIPTS_DIR = Path(__file__).resolve().parents[2] / "pdf-translate" / "scripts"
@@ -19,6 +22,7 @@ sys.path.insert(0, str(SCRIPTS_DIR))
 
 from audit_pdf import (
     DEFAULT_HALLUCINATION_KEYWORDS,
+    audit_document,
     extract_clauses,
     normalize_clause,
 )
@@ -62,6 +66,34 @@ class TestAuditPdf(unittest.TestCase):
         ignore_list = ["2026"]
         filtered = [c for c in sample_clauses if not any(ign in c for ign in ignore_list)]
         self.assertEqual(filtered, ["1.1", "2.3.4"])
+
+    def test_strict_mode_missing_clauses(self):
+        class FakePage:
+            def __init__(self, text):
+                self._text = text
+                self.rect = types.SimpleNamespace(width=595, height=842)
+
+            def get_images(self):
+                return []
+
+            def get_text(self):
+                return self._text
+
+        src_pages = [FakePage("Section 1.1 and clause 1.2 are present here in detail.")]
+        tgt_pages = [FakePage("Section 1.1 is present here in detail without the second one.")]
+
+        fake_fitz = types.ModuleType("fitz")
+        fake_fitz.open = lambda path: src_pages if "src" in path else tgt_pages
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            src_pdf = os.path.join(tmpdir, "src.pdf")
+            tgt_pdf = os.path.join(tmpdir, "tgt.pdf")
+            Path(src_pdf).write_text("dummy", encoding="utf-8")
+            Path(tgt_pdf).write_text("dummy", encoding="utf-8")
+
+            with patch.dict(sys.modules, {"fitz": fake_fitz}):
+                self.assertTrue(audit_document(src_pdf, tgt_pdf, strict=False))
+                self.assertFalse(audit_document(src_pdf, tgt_pdf, strict=True))
 
 
 def main():

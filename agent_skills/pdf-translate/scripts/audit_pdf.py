@@ -17,12 +17,6 @@ import argparse
 if sys.platform == "win32":
     sys.stdout.reconfigure(encoding="utf-8")
 
-try:
-    import fitz  # PyMuPDF
-except ImportError:
-    print("Error: PyMuPDF (fitz) is required. Please install dependencies from scripts/requirements.txt")
-    sys.exit(1)
-
 # Default language-agnostic hallucination and placeholder trigger words
 DEFAULT_HALLUCINATION_KEYWORDS = [
     "TODO",
@@ -88,6 +82,12 @@ def audit_document(
         return False
     if not os.path.exists(tgt_path):
         print(f"[FATAL] Target PDF not found: {tgt_path}")
+        return False
+
+    try:
+        import fitz  # PyMuPDF
+    except ImportError:
+        print("Error: PyMuPDF (fitz) is required. Please install dependencies from scripts/requirements.txt")
         return False
 
     doc_src = fitz.open(src_path)
@@ -197,8 +197,12 @@ def audit_document(
         if missing_clauses:
             page_info["issues"].append(f"Missing clauses in target: {missing_clauses}")
             if strict:
-                page_info["status"] = "WARNING"
-            report["summary"]["warnings"] += 1
+                page_info["status"] = "FAIL"
+                report["summary"]["critical_errors"] += 1
+            else:
+                if page_info["status"] == "PASS":
+                    page_info["status"] = "WARNING"
+                report["summary"]["warnings"] += 1
 
         report["pages"].append(page_info)
 
