@@ -10,7 +10,9 @@ import os
 import sys
 import unittest
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# The skill under test: agent_skills/triage-issue (this file is in agent_skills/evals/triage-issue).
+ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+                    "triage-issue")
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
 
 import grounding  # noqa: E402

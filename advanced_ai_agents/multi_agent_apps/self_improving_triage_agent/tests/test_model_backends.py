@@ -2,7 +2,7 @@
 
     python -m unittest discover -s tests -v
 
-No network and no credentials: token files point at a temp dir.
+No network and no credentials.
 """
 
 import os
@@ -13,7 +13,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "optimizer"))
 
 import litellm  # noqa: E402
-from triage_optimizer import TriageOptimizer  # noqa: E402
+from skill_optimizer import SkillOptimizer  # noqa: E402
 
 
 class TemperatureFix(unittest.TestCase):
@@ -23,7 +23,7 @@ class TemperatureFix(unittest.TestCase):
         self.assertTrue(litellm.drop_params)
 
 
-class KeyRouting(unittest.TestCase):
+class KeyHandling(unittest.TestCase):
     def setUp(self):
         self._saved = os.environ.pop("ANTHROPIC_API_KEY", None)
 
@@ -32,9 +32,10 @@ class KeyRouting(unittest.TestCase):
         if self._saved is not None:
             os.environ["ANTHROPIC_API_KEY"] = self._saved
 
-    def test_anthropic_model_sets_anthropic_key(self):
-        TriageOptimizer(model="anthropic/claude-sonnet-5", api_key="k")
-        self.assertEqual(os.environ.get("ANTHROPIC_API_KEY"), "k")
+    def test_key_stays_on_the_client_not_in_the_environment(self):
+        opt = SkillOptimizer(model="anthropic/claude-sonnet-5", api_key="k")
+        self.assertEqual(opt.api_key, "k")
+        self.assertNotIn("ANTHROPIC_API_KEY", os.environ)
 
 class AppImports(unittest.TestCase):
     def test_streamlit_app_runs_without_exception(self):

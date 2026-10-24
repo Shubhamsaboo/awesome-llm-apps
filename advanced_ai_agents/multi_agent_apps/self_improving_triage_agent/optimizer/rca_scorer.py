@@ -1,27 +1,25 @@
-"""Self-improving RCA writer: the same hill-climb, scored on RCA quality.
+"""RCA scorer: is the RCA the skill writes correct, complete, and grounded?
 
-Reuses TriageOptimizer's loop (rounds, patience, mutation log, events) and
-replaces only the scorer. Per case the Executor writes an RCA from a normalized
-evidence bundle, then the judge grades it against the binary-check rubric.
+Per case the executor writes an RCA from the case's evidence bundle or ticket
+and intake, then the triage-issue skill's own `score_rca` grades it — the same
+code path as its CLI, so a gain measured here reproduces there.
 
-Two numbers come back, never averaged:
+Three numbers come back, never averaged together:
   correctness — did the RCA reach the documented root cause?
-  quality     — weighted pass rate over the rubric's checks
+  quality     — weighted pass rate over the rubric's binary checks
+  grounding   — does it cite only the log links and code it was given?
 
-The optimized objective is `0.6 * correctness + 0.4 * quality`, because a skill
-that writes beautiful RCAs with wrong conclusions is a worse skill.
+The objective is `0.6 * correctness + 0.4 * quality`, because a skill that
+writes beautiful RCAs with wrong conclusions is a worse skill. Grounding is a
+veto on edits, not a term in the objective.
 """
 
 import asyncio
 import json
-import os
-import sys
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scripts"))
-
-from triage_optimizer import TriageOptimizer  # noqa: E402
+import skill_paths  # noqa: F401  (puts the skill's scripts on sys.path)
 from score_rca import render_evidence, score_rca as score_rca_doc  # noqa: E402
+from skill_optimizer import BaseScorer, SkillOptimizer
 
 CORRECTNESS_WEIGHT = 0.6
 
@@ -32,6 +30,16 @@ _DEFAULT_CREDIT = {
     "insufficient_evidence": {"correct": 0.3, "partially_correct": 0.3,
                               "insufficient_evidence": 1.0, "wrong": 0.0},
 }
+
+MUTATION_STRATEGIES = (
+    "add_evidence_rule",
+    "add_citation_rule",
+    "add_causal_rule",
+    "add_falsification_rule",
+    "add_template_section",
+    "add_worked_example",
+    "restructure",
+)
 
 
 def correctness_credit(expected, actual, rubric=None):
@@ -45,21 +53,6 @@ def correctness_credit(expected, actual, rubric=None):
     if not isinstance(row, dict):
         row = _DEFAULT_CREDIT.get(expected or "correct", _DEFAULT_CREDIT["correct"])
     return float(row.get(actual, 0.0))
-
-RCA_ANALYST_SYSTEM = (
-    "You diagnose why a triage skill produces weak or wrong RCAs. Given the "
-    "checks that failed and the conclusions that missed the documented root "
-    "cause, find the single root cause that explains the most failures, then "
-    "pick one mutation_strategy from: add_evidence_rule, add_citation_rule, "
-    "add_causal_rule, add_falsification_rule, add_template_section, "
-    "add_worked_example, restructure.\n\n"
-    "Citing a log link or code line that was never attached is as serious as a "
-    "wrong conclusion: the reader copies it into a fix.\n\n"
-    "A wrong conclusion outranks a missing checkbox: if the skill reaches the "
-    "wrong root cause, fix the reasoning, not the formatting. Prefer a rule "
-    "that generalizes across cases over one that memorizes a single incident. "
-    "Return valid JSON only."
-)
 
 
 def generation_cases(golden: dict) -> list:
@@ -76,23 +69,43 @@ def generation_cases(golden: dict) -> list:
     ]
 
 
-class RcaOptimizer(TriageOptimizer):
-    """`context` expects {"rubric": <parsed rca-rubric.json>, "profile": str}."""
+RCA_ANALYST_SYSTEM = (
+    "You diagnose why a triage skill produces weak or wrong RCAs. Given the "
+    "checks that failed and the conclusions that missed the documented root "
+    "cause, find the single root cause that explains the most failures, then "
+    f"pick one mutation_strategy from: {', '.join(MUTATION_STRATEGIES)}.\n\n"
+    "Citing a log link or code line that was never attached is as serious as a "
+    "wrong conclusion: the reader copies it into a fix.\n\n"
+    "A wrong conclusion outranks a missing checkbox: if the skill reaches the "
+    "wrong root cause, fix the reasoning, not the formatting. Prefer a rule "
+    "that generalizes across cases over one that memorizes a single incident. "
+    "Return valid JSON only."
+)
 
-    async def _score(self, skill_md, scenarios, evals, context) -> dict:
-        rubric = context["rubric"]
-        profile = context.get("profile", rubric.get("default_profile", "balanced"))
-        runs = context.get("judge_runs", 1)
+
+class RcaScorer(BaseScorer):
+    kind = "rca"
+    objective_label = "RCA objective %"
+
+    def __init__(self, rubric: dict, profile: str = None, judge_runs: int = 1):
+        self.rubric = rubric
+        self.profile = profile or rubric.get("default_profile", "balanced")
+        self.judge_runs = judge_runs
+
+    async def score(self, client: SkillOptimizer, skill_md: str, cases: list) -> dict:
+        rubric = self.rubric
         results = await asyncio.gather(*[
-            self._score_one(skill_md, c, rubric, profile, runs) for c in scenarios
+            self._score_one(client, skill_md, c) for c in cases
         ])
 
         dim_totals = {d["id"]: {"passed": 0, "total": 0} for d in rubric["dimensions"]}
         failures, scored, correctness_points = [], 0.0, 0.0
         overconfident = []
         grounding_scores, fabricated_cases = [], []
+        parse_errors = 0
 
         for case, rca, detail in results:
+            parse_errors += detail.get("parse_errors", 0)
             for d in detail["per_dimension"]:
                 dim_totals[d["dimension"]]["passed"] += d["passed"]
                 dim_totals[d["dimension"]]["total"] += d["total"]
@@ -135,9 +148,10 @@ class RcaOptimizer(TriageOptimizer):
                     "grounding": g.get("score"),
                     "grounding_failed": grounding_failed,
                     "rca_excerpt": (rca or "")[:700],
+                    "parse_errors": detail.get("parse_errors", 0),
                 })
 
-        n = len(scenarios) or 1
+        n = len(cases) or 1
         correctness_pct = round(100 * correctness_points / n, 1)
         quality_pct = round(scored / n, 1)
         objective = round(
@@ -146,8 +160,8 @@ class RcaOptimizer(TriageOptimizer):
         )
 
         return {
-            # The base loop hill-climbs on pass_rate, so the blended objective
-            # goes here; the components stay visible alongside it.
+            # The loop hill-climbs on pass_rate, so the blended objective goes
+            # here; the components stay visible alongside it.
             "pass_rate": objective,
             "correctness_pct": correctness_pct,
             "quality_pct": quality_pct,
@@ -155,9 +169,9 @@ class RcaOptimizer(TriageOptimizer):
                 1 for c, _, d in results
                 if d.get("correctness") == c.get("expected_correctness", "correct")
             ),
-            "total": len(scenarios),
+            "total": len(cases),
             "overconfident": overconfident,
-            # Third score: reported, and guarded in _improves, never blended in.
+            # Third score: reported, and guarded in improves(), never blended in.
             "grounding_pct": (round(sum(grounding_scores) / len(grounding_scores), 1)
                               if grounding_scores else None),
             "fabricated": fabricated_cases,
@@ -168,6 +182,7 @@ class RcaOptimizer(TriageOptimizer):
             ],
             "failures": failures,
             "confusion": [],
+            "parse_errors": parse_errors,
             "case_results": [
                 {
                     "case_id": case["id"],
@@ -184,16 +199,16 @@ class RcaOptimizer(TriageOptimizer):
         return {(f["case_id"], check) for f in result.get("fabricated") or []
                 for check in (f.get("checks") or ["?"])}
 
-    def _improves(self, candidate: dict, best: dict) -> bool:
+    def improves(self, candidate: dict, best: dict, min_gain: float = 0.0) -> bool:
         """Grounding is a constraint, not a term in the objective.
 
         - Any fabrication the best did not have vetoes the edit, even if it fixes
           a different one: swapping case A's invented line for case B's is not progress.
         - Lower grounding vetoes the edit.
-        - Otherwise a higher objective is kept, as in the base loop, and so is an
-          equal objective that strictly removes fabrications. Without that, the
-          analyst's top-priority fix could never survive unless it also happened to
-          raise correctness or quality.
+        - Otherwise an objective gain of at least `min_gain` is kept, as for any
+          scorer, and so is an equal objective that strictly removes fabrications.
+          Without that, the analyst's top-priority fix could never survive unless
+          it also happened to raise correctness or quality.
         """
         cand_f, best_f = self._fabrications(candidate), self._fabrications(best)
         if cand_f - best_f:
@@ -201,15 +216,15 @@ class RcaOptimizer(TriageOptimizer):
         cg, bg = candidate.get("grounding_pct"), best.get("grounding_pct")
         if cg is not None and bg is not None and cg < bg:
             return False
-        if super()._improves(candidate, best):
+        if super().improves(candidate, best, min_gain):
             return True
         return candidate["pass_rate"] == best["pass_rate"] and cand_f < best_f
 
-    def _converged(self, best: dict) -> bool:
+    def converged(self, best: dict) -> bool:
         # A perfect objective with an invented citation still has work to do.
-        return super()._converged(best) and not best.get("fabricated")
+        return super().converged(best) and not best.get("fabricated")
 
-    def _extra_results(self, best: dict) -> dict:
+    def extra_results(self, best: dict) -> dict:
         return {
             "correctness_pct": best.get("correctness_pct"),
             "quality_pct": best.get("quality_pct"),
@@ -220,7 +235,7 @@ class RcaOptimizer(TriageOptimizer):
             "per_eval": best.get("per_eval") or [],
         }
 
-    async def _score_one(self, skill_md, case, rubric, profile, runs):
+    async def _score_one(self, client, skill_md, case):
         bundle = case.get("evidence")
         ticket = case.get("ticket")
         if bundle:
@@ -247,7 +262,7 @@ class RcaOptimizer(TriageOptimizer):
                 )
             )
 
-        rca = await self._ask(
+        rca = await client._ask(
             "You are an RCA execution agent. Follow the supplied skill exactly. "
             "Use only facts present in the material given — never invent a log line, "
             "service, identifier, or number. Output the document only, no preamble.",
@@ -257,13 +272,11 @@ class RcaOptimizer(TriageOptimizer):
             role="executor.rca",
         )
 
-        # Same scorer the CLI uses, so an optimizer gain reproduces under
-        # scripts/score_rca.py instead of being an artifact of a second code path.
-        detail = await score_rca_doc(self, rca, bundle, rubric, profile, runs,
-                                     case.get("true_root_cause"))
+        detail = await score_rca_doc(client, rca, bundle, self.rubric, self.profile,
+                                     self.judge_runs, case.get("true_root_cause"))
         return case, rca, detail
 
-    async def _analyze(self, skill_md, failures, mutation_log) -> dict:
+    async def diagnose(self, client, skill_md, failures, mutation_log) -> dict:
         if not failures:
             return {"diagnosis": "All cases correct and complete",
                     "mutation_strategy": "restructure",
@@ -282,14 +295,8 @@ class RcaOptimizer(TriageOptimizer):
             for f in failures
             if any(g.get("hard_fail") for g in f.get("grounding_failed", []))
         ]
-        tried = [
-            f"- [{m['strategy_type']}] {m['description']} "
-            f"({m['score_before']} -> {m['score_after']}, "
-            f"{'kept' if m['kept'] else 'DISCARDED'})"
-            for m in mutation_log[-6:]
-        ]
-        # Priority order: concluding without evidence, then concluding wrongly,
-        # then everything else. Formatting gaps are last.
+        # Priority order: concluding without evidence, then citing what was never
+        # attached, then concluding wrongly. Formatting gaps are last.
         priority = ""
         if overconfident:
             priority += (
@@ -314,20 +321,18 @@ class RcaOptimizer(TriageOptimizer):
                 f"\n\n# Wrong conclusions — fix these before any formatting gap\n"
                 f"{json.dumps(wrong[:3], indent=2)}"
             )
-        return await self._ask_json(
+        return await client._ask_json(
             RCA_ANALYST_SYSTEM,
             (
                 f"Diagnose these RCA failures and propose ONE generalizing fix.\n\n"
                 f"# Current skill\n{skill_md}\n\n"
                 f"# Failing cases\n{json.dumps(failures[:4], indent=2)}"
                 f"{priority}"
-                + (f"\n\n# Already attempted (do not repeat a discarded one)\n"
-                   + "\n".join(tried) if tried else "")
-                + "\n\nReturn JSON: {\"diagnosis\": \"the one root cause\", "
-                  "\"mutation_strategy\": \"add_evidence_rule|add_citation_rule|"
-                  "add_causal_rule|add_falsification_rule|add_template_section|"
-                  "add_worked_example|restructure\", \"target_section\": \"heading to edit\", "
-                  "\"suggested_change\": \"the specific edit\"}"
+                f"{self.tried_block(mutation_log)}"
+                "\n\nReturn JSON: {\"diagnosis\": \"the one root cause\", "
+                f"\"mutation_strategy\": \"{'|'.join(MUTATION_STRATEGIES)}\", "
+                "\"target_section\": \"heading to edit\", "
+                "\"suggested_change\": \"the specific edit\"}"
             ),
             fallback={"diagnosis": "Unable to diagnose",
                       "mutation_strategy": "add_causal_rule",

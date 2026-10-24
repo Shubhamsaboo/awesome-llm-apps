@@ -13,19 +13,21 @@ import sys
 import streamlit as st
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from triage_optimizer import TriageOptimizer  # noqa: E402  (imports LiteLLM safely; see _import_litellm)
+import skill_paths  # noqa: E402  (locates agent_skills/triage-issue)
+from skill_optimizer import CLAUDE_CODE_PREFIX, SkillOptimizer, split_holdout  # noqa: E402  (imports LiteLLM safely)
 import sessions_view  # noqa: E402
 import telemetry  # noqa: E402
-from triage_optimizer import CLAUDE_CODE_PREFIX  # noqa: E402
-from rca_optimizer import RcaOptimizer, generation_cases  # noqa: E402
+from rca_scorer import RcaScorer, generation_cases  # noqa: E402
+from routing_scorer import RoutingScorer, generate_scenarios  # noqa: E402
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SKILL_PATH = os.path.join(ROOT, "SKILL.md")
-GOLDEN_PATH = os.path.join(ROOT, "references", "golden_set.json")
-RCA_GOLDEN_PATH = os.path.join(ROOT, "references", "rca-golden-set.json")
-RUBRIC_PATH = os.path.join(ROOT, "references", "rca-rubric.json")
+SKILL_PATH = skill_paths.SKILL_MD
+GOLDEN_PATH = skill_paths.ROUTING_GOLDEN
+RCA_GOLDEN_PATH = skill_paths.RCA_GOLDEN
+RUBRIC_PATH = skill_paths.RCA_RUBRIC
 ROUTING = "Team assignment"
 RCA = "RCA evaluation"
+OUTCOME_ICONS = {"kept": "✅", "discarded": "❌", "inconclusive": "⚠️",
+                 "skipped": "⏭️", "unchanged": "➖"}
 
 CLAUDE_CODE = "Claude Code"
 API_KEY = "API key"
@@ -117,6 +119,16 @@ with st.sidebar:
     max_rounds = st.slider("Max rounds", 3, 25, 10)
     patience = st.slider("Stop after N rounds with no gain", 2, 10, 4)
     concurrency = st.slider("Parallel scenario calls", 1, 8, 4)
+    min_gain = st.slider(
+        "Minimum gain to keep an edit (points)", 0.0, 20.0, 5.0, 0.5, key="min-gain",
+        help="An edit must raise the objective by at least this much. On small golden "
+             "sets one flipped case moves the score a lot, so 0 keeps lucky runs.",
+    )
+    holdout_pct = st.slider(
+        "Hold out from optimization (%)", 0, 50, 25, 5, key="holdout-pct",
+        help="These cases never decide which edit is kept. They are scored for the "
+             "starting and final skill only, so overfitting shows up as a drop.",
+    )
 
     teams_raw = st.session_state.get("team_text", "\n".join(golden.get("teams", [])))
     if is_rca:
@@ -164,14 +176,14 @@ with tab_skill:
                 st.error("Add your teams in the sidebar.")
             else:
                 with st.spinner("Generating…"):
-                    opt = TriageOptimizer(model=model, api_key=api_key)
-                    gen = asyncio.run(opt.analyze_skill(skill_md, teams))
+                    opt = SkillOptimizer(model=model, api_key=api_key)
+                    gen = asyncio.run(generate_scenarios(opt, skill_md, teams))
                 st.session_state["routing_scenarios_text"] = json.dumps(gen.get("scenarios", []), indent=2)
                 st.session_state["routing_evals_text"] = json.dumps(gen.get("evals", []), indent=2)
                 st.success(f"Generated {len(gen.get('scenarios', []))} scenarios. See tab 2.")
 
 # -- 2. Golden set -----------------------------------------------------------
-scenarios, evals, context = [], [], {}
+scenarios, evals, scorer = [], [], None
 data_valid = False
 with tab_data:
     st.subheader(f"{mode} golden set")
@@ -179,10 +191,11 @@ with tab_data:
 
     if is_rca:
         st.caption(
-            "Loaded from references/rca-golden-set.json. The skill writes a fresh RCA "
-            "from each case's evidence or ticket and intake. The documented root cause "
-            "is shown only to the judge, never the RCA writer. Stored sample RCAs and "
-            "human scores are for judge calibration, not generation targets."
+            "Loaded from agent_skills/triage-issue/references/rca-golden-set.json. The "
+            "skill writes a fresh RCA from each case's evidence or ticket and intake. "
+            "The documented root cause is shown only to the judge, never the RCA writer. "
+            "Stored sample RCAs and human scores are for judge calibration, not "
+            "generation targets."
         )
         initial_cases = generation_cases(rca_golden)
         scen_txt = st.text_area(
@@ -191,11 +204,12 @@ with tab_data:
             height=420, key="rca-cases-editor",
         )
         st.session_state["rca_cases_text"] = scen_txt
-        context = {"rubric": rubric, "profile": profile, "judge_runs": judge_runs}
+        scorer = RcaScorer(rubric, profile=profile, judge_runs=judge_runs)
         with st.expander("RCA evaluation rubric"):
             st.json(rubric)
     else:
-        st.caption("Loaded from references/golden_set.json: tickets and their expected owning teams.")
+        st.caption("Loaded from agent_skills/triage-issue/references/golden_set.json: "
+                   "tickets and their expected owning teams.")
         c1, c2 = st.columns([3, 2])
         with c1:
             st.markdown("**Scenarios** — issue text + expected routing")
@@ -213,7 +227,6 @@ with tab_data:
                 height=420, label_visibility="collapsed",
             )
             st.session_state["routing_evals_text"] = eval_txt
-        context = {"teams": teams}
 
     try:
         scenarios = _records(scen_txt, "RCA cases" if is_rca else "Scenarios")
@@ -245,6 +258,7 @@ with tab_data:
                     raise ValueError(f"Scenario {scenario['id']}: supply non-empty input text.")
                 if scenario.get("expected_team") not in teams:
                     raise ValueError(f"Scenario {scenario['id']}: expected_team must be in the team list.")
+            scorer = RoutingScorer(teams, evals)
             st.success(f"{len(scenarios)} scenarios · {len(evals)} evals ready.")
             counts: dict = {}
             for scenario in scenarios:
@@ -278,22 +292,25 @@ with tab_run:
         history: list = []
 
         async def run():
-            optimizer_class = RcaOptimizer if is_rca else TriageOptimizer
-            opt = optimizer_class(model=model, api_key=api_key, concurrency=concurrency)
+            opt = SkillOptimizer(model=model, api_key=api_key, concurrency=concurrency)
+            # Evaluate scores every case; optimization holds some out so the
+            # final skill is also measured on cases that never steered it.
+            train, held = (scenarios, []) if evaluate else split_holdout(scenarios, holdout_pct / 100)
 
             async def on_event(ev):
                 events.append(ev)
                 if ev["type"] == "baseline":
                     history.append(ev["data"]["score"])
                     outcome = "target verdicts matched" if is_rca else "routed correctly"
+                    held_note = f" · {len(held)} held out" if held else ""
                     board.info(f"Baseline: **{ev['data']['score']}%** "
-                               f"({ev['data']['passed']}/{ev['data']['total']} {outcome})")
+                               f"({ev['data']['passed']}/{ev['data']['total']} {outcome}{held_note})")
                 elif ev["type"] == "round_result":
                     d = ev["data"]
                     rows = [f"Baseline · {events[0]['data']['score']}%"]
                     rows += [
                         f"Round {e['data']['round']} · {e['data']['score']}% · "
-                        f"{'✅ kept' if e['data']['kept'] else '❌ discarded'} · "
+                        f"{OUTCOME_ICONS.get(e['data']['outcome'], '')} {e['data']['outcome']} · "
                         f"{e['data']['description']}"
                         for e in events if e["type"] == "round_result"
                     ]
@@ -302,13 +319,9 @@ with tab_run:
                     chart.line_chart({score_label: history})
 
             return await opt.optimize(
-                skill_md=st.session_state["skill_md"],
-                context=context,
-                scenarios=scenarios,
-                evals=evals,
+                st.session_state["skill_md"], scorer, train, holdout=held,
                 max_rounds=0 if evaluate else max_rounds,
-                patience=patience,
-                callback=on_event,
+                patience=patience, min_gain=min_gain, callback=on_event,
             )
 
         with st.spinner("Evaluating skill…" if evaluate else "Optimizing — each round re-scores every scenario…"):
@@ -337,6 +350,19 @@ with tab_out:
 
         st.line_chart({score_label: res["score_history"]})
 
+        if res.get("parse_errors"):
+            st.warning(f"{res['parse_errors']} model replies could not be parsed while scoring "
+                       "the final skill and were counted as failures. Rerun before trusting "
+                       "the score.", icon=":material/warning:")
+        if h := res.get("holdout"):
+            a, b = st.columns(2)
+            a.metric(f"Held-out cases ({h['total']}), start", f"{h['baseline']}%")
+            b.metric("Held-out cases, final", f"{h['final']}%",
+                     delta=f"{h['final'] - h['baseline']:+.1f}")
+            if h["regressed"]:
+                st.warning("The edits lowered the score on held-out cases: they likely fit "
+                           "the training cases rather than generalize. Review before adopting.",
+                           icon=":material/trending_down:")
         if is_rca:
             a, b, c = st.columns(3)
             a.metric("Correctness", f"{res['correctness_pct']}%")
@@ -380,14 +406,16 @@ with tab_out:
 
         st.subheader("Round log")
         for m in res["mutation_log"]:
-            icon = "✅" if m["kept"] else "❌"
             with st.expander(
-                f"{icon} Round {m['round']} · {m['score_before']}% → {m['score_after']}% · "
-                f"{m['description']}"
+                f"{OUTCOME_ICONS.get(m['outcome'], '')} Round {m['round']} · {m['outcome']} · "
+                f"{m['score_before']}% → {m['score_after']}% · {m['description']}"
             ):
                 st.markdown(f"**Strategy** `{m['strategy_type']}` → `{m['target_section']}`")
                 st.markdown(f"**Diagnosis** {m['diagnosis']}")
                 st.markdown(f"**Rationale** {m['reasoning']}")
+                if m["outcome"] == "inconclusive":
+                    st.caption(f"Not kept: {m['parse_errors']} unparseable model replies "
+                               "while scoring this edit.")
 
         if res["remaining_failures"]:
             if is_rca:

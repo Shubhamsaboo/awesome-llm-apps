@@ -11,8 +11,9 @@ import sys
 import unittest
 from urllib.parse import quote
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(ROOT, "optimizer"))
+# The skill under test: agent_skills/triage-issue (this file is in agent_skills/evals/triage-issue).
+ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+                    "triage-issue")
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
 
 import score_rca  # noqa: E402
@@ -47,7 +48,7 @@ class StringVerdictsOnAGoldenCase(unittest.TestCase):
 
 
 class FakeOpt:
-    """Stands in for TriageOptimizer. `answers` maps check id -> verdict; ids not
+    """Stands in for the judge client. `answers` maps check id -> verdict; ids not
     listed pass. Records every judge call so tests can assert on what was asked."""
 
     def __init__(self, answers=None, gate="correct"):
@@ -197,62 +198,76 @@ class Grounding(unittest.TestCase):
         self.assertIn("[code ]", out)
 
 
-_FAKE_CLAUDE = """#!{python}
-import json, sys
-sys.stdin.read()
-print(json.dumps({{"result": json.dumps({{"results": []}}), "is_error": False,
-                   "usage": {{"input_tokens": 1, "output_tokens": 1}}}}))
-"""
+class ParseErrors(unittest.TestCase):
+    """Unparseable judge replies are counted, not silently scored as real verdicts."""
+
+    def test_unparseable_judge_replies_are_counted(self):
+        class Garbled(FakeOpt):
+            async def _ask_json(self, system, user, fallback=None, **kw):
+                return {**fallback, score_rca.PARSE_ERROR: True}
+
+        r = asyncio.run(score_rca.score_rca(Garbled(), GROUNDED_RCA, BUNDLE, RUBRIC, runs=2,
+                                            true_root_cause="pool exhaustion"))
+        # 2 quality passes + 2 grounding passes (links and code attached) + 1 gate.
+        self.assertEqual(r["parse_errors"], 5)
+        self.assertEqual(r["correctness"], "wrong")  # the fallback, now flagged as noise
+
+    def test_clean_judge_reports_zero(self):
+        r = asyncio.run(score_rca.score_rca(FakeOpt(), GROUNDED_RCA, BUNDLE, RUBRIC, runs=1))
+        self.assertEqual(r["parse_errors"], 0)
+
+    def test_report_warns_about_unparseable_replies(self):
+        import contextlib
+        import io
+
+        r = score(FakeOpt(), rca=GROUNDED_RCA, bundle=BUNDLE, runs=1)
+        r["parse_errors"] = 3
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            score_rca.report(r, "incident.md")
+        self.assertIn("3 judge response(s) could not be parsed", buf.getvalue())
 
 
-class CliExitCode(unittest.TestCase):
-    """The real CLI, on golden cases, with a fake `claude` so no model is called.
+class ParseJson(unittest.TestCase):
+    def test_plain_fenced_and_prose_wrapped(self):
+        self.assertEqual(score_rca.parse_json('{"a": 1}'), {"a": 1})
+        self.assertEqual(score_rca.parse_json('```json\n{"a": 2}\n```'), {"a": 2})
+        self.assertEqual(score_rca.parse_json('Sure! {"a": 3} hope that helps'), {"a": 3})
 
-    The fake judge returns nothing, so quality is 0 for every case; only grounding
-    decides the difference between exit 1 (send back) and exit 2 (blocked).
-    """
+    def test_garbage_raises(self):
+        with self.assertRaises(ValueError):
+            score_rca.parse_json("no json here")
 
-    def setUp(self):
-        import stat
-        import tempfile
 
-        self.dir = tempfile.TemporaryDirectory()
-        self.bin = os.path.join(self.dir.name, "claude")
-        with open(self.bin, "w") as f:
-            f.write(_FAKE_CLAUDE.format(python=sys.executable))
-        os.chmod(self.bin, os.stat(self.bin).st_mode | stat.S_IEXEC)
-        with open(os.path.join(ROOT, "references", "rca-golden-set.json")) as f:
-            self.cases = {c["id"]: c for c in json.load(f)["cases"]}
+class StandaloneSkill(unittest.TestCase):
+    """The skill ships without the app: importing its scorer must need only the
+    standard library, and must not pull in a model SDK until a judge is called."""
 
-    def tearDown(self):
-        self.dir.cleanup()
-
-    def run_case(self, case_id):
+    def test_import_is_stdlib_only(self):
         import subprocess
 
-        case = self.cases[case_id]
-        rca, ev = (os.path.join(self.dir.name, n) for n in ("rca.md", "ev.json"))
-        with open(rca, "w") as f:
-            f.write(case["rca"])
-        with open(ev, "w") as f:
-            json.dump(case["evidence"], f)
-        env = {**os.environ, "TRIAGE_CLAUDE_BIN": self.bin,
-               "TRIAGE_TRACE_DB": os.path.join(self.dir.name, "t.db")}
-        return subprocess.run(
-            [sys.executable, os.path.join(ROOT, "scripts", "score_rca.py"), "--rca", rca,
-             "--evidence", ev, "--model", "claude_code/haiku", "--runs", "1"],
-            env=env, capture_output=True, text=True, timeout=120)
+        code = ("import sys; sys.path.insert(0, %r); import score_rca; "
+                "print('litellm' in sys.modules)") % os.path.join(ROOT, "scripts")
+        out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True,
+                             timeout=60)
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertEqual(out.stdout.strip(), "False")
 
-    def test_fabricated_code_line_blocks_handoff(self):
-        out = self.run_case("gcp-invented-code-line")
-        self.assertEqual(out.returncode, 2, out.stdout + out.stderr)
-        self.assertIn("GROUNDING    FAIL", out.stdout)
-        self.assertIn("repository.py:31", out.stdout)
+    def test_cli_help_runs_without_a_model_sdk(self):
+        import subprocess
 
-    def test_grounded_rca_is_not_blocked_by_grounding(self):
-        out = self.run_case("gcp-grounded-links-and-code")
-        self.assertEqual(out.returncode, 1, out.stdout + out.stderr)  # quality 0 from the fake judge
-        self.assertNotIn("GROUNDING    FAIL", out.stdout)
+        out = subprocess.run([sys.executable, os.path.join(ROOT, "scripts", "score_rca.py"),
+                              "--help"], capture_output=True, text=True, timeout=60)
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertIn("--calibrate", out.stdout)
+
+    def test_skill_never_imports_the_app(self):
+        for name in os.listdir(os.path.join(ROOT, "scripts")):
+            if name.endswith(".py"):
+                with open(os.path.join(ROOT, "scripts", name)) as f:
+                    text = f.read()
+                for marker in ("optimizer", "telemetry", "skill_optimizer", "triage_optimizer"):
+                    self.assertNotIn(f"import {marker}", text, name)
 
 
 if __name__ == "__main__":

@@ -1,8 +1,9 @@
 # Judge Prompt
 
-The prompts are built in code — `scripts/score_rca.py` for the RCA judges,
-`optimizer/triage_optimizer.py` for routing. This file records their shape and
-the rules that keep them honest.
+The prompts are built in code: `scripts/score_rca.py` for the RCA judges, and,
+for routing, `optimizer/routing_scorer.py` in the Self-Improving Triage Agent
+app (outside this skill). This file records their shape and the rules that keep
+them honest.
 
 ---
 

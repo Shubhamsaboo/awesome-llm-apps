@@ -11,7 +11,8 @@ import streamlit as st
 import telemetry
 
 RATING_LABELS = {1: "good", 0: "bad", None: "note"}
-ROLE_ORDER = ["generate", "executor.route", "executor.score", "analyst", "mutator"]
+ROLE_ORDER = ["generate", "executor.route", "executor.score", "executor.rca", "executor.skill",
+              "judge", "judge.grounding", "judge.gate", "judge.expectations", "analyst", "mutator"]
 
 
 def _when(ns) -> str:

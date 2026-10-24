@@ -17,8 +17,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "optimizer"))
 
 import telemetry  # noqa: E402
-import triage_optimizer  # noqa: E402
-from triage_optimizer import TriageOptimizer  # noqa: E402
+import skill_optimizer  # noqa: E402
+from routing_scorer import RoutingScorer  # noqa: E402
+from skill_optimizer import SkillOptimizer  # noqa: E402
 
 FAKE_CLAUDE = """#!{python}
 import json, os, sys, time
@@ -64,7 +65,7 @@ def _trace_id(sp):
 
 
 def _fake_completion(**kwargs):
-    async def acompletion(model, messages, temperature):
+    async def acompletion(model, messages, temperature, **kw):
         content = kwargs["respond"](messages)
         return SimpleNamespace(
             choices=[SimpleNamespace(message=SimpleNamespace(content=content))],
@@ -95,7 +96,7 @@ class ClaudeCodeBackend(unittest.IsolatedAsyncioTestCase):
             return json.load(f)
 
     async def test_call_is_isolated_and_parsed(self):
-        opt = TriageOptimizer(model="claude_code/sonnet")
+        opt = SkillOptimizer(model="claude_code/sonnet")
         with telemetry.span("test.root") as root:
             text = await opt._ask("SYSTEM TEXT", "USER TEXT", role="executor.route")
         self.assertEqual(json.loads(text), {"team": "B"})
@@ -125,7 +126,7 @@ class ClaudeCodeBackend(unittest.IsolatedAsyncioTestCase):
 
     async def test_cli_reported_error_raises_and_span_is_error(self):
         os.environ["FAKE_CLAUDE_MODE"] = "error"
-        opt = TriageOptimizer(model="claude_code/opus")
+        opt = SkillOptimizer(model="claude_code/opus")
         with telemetry.span("test.root") as root:
             with self.assertRaisesRegex(RuntimeError, "rate limited"):
                 await opt._ask("s", "u")
@@ -135,19 +136,19 @@ class ClaudeCodeBackend(unittest.IsolatedAsyncioTestCase):
     async def test_non_json_output_raises_with_context(self):
         os.environ["FAKE_CLAUDE_MODE"] = "garbage"
         with self.assertRaisesRegex(RuntimeError, "without JSON"):
-            await TriageOptimizer(model="claude_code/haiku")._ask("s", "u")
+            await SkillOptimizer(model="claude_code/haiku")._ask("s", "u")
 
     async def test_timeout_kills_the_process(self):
         os.environ["FAKE_CLAUDE_MODE"] = "hang"
-        with mock.patch.object(triage_optimizer, "CLAUDE_CODE_TIMEOUT_S", 0.5):
+        with mock.patch.object(skill_optimizer, "CLAUDE_CODE_TIMEOUT_S", 0.5):
             with self.assertRaisesRegex(RuntimeError, "timed out"):
-                await TriageOptimizer(model="claude_code/sonnet")._ask("s", "u")
+                await SkillOptimizer(model="claude_code/sonnet")._ask("s", "u")
 
     async def test_content_recording_can_be_turned_off(self):
         os.environ["TRIAGE_TRACE_CONTENT"] = "0"
         try:
             with telemetry.span("test.root") as root:
-                await TriageOptimizer(model="claude_code/sonnet")._ask("secret sys", "secret user")
+                await SkillOptimizer(model="claude_code/sonnet")._ask("secret sys", "secret user")
         finally:
             os.environ.pop("TRIAGE_TRACE_CONTENT")
         at = next(s for s in telemetry.store.spans(_trace_id(root)) if s["name"] == "llm.call")["attributes"]
@@ -205,7 +206,7 @@ def noisy():  # stands in for Streamlit's server thread logging asyncio errors
 
 threading.Thread(target=noisy, daemon=True).start()
 before = logging.root.manager.disable
-import triage_optimizer
+import skill_optimizer
 stop = True
 import litellm
 print("disable_restored", logging.root.manager.disable == before)
@@ -215,7 +216,7 @@ print("redaction_on", litellm._logging._ENABLE_SECRET_REDACTION is True)
 
 class ImportDeadlock(unittest.TestCase):
     def test_litellm_imports_while_another_thread_logs(self):
-        # Without TriageOptimizer's guarded import, LiteLLM's redaction filter ran on
+        # Without SkillOptimizer's guarded import, LiteLLM's redaction filter ran on
         # the logging thread, lazily imported a module the importing thread held, and
         # Python raised _DeadlockError (4 of 4 runs when reproduced).
         import subprocess
@@ -239,41 +240,77 @@ class ImportGuard(unittest.TestCase):
 
         stub = SimpleNamespace(__name__="litellm")  # no _logging attribute at all
         before = logging.root.manager.disable
-        with mock.patch.object(triage_optimizer.importlib, "import_module", return_value=stub):
-            self.assertIs(triage_optimizer._import_litellm(), stub)
+        with mock.patch.object(skill_optimizer.importlib, "import_module", return_value=stub):
+            self.assertIs(skill_optimizer._import_litellm(), stub)
         self.assertEqual(logging.root.manager.disable, before)
 
     def test_import_error_propagates_and_logging_is_restored(self):
         import logging
 
         before = logging.root.manager.disable
-        with mock.patch.object(triage_optimizer.importlib, "import_module",
+        with mock.patch.object(skill_optimizer.importlib, "import_module",
                                side_effect=ImportError("no litellm")):
             with self.assertRaisesRegex(ImportError, "no litellm"):
-                triage_optimizer._import_litellm()
+                skill_optimizer._import_litellm()
         self.assertEqual(logging.root.manager.disable, before)
 
 
 class BackendNames(unittest.TestCase):
     def test_backend_per_model_prefix(self):
-        self.assertEqual(TriageOptimizer(model="claude_code/sonnet").backend, "claude_code")
-        self.assertEqual(TriageOptimizer(model="gpt-4o-mini").backend, "litellm")
+        self.assertEqual(SkillOptimizer(model="claude_code/sonnet").backend, "claude_code")
+        self.assertEqual(SkillOptimizer(model="gpt-4o-mini").backend, "litellm")
 
     def test_claude_code_model_never_sets_an_api_key(self):
         saved = os.environ.pop("ANTHROPIC_API_KEY", None)
         try:
-            TriageOptimizer(model="claude_code/sonnet", api_key="sk-x")
+            opt = SkillOptimizer(model="claude_code/sonnet", api_key="sk-x")
             self.assertNotIn("ANTHROPIC_API_KEY", os.environ)
+            self.assertIsNone(opt.api_key)
         finally:
             if saved is not None:
                 os.environ["ANTHROPIC_API_KEY"] = saved
 
 
+class ApiKeyIsolation(unittest.IsolatedAsyncioTestCase):
+    """Review finding: the key a user typed was written to os.environ, so on a shared
+    Streamlit server one session's calls went out on another session's key."""
+
+    async def test_each_client_sends_its_own_key_and_env_is_untouched(self):
+        sent = []
+
+        async def acompletion(model, messages, temperature, **kw):
+            sent.append(kw.get("api_key"))
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content="{}"))], usage=None)
+
+        before = dict(os.environ)
+        alice = SkillOptimizer(model="gpt-4o-mini", api_key="alice-key")
+        bob = SkillOptimizer(model="gpt-4o-mini", api_key="bob-key")
+        with mock.patch.object(skill_optimizer.litellm, "acompletion", acompletion):
+            await alice._ask("s", "u")
+            await bob._ask("s", "u")
+            await alice._ask("s", "u")
+        self.assertEqual(sent, ["alice-key", "bob-key", "alice-key"])
+        self.assertEqual(dict(os.environ), before)
+
+    async def test_no_key_defers_to_the_provider_env_var(self):
+        sent = []
+
+        async def acompletion(model, messages, temperature, **kw):
+            sent.append("api_key" in kw)
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content="{}"))], usage=None)
+
+        with mock.patch.object(skill_optimizer.litellm, "acompletion", acompletion):
+            await SkillOptimizer(model="gpt-4o-mini")._ask("s", "u")
+        self.assertEqual(sent, [False])
+
+
 class LiteLLMPathTracing(unittest.IsolatedAsyncioTestCase):
     async def test_litellm_path_records_usage_and_role(self):
         fake = _fake_completion(respond=lambda m: '{"ok": true}')
-        opt = TriageOptimizer(model="gpt-4o-mini")
-        with mock.patch.object(triage_optimizer.litellm, "acompletion", fake):
+        opt = SkillOptimizer(model="gpt-4o-mini")
+        with mock.patch.object(skill_optimizer.litellm, "acompletion", fake):
             with telemetry.span("test.root") as root:
                 out = await opt._ask_json("sys", "usr", role="analyst")
         self.assertEqual(out, {"ok": True})
@@ -297,7 +334,7 @@ class FullRunTrace(unittest.IsolatedAsyncioTestCase):
                            "new_skill_md": "---\nname: s\n---\nFIXED"})
 
     async def test_run_produces_session_baseline_round_and_calls(self):
-        opt = TriageOptimizer(model="gpt-4o-mini", concurrency=2)
+        opt = SkillOptimizer(model="gpt-4o-mini", concurrency=2)
         scenarios = [{"id": 1, "name": "n", "input": "boom", "expected_team": "B",
                       "expected_severity": "P2"}]
         evals = [{"id": 1, "name": "team_correct"}]
@@ -306,10 +343,10 @@ class FullRunTrace(unittest.IsolatedAsyncioTestCase):
         async def cb(ev):
             events.append(ev["type"])
 
-        with mock.patch.object(triage_optimizer.litellm, "acompletion",
+        with mock.patch.object(skill_optimizer.litellm, "acompletion",
                                _fake_completion(respond=self._respond)):
-            payload = await opt.optimize("---\nname: s\n---\nold", {"teams": ["A", "B"]},
-                                         scenarios, evals, max_rounds=3, callback=cb)
+            payload = await opt.optimize("---\nname: s\n---\nold", RoutingScorer(["A", "B"], evals),
+                                         scenarios, max_rounds=3, callback=cb)
 
         self.assertEqual((payload["baseline_score"], payload["final_score"]), (0.0, 100.0))
         self.assertIn("complete", events)

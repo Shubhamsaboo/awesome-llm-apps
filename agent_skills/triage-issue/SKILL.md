@@ -1,12 +1,23 @@
 ---
 name: triage-issue
-description: Triage a non-prod incident or bug report by investigating
-  logs/traces/tickets, forming an RCA hypothesis, routing to the owning team,
-  and scoring the RCA against a rubric before handoff. Use when the user asks
-  to triage, investigate, root-cause, route, or RCA an issue — especially
+description: >-
+  Triages non-prod incidents and bug reports: investigates logs, traces and
+  tickets, forms and falsifies an RCA hypothesis, routes the issue to the owning
+  team, and scores the RCA against a rubric before handoff. Use when the user
+  asks to triage, investigate, root-cause, route, or RCA an issue, especially
   cross-team issues where the fix is out of scope and evidence quality matters
   for the handoff. Also use for "score this RCA", "review this incident
-  writeup", or "who owns this bug."
+  writeup", or "who owns this bug".
+license: Apache-2.0
+compatibility: >-
+  Python 3.11+. Evidence normalization, log-link parsing and grounding checks
+  run offline with the standard library. scripts/score_rca.py makes network
+  calls to a model API through LiteLLM to judge RCA quality (needs litellm and
+  a provider API key).
+metadata:
+  author: "Prerna Srivastava"
+  version: "1.0.0"
+  source: "https://github.com/Shubhamsaboo/awesome-llm-apps"
 ---
 
 # Triage Issue
@@ -118,4 +129,5 @@ Load on demand, not up front.
 | `references/rca-rubric.json` | scoring |
 | `references/rubric.md` | why the rubric is shaped this way |
 | `references/rca-golden-set.json` | calibrating the judge, or wanting a worked example |
+| `references/golden_set.json` | checking a routing rule against labeled tickets |
 | `references/examples.md` | routing exemplars and the symptom-collision pairs |

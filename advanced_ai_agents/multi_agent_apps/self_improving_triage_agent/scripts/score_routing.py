@@ -8,7 +8,8 @@ real before you commit the new SKILL.md.
     python scripts/score_routing.py --skill /tmp/candidate.md --model gpt-4o
     python scripts/score_routing.py --json > report.json
 
-Exit code is 1 when accuracy is below --min-accuracy, so it gates a merge.
+Exit code is 1 when accuracy is below --min-accuracy, so it gates a merge, and 2
+when any model reply could not be parsed, because that score is partly noise.
 """
 
 import argparse
@@ -18,16 +19,16 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "optimizer"))
+import skill_paths  # noqa: E402
 import telemetry  # noqa: E402
-from triage_optimizer import TriageOptimizer  # noqa: E402
-
-ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+from routing_scorer import RoutingScorer  # noqa: E402
+from skill_optimizer import SkillOptimizer  # noqa: E402
 
 
 def main() -> int:
     p = argparse.ArgumentParser(description="Score a triage SKILL.md on routing accuracy.")
-    p.add_argument("--skill", default=os.path.join(ROOT, "SKILL.md"))
-    p.add_argument("--golden", default=os.path.join(ROOT, "references", "golden_set.json"))
+    p.add_argument("--skill", default=skill_paths.SKILL_MD)
+    p.add_argument("--golden", default=skill_paths.ROUTING_GOLDEN)
     p.add_argument("--model", default=os.environ.get("TRIAGE_MODEL", "gpt-4o-mini"))
     p.add_argument("--api-key", default=None, help="Defaults to the provider's env var.")
     p.add_argument("--concurrency", type=int, default=4)
@@ -41,20 +42,20 @@ def main() -> int:
     with open(args.golden) as f:
         golden = json.load(f)
 
-    opt = TriageOptimizer(model=args.model, api_key=args.api_key, concurrency=args.concurrency)
+    opt = SkillOptimizer(model=args.model, api_key=args.api_key, concurrency=args.concurrency)
+    scorer = RoutingScorer(golden["teams"], golden["evals"])
     # One trace per CLI run, so its calls appear as one session in the app.
     with telemetry.span("cli.score_routing",
                         **{"triage.model": opt.model, "triage.backend": opt.backend}):
-        result = asyncio.run(
-            opt._score(skill_md, golden["scenarios"], golden["evals"],
-                       {"teams": golden["teams"]})
-        )
+        result = asyncio.run(opt.score(skill_md, scorer, golden["scenarios"]))
 
     if args.json:
         print(json.dumps(result, indent=2))
     else:
         _report(result, args)
 
+    if result["parse_errors"]:
+        return 2  # the number is partly unparseable model output: do not gate on it
     return 1 if result["pass_rate"] < args.min_accuracy else 0
 
 
@@ -63,6 +64,9 @@ def _report(result: dict, args) -> None:
     print(f"  model  {args.model}")
     print(f"\n  Routing accuracy  {result['pass_rate']}%  "
           f"({result['passed']}/{result['total']} scenarios fully correct)\n")
+    if result["parse_errors"]:
+        print(f"  ⚠  {result['parse_errors']} model reply(ies) could not be parsed and "
+              "were scored as failures. Exit 2: rerun before gating on this.\n")
 
     for e in result["per_eval"]:
         bar = "█" * round(e["pass_rate"] / 5) + "·" * (20 - round(e["pass_rate"] / 5))
