@@ -231,7 +231,7 @@ Respond with ONLY two numbers for row and column, e.g. "1 2".""",
             try:
                 import re
 
-                numbers = re.findall(r"\d+", response.content if response else "")
+                numbers = re.findall(r"-?\d+", response.content if response else "")
                 row, col = map(int, numbers[:2])
                 success, message = st.session_state.game_board.make_move(row, col)
 
