@@ -55,6 +55,7 @@ Learn how to build a governance layer that enforces deterministic policies on AI
 1. Set your API key:
    ```bash
    export OPENAI_API_KEY=your-openai-api-key
+   export OPENAI_MODEL=gpt-4  # optional, defaults to gpt-4
    ```
 
 2. Run the governance demo:

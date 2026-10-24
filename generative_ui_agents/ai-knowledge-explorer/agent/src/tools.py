@@ -14,6 +14,15 @@ def _get_llm():
     return ChatOpenAI(model=model_name, temperature=0.3)
 
 
+def _strip_code_fence(content: str) -> str:
+    """Remove a leading ```/```json fence and trailing ``` if present."""
+    content = content.strip()
+    if content.startswith("```"):
+        _, _, rest = content.partition("\n")
+        content = rest.rsplit("```", 1)[0]
+    return content.strip()
+
+
 @tool
 def extract_knowledge(runtime: ToolRuntime[Any]) -> Command:
     """Extract entities and relationships from uploaded documents or source code files. ALWAYS call this tool when the user adds files. Do not extract knowledge yourself."""
@@ -144,8 +153,7 @@ RULES:
     response = llm.invoke(extraction_prompt)
     content = response.content.strip()
 
-    if content.startswith("```"):
-        content = content.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+    content = _strip_code_fence(content)
 
     try:
         data = json.loads(content)
@@ -265,8 +273,7 @@ Focus on non-obvious connections. Prefer "contradicts", "extends", "causes" over
 
     response = llm.invoke(prompt)
     content = response.content.strip()
-    if content.startswith("```"):
-        content = content.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+    content = _strip_code_fence(content)
 
     try:
         data = json.loads(content)
@@ -391,8 +398,7 @@ Existing node labels: {json.dumps([n['label'] for n in nodes])}"""
 
     response = llm.invoke(prompt)
     content = response.content.strip()
-    if content.startswith("```"):
-        content = content.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+    content = _strip_code_fence(content)
 
     try:
         data = json.loads(content)
