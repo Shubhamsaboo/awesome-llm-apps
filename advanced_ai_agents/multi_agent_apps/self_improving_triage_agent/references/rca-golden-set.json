@@ -278,6 +278,7 @@
       "environment": "staging",
       "true_root_cause": "An ORM upgrade changed default lazy-loading behaviour, producing an N+1 query pattern: one parent query followed by 214 per-row child queries inside the same trace. Total latency is the sum of many fast queries, not one slow one. The database and its connection pool are healthy throughout.",
       "expected_correctness": "wrong",
+      "expected_generated_correctness": "correct",
       "human_quality": 89,
       "human_notes": "Deliberate trap. Well-structured, well-evidenced, correctly formatted, and wrong: it blames database contention when the trace plainly shows 214 sequential child spans of 11ms each. Scores high on quality, must fail correctness. This is the case that justifies keeping the two numbers apart.",
       "evidence": {

@@ -62,6 +62,20 @@ RCA_ANALYST_SYSTEM = (
 )
 
 
+def generation_cases(golden: dict) -> list:
+    """Keep executor inputs and generation targets, not judge-calibration samples."""
+    fields = ("id", "vendor", "environment", "evidence", "ticket", "intake", "true_root_cause")
+    return [
+        {
+            **{key: case[key] for key in fields if key in case},
+            "expected_correctness": case.get(
+                "expected_generated_correctness", case["expected_correctness"]
+            ),
+        }
+        for case in golden["cases"]
+    ]
+
+
 class RcaOptimizer(TriageOptimizer):
     """`context` expects {"rubric": <parsed rca-rubric.json>, "profile": str}."""
 
@@ -154,6 +168,15 @@ class RcaOptimizer(TriageOptimizer):
             ],
             "failures": failures,
             "confusion": [],
+            "case_results": [
+                {
+                    "case_id": case["id"],
+                    "expected_correctness": case.get("expected_correctness", "correct"),
+                    "rca": rca,
+                    **detail,
+                }
+                for case, rca, detail in results
+            ],
         }
 
     @staticmethod
@@ -187,8 +210,15 @@ class RcaOptimizer(TriageOptimizer):
         return super()._converged(best) and not best.get("fabricated")
 
     def _extra_results(self, best: dict) -> dict:
-        return {"grounding_pct": best.get("grounding_pct"),
-                "fabricated": best.get("fabricated") or []}
+        return {
+            "correctness_pct": best.get("correctness_pct"),
+            "quality_pct": best.get("quality_pct"),
+            "grounding_pct": best.get("grounding_pct"),
+            "fabricated": best.get("fabricated") or [],
+            "overconfident": best.get("overconfident") or [],
+            "case_results": best.get("case_results") or [],
+            "per_eval": best.get("per_eval") or [],
+        }
 
     async def _score_one(self, skill_md, case, rubric, profile, runs):
         bundle = case.get("evidence")

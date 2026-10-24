@@ -238,7 +238,7 @@ self_improving_triage_agent/
 │   ├── rca_optimizer.py          # same loop, RCA scorer
 │   ├── telemetry.py              # OpenTelemetry traces + human feedback store
 │   ├── sessions_view.py          # Sessions tab: browse traces, give feedback
-│   └── app.py                    # Streamlit UI (routing)
+│   └── app.py                    # Streamlit UI (team assignment + RCA evaluation)
 └── tests/                        # python -m unittest discover -s tests
 ```
 
@@ -292,13 +292,57 @@ python scripts/score_rca.py --calibrate
 # routing accuracy; exits 1 below the threshold, so it gates a merge
 python scripts/score_routing.py --min-accuracy 75
 
-# UI (routing optimization)
+# UI (team assignment and RCA evaluation)
 streamlit run optimizer/app.py
 
 # optional: replay links in RCAs (https://github.com/kenn-io/agentsview)
 agentsview daemon start
 python scripts/session_link.py      # -> http://127.0.0.1:8080/sessions/<id>
 ```
+
+## Two evaluation modes in the UI
+
+Use **Evaluation** in the sidebar to switch between:
+
+| Mode | Golden set | What the skill produces | What gets scored |
+|---|---|---|---|
+| **Team assignment** | `references/golden_set.json` | Team, severity, and routing rationale for each ticket | Routing checks, including exact team matching |
+| **RCA evaluation** | `references/rca-golden-set.json` | A fresh RCA from each evidence bundle or ticket and its intake | Correctness against the documented cause, rubric quality, and evidence grounding |
+
+Each mode has its own golden-set editor and results. Switching modes preserves
+your dataset edits and does not show a routing result as an RCA result. The
+starting skill is shared. Edits in the UI do not overwrite the source files.
+
+1. Choose **Team assignment** or **RCA evaluation** and a model backend.
+   **Claude Code** works with your CLI login instead of an OpenAI API key.
+2. Review the skill in **1 · Skill** and the mode's labels in **2 · Golden set**.
+   RCA mode also offers a scoring profile and judge-run count in the sidebar;
+   its rubric is visible in the golden-set tab.
+3. In **3 · Run**, choose **Evaluate skill** to score once without editing the
+   skill, or **Start optimization** to run the improvement loop.
+4. In **4 · Results**, inspect the scores and failures. RCA results include
+   separate correctness, quality, and grounding metrics, each generated report,
+   its check details, and a JSON download. Improved skills can be downloaded;
+   they are not automatically written back to disk.
+
+RCA optimization uses `0.6 × correctness + 0.4 × quality` as its objective,
+while grounding remains a separate veto. A fabricated citation is reported as a
+handoff failure even if correctness and quality are high.
+
+### Generation targets versus judge calibration
+
+The RCA golden set also contains stored `rca` examples, `human_quality` scores,
+and `expected_correctness` verdicts for **judge calibration**. Some samples are
+deliberately wrong; the skill should not learn to reproduce them.
+
+For the UI's generation task, `generation_cases()` keeps only incident inputs,
+the documented cause, and the target verdict. A case can set
+`expected_generated_correctness` to override the calibration verdict—for example,
+`aws-wrong-conclusion` has a wrong sample RCA but expects a **correct** freshly
+generated RCA. Ticket-only cases still expect **insufficient_evidence**.
+The RCA editor displays these generation targets as `expected_correctness`.
+Stored sample RCAs and human scores are excluded, and `true_root_cause` is
+passed to the judge, never to the RCA writer.
 
 ## Profiles
 
@@ -393,6 +437,8 @@ the OTLP test uses a throwaway local collector. They cover:
 - link parsing, every grounding check, and the third score in `score_rca.py`
 - the golden set's grounding labels, reproduced with no model
 - the optimizer's grounding veto
+- separate team/RCA UI datasets, score-only runs, RCA optimization, generated
+  reports, and calibration-label isolation
 
 ## Notes
 
@@ -406,5 +452,5 @@ the OTLP test uses a throwaway local collector. They cover:
 - Re-baseline after editing `judge-prompt.md` or the rubric. Scores from before
   and after are not comparable.
 - Cost per RCA round ≈ (1 + runs) calls per case, plus 2 for analyse/mutate.
-- The Streamlit app currently covers routing only; RCA optimization is CLI and
-  `optimizer/rca_optimizer.py`.
+- The Streamlit app supports both team assignment and RCA evaluation, using
+  `TriageOptimizer` and `RcaOptimizer` respectively.
