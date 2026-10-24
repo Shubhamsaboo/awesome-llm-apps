@@ -36,14 +36,6 @@ async def read_posts(
     )
 
 
-@router.get("/{post_id}", response_model=Post)
-async def read_post(post_id: str):
-    """
-    Get a specific social media post by ID.
-    """
-    return await social_media_service.get_post(post_id=post_id)
-
-
 @router.get("/platforms/list", response_model=List[str])
 async def read_platforms():
     """Get all available platforms."""
@@ -137,6 +129,14 @@ async def read_engagement_stats(
 ):
     """Get overall engagement statistics."""
     return await social_media_service.get_engagement_stats(date_from=date_from, date_to=date_to)
+
+
+@router.get("/{post_id}", response_model=Post)
+async def read_post(post_id: str):
+    """
+    Get a specific social media post by ID.
+    """
+    return await social_media_service.get_post(post_id=post_id)
 
 
 def _run_browser_setup_background(sites: Optional[List[str]] = None):
