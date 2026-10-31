@@ -65,6 +65,11 @@ Connect to existing MCP servers:
 - Use Standard I/O communication with cloud API integration
 
 
+### Desearch Agent
+
+See [desearch_agent](./desearch_agent/) for X search through Desearch's hosted
+MCP server with Bearer authentication and source citations.
+
 ## 📁 Project Structure
 
 ```
