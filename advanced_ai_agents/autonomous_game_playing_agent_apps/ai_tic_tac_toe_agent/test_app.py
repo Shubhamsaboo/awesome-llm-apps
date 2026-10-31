@@ -6,7 +6,6 @@ from types import SimpleNamespace
 import pytest
 import streamlit as st
 from streamlit.testing.v1 import AppTest
-
 from utils import EMPTY, TicTacToeBoard
 
 
@@ -43,7 +42,7 @@ def test_negative_coordinates_do_not_place_a_different_move(content, monkeypatch
     assert state.move_history == []
 
 
-@pytest.mark.parametrize("content", ["1 2", "1, 2", "(1, 2)"])
+@pytest.mark.parametrize("content", ["1 2", "1, 2", "(1, 2)", "1-2"])
 def test_valid_coordinates_still_place_the_requested_move(content, monkeypatch):
     state = play_one_turn(content, monkeypatch)
     assert state.game_board.board[1][2] == "X"
