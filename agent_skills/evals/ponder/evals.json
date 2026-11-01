@@ -1,0 +1,36 @@
+{
+  "skill_name": "ponder",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Ponder the architecture of src/auth and keep thinking until it converges.",
+      "expected_output": "A converged multi-pass review report and ordered apply plan backed by a reconciled .ponder session ledger with 1.00 unit coverage.",
+      "expectations": [
+        "The skill starts or resumes a session with scripts/ponder and enumerates every file in scope into units.json",
+        "Each pass records all four perspectives (skeptic, builder, dreamer, empath) and applies deltas with explicit why rationales",
+        "The skill refuses to stop while coverage is below 1.00 or while findings are still churning",
+        "The skill runs scripts/ponder verify and scripts/ponder report before presenting the final report"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Audit and grade every screen in our UI without skipping the back half.",
+      "expected_output": "An exhaustive UI review where every screen unit is explicitly scored on the UI lens dimensions before the session is allowed to stop.",
+      "expectations": [
+        "The skill selects --lens ui and registers every screen unit in units.json",
+        "If any unit is left ungraded, scripts/ponder judge reports blocked and scripts/ponder decide stop exits 2",
+        "Once all units are graded and subsequent passes converge, the skill generates a ranked report"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Run a multi-pass code review that retracts weak claims on pass 2 instead of inventing nitpicks.",
+      "expected_output": "A multi-pass ledger where unsupported pass-1 findings are retracted via delete deltas and the session stops cleanly once two consecutive passes produce zero churn.",
+      "expectations": [
+        "Pass 2 uses delete deltas with a written why when the skeptic perspective disproves a pass-1 claim",
+        "Pass 2 and later do not invent cosmetic deltas solely to appear active",
+        "scripts/ponder verify confirms that units.json and findings.json match the append-only ledger"
+      ]
+    }
+  ]
+}

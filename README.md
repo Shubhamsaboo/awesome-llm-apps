@@ -84,6 +84,7 @@ streamlit run travel_agent.py
 *   [🩺 Dependency Doctor](agent_skills/dependency-doctor/) - Checks a dependency manifest for standard-library pins, obsolete backports, unpinned entries, duplicate constraints, and yanked releases
 *   [🧠 Advisor Orchestrator Worker](agent_skills/advisor-orchestrator-worker/) - Meta Loop with Claude Fable 5.1 as advisor, GPT-6 Astra as orchestrator, and Gemini 3.8 Flash as worker
 *   [🎙️ Thinking Out Loud](agent_skills/thinking-out-loud/) - Echoes a voice ramble back as a scannable brief, with the model's guesses quarantined and your reversals flagged
+*   [⚖️ Ponder](agent_skills/ponder/) - Coverage-gated, multi-pass deliberation loop with an append-only ledger and four adversarial perspectives (Skeptic, Builder, Dreamer, Empath) that halts on epistemic silence instead of inventing late-pass nitpicks
 *   [♾️ Self-Improving Agent Skills](agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
 
 ### 🛠️ Standalone Apps & Tools

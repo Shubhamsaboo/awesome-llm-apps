@@ -1,0 +1,54 @@
+{
+  "name": "@quinnod345/ponder",
+  "version": "1.0.0",
+  "description": "Convergent deliberation loop for coding agents - multi-pass, coverage-gated, append-only ledger review and planning.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Quinn O'Donnell",
+  "homepage": "https://github.com/Quinnod345/ponder#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Quinnod345/ponder.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Quinnod345/ponder/issues"
+  },
+  "bin": {
+    "ponder": "bin/ponder"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "lenses",
+    "skill",
+    "skills",
+    "rules",
+    "oca",
+    ".claude-plugin",
+    ".codex-plugin",
+    ".cursor-plugin",
+    "gemini-extension.json",
+    "SPEC.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "conformance": "./test/conformance.sh"
+  },
+  "keywords": [
+    "ai-agents",
+    "agent-skills",
+    "claude-code",
+    "claude-code-skill",
+    "claude-skills",
+    "code-review",
+    "codex",
+    "deliberation",
+    "gemini-cli",
+    "openclaw"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}

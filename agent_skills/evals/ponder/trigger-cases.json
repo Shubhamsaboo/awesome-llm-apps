@@ -1,0 +1,42 @@
+{
+  "skill": "ponder",
+  "purpose": "Trigger-behavior spec for deterministic lexical routing and manual behavior checks.",
+  "cases": [
+    {
+      "id": "ponder-until-converges",
+      "prompt": "ponder this codebase and keep thinking until it converges",
+      "should_trigger": true,
+      "assert": "Starts a coverage-gated multi-pass deliberation loop and runs passes until findings converge."
+    },
+    {
+      "id": "grade-every-screen-without-skipping",
+      "prompt": "audit and grade every screen and module in the UI without skipping the tail",
+      "should_trigger": true,
+      "assert": "Enumerates all units in units.json and enforces the coverage gate before stopping."
+    },
+    {
+      "id": "multi-pass-review-retract-false-positives",
+      "prompt": "run a multi-pass code review with skeptic and builder perspectives that retracts false positives instead of inventing pass-4 nitpicks",
+      "should_trigger": true,
+      "assert": "Runs four-perspective deliberation over an append-only ledger and halts on epistemic silence."
+    },
+    {
+      "id": "near-miss-format-file",
+      "prompt": "format my python file with black",
+      "should_trigger": false,
+      "assert": "Does not trigger for a single formatting command."
+    },
+    {
+      "id": "near-miss-write-commit",
+      "prompt": "write a git commit message for staged changes",
+      "should_trigger": false,
+      "assert": "Does not trigger for commit message generation."
+    },
+    {
+      "id": "near-miss-rename-variable",
+      "prompt": "rename the user_id variable to account_id in main.py",
+      "should_trigger": false,
+      "assert": "Does not trigger for a direct single-file edit."
+    }
+  ]
+}

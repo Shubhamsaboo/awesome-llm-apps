@@ -50,6 +50,19 @@
       "evals_dir": "agent_skills/evals/first-reader"
     },
     {
+      "name": "ponder",
+      "path": "agent_skills/ponder",
+      "description": "Runs a coverage-gated, multi-pass deliberation loop over codebases, UIs, architecture, docs, and test suites using an append-only ledger and four adversarial perspectives (Skeptic, Builder, Dreamer, Empath). Use when the user says \"ponder this\", \"keep thinking until it converges\", asks to audit or grade every screen, module, or file without skipping the tail, wants a multi-pass code review that retracts false positives instead of inventing pass-4 nitpicks, or asks whether stopping a review is honest. Operates locally and offline with zero npm dependencies.",
+      "license": "MIT",
+      "metadata": {
+        "author": "Quinn O'Donnell",
+        "version": "1.0.0",
+        "source": "https://github.com/Quinnod345/ponder"
+      },
+      "install": "npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/ponder",
+      "evals_dir": "agent_skills/evals/ponder"
+    },
+    {
       "name": "project-graveyard",
       "path": "agent_skills/project-graveyard",
       "description": "Scans the developer's machine for dead side projects, autopsies each one from its git history (died at the payments wall, killed by a newer project, finished but never shipped), surfaces their personal death patterns, and picks the corpse most worth resurrecting — then helps ship it. Use when the user mentions abandoned, unfinished, or old side projects, asks \"what should I finish\", wants to revive or resurrect a project, says \"run the graveyard\", wonders why they never finish anything, or is about to start a new project that sounds like one they already built. Runs entirely locally.",

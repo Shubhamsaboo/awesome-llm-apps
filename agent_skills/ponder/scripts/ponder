@@ -1,0 +1,11 @@
+#!/bin/sh
+self=$0
+while [ -L "$self" ]; do
+  link=$(readlink "$self")
+  case $link in
+    /*) self=$link ;;
+    *) self=$(dirname "$self")/$link ;;
+  esac
+done
+export PONDER_OCA="${PONDER_OCA:-off}"
+exec node "$(dirname "$self")/lib/cli.js" "$@"
