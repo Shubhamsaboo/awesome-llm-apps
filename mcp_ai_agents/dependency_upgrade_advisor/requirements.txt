@@ -1,0 +1,5 @@
+streamlit>=1.40.0
+strands-agents[openai]>=1.62.0
+# strands-agents allows mcp<2.2, so pip would pick 2.1.1, which has a published advisory
+# fixed in 1.30.0. Remove this pin once Strands allows mcp>=2.2.
+mcp==1.30.0
