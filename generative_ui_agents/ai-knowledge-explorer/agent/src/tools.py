@@ -36,6 +36,7 @@ def extract_knowledge(runtime: ToolRuntime[Any]) -> Command:
     upload_dir = os.path.join(tempfile.gettempdir(), "knowledge-explorer-uploads")
     all_content = ""
     doc_names = []
+    source_content = {}
 
     if os.path.isdir(upload_dir):
         for fpath in sorted(glob.glob(os.path.join(upload_dir, "*"))):
@@ -45,6 +46,7 @@ def extract_knowledge(runtime: ToolRuntime[Any]) -> Command:
                 name = os.path.basename(fpath).split("-", 1)[-1] if "-" in os.path.basename(fpath) else os.path.basename(fpath)
                 all_content += f"\n\n--- {name} ---\n{content}"
                 doc_names.append(name)
+                source_content.setdefault(name, content)
                 os.remove(fpath)
             except Exception as e:
                 print(f"[knowledge-explorer] Skipping unreadable file {fpath}: {e}")
@@ -57,6 +59,7 @@ def extract_knowledge(runtime: ToolRuntime[Any]) -> Command:
                 if hasattr(msg, "type") and msg.type == "human":
                     all_content = msg.content
                     doc_names = ["pasted content"]
+                    source_content["pasted content"] = msg.content
                     break
 
     if not all_content.strip():
@@ -202,16 +205,10 @@ RULES:
     updated_docs = list(existing_docs)
     for name in doc_names:
         if name not in existing_doc_names:
-            section = ""
-            marker = f"--- {name} ---"
-            if marker in all_content:
-                start = all_content.index(marker) + len(marker)
-                next_marker = all_content.find("\n\n---", start)
-                section = all_content[start:next_marker].strip() if next_marker != -1 else all_content[start:].strip()
             updated_docs.append({
                 "id": str(uuid.uuid4())[:8],
                 "name": name,
-                "content": section,
+                "content": source_content[name],
                 "status": "extracted",
             })
 
