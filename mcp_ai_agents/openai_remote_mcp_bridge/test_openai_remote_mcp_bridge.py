@@ -58,3 +58,33 @@ def test_empty_arguments_pass_for_argument_less_tool():
 def test_open_schema_allows_extra_keys():
     schema = {"type": "object", "properties": {"a": {"type": "string"}}}
     assert validate_tool_arguments("t", {"a": "x", "b": 1}, schema) is None
+
+
+NULLABLE_SCHEMA = {
+    "type": "object",
+    "properties": {"note": {"type": ["string", "null"]}},
+}
+
+
+def test_union_type_accepts_each_member():
+    assert validate_tool_arguments("t", {"note": "x"}, NULLABLE_SCHEMA) is None
+    assert validate_tool_arguments("t", {"note": None}, NULLABLE_SCHEMA) is None
+
+
+def test_union_type_rejects_non_member():
+    error = validate_tool_arguments("t", {"note": 42}, NULLABLE_SCHEMA)
+    assert error is not None
+    assert "string" in error
+
+
+def test_null_only_type_rejects_any_value():
+    schema = {"type": "object", "properties": {"note": {"type": ["null"]}}}
+    assert validate_tool_arguments("t", {"note": "x"}, schema) is not None
+    assert validate_tool_arguments("t", {"note": None}, schema) is None
+
+
+def test_unlisted_schema_types_do_not_raise():
+    schema = {"type": "object", "properties": {"id": {"type": "uuid"}}}
+    assert validate_tool_arguments("t", {"id": 123}, schema) is None
+    broken = {"type": "object", "properties": {"id": {"type": ""}}}
+    assert validate_tool_arguments("t", {"id": object()}, broken) is None

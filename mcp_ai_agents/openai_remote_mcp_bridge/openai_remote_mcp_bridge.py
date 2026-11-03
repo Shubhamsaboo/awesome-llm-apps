@@ -104,6 +104,18 @@ JSON_TYPE_CHECKS: dict[str, Any] = {
 }
 
 
+def _json_type_matches(value: Any, expected: str) -> bool | None:
+    """Match one JSON Schema type name, or None when the name is not understood."""
+    if expected == "object":
+        return isinstance(value, dict)
+    if expected == "array":
+        return isinstance(value, list)
+    if expected == "null":
+        return value is None
+    check = JSON_TYPE_CHECKS.get(expected)
+    return check(value) if check else None
+
+
 def validate_tool_arguments(
     name: str, arguments: dict[str, Any], schema: dict[str, Any]
 ) -> str | None:
@@ -125,15 +137,27 @@ def validate_tool_arguments(
             return f"tool {name!r} does not accept argument(s): {', '.join(unknown)}"
 
     for key, value in arguments.items():
-        expected = (properties.get(key) or {}).get("type")
-        if expected == "object":
-            if not isinstance(value, dict):
-                return f"argument {key!r} of tool {name!r} must be an object"
-        elif expected == "array":
-            if not isinstance(value, list):
-                return f"argument {key!r} of tool {name!r} must be an array"
-        elif expected in JSON_TYPE_CHECKS and not JSON_TYPE_CHECKS[expected](value):
-            return f"argument {key!r} of tool {name!r} must be of type {expected}"
+        declared = (properties.get(key) or {}).get("type")
+        if isinstance(declared, str):
+            types = [declared]
+        elif isinstance(declared, list):
+            types = [entry for entry in declared if isinstance(entry, str)]
+        else:
+            types = []
+        if not types:
+            continue
+        if "null" in types and value is None:
+            continue
+
+        checks = [entry for entry in types if entry != "null"] or types
+        results = [_json_type_matches(value, entry) for entry in checks]
+        if any(matched is True for matched in results):
+            continue
+        if all(matched is None for matched in results):
+            continue
+        return (
+            f"argument {key!r} of tool {name!r} must be of type {' or '.join(checks)}"
+        )
     return None
 
 
