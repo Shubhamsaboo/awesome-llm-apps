@@ -1,5 +1,7 @@
 """Check the example's attribution decisions without depending on a live corpus."""
 
+import ast
+import json
 import runpy
 from pathlib import Path
 from types import SimpleNamespace
@@ -66,3 +68,31 @@ async def test_tool_error_is_not_reported_as_no_papers():
 
     with pytest.raises(RuntimeError, match="Service unavailable"):
         await call_json(FakeClient(), "search_lacuna", {})
+
+
+@pytest.mark.parametrize("name", ["github_key", "select_resource", "call_json", "trace_repository"])
+def test_notebook_functions_match_script(name):
+    examples_dir = Path(__file__).resolve().parents[1] / "examples"
+    script = ast.parse((examples_dir / "code_to_paper.py").read_text())
+    notebook = json.loads((examples_dir / "code_to_paper.ipynb").read_text())
+    notebook_nodes = []
+    for cell in notebook["cells"]:
+        if cell["cell_type"] != "code":
+            continue
+        source = "".join(cell["source"])
+        if source.lstrip().startswith("%"):
+            continue  # The notebook's dependency-install cell is IPython syntax.
+        notebook_nodes.extend(ast.parse(source).body)
+
+    def definitions(nodes):
+        return [
+            ast.dump(node, include_attributes=False)
+            for node in nodes
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == name
+        ]
+
+    script_definitions = definitions(script.body)
+    notebook_definitions = definitions(notebook_nodes)
+    assert len(script_definitions) == 1, f"Expected one script definition of {name}"
+    assert len(notebook_definitions) == 1, f"Expected one notebook definition of {name}"
+    assert notebook_definitions == script_definitions, f"Notebook and script differ for {name}"

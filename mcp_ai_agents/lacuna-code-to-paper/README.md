@@ -13,10 +13,11 @@ https://lacuna.tiptreesystems.com/api/mcp
 ```
 
 See the [server installation guide](https://github.com/tiptreesystems/lacuna-research-mcp#install)
-for client-specific steps. Then install this skill from your clone:
+for client-specific steps. Then, with Node.js 22.20+ installed, install the included
+[code-to-paper skill](SKILL.md) from the repository root:
 
 ```bash
-npx skills add ./mcp_ai_agents/lacuna_code_to_paper
+npx skills add ./mcp_ai_agents/lacuna-code-to-paper
 ```
 
 Ask: "Find the paper behind Dao-AILab/flash-attention. Show the recorded connection
@@ -64,12 +65,12 @@ uv run --with pytest --with pytest-asyncio --with mcp==2.3.0 \
 ```
 
 The tests cover repository identity, ambiguous and absent matches, both MCP
-response formats, and tool errors. Run the notebook from a fresh kernel to verify
-the live service separately.
+response formats, tool errors, and consistency between the notebook and script.
+Run the notebook from a fresh kernel to verify the live service separately.
 
 ## Source
 
 Original example and skill from
 [Lacuna Research MCP](https://github.com/tiptreesystems/lacuna-research-mcp),
 maintained by Tiptree Systems. The included files retain their MIT license.
-Lacuna also provides skills for prior-work checks and reading-list gaps.
+The upstream repository also includes a skill for checking prior work.
