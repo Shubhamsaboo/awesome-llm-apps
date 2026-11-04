@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 # Awesome LLM Apps
 
@@ -94,6 +94,7 @@ streamlit run travel_agent.py
 *   [🪡 Needle - A New Way to Find](advanced_llm_apps/needle/) - Search webpages by meaning and highlight the strongest source sentence, using a Chrome extension powered by TypeSafe Jev
 *   [🌀 Ripple - Change One Thing, Find What Else Needs to Change](advanced_llm_apps/ripple/) - Find related inconsistencies and suggested fixes as you edit a Google Doc, using TypeSafe Jev and Gemini
 
+*   [PredictorLab](https://github.com/MarkIvor/predictorlab) - Self-hosted tabular ML with honest predictions: upload a CSV, pick a target, get a model with conformal intervals and a profit-optimized threshold. LLM used only for target suggestions and Model Card texts (works fully offline). Includes MCP server for Claude Desktop and Cursor.
 ### 🌱 Starter AI Agents
 
 *Single-file agents that run with just an API key - a great place to start.*
