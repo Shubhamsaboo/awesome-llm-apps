@@ -260,7 +260,7 @@ streamlit run travel_agent.py
 
 *   [🎯 Toonify Token Optimization](advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/) - Reduce LLM API costs by 30-60% using TOON format
 *   [🧠 Headroom Context Optimization](advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/) - Reduce LLM API costs by 50-90%
-
+*   [TokenVault SDK](https://github.com/hawkinggradia-commits/token-vault-sdk) - Open-source 512KB in-memory LLM cache, 3-strike agent loop breaker, and lossless JSON token compactor for Python & Node.js ([Live Demo](https://www.tockenvault.com)).
 ### 🔧 LLM Fine-tuning
 
 *End-to-end fine-tuning recipes for open-source models.*
