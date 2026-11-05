@@ -93,6 +93,7 @@ streamlit run travel_agent.py
 *   [✏️ Excaliflow - Hand-Drawn Diagrams with Live Animated Flows](advanced_llm_apps/excaliflow/) - Sketch system architectures and AI agent workflows on an Excalidraw-style canvas with live animated arrows and video export
 *   [🪡 Needle - A New Way to Find](advanced_llm_apps/needle/) - Search webpages by meaning and highlight the strongest source sentence, using a Chrome extension powered by TypeSafe Jev
 *   [🌀 Ripple - Change One Thing, Find What Else Needs to Change](advanced_llm_apps/ripple/) - Find related inconsistencies and suggested fixes as you edit a Google Doc, using TypeSafe Jev and Gemini
+*   [📞 LLM Telephone: Watch an Answer Degrade](advanced_llm_apps/llm_telephone_degradation/) - Pass an answer through rotating models and see, step by step, which facts survive
 
 ### 🌱 Starter AI Agents
 
