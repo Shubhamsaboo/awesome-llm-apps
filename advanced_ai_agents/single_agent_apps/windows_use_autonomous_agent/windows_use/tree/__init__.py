@@ -150,7 +150,7 @@ class Tree:
         font_size=12
         try:
             font=ImageFont.truetype('arial.ttf',font_size)
-        except:
+        except Exception:
             font=ImageFont.load_default()
         for label,node in enumerate(nodes):
             box=node.bounding_box
