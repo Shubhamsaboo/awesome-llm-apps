@@ -10,11 +10,11 @@ description: >
   checks the output. Use when generating fake users or customers, test fixtures,
   seed data, demo datasets, synthetic benchmarks or planted test cases, and when
   the user says "fake data", "mock data", "dummy data", "synthetic dataset",
-  "test fixtures", "seed the database", "造数据", "合成数据", "测试数据", "自造数据".
+  "test fixtures", "seed the database".
 license: MIT
 metadata:
   author: ruijiezh67
-  version: "0.1.0"
+  version: "0.2.0"
   source: https://github.com/Shubhamsaboo/awesome-llm-apps
 ---
 
@@ -31,11 +31,13 @@ database. A dataset nobody can regenerate is not evidence.
    the ranges. Do not use realistic-looking values, real company domains or
    famous people's names.
    - Email domains: example.com, example.net, example.org, `*.example`, `*.test`.
-   - Phones: 555-0100 to 555-0199 (NANP), or Ofcom drama ranges for the UK.
+   - Phones: 555-0100 to 555-0199 (NANP), or one of the 20 Ofcom drama ranges
+     for the UK (`decoy.py safe` lists them).
    - Cards: only the listed processor test numbers, copied whole. A test
      *prefix* plus random Luhn-valid digits (`411111…`, `424242…`) is a
      plausible real card number, not a test card.
-   - SSN: area 900-999, 000 or 666.
+   - SSN: area 900-999, 000 or 666, or group 00, or serial 0000 (none is ever
+     issued by the SSA).
    - IPs: 192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24 and 2001:db8::/32.
 2. **A seeded script, not hand-typed rows.** Write the generator as a file
    (`gen_<name>.py` or similar). Seed it explicitly, and print the seed in the card.
@@ -52,8 +54,9 @@ database. A dataset nobody can regenerate is not evidence.
    - **Differences from real data**: for example, only US-style names, perfectly
      clean formatting, no typos, uniform distributions.
 4. **Lint before handing over.** Run `decoy.py lint <files>` and
-   `decoy.py card <files>`. Fix every `BAD` line. Then say in your reply that both
-   pass, and give the regenerate command.
+   `decoy.py card <files>`. Fix every `BAD` line, except values you marked on
+   purpose (next section): lint lists those without failing. Then say in your
+   reply that both pass, and give the regenerate command.
 
 ## When the user wants realism
 
@@ -61,7 +64,9 @@ Realistic *structure* is fine: plausible name mixes, address formats and value
 distributions. Realistic *identifiers* are not. If a test truly needs values
 outside the reserved ranges, for example a validator that must accept real
 domains, say so in the card. Generate as few as the test needs, and mark them
-in the data itself (`# NON-RESERVED: needed for X`).
+on their line in the data itself (`# NON-RESERVED: needed for X`; the reason is
+required). `decoy.py lint` does not fail those lines, and lists their values
+for review.
 
 ## Card template
 

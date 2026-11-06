@@ -30,11 +30,11 @@
     {
       "name": "decoy",
       "path": "agent_skills/decoy",
-      "description": "Makes synthetic, fake, mock, seed or test data safe and reproducible. Every generated value that looks like personal data comes from a published reserved range (RFC 2606 email domains, NANP 555-0100 to 0199 phones, processor test card numbers, SSNs the SSA never issues, RFC 5737 IPs), the generator is a seeded script, and a data card states the generation rules, the standards, what counts as the target, and how the data differs from real data. A linter checks the output. Use when generating fake users or customers, test fixtures, seed data, demo datasets, synthetic benchmarks or planted test cases, and when the user says \"fake data\", \"mock data\", \"dummy data\", \"synthetic dataset\", \"test fixtures\", \"seed the database\", \"造数据\", \"合成数据\", \"测试数据\", \"自造数据\".",
+      "description": "Makes synthetic, fake, mock, seed or test data safe and reproducible. Every generated value that looks like personal data comes from a published reserved range (RFC 2606 email domains, NANP 555-0100 to 0199 phones, processor test card numbers, SSNs the SSA never issues, RFC 5737 IPs), the generator is a seeded script, and a data card states the generation rules, the standards, what counts as the target, and how the data differs from real data. A linter checks the output. Use when generating fake users or customers, test fixtures, seed data, demo datasets, synthetic benchmarks or planted test cases, and when the user says \"fake data\", \"mock data\", \"dummy data\", \"synthetic dataset\", \"test fixtures\", \"seed the database\".",
       "license": "MIT",
       "metadata": {
         "author": "ruijiezh67",
-        "version": "0.1.0",
+        "version": "0.2.0",
         "source": "https://github.com/Shubhamsaboo/awesome-llm-apps"
       },
       "install": "npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/decoy",

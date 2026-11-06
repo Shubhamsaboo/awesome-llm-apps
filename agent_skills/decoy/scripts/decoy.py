@@ -7,12 +7,15 @@
 
 Safe ranges, each from a published rule:
   email   reserved domains: example.com/.net/.org, *.example, *.test, *.invalid, *.localhost (RFC 2606, RFC 6761)
-  phone   NANP 555-0100..555-0199, reserved for fiction (NANPA); UK Ofcom drama ranges 07700 900000-900999,
-          020 7946 0000-0999, 0113 496 0000-0999, 0161 496 0000-0999
+  phone   NANP 555-0100..555-0199, reserved for fiction (NANPA); UK: the 20 Ofcom drama ranges (`safe` lists
+          them), e.g. 07700 900000-900999, 020 7946 0000-0999, 01632 960000-960999
   card    Luhn-valid numbers must be documented processor test numbers (Stripe, Braintree, Adyen test lists)
-  ssn     never issued by the SSA: area 000, 666 or 900-999; group 00; serial 0000
+  ssn     never issued by the SSA: area 000, 666 or 900-999, or group 00, or serial 0000
   ip      documentation ranges 192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24 (RFC 5737), 2001:db8::/32
           (RFC 3849); private/loopback/link-local are allowed (not routable to a real host)
+Not detected: SSNs written as 9 bare digits (every 9-digit id would match). Any Luhn-valid 13 to 19 digit
+number (IMEIs, some order ids) is reported as a card. A line containing "NON-RESERVED: <reason>" is not
+failed: its values are listed for review instead.
 Standard library only.
 """
 import ipaddress, json, os, re, sys
@@ -29,13 +32,23 @@ TEST_CARDS = {
     "378282246310005", "371449635398431", "378734493671000", "6011111111111117", "6011000990139424",
     "3056930009020004", "36227206271667", "3566002020360505", "6200000000000005", "4917610000000000",
 }
-UK_FICTION = [(r"07700\s?900\d{3}", True), (r"020\s?7946\s?0\d{3}", True), (r"0113\s?496\s?0\d{3}", True),
-              (r"0161\s?496\s?0\d{3}", True)]
+# Ofcom, "Telephone numbers for use in TV and radio drama programmes": each range is 1000 numbers, written here
+# as the first 8 digits of the 11-digit national number (e.g. 0113 496 0000-0999 -> "01134960").
+UK_DRAMA = {
+    "01134960": "Leeds", "01144960": "Sheffield", "01154960": "Nottingham", "01164960": "Leicester",
+    "01174960": "Bristol", "01184960": "Reading", "01214960": "Birmingham", "01314960": "Edinburgh",
+    "01414960": "Glasgow", "01514960": "Liverpool", "01614960": "Manchester", "01914980": "Tyneside",
+    "02079460": "London", "02890180": "Northern Ireland", "02920180": "Cardiff", "01632960": "no area",
+    "07700900": "mobile", "03069990": "UK-wide", "08081570": "freephone", "09098790": "premium rate",
+}
+UK = re.compile(r"(?<![\w+])(\+44[\s-]?(?:\(0\)[\s-]?)?|0)([1237-9]\d(?:[\s-]?\d){7,8})(?!\d)")
+BARE7 = re.compile(r"(?<![\d-])(\d{3})-(\d{4})(?![\d-])")  # 555-0123 with no area code
+MARK = re.compile(r"NON-RESERVED:\s*\S")
 
 EMAIL = re.compile(r"\b[A-Za-z0-9._%+-]+@([A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+)\b")
 PHONE = re.compile(r"(?<![\d.])(?:\+?1[-. ]?)?\(?([2-9]\d{2})\)?[-. ]?(\d{3})[-. ]?(\d{4})(?![\d.])")
 CARD = re.compile(r"(?<![\d.-])(?:\d[ -]?){12,18}\d(?![\d.])")
-SSN = re.compile(r"(?<![\d-])(\d{3})-(\d{2})-(\d{4})(?![\d-])")
+SSN = re.compile(r"(?<![\d-])(\d{3})([- ])(\d{2})\2(\d{4})(?![\d-])")  # 123-45-6789 or 123 45 6789
 IPV4 = re.compile(r"(?<![\d.])(?:\d{1,3}\.){3}\d{1,3}(?![\d.])")
 IPV6 = re.compile(r"(?<![\w:.])[0-9a-fA-F]{0,4}(?::[0-9a-fA-F]{0,4}){2,7}(?![\w:])")  # candidates; ipaddress decides
 DOC_NETS = [ipaddress.ip_network(n) for n in ("192.0.2.0/24", "198.51.100.0/24", "203.0.113.0/24", "2001:db8::/32")]
@@ -83,16 +96,28 @@ def scan(text):
             taken.append(m.span())
             if digits not in TEST_CARDS:
                 found.append(("card", m.group(0), "Luhn-valid and not a documented processor test number"))
+    free = lambda m: not any(a <= m.start() < b for a, b in taken)
     for m in SSN.finditer(text):
         taken.append(m.span())
-        if not ssn_ok(*m.groups()):
+        if not ssn_ok(m.group(1), m.group(3), m.group(4)):
             found.append(("ssn", m.group(0), "inside ranges the SSA issues (use area 9xx, 000 or 666)"))
-    for m in PHONE.finditer(text):
-        if any(a <= m.start() < b for a, b in taken):
+    for m in UK.finditer(text):
+        if not free(m):
             continue
+        taken.append(m.span())
+        national = "0" + re.sub(r"\D", "", m.group(2))
+        if not (len(national) == 11 and national[:8] in UK_DRAMA):
+            found.append(("phone", m.group(0), "UK number outside the Ofcom drama ranges"))
+    for m in PHONE.finditer(text):
+        if not free(m):
+            continue
+        taken.append(m.span())
         area, exch, line = m.groups()
         if not (exch == "555" and 100 <= int(line) <= 199):
             found.append(("phone", m.group(0).strip(), "outside NANP fiction range 555-0100..0199"))
+    for m in BARE7.finditer(text):
+        if free(m) and not (m.group(1) == "555" and 100 <= int(m.group(2)) <= 199):
+            found.append(("phone", m.group(0), "outside NANP fiction range 555-0100..0199"))
     for m in IPV4.finditer(text):
         ok = ip_ok(m.group(0))
         if ok is False:
@@ -101,12 +126,15 @@ def scan(text):
         ok = ip_ok(m.group(0))
         if ok is False:
             found.append(("ip", m.group(0), "public address outside 2001:db8::/32 (RFC 3849)"))
-    uk = re.compile(r"(?<!\d)(?:07\d{3}\s?\d{6}|0\d{2,3}\s?\d{3,4}\s?\d{4})(?!\d)")
-    for m in uk.finditer(text):
-        if m.group(0).startswith(("07", "020", "0113", "0161")) and not any(re.fullmatch(p, m.group(0)) for p, _ in UK_FICTION):
-            if not any(a <= m.start() < b for a, b in taken):
-                found.append(("phone", m.group(0), "UK number outside Ofcom drama ranges"))
     return found
+
+
+def lint(text):
+    """(found, marked): values on a line carrying "NON-RESERVED: <reason>" are allowed but listed."""
+    found, marked = [], []
+    for line in text.splitlines():
+        (marked if MARK.search(line) else found).extend(scan(line))
+    return found, marked
 
 
 CARD_FIELDS = {
@@ -159,6 +187,7 @@ def main():
     cmd, files = (sys.argv[1], sys.argv[2:]) if len(sys.argv) > 1 else ("help", [])
     if cmd == "safe":
         print(__doc__.split("Safe ranges, each from a published rule:")[1].split("Standard library")[0].rstrip())
+        print("  UK drama ranges (first 8 digits + 000-999): " + ", ".join(f"{k} {v}" for k, v in UK_DRAMA.items()))
         print("  test cards: " + ", ".join(sorted(TEST_CARDS)))
         return 0
     if cmd not in ("lint", "card") or not files:
@@ -173,12 +202,15 @@ def main():
                 print(f"    {p}")
             bad += bool(problems)
             continue
-        found = scan(open(f, encoding="utf-8", errors="replace").read())
+        found, marked = lint(open(f, encoding="utf-8", errors="replace").read())
         by = defaultdict(list)
         for kind, val, why in found:
             by[kind].append((val, why))
+        if marked:
+            print(f"    {f}: {len(marked)} value(s) on NON-RESERVED lines, allowed: "
+                  + ", ".join(mask(k, v) for k, v, _ in marked[:5]) + (" …" if len(marked) > 5 else ""))
         if not found:
-            print(f"ok  {f}: no value that could be real")
+            print(f"ok  {f}: no value that could be real" + (" outside NON-RESERVED lines" if marked else ""))
         else:
             bad += 1
             print(f"BAD {f}: " + ", ".join(f"{len(v)} {k}" for k, v in sorted(by.items())))

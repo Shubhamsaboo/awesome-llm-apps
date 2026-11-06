@@ -47,6 +47,35 @@ def real_looking_values_flagged():
 
 
 @case
+def uk_numbers_outside_all_20_ofcom_ranges_flagged():
+    for t in ("0131 555 1234", "01632 123456", "+44 7911 123456", "0114 496 1000"):
+        assert kinds(t) == ["phone"], t
+    safe = ["0113 496 0000", "0191 498 0999", "+44 (0)20 7946 0123", "028 9018 0500", "029 2018 0001",
+            "01632 960123", "+44 7700 900999", "0306 999 0123", "0808 157 0999", "0909 879 0000"]
+    assert len(D.UK_DRAMA) == 20 and [t for t in safe if kinds(t)] == []
+
+
+@case
+def bare_seven_digit_and_spaced_ssn_flagged():
+    assert kinds("ext 555-0200") == ["phone"] and kinds("ext 555-0150") == []
+    assert kinds("ssn 123 45 6789") == ["ssn"] and kinds("ssn 912 34 5678") == []
+    assert kinds("id 123456789") == []  # documented: bare 9 digits are not read as an SSN
+
+
+@case
+def non_reserved_marker_allows_and_reports():
+    d = tempfile.mkdtemp()
+    f = os.path.join(d, "fixture.py")
+    open(f, "w").write('ok = "a@example.com"\nreal = "support@gmail.com"  # NON-RESERVED: validator must accept real domains\n')
+    found, marked = D.lint(open(f).read())
+    assert found == [] and [k for k, *_ in marked] == ["email"]
+    r = subprocess.run([sys.executable, SCRIPT, "lint", f], capture_output=True, text=True, encoding="utf-8")
+    assert r.returncode == 0 and "NON-RESERVED" in r.stdout and "support@gmail.com" in r.stdout, r.stdout
+    open(f, "w").write('real = "support@gmail.com"  # NON-RESERVED:\n')  # a marker needs a reason
+    assert D.lint(open(f).read())[0]
+
+
+@case
 def non_luhn_long_numbers_are_not_cards():
     assert kinds("order 4539148803436468") == []                   # fails Luhn: an order id, not a card
 
