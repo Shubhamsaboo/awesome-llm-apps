@@ -8,12 +8,11 @@ description: >
   output. Unmeasured values are written N/A, never 0. Use when reporting
   experiment results, benchmarks, metrics, data analysis, test counts, costs or
   any summary full of numbers, and when the user says "notary", "receipts", "show your
-  sources", "where does this number come from", "don't make up numbers",
-  "数字要有出处", "别编数字", "没测的写N/A".
+  sources", "where does this number come from", "don't make up numbers".
 license: MIT
 metadata:
   author: ruijiezh67
-  version: "0.1.0"
+  version: "0.2.0"
   source: https://github.com/Shubhamsaboo/awesome-llm-apps
 ---
 
@@ -24,9 +23,10 @@ must point to where it came from, and that pointer must check out.
 
 ## The rules (always)
 
-1. **No receipt, no number.** For each number in your reply, there is a receipt
-   in `.notary/turn.json` with that exact value string. If you cannot write one,
-   drop the number or say what you would need to measure it.
+1. **No receipt, no number.** For each result number in your reply, there is a
+   receipt in `.notary/turn.json` with that exact value string. If you cannot
+   write one, drop the number or say what you would need to measure it. (What
+   the checker enforces by default is listed under "What needs a receipt".)
 2. **Never write 0 for something not measured.** A run that crashed, a metric
    that was not logged, a test that was not run: the value is `N/A`, with an `na`
    receipt saying why. `0` means "measured, and it was zero".
@@ -60,9 +60,9 @@ Write `.notary/turn.json` (overwrite it for each report):
 | kind | needs | checked against |
 |---|---|---|
 | `file` | `path` (relative to project), `quote` | the file as it is now |
-| `cmd` | `command`, `quote` | real tool output logged by the hook in `.notary/log.jsonl`. A quote you typed yourself will not be found. **Receipts expire**: if a file the command read has changed since that output, run it again |
+| `cmd` | `command` (exactly as you ran it), `quote` | the logged output of that same command in `.notary/log.jsonl`. A quote you typed yourself, or one from another command's output, will not be found. **Receipts expire**: if a file named in the command has changed since that output, run it again |
 | `calc` | `expr` over receipt ids (`+ - * / **`) | recomputed; fails if any input fails or is N/A |
-| `user` | `quote` | the user's messages in the transcript |
+| `user` | `quote` | the user's messages in the transcript. Only the Stop hook (or `check --transcript`) can see it; without one the receipt shows as `??` unchecked, not `ok` |
 | `na` | `why`; value `N/A` | that it is not dressed up as a number |
 
 ## Workflow
@@ -71,11 +71,13 @@ Write `.notary/turn.json` (overwrite it for each report):
    `.notary/log.jsonl` does not exist after you run a command, the
    hooks are not installed. Then run every measuring command as
    `python <skill-dir>/scripts/notary.py run -- <command>`, so that its real
-   output is logged and `cmd` receipts can be checked.
+   output is logged and `cmd` receipts can be checked. Pass the files a command
+   reads as arguments (`python eval.py runs/aug/preds.csv`, not a script that
+   finds them itself): expiry only sees files named in the command.
 2. Write `.notary/turn.json`.
 3. Run `python <skill-dir>/scripts/notary.py check --message <draft.md>` (or
    without `--message` to check only the receipts). Fix every `BAD` line and every
-   uncovered number.
+   uncovered number. Add `--all` to also check small integers.
 4. Reply. Keep the prose clean: no inline citations needed. End with one line,
    `🧾 N/N receipts check out (.notary/turn.json)`, so the reader knows where
    to look.
@@ -90,3 +92,9 @@ make a receipt pass.
 Results, metrics, counts, sizes, durations, costs, percentages, deltas. Not:
 numbers inside code blocks or inline code, dates, versions, `file:line`
 references, list numbering, step numbers.
+
+The checker and the Stop hook enforce this for numbers with a decimal point, a
+percent sign, a thousands separator or an exponent, for `0`, and for integers of
+100 or more. Integers from 1 to 99 ("3 seeds", "12 files") pass without a
+receipt unless you run `check --all`. Write receipts for the ones that are
+results anyway.

@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 """notary: every number in an agent's report must come with a receipt that checks out.
 
-  notary.py check [--message FILE] [--dir PROJECT]   verify .notary/turn.json (and coverage of FILE)
+  notary.py check [--message FILE] [--dir PROJECT] [--transcript JSONL] [--all]
+                                                      verify .notary/turn.json (and coverage of FILE)
+  notary.py run -- <command>                          run a command and log its real output
   notary.py hook-log                                  PostToolUse hook: log real tool output
   notary.py hook-stop                                 Stop hook: block a reply with unreceipted numbers
 
 Receipt kinds (in .notary/turn.json, {"receipts": [...]}):
   file  {path, quote}       quote must be in the file now, and contain the number
-  cmd   {command, quote}    quote must be in a logged real tool output (.notary/log.jsonl), and the files
-                            that command read must not have changed since (receipts expire)
+  cmd   {command, quote}    quote must be in the logged real output (.notary/log.jsonl) of that exact
+                            command, and no file named in the command may have changed since (receipts expire)
   calc  {expr}              arithmetic over other receipt ids, e.g. "(r2 - r1) * 100"
-  user  {quote}             the user said it; checked against the transcript when available
+  user  {quote}             the user said it; checked against the transcript (--transcript, or the Stop
+                            hook); without one it is reported as unchecked, never as ok
   na    {why}               value "N/A": not measured. Never write 0 for this.
 Standard library only. Hooks fail open: an exception never blocks the user.
 """
@@ -55,6 +58,7 @@ def numbers(text, strong_only=False):
             v = -v
         if 1900 <= v <= 2100 and not frac and not pct and not exp:
             continue  # bare years
+        # ponytail: integers 1-99 ("3 files", "step 2") are too often not claims; --all checks them too
         strong = bool(frac or exp or pct or "," in whole or abs(v) >= 100 or v == 0)
         if strong_only and not strong:
             continue
@@ -151,6 +155,11 @@ def quote_supports(quote, value, raw):
     return any(n[1] is not None and consistent(v, n[1], pct, dec) for n in numbers(quote))
 
 
+def calc_names(expr):
+    """Receipt ids used in a calc ("1e6" is a number, not a name)."""
+    return sorted({n.id for n in ast.walk(ast.parse(expr, mode="eval")) if isinstance(n, ast.Name)})
+
+
 def safe_eval(expr, env):
     node = ast.parse(expr, mode="eval")
     ok = (ast.Expression, ast.BinOp, ast.UnaryOp, ast.Constant, ast.Name, ast.Load,
@@ -158,6 +167,10 @@ def safe_eval(expr, env):
     for n in ast.walk(node):
         if not isinstance(n, ok):
             raise ValueError(f"not allowed in calc: {type(n).__name__}")
+        if isinstance(n, ast.Constant):
+            if isinstance(n.value, bool) or not isinstance(n.value, (int, float)):
+                raise ValueError(f"not a number in calc: {n.value!r}")
+            n.value = float(n.value)  # float powers overflow at once; int powers like 9**9**9 would run for hours
     return eval(compile(node, "<calc>", "eval"), {"__builtins__": {}}, env)
 
 
@@ -191,10 +204,12 @@ def verify(receipts, d, transcript=None):
                     res[rid] = (True, "")
             elif kind == "cmd":
                 logs = logs if logs is not None else logged_outputs(d)
-                hits = [row for row in logs if norm(r["quote"]) in row["output"]]
+                found = [row for row in logs if norm(r["quote"]) in row["output"]]
+                hits = [row for row in found if norm(row["command"]) == norm(r["command"])]
                 stale = changed_since(d, hits[-1]["command"], hits[-1]["ts"]) if hits else []
                 if not hits:
-                    res[rid] = (False, "quote not found in any logged tool output")
+                    res[rid] = (False, "quote not found in any logged tool output" if not found else
+                                f"quote is only in the output of a different command: {found[-1]['command'][:80]}")
                 elif not quote_supports(r["quote"], val, r["value"]):
                     res[rid] = (False, f"{r['value']} is not a rounding of any number in the quote")
                 elif stale:
@@ -203,7 +218,7 @@ def verify(receipts, d, transcript=None):
                     res[rid] = (True, "")
             elif kind == "calc":
                 env = {}
-                for name in re.findall(r"[A-Za-z_]\w*", r["expr"]):
+                for name in calc_names(r["expr"]):
                     ref = byid.get(name)
                     if not ref:
                         raise ValueError(f"unknown receipt {name}")
@@ -218,19 +233,19 @@ def verify(receipts, d, transcript=None):
             elif kind == "user":
                 utext = utext if utext is not None else user_text(transcript)
                 if utext is None:
-                    res[rid] = (True, "unchecked: no transcript")
+                    res[rid] = (None, "unchecked: no transcript (pass --transcript; the Stop hook checks it)")
                 else:
                     ok = norm(r["quote"]) in utext
                     res[rid] = (ok, "" if ok else "quote not in any user message")
             else:
                 res[rid] = (False, f"unknown kind {kind!r}")
-        except (KeyError, ValueError, ZeroDivisionError, SyntaxError) as e:
+        except (KeyError, TypeError, ValueError, ZeroDivisionError, OverflowError, SyntaxError) as e:
             res[rid] = (False, f"{type(e).__name__}: {e}")
     # a receipt that relies on a failed receipt fails too
     for r in receipts:
         if r.get("kind") == "calc" and res.get(r.get("id"), (False,))[0]:
-            for name in re.findall(r"[A-Za-z_]\w*", r["expr"]):
-                if not res.get(name, (True,))[0]:
+            for name in calc_names(r["expr"]):
+                if res.get(name, (True,))[0] is False:
                     res[r["id"]] = (False, f"depends on failed {name}")
     return res
 
@@ -246,13 +261,20 @@ def load(d):
     if not os.path.exists(p):
         return []
     with open(p, encoding="utf-8") as f:
-        return json.load(f).get("receipts", [])
+        data = json.load(f)
+    rs = data.get("receipts") if isinstance(data, dict) else None
+    if not isinstance(rs, list) or not all(isinstance(r, dict) for r in rs):
+        raise ValueError('expected {"receipts": [{...}, ...]}')
+    return rs
 
 
 def report(message, d, transcript=None, strong_only=False):
-    rs = load(d)
+    try:
+        rs = load(d)
+    except ValueError as e:  # a broken turn.json is a BAD line, not a traceback
+        return [], {}, {"turn.json": f"malformed .notary/turn.json: {e}"}, coverage(message, [], strong_only) if message else []
     res = verify(rs, d, transcript)
-    bad = {k: v[1] for k, v in res.items() if not v[0]}
+    bad = {k: v[1] for k, v in res.items() if v[0] is False}
     uncovered = coverage(message, rs, strong_only) if message else []
     return rs, res, bad, uncovered
 
@@ -355,18 +377,23 @@ def cli_check(argv):
     ap.add_argument("--message")
     ap.add_argument("--dir", default=os.getcwd())
     ap.add_argument("--transcript")
+    ap.add_argument("--all", action="store_true", help="also require receipts for integers 1-99")
     a = ap.parse_args(argv)
     msg = open(a.message, encoding="utf-8").read() if a.message else ""
-    rs, res, bad, uncovered = report(msg, a.dir, a.transcript, strong_only=True)
+    rs, res, bad, uncovered = report(msg, a.dir, a.transcript, strong_only=not a.all)
+    tag = {True: "ok ", False: "BAD", None: "?? "}
     for r in rs:
         ok, why = res.get(r.get("id"), (False, "?"))
         src = r.get("path") or r.get("command") or r.get("expr") or r.get("why") or r.get("quote", "")
-        print(f"{'ok ' if ok else 'BAD'} {r.get('id', '?'):>4} {str(r.get('value')):>10}  {r.get('kind', '?'):<4} {str(src)[:60]}"
+        print(f"{tag[ok]} {str(r.get('id', '?')):>4} {str(r.get('value')):>10}  {str(r.get('kind', '?')):<4} {str(src)[:60]}"
               + (f"  <- {why}" if why else ""))
+    for k in bad.keys() - {r.get("id") for r in rs}:
+        print(f"BAD {k}  <- {bad[k]}")
     if uncovered:
         print("no receipt: " + ", ".join(dict.fromkeys(uncovered)))
-    n = len(rs)
-    print(f"🧾 {n - len(bad)}/{n} receipts check out" + (f"; {len(uncovered)} numbers uncovered" if msg else ""))
+    n, unchecked = len(rs), sum(v[0] is None for v in res.values())
+    print(f"🧾 {n - len(bad) - unchecked}/{n} receipts check out" + (f", {unchecked} unchecked" if unchecked else "")
+          + (f"; {len(uncovered)} numbers uncovered" if msg else ""))
     return 1 if bad or uncovered else 0
 
 

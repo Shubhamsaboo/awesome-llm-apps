@@ -52,11 +52,11 @@
     {
       "name": "notary",
       "path": "agent_skills/notary",
-      "description": "Makes every number in a report traceable. Before stating results, metrics, counts, timings or any other figure, the agent writes a receipt for each one (the file and exact quote, the logged command output, the calculation, or the user's words) and a checker verifies them against the real files and tool output. Unmeasured values are written N/A, never 0. Use when reporting experiment results, benchmarks, metrics, data analysis, test counts, costs or any summary full of numbers, and when the user says \"notary\", \"receipts\", \"show your sources\", \"where does this number come from\", \"don't make up numbers\", \"数字要有出处\", \"别编数字\", \"没测的写N/A\".",
+      "description": "Makes every number in a report traceable. Before stating results, metrics, counts, timings or any other figure, the agent writes a receipt for each one (the file and exact quote, the logged command output, the calculation, or the user's words) and a checker verifies them against the real files and tool output. Unmeasured values are written N/A, never 0. Use when reporting experiment results, benchmarks, metrics, data analysis, test counts, costs or any summary full of numbers, and when the user says \"notary\", \"receipts\", \"show your sources\", \"where does this number come from\", \"don't make up numbers\".",
       "license": "MIT",
       "metadata": {
         "author": "ruijiezh67",
-        "version": "0.1.0",
+        "version": "0.2.0",
         "source": "https://github.com/Shubhamsaboo/awesome-llm-apps"
       },
       "install": "npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/notary",

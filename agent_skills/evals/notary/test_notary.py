@@ -29,8 +29,9 @@ def project(receipts, files=None, log=None):
         os.makedirs(os.path.dirname(os.path.join(d, path)), exist_ok=True)
         open(os.path.join(d, path), "w").write(body)
     with open(os.path.join(d, ".notary", "log.jsonl"), "w") as f:
-        for out in (log if log is not None else ["$ python eval_test.py\naccuracy 0.8290 (829/1000)\nmacro_f1 0.8011\n"]):
-            f.write(json.dumps({"output": out}) + "\n")
+        for out in (log if log is not None else ["accuracy 0.8290 (829/1000)\nmacro_f1 0.8011\n"]):
+            cmd, out = out if isinstance(out, tuple) else ("python eval_test.py", out)
+            f.write(json.dumps({"output": out, "input": {"command": cmd}}) + "\n")
     json.dump({"receipts": receipts}, open(os.path.join(d, ".notary", "turn.json"), "w"))
     return d
 
@@ -78,7 +79,7 @@ def fabricated_command_output_fails():
 @case
 def cmd_receipt_expires_when_its_input_changes():
     import time
-    d = project([CMD_OK], files={"runs/aug/preds.csv": "y_true,y_pred\n1,1\n"}, log=[])
+    d = project([dict(CMD_OK, command="python eval_test.py runs/aug/preds.csv")], files={"runs/aug/preds.csv": "y_true,y_pred\n1,1\n"}, log=[])
     row = {"output": "accuracy 0.8290 (829/1000)", "input": {"command": "python eval_test.py runs/aug/preds.csv"}}
     with open(os.path.join(d, ".notary", "log.jsonl"), "w") as f:
         f.write(json.dumps(dict(row, ts=time.time() + 60)) + "\n")  # output logged after the file was written
@@ -99,25 +100,26 @@ def scientific_notation():
 
 @case
 def run_wrapper_logs_output_without_hooks():
-    d = project([dict(CMD_OK, quote="accuracy 0.8290")], log=[])
+    cmd = subprocess.list2cmdline([sys.executable, "ev.py"]) if os.name == "nt" else __import__("shlex").join([sys.executable, "ev.py"])
+    d = project([dict(CMD_OK, command=cmd)], log=[])
     open(os.path.join(d, "ev.py"), "w").write("print('accuracy 0.8290 (829/1000)')\n")
     assert "r2" in bad_ids(d)  # nothing logged yet
-    p = subprocess.run([sys.executable, SCRIPT, "run", "--", sys.executable, "ev.py"], cwd=d, capture_output=True, text=True)
+    p = subprocess.run([sys.executable, SCRIPT, "run", "--", cmd], cwd=d, capture_output=True, text=True)
     assert p.returncode == 0 and "accuracy 0.8290" in p.stdout, p.stderr
     assert bad_ids(d) == {}
 
 
 @case
 def fraction_receipt():
-    d = project([{"id": "r3", "value": "829/1000", "kind": "cmd", "quote": "(829/1000)"}])
+    d = project([{"id": "r3", "value": "829/1000", "kind": "cmd", "command": "python eval_test.py", "quote": "(829/1000)"}])
     assert bad_ids(d) == {}
-    d = project([{"id": "r3", "value": "839/1000", "kind": "cmd", "quote": "(829/1000)"}])
+    d = project([{"id": "r3", "value": "839/1000", "kind": "cmd", "command": "python eval_test.py", "quote": "(829/1000)"}])
     assert "r3" in bad_ids(d)
 
 
 @case
 def calc_checks_arithmetic_and_dependencies():
-    base = {"id": "r0", "value": "0.806", "kind": "cmd", "quote": "accuracy 0.8060"}
+    base = {"id": "r0", "value": "0.806", "kind": "cmd", "command": "python eval_test.py", "quote": "accuracy 0.8060"}
     log = ["accuracy 0.8290 (829/1000)", "accuracy 0.8060 (806/1000)"]
     good = {"id": "r4", "value": "2.3", "kind": "calc", "expr": "(r2 - r0) * 100"}
     assert bad_ids(project([CMD_OK, base, good], log=log)) == {}
@@ -150,6 +152,46 @@ def user_receipt_checked_against_transcript():
     assert bad_ids(d, transcript=t) == {}
     open(t, "w").write(json.dumps({"type": "user", "message": {"content": "use the default"}}) + "\n")
     assert "r6" in bad_ids(d, transcript=t)
+
+
+@case
+def cmd_receipt_must_match_the_logged_command():
+    log = [("cat old_notes.txt", "accuracy 0.8290 (829/1000)")]
+    d = project([dict(CMD_OK, command="python never_ran.py")], log=log)
+    assert "different command: cat old_notes.txt" in bad_ids(d)["r2"]
+    assert bad_ids(project([dict(CMD_OK, command="cat  old_notes.txt")], log=log)) == {}  # whitespace is normalized
+
+
+@case
+def user_receipt_without_transcript_is_unchecked_not_ok():
+    d = project([{"id": "r6", "value": "0.003", "kind": "user", "quote": "use lr 0.003"}])
+    rs, res, bad, unc = R.report("", d, None, strong_only=True)
+    assert res["r6"][0] is None and bad == {}, res
+    p = subprocess.run([sys.executable, SCRIPT, "check", "--dir", d], capture_output=True, text=True, encoding="utf-8")
+    assert "??" in p.stdout and "0/1 receipts check out, 1 unchecked" in p.stdout, p.stdout
+
+
+@case
+def small_integers_need_receipts_only_with_all():
+    d = project([FILE_OK])
+    msg = os.path.join(d, "m.md")
+    open(msg, "w").write("val 84.7% over 3 seeds\n")
+    run = lambda *a: subprocess.run([sys.executable, SCRIPT, "check", "--dir", d, "--message", msg, *a],
+                                    capture_output=True, text=True, encoding="utf-8")
+    assert run().returncode == 0
+    p = run("--all")
+    assert p.returncode == 1 and "no receipt: 3" in p.stdout, p.stdout
+
+
+@case
+def calc_overflow_and_broken_turn_json_are_bad_lines():
+    for expr in ("10 ** 400", "9 ** 9 ** 9", "(1 / r2) ** 1e6 ** 9"):
+        d = project([CMD_OK, {"id": "r9", "value": "1", "kind": "calc", "expr": expr}])
+        assert "OverflowError" in bad_ids(d)["r9"], (expr, bad_ids(d))
+    d = project([])
+    open(os.path.join(d, ".notary", "turn.json"), "w").write('{"receipts": [ {"id": "r1",')
+    p = subprocess.run([sys.executable, SCRIPT, "check", "--dir", d], capture_output=True, text=True, encoding="utf-8")
+    assert p.returncode == 1 and "BAD turn.json" in p.stdout and "Traceback" not in p.stderr, (p.stdout, p.stderr)
 
 
 def hook(cmd, payload, env=None):
