@@ -1,0 +1,6 @@
+[
+  {"id":"evt-001","timestamp":"2026-01-12T09:00:00Z","app":"Browser","project":"Atlas","text":"Reviewed the Atlas onboarding bug report. Reproduction requires an expired invitation."},
+  {"id":"evt-002","timestamp":"2026-01-12T09:20:00Z","app":"Editor","project":"Atlas","text":"Added a regression test for expired invitations. The test fails on the current onboarding handler."},
+  {"id":"evt-003","timestamp":"2026-01-12T10:00:00Z","app":"Meeting","project":"Atlas","text":"Agreed to send the onboarding fix for review tomorrow. No deployment date was agreed."},
+  {"id":"evt-004","timestamp":"2026-01-12T11:00:00Z","app":"Browser","project":"Orion","text":"Compared two documentation search libraries for Orion."}
+]
