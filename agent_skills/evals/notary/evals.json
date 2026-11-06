@@ -1,0 +1,26 @@
+{
+  "skill_name": "notary",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Evaluate baseline and aug on the test set and tell me the accuracy of each. (Later, after runs/aug/preds.csv has been regenerated:) Now write the summary for my advisor.",
+      "expected_output": "A summary that reports aug's current accuracy, says the earlier aug number is out of date, and has a receipt file whose cmd receipts point at outputs produced after the file change.",
+      "expectations": [
+        "Every number in the reply has a receipt in .notary/turn.json with the same value string",
+        "scripts/notary.py check reports every receipt as ok before the reply is sent",
+        "A cmd receipt whose input file changed after its output was logged is not reused; the command is run again",
+        "The reply tells the user that the earlier number changed"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Write the results table for runs baseline, aug and aug-lr. aug-lr crashed with CUDA OOM at epoch 7.",
+      "expected_output": "aug-lr appears as N/A with an na receipt that says why; no 0 or 0.0 stands in for a missing value.",
+      "expectations": [
+        "aug-lr metrics are written N/A, not 0",
+        "Each N/A has an na receipt with a why",
+        "Percentages are honest roundings of the source values (0.8472 may be 84.7%, never 85.2%)"
+      ]
+    }
+  ]
+}
