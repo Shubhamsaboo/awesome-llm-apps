@@ -516,6 +516,81 @@ function runMockReq(method, url) {
   assert.strictEqual(app.state.tabs.length, 3, 'Restoring workspace JSON should bring back all 3 tabs');
   console.log('[PASS] 8. Multi-canvas tabs (create, switch, fork/duplicate, rename, close, Alt+1..9, localStorage & multi-tab JSON) verified');
 
+  // 9. Text to Flow (Mermaid flowchart subset)
+  const flow = app.parseMermaidFlow(`flowchart LR
+    %% a comment
+    A[Change ticket] --> B{Admitted?}
+    B -->|yes| C[Build]; B -.->|no| D(Blocked)
+    C ==> E(["Durable<br>code"])
+    B -- retry --> A
+    X & Y --> E
+    style C stroke:#10b981
+    subgraph S`);
+  assert.strictEqual(flow.direction, 'LR', 'Mermaid header direction should be read');
+  assert.deepStrictEqual([...flow.nodes.keys()], ['A', 'B', 'C', 'D', 'E', 'X', 'Y'], 'Nodes in order of appearance');
+  assert.strictEqual(flow.nodes.get('B').type, 'diamond', '{text} should be a diamond');
+  assert.strictEqual(flow.nodes.get('D').type, 'rectangle', '(text) should be a rounded box');
+  assert.strictEqual(flow.nodes.get('E').type, 'ellipse', '([text]) should be an oval');
+  assert.strictEqual(flow.nodes.get('E').text, 'Durable\ncode', 'Quoted labels with <br> should become two lines');
+  assert.strictEqual(flow.nodes.get('C').strokeColor, '#10b981', 'style stroke:#hex should colour the node');
+  assert.strictEqual(flow.edges.length, 7, '& should fan out edges and ; should split statements');
+  const noEdge = flow.edges.find(e => e.to === 'D');
+  assert(noEdge.dotted && noEdge.label === 'no', '-.->|no| should be a dotted, labelled edge');
+  assert(flow.edges.find(e => e.to === 'E' && e.from === 'C').thick, '==> should be a thick edge');
+  assert.strictEqual(flow.edges.find(e => e.to === 'A').label, 'retry', '-- text --> should label the edge');
+  assert(flow.warnings.some(w => w.includes('subgraph')), 'Unsupported statements should warn, not fail');
+  assert.throws(() => app.parseMermaidFlow('flowchart LR\nA[open --> B'), /Line 2/, 'Syntax errors should name the line');
+  assert.throws(() => app.parseMermaidFlow('A --> B\nflowchart LR'), /Line 2/, 'A late header should be an error');
+
+  const laid = app.textToFlow('graph TD\nA --> B\nA --> C\nB --> D\nC --> D\nD --> A');
+  const at = id => laid.elements.find(e => e.id === id);
+  const cy = el => el.y + el.height / 2;
+  assert(cy(at('A')) < cy(at('B')) && cy(at('B')) < cy(at('D')), 'TD layout should rank nodes downwards, cycle ignored for ranking');
+  assert.strictEqual(cy(at('B')), cy(at('C')), 'Nodes of one rank should share a layer');
+  const arrowsTD = laid.elements.filter(e => e.type === 'arrow');
+  assert.strictEqual(arrowsTD.length, 5, 'Every edge should become an arrow');
+  assert(arrowsTD.every(a => a.startBinding && a.endBinding), 'Arrows should be bound to their nodes');
+  const laidMap = new Map(laid.elements.map(e => [e.id, e]));
+  const backPts = app.getArrowGeometry(arrowsTD.find(a => a.startBinding.elementId === 'D'), laidMap).samples;
+  assert(['B', 'C'].every(id => !backPts.some(p => p.x > at(id).x && p.x < at(id).x + at(id).width &&
+    p.y > at(id).y && p.y < at(id).y + at(id).height)), 'The back edge D -> A should not cross B or C');
+
+  const inked = app.textToFlow('flowchart LR\nA[One] --> B[Two]\nstyle A stroke:#0070f3\nstyle B stroke:#10b981,color:#ef4444').elements;
+  assert.strictEqual(inked.find(e => e.id === 'A').textColor, '#171717', 'Node text should default to ink, not the outline colour');
+  assert.strictEqual(inked.find(e => e.id === 'B').textColor, '#ef4444', 'style color:#hex should colour the text');
+  assert.strictEqual(app.createElement('rectangle', {}).textColor, null, 'Hand-drawn shapes keep text in their stroke colour');
+
+  // A loop is broken at the edge that closes it in the order written: "retry" (G -> P), not S -> A.
+  const loop = app.textToFlow('flowchart TD\nU --> R\nR --> A\nR --> P\nP --> S\nS --> A\nA --> G\nG -- retry --> P\nG --> O').elements;
+  const ly = id => { const el = loop.find(e => e.id === id); return el.y + el.height / 2; };
+  assert(ly('P') < ly('S') && ly('S') < ly('A') && ly('A') < ly('G'), 'The loop-back should be the edge written last in the loop');
+
+  const chain = 'flowchart LR\nA --> B --> C --> D --> E --> F --> G';
+  const wrapped = app.textToFlow(chain, { maxPerBand: 3 }).elements;
+  const w = id => wrapped.find(e => e.id === id);
+  const cx = el => el.x + el.width / 2;
+  assert.strictEqual(new Set(wrapped.filter(e => e.type !== 'arrow').map(cx)).size, 3, 'maxPerBand 3 should give 3 columns');
+  assert.strictEqual(new Set(wrapped.filter(e => e.type !== 'arrow').map(cy)).size, 3, '7 steps at 3 per row should give 3 rows');
+  assert(cx(w('D')) > cx(w('E')) && cx(w('D')) === cx(w('C')), 'The second row should snake back, starting under the end of the first');
+  const tall = app.textToFlow(chain, { aspect: Math.SQRT1_2, maxPerBand: 3 }).elements.filter(e => e.type !== 'arrow');
+  const span = (els, f, g) => Math.max(...els.map(g)) - Math.min(...els.map(f));
+  assert(span(tall, e => e.x, e => e.x + e.width) < span(tall, e => e.y, e => e.y + e.height), 'An A4 portrait aspect should come out taller than wide');
+
+  const skip = app.textToFlow('flowchart LR\nA --> B --> C\nA -->|skip| C').elements;
+  const skipArrow = skip.find(e => e.type === 'arrow' && e.startBinding.elementId === 'A' && e.endBinding.elementId === 'C');
+  const boxB = skip.find(e => e.id === 'B');
+  const skipMap = new Map(skip.map(e => [e.id, e]));
+  assert(skipArrow.curveOffset !== 0, 'An arrow whose straight line crosses a box should bend');
+  assert(!app.getArrowGeometry(skipArrow, skipMap).samples.some(p =>
+    p.x > boxB.x && p.x < boxB.x + boxB.width && p.y > boxB.y && p.y < boxB.y + boxB.height), 'A bent arrow should go around the box, not over it');
+
+  app.loadTextFlow('flowchart LR\nP[Plan] -->|go| Q[Ship]');
+  assert.strictEqual(app.state.elements.filter(e => e.type === 'arrow').length, 1, 'loadTextFlow should replace the canvas');
+  assert(app.state.elements.some(e => e.type === 'text' && e.text === 'go'), 'Edge labels should be drawn as text');
+  app.undo();
+  assert(!app.state.elements.some(e => e.id === 'P'), 'loadTextFlow should be undoable');
+  console.log('[PASS] 9. Text to Flow: Mermaid parse, warnings, errors, layered layout, snaking rows for a page shape, arrows around boxes, ink text, loop-backs, labels, undo');
+
   console.log('\nALL EXCALIFLOW VERIFICATION CHECKS PASSED SUCCESSFULLY!');
 })().catch(err => {
   console.error(err);
