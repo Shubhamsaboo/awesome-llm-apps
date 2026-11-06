@@ -475,7 +475,7 @@ If no tool is needed, just respond normally."""
         # Get LLM response
         try:
             response = self.client.chat.completions.create(
-                model=os.getenv("OPENAI_MODEL", "gpt-4"),
+                model=os.getenv("OPENAI_MODEL", "gpt-5.6-sol"),
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_request}

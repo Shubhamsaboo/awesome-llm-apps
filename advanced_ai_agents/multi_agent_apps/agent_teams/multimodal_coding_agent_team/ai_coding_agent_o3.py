@@ -43,7 +43,7 @@ def create_agents() -> tuple[Agent, Agent, Agent]:
 
     coding_agent = Agent(
         model=OpenAIChat(
-            id="o3-mini", 
+            id="gpt-5.6-sol",
             api_key=st.session_state.openai_key,
             system_prompt="""You are an expert Python programmer. You will receive coding problems similar to LeetCode questions, 
             which may include problem statements, sample inputs, and examples. Your task is to:
@@ -58,7 +58,7 @@ def create_agents() -> tuple[Agent, Agent, Agent]:
     
     execution_agent = Agent(
         model=OpenAIChat(
-            id="o3-mini",
+            id="gpt-5.6-sol",
             api_key=st.session_state.openai_key,
             system_prompt="""You are an expert at executing Python code in sandbox environments.
             Your task is to:

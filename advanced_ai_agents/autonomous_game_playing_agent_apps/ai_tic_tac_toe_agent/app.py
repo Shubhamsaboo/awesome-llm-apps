@@ -37,7 +37,7 @@ def main():
     ####################################################################
     required_keys_info = {
         "gpt-4o": "OPENAI_API_KEY",
-        "o3-mini": "OPENAI_API_KEY", 
+        "gpt-5.6-sol": "OPENAI_API_KEY",
         "claude-3.5": "ANTHROPIC_API_KEY",
         "claude-3.7": "ANTHROPIC_API_KEY",
         "claude-3.7-thinking": "ANTHROPIC_API_KEY",
@@ -66,7 +66,7 @@ def main():
         st.markdown("### Game Controls")
         model_options = {
             "gpt-4o": "openai:gpt-4o",
-            "o3-mini": "openai:o3-mini",
+            "gpt-5.6-sol": "openai:gpt-5.6-sol",
             "claude-3.5": "anthropic:claude-3-5-sonnet",
             "claude-3.7": "anthropic:claude-3-7-sonnet",
             "claude-3.7-thinking": "anthropic:claude-3-7-sonnet-thinking",
@@ -86,7 +86,7 @@ def main():
         selected_p_o = st.selectbox(
             "Select Player O",
             list(model_options.keys()),
-            index=list(model_options.keys()).index("o3-mini"),
+            index=list(model_options.keys()).index("gpt-5.6-sol"),
             key="model_p2",
         )
 

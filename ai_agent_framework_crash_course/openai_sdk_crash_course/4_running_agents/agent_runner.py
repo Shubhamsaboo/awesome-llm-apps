@@ -109,7 +109,7 @@ def main():
         # Model configuration
         model_choice = st.selectbox(
             "Model",
-            ["gpt-4o", "gpt-4o-mini", "gpt-3.5-turbo"],
+            ["gpt-4o", "gpt-4o-mini", "gpt-5.6-terra"],
             index=0
         )
         
