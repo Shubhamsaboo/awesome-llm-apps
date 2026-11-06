@@ -66,6 +66,7 @@ def extract_knowledge(runtime: ToolRuntime[Any]) -> Command:
     all_content = ""
     doc_names = []
     source_content = {}
+    consumed_uploads = []
 
     if os.path.isdir(upload_dir):
         for fpath in sorted(glob.glob(os.path.join(upload_dir, "*"))):
@@ -76,7 +77,7 @@ def extract_knowledge(runtime: ToolRuntime[Any]) -> Command:
                 all_content += f"\n\n--- {name} ---\n{content}"
                 doc_names.append(name)
                 source_content.setdefault(name, content)
-                os.remove(fpath)
+                consumed_uploads.append(fpath)
             except Exception as e:
                 print(f"[knowledge-explorer] Skipping unreadable file {fpath}: {e}")
                 continue
@@ -244,7 +245,7 @@ RULES:
                 "status": "extracted",
             })
 
-    return Command(update={
+    result = Command(update={
         "documents": updated_docs,
         "nodes": existing_nodes + new_nodes,
         "edges": existing_edges + new_edges,
@@ -254,6 +255,16 @@ RULES:
             tool_call_id=runtime.tool_call_id
         )]
     })
+
+    # Keep source files available for a retry if the model call, parsing, or
+    # graph construction fails. Only clean up files included in this result.
+    for fpath in consumed_uploads:
+        try:
+            os.remove(fpath)
+        except OSError as e:
+            print(f"[knowledge-explorer] Could not remove processed upload {fpath}: {e}")
+
+    return result
 
 
 @tool
