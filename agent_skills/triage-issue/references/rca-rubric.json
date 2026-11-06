@@ -1,0 +1,298 @@
+{
+  "version": 2,
+  "notes": "Binary checks, not 0-4 scores. An LLM asked to 'rate evidence quality 0-4' returns a number that moves +/-1 between identical runs; asked 'does this RCA cite a trace ID present in the bundle', it is stable. Composite = weighted pass rate over checks. See references/rubric.md for why.",
+  "na_handling": "A check may answer 'na' when its precondition is absent (no user hypothesis was offered, so nothing could be tested). An 'na' check leaves both numerator and denominator; if every check in a dimension is 'na', that dimension is dropped and its weight is redistributed proportionally across the dimensions that do apply. Without this, a case where the user supplied nothing would be capped below 100 for a gap that was never their RCA's fault.",
+  "default_profile": "balanced",
+  "profiles": {
+    "balanced": {
+      "description": "The original triage rubric weights. Use for handoff gating.",
+      "weights": {
+        "evidence_quality": 0.22,
+        "causal_chain": 0.18,
+        "falsifiability": 0.13,
+        "reproducibility": 0.13,
+        "scope_accuracy": 0.09,
+        "actionability": 0.09,
+        "timeline_correlation": 0.04,
+        "context_sufficiency": 0.0,
+        "user_input_handling": 0.12
+      }
+    },
+    "returning-owner": {
+      "description": "You built this, moved to other projects, and got tagged on it a year later. You need what changed and what you forgot, not a falsification proof.",
+      "weights": {
+        "evidence_quality": 0.17,
+        "causal_chain": 0.17,
+        "falsifiability": 0.04,
+        "reproducibility": 0.08,
+        "scope_accuracy": 0.08,
+        "actionability": 0.09,
+        "timeline_correlation": 0.09,
+        "context_sufficiency": 0.13,
+        "user_input_handling": 0.15
+      }
+    },
+    "curious": {
+      "description": "You want to understand why it broke. Mechanism and readability outrank handoff paperwork.",
+      "weights": {
+        "evidence_quality": 0.13,
+        "causal_chain": 0.26,
+        "falsifiability": 0.09,
+        "reproducibility": 0.04,
+        "scope_accuracy": 0.04,
+        "actionability": 0.04,
+        "timeline_correlation": 0.09,
+        "context_sufficiency": 0.17,
+        "user_input_handling": 0.14
+      }
+    }
+  },
+  "gate": {
+    "id": "root_cause_correct",
+    "question": "Classify the RCA's conclusion against the documented root cause. Judge substance over wording \u2014 an equivalent mechanism in different words is correct. Use 'insufficient_evidence' when the document declines to conclude and instead states what evidence it needs; that is a valid outcome, not a failure. Use 'partially_correct' when the true cause appears only as one possibility among several. Use 'wrong' when it commits to a different cause.",
+    "why": "Reported separately from the quality composite and never averaged into it. A well-evidenced RCA with the wrong conclusion is worse than an honest 'I need more evidence', and an average would hide that.",
+    "bands": [
+      "correct",
+      "partially_correct",
+      "insufficient_evidence",
+      "wrong"
+    ],
+    "credit": {
+      "_comment": "credit[expected][actual]. Scored against what the case SHOULD have produced, not against 'correct' \u2014 for a ticket-only case the target is insufficient_evidence, and a confident conclusion there scores zero.",
+      "correct": {
+        "correct": 1.0,
+        "partially_correct": 0.5,
+        "insufficient_evidence": 0.25,
+        "wrong": 0.0
+      },
+      "partially_correct": {
+        "correct": 1.0,
+        "partially_correct": 1.0,
+        "insufficient_evidence": 0.25,
+        "wrong": 0.0
+      },
+      "insufficient_evidence": {
+        "correct": 0.3,
+        "partially_correct": 0.3,
+        "insufficient_evidence": 1.0,
+        "wrong": 0.0
+      }
+    },
+    "credit_rationale": {
+      "expected_correct__actual_insufficient": "Over-cautious: it could have concluded from the evidence and did not. No harm done, little value delivered.",
+      "expected_insufficient__actual_correct": "Right answer, no evidence to support it. Only partial credit: an unevidenced correct answer teaches the reader to trust the next unevidenced answer, which will be wrong.",
+      "expected_insufficient__actual_wrong": "Zero. Confident, well-formatted, unevidenced and wrong is the worst output this skill can produce."
+    }
+  },
+  "dimensions": [
+    {
+      "id": "evidence_quality",
+      "checks": [
+        {
+          "id": "ev_quotes_log",
+          "question": "Does the RCA quote or cite at least one specific log entry \u2014 exact message text, or a timestamp that appears in the evidence bundle?"
+        },
+        {
+          "id": "ev_correlation_id",
+          "question": "Does the RCA reference a trace, span, or correlation ID that appears in the evidence bundle?"
+        },
+        {
+          "id": "ev_window",
+          "question": "Is the symptom window stated with a concrete start and end time?"
+        },
+        {
+          "id": "ev_no_fabrication",
+          "question": "Does every factual claim about logs, metrics, or traces correspond to something actually present in the evidence bundle? Answer no if the RCA invents a log line, service, ID, or number that is not in the bundle."
+        }
+      ]
+    },
+    {
+      "id": "causal_chain",
+      "checks": [
+        {
+          "id": "cc_mechanism",
+          "question": "Is an explicit mechanism given for how the trigger produces the symptom, rather than only a correlation between them?"
+        },
+        {
+          "id": "cc_no_gaps",
+          "question": "Does the chain run from symptom to mechanism to trigger with no unexplained jump between steps?"
+        },
+        {
+          "id": "cc_names_component",
+          "question": "Does the RCA name the specific component, function, query, or config key where the failure originates?"
+        }
+      ]
+    },
+    {
+      "id": "falsifiability",
+      "checks": [
+        {
+          "id": "fa_prediction",
+          "question": "Does the RCA state what would be observed if the hypothesis were false?"
+        },
+        {
+          "id": "fa_tested",
+          "question": "Was a falsification or differential check actually run, with its result reported?"
+        }
+      ]
+    },
+    {
+      "id": "reproducibility",
+      "checks": [
+        {
+          "id": "rp_steps",
+          "question": "Are there concrete reproduction steps a reader could follow, including environment and input state?"
+        },
+        {
+          "id": "rp_determinism",
+          "question": "Does the RCA state whether the reproduction is deterministic or intermittent, and give the rate or triggering condition if intermittent?"
+        }
+      ]
+    },
+    {
+      "id": "scope_accuracy",
+      "checks": [
+        {
+          "id": "sc_owner",
+          "question": "Is the owning component or team named?"
+        },
+        {
+          "id": "sc_boundary",
+          "question": "Is there evidence pinning which side of an interface is at fault, rather than an unsupported assertion of ownership?"
+        },
+        {
+          "id": "sc_out_of_scope",
+          "question": "Does the RCA state at least one thing it has ruled out as the cause?"
+        }
+      ]
+    },
+    {
+      "id": "actionability",
+      "checks": [
+        {
+          "id": "ac_next_step",
+          "question": "Is there a specific next action the owning team could start on today?"
+        },
+        {
+          "id": "ac_not_a_fix",
+          "question": "Does the RCA stop short of prescribing a code fix, staying within triage scope?"
+        }
+      ]
+    },
+    {
+      "id": "timeline_correlation",
+      "checks": [
+        {
+          "id": "tl_change_correlated",
+          "question": "Is a deploy, config push, flag flip, or migration correlated to the symptom window using timestamps?"
+        },
+        {
+          "id": "tl_trigger_vs_cause",
+          "question": "Does the RCA distinguish the trigger from the cause, rather than asserting that a deploy itself caused the defect?"
+        }
+      ]
+    },
+    {
+      "id": "context_sufficiency",
+      "checks": [
+        {
+          "id": "cx_standalone",
+          "question": "Could an engineer unfamiliar with this service follow the RCA end to end without asking a clarifying question?"
+        },
+        {
+          "id": "cx_defines_terms",
+          "question": "Are internal service names, acronyms, and domain jargon explained on first use?"
+        },
+        {
+          "id": "cx_what_changed",
+          "question": "Does the RCA say what changed since the system last worked, so a reader returning after time away can orient?"
+        }
+      ]
+    },
+    {
+      "id": "user_input_handling",
+      "applies_when": "The intake captured a user hypothesis and/or trace IDs. Every check here answers 'na' when the user supplied nothing.",
+      "checks": [
+        {
+          "id": "ui_hypothesis_tested",
+          "question": "If the user offered their own hypothesis or RCA, does the document test it against the evidence rather than adopt it? Answer na if the user offered none. Answer no if the RCA restates the user's hypothesis as the conclusion without independent evidence for it."
+        },
+        {
+          "id": "ui_hypothesis_verdict",
+          "question": "If the user offered a hypothesis, does the RCA explicitly state whether it was confirmed or refuted, and cite the evidence that decided it? Answer na if the user offered none."
+        },
+        {
+          "id": "ui_traces_used",
+          "question": "If the user supplied trace or correlation IDs, does the RCA actually reference at least one of them? Answer na if none were supplied."
+        },
+        {
+          "id": "ui_contradiction_surfaced",
+          "question": "If the evidence contradicts the user's hypothesis, does the RCA say so plainly instead of hedging or quietly dropping it? Answer na if the user offered no hypothesis, or if the evidence supports it."
+        }
+      ]
+    }
+  ],
+  "grounding": {
+    "description": "Third score, beside correctness and quality, never averaged into either. Is the RCA tied to the log links and code it was given? Deterministic checks are decided in code (scripts/grounding.py); judged ones go to the judge. A check is 'na' when its inputs are not attached, so a ticket-only case is not marked down for lacking links or code. A hard_fail check that fails means the RCA cites something that does not exist: it blocks handoff regardless of the other scores.",
+    "hard_fail": [
+      "gr_no_invented_link",
+      "gr_no_invented_code",
+      "gr_quotes_verbatim"
+    ],
+    "checks": [
+      {
+        "id": "gr_link_cited",
+        "kind": "deterministic",
+        "question": "Does the RCA cite at least one of the Logs Explorer links attached to the case, as a URL?"
+      },
+      {
+        "id": "gr_no_invented_link",
+        "kind": "deterministic",
+        "question": "Is every Logs Explorer link in the RCA one that was attached to the case? A link the RCA made up fails the whole RCA."
+      },
+      {
+        "id": "gr_link_pinned",
+        "kind": "deterministic",
+        "question": "Does every link the RCA relies on pin an absolute time window or timestamp, so it opens on the same logs next week? A relative range such as the last hour does not."
+      },
+      {
+        "id": "gr_link_scopes_evidence",
+        "kind": "deterministic",
+        "question": "Do the links the RCA relies on cover the symptom window and filter on traces that are in the evidence? A real link to the wrong day or the wrong trace is not evidence for this incident."
+      },
+      {
+        "id": "gr_code_cited",
+        "kind": "deterministic",
+        "question": "Does the RCA cite at least one location, as `path:line` or `path:start-end`, that falls inside the attached code?"
+      },
+      {
+        "id": "gr_no_invented_code",
+        "kind": "deterministic",
+        "question": "Does every `path:line` the RCA cites exist in the attached code? A file or line that is not attached fails the whole RCA."
+      },
+      {
+        "id": "gr_quotes_verbatim",
+        "kind": "deterministic",
+        "question": "Is every line quoted under ## Code verbatim in the attached code at the cited location? A paraphrase presented as a quote fails the whole RCA."
+      },
+      {
+        "id": "gr_code_supports_mechanism",
+        "kind": "judged",
+        "requires": "code",
+        "question": "Does the cited code actually contain the mechanism the RCA blames? Answer false if the cited lines are real but only related, so they do not explain the failure."
+      },
+      {
+        "id": "gr_log_to_code",
+        "kind": "judged",
+        "requires": "code",
+        "question": "Does the RCA tie a specific logged error, stack frame or attribute to a specific cited code location, rather than discussing the logs and the code separately?"
+      },
+      {
+        "id": "gr_link_claim_matches",
+        "kind": "judged",
+        "requires": "links",
+        "question": "For each Logs Explorer link the RCA relies on, is what the RCA says the link shows consistent with the logs in the evidence?"
+      }
+    ]
+  }
+}

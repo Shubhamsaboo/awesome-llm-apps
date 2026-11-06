@@ -1,0 +1,4 @@
+litellm>=1.55.0
+streamlit>=1.65.0
+opentelemetry-sdk>=1.30.0
+opentelemetry-exporter-otlp-proto-http>=1.30.0

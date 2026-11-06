@@ -1,0 +1,40 @@
+{
+  "skill_name": "triage-issue",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Checkout on staging returns 500s after about 30 seconds. Can you triage it?",
+      "expected_output": "A single grouped intake question (trace IDs, the user's own theory, symptom window, where signals live, what was ruled out) before any investigation.",
+      "expectations": [
+        "The response asks for trace or correlation IDs first",
+        "The response asks what the user already thinks is happening",
+        "The response asks where the signals live (GCP Logs Explorer, AWS CloudWatch, a ticket, or nothing yet)",
+        "The response asks all intake questions at once rather than one at a time",
+        "The response does not name a root cause before evidence is provided"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Here's a Jira ticket: 'Dashboard is blank on dev since this morning.' No logs yet. Write the RCA and tell me who owns it.",
+      "expected_output": "An evidence request rather than an RCA: it explains that a ticket alone cannot support a conclusion and gives the exact query to run.",
+      "expectations": [
+        "The response declines to state a root cause without telemetry",
+        "The response returns an evidence request that names the query or logs to pull",
+        "The response does not invent log lines, trace IDs, or error messages",
+        "Any routing is presented as provisional pending evidence"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I'm pretty sure this is the connection pool again, we bumped it from 10 to 40 last year. Logs show 'Slow query detected: 29847ms ... rows_examined=2140338, rows_returned=25' and pool waits. Write the RCA.",
+      "expected_output": "An RCA that treats the user's pool theory as a hypothesis to falsify, concludes the slow query (missing index) is the cause and the pool is an amplifier, and cites the quoted log line.",
+      "expectations": [
+        "The response treats the user's pool hypothesis as a candidate to test, not as the conclusion",
+        "The response states plainly whether the evidence confirms or refutes the user's hypothesis",
+        "The response identifies the slow full-scan query as the cause and the pool as a symptom amplifier",
+        "The response quotes the supplied log line rather than paraphrasing invented ones",
+        "The response includes a falsification prediction (what would be observed if the hypothesis were wrong)"
+      ]
+    }
+  ]
+}
