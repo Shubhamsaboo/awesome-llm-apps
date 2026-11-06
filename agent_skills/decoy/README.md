@@ -8,6 +8,8 @@
 
 `scripts/decoy.py` lints all three.
 
+Maintained at [ruijiezh67/ruijie_skills](https://github.com/ruijiezh67/ruijie_skills/tree/main/decoy), which also has the Claude Code plugin with hooks, the original benchmark fixtures and raw results. Issues and updates go there.
+
 ## Install
 
 ```bash
