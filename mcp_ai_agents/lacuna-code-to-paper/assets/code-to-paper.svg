@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 310" role="img" aria-labelledby="title desc">
+  <title id="title">Trace a repository to its research papers</title>
+  <desc id="desc">Search resources, check repository identity, follow publication relationships, and fetch paper sources. Stop if the repository match is missing or ambiguous.</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#667085"/></marker></defs>
+  <rect width="960" height="310" rx="16" fill="#f8fafc"/>
+  <g font-family="system-ui, sans-serif" fill="#15233b">
+    <text x="32" y="40" font-size="21" font-weight="700">From code to a paper you can inspect</text>
+    <g fill="#fff" stroke="#b8c8dc" stroke-width="1.5">
+      <rect x="30" y="78" width="190" height="112" rx="10"/>
+      <rect x="264" y="78" width="190" height="112" rx="10"/>
+      <rect x="498" y="78" width="190" height="112" rx="10"/>
+      <rect x="732" y="78" width="198" height="112" rx="10"/>
+    </g>
+    <g font-size="16" font-weight="600">
+      <text x="48" y="109">1. Search resources</text><text x="282" y="109">2. Check identity</text>
+      <text x="516" y="109">3. Follow paper links</text><text x="750" y="109">4. Inspect sources</text>
+    </g>
+    <g font-size="14" fill="#475467">
+      <text x="48" y="139">search_lacuna</text><text x="48" y="164">type: resource</text>
+      <text x="282" y="139">Match owner/name</text><text x="282" y="164">against returned data</text>
+      <text x="516" y="139">get_resource</text><text x="516" y="164">publications[].paper_id</text>
+      <text x="750" y="139">get_paper</text><text x="750" y="164">Lacuna + original paper</text>
+    </g>
+    <path d="M222 134H258 M456 134H492 M690 134H726" fill="none" stroke="#667085" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M358 192V226" fill="none" stroke="#667085" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="216" y="250" font-size="14">Missing or ambiguous match: stop and inspect candidates.</text>
+    <text x="32" y="289" font-size="13" fill="#475467">Search rank is a candidate signal. A recorded relationship supplies a source to verify.</text>
+  </g>
+</svg>
