@@ -1,10 +1,14 @@
 streamlit 
 agno
 openai
-psycopg-binary
+psycopg[binary]
 pgvector
 requests
 sqlalchemy
 pypdf
 duckduckgo-search
 nest_asyncio
+google-genai
+ddgs
+python-dotenv
+greenlet
