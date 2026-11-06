@@ -31,7 +31,7 @@ pip install -r requirements.txt
 3. Get your OpenAI API Key
 
 - Sign up at [platform.openai.com](https://platform.openai.com) and create an API key
-- Recommended model: `gpt-4o` for best extraction quality
+- Recommended model: `gpt-5.4` for best extraction quality
 
 4. Run the Streamlit App
 
@@ -64,7 +64,7 @@ JSON Schema  ──→ Field Planner ──→ Target Fields
                                        │
                               ┌────────▼────────┐
                               │  Extraction LLM  │◄──── Iteration Loop
-                              │  (GPT-4o / 4.1)  │       (max N rounds)
+                              │  (GPT-5.4)  │       (max N rounds)
                               └────────┬────────┘
                                        │
                               Structured JSON Output

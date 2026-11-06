@@ -56,7 +56,7 @@ with st.sidebar:
     )
 
     api_key = st.text_input("OpenAI API Key", type="password")
-    model = st.selectbox("Model", ["gpt-4o", "gpt-4o-mini", "gpt-4.1", "gpt-4.1-mini"], index=0)
+    model = st.selectbox("Model", ["gpt-5.4", "gpt-4o", "gpt-4.1", "gpt-4.1-mini"], index=0)
     max_iterations = st.slider("Max iterations", 1, 5, 3)
 
     st.divider()
