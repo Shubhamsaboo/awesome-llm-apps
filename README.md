@@ -138,6 +138,7 @@ streamlit run travel_agent.py
 *   [🎧 AI Social Media News and Podcast Agent](advanced_ai_agents/multi_agent_apps/ai_news_and_podcast_agents/) - Curates your trusted sources into briefs and generated podcasts
 *   [🌐 Openwork - Open Browser Automation Agent](https://github.com/accomplish-ai/coworker) <sub>↗ external</sub> - Open-source agent that operates a real browser
 *   [🛡️ Trust-Gated Multi-Agent Research Team](advanced_ai_agents/multi_agent_apps/trust_gated_agent_team/) - Every agent verified, every action in a hash-chained audit trail
+*   [📄 AI Document Extraction Agent](advanced_ai_agents/single_agent_apps/ai_document_extraction_agent/) - Schema-guided extraction from any PDF with iterative refinement — 92.97 F1 on ExtractBench
 
 ### 🛰️ Always-on Agents
 
