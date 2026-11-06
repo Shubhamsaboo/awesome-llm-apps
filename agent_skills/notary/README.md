@@ -2,6 +2,8 @@
 
 **No receipt, no number.** Every figure your agent reports must point to where it came from (the file and exact quote, the command output it actually saw, or the arithmetic), and `scripts/notary.py` checks each receipt against the real files and logs. Unmeasured values are `N/A`, never `0`.
 
+Maintained at [ruijiezh67/ruijie_skills](https://github.com/ruijiezh67/ruijie_skills/tree/main/notary), which also has the Claude Code plugin with hooks, the original benchmark fixtures and raw results. Issues and updates go there.
+
 ## Install
 
 ```bash
