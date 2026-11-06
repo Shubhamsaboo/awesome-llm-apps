@@ -78,7 +78,7 @@ def initialize_sandbox() -> None:
         if st.session_state.sandbox:
             try:
                 st.session_state.sandbox.close()
-            except:
+            except Exception:
                 pass
         os.environ['E2B_API_KEY'] = st.session_state.e2b_key
         # Initialize sandbox with 60 second timeout
@@ -151,7 +151,7 @@ def execute_code_with_agent(execution_agent: Agent, code: str, sandbox: Sandbox)
         # Get files list safely
         try:
             files = sandbox.files.list("/")
-        except:
+        except Exception:
             files = []
         
         prompt = f"""Here is the code execution result:
@@ -166,7 +166,7 @@ def execute_code_with_agent(execution_agent: Agent, code: str, sandbox: Sandbox)
         # Reinitialize sandbox on error
         try:
             initialize_sandbox()
-        except:
+        except Exception:
             pass
         return f"⚠️ Sandbox Error: {str(e)}"
 
@@ -275,7 +275,7 @@ def main() -> None:
                             if files:
                                 st.markdown("📁 **Generated Files:**")
                                 st.json(files)
-                        except:
+                        except Exception:
                             pass
 
 if __name__ == "__main__":
