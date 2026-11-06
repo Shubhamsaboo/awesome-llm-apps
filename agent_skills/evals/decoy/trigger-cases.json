@@ -1,0 +1,18 @@
+{
+  "skill": "decoy",
+  "purpose": "Trigger-behavior spec for deterministic lexical routing and manual behavior checks.",
+  "cases": [
+    {"id": "fake-customers", "prompt": "generate 200 fake customer records with email, phone and card number for testing", "should_trigger": true,
+     "assert": "Uses only reserved values, a seeded generator script and writes a data card."},
+    {"id": "seed-database", "prompt": "seed the database with mock users", "should_trigger": true,
+     "assert": "Generates mock data from reserved ranges and lints it."},
+    {"id": "synthetic-dataset", "prompt": "make a synthetic dataset of test fixtures for the PII detector", "should_trigger": true,
+     "assert": "Writes a data card that defines what counts as PII in the fixtures."},
+    {"id": "near-miss-anonymize", "prompt": "anonymize this production export", "should_trigger": false,
+     "assert": "Does not trigger: anonymizing real data is a different task."},
+    {"id": "near-miss-unit-tests", "prompt": "write unit tests for the parser", "should_trigger": false,
+     "assert": "Does not trigger for writing tests without data generation."},
+    {"id": "near-miss-validate-email", "prompt": "validate the email field in the signup form", "should_trigger": false,
+     "assert": "Does not trigger for input validation code."}
+  ]
+}
