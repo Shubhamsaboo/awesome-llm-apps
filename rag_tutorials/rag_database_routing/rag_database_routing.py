@@ -3,7 +3,7 @@ from typing import List, Dict, Any, Literal, Optional
 from dataclasses import dataclass
 import streamlit as st
 from langchain_core.documents import Document
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import Qdrant
 from langchain_openai import OpenAIEmbeddings
