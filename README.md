@@ -93,6 +93,7 @@ streamlit run travel_agent.py
 *   [✏️ Excaliflow - Hand-Drawn Diagrams with Live Animated Flows](advanced_llm_apps/excaliflow/) - Sketch system architectures and AI agent workflows on an Excalidraw-style canvas with live animated arrows and video export
 *   [🪡 Needle - A New Way to Find](advanced_llm_apps/needle/) - Search webpages by meaning and highlight the strongest source sentence, using a Chrome extension powered by TypeSafe Jev
 *   [🌀 Ripple - Change One Thing, Find What Else Needs to Change](advanced_llm_apps/ripple/) - Find related inconsistencies and suggested fixes as you edit a Google Doc, using TypeSafe Jev and Gemini
+*   [🤖 KinetAios - MCP-Driven Autonomous Agent Workstation](advanced_llm_apps/kinetaios_mcp_agent/) - Drive a full remote agent (shell / files / web, ReAct loop, long-term memory) over MCP JSON-RPC with ~100 lines of pure requests — no API key in the client
 
 ### 🌱 Starter AI Agents
 
