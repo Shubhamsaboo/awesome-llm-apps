@@ -194,6 +194,47 @@ def calc_overflow_and_broken_turn_json_are_bad_lines():
     assert p.returncode == 1 and "BAD turn.json" in p.stdout and "Traceback" not in p.stderr, (p.stdout, p.stderr)
 
 
+@case
+def only_the_exact_footer_line_is_skipped():
+    for line in ("Receipts: test accuracy 91.0%", "🧾 accuracy 91.0%", "receipt: 91.0%", "🧾 3/3 receipts check out; accuracy 91.0%"):
+        assert "91.0%" in [n[0] for n in R.numbers(line, strong_only=True)], line
+    for line in ("🧾 3/3 receipts check out (.notary/turn.json)", "🧾 2/3 receipts check out, 1 unchecked; 0 numbers uncovered"):
+        assert R.numbers(line, strong_only=True) == [], line
+    out = hook("hook-stop", {"cwd": project([FILE_OK]), "stop_hook_active": False,
+                             "last_assistant_message": "Val 84.7%.\nReceipts: test accuracy 91.0%"})
+    assert json.loads(out)["decision"] == "block" and "91.0%" in json.loads(out)["reason"]
+
+
+@case
+def percent_scaling_only_for_values_written_with_percent():
+    files = {"cfg.json": '{"lr": 0.0085, "loss": 0.0031}\n'}
+    rc = lambda v, q: {"id": "r8", "value": v, "kind": "file", "path": "cfg.json", "quote": q}
+    assert "r8" in bad_ids(project([rc("0.85", '"lr": 0.0085')], files=files))
+    assert "r8" in bad_ids(project([rc("0.31", '"loss": 0.0031')], files=files))
+    assert bad_ids(project([rc("0.85%", '"lr": 0.0085')], files=files)) == {}
+    assert bad_ids(project([rc("0.0085", '"lr": 0.0085')], files=files)) == {}
+
+
+@case
+def numbers_with_unit_suffixes_need_and_take_receipts():
+    msg = "Training took 3985s, model 1.2GB, latency 250ms, 0.5x faster, 45s per epoch."
+    assert [n[0] for n in R.numbers(msg, strong_only=True)] == ["3985s", "1.2GB", "250ms", "0.5x", "45s"]
+    assert [n[0] for n in R.numbers("3 files, 1st run, 2026s", strong_only=True)] == []  # no unit, ordinal, year + s
+    log = [("python bench.py", "elapsed 66.4s")]
+    for v in ("66.4", "66.4s"):
+        d = project([{"id": "r9", "value": v, "kind": "cmd", "command": "python bench.py", "quote": "elapsed 66.4s"}], log=log)
+        assert bad_ids(d, "The run took 66.4s.") == {}, v
+    d = project([FILE_OK])
+    assert R.report("val 84.7%, took 3985s", d, strong_only=True)[3] == ["3985s"]
+
+
+@case
+def a_receipt_id_that_is_not_a_string_is_a_bad_line():
+    d = project([dict(FILE_OK, id=["r1"])])
+    p = subprocess.run([sys.executable, SCRIPT, "check", "--dir", d], capture_output=True, text=True, encoding="utf-8")
+    assert p.returncode == 1 and "BAD turn.json" in p.stdout and "Traceback" not in p.stderr, (p.stdout, p.stderr)
+
+
 def hook(cmd, payload, env=None):
     p = subprocess.run([sys.executable, SCRIPT, cmd], input=json.dumps(payload), capture_output=True, text=True,
                        encoding="utf-8", env=dict(os.environ, **(env or {})))
@@ -238,6 +279,10 @@ def log_hook_records_bash_stdout():
 
 
 if __name__ == "__main__":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except AttributeError:
+        pass
     bad = 0
     for c in CASES:
         try:

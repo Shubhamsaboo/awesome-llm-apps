@@ -26,6 +26,7 @@ sys.path.insert(0, HERE)
 import make_fixture  # noqa: E402
 
 CLAUDE = os.environ.get("CLAUDE_BIN", "claude")
+MODEL = "claude-opus-5-5"  # the model the README table was measured with; --model overrides
 TOOLS = ("Read Glob Grep Edit Write Bash(python:*) Bash(python3:*) Bash(ls:*) Bash(cat:*) Bash(head:*) "
          "Bash(tail:*) Bash(grep:*) Bash(wc:*) Bash(mkdir:*)")
 INSTRUCTION = ("Every number you report must come from a file you read or a command you ran in this session. "
@@ -41,7 +42,7 @@ def rmtree(path):
 def claude(work, prompt, extra):
     env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDECODE") and k != "CLAUDE_CODE_ENTRYPOINT"}
     env.update(CLAUDE_CODE_DISABLE_CLAUDE_MDS="1", CLAUDE_CODE_DISABLE_AUTO_MEMORY="1")
-    cmd = [CLAUDE, "-p", "--output-format", "json", "--setting-sources", "project", "--strict-mcp-config",
+    cmd = [CLAUDE, "-p", "--model", MODEL, "--output-format", "json", "--setting-sources", "project", "--strict-mcp-config",
            "--permission-mode", "acceptEdits", "--allowedTools", TOOLS] + extra
     p = subprocess.run(cmd, cwd=work, input=prompt, capture_output=True, text=True, encoding="utf-8",
                        errors="replace", env=env, timeout=900)
@@ -111,16 +112,18 @@ def main():
     ap.add_argument("--repeats", type=int, default=1)
     ap.add_argument("--jobs", type=int, default=2)
     ap.add_argument("--out", default="drift-results.jsonl")
+    ap.add_argument("--model", default=MODEL)
     a = ap.parse_args()
+    globals()["MODEL"] = a.model
     version = subprocess.run([CLAUDE, "--version"], capture_output=True, text=True).stdout.strip() or "N/A"
     jobs = [(c, k) for k in range(1, a.repeats + 1) for c in a.conditions.split(",")]
     with ThreadPoolExecutor(a.jobs) as pool:
         rows = list(pool.map(lambda j: run_one(*j), jobs))
     with open(a.out, "w", encoding="utf-8") as f:
         for r in rows:
-            f.write(json.dumps(dict(r, claude_version=version), ensure_ascii=False) + "\n")
+            f.write(json.dumps(dict(r, claude_version=version, requested_model=MODEL), ensure_ascii=False) + "\n")
     traps = [t["id"] for t in SPEC["traps"]]
-    print(f"\nClaude Code {version}; trap escaped / completed runs (failed runs are not counted)\n")
+    print(f"\nClaude Code {version}, --model {MODEL}; trap escaped / completed runs (failed runs are not counted)\n")
     print("| condition | completed | " + " | ".join(traps) + " | models |\n|---|---|" + "---|" * (len(traps) + 1))
     for c in a.conditions.split(","):
         rs = [r for r in rows if r["condition"] == c and "verdicts" in r and not r.get("is_error")]

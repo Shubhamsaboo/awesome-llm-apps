@@ -2,8 +2,6 @@
 
 **No receipt, no number.** Every figure your agent reports must point to where it came from (the file and exact quote, the command output it actually saw, or the arithmetic), and `scripts/notary.py` checks each receipt against the real files and logs. Unmeasured values are `N/A`, never `0`.
 
-Maintained at [ruijiezh67/ruijie_skills](https://github.com/ruijiezh67/ruijie_skills/tree/main/notary), which also has the Claude Code plugin with hooks, the original benchmark fixtures and raw results. Issues and updates go there.
-
 ## Install
 
 ```bash
@@ -28,7 +26,7 @@ The fix is that **receipts expire**. A `cmd` receipt fails when a file named in 
 Scoring is deterministic: regexes over the reply against an answer key, no model judge. Every run is isolated from the operator's own CLAUDE.md, skills and plugins. The fixture, prompts and scoring are in [`evals/notary/drift/`](../evals/notary/drift/). To re-run it (it calls the model, about 0.2 to 1 USD per run at list price):
 
 ```bash
-python agent_skills/evals/notary/drift/run_drift.py --repeats 6 --jobs 2
+python agent_skills/evals/notary/drift/run_drift.py --repeats 6 --jobs 2   # pinned to --model claude-opus-5-5
 ```
 
 ## How it checks
@@ -41,7 +39,7 @@ python agent_skills/evals/notary/drift/run_drift.py --repeats 6 --jobs 2
 | `user` | the user's words | the transcript. `check` without `--transcript` shows these as `??` unchecked; the Stop hook, which has the transcript, verifies them |
 | `na` | why it was not measured | value must be `N/A` |
 
-By default the checker requires receipts for numbers with a decimal point, a percent sign, a thousands separator or an exponent, for `0`, and for integers of 100 or more. Integers from 1 to 99 pass unless you run `check --all`.
+By default the checker requires receipts for numbers with a decimal point, a percent sign, a unit suffix (`s`, `ms`, `min`, `h`, `KB` to `TB`, `KiB` to `GiB`, `x`, `k`, `M`), a thousands separator or an exponent, for `0`, and for integers of 100 or more. Integers from 1 to 99 without a unit pass unless you run `check --all`. Only the exact footer line `🧾 N/N receipts check out (...)` is skipped; any other line is checked.
 
 ## Optional: Claude Code hooks
 
@@ -57,6 +55,12 @@ The hooked row uses two hooks: PostToolUse logs real tool output, and Stop sends
 What installing them means:
 - **The Stop hook checks every reply** in every project where these settings apply (all projects if you put them in `~/.claude/settings.json`). Any reply with a checked number and no passing receipt is sent back once, whatever the task.
 - Both hooks fail open and never loop. Turn them off with `NOTARY=off`, or for one project with an empty `.notary/off` file.
+
+## Limits
+
+- **Exit codes and sessions are not checked.** The PostToolUse hook does not receive a command's exit code, and receipts are not tied to a session. Output from a failed run, or from an earlier session, can back a `cmd` receipt as long as no file named in the command has changed since.
+- **Units are read, not converted.** `66.4s` and `66.4ms` both have the value 66.4. A change of unit (seconds to minutes) needs a `calc` receipt.
+- **Expiry only sees files named in the command**, as described above.
 
 ## Privacy
 

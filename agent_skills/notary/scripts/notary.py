@@ -21,7 +21,8 @@ import ast, json, math, os, re, sys, time
 
 DIRNAME = ".notary"
 LOG_CAP = 20 * 1024 * 1024
-FOOTER = re.compile(r"^\s*(🧾|receipts?:)", re.I | re.M)
+# Only the exact footer line is skipped; any other line starting with 🧾 or "Receipts:" is checked like prose.
+FOOTER = re.compile(r"^\s*🧾\s*\d+/\d+ receipts check out(?:, \d+ unchecked)?(?:; \d+ numbers uncovered)?(?:\s*\([^()\d]*\))?[.!]?\s*$")
 
 # ---------- numbers ----------
 
@@ -38,17 +39,19 @@ STRIP = [
     re.compile(r"^\s*(?:#+\s*)?\d+[.)]\s", re.M),    # list markers, numbered headings
     re.compile(r"(?:\b(?:step|phase|option|section|rule|round|part|figure|fig\.|table|line|lines|issue|pr)\s*|#)\d+\b", re.I),
 ]
-NUM = re.compile(r"(?<![\w.])([-+−]?)(\d{1,3}(?:,\d{3})+|\d+)(\.\d+)?(?:[eE]([-+]?\d+))?(\s?%)?(?:\s*/\s*(\d+)(?![\d.]))?(?![\w])")
+# Unit suffixes are read but not converted: 66.4s and 66.4ms both have the value 66.4.
+UNIT = r"(?:ms|min|s|h|GiB|MiB|KiB|TB|GB|MB|KB|x|k|K|M)"
+NUM = re.compile(r"(?<![\w.])([-+−]?)(\d{1,3}(?:,\d{3})+|\d+)(\.\d+)?(?:[eE]([-+]?\d+))?(?:(\s?%)|(" + UNIT + r"))?(?:\s*/\s*(\d+)(?![\d.]))?(?![\w])")
 
 
 def numbers(text, strong_only=False):
     """Claim-like numbers in prose: [(raw, value, is_pct, decimals)]."""
-    text = FOOTER.sub("", "\n".join(l for l in text.splitlines() if not FOOTER.match(l)))
+    text = "\n".join(l for l in text.splitlines() if not FOOTER.match(l))
     for rx in STRIP:
         text = rx.sub(" ", text)
     out = []
     for m in NUM.finditer(text):
-        sign, whole, frac, exp, pct, denom = m.groups()
+        sign, whole, frac, exp, pct, unit, denom = m.groups()
         raw = m.group(0).strip()
         if denom:  # 47/50 counts as one number
             out.append((raw, None, False, 0))
@@ -59,7 +62,7 @@ def numbers(text, strong_only=False):
         if 1900 <= v <= 2100 and not frac and not pct and not exp:
             continue  # bare years
         # ponytail: integers 1-99 ("3 files", "step 2") are too often not claims; --all checks them too
-        strong = bool(frac or exp or pct or "," in whole or abs(v) >= 100 or v == 0)
+        strong = bool(frac or exp or pct or unit or "," in whole or abs(v) >= 100 or v == 0)
         if strong_only and not strong:
             continue
         out.append((raw, v, bool(pct), (len(frac) - 1 if frac else 0) - (int(exp) if exp else 0)))
@@ -74,7 +77,7 @@ def parse_value(s):
     m = re.fullmatch(r"([-+]?[\d,]+)\s*/\s*(\d+)", s)
     if m:
         return (int(m.group(1).replace(",", "")) / int(m.group(2)), False, None)
-    m = re.fullmatch(r"([-+]?[\d,]*\.?\d+)(?:[eE]([-+]?\d+))?\s*(%)?", s)
+    m = re.fullmatch(r"([-+]?[\d,]*\.?\d+)(?:[eE]([-+]?\d+))?\s*(%)?" + UNIT + "?", s)
     if not m:
         raise ValueError(f"not a number: {s!r}")
     num, exp = m.group(1).replace(",", ""), int(m.group(2) or 0)
@@ -82,14 +85,14 @@ def parse_value(s):
 
 
 def consistent(value, source, pct=False, decimals=0):
-    """Is the reported value an honest rounding of source (or of source as a percentage)?"""
+    """Is the reported value an honest rounding of source (or, for a value written with %, of source x 100)?"""
     tol = 0.5 * 10 ** -decimals + 1e-9
-    cands = [source, source * 100] if abs(source) <= 1 else [source]
+    cands = [source, source * 100] if pct and abs(source) <= 1 else [source]
     return any(abs(c - value) <= tol for c in cands)
 
 
 def same(raw, value_str):
-    a, b = [str(x).replace(",", "").replace(" ", "").replace("−", "-") for x in (raw, value_str)]
+    a, b = [re.sub(r"(?<=\d)" + UNIT + "$", "", str(x).replace(",", "").replace(" ", "").replace("−", "-")) for x in (raw, value_str)]
     return a.lstrip("+") == b.lstrip("+")
 
 # ---------- verification ----------
@@ -265,6 +268,8 @@ def load(d):
     rs = data.get("receipts") if isinstance(data, dict) else None
     if not isinstance(rs, list) or not all(isinstance(r, dict) for r in rs):
         raise ValueError('expected {"receipts": [{...}, ...]}')
+    if not all(isinstance(r.get("id", ""), str) for r in rs):
+        raise ValueError("every receipt id must be a string")
     return rs
 
 

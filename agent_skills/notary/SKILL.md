@@ -12,7 +12,7 @@ description: >
 license: MIT
 metadata:
   author: ruijiezh67
-  version: "0.2.0"
+  version: "0.2.1"
   source: https://github.com/Shubhamsaboo/awesome-llm-apps
 ---
 
@@ -94,7 +94,13 @@ numbers inside code blocks or inline code, dates, versions, `file:line`
 references, list numbering, step numbers.
 
 The checker and the Stop hook enforce this for numbers with a decimal point, a
-percent sign, a thousands separator or an exponent, for `0`, and for integers of
-100 or more. Integers from 1 to 99 ("3 seeds", "12 files") pass without a
-receipt unless you run `check --all`. Write receipts for the ones that are
-results anyway.
+percent sign, a unit suffix (`3985s`, `250ms`, `1.2GB`, `0.5x`), a thousands
+separator or an exponent, for `0`, and for integers of 100 or more. Integers
+from 1 to 99 without a unit ("3 seeds", "12 files") pass without a receipt
+unless you run `check --all`. Write receipts for the ones that are results
+anyway. A receipt value may keep its unit (`"66.4s"`); units are not converted,
+so a change of unit is a `calc` receipt.
+
+Only the exact footer line `🧾 N/N receipts check out (.notary/turn.json)` is
+skipped. Any other line, including one that starts with 🧾 or "Receipts:", is
+checked like the rest of the reply.
