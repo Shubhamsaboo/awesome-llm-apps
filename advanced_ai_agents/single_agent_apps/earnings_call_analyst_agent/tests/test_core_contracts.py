@@ -13,7 +13,11 @@ from earnings_call_analyst_agent.adk_runtime import (
     has_adk_credentials,
     parse_json_object,
 )
-from earnings_call_analyst_agent.agent import _realign_event_times, generate_insights
+from earnings_call_analyst_agent.agent import (
+    _chunk_signal_score,
+    _realign_event_times,
+    generate_insights,
+)
 from earnings_call_analyst_agent.research import build_research_pack, fetch_market_news
 from earnings_call_analyst_agent.youtube_ingest import (
     chunk_transcript,
@@ -306,3 +310,14 @@ def test_parse_transcribed_segments_accepts_json_with_code_fences():
 
 def test_shared_json_parser_accepts_fenced_json():
     assert parse_json_object('```json\n{"ok": true}\n```') == {"ok": True}
+
+
+def test_signal_score_ignores_short_terms_inside_other_words():
+    # "said", "remain", "maintain" contain "ai"; "steps" and "keeps" contain "eps".
+    boilerplate = "As I said, we remain focused and maintain our steps. It keeps going."
+
+    assert _chunk_signal_score(boilerplate) == 0
+
+
+def test_signal_score_counts_short_terms_as_whole_words():
+    assert _chunk_signal_score("AI demand lifted EPS. AI-driven margins.") == 5

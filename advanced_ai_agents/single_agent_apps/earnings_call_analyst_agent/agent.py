@@ -151,7 +151,6 @@ def _chunk_signal_score(text: str) -> int:
         "revenue",
         "guidance",
         "margin",
-        "eps",
         "earnings",
         "cash flow",
         "free cash",
@@ -164,12 +163,15 @@ def _chunk_signal_score(text: str) -> int:
         "tailwind",
         "uncertain",
         "confident",
-        "ai",
         "layoff",
         "restructuring",
         "litigation",
     ]
+    # Short acronyms only count as whole words: as substrings, "ai" matches
+    # "said"/"remain" and "eps" matches "steps"/"keeps".
+    whole_word_terms = ["eps", "ai", "genai"]
     score = sum(lower.count(term) for term in terms)
+    score += sum(len(re.findall(rf"\b{term}\b", lower)) for term in whole_word_terms)
     score += min(6, len(re.findall(r"\d", text)) // 8)
     return score
 
