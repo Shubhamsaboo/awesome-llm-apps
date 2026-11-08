@@ -38,11 +38,11 @@ UK_DRAMA = {
     "01134960": "Leeds", "01144960": "Sheffield", "01154960": "Nottingham", "01164960": "Leicester",
     "01174960": "Bristol", "01184960": "Reading", "01214960": "Birmingham", "01314960": "Edinburgh",
     "01414960": "Glasgow", "01514960": "Liverpool", "01614960": "Manchester", "01914980": "Tyneside",
-    "02079460": "London", "02890180": "Northern Ireland", "02920180": "Cardiff", "01632960": "no area",
+    "02079460": "London", "02896496": "Northern Ireland", "02920180": "Cardiff", "01632960": "no area",
     "07700900": "mobile", "03069990": "UK-wide", "08081570": "freephone", "09098790": "premium rate",
 }
 UK = re.compile(r"(?<![\w+])(\+44[\s-]?(?:\(0\)[\s-]?)?|0)([1237-9]\d(?:[\s-]?\d){7,8})(?!\d)")
-BARE7 = re.compile(r"(?<![\d-])(\d{3})-(\d{4})(?![\d-])")  # 555-0123 with no area code
+BARE7 = re.compile(r"(?<![\d.-])(\d{3})[-. ](\d{4})(?![\d.-])")  # 555-0123 / 555.0123 / 555 0123, no area code
 MARK = re.compile(r"NON-RESERVED:\s*\S")
 
 EMAIL = re.compile(r"\b[A-Za-z0-9._%+-]+@([A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+)\b")

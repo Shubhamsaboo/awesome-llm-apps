@@ -48,16 +48,19 @@ def real_looking_values_flagged():
 
 @case
 def uk_numbers_outside_all_20_ofcom_ranges_flagged():
-    for t in ("0131 555 1234", "01632 123456", "+44 7911 123456", "0114 496 1000"):
+    for t in ("0131 555 1234", "01632 123456", "+44 7911 123456", "0114 496 1000", "028 9018 0500"):  # 028 9018 0xxx: pre-2019 range, now real
         assert kinds(t) == ["phone"], t
-    safe = ["0113 496 0000", "0191 498 0999", "+44 (0)20 7946 0123", "028 9018 0500", "029 2018 0001",
+    safe = ["0113 496 0000", "0191 498 0999", "+44 (0)20 7946 0123", "028 9649 6500", "029 2018 0001",
             "01632 960123", "+44 7700 900999", "0306 999 0123", "0808 157 0999", "0909 879 0000"]
     assert len(D.UK_DRAMA) == 20 and [t for t in safe if kinds(t)] == []
 
 
 @case
 def bare_seven_digit_and_spaced_ssn_flagged():
-    assert kinds("ext 555-0200") == ["phone"] and kinds("ext 555-0150") == []
+    for t in ("ext 555-0200", "ext 555.0200", "ext 555 0200"):
+        assert kinds(t) == ["phone"], t
+    assert kinds("ext 555-0150") == [] and kinds("ext 555.0150") == [] and kinds("ext 555 0150") == []
+    assert kinds("id 5550200") == []  # documented: 7 bare digits are not read as a phone
     assert kinds("ssn 123 45 6789") == ["ssn"] and kinds("ssn 912 34 5678") == []
     assert kinds("id 123456789") == []  # documented: bare 9 digits are not read as an SSN
 
