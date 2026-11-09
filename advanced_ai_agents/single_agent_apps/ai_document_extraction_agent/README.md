@@ -31,7 +31,7 @@ pip install -r requirements.txt
 3. Get your OpenAI API Key
 
 - Sign up at [platform.openai.com](https://platform.openai.com) and create an API key
-- Recommended model: `gpt-5.4` for best extraction quality
+- Recommended models: `gpt-5.4`, `gpt-5.6-sol`, `gpt-6-luna`, or `gpt-6.1-sol`
 
 4. Run the Streamlit App
 

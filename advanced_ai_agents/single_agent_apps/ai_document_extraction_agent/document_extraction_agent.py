@@ -1,11 +1,11 @@
-"""KYNEX-style Document Extraction Agent — Streamlit Demo
+"""AI Document Extraction Agent — Streamlit Demo
 
 Agentic schema-guided extraction from PDFs. Given any document and a
 JSON Schema, the agent parses, plans, extracts, and iterates until the
 schema is filled — no templates, no per-document tuning.
 
-Ranked on the ExtractBench leaderboard:
-https://github.com/run-llama/ExtractBench
+Based on the approach behind KYNEX Harness, ranked on the ExtractBench
+leaderboard: https://github.com/run-llama/ExtractBench
 
 Usage:
     streamlit run document_extraction_agent.py
@@ -13,8 +13,6 @@ Usage:
 
 from __future__ import annotations
 
-import base64
-import io
 import json
 import re
 import textwrap
@@ -22,13 +20,16 @@ from typing import Any
 
 import pymupdf
 import streamlit as st
-from jsonschema import Draft7Validator
 from openai import OpenAI
+
+# ── Constants ──────────────────────────────────────────────────────────────────
+
+_REASONING_PREFIXES = ("gpt-5", "gpt-6", "o1", "o3", "o4")
 
 # ── Page config ────────────────────────────────────────────────────────────────
 
 st.set_page_config(
-    page_title="KYNEX Document Extraction Agent",
+    page_title="AI Document Extraction Agent",
     page_icon="📄",
     layout="wide",
 )
@@ -49,14 +50,18 @@ for key, default in {
 # ── Sidebar ────────────────────────────────────────────────────────────────────
 
 with st.sidebar:
-    st.title("📄 KYNEX Document Extraction")
+    st.title("📄 AI Document Extraction")
     st.caption(
         "Agentic schema-guided extraction — "
         "[ExtractBench leaderboard](https://github.com/run-llama/ExtractBench)"
     )
 
     api_key = st.text_input("OpenAI API Key", type="password")
-    model = st.selectbox("Model", ["gpt-5.4", "gpt-4o", "gpt-4.1", "gpt-4.1-mini"], index=0)
+    model = st.selectbox(
+        "Model",
+        ["gpt-5.4", "gpt-5.6-sol", "gpt-6-luna", "gpt-6.1-sol"],
+        index=0,
+    )
     max_iterations = st.slider("Max iterations", 1, 5, 3)
 
     st.divider()
@@ -147,6 +152,8 @@ def null_skeleton(schema: dict) -> dict:
 def count_nulls(obj: Any) -> tuple[int, int]:
     """Return (null_count, total_leaves)."""
     if isinstance(obj, dict):
+        if not obj:
+            return 0, 0
         n, t = 0, 0
         for v in obj.values():
             cn, ct = count_nulls(v)
@@ -155,7 +162,7 @@ def count_nulls(obj: Any) -> tuple[int, int]:
         return n, t
     if isinstance(obj, list):
         if not obj:
-            return 1, 1
+            return 0, 0
         n, t = 0, 0
         for v in obj:
             cn, ct = count_nulls(v)
@@ -186,6 +193,10 @@ def schema_field_list(schema: dict, prefix: str = "") -> list[str]:
         else:
             fields.append(path)
     return fields
+
+
+def _is_reasoning_model(model_id: str) -> bool:
+    return any(model_id.startswith(p) for p in _REASONING_PREFIXES)
 
 
 # ── Agent logic ────────────────────────────────────────────────────────────────
@@ -255,12 +266,13 @@ def extraction_prompt(
 
 def call_llm(client: OpenAI, model: str, messages: list[dict]) -> str:
     """Call the LLM and return raw text."""
-    resp = client.chat.completions.create(
-        model=model,
-        messages=messages,
-        temperature=0.0,
-        max_tokens=16_384,
-    )
+    kwargs: dict[str, Any] = {"model": model, "messages": messages}
+    if _is_reasoning_model(model):
+        kwargs["max_completion_tokens"] = 32_768
+    else:
+        kwargs["temperature"] = 0.0
+        kwargs["max_tokens"] = 16_384
+    resp = client.chat.completions.create(**kwargs)
     return resp.choices[0].message.content or ""
 
 
@@ -295,17 +307,23 @@ def run_extraction(
     doc_text = build_document_context(pages)
     fields = schema_field_list(schema)
     current = null_skeleton(schema)
+    prev_keys: set[str] = set()
 
     for i in range(1, max_iters + 1):
-        nulls_before, total = count_nulls(current)
+        nulls_before, total_before = count_nulls(current)
         status_container.info(
-            f"Iteration {i}/{max_iters} — {nulls_before}/{total} fields still null"
+            f"Iteration {i}/{max_iters} — {nulls_before}/{total_before} fields still null"
         )
 
         messages = extraction_prompt(schema, doc_text, current, i, fields)
         log_container.markdown(f"**Iteration {i}:** Sending {len(doc_text):,} chars to `{model}`...")
 
-        raw = call_llm(client, model, messages)
+        try:
+            raw = call_llm(client, model, messages)
+        except Exception as exc:
+            log_container.error(f"Iteration {i}: API call failed — {exc}")
+            break
+
         parsed = parse_json_response(raw)
 
         if parsed is None:
@@ -313,14 +331,16 @@ def run_extraction(
             continue
 
         current = parsed
-        nulls_after, total = count_nulls(current)
-        filled = nulls_before - nulls_after
+        nulls_after, total_after = count_nulls(current)
+        cur_keys = set(_flatten_keys(current))
+        filled = max(0, nulls_before - nulls_after + len(cur_keys - prev_keys))
+        prev_keys = cur_keys
         log_container.success(
             f"Iteration {i}: Filled {filled} fields "
-            f"({nulls_after}/{total} still null)"
+            f"({nulls_after}/{total_after} still null)"
         )
 
-        if nulls_after == 0:
+        if nulls_after == 0 and total_after > 0:
             log_container.success("All fields filled — stopping early.")
             break
 
@@ -331,9 +351,26 @@ def run_extraction(
     return current
 
 
+def _flatten_keys(obj: Any, prefix: str = "") -> list[str]:
+    """Return all leaf key paths for change detection."""
+    if isinstance(obj, dict):
+        out = []
+        for k, v in obj.items():
+            out.extend(_flatten_keys(v, f"{prefix}{k}."))
+        return out
+    if isinstance(obj, list):
+        out = []
+        for i, v in enumerate(obj):
+            out.extend(_flatten_keys(v, f"{prefix}[{i}]."))
+        return out
+    if obj is not None:
+        return [prefix]
+    return []
+
+
 # ── Main UI ────────────────────────────────────────────────────────────────────
 
-st.title("📄 KYNEX Document Extraction Agent")
+st.title("📄 AI Document Extraction Agent")
 st.markdown(
     "Upload any PDF + provide a JSON Schema. The agent iteratively extracts "
     "structured data, filling every field and every array record it can find."
@@ -364,10 +401,14 @@ if run_btn and uploaded_pdf and api_key:
         status = st.empty()
         log = st.container()
 
-        client = OpenAI(api_key=api_key)
-        result = run_extraction(
-            client, model, pages, schema, max_iterations, status, log
-        )
+        try:
+            client = OpenAI(api_key=api_key)
+            result = run_extraction(
+                client, model, pages, schema, max_iterations, status, log
+            )
+        except Exception as exc:
+            st.error(f"Extraction failed: {exc}")
+            st.stop()
 
         nulls, total = count_nulls(result)
         pct = ((total - nulls) / total * 100) if total else 0

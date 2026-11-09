@@ -1,4 +1,3 @@
 streamlit>=1.40.0
 openai>=1.50.0
 pymupdf>=1.25.0
-jsonschema>=4.23.0
