@@ -78,16 +78,45 @@ class Dependency:
     ecosystem: str  # "PyPI" or "npm"
 
 
-_REQ_LINE = re.compile(r"^([A-Za-z0-9][A-Za-z0-9._-]*)(?:\[[^\]]*\])?\s*(?:(?:===|==|~=|>=|<=|!=|>|<)\s*([^\s,;#]+))?")
+_REQ_LINE = re.compile(r"^([A-Za-z0-9][A-Za-z0-9._-]*)(?:\[[^\]]*\])?\s*(.*)$")
+# A specifier such as `>=4.4` or `!=5.0`. Only some operators say which version is used today.
+_SPECIFIER = re.compile(r"(===|==|~=|>=|<=|!=|>|<)\s*([^\s,;#]+)")
+_CURRENT_OPERATORS = {"==", "===", "~=", ">=", ">"}  # `!=`, `<` and `<=` exclude or cap versions
+_MAX_NAME_LENGTH = 214  # PyPI and npm both cap package names near this length
+_NAME_OK = re.compile(r"^[A-Za-z0-9@][A-Za-z0-9._/@-]*$")
+# One npm comparator: an optional operator, then a version number.
+_NPM_COMPARATOR = re.compile(r"(<=|>=|<|>|=|\^|~)?\s*v?(\d+(?:\.[0-9A-Za-z*+-]+)*)")
+# The Target field goes straight into the prompt, so it must look like a version (or "latest").
+TARGET_OK = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._+-]{0,63}$")
+
+
+def _pypi_version(spec: str) -> str:
+    """First version in a requirement specifier that says what is used today ("" if none)."""
+    for op, version in _SPECIFIER.findall(spec):
+        if op in _CURRENT_OPERATORS:
+            return version
+    return ""
+
+
+def _npm_version(spec: str) -> str:
+    """First version number in an npm range ("" for "latest", "workspace:*", URLs, upper bounds only)."""
+    spec = spec.strip()
+    if not re.match(r"^[\^~<>=v\s]*\d", spec):
+        return ""
+    for op, version in _NPM_COMPARATOR.findall(spec):
+        if op not in ("<", "<="):
+            return version
+    return ""
 
 
 def parse_dependencies(text: str) -> list[Dependency]:
     """Read a requirements.txt or a package.json (dependencies and devDependencies).
 
     Lines such as comments, `-r other.txt`, `-e .` and URLs are skipped. A range such as
-    `>=1.0,<2` keeps its first version number, because that is the lower bound in use.
+    `>=1.0,<2` keeps its first version number, because that is the lower bound in use. `!=` and `<`
+    do not say which version is in use, so those packages count as unpinned.
     """
-    text = text.strip()
+    text = text.lstrip("\ufeff").strip()  # drop a BOM so `{` is detected
     if not text:
         return []
 
@@ -96,13 +125,20 @@ def parse_dependencies(text: str) -> list[Dependency]:
             data = json.loads(text)
         except json.JSONDecodeError as exc:
             raise ValueError(f"This looks like package.json but is not valid JSON: {exc}") from exc
+        if not isinstance(data, dict):
+            raise ValueError("package.json must be a JSON object.")
         found: dict[str, str] = {}
         for section in ("dependencies", "devDependencies"):
-            for name, spec in (data.get(section) or {}).items():
-                found[name] = str(spec)
-        # Keep only real version numbers; specs such as "workspace:*" or "latest" count as unpinned.
-        versions = {n: re.sub(r"^[\^~<>=\s]+", "", s) for n, s in found.items()}
-        return [Dependency(n, v if v[:1].isdigit() else "", "npm") for n, v in versions.items()]
+            value = data.get(section)
+            if value is None:
+                continue
+            if not isinstance(value, dict):
+                raise ValueError(f'"{section}" in package.json must be an object of name: version pairs.')
+            for name, spec in value.items():
+                if len(name) <= _MAX_NAME_LENGTH and _NAME_OK.match(name):
+                    found[name] = str(spec)
+        # Specs such as "workspace:*", "latest" or a URL count as unpinned.
+        return [Dependency(n, _npm_version(spec), "npm") for n, spec in found.items()]
 
     deps: list[Dependency] = []
     for raw in text.splitlines():
@@ -110,8 +146,8 @@ def parse_dependencies(text: str) -> list[Dependency]:
         if not line or line.startswith(("#", "-", "git+", "http")):
             continue
         match = _REQ_LINE.match(line)
-        if match:
-            deps.append(Dependency(match.group(1), match.group(2) or "", "PyPI"))
+        if match and len(match.group(1)) <= _MAX_NAME_LENGTH:
+            deps.append(Dependency(match.group(1), _pypi_version(match.group(2)), "PyPI"))
     return deps
 
 
@@ -238,6 +274,12 @@ def main() -> None:
     chosen = [(deps[i], (row["Target"] or "").strip() or "latest") for i, row in enumerate(table) if row["Upgrade"]]
     if not chosen:
         st.warning("Tick at least one package.")
+        return
+    bad = [d.name for d, target in chosen if not TARGET_OK.match(target)]
+    if bad:
+        st.error(
+            f"Target for {', '.join(bad)} must be a version number or `latest` (letters, digits, `.`, `_`, `+`, `-`)."
+        )
         return
     if not (api_key or os.environ.get("OPENAI_API_KEY")):
         st.error("Enter your OpenAI API key in the sidebar.")

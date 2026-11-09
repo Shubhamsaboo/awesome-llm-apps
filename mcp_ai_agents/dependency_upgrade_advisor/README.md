@@ -46,7 +46,7 @@ Then:
                           (resolve-library-id, query-docs)        (ask_wiki_question)
 ```
 
-- `parse_dependencies()` reads `requirements.txt` (pins and ranges, skipping comments, `-r`, `-e` and URLs) and `package.json` (`dependencies` and `devDependencies`).
+- `parse_dependencies()` reads `requirements.txt` (pins and ranges, skipping comments, `-r`, `-e` and URLs; only `==`, `===`, `~=`, `>=` and `>` count as the current version) and `package.json` (`dependencies` and `devDependencies`).
 - `build_agent()` returns a plain Strands `Agent` that holds both MCP clients. Strands opens and closes the MCP connections; the app calls `agent.cleanup()` at the end.
 - `tool_filters` allow-list only the read-only tools of each server.
 - Each package starts from a clean conversation (`agent.messages.clear()`), and the expander title shows which tools were used.
