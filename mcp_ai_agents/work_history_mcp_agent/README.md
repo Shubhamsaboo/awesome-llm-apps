@@ -65,12 +65,10 @@ IDs must be unique and timestamps must include a timezone. Set `--start`, `--end
 and `--project` for your data; pass `--project ""` to search all projects.
 The start bound is inclusive and the end bound is exclusive.
 
-Possible sources include manually authored work logs, calendar exports, and
-application events. Screenpipe is one optional capture source with a
-[documented local API](https://docs.screenpi.pe/cli-reference) and
-[MCP server](https://github.com/screenpipe/screenpipe/tree/main/packages/screenpipe-mcp).
+Possible sources include manually authored work logs, calendar exports,
+application events, or any screen or activity recorder that can export JSON.
 A capture-source adapter must normalize its records to this example's schema;
-this tutorial does not install or require Screenpipe.
+this tutorial does not install or require a particular recorder.
 
 ## Limits and data flow
 
