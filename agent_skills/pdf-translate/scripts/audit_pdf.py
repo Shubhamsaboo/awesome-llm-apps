@@ -41,8 +41,8 @@ CLAUSE_REGEX = re.compile(
     r'第\s*(?:\(\s*[\d\.]+\s*\)|[\d\.]+)\s*部分|'
     r'Appendix\s*[-–—]?\s*[A-Za-z0-9\.]+|'
     r'附录\s*[-–—]?\s*[一二三四五六七八九十A-Za-z\d\.]+|'
-    r'Table\s*[-–—\.]?\s*[A-Za-z0-9]+|'
-    r'表\s*[-–—\.]?\s*[A-Za-z0-9\u4e00-\u9fa5]+|'
+    r'Table\s*[-–—\.]?\s*[A-Za-z0-9]+(?:\.\d+)*|'
+    r'表\s*[-–—\.]?\s*(?:\d+(?:\.\d+)*|[A-Za-z0-9\u4e00-\u9fa5]+)|'
     r'(?<!\w)\d+\.\d+(?:\.\d+)*(?!\w))',
     re.IGNORECASE
 )
@@ -62,6 +62,21 @@ def extract_clauses(text: str):
             seen.add(norm)
             res.append(m.strip())
     return res
+
+_DOTTED_NUMBER_RE = re.compile(r'\d+(?:\.\d+)+')
+
+def clause_number(clause: str):
+    """Return the bare dotted number of a clause label (e.g. 'Section 1.2' -> '1.2'),
+    so labels translated into another language still match. None if no dotted number."""
+    m = _DOTTED_NUMBER_RE.search(clause)
+    return m.group(0) if m else None
+
+def parse_csv_list(value):
+    """Split a comma-separated CLI value, dropping empty entries (e.g. trailing commas)."""
+    if not value:
+        return None
+    items = [item.strip() for item in value.split(",") if item.strip()]
+    return items or None
 
 def audit_document(
     src_path: str,
@@ -175,6 +190,7 @@ def audit_document(
 
         # Check for AI hallucination / placeholder keywords
         active_keywords = hallucination_keywords if hallucination_keywords is not None else DEFAULT_HALLUCINATION_KEYWORDS
+        active_keywords = [kw for kw in active_keywords if kw and kw.strip()]
         found_hallucinations = [kw for kw in active_keywords if kw in tgt_text]
         if found_hallucinations:
             for h in found_hallucinations:
@@ -187,12 +203,18 @@ def audit_document(
         src_clauses = extract_clauses(src_text)
         tgt_clauses = extract_clauses(tgt_text)
 
-        src_norm = {normalize_clause(c): c for c in src_clauses}
-        tgt_norm = {normalize_clause(c): c for c in tgt_clauses}
+        # Compare bare dotted numbers so "Section 1.2" matches "第 1.2 部分"
+        src_numbers = {}
+        for c in src_clauses:
+            num = clause_number(c)
+            if num and num not in src_numbers:
+                src_numbers[num] = c
+        tgt_numbers = {clause_number(c) for c in tgt_clauses} - {None}
 
-        missing_clauses = [src_norm[k] for k in src_norm if k not in tgt_norm and re.search(r'\d+\.\d+', k)]
-        if ignore_clauses:
-            missing_clauses = [c for c in missing_clauses if not any(ign.lower() in c.lower() for ign in ignore_clauses)]
+        missing_clauses = [src_numbers[n] for n in src_numbers if n not in tgt_numbers]
+        active_ignores = [i.strip() for i in (ignore_clauses or []) if i and i.strip()]
+        if active_ignores:
+            missing_clauses = [c for c in missing_clauses if not any(ign.lower() in c.lower() for ign in active_ignores)]
 
         if missing_clauses:
             page_info["issues"].append(f"Missing clauses in target: {missing_clauses}")
@@ -237,8 +259,8 @@ if __name__ == "__main__":
     parser.add_argument("--ignore-clauses", default=None, help="Optional comma-separated list of clause numbers or patterns to ignore")
 
     args = parser.parse_args()
-    custom_keywords = [k.strip() for k in args.hallucination_keywords.split(",")] if args.hallucination_keywords else None
-    ignore_list = [c.strip() for c in args.ignore_clauses.split(",")] if args.ignore_clauses else None
+    custom_keywords = parse_csv_list(args.hallucination_keywords)
+    ignore_list = parse_csv_list(args.ignore_clauses)
 
     success = audit_document(
         args.src,
