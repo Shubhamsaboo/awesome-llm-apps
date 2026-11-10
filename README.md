@@ -267,6 +267,7 @@ streamlit run travel_agent.py
 
 *   [🦥 Gemma 3 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/gemma3_finetuning/) - 4-bit LoRA with Unsloth, small and readable
 *   [🦙 Llama 3.2 Fine-tuning](advanced_llm_apps/llm_finetuning_tutorials/llama3.2_finetuning/) - Fine-tune in 30 lines, free on Colab
+*   [🧠 NeuroMAS Multi-Agent RL](advanced_llm_apps/llm_finetuning_tutorials/neuromas_finetuning/) - Train a team of LoRA agents on one small model from a single final reward
 
 ### 🧑‍🏫 AI Agent Framework Crash Courses
 
