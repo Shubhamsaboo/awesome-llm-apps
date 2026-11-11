@@ -1,0 +1,16 @@
+{
+  "skill_name": "decoy",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I need 200 fake customer records to test our CRM import: full name, email, phone, SSN, credit card number, last-login IP address and signup date. Put them in data/customers.csv.",
+      "expected_output": "data/customers.csv from a seeded generator script, a data card beside it, and a clean decoy.py lint and card run.",
+      "expectations": [
+        "scripts/decoy.py lint reports no value that could be real",
+        "Card numbers are whole documented test numbers, never a test prefix plus random digits",
+        "A data card states generator, seed value, rules per field, standard, what counts as the target, and differences from real data",
+        "Re-running the documented regenerate command recreates the file byte for byte"
+      ]
+    }
+  ]
+}
