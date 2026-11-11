@@ -12,7 +12,7 @@ npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_
 
 Current models write a careful one-shot results summary. They fail **across turns**. An agent evaluates a run, the run is re-done, and later it writes the summary from the number it remembers. That number came from a real command in the same session, so it reads exactly like a correct one.
 
-| Condition (notary 0.2.0, Claude Code 2.1.318, Opus 5.5, 6 runs each) | Reported the stale number | median cost per run |
+| Condition (measured on notary 0.2.0, before the 0.2.1 checker fixes; Claude Code 2.1.318, Opus 5.5, 6 runs each) | Reported the stale number | median cost per run |
 |---|---|---|
 | no skill | 6/6 | 0.25 USD |
 | one-line instruction: "every number must come from a file you read or a command you ran in this session" | 6/6 | 0.27 USD |
@@ -60,6 +60,7 @@ What installing them means:
 
 - **Exit codes and sessions are not checked.** The PostToolUse hook does not receive a command's exit code, and receipts are not tied to a session. Output from a failed run, or from an earlier session, can back a `cmd` receipt as long as no file named in the command has changed since.
 - **Units are read, not converted.** `66.4s` and `66.4ms` both have the value 66.4. A change of unit (seconds to minutes) needs a `calc` receipt.
+- **`k` and `M` are read as units, not multipliers.** `10k` has the value 10, so it is covered by a receipt quoting `epochs: 10`, and a receipt with value `10k` does not match `rows: 10000`. Write counts in full or back them with a `calc` receipt.
 - **Expiry only sees files named in the command**, as described above.
 
 ## Privacy

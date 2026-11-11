@@ -219,13 +219,18 @@ def percent_scaling_only_for_values_written_with_percent():
 def numbers_with_unit_suffixes_need_and_take_receipts():
     msg = "Training took 3985s, model 1.2GB, latency 250ms, 0.5x faster, 45s per epoch."
     assert [n[0] for n in R.numbers(msg, strong_only=True)] == ["3985s", "1.2GB", "250ms", "0.5x", "45s"]
-    assert [n[0] for n in R.numbers("3 files, 1st run, 2026s", strong_only=True)] == []  # no unit, ordinal, year + s
+    assert [n[0] for n in R.numbers("3 files, 1st run, 2026", strong_only=True)] == []  # no unit, ordinal, bare year
+    assert [n[0] for n in R.numbers("Latency 2000ms, memory 2048MB, 2026s", strong_only=True)] == ["2000ms", "2048MB", "2026s"]
+    d = project([{"id": "r0", "value": "2000ms", "kind": "file", "path": "m.txt", "quote": "latency 2000ms"}], files={"m.txt": "latency 2000ms\n"})
+    assert bad_ids(d, "Latency 2000ms.") == {}
     log = [("python bench.py", "elapsed 66.4s")]
     for v in ("66.4", "66.4s"):
         d = project([{"id": "r9", "value": v, "kind": "cmd", "command": "python bench.py", "quote": "elapsed 66.4s"}], log=log)
         assert bad_ids(d, "The run took 66.4s.") == {}, v
     d = project([FILE_OK])
     assert R.report("val 84.7%, took 3985s", d, strong_only=True)[3] == ["3985s"]
+    d = project([{"id": "r9", "value": "66.4", "kind": "cmd", "command": "python bench.py", "quote": "elapsed 66.4s"}], log=log)
+    assert R.report("The run took 66.4s.", d, strong_only=True)[3] == []  # value 66.4 covers 66.4s
 
 
 @case
@@ -233,6 +238,15 @@ def a_receipt_id_that_is_not_a_string_is_a_bad_line():
     d = project([dict(FILE_OK, id=["r1"])])
     p = subprocess.run([sys.executable, SCRIPT, "check", "--dir", d], capture_output=True, text=True, encoding="utf-8")
     assert p.returncode == 1 and "BAD turn.json" in p.stdout and "Traceback" not in p.stderr, (p.stdout, p.stderr)
+
+
+@case
+def missing_or_duplicate_receipt_ids_are_bad_lines():
+    bogus = dict(FILE_OK, id="r1", quote="not in the file")
+    for rs in ([bogus, dict(FILE_OK, id="r1")], [bogus, {k: v for k, v in FILE_OK.items() if k != "id"}], [dict(FILE_OK, id="")]):
+        d = project(rs)
+        p = subprocess.run([sys.executable, SCRIPT, "check", "--dir", d], capture_output=True, text=True, encoding="utf-8")
+        assert p.returncode == 1 and "BAD turn.json" in p.stdout, (rs, p.stdout, p.stderr)
 
 
 def hook(cmd, payload, env=None):

@@ -59,7 +59,7 @@ def numbers(text, strong_only=False):
         v = float(whole.replace(",", "") + (frac or "") + (f"e{exp}" if exp else ""))
         if sign in "-−" and sign:
             v = -v
-        if 1900 <= v <= 2100 and not frac and not pct and not exp:
+        if 1900 <= v <= 2100 and not frac and not pct and not exp and not unit:
             continue  # bare years
         # ponytail: integers 1-99 ("3 files", "step 2") are too often not claims; --all checks them too
         strong = bool(frac or exp or pct or unit or "," in whole or abs(v) >= 100 or v == 0)
@@ -268,8 +268,12 @@ def load(d):
     rs = data.get("receipts") if isinstance(data, dict) else None
     if not isinstance(rs, list) or not all(isinstance(r, dict) for r in rs):
         raise ValueError('expected {"receipts": [{...}, ...]}')
-    if not all(isinstance(r.get("id", ""), str) for r in rs):
-        raise ValueError("every receipt id must be a string")
+    ids = [r.get("id") for r in rs]
+    if not all(isinstance(i, str) and i.strip() for i in ids):
+        raise ValueError("every receipt needs a non-empty string id")
+    dup = sorted({i for i in ids if ids.count(i) > 1})
+    if dup:
+        raise ValueError("duplicate receipt id: " + ", ".join(dup))
     return rs
 
 
