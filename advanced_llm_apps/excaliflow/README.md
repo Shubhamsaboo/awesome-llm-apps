@@ -11,6 +11,7 @@
 - **Multi-canvas tabs & auto-save.** Work across multiple canvas tabs in the bottom tab dock or top-left canvas switcher—create new tabs (`+ New` / `+ Canvas`), fork/duplicate a diagram (`⧉`) to compare architectures side-by-side, step between tabs (`‹` / `›`), double-click to rename, and have every tab auto-saved to your browser.
 - **Ready-made starter templates.** Load built-in diagrams for **AI Agent Swarm**, **RAG Pipeline**, **How Browsers Work**, and **Microservices** in one click.
 - **Light & dark canvas + instant export.** Switch between a clean white canvas and a pitch-black neon canvas, then export a cropped 2x PNG, copy to clipboard, record a `.webm` video loop, or save and load `.excaliflow` / `.excalidraw` JSON files.
+- **Text to Flow (Mermaid).** Paste a Mermaid flowchart (Templates → **From Mermaid text…**) and it is laid out automatically, with arrows routed around boxes. Scripts and AI coding agents can do the same with no UI, and `flow2gif.mjs` turns a `.mmd` file into a seamlessly looping GIF.
 
 ## How to Get Started
 
@@ -23,6 +24,58 @@ npm start
 ```
 
 Open **http://localhost:3000** in your browser.
+
+## Text to Flow (Mermaid)
+
+![An AI agent flow drawn from Mermaid text](examples/ai-agent.gif)
+
+Write a Mermaid flowchart, for example [`examples/ai-agent.mmd`](examples/ai-agent.mmd):
+
+```text
+flowchart TD
+  U([User question]) --> R{Needs tools?}
+  R -->|no| A[Draft answer]
+  R -->|yes| P[Plan the steps]
+  P --> W[Web search] & C[Code runner] & V[Vector DB]
+  W & C & V --> S[Synthesise findings]
+  S --> A
+  A --> G{Good enough?}
+  G -- retry --> P
+  G ==>|yes| O([Reply to user])
+  style W stroke:#06b6d4
+```
+
+Excaliflow ranks the steps into layers, routes every arrow around the boxes it does not connect, and places labels clear of boxes. A loop is broken at the arrow that closes it in the order written, so `retry` arrows point back.
+
+| Mermaid | Excaliflow |
+| --- | --- |
+| `flowchart` / `graph` + `TD` `TB` `BT` `LR` `RL` | layout direction |
+| `id[text]`, `id(text)`, `id[[text]]`, `id[(text)]`, `id>text]` | box |
+| `id{text}`, `id{{text}}` | diamond |
+| `id((text))`, `id([text])` | oval |
+| `-->`, `-.->`, `==>` (also `---`, `-.-`, `===`, `--x`, `--o`) | arrow, dashed arrow, thick arrow |
+| `-->\|label\|`, `-- label -->` | label beside the arrow |
+| `A --> B --> C`, `A & B --> C`, `;` | chains, fan-out and fan-in, several statements on a line |
+| `style id stroke:#hex,color:#hex` | outline and text colour, snapped to the nearest palette colour |
+| `"quoted text"`, `<br>`, `%% comment` | brackets inside labels, line breaks, comments |
+
+`subgraph`, `classDef`, `class`, `linkStyle` and `click` are skipped with a warning; any other syntax error names its line. Every link draws as an animated arrow.
+
+**From a script or an AI coding agent**, after the page loads:
+
+```js
+window.loadTextFlow(text)   // replaces the active canvas; returns warnings
+window.textToFlow(text)     // { elements, warnings } without drawing
+// options: { aspect: width / height, maxPerBand: layers per row (LR) or column (TD) }
+```
+
+**As a GIF**, with no UI (needs Chrome or Chromium, and ffmpeg on `PATH`):
+
+```sh
+node flow2gif.mjs examples/ai-agent.mmd examples/ai-agent.gif --dark --mode neon
+```
+
+Options: `--fps 25`, `--period 2` (seconds for one trip along every arrow; the GIF is exactly one trip, so it loops seamlessly), `--scale 1`, `--dark`, `--mode comets|pulses|neon|dashed`, `--page a4|a4-portrait` (fits the layout to the page and pads the image to exactly that shape), `--max-per-row N`. Set `CHROME=<path>` if the browser is not found.
 
 ## Keyboard Shortcuts
 
@@ -57,6 +110,8 @@ excaliflow/
 |-- index.html            Complete single-file app (UI, sketch renderer, and animation loop)
 |-- server.js             Zero-dependency local static server (http://localhost:3000)
 |-- verify.js             Automated test suite for geometry, arrows, and interactions
+|-- flow2gif.mjs          Mermaid file to looping GIF, headless (Chrome + ffmpeg)
+|-- examples/             Mermaid examples and their GIFs
 |-- package.json          Start and test scripts
 `-- README.md
 ```
