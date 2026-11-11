@@ -51,10 +51,7 @@ for key, default in {
 
 with st.sidebar:
     st.title("📄 AI Document Extraction")
-    st.caption(
-        "Agentic schema-guided extraction — "
-        "[ExtractBench leaderboard](https://github.com/run-llama/ExtractBench)"
-    )
+    st.caption("Agentic schema-guided extraction from any PDF")
 
     api_key = st.text_input("OpenAI API Key", type="password")
     model = st.selectbox(
@@ -333,7 +330,7 @@ def run_extraction(
         current = parsed
         nulls_after, total_after = count_nulls(current)
         cur_keys = set(_flatten_keys(current))
-        filled = max(0, nulls_before - nulls_after + len(cur_keys - prev_keys))
+        filled = len(cur_keys - prev_keys)
         prev_keys = cur_keys
         log_container.success(
             f"Iteration {i}: Filled {filled} fields "
