@@ -8,6 +8,7 @@
 - **Live animated arrows.** Connect any two shapes and watch comets, pulses, neon streaks, or dashed streams travel along your arrows in order from start to finish.
 - **Easy arrow editing.** Drag any arrow endpoint around the edge of a shape, pull the middle of an arrow to curve it, or double-click an arrow to straighten it.
 - **Fast diagram building.** Press `Tab` or click a `+` port on any selected shape to add and connect the next step automatically, or drop a shape onto an existing arrow to split it in two.
+- **Multi-agent MCP collaboration & live agent cursors.** Connect **Claude Code**, **Antigravity**, **Codex**, **Grok Bot**, or **ChatGPT** concurrently via the built-in zero-dependency Model Context Protocol (MCP) server (`stdio` and `HTTP`). Watch each agent's named cursor glide across the canvas at 60fps, branch nodes without overlapping, stamp author attribution badges (`[Claude Code]`, `[Antigravity]`), respond to `@Agent` task stickies, or click **⚡ Agent Jam** to watch 4 agents co-architect live.
 - **Multi-canvas tabs & auto-save.** Work across multiple canvas tabs in the bottom tab dock or top-left canvas switcher—create new tabs (`+ New` / `+ Canvas`), fork/duplicate a diagram (`⧉`) to compare architectures side-by-side, step between tabs (`‹` / `›`), double-click to rename, and have every tab auto-saved to your browser.
 - **Ready-made starter templates.** Load built-in diagrams for **AI Agent Swarm**, **RAG Pipeline**, **How Browsers Work**, and **Microservices** in one click.
 - **Light & dark canvas + instant export.** Switch between a clean white canvas and a pitch-black neon canvas, then export a cropped 2x PNG, copy to clipboard, record a `.webm` video loop, or save and load `.excaliflow` / `.excalidraw` JSON files.
@@ -23,6 +24,31 @@ npm start
 ```
 
 Open **http://localhost:3000** in your browser.
+
+## Multi-Agent MCP Server (Claude Code, Antigravity, Codex, Grok)
+
+`server.js` includes a zero-dependency **Model Context Protocol (MCP) JSON-RPC 2.0 server** (both `stdio` and `HTTP /mcp`) plus a real-time Server-Sent Events (`/api/events`) bridge so multiple CLI/IDE agents can collaborate on the same live browser canvas simultaneously.
+
+```sh
+# Add Excaliflow as an MCP server in Claude Code:
+claude mcp add excaliflow -- node /path/to/awesome-llm-apps/advanced_llm_apps/excaliflow/server.js --mcp-stdio --agent "Claude Code"
+
+# Or spawn for Antigravity / Codex / Grok:
+node server.js --mcp-stdio --agent "Antigravity"
+```
+
+### Exposed MCP Tools
+| MCP Tool | Description |
+| --- | --- |
+| `get_workspace_state` | Read all canvas tabs, nodes, arrows, active agents, and `@Agent` sticky mentions |
+| `move_agent_cursor` | Glide an agent's named cursor (`agentName`, `x`, `y`, `statusText`) across the live canvas |
+| `draw_node` | Sketch a shape or sticky with automatic collision avoidance and author attribution badge |
+| `branch_from` | Semantically branch a new connected node (`right`, `bottom`, `left`, `top`) from an existing node |
+| `connect_nodes` | Wire an animated causal flow arrow (`curved`, `elbow`, `straight`) between two nodes |
+| `insert_between` | Split an existing arrow between two nodes and insert an intermediary node mid-stream |
+| `add_critique_sticky` | Attach an architectural review sticky note next to a target node and fire a pulse burst |
+| `trigger_flow_pulse` | Fire a burst of 60fps data packets along outgoing arrows from a node |
+| `manage_canvas_tab` | Create, fork/duplicate, switch, or rename canvas tabs for parallel agent proposals |
 
 ## Keyboard Shortcuts
 
