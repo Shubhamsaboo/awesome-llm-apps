@@ -169,7 +169,7 @@ def llm_integration_demo():
 Provide: 1) Total revenue, 2) Orders by status, 3) Average order value"""
             
             response = client.chat.completions.create(
-                model="gpt-4",
+                model="gpt-5.6-sol",
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=200
             )

@@ -54,7 +54,7 @@ if openai_api_key:
                 # Generate a response using OpenAI
                 full_prompt = f"{context}\nCustomer: {query}\nSupport Agent:"
                 response = self.client.chat.completions.create(
-                    model="gpt-4",
+                    model="gpt-5.6-sol",
                     messages=[
                         {"role": "system", "content": "You are a customer support AI agent for TechGadgets.com, an online electronics store."},
                         {"role": "user", "content": full_prompt}
@@ -97,7 +97,7 @@ if openai_api_key:
                 Format the output as a JSON object."""
 
                 response = self.client.chat.completions.create(
-                    model="gpt-4",
+                    model="gpt-5.6-sol",
                     messages=[
                         {"role": "system", "content": "You are a data generation AI that creates realistic customer profiles and order histories. Always respond with valid JSON."},
                         {"role": "user", "content": prompt}

@@ -566,13 +566,13 @@ def validate_csv_format(file) -> bool:
         # Validate date format
         try:
             pd.to_datetime(df['Date'])
-        except:
+        except Exception:
             return False, "Invalid date format in Date column"
             
         # Validate amount format (should be numeric after removing currency symbols)
         try:
             df['Amount'].replace('[\$,]', '', regex=True).astype(float)
-        except:
+        except Exception:
             return False, "Invalid amount format in Amount column"
             
         return True, "CSV format is valid"
