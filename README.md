@@ -164,6 +164,7 @@ streamlit run travel_agent.py
 *   [🎨 🍌 Multimodal UI/UX Feedback Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_uiux_feedback_agent_team/) - Landing page feedback plus an auto-generated improved version
 *   [🌏 AI Travel Planner Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/) - A complete trip itinerary, crafted by a team
 *   [⚖️ LLM Panel Agent Team](advanced_ai_agents/multi_agent_apps/agent_teams/llm_panel_agent_team/) - Three vendors review the same diff blind, then argue it out anonymously
+*   [🛡️ Sovereign Multi-Agent Platform (LangGraph & ADK)](https://github.com/FirdowsRahaman/agentic-workflows-masterclass) <sub>↗ external</sub> - Enterprise stateful agent workflows with human oversight (EU AI Act Art. 14), memory lifecycle management, and sovereign vLLM routing
 
 ### 🗣️ Voice AI Agents
 
