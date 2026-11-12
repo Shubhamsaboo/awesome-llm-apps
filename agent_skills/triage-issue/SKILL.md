@@ -87,9 +87,9 @@ it, the first non-retryable error in the trace decides.
   Load `references/grounding.md` before writing: it sets how to cite them.
 
 **Handoff gate** on quality: <60 send back · 60–80 conditional, flag gaps ·
-\>80 hand off with reproduction. Any `wrong` correctness verdict blocks handoff
-regardless of quality, and so does citing a link or code line that was never
-attached.
+\>80 hand off with reproduction. Any `wrong` or `judge_error` correctness status
+blocks handoff regardless of quality, and so does citing a link or code line
+that was never attached. For `judge_error`, rerun the judge before deciding.
 
 ### Profiles
 

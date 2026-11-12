@@ -5,10 +5,13 @@ call from a table keyed by the check ids it was asked about.
 """
 
 import asyncio
+import contextlib
+import io
 import json
 import os
 import sys
 import unittest
+from unittest.mock import Mock
 from urllib.parse import quote
 
 # The skill under test: agent_skills/triage-issue (this file is in agent_skills/evals/triage-issue).
@@ -229,7 +232,7 @@ class ParseErrors(unittest.TestCase):
                 self.assertEqual(r["quality"], 0.0)
                 self.assertEqual(r["parse_errors"], 1)
 
-    def test_invalid_correctness_gate_fails_closed_and_is_reported(self):
+    def test_invalid_correctness_gate_is_reported_as_a_judge_error(self):
         class InvalidGate(FakeOpt):
             async def _ask_json(self, system, user, fallback=None, **kw):
                 if kw.get("role") == "judge.gate":
@@ -238,8 +241,12 @@ class ParseErrors(unittest.TestCase):
 
         r = score(InvalidGate(), runs=1, true_root_cause="a missing index")
         self.assertEqual(r["quality"], 100.0)
-        self.assertEqual(r["correctness"], "wrong")
+        self.assertEqual(r["correctness"], "judge_error")
         self.assertEqual(r["parse_errors"], 1)
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            score_rca.report(r, "incident.md")
+        self.assertIn("CORRECTNESS  ERROR  (judge_error)", out.getvalue())
 
     def test_null_quote_and_reason_keep_valid_verdicts(self):
         class NullFields(FakeOpt):
@@ -266,7 +273,7 @@ class ParseErrors(unittest.TestCase):
                                             true_root_cause="pool exhaustion"))
         # 2 quality passes + 2 grounding passes (links and code attached) + 1 gate.
         self.assertEqual(r["parse_errors"], 5)
-        self.assertEqual(r["correctness"], "wrong")  # the fallback, now flagged as noise
+        self.assertEqual(r["correctness"], "judge_error")
 
     def test_clean_judge_reports_zero(self):
         r = asyncio.run(score_rca.score_rca(FakeOpt(), GROUNDED_RCA, BUNDLE, RUBRIC, runs=1))
@@ -282,6 +289,53 @@ class ParseErrors(unittest.TestCase):
         with contextlib.redirect_stdout(buf):
             score_rca.report(r, "incident.md")
         self.assertIn("3 judge response(s) could not be parsed", buf.getvalue())
+
+
+class Cli(unittest.TestCase):
+    def test_non_positive_runs_are_rejected_before_client_creation(self):
+        for mode in (["--rca", os.path.join(ROOT, "references", "rca-template.md")],
+                     ["--calibrate"]):
+            for runs in (0, -1):
+                with self.subTest(mode=mode, runs=runs):
+                    make_client = Mock(return_value=FakeOpt())
+                    err = io.StringIO()
+                    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(err):
+                        with self.assertRaises(SystemExit) as raised:
+                            score_rca.main(mode + ["--runs", str(runs)], make_client=make_client)
+                    self.assertEqual(raised.exception.code, 2)
+                    self.assertIn("--runs must be at least 1", err.getvalue())
+                    make_client.assert_not_called()
+
+    def test_correctness_judge_errors_have_a_distinct_exit_status(self):
+        cases = [
+            ({"verdict": "correct", "reason": "fake"}, "correct", 0),
+            ({"verdict": "wrong", "reason": "fake"}, "wrong", 2),
+            ({"verdict": ["correct"], "reason": "invalid"}, "judge_error", 3),
+            ({"verdict": "wrong", "reason": "unparseable", score_rca.PARSE_ERROR: True},
+             "judge_error", 3),
+            ({"verdict": "correct", "reason": "unparseable", score_rca.PARSE_ERROR: True},
+             "judge_error", 3),
+        ]
+        for response, verdict, exit_code in cases:
+            with self.subTest(response=response):
+                class GateReply(FakeOpt):
+                    async def _ask_json(self, system, user, fallback=None, **kw):
+                        if kw.get("role") == "judge.gate":
+                            return response
+                        return await super()._ask_json(system, user, fallback, **kw)
+
+                out = io.StringIO()
+                with contextlib.redirect_stdout(out):
+                    code = score_rca.main(
+                        ["--rca", os.path.join(ROOT, "references", "rca-template.md"),
+                         "--runs", "1", "--true-root-cause", "missing index", "--json"],
+                        make_client=lambda *args: GateReply(),
+                    )
+                result = json.loads(out.getvalue())
+                self.assertEqual(code, exit_code)
+                self.assertEqual(result["correctness"], verdict)
+                self.assertEqual(result["quality"], 100.0)
+                self.assertEqual(result["parse_errors"], int(verdict == "judge_error"))
 
 
 class ParseJson(unittest.TestCase):

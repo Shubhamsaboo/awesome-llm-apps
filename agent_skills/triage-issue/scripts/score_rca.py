@@ -239,12 +239,15 @@ async def judge_gate(opt, rca, true_root_cause, gate):
             f'Return JSON: {{"verdict": "{"|".join(gate["bands"])}", '
             f'"reason": "one sentence"}}'
         ),
-        fallback={"verdict": "wrong", "reason": "judge failed to parse"},
+        fallback={"verdict": "judge_error", "reason": "judge failed to parse"},
         temperature=0.0,
         role="judge.gate",
     )
+    if is_parse_error(response):
+        return {"verdict": "judge_error", "reason": "judge failed to parse",
+                PARSE_ERROR: True}
     if not isinstance(response, dict) or response.get("verdict") not in gate["bands"]:
-        return {"verdict": "wrong", "reason": "judge returned an invalid response",
+        return {"verdict": "judge_error", "reason": "judge returned an invalid response",
                 PARSE_ERROR: True}
     reason = response.get("reason")
     return {**response, "reason": reason if isinstance(reason, str) else ""}
@@ -369,7 +372,7 @@ async def score_rca(opt, rca, bundle, rubric, profile="balanced", runs=3,
 
     if true_root_cause:
         gate = await judge_gate(opt, rca, true_root_cause, rubric["gate"])
-        result["correctness"] = gate.get("verdict", "wrong")
+        result["correctness"] = gate["verdict"]
         result["correctness_reason"] = gate.get("reason", "")
         result["parse_errors"] += int(is_parse_error(gate))
     return result
@@ -383,7 +386,8 @@ def report(r, rca_path):
             "CONDITIONAL" if r["quality"] >= 60 else "SEND BACK")
     print(f"\n  {os.path.basename(rca_path)}   profile={r['profile']}  runs={r['runs']}")
     if "correctness" in r:
-        mark = {"correct": "PASS", "partially_correct": "PARTIAL", "wrong": "FAIL"}
+        mark = {"correct": "PASS", "partially_correct": "PARTIAL", "wrong": "FAIL",
+                "judge_error": "ERROR"}
         print(f"\n  CORRECTNESS  {mark.get(r['correctness'], '?')}  ({r['correctness']})")
         if r.get("correctness_reason"):
             print(f"               {r['correctness_reason'][:100]}")
@@ -496,10 +500,13 @@ def main(argv=None, make_client=None, trace=None) -> int:
     p.add_argument("--profile", default=None, help="balanced | returning-owner | curious")
     p.add_argument("--model", default=os.environ.get("TRIAGE_MODEL", "gpt-5.4-mini"))
     p.add_argument("--api-key", default=None)
-    p.add_argument("--runs", type=int, default=3, help="Judge passes; majority vote per check.")
+    p.add_argument("--runs", type=int, default=3,
+                   help="Judge passes (at least 1); majority vote per check.")
     p.add_argument("--calibrate", action="store_true", help="Score the labeled golden set.")
     p.add_argument("--json", action="store_true")
     args = p.parse_args(argv)
+    if args.runs < 1:
+        p.error("--runs must be at least 1")
 
     with open(args.rubric) as f:
         rubric = json.load(f)
@@ -538,6 +545,8 @@ def main(argv=None, make_client=None, trace=None) -> int:
     else:
         report(result, args.rca)
 
+    if result.get("correctness") == "judge_error":
+        return 3
     if result.get("correctness") == "wrong":
         return 2
     if (result.get("grounding") or {}).get("hard_fail"):

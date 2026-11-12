@@ -86,7 +86,7 @@ instead; model API calls still require network access.
 gcloud logging read '<filter>' --format=json \
   | python3 scripts/normalize_evidence.py - --symptom "checkout 500s" -o bundle.json
 
-# score an RCA: exit 2 if wrong or it cites something never attached, 1 if weak
+# score an RCA (exit 1: weak, 2: wrong/fabricated, 3: correctness judge error)
 python3 scripts/score_rca.py --rca incident.md --evidence bundle.json
 python3 scripts/score_rca.py --rca incident.md --profile returning-owner --model gpt-5.4-mini
 
@@ -95,7 +95,9 @@ python3 scripts/score_rca.py --calibrate
 ```
 
 A judge reply that cannot be parsed or has an invalid shape is counted and
-reported, never silently mistaken for a real failing verdict.
+reported. If the correctness judge fails, correctness is `judge_error` and the
+CLI exits `3`: handoff stays blocked without calling the RCA wrong. `--runs`
+must be at least `1` for both scoring and calibration.
 
 ### Grounding
 
