@@ -1,0 +1,103 @@
+{
+  "teams": [
+    "auth-service",
+    "backend-infra",
+    "frontend",
+    "data-platform",
+    "devops",
+    "security",
+    "payments"
+  ],
+  "evals": [
+    {
+      "id": 1,
+      "name": "team_correct",
+      "criterion": "routes to the owning team",
+      "question": "Does the predicted team exactly match the expected team?",
+      "pass_condition": "exact string match to expected_team",
+      "fail_condition": "any other team, or unknown"
+    },
+    {
+      "id": 2,
+      "name": "severity_capped",
+      "criterion": "non-prod severity capped at P2",
+      "question": "Is the severity P2 or lower?",
+      "pass_condition": "P2, P3, or P4",
+      "fail_condition": "P0 or P1 on a non-prod issue"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": 1,
+      "name": "token refresh 401 on staging",
+      "source": "jira",
+      "environment": "staging",
+      "input": "DEV-4471 [staging] Login works but users get kicked out after ~15 min. Refresh endpoint returns 401. Started after config push at 14:02. No prod impact.",
+      "expected_team": "auth-service",
+      "expected_severity": "P2"
+    },
+    {
+      "id": 2,
+      "name": "pool exhausted in dev",
+      "source": "teams",
+      "environment": "dev",
+      "input": "#eng-dev-issues 09:14 — checkout svc is throwing `pool timeout` in dev, can't get a connection. nothing in prod. anyone touching the pool config?",
+      "expected_team": "backend-infra",
+      "expected_severity": "P2"
+    },
+    {
+      "id": 3,
+      "name": "blank chart, server healthy",
+      "source": "jira",
+      "environment": "staging",
+      "input": "DEV-4489 [staging] Analytics dashboard renders an empty chart since yesterday's FE deploy. API returns 200 with a valid payload. Console shows a null deref in ChartContainer.",
+      "expected_team": "frontend",
+      "expected_severity": "P3"
+    },
+    {
+      "id": 4,
+      "name": "blank dashboard, 500 upstream",
+      "source": "teams",
+      "environment": "staging",
+      "input": "#eng-dev-issues 11:41 — dashboard is blank on staging again. FE team already looked, they say the /metrics/rollup call is 500ing.",
+      "expected_team": "data-platform",
+      "expected_severity": "P2"
+    },
+    {
+      "id": 5,
+      "name": "post-deploy app bug, not a deploy bug",
+      "source": "jira",
+      "environment": "staging",
+      "input": "DEV-4502 [staging] Broke right after release 2.31 deployed. Orders with >50 line items now throw IndexOutOfBounds in the totals calculator. Rollback fixes it.",
+      "expected_team": "payments",
+      "expected_severity": "P2"
+    },
+    {
+      "id": 6,
+      "name": "credential leaked in staging logs",
+      "source": "teams",
+      "environment": "staging",
+      "input": "#eng-dev-issues 16:20 — heads up, staging logs are printing the full DB connection string including the password on startup. only staging but the creds are shared with the read replica.",
+      "expected_team": "security",
+      "expected_severity": "P2"
+    },
+    {
+      "id": 7,
+      "name": "CI host resolution failure",
+      "source": "jira",
+      "environment": "ci",
+      "input": "DEV-4510 [CI] All PR builds failing at the integration-test step with 'could not resolve host: artifacts.internal'. No code changes involved.",
+      "expected_team": "devops",
+      "expected_severity": "P2"
+    },
+    {
+      "id": 8,
+      "name": "stale dashboard numbers",
+      "source": "teams",
+      "environment": "staging",
+      "input": "#eng-dev-issues 08:55 — staging dashboard numbers are 3 days behind. UI looks fine, just old data.",
+      "expected_team": "data-platform",
+      "expected_severity": "P3"
+    }
+  ]
+}

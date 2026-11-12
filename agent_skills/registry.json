@@ -87,6 +87,19 @@
       },
       "install": "npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/thinking-out-loud",
       "evals_dir": "agent_skills/evals/thinking-out-loud"
+    },
+    {
+      "name": "triage-issue",
+      "path": "agent_skills/triage-issue",
+      "description": "Triages non-prod incidents and bug reports: investigates logs, traces and tickets, forms and falsifies an RCA hypothesis, routes the issue to the owning team, and scores the RCA against a rubric before handoff. Use when the user asks to triage, investigate, root-cause, route, or RCA an issue, especially cross-team issues where the fix is out of scope and evidence quality matters for the handoff. Also use for \"score this RCA\", \"review this incident writeup\", or \"who owns this bug\".",
+      "license": "Apache-2.0",
+      "metadata": {
+        "author": "Prerna Srivastava",
+        "version": "1.0.0",
+        "source": "https://github.com/Shubhamsaboo/awesome-llm-apps"
+      },
+      "install": "npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/triage-issue",
+      "evals_dir": "agent_skills/evals/triage-issue"
     }
   ]
 }

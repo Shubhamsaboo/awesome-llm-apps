@@ -1,0 +1,54 @@
+{
+  "skill": "triage-issue",
+  "purpose": "Trigger-behavior spec for deterministic lexical routing and manual behavior checks.",
+  "cases": [
+    {
+      "id": "triage-staging-bug",
+      "prompt": "triage this staging bug and route it to the owning team",
+      "should_trigger": true,
+      "assert": "Runs intake, investigates the evidence, and routes to exactly one team from the roster."
+    },
+    {
+      "id": "rca-from-logs",
+      "prompt": "write an RCA for this incident from these logs and traces",
+      "should_trigger": true,
+      "assert": "Normalizes the evidence and writes an RCA with a falsifiable hypothesis and cited log lines."
+    },
+    {
+      "id": "score-rca",
+      "prompt": "score this RCA before I hand it off",
+      "should_trigger": true,
+      "assert": "Runs scripts/score_rca.py and reports correctness, quality, and grounding separately."
+    },
+    {
+      "id": "who-owns-bug",
+      "prompt": "who owns this bug",
+      "should_trigger": true,
+      "assert": "Routes using references/team-roster.md and states which signal drove the decision."
+    },
+    {
+      "id": "root-cause-incident",
+      "prompt": "root-cause this non-prod incident",
+      "should_trigger": true,
+      "assert": "Asks the grouped intake question before investigating."
+    },
+    {
+      "id": "near-miss-unit-test",
+      "prompt": "write a unit test for this function",
+      "should_trigger": false,
+      "assert": "Does not trigger for test authoring."
+    },
+    {
+      "id": "near-miss-deploy",
+      "prompt": "deploy the service to production",
+      "should_trigger": false,
+      "assert": "Does not trigger for deployment requests."
+    },
+    {
+      "id": "near-miss-meeting-notes",
+      "prompt": "summarize the meeting notes",
+      "should_trigger": false,
+      "assert": "Does not trigger for summarization."
+    }
+  ]
+}

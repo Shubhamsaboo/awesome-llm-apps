@@ -26,6 +26,7 @@ Most "skills" on registries are text-only prompt dumps: advice the model already
 | [🔭 scope-creep-detector](scope-creep-detector/) | Checks a diff against its stated intent, flags unrelated files and scope signals, and recommends what to keep, split, or justify |
 | [♾️ self-improving-agent-skills](self-improving-agent-skills/) | Automatically optimizes agent skills using Gemini and ADK |
 | [🎙️ thinking-out-loud](thinking-out-loud/) | Audit what your agent heard before it acts: on any voice ramble it echoes back a scannable brief with its own guesses quarantined and your reversals flagged, because follow-up questions only verify what the model doubts, while the echo verifies what it believes |
+| [🔀 triage-issue](triage-issue/) | Triages non-prod incidents: asks before investigating, tests the reporter's theory instead of adopting it, routes to the one owning team, and scores the RCA on correctness, quality and grounding, blocking handoff if it cites a log link or code line that was never attached |
 
 More coming, released one at a time.
 

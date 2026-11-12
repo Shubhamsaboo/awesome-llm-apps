@@ -85,6 +85,7 @@ streamlit run travel_agent.py
 *   [🧠 Advisor Orchestrator Worker](agent_skills/advisor-orchestrator-worker/) - Meta Loop with Claude Fable 5.1 as advisor, GPT-6 Astra as orchestrator, and Gemini 3.8 Flash as worker
 *   [🎙️ Thinking Out Loud](agent_skills/thinking-out-loud/) - Echoes a voice ramble back as a scannable brief, with the model's guesses quarantined and your reversals flagged
 *   [♾️ Self-Improving Agent Skills](agent_skills/self-improving-agent-skills/) - Automatically optimize agent skills using Gemini and ADK
+*   [🔀 Triage Issue](agent_skills/triage-issue/) - Triages non-prod incidents, routes them to the owning team, and scores the RCA on correctness, quality and grounding before handoff
 
 ### 🛠️ Standalone Apps & Tools
 
