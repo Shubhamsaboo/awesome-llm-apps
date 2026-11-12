@@ -1,6 +1,6 @@
 # 🛡️ Self-Healing / Anti-Loop LangGraph Agent (Powered by Groq)
 
-A production-ready **Loop-Detection Middleware Pattern** built with LangGraph and Groq (`llama-3.3-70b-versatile`) to prevent AI agents from getting stuck in infinite tool-calling loops and draining API credits.
+A production-ready **Loop-Detection Middleware Pattern** built with LangGraph and Groq (`openai/gpt-oss-120b`) to prevent AI agents from getting stuck in infinite tool-calling loops and draining API credits.
 
 ## 🚨 The Problem
 In production environments, autonomous agents often get trapped in "silent loops"—repeatedly calling the exact same failing tool with identical arguments.
