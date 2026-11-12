@@ -321,3 +321,7 @@ def test_signal_score_ignores_short_terms_inside_other_words():
 
 def test_signal_score_counts_short_terms_as_whole_words():
     assert _chunk_signal_score("AI demand lifted EPS. AI-driven margins.") == 5
+    # Company names and plurals still count.
+    assert _chunk_signal_score("OpenAI partnership") == 1
+    assert _chunk_signal_score("xAI and OpenAI") == 2
+    assert _chunk_signal_score("AIs") == 1
