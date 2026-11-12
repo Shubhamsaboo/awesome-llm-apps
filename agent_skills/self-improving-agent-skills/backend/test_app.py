@@ -150,6 +150,39 @@ def configured_session(client):
     return sid
 
 
+@pytest.mark.parametrize(
+    "bad_evals",
+    [
+        [{"name": "missing id"}],
+        [{"id": None}],
+        [{"id": True}],
+        [{"id": []}],
+        [{"id": ""}],
+    ],
+)
+def test_update_config_rejects_malformed_eval_definitions(client, bad_evals):
+    sid = new_session()
+    res = client.post(
+        "/api/update-config",
+        json={"session_id": sid, "scenarios": [{"id": 1, "input": "x"}], "evals": bad_evals},
+    )
+    assert res.status_code == 400
+    assert res.json()["detail"] == "Each eval must be a dict with an int or str 'id'"
+    assert backend.sessions[sid]["status"] == "uploaded"
+
+
+def test_start_rejects_malformed_evals_in_session_before_running(client):
+    sid = new_session()
+    backend.sessions[sid]["scenarios"] = [{"id": 1, "input": "x"}]
+    backend.sessions[sid]["evals"] = [{"id": None}]
+    backend.sessions[sid]["status"] = "configured"
+    res = client.post(f"/api/start/{sid}", json={"gemini_api_key": "k"})
+    assert res.status_code == 400
+    assert res.json()["detail"] == "Each eval must be a dict with an int or str 'id'"
+    assert backend.sessions[sid]["status"] == "configured"
+    assert FakeOptimizer.built == []
+
+
 def test_start_refuses_a_bad_model_before_marking_the_session_running(client):
     sid = configured_session(client)
     res = client.post(f"/api/start/{sid}", json={"gemini_api_key": "k", "model": "not a model"})

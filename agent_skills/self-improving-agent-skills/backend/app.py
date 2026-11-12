@@ -15,7 +15,7 @@ import shutil
 import re
 import logging
 import traceback
-from adk_optimizer import SkillOptimizer, DEFAULT_MODEL
+from adk_optimizer import SkillOptimizer, DEFAULT_MODEL, validate_evals
 from contextlib import asynccontextmanager
 
 logging.basicConfig(level=logging.INFO)
@@ -313,6 +313,10 @@ async def update_config(config: SessionConfig):
     """Save user's selected/edited scenarios + evals"""
     if config.session_id not in sessions:
         raise HTTPException(status_code=404, detail="Session not found")
+    try:
+        validate_evals(config.evals)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     session = sessions[config.session_id]
     session["scenarios"] = config.scenarios
     session["evals"] = config.evals
@@ -358,6 +362,10 @@ async def start_optimization(session_id: str, request: StartRequest):
     session = sessions[session_id]
     if not session.get("scenarios") or not session.get("evals"):
         raise HTTPException(status_code=400, detail="Must configure scenarios and evals first")
+    try:
+        validate_evals(session["evals"])
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     if session.get("status") == "running":
         raise HTTPException(status_code=400, detail="Optimization already running")
     # Refuse a bad model name before the session is marked running.
@@ -414,6 +422,7 @@ async def start_optimization(session_id: str, request: StartRequest):
                 "min_gain": data.get("min_gain", request.min_gain),
                 "parse_errors": data.get("parse_errors", 0),
                 "holdout": data.get("holdout"),
+                "stopped_reason": data.get("stopped_reason"),
             }
 
         async def callback(event):

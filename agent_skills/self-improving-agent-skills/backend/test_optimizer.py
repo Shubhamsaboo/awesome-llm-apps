@@ -56,6 +56,22 @@ def test_parse_json_direct_fenced_and_raw_decode():
 
     leading_bracket_noise = 'Note [section 1]: {"answer": "yes"} extra text'
     assert parse_json(leading_bracket_noise) == {"answer": "yes"}
+    assert parse_json(
+        'Eval [1] result: {"results": [{"eval_id": 1, "passed": true}]}',
+        expected_type=dict,
+    ) == {"results": [{"eval_id": 1, "passed": True}]}
+    assert parse_json("Note {see above}: {\"a\": 1}", expected_type=dict) == {"a": 1}
+
+
+def test_parse_json_expected_type_skips_wrong_fence_and_finds_later_dict():
+    text = 'Example:\n```json\n[1, 2]\n```\nResult:\n```json\n{"a": 1}\n```'
+    assert parse_json(text, expected_type=dict) == {"a": 1}
+
+
+def test_parse_json_expected_type_does_not_extract_nested_dict_from_wrong_fence():
+    text = '```json\n[{"diagnosis": "bad"}]\n```'
+    with pytest.raises(ValueError):
+        parse_json(text, expected_type=dict)
 
 
 @pytest.mark.parametrize("bad", ["", "   ", "not json at all", "{unclosed", "NaN", None])
@@ -109,6 +125,42 @@ def test_ask_json_parse_errors_and_non_dict_guards(monkeypatch):
     assert not is_parse_error(ok_res)
 
 
+def test_ask_json_prefers_expected_dict_over_bracketed_noise(monkeypatch):
+    opt = SkillOptimizer(api_key="test-key")
+
+    async def fake_ask(agent, prompt):
+        return 'Eval [1] result: {"results": [{"eval_id": 1, "passed": true}]}'
+
+    monkeypatch.setattr(opt, "_ask", fake_ask)
+    parsed = run(opt._ask_json(opt.executor, "p", fallback={"results": []}))
+    assert parsed == {"results": [{"eval_id": 1, "passed": True}]}
+    assert not is_parse_error(parsed)
+
+
+def test_ask_json_expected_dict_rejects_top_level_arrays(monkeypatch):
+    opt = SkillOptimizer(api_key="test-key")
+    replies = iter([
+        '[{"diagnosis": "d"}]',
+        'Here: [{"a": 1}]',
+        'Eval [1] result: {"results": [{"eval_id": 1, "passed": true}]}',
+    ])
+
+    async def fake_ask(agent, prompt):
+        return next(replies)
+
+    monkeypatch.setattr(opt, "_ask", fake_ask)
+    fallback = {"results": []}
+
+    first = run(opt._ask_json(opt.executor, "p", fallback=fallback))
+    second = run(opt._ask_json(opt.executor, "p", fallback=fallback))
+    third = run(opt._ask_json(opt.executor, "p", fallback=fallback))
+
+    assert is_parse_error(first)
+    assert is_parse_error(second)
+    assert third == {"results": [{"eval_id": 1, "passed": True}]}
+    assert not is_parse_error(third)
+
+
 # -- 2. Malformed judge replies in ExecutorScorer / _score_skill -------------
 
 
@@ -145,6 +197,24 @@ def test_score_skill_handles_malformed_judge_replies_fail_closed(monkeypatch, ju
         and d.get("parse_error") is True
         for d in res["details"]
     )
+
+
+def test_score_skill_parses_judge_reply_with_bracketed_prefix(monkeypatch):
+    opt = SkillOptimizer(api_key="test-key")
+    scenarios = [{"id": 1, "description": "s1", "input": "request 1"}]
+    evals = [{"id": 1, "name": "e1", "question": "check 1?"}]
+
+    async def fake_ask(agent, prompt):
+        if prompt.startswith("Execute this skill:"):
+            return "generated skill output"
+        return 'Eval [1] result: {"results": [{"eval_id": 1, "passed": true, "reason": "ok"}]}'
+
+    monkeypatch.setattr(opt, "_ask", fake_ask)
+    res = run(opt._score_skill(SKILL_V0, scenarios, evals))
+    assert res["pass_rate"] == 100.0
+    assert res["passed"] == 1
+    assert res["total"] == 1
+    assert res["parse_errors"] == 0
 
 
 def test_score_skill_rejects_non_bool_passed_and_missing_verdicts(monkeypatch):
@@ -190,6 +260,65 @@ def test_score_skill_rejects_non_bool_passed_and_missing_verdicts(monkeypatch):
 
 
 @pytest.mark.parametrize(
+    "declared_eval_id,judge_eval_id",
+    [
+        (1, "1"),
+        ("1", 1),
+    ],
+)
+def test_score_skill_matches_eval_ids_across_int_and_str(
+    monkeypatch, declared_eval_id, judge_eval_id
+):
+    opt = SkillOptimizer(api_key="test-key")
+    scenarios = [{"id": 1, "description": "s1", "input": "request 1"}]
+    evals = [{"id": declared_eval_id, "name": "e1", "question": "check 1?"}]
+
+    async def fake_ask(agent, prompt):
+        if prompt.startswith("Execute this skill:"):
+            return "output"
+        return json.dumps({
+            "results": [{"eval_id": judge_eval_id, "passed": True, "reason": "matched"}]
+        })
+
+    monkeypatch.setattr(opt, "_ask", fake_ask)
+
+    res = run(opt._score_skill(SKILL_V0, scenarios, evals))
+    assert res["pass_rate"] == 100.0
+    assert res["passed"] == 1
+    assert res["total"] == 1
+    assert res["parse_errors"] == 0
+    assert res["details"][0]["eval_id"] == declared_eval_id
+    assert res["details"][0]["passed"] is True
+
+
+@pytest.mark.parametrize("judge_eval_id", [True, "999"])
+def test_score_skill_rejects_bool_and_unknown_eval_ids_after_canonicalization(
+    monkeypatch, judge_eval_id
+):
+    opt = SkillOptimizer(api_key="test-key")
+    scenarios = [{"id": 1, "description": "s1", "input": "request 1"}]
+    evals = [{"id": 1, "name": "e1", "question": "check 1?"}]
+
+    async def fake_ask(agent, prompt):
+        if prompt.startswith("Execute this skill:"):
+            return "output"
+        return json.dumps({
+            "results": [{"eval_id": judge_eval_id, "passed": True, "reason": "bad id"}]
+        })
+
+    monkeypatch.setattr(opt, "_ask", fake_ask)
+
+    res = run(opt._score_skill(SKILL_V0, scenarios, evals))
+    assert res["pass_rate"] == 0.0
+    assert res["passed"] == 0
+    assert res["total"] == 1
+    assert res["parse_errors"] == 1
+    assert res["details"][0]["eval_id"] == 1
+    assert res["details"][0]["passed"] is False
+    assert res["details"][0]["parse_error"] is True
+
+
+@pytest.mark.parametrize(
     "bad_eval_id",
     [[1], {"k": 1}, True],
 )
@@ -210,6 +339,37 @@ def test_score_skill_rejects_invalid_or_unhashable_eval_id(monkeypatch, bad_eval
     assert res["parse_errors"] == 1
     assert all(d.get("parse_error") is True for d in res["details"])
     assert all(d["reason"] == "no verdict returned" for d in res["details"])
+
+
+@pytest.mark.parametrize(
+    "bad_evals",
+    [
+        [{"name": "missing id"}],
+        [{"id": None}],
+        [{"id": True}],
+        [{"id": []}],
+        [{"id": {}}],
+        [{"id": ""}],
+        [{"id": "   "}],
+        [{"id": 1}, {"id": 1}],
+        [{"id": 1}, {"id": "1"}],
+        [{"id": "same"}, {"id": "same"}],
+        ["not-a-dict"],
+    ],
+)
+def test_score_skill_raises_for_malformed_eval_definitions(bad_evals):
+    opt = SkillOptimizer(api_key="test-key")
+    with pytest.raises(ValueError, match="Each eval must be a dict with an int or str 'id'"):
+        run(opt._score_skill(SKILL_V0, [{"id": 1, "input": "only"}], bad_evals))
+
+
+def test_score_and_optimize_reject_malformed_evals_up_front():
+    opt = SkillOptimizer(api_key="test-key")
+    bad_evals = [{"id": None}]
+    with pytest.raises(ValueError, match="Each eval must be a dict with an int or str 'id'"):
+        run(opt.score(SKILL_V0, SCENARIOS, bad_evals, scorer=ExecutorScorer()))
+    with pytest.raises(ValueError, match="Each eval must be a dict with an int or str 'id'"):
+        run(opt.optimize({"SKILL.md": SKILL_V0}, SCENARIOS, bad_evals, max_rounds=1))
 
 
 def test_analyze_failures_excludes_parse_error_placeholders(monkeypatch):
@@ -244,10 +404,13 @@ def test_analyze_failures_excludes_parse_error_placeholders(monkeypatch):
     assert '"eval_id": 1' not in captured["prompt"]
 
 
-def test_optimize_skips_round_when_only_parse_error_misses(monkeypatch):
+def test_repeated_parse_only_baseline_skips_emit_stopped_and_set_reason(monkeypatch):
     opt = SkillOptimizer(api_key="test-key")
+    score_calls = 0
 
     def noisy_scorer(skill_md, scenarios, evals):
+        nonlocal score_calls
+        score_calls += 1
         return {
             "pass_rate": 0.0,
             "passed": 0,
@@ -280,12 +443,126 @@ def test_optimize_skips_round_when_only_parse_error_misses(monkeypatch):
         )
     )
 
-    assert [m["outcome"] for m in res["mutation_log"]] == ["skipped"]
-    assert res["mutation_log"][0]["description"] == "Scoring replies could not be parsed"
-    assert res["mutation_log"][0]["parse_errors"] == 1
-    exp = next(e for e in events if e["type"] == "experiment_result")["data"]
-    assert exp["outcome"] == "skipped"
-    assert exp["description"] == "Scoring replies could not be parsed"
+    assert score_calls == 3  # baseline + 2 clean-baseline retries
+    assert res["mutation_log"] == []
+    assert res["stopped_reason"] == "parse_errors"
+    assert res["baseline_score"] == res["final_score"] == 0.0
+    assert res["score_history"] == [0.0]
+    assert [e["type"] for e in events] == ["baseline", "stopped", "complete"]
+    stopped = next(e for e in events if e["type"] == "stopped")
+    assert stopped["data"] == {"round": 0, "reason": "parse_errors"}
+
+
+def test_optimize_parse_error_only_baseline_refresh_recovers_same_round(monkeypatch):
+    opt = SkillOptimizer(api_key="test-key")
+    score_calls = []
+    score_results = iter([
+        {
+            "pass_rate": 0.0,
+            "passed": 0,
+            "total": 2,
+            "parse_errors": 1,
+            "details": [
+                {"eval_id": 1, "passed": False, "parse_error": True},
+                {"eval_id": 2, "passed": False, "parse_error": True},
+            ],
+        },
+        {
+            "pass_rate": 50.0,
+            "passed": 1,
+            "total": 2,
+            "parse_errors": 0,
+            "details": [
+                {"eval_id": 1, "passed": False, "reason": "real failure"},
+                {"eval_id": 2, "passed": True, "reason": "ok"},
+            ],
+        },
+        {"pass_rate": 80.0, "passed": 2, "total": 2, "parse_errors": 0},
+    ])
+
+    def scorer_fn(md, sc, ev):
+        score_calls.append(md)
+        return next(score_results)
+
+    async def fake_analyze(skill_md, scenarios, evals, details, mutation_log=None, result=None):
+        return {
+            "diagnosis": "fix",
+            "mutation_strategy": "add_constraint",
+            "target_section": "rules",
+            "suggested_change": "tighten",
+        }
+
+    async def fake_mutate(skill_md, analysis, context=""):
+        return {"description": "fix parse-only baseline", "reasoning": "", "new_skill_md": SKILL_V1}
+
+    monkeypatch.setattr(opt, "_analyze_failures", fake_analyze)
+    monkeypatch.setattr(opt, "_mutate_skill", fake_mutate)
+
+    res = run(
+        opt.optimize(
+            {"SKILL.md": SKILL_V0},
+            [{"id": 1, "input": "x"}],
+            EVALS,
+            max_rounds=1,
+            scorer=scorer_fn,
+        )
+    )
+
+    assert score_calls == [SKILL_V0, SKILL_V0, SKILL_V1]
+    assert [m["outcome"] for m in res["mutation_log"]] == ["kept"]
+    assert res["baseline_score"] == 50.0
+    assert res["final_score"] == 80.0
+    assert res["score_history"] == [50.0, 80.0]
+    assert res["improved_skill_md"] == SKILL_V1
+
+
+def test_optimize_parse_error_only_baseline_stops_after_retry_bound(monkeypatch):
+    opt = SkillOptimizer(api_key="test-key")
+    score_calls = 0
+
+    def noisy_scorer(skill_md, scenarios, evals):
+        nonlocal score_calls
+        score_calls += 1
+        return {
+            "pass_rate": 0.0,
+            "passed": 0,
+            "total": 2,
+            "parse_errors": 1,
+            "details": [
+                {"eval_id": 1, "passed": False, "parse_error": True},
+                {"eval_id": 2, "passed": False, "parse_error": True},
+            ],
+        }
+
+    async def should_not_analyze(*args, **kwargs):
+        raise AssertionError("diagnose should not run for parse-error-only misses")
+
+    async def should_not_mutate(*args, **kwargs):
+        raise AssertionError("mutator should not run for parse-error-only misses")
+
+    monkeypatch.setattr(opt, "_analyze_failures", should_not_analyze)
+    monkeypatch.setattr(opt, "_mutate_skill", should_not_mutate)
+
+    events = []
+    res = run(
+        opt.optimize(
+            {"SKILL.md": SKILL_V0},
+            [{"id": 1, "input": "x"}],
+            EVALS,
+            max_rounds=5,
+            scorer=noisy_scorer,
+            callback=events.append,
+        )
+    )
+
+    assert score_calls == 3  # baseline + 2 retry refreshes, then stop
+    assert res["mutation_log"] == []
+    assert len([e for e in events if e["type"] == "experiment_start"]) == 0
+    stopped = next(e for e in events if e["type"] == "stopped")
+    assert stopped["data"] == {"round": 0, "reason": "parse_errors"}
+    assert res["stopped_reason"] == "parse_errors"
+    assert res["baseline_score"] == res["final_score"] == 0.0
+    assert res["score_history"] == [0.0]
 
 
 # -- 3. min_gain -------------------------------------------------------------
@@ -492,6 +769,513 @@ def test_unchanged_mutation_and_inconclusive_candidate_parse_errors(monkeypatch)
     assert exp_events[1]["kept"] is False
 
 
+def test_candidate_with_fewer_parse_errors_refreshes_baseline_and_discards_tie(monkeypatch):
+    opt = SkillOptimizer(api_key="test-key")
+    scored = iter([
+        (SKILL_V0, {"pass_rate": 50.0, "passed": 2, "total": 4, "parse_errors": 1}),
+        (SKILL_V1, {"pass_rate": 75.0, "passed": 3, "total": 4, "parse_errors": 0}),
+        (SKILL_V0, {"pass_rate": 75.0, "passed": 3, "total": 4, "parse_errors": 0}),
+    ])
+
+    def scorer_fn(md, sc, ev):
+        expected_md, payload = next(scored)
+        assert md == expected_md
+        return payload
+
+    async def fake_analyze(skill_md, scenarios, evals, details, mutation_log=None, result=None):
+        return {
+            "diagnosis": "d",
+            "mutation_strategy": "restructure",
+            "target_section": "t",
+            "suggested_change": "c",
+        }
+
+    async def fake_mutate(skill_md, analysis, context=""):
+        return {"description": "candidate", "reasoning": "", "new_skill_md": SKILL_V1}
+
+    monkeypatch.setattr(opt, "_analyze_failures", fake_analyze)
+    monkeypatch.setattr(opt, "_mutate_skill", fake_mutate)
+
+    res = run(
+        opt.optimize(
+            {"SKILL.md": SKILL_V0},
+            SCENARIOS,
+            EVALS,
+            max_rounds=1,
+            scorer=scorer_fn,
+        )
+    )
+
+    assert res["baseline_score"] == 75.0
+    assert res["improved_skill_md"] == SKILL_V0
+    assert res["final_score"] == 75.0
+    assert res["score_history"] == [75.0, 75.0]
+    assert res["mutation_log"][0]["outcome"] == "discarded"
+    assert res["mutation_log"][0]["score_before"] == 75.0
+
+
+def test_candidate_with_fewer_parse_errors_refreshes_baseline_and_keeps_real_gain(monkeypatch):
+    opt = SkillOptimizer(api_key="test-key")
+    scored = iter([
+        (SKILL_V0, {"pass_rate": 50.0, "passed": 2, "total": 4, "parse_errors": 1}),
+        (SKILL_V1, {"pass_rate": 75.0, "passed": 3, "total": 4, "parse_errors": 0}),
+        (SKILL_V0, {"pass_rate": 60.0, "passed": 2, "total": 4, "parse_errors": 0}),
+    ])
+
+    def scorer_fn(md, sc, ev):
+        expected_md, payload = next(scored)
+        assert md == expected_md
+        return payload
+
+    async def fake_analyze(skill_md, scenarios, evals, details, mutation_log=None, result=None):
+        return {
+            "diagnosis": "d",
+            "mutation_strategy": "add_constraint",
+            "target_section": "rules",
+            "suggested_change": "c",
+        }
+
+    async def fake_mutate(skill_md, analysis, context=""):
+        return {"description": "candidate", "reasoning": "", "new_skill_md": SKILL_V1}
+
+    monkeypatch.setattr(opt, "_analyze_failures", fake_analyze)
+    monkeypatch.setattr(opt, "_mutate_skill", fake_mutate)
+
+    res = run(
+        opt.optimize(
+            {"SKILL.md": SKILL_V0},
+            SCENARIOS,
+            EVALS,
+            max_rounds=1,
+            scorer=scorer_fn,
+        )
+    )
+
+    assert res["mutation_log"][0]["outcome"] == "kept"
+    assert res["improved_skill_md"] == SKILL_V1
+    assert res["baseline_score"] == 60.0
+    assert res["final_score"] == 75.0
+    assert res["score_history"] == [60.0, 75.0]
+
+
+def test_baseline_re_scored_at_most_once_per_baseline_version(monkeypatch):
+    opt = SkillOptimizer(api_key="test-key")
+    score_calls = []
+    scored = iter([
+        (SKILL_V0, {
+            "pass_rate": 50.0,
+            "passed": 1,
+            "total": 2,
+            "parse_errors": 1,
+            "details": [
+                {"scenario_id": 1, "eval_id": 1, "passed": False, "reason": "real miss"},
+                {"scenario_id": 2, "eval_id": 1, "passed": False, "parse_error": True},
+            ],
+        }),
+        (SKILL_V1, {
+            "pass_rate": 55.0,
+            "passed": 1,
+            "total": 2,
+            "parse_errors": 0,
+            "details": [
+                {"scenario_id": 1, "eval_id": 1, "passed": False, "reason": "still miss"},
+                {"scenario_id": 2, "eval_id": 1, "passed": True, "reason": "clean"},
+            ],
+        }),
+        (SKILL_V0, {
+            "pass_rate": 50.0,
+            "passed": 1,
+            "total": 2,
+            "parse_errors": 1,
+            "details": [
+                {"scenario_id": 1, "eval_id": 1, "passed": False, "reason": "real miss"},
+                {"scenario_id": 2, "eval_id": 1, "passed": False, "parse_error": True},
+            ],
+        }),
+        (SKILL_V1, {
+            "pass_rate": 55.0,
+            "passed": 1,
+            "total": 2,
+            "parse_errors": 0,
+            "details": [
+                {"scenario_id": 1, "eval_id": 1, "passed": False, "reason": "still miss"},
+                {"scenario_id": 2, "eval_id": 1, "passed": True, "reason": "clean"},
+            ],
+        }),
+        (SKILL_V1, {
+            "pass_rate": 55.0,
+            "passed": 1,
+            "total": 2,
+            "parse_errors": 0,
+            "details": [
+                {"scenario_id": 1, "eval_id": 1, "passed": False, "reason": "still miss"},
+                {"scenario_id": 2, "eval_id": 1, "passed": True, "reason": "clean"},
+            ],
+        }),
+    ])
+
+    def scorer_fn(md, sc, ev):
+        score_calls.append(md)
+        expected_md, payload = next(scored)
+        assert md == expected_md
+        return payload
+
+    async def fake_analyze(skill_md, scenarios, evals, details, mutation_log=None, result=None):
+        return {
+            "diagnosis": "d",
+            "mutation_strategy": "add_constraint",
+            "target_section": "rules",
+            "suggested_change": "c",
+        }
+
+    async def fake_mutate(skill_md, analysis, context=""):
+        return {"description": "candidate", "reasoning": "", "new_skill_md": SKILL_V1}
+
+    monkeypatch.setattr(opt, "_analyze_failures", fake_analyze)
+    monkeypatch.setattr(opt, "_mutate_skill", fake_mutate)
+
+    res = run(
+        opt.optimize(
+            {"SKILL.md": SKILL_V0},
+            SCENARIOS,
+            EVALS,
+            max_rounds=3,
+            scorer=scorer_fn,
+        )
+    )
+
+    assert score_calls == [SKILL_V0, SKILL_V1, SKILL_V0, SKILL_V1, SKILL_V1]
+    assert [m["outcome"] for m in res["mutation_log"]] == ["discarded", "discarded", "discarded"]
+
+
+def test_candidate_parse_error_mismatch_after_refresh_is_inconclusive(monkeypatch):
+    opt = SkillOptimizer(api_key="test-key")
+    scored = iter([
+        (SKILL_V0, {"pass_rate": 50.0, "passed": 2, "total": 4, "parse_errors": 1}),
+        (SKILL_V1, {"pass_rate": 80.0, "passed": 4, "total": 4, "parse_errors": 0}),
+        (SKILL_V0, {"pass_rate": 55.0, "passed": 2, "total": 4, "parse_errors": 1}),
+    ])
+
+    def scorer_fn(md, sc, ev):
+        expected_md, payload = next(scored)
+        assert md == expected_md
+        return payload
+
+    async def fake_analyze(skill_md, scenarios, evals, details, mutation_log=None, result=None):
+        return {
+            "diagnosis": "d",
+            "mutation_strategy": "add_constraint",
+            "target_section": "rules",
+            "suggested_change": "c",
+        }
+
+    async def fake_mutate(skill_md, analysis, context=""):
+        return {"description": "candidate", "reasoning": "", "new_skill_md": SKILL_V1}
+
+    monkeypatch.setattr(opt, "_analyze_failures", fake_analyze)
+    monkeypatch.setattr(opt, "_mutate_skill", fake_mutate)
+
+    res = run(
+        opt.optimize(
+            {"SKILL.md": SKILL_V0},
+            SCENARIOS,
+            EVALS,
+            max_rounds=1,
+            scorer=scorer_fn,
+        )
+    )
+
+    assert res["mutation_log"][0]["outcome"] == "inconclusive"
+    assert res["mutation_log"][0]["kept"] is False
+    assert res["improved_skill_md"] == SKILL_V0
+    assert res["final_score"] == 55.0
+
+
+def test_persistent_baseline_parse_error_keeps_candidate_with_shared_clean_gain(monkeypatch):
+    opt = SkillOptimizer(api_key="test-key")
+    evals = [{"id": 1, "name": "e1", "question": "ok?"}]
+    scored = iter([
+        (SKILL_V0, {
+            "pass_rate": 0.0,
+            "passed": 0,
+            "total": 2,
+            "parse_errors": 1,
+            "details": [
+                {"scenario_id": 1, "eval_id": 1, "passed": False, "reason": "bad"},
+                {"scenario_id": 2, "eval_id": 1, "passed": False, "parse_error": True},
+            ],
+        }),
+        (SKILL_V1, {
+            "pass_rate": 100.0,
+            "passed": 2,
+            "total": 2,
+            "parse_errors": 0,
+            "details": [
+                {"scenario_id": 1, "eval_id": 1, "passed": True, "reason": "fixed"},
+                {"scenario_id": 2, "eval_id": 1, "passed": True, "reason": "parsed"},
+            ],
+        }),
+        (SKILL_V0, {
+            "pass_rate": 0.0,
+            "passed": 0,
+            "total": 2,
+            "parse_errors": 1,
+            "details": [
+                {"scenario_id": 1, "eval_id": 1, "passed": False, "reason": "still bad"},
+                {"scenario_id": 2, "eval_id": 1, "passed": False, "parse_error": True},
+            ],
+        }),
+    ])
+
+    def scorer_fn(md, sc, ev):
+        expected_md, payload = next(scored)
+        assert md == expected_md
+        return payload
+
+    async def fake_analyze(skill_md, scenarios, evals, details, mutation_log=None, result=None):
+        return {
+            "diagnosis": "d",
+            "mutation_strategy": "add_constraint",
+            "target_section": "rules",
+            "suggested_change": "c",
+        }
+
+    async def fake_mutate(skill_md, analysis, context=""):
+        return {"description": "candidate", "reasoning": "", "new_skill_md": SKILL_V1}
+
+    monkeypatch.setattr(opt, "_analyze_failures", fake_analyze)
+    monkeypatch.setattr(opt, "_mutate_skill", fake_mutate)
+
+    res = run(
+        opt.optimize(
+            {"SKILL.md": SKILL_V0},
+            SCENARIOS,
+            evals,
+            max_rounds=1,
+            scorer=scorer_fn,
+        )
+    )
+
+    assert res["mutation_log"][0]["outcome"] == "kept"
+    assert res["improved_skill_md"] == SKILL_V1
+
+
+def test_persistent_baseline_parse_error_discards_candidate_on_shared_clean_tie(monkeypatch):
+    opt = SkillOptimizer(api_key="test-key")
+    evals = [{"id": 1, "name": "e1", "question": "ok?"}]
+    scored = iter([
+        (SKILL_V0, {
+            "pass_rate": 0.0,
+            "passed": 0,
+            "total": 2,
+            "parse_errors": 1,
+            "details": [
+                {"scenario_id": 1, "eval_id": 1, "passed": False, "reason": "clean fail"},
+                {"scenario_id": 2, "eval_id": 1, "passed": False, "parse_error": True},
+            ],
+        }),
+        (SKILL_V1, {
+            "pass_rate": 50.0,
+            "passed": 1,
+            "total": 2,
+            "parse_errors": 0,
+            "details": [
+                {"scenario_id": 1, "eval_id": 1, "passed": False, "reason": "same clean fail"},
+                {"scenario_id": 2, "eval_id": 1, "passed": True, "reason": "parsed"},
+            ],
+        }),
+        (SKILL_V0, {
+            "pass_rate": 0.0,
+            "passed": 0,
+            "total": 2,
+            "parse_errors": 1,
+            "details": [
+                {"scenario_id": 1, "eval_id": 1, "passed": False, "reason": "still clean fail"},
+                {"scenario_id": 2, "eval_id": 1, "passed": False, "parse_error": True},
+            ],
+        }),
+    ])
+
+    def scorer_fn(md, sc, ev):
+        expected_md, payload = next(scored)
+        assert md == expected_md
+        return payload
+
+    async def fake_analyze(skill_md, scenarios, evals, details, mutation_log=None, result=None):
+        return {
+            "diagnosis": "d",
+            "mutation_strategy": "add_constraint",
+            "target_section": "rules",
+            "suggested_change": "c",
+        }
+
+    async def fake_mutate(skill_md, analysis, context=""):
+        return {"description": "candidate", "reasoning": "", "new_skill_md": SKILL_V1}
+
+    monkeypatch.setattr(opt, "_analyze_failures", fake_analyze)
+    monkeypatch.setattr(opt, "_mutate_skill", fake_mutate)
+
+    res = run(
+        opt.optimize(
+            {"SKILL.md": SKILL_V0},
+            SCENARIOS,
+            evals,
+            max_rounds=1,
+            scorer=scorer_fn,
+        )
+    )
+
+    assert res["mutation_log"][0]["outcome"] == "discarded"
+    assert res["improved_skill_md"] == SKILL_V0
+
+
+def test_equal_parse_errors_compare_shared_clean_and_discard_placeholder_advantage(monkeypatch):
+    opt = SkillOptimizer(api_key="test-key")
+    scored = iter([
+        (SKILL_V0, {
+            "pass_rate": 25.0,
+            "passed": 1,
+            "total": 4,
+            "parse_errors": 1,
+            "details": [
+                {"scenario_id": 1, "eval_id": 1, "passed": True, "reason": "clean pass"},
+                {"scenario_id": 1, "eval_id": 2, "passed": False, "reason": "clean fail"},
+                {"scenario_id": 2, "eval_id": 1, "passed": False, "parse_error": True, "reason": "no verdict"},
+                {"scenario_id": 2, "eval_id": 2, "passed": False, "parse_error": True, "reason": "no verdict"},
+            ],
+        }),
+        (SKILL_V1, {
+            "pass_rate": 50.0,
+            "passed": 2,
+            "total": 4,
+            "parse_errors": 1,
+            "details": [
+                {"scenario_id": 1, "eval_id": 1, "passed": True, "reason": "clean pass"},
+                {"scenario_id": 1, "eval_id": 2, "passed": False, "reason": "clean fail"},
+                {"scenario_id": 2, "eval_id": 1, "passed": True, "reason": "present"},
+                {"scenario_id": 2, "eval_id": 2, "passed": False, "parse_error": True, "reason": "missing verdict"},
+            ],
+        }),
+        (SKILL_V0, {
+            "pass_rate": 25.0,
+            "passed": 1,
+            "total": 4,
+            "parse_errors": 1,
+            "details": [
+                {"scenario_id": 1, "eval_id": 1, "passed": True, "reason": "clean pass"},
+                {"scenario_id": 1, "eval_id": 2, "passed": False, "reason": "clean fail"},
+                {"scenario_id": 2, "eval_id": 1, "passed": False, "parse_error": True, "reason": "still no verdict"},
+                {"scenario_id": 2, "eval_id": 2, "passed": False, "parse_error": True, "reason": "still no verdict"},
+            ],
+        }),
+    ])
+
+    def scorer_fn(md, sc, ev):
+        expected_md, payload = next(scored)
+        assert md == expected_md
+        return payload
+
+    async def fake_analyze(skill_md, scenarios, evals, details, mutation_log=None, result=None):
+        return {
+            "diagnosis": "d",
+            "mutation_strategy": "add_constraint",
+            "target_section": "rules",
+            "suggested_change": "c",
+        }
+
+    async def fake_mutate(skill_md, analysis, context=""):
+        return {"description": "candidate", "reasoning": "", "new_skill_md": SKILL_V1}
+
+    monkeypatch.setattr(opt, "_analyze_failures", fake_analyze)
+    monkeypatch.setattr(opt, "_mutate_skill", fake_mutate)
+
+    res = run(
+        opt.optimize(
+            {"SKILL.md": SKILL_V0},
+            SCENARIOS,
+            EVALS,
+            max_rounds=1,
+            scorer=scorer_fn,
+        )
+    )
+
+    assert res["improved_skill_md"] == SKILL_V0
+    assert res["final_score"] == 25.0
+    assert res["mutation_log"][0]["outcome"] == "discarded"
+    assert res["mutation_log"][0]["kept"] is False
+
+
+def test_worse_baseline_refresh_is_ignored_and_candidate_can_be_kept(monkeypatch):
+    opt = SkillOptimizer(api_key="test-key")
+    evals = [{"id": 1, "name": "e1", "question": "ok?"}]
+    scored = iter([
+        (SKILL_V0, {
+            "pass_rate": 0.0,
+            "passed": 0,
+            "total": 2,
+            "parse_errors": 1,
+            "details": [
+                {"scenario_id": 1, "eval_id": 1, "passed": False, "reason": "clean fail"},
+                {"scenario_id": 2, "eval_id": 1, "passed": False, "parse_error": True},
+            ],
+        }),
+        (SKILL_V1, {
+            "pass_rate": 100.0,
+            "passed": 2,
+            "total": 2,
+            "parse_errors": 0,
+            "details": [
+                {"scenario_id": 1, "eval_id": 1, "passed": True, "reason": "ok"},
+                {"scenario_id": 2, "eval_id": 1, "passed": True, "reason": "ok"},
+            ],
+        }),
+        (SKILL_V0, {
+            "pass_rate": 0.0,
+            "passed": 0,
+            "total": 2,
+            "parse_errors": 2,
+            "details": [
+                {"scenario_id": 1, "eval_id": 1, "passed": False, "parse_error": True},
+                {"scenario_id": 2, "eval_id": 1, "passed": False, "parse_error": True},
+            ],
+        }),
+    ])
+
+    def scorer_fn(md, sc, ev):
+        expected_md, payload = next(scored)
+        assert md == expected_md
+        return payload
+
+    async def fake_analyze(skill_md, scenarios, evals, details, mutation_log=None, result=None):
+        return {
+            "diagnosis": "d",
+            "mutation_strategy": "add_constraint",
+            "target_section": "rules",
+            "suggested_change": "c",
+        }
+
+    async def fake_mutate(skill_md, analysis, context=""):
+        return {"description": "candidate", "reasoning": "", "new_skill_md": SKILL_V1}
+
+    monkeypatch.setattr(opt, "_analyze_failures", fake_analyze)
+    monkeypatch.setattr(opt, "_mutate_skill", fake_mutate)
+
+    res = run(
+        opt.optimize(
+            {"SKILL.md": SKILL_V0},
+            SCENARIOS,
+            evals,
+            max_rounds=1,
+            scorer=scorer_fn,
+        )
+    )
+
+    assert res["mutation_log"][0]["outcome"] == "kept"
+    assert res["mutation_log"][0]["kept"] is True
+    assert res["baseline_score"] == 0.0
+    assert res["final_score"] == 100.0
+
+
 # -- 5. split_holdout & holdout isolation / regression / reuse ---------------
 
 
@@ -584,6 +1368,8 @@ def test_holdout_isolation_regression_detection_and_fraction(monkeypatch):
         "final": 0.0,
         "total": 1,
         "regressed": True,
+        "inconclusive": False,
+        "baseline_parse_errors": 0,
         "parse_errors": 0,
     }
     holdout_event = next(e for e in events if e["type"] == "holdout")
@@ -603,6 +1389,113 @@ def test_holdout_isolation_regression_detection_and_fraction(monkeypatch):
     )
     assert res_frac["holdout"]["total"] == 1
     assert res_frac["holdout"]["regressed"] is False
+    assert res_frac["holdout"]["inconclusive"] is False
+    assert res_frac["holdout"]["baseline_parse_errors"] == 0
+
+
+def test_holdout_parse_error_marks_inconclusive_without_regression(monkeypatch):
+    opt = SkillOptimizer(api_key="test-key")
+
+    def scorer_fn(md, scenarios, evals):
+        ids = [s["id"] for s in scenarios]
+        if ids == [99]:
+            if md == SKILL_V0:
+                return {"pass_rate": 100.0, "passed": 1, "total": 1, "parse_errors": 0}
+            return {"pass_rate": 0.0, "passed": 0, "total": 1, "parse_errors": 1}
+        return {"pass_rate": 50.0 if md == SKILL_V0 else 90.0, "passed": 1, "total": 2}
+
+    async def fake_analyze(skill_md, scenarios, evals, details, mutation_log=None, result=None):
+        return {
+            "diagnosis": "d",
+            "mutation_strategy": "add_example",
+            "target_section": "examples",
+            "suggested_change": "c",
+        }
+
+    async def fake_mutate(skill_md, analysis, context=""):
+        return {"description": "overfit edit", "reasoning": "", "new_skill_md": SKILL_V1}
+
+    monkeypatch.setattr(opt, "_analyze_failures", fake_analyze)
+    monkeypatch.setattr(opt, "_mutate_skill", fake_mutate)
+
+    res = run(
+        opt.optimize(
+            {"SKILL.md": SKILL_V0},
+            [{"id": 1, "input": "train"}],
+            EVALS,
+            max_rounds=1,
+            holdout=[{"id": 99, "input": "holdout"}],
+            scorer=scorer_fn,
+        )
+    )
+
+    assert res["holdout"] == {
+        "baseline": 100.0,
+        "final": 0.0,
+        "total": 1,
+        "regressed": None,
+        "inconclusive": True,
+        "baseline_parse_errors": 0,
+        "parse_errors": 1,
+    }
+
+
+def test_holdout_clean_regression_still_flags_regressed_when_other_check_parse_fails(monkeypatch):
+    opt = SkillOptimizer(api_key="test-key")
+
+    def scorer_fn(md, scenarios, evals):
+        ids = [s["id"] for s in scenarios]
+        if ids == [99, 100]:
+            if md == SKILL_V0:
+                return {
+                    "pass_rate": 100.0,
+                    "passed": 2,
+                    "total": 2,
+                    "parse_errors": 0,
+                    "details": [
+                        {"scenario_id": 99, "eval_id": 1, "passed": True},
+                        {"scenario_id": 100, "eval_id": 1, "passed": True},
+                    ],
+                }
+            return {
+                "pass_rate": 0.0,
+                "passed": 0,
+                "total": 2,
+                "parse_errors": 1,
+                "details": [
+                    {"scenario_id": 99, "eval_id": 1, "passed": False, "reason": "regressed"},
+                    {"scenario_id": 100, "eval_id": 1, "passed": False, "parse_error": True},
+                ],
+            }
+        return {"pass_rate": 50.0 if md == SKILL_V0 else 90.0, "passed": 1, "total": 1}
+
+    async def fake_analyze(skill_md, scenarios, evals, details, mutation_log=None, result=None):
+        return {
+            "diagnosis": "d",
+            "mutation_strategy": "add_example",
+            "target_section": "examples",
+            "suggested_change": "c",
+        }
+
+    async def fake_mutate(skill_md, analysis, context=""):
+        return {"description": "edit", "reasoning": "", "new_skill_md": SKILL_V1}
+
+    monkeypatch.setattr(opt, "_analyze_failures", fake_analyze)
+    monkeypatch.setattr(opt, "_mutate_skill", fake_mutate)
+
+    res = run(
+        opt.optimize(
+            {"SKILL.md": SKILL_V0},
+            [{"id": 1, "input": "train"}],
+            EVALS,
+            max_rounds=1,
+            holdout=[{"id": 99, "input": "h1"}, {"id": 100, "input": "h2"}],
+            scorer=scorer_fn,
+        )
+    )
+
+    assert res["holdout"]["regressed"] is True
+    assert res["holdout"]["inconclusive"] is True
 
 
 def test_holdout_reuses_baseline_score_when_skill_unchanged(monkeypatch):
@@ -649,8 +1542,103 @@ def test_holdout_reuses_baseline_score_when_skill_unchanged(monkeypatch):
         "final": 75.0,
         "total": 1,
         "regressed": False,
+        "inconclusive": False,
+        "baseline_parse_errors": 0,
         "parse_errors": 0,
     }
+
+
+def test_holdout_unchanged_skill_with_parse_errors_is_not_inconclusive(monkeypatch):
+    opt = SkillOptimizer(api_key="test-key")
+    holdout_calls = 0
+
+    def scorer_fn(md, scenarios, evals):
+        nonlocal holdout_calls
+        if scenarios and scenarios[0]["id"] == 99:
+            holdout_calls += 1
+            return {"pass_rate": 50.0, "passed": 2, "total": 4, "parse_errors": 1}
+        return {"pass_rate": 50.0, "passed": 2, "total": 4, "parse_errors": 0}
+
+    res = run(
+        opt.optimize(
+            {"SKILL.md": SKILL_V0},
+            [{"id": 1, "input": "t1"}],
+            EVALS,
+            max_rounds=0,
+            holdout=[{"id": 99, "input": "h1"}],
+            scorer=scorer_fn,
+        )
+    )
+
+    assert holdout_calls == 1
+    assert res["holdout"]["baseline"] == 50.0
+    assert res["holdout"]["final"] == 50.0
+    assert res["holdout"]["baseline_parse_errors"] == 1
+    assert res["holdout"]["parse_errors"] == 1
+    assert res["holdout"]["regressed"] is False
+    assert res["holdout"]["inconclusive"] is False
+
+
+def test_holdout_regression_when_final_is_clean_but_lower_even_if_shared_clean_ties(monkeypatch):
+    opt = SkillOptimizer(api_key="test-key")
+
+    def scorer_fn(md, scenarios, evals):
+        ids = [s["id"] for s in scenarios]
+        if ids == [99]:
+            if md == SKILL_V0:
+                return {
+                    "pass_rate": 50.0,
+                    "passed": 2,
+                    "total": 4,
+                    "parse_errors": 1,
+                    "details": [
+                        {"scenario_id": 99, "eval_id": 1, "passed": True},
+                        {"scenario_id": 99, "eval_id": 2, "passed": False, "parse_error": True},
+                    ],
+                }
+            return {
+                "pass_rate": 25.0,
+                "passed": 1,
+                "total": 4,
+                "parse_errors": 0,
+                "details": [
+                    {"scenario_id": 99, "eval_id": 1, "passed": True},
+                    {"scenario_id": 99, "eval_id": 2, "passed": False},
+                ],
+            }
+        return {"pass_rate": 50.0 if md == SKILL_V0 else 90.0, "passed": 1, "total": 1}
+
+    async def fake_analyze(skill_md, scenarios, evals, details, mutation_log=None, result=None):
+        return {
+            "diagnosis": "d",
+            "mutation_strategy": "add_example",
+            "target_section": "examples",
+            "suggested_change": "c",
+        }
+
+    async def fake_mutate(skill_md, analysis, context=""):
+        return {"description": "edit", "reasoning": "", "new_skill_md": SKILL_V1}
+
+    monkeypatch.setattr(opt, "_analyze_failures", fake_analyze)
+    monkeypatch.setattr(opt, "_mutate_skill", fake_mutate)
+
+    res = run(
+        opt.optimize(
+            {"SKILL.md": SKILL_V0},
+            [{"id": 1, "input": "train"}],
+            EVALS,
+            max_rounds=1,
+            holdout=[{"id": 99, "input": "holdout"}],
+            scorer=scorer_fn,
+        )
+    )
+
+    assert res["holdout"]["baseline"] == 50.0
+    assert res["holdout"]["final"] == 25.0
+    assert res["holdout"]["baseline_parse_errors"] == 1
+    assert res["holdout"]["parse_errors"] == 0
+    assert res["holdout"]["regressed"] is True
+    assert res["holdout"]["inconclusive"] is True
 
 
 # -- 6. Custom BaseScorer veto, callable scorers, and early convergence ------
