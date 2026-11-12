@@ -33,7 +33,16 @@ class FakeOptimizer:
             "evals": [{"id": 1, "name": "e", "question": "ok?"}],
         }
 
-    async def optimize(self, skill_files, scenarios, evals, max_rounds=5, callback=None):
+    async def optimize(
+        self,
+        skill_files,
+        scenarios,
+        evals,
+        max_rounds=5,
+        callback=None,
+        min_gain=0.0,
+        holdout_fraction=0.0,
+    ):
         return {
             "baseline_score": 0,
             "final_score": 0,
@@ -177,3 +186,249 @@ def test_real_optimizer_builds_all_three_agents_on_the_model():
     assert opt.model == "gemini-3.8-flash"
     assert {a.model for a in (opt.executor, opt.analyst, opt.mutator)} == {"gemini-3.8-flash"}
     assert SkillOptimizer(api_key="test-key").model == DEFAULT_MODEL
+
+
+class RecordingOptimizer:
+    """Test double whose optimize() signature accepts min_gain and holdout_fraction."""
+
+    calls = []
+    emit_complete = True
+
+    def __init__(self, api_key, model):
+        self.model = model
+
+    async def optimize(
+        self,
+        skill_files,
+        scenarios,
+        evals,
+        max_rounds=5,
+        callback=None,
+        min_gain=0.0,
+        holdout_fraction=0.0,
+    ):
+        RecordingOptimizer.calls.append({
+            "max_rounds": max_rounds,
+            "min_gain": min_gain,
+            "holdout_fraction": holdout_fraction,
+        })
+        mutation_log = [
+            {
+                "round": 1,
+                "strategy_type": "add_constraint",
+                "diagnosis": "missing rule",
+                "description": "added rule",
+                "score_before": 50.0,
+                "score_after": 75.0,
+                "kept": True,
+                "outcome": "kept",
+                "parse_errors": 0,
+            },
+            {
+                "round": 2,
+                "strategy_type": "unknown",
+                "diagnosis": "",
+                "description": "Analyst reply could not be parsed",
+                "score_before": 75.0,
+                "score_after": 75.0,
+                "kept": False,
+                "outcome": "skipped",
+                "parse_errors": 1,
+            },
+            {
+                "round": 3,
+                "strategy_type": "add_example",
+                "diagnosis": "edge case",
+                "description": "added noisy example",
+                "score_before": 75.0,
+                "score_after": 80.0,
+                "kept": False,
+                "outcome": "inconclusive",
+                "parse_errors": 2,
+            },
+            {
+                "round": 4,
+                "strategy_type": "restructure",
+                "diagnosis": "minor",
+                "description": "small tweak",
+                "score_before": 75.0,
+                "score_after": 76.0,
+                "kept": False,
+                "outcome": "discarded",
+                "parse_errors": 0,
+            },
+            {
+                "round": 5,
+                "strategy_type": "restructure",
+                "diagnosis": "noop",
+                "description": "no effective edit",
+                "score_before": 75.0,
+                "score_after": 75.0,
+                "kept": False,
+                "outcome": "unchanged",
+                "parse_errors": 0,
+            },
+        ]
+        holdout = {
+            "baseline": 50.0,
+            "final": 75.0,
+            "total": 1,
+            "regressed": False,
+            "parse_errors": 0,
+        }
+        summary = {
+            "baseline_score": 50.0,
+            "final_score": 75.0,
+            "improved_skill_md": "# Improved\n",
+            "score_history": [50.0, 75.0, 75.0, 75.0, 75.0],
+            "mutation_log": mutation_log,
+            "strategy_stats": {"add_constraint": {"attempts": 1, "kept": 1}},
+            "min_gain": min_gain,
+            "parse_errors": 1,
+            "holdout": holdout,
+        }
+        if callback:
+            await callback({"type": "baseline", "data": {"score": 50.0, "per_eval": []}})
+            for m in mutation_log:
+                await callback({
+                    "type": "experiment_result",
+                    "data": {
+                        "round": m["round"],
+                        "score": m["score_after"],
+                        "kept": m["kept"],
+                        "outcome": m["outcome"],
+                        "parse_errors": m["parse_errors"],
+                        "description": m["description"],
+                        "strategy": m["strategy_type"],
+                        "per_eval": [],
+                    },
+                })
+            if RecordingOptimizer.emit_complete:
+                await callback({"type": "complete", "data": dict(summary)})
+        return summary
+
+
+def _wait_for_complete(client, sid):
+    deadline = time.time() + 5
+    data = client.get(f"/api/status/{sid}").json()
+    while data["status"] != "complete" and time.time() < deadline:
+        time.sleep(0.02)
+        data = client.get(f"/api/status/{sid}").json()
+    assert data["status"] == "complete", data
+    return data
+
+
+@pytest.mark.parametrize("emit_complete", [True, False])
+def test_start_forwards_min_gain_and_holdout_and_exposes_guard_fields(
+    client, monkeypatch, emit_complete
+):
+    RecordingOptimizer.calls.clear()
+    RecordingOptimizer.emit_complete = emit_complete
+    monkeypatch.setattr(backend, "SkillOptimizer", RecordingOptimizer)
+
+    sid = configured_session(client)
+    res = client.post(
+        f"/api/start/{sid}",
+        json={
+            "gemini_api_key": "k",
+            "max_rounds": 5,
+            "min_gain": 5.0,
+            "holdout_fraction": 0.25,
+        },
+    )
+    assert res.status_code == 200, res.text
+
+    status = _wait_for_complete(client, sid)
+    assert RecordingOptimizer.calls == [
+        {"max_rounds": 5, "min_gain": 5.0, "holdout_fraction": 0.25}
+    ]
+
+    exps = status["experiments"]
+    assert [e["status"] for e in exps] == [
+        "baseline",
+        "keep",
+        "discard",
+        "discard",
+        "discard",
+        "discard",
+    ]
+    assert [e.get("outcome") for e in exps] == [
+        "baseline",
+        "kept",
+        "skipped",
+        "inconclusive",
+        "discarded",
+        "unchanged",
+    ]
+    assert [e.get("parse_errors") for e in exps[1:]] == [0, 1, 2, 0, 0]
+
+    final = status["final_result"]
+    assert final["min_gain"] == 5.0
+    assert final["holdout"] == {
+        "baseline": 50.0,
+        "final": 75.0,
+        "total": 1,
+        "regressed": False,
+        "parse_errors": 0,
+    }
+    assert final["parse_errors"] == 1
+    assert final["experiments_run"] == 5
+    assert final["kept"] == 1
+    assert final["discarded"] == 1
+    assert final["skipped"] == 1
+    assert final["unchanged"] == 1
+    assert final["inconclusive"] == 1
+    assert (
+        final["kept"]
+        + final["discarded"]
+        + final["skipped"]
+        + final["unchanged"]
+        + final["inconclusive"]
+    ) == final["experiments_run"]
+    assert [c["status"] for c in final["changelog"]] == [
+        "keep",
+        "discard",
+        "discard",
+        "discard",
+        "discard",
+    ]
+    assert [c["outcome"] for c in final["changelog"]] == [
+        "kept",
+        "skipped",
+        "inconclusive",
+        "discarded",
+        "unchanged",
+    ]
+
+
+@pytest.mark.parametrize(
+    "bad_fields",
+    [
+        {"min_gain": -1.0},
+        {"min_gain": 101.0},
+        {"holdout_fraction": -0.1},
+        {"holdout_fraction": 1.0},
+    ],
+)
+def test_start_rejects_invalid_min_gain_or_holdout_fraction(client, bad_fields):
+    sid = configured_session(client)
+    res = client.post(f"/api/start/{sid}", json={"gemini_api_key": "k", **bad_fields})
+    assert res.status_code == 422
+    assert backend.sessions[sid]["status"] == "configured"
+    assert FakeOptimizer.built == []
+
+
+def test_fake_optimizer_with_guard_kwargs_works_with_defaults(client):
+    assert "min_gain" in inspect.signature(FakeOptimizer.optimize).parameters
+    assert "holdout_fraction" in inspect.signature(FakeOptimizer.optimize).parameters
+    sid = configured_session(client)
+    res = client.post(f"/api/start/{sid}", json={"gemini_api_key": "k"})
+    assert res.status_code == 200, res.text
+
+    status = _wait_for_complete(client, sid)
+    final = status["final_result"]
+    assert final["min_gain"] == 0.0
+    assert final["holdout"] is None
+    assert final["parse_errors"] == 0
+    assert final["skipped"] == 0
+    assert final["inconclusive"] == 0

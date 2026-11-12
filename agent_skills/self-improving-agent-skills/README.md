@@ -182,7 +182,7 @@ For each round, the three agents collaborate:
 | `POST` | `/api/analyze` | Generate scenarios and evals (requires Gemini API key; optional `model`) |
 | `POST` | `/api/regenerate` | Regenerate scenarios and evals (optional `model`) |
 | `POST` | `/api/update-config` | Save user's selected/edited config |
-| `POST` | `/api/start/{session_id}` | Start optimization (optional `model`) |
+| `POST` | `/api/start/{session_id}` | Start optimization (optional `model`, `max_rounds`, `min_gain`, `holdout_fraction`) |
 | `GET` | `/api/stream/{session_id}` | SSE stream of optimization progress |
 | `POST` | `/api/stop/{session_id}` | Stop optimization |
 | `GET` | `/api/download/{session_id}` | Download improved skill |
@@ -232,6 +232,15 @@ The model comes from the UI field or `GEMINI_MODEL` (see Configuration above); `
 ```python
 DEFAULT_MODEL = "gemini-3.8-flash"
 ```
+
+### Optimizer Guards & Pluggable Scorers
+
+`adk_optimizer.py` and `POST /api/start/{session_id}` support additional evaluation guards and custom scoring:
+
+- **Minimum gain threshold (`min_gain`)**: Require a candidate mutation to beat the current best score by at least `min_gain` percentage points (`0.0`–`100.0`, default `0.0`) before keeping it — pass `min_gain` in `POST /api/start/{session_id}` or `optimizer.optimize(..., min_gain=5.0)`.
+- **Held-out scenario validation (`holdout` / `holdout_fraction` & `split_holdout`)**: Reserve held-out scenarios that never guide Analyst/Mutator decisions to check generalization. Pass `holdout_fraction` (`[0.0, 1.0)`, deterministic split via `split_holdout(scenarios, holdout_fraction, seed=0)`) to `/api/start/{session_id}` or `optimize(...)`, or pass an explicit `holdout=[...]` list to `optimize(...)`. Results include `holdout` (`baseline`, `final`, `total`, `regressed`, `parse_errors`).
+- **Parse-error separation & judge reply-shape guards (`PARSE_ERROR`, `skipped` / `inconclusive`)**: Unparseable JSON or malformed judge verdict shapes are tagged with the `PARSE_ERROR` sentinel (`is_parse_error(...)`) instead of silently masquerading as clean eval failures. Unparseable Analyst/Mutator responses mark the round `outcome="skipped"`, and candidate runs with more judge `parse_errors` than baseline are rejected as `outcome="inconclusive"`.
+- **Pluggable skill scorers (`Scorer` / `BaseScorer` / `ExecutorScorer`)**: Replace the default LLM-judge `ExecutorScorer` by passing a `BaseScorer` subclass, `Scorer` implementation, or `(skill_md, scenarios, evals) -> dict` callable to `SkillOptimizer(..., scorer=...)` or `optimizer.optimize(..., scorer=...)`. Callable scorer dicts can return aggregate keys like `{"pass_rate": float}` or `{"passed": int, "total": int}`, plus optional `"failures"`, `"per_eval"`, and `"parse_errors"` fields. `pass_rate` is a percentage in the `0.0`–`100.0` range (the same unit as `min_gain` percentage points).
 
 ## Development
 

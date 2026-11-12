@@ -123,6 +123,8 @@ class StartRequest(BaseModel):
     gemini_api_key: str
     max_rounds: Optional[int] = Field(default=20, gt=0, le=50)
     model: Optional[str] = None
+    min_gain: float = Field(default=0.0, ge=0.0, le=100.0)
+    holdout_fraction: float = Field(default=0.0, ge=0.0, lt=1.0)
 
 
 def parse_skill_frontmatter(content: str) -> dict:
@@ -372,6 +374,48 @@ async def start_optimization(session_id: str, request: StartRequest):
         logger.info(f"Starting optimization for session {session_id} on {model}")
         optimizer = SkillOptimizer(api_key=gemini_key, model=model)
 
+        def _build_final_result(data: dict) -> dict:
+            ml = data.get("mutation_log", [])
+            kept = sum(1 for m in ml if m.get("kept"))
+            discarded = sum(
+                1
+                for m in ml
+                if not m.get("kept") and m.get("outcome", "discarded") == "discarded"
+            )
+            skipped = sum(1 for m in ml if m.get("outcome") == "skipped")
+            unchanged = sum(1 for m in ml if m.get("outcome") == "unchanged")
+            inconclusive = sum(1 for m in ml if m.get("outcome") == "inconclusive")
+            return {
+                "baseline_score": data.get("baseline_score", 0),
+                "final_score": data.get("final_score", 0),
+                "improved_skill_md": data.get("improved_skill_md", ""),
+                "original_skill_md": session.get("original_skill_md", ""),
+                "score_history": data.get("score_history", []),
+                "experiments_run": len(ml),
+                "kept": kept,
+                "discarded": discarded,
+                "skipped": skipped,
+                "unchanged": unchanged,
+                "inconclusive": inconclusive,
+                "changelog": [
+                    {
+                        "description": m.get("description", m.get("diagnosis", "")),
+                        "reasoning": m.get("diagnosis", ""),
+                        "status": "keep" if m.get("kept") else "discard",
+                        "outcome": m.get("outcome", "kept" if m.get("kept") else "discarded"),
+                        "score_before": m.get("score_before", 0),
+                        "score_after": m.get("score_after", 0),
+                        "strategy": m.get("strategy_type", ""),
+                    }
+                    for m in ml
+                ],
+                "mutation_log": ml,
+                "strategy_stats": data.get("strategy_stats", {}),
+                "min_gain": data.get("min_gain", request.min_gain),
+                "parse_errors": data.get("parse_errors", 0),
+                "holdout": data.get("holdout"),
+            }
+
         async def callback(event):
             logger.info(f"Callback event: {event['type']}")
             if "event_queue" in session:
@@ -381,45 +425,27 @@ async def start_optimization(session_id: str, request: StartRequest):
                     "experiment_id": 0,
                     "pass_rate": event["data"].get("score", 0),
                     "status": "baseline",
+                    "outcome": "baseline",
                     "per_eval": event["data"].get("per_eval", []),
                 })
             elif event["type"] == "experiment_result":
+                kept = bool(event["data"].get("kept"))
+                outcome = event["data"].get("outcome", "kept" if kept else "discarded")
                 session["experiments"].append({
                     "experiment_id": event["data"].get("round", len(session["experiments"])),
                     "pass_rate": event["data"].get("score", 0),
-                    "status": "keep" if event["data"].get("kept") else "discard",
+                    "status": "keep" if kept else "discard",
+                    "outcome": outcome,
                     "per_eval": event["data"].get("per_eval", []),
                     "description": event["data"].get("description", ""),
                     "strategy": event["data"].get("strategy", ""),
+                    "parse_errors": event["data"].get("parse_errors", 0),
                 })
             elif event["type"] == "complete":
                 session["status"] = "complete"
                 data = event["data"]
-                ml = data.get("mutation_log", [])
                 # Transform to match frontend ResultsStep expectations
-                session["final_result"] = {
-                    "baseline_score": data.get("baseline_score", 0),
-                    "final_score": data.get("final_score", 0),
-                    "improved_skill_md": data.get("improved_skill_md", ""),
-                    "original_skill_md": session.get("original_skill_md", ""),
-                    "score_history": data.get("score_history", []),
-                    "experiments_run": len(ml),
-                    "kept": sum(1 for m in ml if m.get("kept")),
-                    "discarded": sum(1 for m in ml if not m.get("kept")),
-                    "changelog": [
-                        {
-                            "description": m.get("description", m.get("diagnosis", "")),
-                            "reasoning": m.get("diagnosis", ""),
-                            "status": "keep" if m.get("kept") else "discard",
-                            "score_before": m.get("score_before", 0),
-                            "score_after": m.get("score_after", 0),
-                            "strategy": m.get("strategy_type", ""),
-                        }
-                        for m in ml
-                    ],
-                    "mutation_log": ml,
-                    "strategy_stats": data.get("strategy_stats", {}),
-                }
+                session["final_result"] = _build_final_result(data)
                 session["current_skill_md"] = data.get("improved_skill_md", "")
                 if "event_queue" in session:
                     await session["event_queue"].put(None)
@@ -431,33 +457,13 @@ async def start_optimization(session_id: str, request: StartRequest):
                 evals=session["evals"],
                 max_rounds=request.max_rounds,
                 callback=callback,
+                min_gain=request.min_gain,
+                holdout_fraction=request.holdout_fraction,
             )
             logger.info(f"Optimization complete: {result['baseline_score']}% -> {result['final_score']}%")
             # Don't overwrite final_result if callback already set it with transformed data
             if not session.get("final_result"):
-                ml = result.get("mutation_log", [])
-                session["final_result"] = {
-                    "baseline_score": result.get("baseline_score", 0),
-                    "final_score": result.get("final_score", 0),
-                    "improved_skill_md": result.get("improved_skill_md", ""),
-                    "original_skill_md": session.get("original_skill_md", ""),
-                    "score_history": result.get("score_history", []),
-                    "experiments_run": len(ml),
-                    "kept": sum(1 for m in ml if m.get("kept")),
-                    "discarded": sum(1 for m in ml if not m.get("kept")),
-                    "changelog": [
-                        {
-                            "description": m.get("description", m.get("diagnosis", "")),
-                            "reasoning": m.get("diagnosis", ""),
-                            "status": "keep" if m.get("kept") else "discard",
-                            "score_before": m.get("score_before", 0),
-                            "score_after": m.get("score_after", 0),
-                            "strategy": m.get("strategy_type", ""),
-                        }
-                        for m in ml
-                    ],
-                    "mutation_log": ml,
-                }
+                session["final_result"] = _build_final_result(result)
             session["current_skill_md"] = result["improved_skill_md"]
             session["status"] = "complete"
         except Exception as e:
