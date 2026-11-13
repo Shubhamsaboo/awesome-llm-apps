@@ -1,0 +1,2 @@
+streamlit>=1.40.0
+strands-agents[anthropic]>=1.64.0
