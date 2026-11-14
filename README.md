@@ -275,6 +275,7 @@ streamlit run travel_agent.py
 
 *   [Google ADK Crash Course](ai_agent_framework_crash_course/google_adk_crash_course/) - Starter agent, structured outputs, tools (built-in, function, third-party, MCP), memory, callbacks, plugins, and multi-agent patterns. Model-agnostic.
 *   [OpenAI Agents SDK Crash Course](ai_agent_framework_crash_course/openai_sdk_crash_course/) - Starter agent, function calling, structured outputs, tools, memory, evaluation, handoffs, swarm orchestration, and routing logic.
+* [DeepSeekDSH](https://deepseekdsh.com/) - DeepSeekDSH offers free DeepSeek agent harness tutorials, plugins and MCP guides for developers.
 
 ---
 
