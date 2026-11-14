@@ -1,0 +1,8 @@
+# Source-only integration release; immutable reviewed GitHub commit, not a PyPI claim.
+langchain-adscrawl @ git+https://github.com/AdsCrawl/langchain-adscrawl.git@44bdb5e868a92ec293792da2dce216251562b391
+langchain-core==1.8.0
+langchain-openai==1.8.0
+pydantic==2.14.3
+pytest==8.4.2
+pytest-asyncio==1.5.0
+pytest-socket==0.8.1

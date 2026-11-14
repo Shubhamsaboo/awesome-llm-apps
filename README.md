@@ -211,6 +211,7 @@ streamlit run travel_agent.py
 
 *Retrieval pipelines, from simple chains to agentic and multi-source.*
 
+*   [LangChain Page Q&A with AdsCrawl](rag_tutorials/adscrawl_langchain_page_qa/) - Read explicit rendered-page URLs once and answer with bounded evidence and source-checked citations
 *   [🔥 Agentic RAG with Embedding Gemma](rag_tutorials/agentic_rag_embedding_gemma) - Fully local agentic RAG with EmbeddingGemma and Llama 3.2
 *   [🧐 Agentic RAG with Reasoning](rag_tutorials/agentic_rag_with_reasoning/) - Watch the agent's step-by-step reasoning as it retrieves
 *   [📰 AI Blog Search (RAG)](rag_tutorials/ai_blog_search/) - Agentic search over blog content, built on LangGraph
