@@ -206,6 +206,7 @@ streamlit run travel_agent.py
 *   [🔀 Multi-MCP Agent Router](mcp_ai_agents/multi_mcp_agent_router/) - Specialist agents, each wired to its own MCP server
 *   [🔌 OpenAI Remote MCP Tool Bridge](mcp_ai_agents/openai_remote_mcp_bridge/) - Connect OpenAI function calling directly to a remote MCP server
 *   [📦 Dependency Upgrade Advisor](mcp_ai_agents/dependency_upgrade_advisor/) - See what an upgrade breaks, from library docs and GitHub repos over MCP
+*   [🧾 Verifiable Agent Job](mcp_ai_agents/verifiable_agent_job/) - A chained MCP job that ends in proof: a receipt for every step and a handover anyone can pick up and recheck
 
 ### 📀 RAG (Retrieval Augmented Generation)
 
