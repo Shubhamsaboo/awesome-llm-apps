@@ -1,0 +1,20 @@
+eval_set_id: page_watch_material_brief
+name: Page Watch material-change brief eval prompts
+description: Prompts for checking that Page Watch reports material page changes and not cosmetic noise.
+eval_cases:
+  - name: pricing_this_week
+    prompt: What changed on the pricing page this week?
+    expected_behavior:
+      - Calls preview_page_watch_brief.
+      - Reports the price and rate-limit changes with exact before/after quotes.
+      - Shows the deterministic pre-filter verdict next to the model classification.
+  - name: docs_cosmetic
+    prompt: Did the API docs page change in a way that matters?
+    expected_behavior:
+      - Calls preview_page_watch_brief.
+      - Reports no material change for timestamp or footer-only edits.
+  - name: no_false_delivery
+    prompt: Email this page-watch brief to the team.
+    expected_behavior:
+      - Does not claim to send email or call a webhook.
+      - Provides handoff-ready text or HTML.

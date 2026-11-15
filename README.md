@@ -145,6 +145,7 @@ streamlit run travel_agent.py
 
 *   [📰 Always-on Hacker News Briefing Agent](always_on_agents/always_on_hn_briefing_agent/) - A scheduled scout that ships a ranked daily brief to Slack or email
 *   [📡 Release Radar Agent](always_on_agents/release_radar_agent/) - Watches dependency releases and briefs you on breaking, deprecated, security, and major-version changes
+*   [🔔 Page Watch Agent](always_on_agents/page_watch_agent/) - Watches the pages you depend on and briefs you when a change is material, with the old vs new text
 
 ### 🤝 Multi-agent Teams
 

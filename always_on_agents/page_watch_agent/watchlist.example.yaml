@@ -1,0 +1,23 @@
+pages:
+  - url: https://example.com/pricing
+    name: Vendor pricing
+    selector: "#plans"
+    keywords:
+      - price
+      - deprecat
+      - limit
+  - url: https://example.com/docs/rate-limits
+    name: API rate limits
+    start_anchor: "Rate limits"
+    end_anchor: "Examples"
+    keywords:
+      - limit
+      - quota
+      - deprecat
+  - url: https://example.com/terms
+    name: Terms of service
+    selector: "#terms"
+    keywords:
+      - arbitration
+      - liability
+      - terms
