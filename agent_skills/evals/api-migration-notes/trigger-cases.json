@@ -1,0 +1,60 @@
+{
+  "skill": "api-migration-notes",
+  "purpose": "Trigger-behavior spec for deterministic lexical routing and manual behavior checks.",
+  "cases": [
+    {
+      "id": "openapi-migration-notes",
+      "prompt": "write migration notes from this OpenAPI diff",
+      "should_trigger": true,
+      "assert": "Runs the differ on the two specs and drafts consumer migration notes."
+    },
+    {
+      "id": "consumer-breaking-changes",
+      "prompt": "what breaking API changes do consumers need to handle in this swagger spec",
+      "should_trigger": true,
+      "assert": "Lists breaking OpenAPI changes with who is affected."
+    },
+    {
+      "id": "oas-changelog-coverage",
+      "prompt": "generate consumer migration notes for the OAS change and check coverage",
+      "should_trigger": true,
+      "assert": "Writes notes tagged with BRK ids and runs the checker."
+    },
+    {
+      "id": "enum-narrowing-examples",
+      "prompt": "request and response examples for each enum narrowing in the OpenAPI document",
+      "should_trigger": true,
+      "assert": "Includes before/after examples for enum narrowing records."
+    },
+    {
+      "id": "near-miss-format",
+      "prompt": "format my code",
+      "should_trigger": false,
+      "assert": "Does not trigger for a formatting request."
+    },
+    {
+      "id": "near-miss-commit-message",
+      "prompt": "write my commit message",
+      "should_trigger": false,
+      "assert": "Does not trigger for commit message drafting."
+    },
+    {
+      "id": "near-miss-pr-scope",
+      "prompt": "is my PR too broad",
+      "should_trigger": false,
+      "assert": "Does not trigger for scope-creep questions."
+    },
+    {
+      "id": "near-miss-codebase-migrate",
+      "prompt": "migrate this python codebase to a new framework",
+      "should_trigger": false,
+      "assert": "Does not trigger for source-code framework migrations."
+    },
+    {
+      "id": "near-miss-dependencies",
+      "prompt": "check my dependencies",
+      "should_trigger": false,
+      "assert": "Does not trigger for dependency manifest audits."
+    }
+  ]
+}

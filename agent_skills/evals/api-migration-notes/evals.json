@@ -1,0 +1,35 @@
+{
+  "skill_name": "api-migration-notes",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Write consumer migration notes from these two OpenAPI JSON files.",
+      "expected_output": "Notes that tag every breaking change id from oas_diff.py and include before/after request or response examples.",
+      "expectations": [
+        "The skill runs scripts/oas_diff.py on the two JSON documents",
+        "The notes include a section for every BRK-### id in the differ JSON",
+        "Each breaking section has Before and After examples",
+        "The skill runs scripts/check_notes.py and only treats the notes as complete on exit 0"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Did we miss a breaking change in the swagger spec changelog?",
+      "expected_output": "A checker report listing uncovered breaking ids, or confirmation that every breaking id is covered.",
+      "expectations": [
+        "The skill uses the differ JSON as the source of breaking changes",
+        "Uncovered BRK ids are named rather than paraphrased away",
+        "Unknown ids in the notes are reported as failures"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Migrate this Python service from Flask to FastAPI and rewrite the handlers.",
+      "expected_output": "The skill is not used; the request is a source rewrite, not OpenAPI consumer notes.",
+      "expectations": [
+        "The skill is not loaded for a framework source migration",
+        "No OpenAPI differ is run unless the user also provides two OpenAPI documents"
+      ]
+    }
+  ]
+}

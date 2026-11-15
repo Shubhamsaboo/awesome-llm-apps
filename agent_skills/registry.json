@@ -15,6 +15,19 @@
       "evals_dir": "agent_skills/evals/advisor-orchestrator-worker"
     },
     {
+      "name": "api-migration-notes",
+      "path": "agent_skills/api-migration-notes",
+      "description": "Turns two OpenAPI 3.x JSON documents into consumer migration notes that cover every breaking API change. A deterministic differ classifies removed paths and operations, removed or renamed response fields, newly required request fields, type format and enum narrowing, parameter location changes, auth scheme changes, and removed status codes versus additive optional fields, new endpoints, and enum widening. A checker fails if any breaking change id is missing from the notes. Use when the user asks for OpenAPI, OAS, or swagger spec migration notes, consumer changelog coverage for a breaking API change, request and response examples for each spec diff, or to verify notes address every breaking change.",
+      "license": "Apache-2.0",
+      "metadata": {
+        "author": "Matt Van Horn",
+        "version": "1.0.0",
+        "source": "https://github.com/Shubhamsaboo/awesome-llm-apps"
+      },
+      "install": "npx skills add https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/agent_skills/api-migration-notes",
+      "evals_dir": "agent_skills/evals/api-migration-notes"
+    },
+    {
       "name": "commit-archaeologist",
       "path": "agent_skills/commit-archaeologist",
       "description": "Reconstructs why code exists from local git history, including the introducing commit, later changes, current authors, repeated companion files, and likely intent. Use when the user asks \"why does this code exist\", \"who wrote this function and why\", or to \"explain the history of this function\" before a rewrite, refactor, or risky edit. Runs entirely locally.",
