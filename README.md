@@ -93,7 +93,7 @@ streamlit run travel_agent.py
 *   [✏️ Excaliflow - Hand-Drawn Diagrams with Live Animated Flows](advanced_llm_apps/excaliflow/) - Sketch system architectures and AI agent workflows on an Excalidraw-style canvas with live animated arrows and video export
 *   [🪡 Needle - A New Way to Find](advanced_llm_apps/needle/) - Search webpages by meaning and highlight the strongest source sentence, using a Chrome extension powered by TypeSafe Jev
 *   [🌀 Ripple - Change One Thing, Find What Else Needs to Change](advanced_llm_apps/ripple/) - Find related inconsistencies and suggested fixes as you edit a Google Doc, using TypeSafe Jev and Gemini
-*   [📺 Take Back Your TV - Your Photos Instead of Ads](advanced_llm_apps/take-back-your-tv/) - Hand one file to a coding agent and it turns off the junk on an Android TV or Google TV, then replaces the ad-filled home screen with your own photos, a small clock, and your four apps
+*   [📺 Take Back Your TV](advanced_llm_apps/take-back-your-tv/) - Give a coding agent one file and it swaps your smart TV's ad-filled home screen for your own photos
 
 ### 🌱 Starter AI Agents
 
