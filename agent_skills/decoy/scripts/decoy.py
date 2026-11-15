@@ -42,7 +42,7 @@ UK_DRAMA = {
     "07700900": "mobile", "03069990": "UK-wide", "08081570": "freephone", "09098790": "premium rate",
 }
 UK = re.compile(r"(?<![\w+])(\+44[\s-]?(?:\(0\)[\s-]?)?|0)([1237-9]\d(?:[\s-]?\d){7,8})(?!\d)")
-BARE7 = re.compile(r"(?<![\d.-])(\d{3})[-. ](\d{4})(?![\d.-])")  # 555-0123 / 555.0123 / 555 0123, no area code
+BARE7 = re.compile(r"(?<![\d.-])([2-9]\d{2})[-. ](\d{4})(?![\d.-])")  # 555-0123 / 555.0123 / 555 0123, no area code; NANP exchange codes never start with 0 or 1
 MARK = re.compile(r"NON-RESERVED:\s*\S")
 
 EMAIL = re.compile(r"\b[A-Za-z0-9._%+-]+@([A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+)\b")

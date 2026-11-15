@@ -61,6 +61,8 @@ def bare_seven_digit_and_spaced_ssn_flagged():
         assert kinds(t) == ["phone"], t
     assert kinds("ext 555-0150") == [] and kinds("ext 555.0150") == [] and kinds("ext 555 0150") == []
     assert kinds("id 5550200") == []  # documented: 7 bare digits are not read as a phone
+    for t in ("lng 151.2093", "Tokyo 139.6917", "price 199.9900", "ref 012-3456"):
+        assert kinds(t) == [], t  # exchange codes start with 2-9, so decimals and 0xx/1xx tokens are not phones
     assert kinds("ssn 123 45 6789") == ["ssn"] and kinds("ssn 912 34 5678") == []
     assert kinds("id 123456789") == []  # documented: bare 9 digits are not read as an SSN
 

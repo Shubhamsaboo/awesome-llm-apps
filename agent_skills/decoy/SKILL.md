@@ -14,7 +14,7 @@ description: >
 license: MIT
 metadata:
   author: ruijiezh67
-  version: "0.2.1"
+  version: "0.2.2"
   source: https://github.com/Shubhamsaboo/awesome-llm-apps
 ---
 
