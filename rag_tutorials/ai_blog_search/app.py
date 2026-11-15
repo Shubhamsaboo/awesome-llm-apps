@@ -5,17 +5,16 @@ from qdrant_client.models import Distance, VectorParams
 from uuid import uuid4
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain.tools.retriever import create_retriever_tool
+from langchain_core.tools import create_retriever_tool
 
 from typing import Annotated, Literal, Sequence
 from typing_extensions import TypedDict
 from functools import partial
 
-from langchain import hub
 from langchain_core.messages import BaseMessage, HumanMessage
 from langgraph.graph.message import add_messages
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import PromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from pydantic import BaseModel, Field
@@ -231,8 +230,10 @@ def generate(state):
 
     docs = last_message.content
 
-    # Initialize a Chat Prompt Template
-    prompt_template = hub.pull("rlm/rag-prompt")
+    # Initialize a Chat Prompt Template (the "rlm/rag-prompt" prompt)
+    prompt_template = ChatPromptTemplate.from_messages([
+        ("human", "You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.\nQuestion: {question} \nContext: {context} \nAnswer:"),
+    ])
 
     # Initialize a Generator (i.e. Chat Model)
     chat_model = ChatGoogleGenerativeAI(api_key=st.session_state.gemini_api_key, model="gemini-3.8-flash", temperature=0, streaming=True)
