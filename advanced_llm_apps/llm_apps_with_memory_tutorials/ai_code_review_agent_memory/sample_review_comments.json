@@ -1,0 +1,58 @@
+[
+  {
+    "path": "src/requests/sessions.py",
+    "body": "`should_strip_auth` is a security boundary. The only cross-origin case that may keep the Authorization header is http -> https on the same host with default ports. Any other change of host, scheme or port must strip it, and every new case needs a test in test_requests.py.",
+    "diff_hunk": "@@ -127,6 +127,10 @@ def should_strip_auth(self, old_url, new_url):\n         old_parsed = urlparse(old_url)\n         new_parsed = urlparse(new_url)\n+        if old_parsed.hostname.endswith(new_parsed.hostname):\n+            return False",
+    "created_at": "2024-03-02T10:15:00Z",
+    "url": "sample://comment/1"
+  },
+  {
+    "path": "src/requests/sessions.py",
+    "body": "In `rebuild_proxies`, always delete the old Proxy-Authorization header before deciding whether to add a new one. Otherwise credentials for one proxy leak to the next proxy after a redirect.",
+    "diff_hunk": "@@ -315,8 +315,6 @@ def rebuild_proxies(self, prepared_request, proxies):\n         new_proxies = resolve_proxies(prepared_request, proxies, self.trust_env)\n-        if \"Proxy-Authorization\" in headers:\n-            del headers[\"Proxy-Authorization\"]",
+    "created_at": "2024-05-11T08:40:00Z",
+    "url": "sample://comment/2"
+  },
+  {
+    "path": "src/requests/adapters.py",
+    "body": "Please don't let urllib3 exceptions escape `send`. Callers catch requests.exceptions only, so wrap the new error in ConnectionError (or the matching requests exception) with request=request, like the other except blocks here.",
+    "diff_hunk": "@@ -678,6 +678,8 @@ def send(\n+        except NewConnectionError:\n+            raise",
+    "created_at": "2024-06-20T14:05:00Z",
+    "url": "sample://comment/3"
+  },
+  {
+    "path": "src/requests/utils.py",
+    "body": "`get_netrc_auth` must not fail when ~/.netrc is broken or unreadable: skip netrc auth unless raise_errors is set. A bad netrc file would otherwise break every request on the machine.",
+    "diff_hunk": "@@ -240,7 +240,6 @@ def get_netrc_auth(url, raise_errors=False):\n-        except (NetrcParseError, OSError):\n-            if raise_errors:\n-                raise",
+    "created_at": "2024-01-28T09:00:00Z",
+    "url": "sample://comment/4"
+  },
+  {
+    "path": "src/requests/utils.py",
+    "body": "`super_len` must leave a file-like body where it found it: if you read to measure, seek back to the original position. Otherwise the body is sent empty.",
+    "diff_hunk": "@@ -170,6 +170,7 @@ def super_len(o):\n+            total_length = len(o.read())",
+    "created_at": "2024-07-03T16:30:00Z",
+    "url": "sample://comment/5"
+  },
+  {
+    "path": "src/requests/sessions.py",
+    "body": "nit: typo in the docstring, \"recieve\" -> \"receive\".",
+    "diff_hunk": "@@ -500,6 +500,6 @@ def request(\n-        Returns the response you recieve.",
+    "created_at": "2024-07-09T11:00:00Z",
+    "url": "sample://comment/6"
+  },
+  {
+    "path": "src/requests/adapters.py",
+    "body": "LGTM, thanks for the quick fix!",
+    "diff_hunk": "",
+    "created_at": "2024-07-10T12:00:00Z",
+    "url": "sample://comment/7"
+  },
+  {
+    "path": "src/requests/models.py",
+    "body": "Can you rebase on main and squash these into one commit before we merge?",
+    "diff_hunk": "",
+    "created_at": "2024-07-12T12:30:00Z",
+    "url": "sample://comment/8"
+  }
+]
