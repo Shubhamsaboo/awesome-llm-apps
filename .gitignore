@@ -19,3 +19,6 @@ dist/
 
 # JetBrains IDEs
 .idea/
+
+#adk
+session.db
