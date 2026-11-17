@@ -116,11 +116,12 @@ def is_parse_error(value: Any) -> bool:
     return isinstance(value, dict) and value.get(PARSE_ERROR) is True
 
 
-def _only_parse_error_misses(result: dict) -> bool:
-    """Return True when all failed checks are parse-error placeholders."""
+def _no_clean_verdicts(result: dict) -> bool:
+    """Return True when parse errors left no clean verdict to score against."""
     details = result.get("details") if isinstance(result.get("details"), list) else []
-    misses = [d for d in details if isinstance(d, dict) and not d.get("passed")]
-    return bool(misses) and all(d.get("parse_error") for d in misses)
+    return result.get("parse_errors", 0) > 0 and bool(details) and not any(
+        isinstance(d, dict) and not d.get("parse_error") for d in details
+    )
 
 
 def _is_valid_eval_id(value: Any) -> bool:
@@ -165,6 +166,25 @@ def split_holdout(scenarios: list, holdout_fraction: float, seed: int = 0) -> tu
     return (train, holdout)
 
 
+def holdout_split_report(n_scenarios: int, n_holdout: int, requested: float) -> dict:
+    """Report the effective split; small scenario sets can differ a lot from the request."""
+    effective = n_holdout / n_scenarios if n_scenarios else 0.0
+    warning = None
+    if n_holdout == 0:
+        warning = f"No scenarios held out: {n_scenarios} scenario(s) cannot be split."
+    elif abs(effective - requested) > 0.1:
+        warning = f"Held out {n_holdout} of {n_scenarios} scenarios ({effective:.0%}), not {requested:.0%}."
+    return {"requested_fraction": requested, "effective_fraction": round(effective, 3),
+            "train": n_scenarios - n_holdout, "holdout": n_holdout, "warning": warning}
+
+
+def _whole_count(value: Any, key: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) \
+            or value < 0 or value != int(value):
+        raise ValueError(f"{key} must be a non-negative whole number")
+    return int(value)
+
+
 def _normalize_score_result(result: dict) -> dict:
     """Ensure every scorer dict exposes standard keys while preserving extras."""
     if not isinstance(result, dict):
@@ -180,24 +200,24 @@ def _normalize_score_result(result: dict) -> dict:
     else:
         failures = [d for d in details if isinstance(d, dict) and not d.get("passed")]
 
-    if has_passed and not has_pass_rate and not has_total and not details:
-        raise ValueError("total is required when passed is provided without pass_rate")
+    if not (has_pass_rate or has_passed or details):
+        raise ValueError("Scorer result needs pass_rate, passed with total, or details")
+    if has_passed and not has_total and not details:
+        raise ValueError("total is required when passed is provided")
 
     if has_total:
-        total = int(result["total"])
+        total = _whole_count(result["total"], "total")
     elif details:
         total = len(details)
     else:
         total = 0
-    if total < 0:
-        raise ValueError("total must be >= 0")
 
     if has_pass_rate:
         pass_rate = float(result["pass_rate"])
         if not math.isfinite(pass_rate) or not (0.0 <= pass_rate <= 100.0):
             raise ValueError("pass_rate must be between 0 and 100")
     if has_passed:
-        passed = int(result["passed"])
+        passed = _whole_count(result["passed"], "passed")
     elif details:
         passed = sum(1 for d in details if isinstance(d, dict) and d.get("passed") is True)
     elif has_pass_rate and total > 0:
@@ -205,8 +225,10 @@ def _normalize_score_result(result: dict) -> dict:
     else:
         passed = 0
 
-    if has_passed and has_total and (passed < 0 or passed > total):
+    if passed > total:
         raise ValueError("passed must be between 0 and total")
+    if has_pass_rate and has_passed and abs(pass_rate - (100.0 * passed / total if total else 0.0)) > 0.05 + 1e-9:
+        raise ValueError("pass_rate is inconsistent with passed/total")
 
     if not has_pass_rate:
         pass_rate = round(100 * passed / max(total, 1), 1)
@@ -424,24 +446,6 @@ class BaseScorer:
     def extra_results(self, best: dict) -> dict:
         return {}
 
-    @staticmethod
-    def tried_block(mutation_log: list) -> str:
-        if not mutation_log:
-            return ""
-        relevant = [m for m in mutation_log if m.get("outcome") != "skipped"][-6:]
-        if not relevant:
-            return ""
-        lines = ["Previously tried mutations (avoid repeating discarded ideas):"]
-        for m in relevant:
-            outcome = m.get("outcome") or ("kept" if m.get("kept") else "discarded")
-            strategy = m.get("strategy_type", "unknown")
-            desc = m.get("description") or m.get("diagnosis") or ""
-            before = m.get("score_before", "?")
-            after = m.get("score_after", "?")
-            lines.append(
-                f"- Round {m.get('round', '?')} [{outcome}] ({strategy}, {before}% -> {after}%): {desc}"
-            )
-        return "\n".join(lines)
 
 
 class ExecutorScorer(BaseScorer):
@@ -468,7 +472,7 @@ class ExecutorScorer(BaseScorer):
                 optimizer.executor,
                 f"Execute this skill:\n\n{skill_md}\n\nUser request:\n{sc['input']}",
             )
-            scoring = await optimizer._ask_json(
+            reply = await optimizer._ask(
                 optimizer.executor,
                 (
                     f"Evaluate this output against the criteria.\n\n"
@@ -477,8 +481,14 @@ class ExecutorScorer(BaseScorer):
                     f"Criteria:\n{json.dumps(evals, indent=2)}\n\n"
                     f"Return JSON: {{\"results\": [{{\"eval_id\": 1, \"passed\": true, \"reason\": \"...\"}}]}}"
                 ),
-                fallback={"results": []},
             )
+            try:
+                scoring = parse_json(reply, expected_type=dict)
+            except ValueError:
+                try:  # main also scored a bare [{"eval_id": ..., "passed": ...}] array
+                    scoring = {"results": parse_json(reply, expected_type=list)}
+                except ValueError:
+                    scoring = {PARSE_ERROR: True}
             scenario_parse_error = is_parse_error(scoring)
             raw_results = scoring.get("results") if isinstance(scoring, dict) else None
             if not isinstance(raw_results, list):
@@ -506,24 +516,24 @@ class ExecutorScorer(BaseScorer):
                 eid = ev["id"]
                 entry = by_eval.get(eid)
                 if entry is None:
+                    # Judge noise: keep as a diagnostic but leave it out of the score.
                     scenario_parse_error = True
-                    passed = False
-                    record = {
+                    all_results.append({
                         "eval_id": eid,
                         "passed": False,
                         "reason": "no verdict returned",
                         "scenario_id": sc["id"],
                         "parse_error": True,
-                    }
-                else:
-                    passed = entry.get("passed") is True
-                    record = {
-                        **entry,
-                        "eval_id": eid,
-                        "passed": passed,
-                        "reason": entry.get("reason", ""),
-                        "scenario_id": sc["id"],
-                    }
+                    })
+                    continue
+                passed = entry.get("passed") is True
+                record = {
+                    **entry,
+                    "eval_id": eid,
+                    "passed": passed,
+                    "reason": entry.get("reason", ""),
+                    "scenario_id": sc["id"],
+                }
                 total_checks += 1
                 per_eval[eid]["total"] += 1
                 if passed:
@@ -546,7 +556,7 @@ class ExecutorScorer(BaseScorer):
                 for k, v in per_eval.items()
             ],
             "details": all_results,
-            "failures": [r for r in all_results if not r["passed"]],
+            "failures": [r for r in all_results if not r["passed"] and not r.get("parse_error")],
             "parse_errors": parse_errors,
         }
 
@@ -569,7 +579,7 @@ class CallableScorer(BaseScorer):
         res = self.fn(skill_md, scenarios, evals)
         if inspect.isawaitable(res):
             res = await res
-        return _normalize_score_result(res)
+        return res
 
 
 def _coerce_scorer(scorer: Any) -> Scorer:
@@ -783,12 +793,16 @@ class SkillOptimizer:
         if isinstance(active_scorer, ExecutorScorer):
             validate_evals(evals_list)
 
+        holdout_split = None
         if holdout is not None:
             train_scenarios = list(scenarios)
             holdout_scenarios = list(holdout)
         elif holdout_fraction > 0:
             train_scenarios, holdout_scenarios = split_holdout(
                 scenarios, holdout_fraction
+            )
+            holdout_split = holdout_split_report(
+                len(scenarios), len(holdout_scenarios), holdout_fraction
             )
         else:
             train_scenarios = list(scenarios)
@@ -800,7 +814,6 @@ class SkillOptimizer:
         current_md = skill_md
         score_history = []
         mutation_log = []
-        kept_any = False
 
         async def record_round(
             round_no: int,
@@ -851,23 +864,9 @@ class SkillOptimizer:
         baseline = await self.score(
             current_md, train_scenarios, evals_list, scorer=active_scorer
         )
-        max_parse_retries = 2
         stopped_reason: Optional[str] = None
-        baseline_retries = 0
-        while (
-            baseline_retries < max_parse_retries
-            and baseline.get("parse_errors", 0) > 0
-            and _only_parse_error_misses(baseline)
-        ):
-            baseline = await self.score(
-                current_md, train_scenarios, evals_list, scorer=active_scorer
-            )
-            baseline_retries += 1
-        baseline_refreshed = baseline_retries > 0
-
         baseline_pct = baseline["pass_rate"]
         initial_baseline_pct = baseline_pct
-        consecutive_parse_only_skips = 0
         score_history.append(baseline_pct)
 
         await emit({
@@ -881,7 +880,7 @@ class SkillOptimizer:
             },
         })
 
-        if baseline.get("parse_errors", 0) > 0 and _only_parse_error_misses(baseline):
+        if _no_clean_verdicts(baseline):
             stopped_reason = "parse_errors"
             await emit({"type": "stopped", "data": {"round": 0, "reason": "parse_errors"}})
             strategy_stats = self._strategy_stats(mutation_log)
@@ -896,6 +895,7 @@ class SkillOptimizer:
                 "min_gain": min_gain,
                 "parse_errors": baseline.get("parse_errors", 0),
                 "holdout": None,
+                "holdout_split": holdout_split,
                 "stopped_reason": stopped_reason,
                 **extra,
             }
@@ -914,41 +914,6 @@ class SkillOptimizer:
                 stopped_reason = "converged"
                 await emit({"type": "converged", "data": {"round": rnd}})
                 break
-
-            if baseline.get("parse_errors", 0) > 0 and _only_parse_error_misses(baseline):
-                refreshed = await self.score(
-                    current_md, train_scenarios, evals_list, scorer=active_scorer
-                )
-                baseline = refreshed
-                baseline_pct = round(baseline["pass_rate"], 1)
-                baseline_refreshed = True
-                if active_scorer.converged(baseline):
-                    stopped_reason = "converged"
-                    await emit({"type": "converged", "data": {"round": rnd}})
-                    break
-                if baseline.get("parse_errors", 0) > 0 and _only_parse_error_misses(baseline):
-                    consecutive_parse_only_skips += 1
-                    await emit({"type": "experiment_start", "data": {"round": rnd}})
-                    await record_round(
-                        rnd,
-                        analysis=None,
-                        description="Scoring replies could not be parsed",
-                        kept=False,
-                        outcome="skipped",
-                        parse_errors=baseline.get("parse_errors", 1),
-                        score_after=baseline_pct,
-                        event_score=baseline_pct,
-                        event_per_eval=baseline.get("per_eval", []),
-                    )
-                    if consecutive_parse_only_skips >= max_parse_retries:
-                        stopped_reason = "parse_errors"
-                        await emit({
-                            "type": "stopped",
-                            "data": {"round": rnd, "reason": "parse_errors"},
-                        })
-                        break
-                    continue
-            consecutive_parse_only_skips = 0
 
             await emit({"type": "experiment_start", "data": {"round": rnd}})
 
@@ -1022,25 +987,6 @@ class SkillOptimizer:
             new_pct = result["pass_rate"]
             cand_parse_errors = result.get("parse_errors", 0)
 
-            best_parse_errors = baseline.get("parse_errors", 0)
-            if (
-                not baseline_refreshed
-                and best_parse_errors > 0
-                and cand_parse_errors <= best_parse_errors
-            ):
-                baseline_refreshed = True
-                refreshed = _normalize_score_result(
-                    await self.score(
-                        current_md, train_scenarios, evals_list, scorer=active_scorer
-                    )
-                )
-                if refreshed.get("parse_errors", 0) <= best_parse_errors:
-                    baseline = refreshed
-                    baseline_pct = round(baseline["pass_rate"], 1)
-                    if current_md == skill_md and not kept_any:
-                        initial_baseline_pct = baseline_pct
-                        score_history = [baseline_pct for _ in score_history]
-
             compare_result = _compare_on_clean_checks(
                 result, baseline, active_scorer, min_gain
             )
@@ -1048,7 +994,10 @@ class SkillOptimizer:
             if cand_parse_errors > best_parse_errors:
                 kept = False
                 outcome = "inconclusive"
-            elif compare_result is None:
+            elif compare_result is None or (
+                compare_result and not active_scorer.improves(result, baseline, min_gain)
+            ):
+                # A clean-check win whose full score does not also improve is never kept.
                 kept = False
                 outcome = "inconclusive"
             else:
@@ -1070,8 +1019,6 @@ class SkillOptimizer:
                 current_md = new_md
                 baseline = result
                 baseline_pct = new_pct
-                kept_any = True
-                baseline_refreshed = False
 
         # -- Holdout ----------------------------------------------------------
         holdout_summary = None
@@ -1101,6 +1048,7 @@ class SkillOptimizer:
             "min_gain": min_gain,
             "parse_errors": baseline.get("parse_errors", 0),
             "holdout": holdout_summary,
+            "holdout_split": holdout_split,
             "stopped_reason": stopped_reason,
             **extra,
         }
@@ -1130,7 +1078,7 @@ class SkillOptimizer:
             for d in details
             if isinstance(d, dict) and not d.get("passed") and not d.get("parse_error")
         ]
-        if result.get("pass_rate", 0.0) >= 100.0 and result.get("parse_errors", 0) == 0:
+        if not failed and result.get("pass_rate", 0.0) >= 100.0:
             return {
                 "diagnosis": "All passed",
                 "mutation_strategy": "add_constraint",
@@ -1138,30 +1086,21 @@ class SkillOptimizer:
                 "suggested_change": "none",
             }
 
-        tried = BaseScorer.tried_block(mutation_log or [])
-        tried_section = f"\n\n{tried}" if tried else ""
-        aggregate = {
-            "pass_rate": result.get("pass_rate", 0.0),
-            "passed": result.get("passed", 0),
-            "total": result.get("total", 0),
-            "parse_errors": result.get("parse_errors", 0),
-        }
-        failed_block = (
-            json.dumps(failed[:5], indent=2)
-            if failed
-            else "No per-check failures were provided by the scorer."
-        )
+        if failed:  # same prompt as main
+            evidence = f"Failed evals:\n{json.dumps(failed[:5], indent=2)}"
+        else:  # aggregate-only scorers report no per-check failures
+            aggregate = {k: result.get(k, 0) for k in ("pass_rate", "passed", "total")}
+            evidence = (
+                f"Evals:\n{json.dumps(evals or [], indent=2)}\n\n"
+                f"Aggregate score summary:\n{json.dumps(aggregate, indent=2)}"
+            )
 
         return await self._ask_json(
             self.analyst,
             (
                 f"Diagnose these failures and suggest ONE fix.\n\n"
                 f"Skill:\n{skill_md[:2000]}\n\n"
-                f"Scenarios (sample):\n{json.dumps((scenarios or [])[:3], indent=2)}\n\n"
-                f"Evals:\n{json.dumps(evals or [], indent=2)}\n\n"
-                f"Aggregate score summary:\n{json.dumps(aggregate, indent=2)}\n\n"
-                f"Failed evals:\n{failed_block}"
-                f"{tried_section}"
+                f"{evidence}"
             ),
             fallback={
                 "diagnosis": "Unable to diagnose",

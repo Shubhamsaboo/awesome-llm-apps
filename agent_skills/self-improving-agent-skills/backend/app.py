@@ -422,6 +422,7 @@ async def start_optimization(session_id: str, request: StartRequest):
                 "min_gain": data.get("min_gain", request.min_gain),
                 "parse_errors": data.get("parse_errors", 0),
                 "holdout": data.get("holdout"),
+                "holdout_split": data.get("holdout_split"),
                 "stopped_reason": data.get("stopped_reason"),
             }
 
