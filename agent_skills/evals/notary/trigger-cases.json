@@ -1,0 +1,18 @@
+{
+  "skill": "notary",
+  "purpose": "Trigger-behavior spec for deterministic lexical routing and manual behavior checks.",
+  "cases": [
+    {"id": "summarize-experiment-results", "prompt": "summarize my experiment results with the metrics for each run", "should_trigger": true,
+     "assert": "Writes a receipt for every reported number and checks them before replying."},
+    {"id": "where-number-came-from", "prompt": "where does this accuracy number come from? show your sources", "should_trigger": true,
+     "assert": "Points each number to a file quote, logged command output, calc or the user's words."},
+    {"id": "dont-make-up-numbers", "prompt": "write the benchmark report and don't make up numbers", "should_trigger": true,
+     "assert": "Reports unmeasured values as N/A with an na receipt, never 0."},
+    {"id": "near-miss-plot", "prompt": "make a bar chart of these values", "should_trigger": false,
+     "assert": "Does not trigger for plotting alone."},
+    {"id": "near-miss-fix-test", "prompt": "fix the failing unit test", "should_trigger": false,
+     "assert": "Does not trigger for code changes."},
+    {"id": "near-miss-translate", "prompt": "translate this paragraph into Spanish", "should_trigger": false,
+     "assert": "Does not trigger for translation."}
+  ]
+}
