@@ -12,15 +12,15 @@ from agno.agent import Agent
 from agno.run.agent import RunOutput
 from agno.models.openai import OpenAIChat
 from agno.tools.email import EmailTools
-from phi.tools.zoom import ZoomTool
-from phi.utils.log import logger
+from agno.tools.zoom import ZoomTools
+from agno.utils.log import logger
 from streamlit_pdf_viewer import pdf_viewer
 
 
 
-class CustomZoomTool(ZoomTool):
-    def __init__(self, *, account_id: Optional[str] = None, client_id: Optional[str] = None, client_secret: Optional[str] = None, name: str = "zoom_tool"):
-        super().__init__(account_id=account_id, client_id=client_id, client_secret=client_secret, name=name)
+class CustomZoomTool(ZoomTools):
+    def __init__(self, *, account_id: Optional[str] = None, client_id: Optional[str] = None, client_secret: Optional[str] = None):
+        super().__init__(account_id=account_id, client_id=client_id, client_secret=client_secret)
         self.token_url = "https://zoom.us/oauth/token"
         self.access_token = None
         self.token_expires_at = 0
@@ -49,9 +49,9 @@ class CustomZoomTool(ZoomTool):
             return ""
 
     def _set_parent_token(self, token: str) -> None:
-        """Helper method to set the token in the parent ZoomTool class"""
+        """Helper method to set the token in the parent ZoomTools class"""
         if token:
-            self._ZoomTool__access_token = token
+            self._ZoomTools__access_token = token
 
 
 # Role requirements as a constant dictionary
