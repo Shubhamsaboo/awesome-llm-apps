@@ -432,9 +432,11 @@ def main():
     st.write(case["question"])
     if st.button("Recheck and review", type="primary"):
         try:
-            with closing(Model(provider, model, api_key, region)) as ask:
-                with st.spinner("Checking current evidence…"):
-                    result = review(ask, repo, note, case["question"], mode)
+            with (
+                closing(Model(provider, model, api_key, region)) as ask,
+                st.spinner("Checking current evidence…"),
+            ):
+                result = review(ask, repo, note, case["question"], mode)
             st.session_state.store.record(note, result)
             st.subheader(result["review"]["action"].capitalize())
             st.write(result["review"]["reason"])
