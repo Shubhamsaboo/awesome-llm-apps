@@ -1,0 +1,17 @@
+{
+  "provider": "Bedrock",
+  "model": "us.anthropic.claude-sonnet-5-5",
+  "region": "us-east-1",
+  "repeats": 3,
+  "seed": 23,
+  "cases_sha256": "dfa45c5fda0956712a9424972f97797c51455db3f1cd9b59c9a9f4ee1c2fb96d",
+  "source_sha256": "a63e858f348a3e23032188c432728cfdb012c20b4951709bfc2680eec0a420cb",
+  "max_output_tokens_per_call": 900,
+  "modes": [
+    "blind",
+    "always",
+    "freshness"
+  ],
+  "started_at": "2026-11-18T21:20:30.998696+00:00",
+  "scope": "Six authored teaching examples; not a public-repository benchmark"
+}

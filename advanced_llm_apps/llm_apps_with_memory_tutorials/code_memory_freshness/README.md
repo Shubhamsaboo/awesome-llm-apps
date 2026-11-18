@@ -139,6 +139,35 @@ quality**. These six authored teaching cases are not a public-repository benchma
 A correct answer can still have a weak explanation. File/AST hashes do not prove
 semantic equivalence, and this experiment cannot establish a broad quality win.
 
+### Recorded example run
+
+The checked-in [protocol](evaluation/sample_run/protocol.json),
+[all 54 responses](evaluation/sample_run/attempts.jsonl) and
+[summary](evaluation/sample_run/summary.json) come from three repeats of the six
+teaching cases using Sonnet 5.5 through Bedrock. There were no failed attempts or
+retries. Source and case hashes identify exactly what was evaluated.
+
+| Policy | Reference actions correct | Model calls | Reported input tokens | Output tokens | Total review seconds |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Blind review | 18/18 | 18 | 8,892 | 3,186 | 30.30 |
+| Recheck everything | 18/18 | 36 | 21,358 | 5,881 | 64.47 |
+| Freshness routing | 18/18 | 33 | 19,288 | 5,562 | 51.15 |
+
+**This run shows no accuracy improvement.** Blind review already catches the stale
+claims when given these short, complete source contexts. Rechecking adds cost and
+latency. Freshness routing avoids the unchanged-case rechecks compared with
+rechecking everything; it remains more expensive than blind review here.
+
+The changed-but-valid case remains `reuse`, the extra-callback and changed-helper
+cases become `reject`, and the missing-target case requests another check, under
+all three policies. Read the responses to compare their explanations; matching a
+reference action is not a complete assessment of reasoning quality. No percentage
+here estimates performance on production code or another model.
+
+Times include inspection and every model call within each review, but exclude
+shared fixture construction and provider-client initialization. Raw calls also
+include native provider usage fields. Token counts are not a provider bill.
+
 ### Local checks
 
 ```bash

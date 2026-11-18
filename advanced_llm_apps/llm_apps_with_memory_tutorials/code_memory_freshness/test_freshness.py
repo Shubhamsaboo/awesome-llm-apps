@@ -2,7 +2,6 @@
 
 import json
 from dataclasses import replace
-from pathlib import Path
 
 import pytest
 
@@ -81,10 +80,20 @@ def test_routing_counts_all_calls_without_forcing_model_verdicts(tmp_path, key, 
 
     def ask(prompt):
         calls.append(prompt)
-        evidence = "return cached" if key == "changed_valid" else "return _seen[request_id]"
+        evidence = (
+            "return cached" if key == "changed_valid" else "return _seen[request_id]"
+        )
         if prompt.startswith("Recheck"):
-            return {"verdict": "supported", "reason": "The cache guard remains", "evidence": evidence}
-        return {"action": "reuse", "reason": "Current source supports the finding", "evidence": evidence}
+            return {
+                "verdict": "supported",
+                "reason": "The cache guard remains",
+                "evidence": evidence,
+            }
+        return {
+            "action": "reuse",
+            "reason": "Current source supports the finding",
+            "evidence": evidence,
+        }
 
     out = lab.review(ask, repo, note, case["question"], mode)
     expected = 1 + int(mode == "always" or (mode == "freshness" and key != "unchanged"))
@@ -97,29 +106,43 @@ def test_model_cannot_invent_a_source_quote(tmp_path):
     repo = tmp_path / "repo"
     note = lab.prepare_case(CASES["unchanged"], repo)
     with pytest.raises(ValueError, match="verbatim"):
-        lab.review(lambda _: {"action": "reuse", "reason": "guessed", "evidence": "invented"},
-                   repo, note, "Is it still true?", "blind")
+        lab.review(
+            lambda _: {"action": "reuse", "reason": "guessed", "evidence": "invented"},
+            repo,
+            note,
+            "Is it still true?",
+            "blind",
+        )
 
 
 def test_streamlit_switches_scenarios_and_records_a_review(monkeypatch):
-    from streamlit.testing.v1 import AppTest
+    from types import SimpleNamespace
 
     # AppTest executes this file as __main__, so patch the provider imports rather
     # than the separately imported module's class in a second namespace.
     import openai
-    from types import SimpleNamespace
     from openai.types.completion_usage import CompletionUsage
+    from streamlit.testing.v1 import AppTest
 
-    content = json.dumps({"action": "reuse", "reason": "The cache returns",
-                          "evidence": "return _seen[request_id]"})
+    content = json.dumps(
+        {
+            "action": "reuse",
+            "reason": "The cache returns",
+            "evidence": "return _seen[request_id]",
+        }
+    )
     response = SimpleNamespace(
         choices=[SimpleNamespace(message=SimpleNamespace(content=content))],
         usage=CompletionUsage(prompt_tokens=1, completion_tokens=1, total_tokens=2),
     )
     completions = SimpleNamespace(create=lambda **kw: response)
-    client = SimpleNamespace(chat=SimpleNamespace(completions=completions))
+    client = SimpleNamespace(
+        chat=SimpleNamespace(completions=completions), close=lambda: None
+    )
     monkeypatch.setattr(openai, "OpenAI", lambda **kw: client)
-    app = AppTest.from_file(str(lab.HERE / "freshness_lab.py"), default_timeout=20).run()
+    app = AppTest.from_file(
+        str(lab.HERE / "freshness_lab.py"), default_timeout=20
+    ).run()
     assert not app.exception
     app.button[0].click().run()
     assert not app.exception and not app.error
@@ -130,3 +153,65 @@ def test_streamlit_switches_scenarios_and_records_a_review(monkeypatch):
     assert not app.exception
     app.session_state["store"].close()
     app.session_state["sandbox"].cleanup()
+
+
+@pytest.mark.parametrize(
+    "key",
+    ["unchanged", "changed_valid", "changed_unsafe", "moved", "dependency_changed"],
+)
+def test_reference_actions_agree_with_the_toy_program_behavior(key):
+    case = CASES[key]
+    files = case["after"]
+    scope = {}
+    # Execute only the committed teaching fixtures, never a user's inspected checkout.
+    if "helpers.py" in files:
+        helpers = {}
+        exec(files["helpers.py"], helpers)  # noqa: S102 — versioned toy fixtures only
+        scope["run_once"] = helpers["run_once"]
+    body = files.get("payments.py", files.get("service.py"))
+    exec(body.replace("from helpers import run_once\n", ""), scope)  # noqa: S102 — versioned toy fixtures only
+    charge = scope.get("charge", scope.get("charge_cached"))
+    effects = []
+
+    def send():
+        effects.append("send")
+        return "receipt"
+
+    if key == "changed_unsafe":
+        args = ("same-request", send, lambda: effects.append("notify"))
+    else:
+        args = ("same-request", send)
+    charge(*args)
+    before_second_call = list(effects)
+    charge(*args)
+    same_effects = effects == before_second_call
+    assert same_effects is (case["expected_action"] == "reuse")
+
+
+def test_evaluator_retains_a_client_initialization_failure(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+
+    import evaluate
+
+    def unavailable(*args, **kwargs):
+        raise ValueError("No provider client")
+
+    monkeypatch.setattr(evaluate, "Model", unavailable)
+    output = tmp_path / "failed-run"
+    args = SimpleNamespace(
+        provider="Bedrock",
+        model="test",
+        region="test",
+        repeats=1,
+        seed=23,
+        output=str(output),
+    )
+    with pytest.raises(RuntimeError, match="Stopped"):
+        evaluate.run(args)
+    rows = [
+        json.loads(line)
+        for line in (output / "attempts.jsonl").read_text().splitlines()
+    ]
+    assert len(rows) == 1 and rows[0]["error_type"] == "ValueError"
+    assert rows[0]["calls"] == [] and not rows[0]["correct"]
+    assert not (output / "summary.json").exists()

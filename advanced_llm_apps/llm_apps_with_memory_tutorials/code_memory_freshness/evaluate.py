@@ -20,13 +20,21 @@ def run(args):
     cases = json.loads((HERE / "cases.json").read_text())
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=False)  # never overwrite a previous run
-    protocol = {"provider": args.provider, "model": args.model, "region": args.region,
-                "repeats": args.repeats, "seed": args.seed,
-                "cases_sha256": hashlib.sha256((HERE / "cases.json").read_bytes()).hexdigest(),
-                "source_sha256": hashlib.sha256((HERE / "freshness_lab.py").read_bytes()).hexdigest(),
-                "max_output_tokens_per_call": 900, "modes": ["blind", "always", "freshness"],
-                "started_at": datetime.now(UTC).isoformat(),
-                "scope": "Six authored teaching examples; not a public-repository benchmark"}
+    protocol = {
+        "provider": args.provider,
+        "model": args.model,
+        "region": args.region,
+        "repeats": args.repeats,
+        "seed": args.seed,
+        "cases_sha256": hashlib.sha256((HERE / "cases.json").read_bytes()).hexdigest(),
+        "source_sha256": hashlib.sha256(
+            (HERE / "freshness_lab.py").read_bytes()
+        ).hexdigest(),
+        "max_output_tokens_per_call": 900,
+        "modes": ["blind", "always", "freshness"],
+        "started_at": datetime.now(UTC).isoformat(),
+        "scope": "Six authored teaching examples; not a public-repository benchmark",
+    }
     (output / "protocol.json").write_text(json.dumps(protocol, indent=2) + "\n")
     rng, rows = random.Random(args.seed), []
     # Pair by case/repeat; independently shuffle arm order to avoid one fixed order.
@@ -38,38 +46,67 @@ def run(args):
                 modes = list(protocol["modes"])
                 rng.shuffle(modes)
                 for mode in modes:
-                    ask = Model(args.provider, args.model, region=args.region)
-                    row = {"case": key, "repeat": repeat, "mode": mode,
-                           "expected_action": case["expected_action"]}
+                    ask = None
+                    row = {
+                        "case": key,
+                        "repeat": repeat,
+                        "mode": mode,
+                        "expected_action": case["expected_action"],
+                    }
                     started = time.monotonic()
                     try:
+                        ask = Model(args.provider, args.model, region=args.region)
                         result = review(ask, repo, note, case["question"], mode)
-                        row.update(result=result, correct=result["review"]["action"] == case["expected_action"])
-                    except Exception as exc:
+                        row.update(
+                            result=result,
+                            correct=result["review"]["action"]
+                            == case["expected_action"],
+                        )
+                    except Exception as exc:  # noqa: BLE001 — record every failed attempt before stopping
                         row.update(error_type=type(exc).__name__, correct=False)
                     row["wall_seconds"] = time.monotonic() - started
-                    row["calls"] = ask.calls
+                    row["calls"] = ask.calls if ask is not None else []
+                    if ask is not None:
+                        ask.close()
                     rows.append(row)
                     # Preserve every response before the next call, including failures.
                     with (output / "attempts.jsonl").open("a") as f:
                         f.write(json.dumps(row) + "\n")
-                    print(key, repeat, mode, row.get("result", {}).get("review", {}).get("action", row.get("error_type")))
+                    print(
+                        key,
+                        repeat,
+                        mode,
+                        row.get("result", {})
+                        .get("review", {})
+                        .get("action", row.get("error_type")),
+                    )
                     if "error_type" in row:
-                        raise RuntimeError("Stopped after a failed attempt; partial results retained")
+                        raise RuntimeError(
+                            "Stopped after a failed attempt; partial results retained"
+                        )
     summary = {}
     for mode in protocol["modes"]:
         arm = [r for r in rows if r["mode"] == mode]
         calls = [c for r in arm for c in r["calls"]]
-        summary[mode] = {"correct": sum(r["correct"] for r in arm), "attempts": len(arm),
-                         "model_calls": len(calls), "wall_seconds": sum(r["wall_seconds"] for r in arm),
-                         **{k: sum(c[k] for c in calls) for k in ["input_tokens", "output_tokens", "seconds"]}}
+        summary[mode] = {
+            "correct": sum(r["correct"] for r in arm),
+            "attempts": len(arm),
+            "model_calls": len(calls),
+            "wall_seconds": sum(r["wall_seconds"] for r in arm),
+            **{
+                k: sum(c[k] for c in calls)
+                for k in ["input_tokens", "output_tokens", "seconds"]
+            },
+        }
     (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps(summary, indent=2))
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--provider", choices=["OpenAI", "Anthropic", "Bedrock"], required=True)
+    parser.add_argument(
+        "--provider", choices=["OpenAI", "Anthropic", "Bedrock"], required=True
+    )
     parser.add_argument("--model", required=True)
     parser.add_argument("--region", default="us-east-1")
     parser.add_argument("--repeats", type=int, default=3)
