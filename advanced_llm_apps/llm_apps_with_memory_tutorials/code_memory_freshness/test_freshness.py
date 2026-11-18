@@ -215,3 +215,14 @@ def test_evaluator_retains_a_client_initialization_failure(tmp_path, monkeypatch
     assert len(rows) == 1 and rows[0]["error_type"] == "ValueError"
     assert rows[0]["calls"] == [] and not rows[0]["correct"]
     assert not (output / "summary.json").exists()
+
+
+def test_evaluation_refuses_an_empty_cohort_before_creating_output(tmp_path):
+    from types import SimpleNamespace
+
+    import evaluate
+
+    output = tmp_path / "zero-run"
+    with pytest.raises(ValueError, match="repeat"):
+        evaluate.run(SimpleNamespace(repeats=0, output=str(output)))
+    assert not output.exists()

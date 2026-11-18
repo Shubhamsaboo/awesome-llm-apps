@@ -6,7 +6,9 @@ identical current source. Extra recheck calls are charged to that mode.
 
 import argparse
 import hashlib
+import importlib.metadata
 import json
+import platform
 import random
 import tempfile
 import time
@@ -17,6 +19,8 @@ from freshness_lab import HERE, Model, prepare_case, review
 
 
 def run(args):
+    if args.repeats < 1:
+        raise ValueError("At least one repeat is required")
     cases = json.loads((HERE / "cases.json").read_text())
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=False)  # never overwrite a previous run
@@ -30,6 +34,12 @@ def run(args):
         "source_sha256": hashlib.sha256(
             (HERE / "freshness_lab.py").read_bytes()
         ).hexdigest(),
+        "evaluator_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "python_version": platform.python_version(),
+        "packages": {
+            name: importlib.metadata.version(name)
+            for name in ["streamlit", "openai", "anthropic", "boto3"]
+        },
         "max_output_tokens_per_call": 900,
         "modes": ["blind", "always", "freshness"],
         "started_at": datetime.now(UTC).isoformat(),
