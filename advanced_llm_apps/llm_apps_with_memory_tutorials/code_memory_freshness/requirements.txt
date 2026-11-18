@@ -1,0 +1,4 @@
+streamlit>=1.40,<2
+openai>=1.50,<3
+anthropic>=0.40,<1
+boto3>=1.35,<2
