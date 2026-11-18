@@ -145,9 +145,9 @@ semantic equivalence, and this experiment cannot establish a broad quality win.
 The recorded run is pinned to
 [commit `c85c623`](https://github.com/zlareb1/awesome-llm-apps/commit/c85c623c31391164a56f0509d8f363ec082eb48f).
 Its evaluator hash is `3217140168eaddcd339d646c7e04b5820fccc7de1d0a2f815d161a109f65e241`.
-The evaluator also preserves responses when client cleanup fails; that failure-path
-change was checked offline after the recorded run. The application, cases and
-model prompts used for the recorded result are unchanged.
+The evaluator also preserves responses when client cleanup fails. That failure
+path has separate offline regression tests; the recorded run had no cleanup
+failures. The application, cases and model prompts are unchanged.
 
 The checked-in [protocol](evaluation/sample_run/protocol.json),
 [all 54 responses](evaluation/sample_run/attempts.jsonl) and
