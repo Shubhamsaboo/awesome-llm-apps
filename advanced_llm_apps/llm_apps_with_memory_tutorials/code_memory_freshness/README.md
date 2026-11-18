@@ -104,7 +104,7 @@ would capture the new code instead. `Store.save()` does not overwrite an existin
 anchor with the same ID.
 
 The reader accepts at most 100 tracked or unignored Python files, 50 KB each and
-150 KB in total. It refuses source paths that escape the checkout. Use a small
+150,000 source characters in total. It refuses source paths that escape the checkout. Use a small
 checkout or purpose-built fixture; this example does not truncate hidden context
 and then claim to have checked it.
 
@@ -149,9 +149,9 @@ retries. Source and case hashes identify exactly what was evaluated.
 
 | Policy | Reference actions correct | Model calls | Reported input tokens | Output tokens | Total review seconds |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Blind review | 18/18 | 18 | 8,892 | 3,186 | 30.30 |
-| Recheck everything | 18/18 | 36 | 21,358 | 5,881 | 64.47 |
-| Freshness routing | 18/18 | 33 | 19,288 | 5,562 | 51.15 |
+| Blind review | 18/18 | 18 | 8,892 | 3,256 | 30.50 |
+| Recheck everything | 18/18 | 36 | 21,333 | 6,114 | 56.82 |
+| Freshness routing | 18/18 | 33 | 19,085 | 5,280 | 50.55 |
 
 **This run shows no accuracy improvement.** Blind review already catches the stale
 claims when given these short, complete source contexts. Rechecking adds cost and
@@ -164,8 +164,8 @@ all three policies. Read the responses to compare their explanations; matching a
 reference action is not a complete assessment of reasoning quality. No percentage
 here estimates performance on production code or another model.
 
-Times include inspection and every model call within each review, but exclude
-shared fixture construction and provider-client initialization. Raw calls also
+Times include provider-client initialization, inspection and every model call
+within each review, but exclude shared fixture construction. Raw calls also
 include native provider usage fields. Token counts are not a provider bill.
 
 ### Local checks

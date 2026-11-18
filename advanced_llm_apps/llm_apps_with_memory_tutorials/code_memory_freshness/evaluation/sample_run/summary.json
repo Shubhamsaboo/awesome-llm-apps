@@ -3,27 +3,27 @@
     "correct": 18,
     "attempts": 18,
     "model_calls": 18,
-    "wall_seconds": 30.30072143196594,
+    "wall_seconds": 30.50487057797727,
     "input_tokens": 8892,
-    "output_tokens": 3186,
-    "seconds": 30.253411974961637
+    "output_tokens": 3256,
+    "seconds": 30.423284486983903
   },
   "always": {
     "correct": 18,
     "attempts": 18,
     "model_calls": 36,
-    "wall_seconds": 64.46944282195182,
-    "input_tokens": 21358,
-    "output_tokens": 5881,
-    "seconds": 64.42044951606658
+    "wall_seconds": 56.821529651089804,
+    "input_tokens": 21333,
+    "output_tokens": 6114,
+    "seconds": 56.73868877295172
   },
   "freshness": {
     "correct": 18,
     "attempts": 18,
     "model_calls": 33,
-    "wall_seconds": 51.1532290809555,
-    "input_tokens": 19288,
-    "output_tokens": 5562,
-    "seconds": 51.10536442496232
+    "wall_seconds": 50.54650381510146,
+    "input_tokens": 19085,
+    "output_tokens": 5280,
+    "seconds": 49.857169380033156
   }
 }
