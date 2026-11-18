@@ -1,6 +1,5 @@
 langchain
 langgraph
-langchainhub
 langchain-community
 langchain-google-genai
 langchain-qdrant
