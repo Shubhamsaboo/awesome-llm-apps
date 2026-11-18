@@ -165,20 +165,23 @@ class Model:
                                      messages=[{"role": "user", "content": [{"text": prompt}]}],
                                      inferenceConfig={"maxTokens": 900})
             text = "".join(b.get("text", "") for b in r["output"]["message"]["content"])
+            native_usage = r["usage"]
             usage = {"input_tokens": r["usage"]["inputTokens"],
                      "output_tokens": r["usage"]["outputTokens"]}
         elif self.provider == "Anthropic":
             r = self.client.messages.create(model=self.model, system=system, max_tokens=900,
                                             messages=[{"role": "user", "content": prompt}])
             text = "".join(b.text for b in r.content if b.type == "text")
+            native_usage = r.usage.model_dump()
             usage = {"input_tokens": r.usage.input_tokens, "output_tokens": r.usage.output_tokens}
         else:
             r = self.client.chat.completions.create(model=self.model, max_completion_tokens=900,
                     response_format={"type": "json_object"},
                     messages=[{"role": "system", "content": system}, {"role": "user", "content": prompt}])
             text = r.choices[0].message.content
+            native_usage = r.usage.model_dump()
             usage = {"input_tokens": r.usage.prompt_tokens, "output_tokens": r.usage.completion_tokens}
-        self.calls.append({**usage, "seconds": time.monotonic() - start})
+        self.calls.append({**usage, "provider_usage": native_usage, "seconds": time.monotonic() - start})
         return json.loads(text)
 
 
@@ -311,7 +314,7 @@ def main():
                 st.json(result)
                 st.json(ask.calls)
         except Exception as exc:
-            st.error(f"Review did not complete: {type(exc).__name__}: {exc}")
+            st.error(f"Review did not complete ({type(exc).__name__}). No recheck was recorded.")
 
 
 if __name__ == "__main__":

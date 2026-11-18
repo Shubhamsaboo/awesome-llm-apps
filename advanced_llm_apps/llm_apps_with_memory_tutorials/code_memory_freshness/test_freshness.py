@@ -104,16 +104,6 @@ def test_model_cannot_invent_a_source_quote(tmp_path):
 def test_streamlit_switches_scenarios_and_records_a_review(monkeypatch):
     from streamlit.testing.v1 import AppTest
 
-    class FakeModel:
-        def __init__(self, *args):
-            self.calls = []
-
-        def __call__(self, prompt):
-            self.calls.append({"input_tokens": 1, "output_tokens": 1, "seconds": 0.01})
-            if prompt.startswith("Recheck"):
-                return {"verdict": "supported", "reason": "Cache remains", "evidence": "return _seen[request_id]"}
-            return {"action": "reuse", "reason": "The cached result is returned", "evidence": "return _seen[request_id]"}
-
     # AppTest executes this file as __main__, so patch the provider imports rather
     # than the separately imported module's class in a second namespace.
     import openai

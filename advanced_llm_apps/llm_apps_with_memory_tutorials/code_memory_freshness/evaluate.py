@@ -9,6 +9,7 @@ import hashlib
 import json
 import random
 import tempfile
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -40,11 +41,13 @@ def run(args):
                     ask = Model(args.provider, args.model, region=args.region)
                     row = {"case": key, "repeat": repeat, "mode": mode,
                            "expected_action": case["expected_action"]}
+                    started = time.monotonic()
                     try:
                         result = review(ask, repo, note, case["question"], mode)
                         row.update(result=result, correct=result["review"]["action"] == case["expected_action"])
                     except Exception as exc:
                         row.update(error_type=type(exc).__name__, correct=False)
+                    row["wall_seconds"] = time.monotonic() - started
                     row["calls"] = ask.calls
                     rows.append(row)
                     # Preserve every response before the next call, including failures.
@@ -58,7 +61,7 @@ def run(args):
         arm = [r for r in rows if r["mode"] == mode]
         calls = [c for r in arm for c in r["calls"]]
         summary[mode] = {"correct": sum(r["correct"] for r in arm), "attempts": len(arm),
-                         "model_calls": len(calls),
+                         "model_calls": len(calls), "wall_seconds": sum(r["wall_seconds"] for r in arm),
                          **{k: sum(c[k] for c in calls) for k in ["input_tokens", "output_tokens", "seconds"]}}
     (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps(summary, indent=2))
