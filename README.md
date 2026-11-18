@@ -238,6 +238,7 @@ streamlit run travel_agent.py
 
 *Agents and chatbots that remember conversations and user state across sessions.*
 
+*   [🧭 Code Memory Freshness Lab](advanced_llm_apps/llm_apps_with_memory_tutorials/code_memory_freshness/) - Recheck saved code findings when functions change, move or depend on changed helpers
 *   [💾 AI ArXiv Agent with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/ai_arxiv_agent_memory/) - Paper search that remembers your research interests
 *   [🛩️ AI Travel Agent with Memory](advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/) - A travel assistant that remembers your preferences
 *   [💬 Llama3 Stateful Chat](advanced_llm_apps/llm_apps_with_memory_tutorials/llama3_stateful_chat/) - Session-persistent chat with Llama 3
