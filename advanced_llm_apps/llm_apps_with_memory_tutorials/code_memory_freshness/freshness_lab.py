@@ -98,7 +98,7 @@ class Store:
     """Keep the original anchor and an append-only history of rechecks separately."""
 
     def __init__(self, path: str):
-        self.db = sqlite3.connect(path)
+        self.db = sqlite3.connect(path, check_same_thread=False)
         self.db.execute("CREATE TABLE IF NOT EXISTS notes (id TEXT PRIMARY KEY, payload TEXT)")
         self.db.execute("CREATE TABLE IF NOT EXISTS checks (note_id TEXT, snapshot TEXT, payload TEXT)")
 
@@ -144,6 +144,8 @@ class Model:
     """Three transports, one JSON contract and one token budget for each call."""
 
     def __init__(self, provider: str, model: str, api_key="", region=""):
+        if provider not in {"OpenAI", "Anthropic", "Bedrock"}:
+            raise ValueError("Unknown model provider")
         self.provider, self.model, self.calls = provider, model, []
         if provider == "Bedrock":
             import boto3
@@ -233,6 +235,8 @@ CURRENT SOURCE:\n{current['context']}"""
         raise ValueError("Invalid review action")
     if not isinstance(out.get("evidence"), str) or (out["evidence"] and out["evidence"] not in current["context"]):
         raise ValueError("Review did not cite current source verbatim")
+    if out["action"] != "recheck" and not out["evidence"]:
+        raise ValueError("A reuse or rejection needs current source evidence")
     return {"mode": mode, "state": current["state"], "snapshot": current["snapshot"],
             "target": current["target"], "check": check, "review": out}
 
@@ -277,6 +281,7 @@ def main():
     if st.session_state.get("scenario") != choice:
         old = st.session_state.get("sandbox")
         if old:
+            st.session_state.store.close()
             old.cleanup()
         sandbox = tempfile.TemporaryDirectory(prefix="code-memory-freshness-")
         repo = Path(sandbox.name) / "repo"
