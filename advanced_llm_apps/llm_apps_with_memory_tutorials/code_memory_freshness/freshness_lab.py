@@ -149,13 +149,15 @@ class Model:
         self.provider, self.model, self.calls = provider, model, []
         if provider == "Bedrock":
             import boto3
-            self.client = boto3.client("bedrock-runtime", region_name=region or None)
+            from botocore.config import Config
+            self.client = boto3.client("bedrock-runtime", region_name=region or None,
+                config=Config(connect_timeout=10, read_timeout=90, retries={"total_max_attempts": 1}))
         elif provider == "Anthropic":
             import anthropic
-            self.client = anthropic.Anthropic(api_key=api_key or None)
+            self.client = anthropic.Anthropic(api_key=api_key or None, max_retries=0, timeout=90)
         else:
             from openai import OpenAI
-            self.client = OpenAI(api_key=api_key or None)
+            self.client = OpenAI(api_key=api_key or None, max_retries=0, timeout=90)
 
     def __call__(self, prompt: str) -> dict:
         start = time.monotonic()

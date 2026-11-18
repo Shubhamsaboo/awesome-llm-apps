@@ -108,10 +108,16 @@ def test_streamlit_switches_scenarios_and_records_a_review(monkeypatch):
     # than the separately imported module's class in a second namespace.
     import openai
     from types import SimpleNamespace
-    client = SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=lambda **kw:
-        SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps({
-            "action": "reuse", "reason": "The cache returns", "evidence": "return _seen[request_id]"})))],
-                        usage=SimpleNamespace(prompt_tokens=1, completion_tokens=1))))))
+    from openai.types.completion_usage import CompletionUsage
+
+    content = json.dumps({"action": "reuse", "reason": "The cache returns",
+                          "evidence": "return _seen[request_id]"})
+    response = SimpleNamespace(
+        choices=[SimpleNamespace(message=SimpleNamespace(content=content))],
+        usage=CompletionUsage(prompt_tokens=1, completion_tokens=1, total_tokens=2),
+    )
+    completions = SimpleNamespace(create=lambda **kw: response)
+    client = SimpleNamespace(chat=SimpleNamespace(completions=completions))
     monkeypatch.setattr(openai, "OpenAI", lambda **kw: client)
     app = AppTest.from_file(str(lab.HERE / "freshness_lab.py"), default_timeout=20).run()
     assert not app.exception
