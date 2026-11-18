@@ -226,3 +226,57 @@ def test_evaluation_refuses_an_empty_cohort_before_creating_output(tmp_path):
     with pytest.raises(ValueError, match="repeat"):
         evaluate.run(SimpleNamespace(repeats=0, output=str(output)))
     assert not output.exists()
+
+
+@pytest.mark.parametrize("operation_fails", [False, True])
+@pytest.mark.parametrize("cleanup_fails", [False, True])
+def test_evaluation_keeps_the_attempt_when_cleanup_fails(
+    tmp_path, monkeypatch, operation_fails, cleanup_fails
+):
+    from types import SimpleNamespace
+
+    import evaluate
+
+    class RecordedModel:
+        def __init__(self, *args, **kwargs):
+            self.calls = [{"input_tokens": 3, "output_tokens": 2, "seconds": 0.01}]
+
+        def close(self):
+            if cleanup_fails:
+                raise OSError("cleanup failed")
+
+    def response(*args, **kwargs):
+        if operation_fails:
+            raise ValueError("provider response failed")
+        return {"review": {"action": "reuse", "reason": "completed response"}}
+
+    monkeypatch.setattr(evaluate, "Model", RecordedModel)
+    monkeypatch.setattr(evaluate, "review", response)
+    output = tmp_path / "cleanup-run"
+    args = SimpleNamespace(
+        provider="Bedrock",
+        model="test",
+        region="test",
+        repeats=1,
+        seed=23,
+        output=str(output),
+    )
+    if operation_fails or cleanup_fails:
+        with pytest.raises(RuntimeError, match="Stopped"):
+            evaluate.run(args)
+    else:
+        evaluate.run(args)
+    rows = [
+        json.loads(line)
+        for line in (output / "attempts.jsonl").read_text().splitlines()
+    ]
+    assert len(rows) == (1 if operation_fails or cleanup_fails else 18)
+    first = rows[0]
+    assert first["calls"] == [{"input_tokens": 3, "output_tokens": 2, "seconds": 0.01}]
+    if operation_fails:
+        assert first["error_type"] == "ValueError" and not first["correct"]
+    else:
+        assert first["result"]["review"]["reason"] == "completed response"
+        assert first["correct"] and "error_type" not in first
+    assert first.get("cleanup_error_type") == ("OSError" if cleanup_fails else None)
+    assert (output / "summary.json").exists() is not (operation_fails or cleanup_fails)

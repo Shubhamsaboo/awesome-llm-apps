@@ -131,8 +131,9 @@ python evaluate.py --provider Bedrock --region us-east-1 \
 For OpenAI or Anthropic, pass that provider and a model name, with its usual API
 key environment variable. Output directories must be new. The protocol stores
 source/case hashes and ordering seed; `attempts.jsonl` retains every response,
-provider token usage and failure. A failed attempt stops the run, without retrying
-or hiding it. `summary.json` is written only for a complete run.
+provider token usage and failure. A failed operation or cleanup stops the run after preserving the attempt and
+usage, without retrying or hiding it. Cleanup errors are recorded separately from
+operation errors. `summary.json` is written only for a complete run.
 
 The reference labels grade handling of a saved note, **not general code-review
 quality**. These six authored teaching cases are not a public-repository benchmark.
@@ -140,6 +141,13 @@ A correct answer can still have a weak explanation. File/AST hashes do not prove
 semantic equivalence, and this experiment cannot establish a broad quality win.
 
 ### Recorded example run
+
+The recorded run is pinned to
+[commit `c85c623`](https://github.com/zlareb1/awesome-llm-apps/commit/c85c623c31391164a56f0509d8f363ec082eb48f).
+Its evaluator hash is `3217140168eaddcd339d646c7e04b5820fccc7de1d0a2f815d161a109f65e241`.
+The evaluator also preserves responses when client cleanup fails; that failure-path
+change was checked offline after the recorded run. The application, cases and
+model prompts used for the recorded result are unchanged.
 
 The checked-in [protocol](evaluation/sample_run/protocol.json),
 [all 54 responses](evaluation/sample_run/attempts.jsonl) and

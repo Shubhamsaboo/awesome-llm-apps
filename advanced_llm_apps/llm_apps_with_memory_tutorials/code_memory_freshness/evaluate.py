@@ -77,7 +77,10 @@ def run(args):
                     row["wall_seconds"] = time.monotonic() - started
                     row["calls"] = ask.calls if ask is not None else []
                     if ask is not None:
-                        ask.close()
+                        try:
+                            ask.close()
+                        except Exception as exc:  # noqa: BLE001 — cleanup cannot discard a paid response or mask its error
+                            row["cleanup_error_type"] = type(exc).__name__
                     rows.append(row)
                     # Preserve every response before the next call, including failures.
                     with (output / "attempts.jsonl").open("a") as f:
@@ -90,7 +93,7 @@ def run(args):
                         .get("review", {})
                         .get("action", row.get("error_type")),
                     )
-                    if "error_type" in row:
+                    if "error_type" in row or "cleanup_error_type" in row:
                         raise RuntimeError(
                             "Stopped after a failed attempt; partial results retained"
                         )
