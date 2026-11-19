@@ -91,6 +91,6 @@ prompt = "Find company names, emails, and phone numbers"
 
 ## 📖 Documentation
 
-- **ScrapeGraphAI Library**: [ScrapeGraphAI GitHub](https://github.com/VinciGit00/Scrapegraph-ai)
+- **ScrapeGraphAI Library**: [ScrapeGraphAI GitHub](https://github.com/ScrapeGraphAI/Scrapegraph-ai)
 
 ---
