@@ -20,6 +20,7 @@ DEFAULT_MAX_TOOL_CALLS = 6
 READ_TIMEOUT_SECONDS = 120
 MAX_TOOL_RESULT_CHARS = 12_000
 MAX_TRACE_CHARS = 500
+MAX_TOOL_DISCOVERY_PAGES = 100
 OPENAI_FUNCTION_NAME = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 
 
@@ -41,15 +42,26 @@ def explain_error(exc: BaseException) -> str:
 
 
 async def list_all_tools(session: ClientSession) -> list[Any]:
-    """Collect every page returned by MCP tool discovery."""
+    """Collect every page returned by MCP tool discovery.
+
+    Pagination is bounded and a repeated cursor is treated as an error, so a
+    misbehaving server cannot make the bridge loop forever.
+    """
     tools: list[Any] = []
     cursor = None
-    while True:
+    seen_cursors: set[str] = set()
+    for _ in range(MAX_TOOL_DISCOVERY_PAGES):
         page = await session.list_tools(cursor=cursor)
         tools.extend(page.tools)
         cursor = getattr(page, "nextCursor", None)
         if not cursor:
             return tools
+        if cursor in seen_cursors:
+            raise ValueError("MCP tool discovery repeated a cursor; aborting.")
+        seen_cursors.add(cursor)
+    raise ValueError(
+        f"MCP tool discovery exceeded {MAX_TOOL_DISCOVERY_PAGES} pages; aborting."
+    )
 
 
 def mcp_tool_to_openai(tool: Any) -> dict[str, Any]:
@@ -208,6 +220,54 @@ def select_tools(tools: list[Any], selected_names: list[str] | None) -> list[Any
     return [by_name[name] for name in selected_names]
 
 
+def _unique_tool_calls(message: Any) -> list[Any]:
+    """Return the assistant's tool calls with missing or duplicate ids removed.
+
+    Repeating a tool_call id in one reply makes the next OpenAI request invalid,
+    so only the first occurrence is kept - and only it gets a tool result.
+    """
+    calls = []
+    seen_ids: set[str] = set()
+    for call in getattr(message, "tool_calls", None) or []:
+        call_id = getattr(call, "id", None)
+        if not isinstance(call_id, str) or not call_id or call_id in seen_ids:
+            print(f"[skip] tool call with missing or duplicate id: {call_id!r}")
+            continue
+        seen_ids.add(call_id)
+        calls.append(call)
+    return calls
+
+
+def assistant_message_for_replay(message: Any, tool_calls: list[Any]) -> dict[str, Any]:
+    """Build the minimal assistant message accepted by the next chat request.
+
+    ``model_dump()`` replays every non-null field the SDK parsed, including
+    output-only ones the API rejects on input. Keep only the fields the chat
+    API accepts, using the already-deduplicated tool calls.
+    """
+    replay: dict[str, Any] = {
+        "role": "assistant",
+        "content": getattr(message, "content", None) or "",
+    }
+    if not tool_calls:
+        return replay
+
+    replay["tool_calls"] = []
+    for call in tool_calls:
+        function = getattr(call, "function", None)
+        replay["tool_calls"].append(
+            {
+                "id": call.id,
+                "type": getattr(call, "type", None) or "function",
+                "function": {
+                    "name": getattr(function, "name", None) or "",
+                    "arguments": getattr(function, "arguments", None) or "{}",
+                },
+            }
+        )
+    return replay
+
+
 async def run_bridge(
     task: str | None,
     api_key: str | None,
@@ -257,7 +317,9 @@ async def run_bridge(
             ]
             requested_calls = 0
 
-            async with AsyncOpenAI(api_key=api_key) as client:
+            async with AsyncOpenAI(
+                api_key=api_key, timeout=READ_TIMEOUT_SECONDS
+            ) as client:
                 while True:
                     request: dict[str, Any] = {"model": model, "messages": messages}
                     if requested_calls < max_tool_calls:
@@ -268,8 +330,8 @@ async def run_bridge(
                         )
                     response = await client.chat.completions.create(**request)
                     message = response.choices[0].message
-                    messages.append(message.model_dump(exclude_none=True))
-                    tool_calls = message.tool_calls or []
+                    tool_calls = _unique_tool_calls(message)
+                    messages.append(assistant_message_for_replay(message, tool_calls))
                     if not tool_calls:
                         answer = message.content or "No final answer was returned."
                         print(f"[final] {answer}")

@@ -444,6 +444,63 @@ def create_governed_tools(policy_engine: PolicyEngine) -> Dict[str, Callable]:
     }
 
 
+def _tool_call_texts(reply: str) -> List[str]:
+    """Return every ``TOOL: name(...)`` call in a model reply.
+
+    A call can span several lines when an argument contains a newline, so scan
+    to the matching closing parenthesis instead of stopping at the first line.
+    More than one call in a single reply is also allowed.
+    """
+    calls: List[str] = []
+    position = 0
+    while True:
+        marker = reply.find("TOOL:", position)
+        if marker == -1:
+            return calls
+
+        start = marker + len("TOOL:")
+        while start < len(reply) and reply[start].isspace():
+            start += 1
+
+        match = re.match(r"[A-Za-z_]\w*\s*\(", reply[start:])
+        if not match:
+            position = start
+            continue
+
+        open_paren = start + match.end() - 1
+        depth = 0
+        quote = None
+        escaped = False
+        end = None
+        for index in range(open_paren, len(reply)):
+            char = reply[index]
+            if quote is not None:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == quote:
+                    quote = None
+                continue
+            if char in "\"'":
+                quote = char
+            elif char == "(":
+                depth += 1
+            elif char == ")":
+                depth -= 1
+                if depth == 0:
+                    end = index + 1
+                    break
+
+        if end is None:
+            # Unterminated call: keep the line so the parser can report it.
+            line_end = reply.find("\n", start)
+            end = len(reply) if line_end == -1 else line_end
+
+        calls.append(reply[start:end].strip())
+        position = end
+
+
 # ============================================================================
 # DEMO: SIMPLE AGENT WITH GOVERNANCE
 # ============================================================================
@@ -489,11 +546,12 @@ If no tool is needed, just respond normally."""
         llm_response = response.choices[0].message.content or ""
         print(f"\n🤖 Agent response: {llm_response}")
         
-        # Parse and execute tool call if present
-        if "TOOL:" in llm_response:
-            tool_line = llm_response.split("TOOL:")[1].strip().split("\n")[0]
-            return self._execute_tool_call(tool_line)
-        
+        # Execute every tool call in the reply, including calls whose arguments
+        # span more than one line.
+        tool_calls = _tool_call_texts(llm_response)
+        if tool_calls:
+            return "\n".join(self._execute_tool_call(call) for call in tool_calls)
+
         return llm_response
     
     def _execute_tool_call(self, tool_call: str) -> str:
