@@ -38,9 +38,8 @@ def main():
     required_keys_info = {
         "gpt-4o": "OPENAI_API_KEY",
         "gpt-5.6-sol": "OPENAI_API_KEY",
-        "claude-3.5": "ANTHROPIC_API_KEY",
-        "claude-3.7": "ANTHROPIC_API_KEY",
-        "claude-3.7-thinking": "ANTHROPIC_API_KEY",
+        "claude-sonnet-5.5": "ANTHROPIC_API_KEY",
+        "claude-sonnet-5.5-thinking": "ANTHROPIC_API_KEY",
         "gemini-flash": "GOOGLE_API_KEY",
         "gemini-pro": "GOOGLE_API_KEY",
         "llama-3.3": "GROQ_API_KEY",
@@ -67,9 +66,8 @@ def main():
         model_options = {
             "gpt-4o": "openai:gpt-4o",
             "gpt-5.6-sol": "openai:gpt-5.6-sol",
-            "claude-3.5": "anthropic:claude-3-5-sonnet",
-            "claude-3.7": "anthropic:claude-3-7-sonnet",
-            "claude-3.7-thinking": "anthropic:claude-3-7-sonnet-thinking",
+            "claude-sonnet-5.5": "anthropic:claude-sonnet-5-5",
+            "claude-sonnet-5.5-thinking": "anthropic:claude-sonnet-5-5-thinking",
             "gemini-flash": "google:gemini-2.0-flash",
             "gemini-pro": "google:gemini-2.0-pro-exp-02-05",
             "llama-3.3": "groq:llama-3.3-70b-versatile",
@@ -80,7 +78,7 @@ def main():
         selected_p_x = st.selectbox(
             "Select Player X",
             list(model_options.keys()),
-            index=list(model_options.keys()).index("claude-3.7-thinking"),
+            index=list(model_options.keys()).index("claude-sonnet-5.5-thinking"),
             key="model_p1",
         )
         selected_p_o = st.selectbox(

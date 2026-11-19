@@ -6,7 +6,7 @@ An Agno agentic system that provides expert software architecture analysis and r
 
 - **Dual AI Model Architecture**
   - **DeepSeek Reasoner**: Provides initial technical analysis and structured reasoning about architecture patterns, tools, and implementation strategies
-  - **Claude-3.5**: Generates detailed explanations, implementation roadmaps, and technical specifications based on DeepSeek's analysis
+  - **Claude Sonnet 5.5**: Generates detailed explanations, implementation roadmaps, and technical specifications based on DeepSeek's analysis
 
 - **Comprehensive Analysis Components**
   - Architecture Pattern Selection

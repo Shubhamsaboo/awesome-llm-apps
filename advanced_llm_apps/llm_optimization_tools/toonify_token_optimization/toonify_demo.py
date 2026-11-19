@@ -200,7 +200,7 @@ Provide: 1) Total revenue, 2) Orders by status, 3) Average order value"""
             client = Anthropic(api_key=anthropic_key)
             
             response = client.messages.create(
-                model="claude-3-5-sonnet-20241022",
+                model="claude-sonnet-5-5",
                 max_tokens=200,
                 messages=[{
                     "role": "user",

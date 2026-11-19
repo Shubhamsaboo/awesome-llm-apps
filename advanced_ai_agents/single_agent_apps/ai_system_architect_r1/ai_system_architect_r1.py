@@ -14,7 +14,7 @@ from agno.models.anthropic import Claude
 
 # Model Constants
 DEEPSEEK_MODEL: str = "deepseek-reasoner"
-CLAUDE_MODEL: str = "claude-3-5-sonnet-20241022"
+CLAUDE_MODEL: str = "claude-sonnet-5-5"
 
 class ArchitecturePattern(str, Enum):
     """Architectural patterns for system design."""
@@ -78,7 +78,7 @@ class ModelChain:
         
         # Create Claude model with system prompt
         claude_model = Claude(
-            id="claude-3-5-sonnet-20241022", 
+            id=CLAUDE_MODEL,
             api_key=anthropic_api_key,
             system_prompt="""Given the user's query and the DeepSeek reasoning:
             1. Provide a detailed analysis of the architecture decisions
