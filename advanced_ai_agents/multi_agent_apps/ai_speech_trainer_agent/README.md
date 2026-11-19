@@ -81,8 +81,8 @@ Built with Streamlit, the UI includes:
 ## Setup Instructions
 ### 1. Clone the repo
 ```sh
-git clone https://github.com/aminajavaid30/ai_speech_trainer.git
-cd ai_speech_trainer
+git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
+cd awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_speech_trainer_agent
 ```
 
 ### 2. Install dependencies
