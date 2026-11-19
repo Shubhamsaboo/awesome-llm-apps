@@ -1,4 +1,14 @@
-from openai_remote_mcp_bridge import validate_tool_arguments
+import asyncio
+from types import SimpleNamespace
+
+import pytest
+
+from openai_remote_mcp_bridge import (
+    _unique_tool_calls,
+    assistant_message_for_replay,
+    list_all_tools,
+    validate_tool_arguments,
+)
 
 
 SCHEMA = {
@@ -146,3 +156,76 @@ def test_integral_float_satisfies_integer():
     assert validate_tool_arguments("t", {"x": 3.0}, {"properties": {"x": {"type": "integer"}}}) is None
     assert validate_tool_arguments("t", {"x": 3.5}, {"properties": {"x": {"type": "integer"}}}) is not None
     assert validate_tool_arguments("t", {"x": True}, {"properties": {"x": {"type": "integer"}}}) is not None
+
+
+class _FakeSession:
+    def __init__(self, pages):
+        self.pages = pages
+        self.calls = []
+
+    async def list_tools(self, cursor=None):
+        self.calls.append(cursor)
+        return self.pages[len(self.calls) - 1]
+
+
+def test_tool_discovery_accepts_a_normal_paginated_sequence():
+    session = _FakeSession([
+        SimpleNamespace(tools=["one"], nextCursor="A"),
+        SimpleNamespace(tools=["two"], nextCursor=None),
+    ])
+
+    assert asyncio.run(list_all_tools(session)) == ["one", "two"]
+
+
+def test_tool_discovery_aborts_when_the_server_repeats_a_cursor():
+    session = _FakeSession([
+        SimpleNamespace(tools=[], nextCursor="A"),
+        SimpleNamespace(tools=[], nextCursor="A"),
+    ])
+
+    with pytest.raises(ValueError, match="repeated a cursor"):
+        asyncio.run(list_all_tools(session))
+
+
+def test_duplicate_tool_call_ids_are_replayed_once():
+    message = SimpleNamespace(
+        content=None,
+        refusal="output-only field",
+        tool_calls=[
+            SimpleNamespace(
+                id="dup",
+                type="function",
+                function=SimpleNamespace(name="search", arguments='{"q": "x"}'),
+            ),
+            SimpleNamespace(
+                id="dup",
+                type="function",
+                function=SimpleNamespace(name="search", arguments='{"q": "y"}'),
+            ),
+        ],
+    )
+
+    calls = _unique_tool_calls(message)
+    replay = assistant_message_for_replay(message, calls)
+
+    assert len(calls) == 1
+    assert replay == {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+            {
+                "id": "dup",
+                "type": "function",
+                "function": {"name": "search", "arguments": '{"q": "x"}'},
+            }
+        ],
+    }
+
+
+def test_replay_omits_output_only_fields_when_there_are_no_tool_calls():
+    message = SimpleNamespace(content="done", refusal="declined", tool_calls=None)
+
+    assert assistant_message_for_replay(message, _unique_tool_calls(message)) == {
+        "role": "assistant",
+        "content": "done",
+    }
