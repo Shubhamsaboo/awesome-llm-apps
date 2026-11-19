@@ -3,6 +3,7 @@ import datetime as dt
 from always_on_hn_briefing_agent.scout import (
     AGENT_KEYWORDS,
     PACIFIC,
+    HNFrontPageParser,
     curate_stories,
     render_brief,
     run_ambient_scout,
@@ -40,3 +41,36 @@ def test_run_ambient_scout_returns_delivery_handoff_payload():
     assert "text" in payload
     assert "html" in payload
     assert "delivery_note" in payload
+
+
+def _hn_row(item_id, rank, href, title, site, points, comments):
+    return (
+        f'<tr class="athing submission" id="{item_id}">'
+        f'<td align="right" valign="top" class="title"><span class="rank">{rank}.</span></td>'
+        f'<td class="title"><span class="titleline"><a href="{href}">{title}</a>'
+        f'<span class="sitebit comhead"> (<a href="from?site={site}">'
+        f'<span class="sitestr">{site}</span></a>)</span></span></td></tr>'
+        f'<tr><td colspan="2"></td><td class="subtext"><span class="subline">'
+        f'<span class="score" id="score_{item_id}">{points} points</span> by '
+        f'<a href="user?id=someone">someone</a> '
+        f'<span class="age" title="2026-06-08T09:00:00"><a href="item?id={item_id}">1 hour ago</a></span> '
+        f'<span id="unv_{item_id}"></span> | <a href="hide?id={item_id}&amp;goto=news">hide</a> | '
+        f'<a href="item?id={item_id}">{comments}&nbsp;comments</a></span></td></tr>'
+    )
+
+
+def test_front_page_parser_reads_every_story_from_hn_markup():
+    markup = "<table>" + "".join(
+        [
+            _hn_row(1, 1, "https://example.com/agents", "Agent workflows", "example.com", 120, 45),
+            _hn_row(2, 2, "https://example.org/mcp", "MCP servers", "example.org", 80, 12),
+        ]
+    ) + "</table>"
+
+    parser = HNFrontPageParser()
+    parser.feed(markup)
+
+    assert [(s["title"], s["url"], s["points"], s["comments"]) for s in parser.stories] == [
+        ("Agent workflows", "https://example.com/agents", 120, 45),
+        ("MCP servers", "https://example.org/mcp", 80, 12),
+    ]

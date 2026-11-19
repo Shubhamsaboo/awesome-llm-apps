@@ -77,6 +77,7 @@ class HNFrontPageParser(HTMLParser):
         self._current_item_id = ""
         self._in_score = False
         self._in_subtext = False
+        self._subtext_tag = ""
         self._subtext_link_text = ""
         self.stories: list[dict[str, Any]] = []
 
@@ -93,8 +94,10 @@ class HNFrontPageParser(HTMLParser):
         elif tag == "span" and class_name == "score":
             self._in_score = True
             self._current_text = []
-        elif tag == "span" and class_name == "subtext":
+        elif tag in {"span", "td"} and class_name == "subtext":
+            # HN renders the points/comments row as <td class="subtext">.
             self._in_subtext = True
+            self._subtext_tag = tag
         elif self._in_subtext and tag == "a":
             self._subtext_link_text = ""
 
@@ -113,6 +116,9 @@ class HNFrontPageParser(HTMLParser):
                 "rank": rank,
             }
             self.stories.append(self._latest_story)
+            # Only the first link is the story; the "(site.com)" link that
+            # follows inside the titleline must not start a new title.
+            self._in_title = False
             self._current_item_id = ""
             self._current_href = ""
             self._current_text = []
@@ -127,7 +133,7 @@ class HNFrontPageParser(HTMLParser):
         elif self._in_subtext and tag == "a":
             if self._latest_story is not None and "comment" in self._subtext_link_text:
                 self._latest_story["comments"] = _first_int(self._subtext_link_text)
-        elif tag == "span" and self._in_subtext:
+        elif self._in_subtext and tag == self._subtext_tag:
             self._in_subtext = False
 
     def handle_data(self, data: str) -> None:
