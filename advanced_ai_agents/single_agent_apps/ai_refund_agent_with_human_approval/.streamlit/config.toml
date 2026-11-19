@@ -1,0 +1,6 @@
+[client]
+# no "Deploy" button or developer menu in the example
+toolbarMode = "minimal"
+
+[browser]
+gatherUsageStats = false

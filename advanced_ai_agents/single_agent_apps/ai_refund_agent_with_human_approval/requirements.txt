@@ -1,0 +1,7 @@
+provenza>=0.2.2
+openai>=1.40
+streamlit>=1.38
+fastapi>=0.110
+uvicorn>=0.30
+httpx>=0.27
+pytest>=8
