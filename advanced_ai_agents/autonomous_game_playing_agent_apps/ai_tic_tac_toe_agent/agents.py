@@ -62,7 +62,7 @@ def get_model_for_provider(provider: str, model_name: str):
             return Claude(
                 id="claude-sonnet-5-5",
                 max_tokens=8192,
-                thinking={"type": "enabled", "budget_tokens": 4096},
+                thinking={"type": "adaptive"},
             )
         else:
             return Claude(id=model_name)
