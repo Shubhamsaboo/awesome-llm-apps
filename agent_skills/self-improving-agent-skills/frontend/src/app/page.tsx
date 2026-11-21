@@ -16,6 +16,7 @@ export default function Home() {
   const [scenarios, setScenarios] = useState<any[]>([]);
   const [evals, setEvals] = useState<any[]>([]);
   const [finalResult, setFinalResult] = useState<any>(null);
+  const [guards, setGuards] = useState({ min_gain: 0, holdout_fraction: 0 });
 
   const handleUploadComplete = (
     sid: string,
@@ -87,6 +88,8 @@ export default function Home() {
               evals={evals}
               onScenariosChange={setScenarios}
               onEvalsChange={setEvals}
+              guards={guards}
+              onGuardsChange={setGuards}
               onComplete={handleConfigComplete}
             />
           )}
@@ -98,6 +101,7 @@ export default function Home() {
               model={model}
               scenarios={scenarios}
               evals={evals}
+              guards={guards}
               onComplete={handleOptimizationComplete}
             />
           )}
