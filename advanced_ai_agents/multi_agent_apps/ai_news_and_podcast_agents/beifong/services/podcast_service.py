@@ -287,7 +287,9 @@ class PodcastService:
             if not existing:
                 raise HTTPException(status_code=404, detail="Podcast not found")
             query = "DELETE FROM podcasts WHERE id = ?"
-            result = await podcasts_db.execute_query(query, (podcast_id,))
+            # execute_query returns cursor.lastrowid, which is 0 after a DELETE, so it
+            # can't signal success. The row is known to exist (404 is raised above).
+            await podcasts_db.execute_query(query, (podcast_id,))
             if delete_assets:
                 if existing.get("audio_path"):
                     audio_path = os.path.join(AUDIO_DIR, existing["audio_path"])
@@ -297,7 +299,7 @@ class PodcastService:
                     img_path = os.path.join(IMAGE_DIR, existing["banner_img_path"])
                     if os.path.exists(img_path):
                         os.remove(img_path)
-            return result > 0
+            return True
         except Exception as e:
             if isinstance(e, HTTPException):
                 raise e
