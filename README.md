@@ -10,6 +10,8 @@ Works with Claude, Gemini, GPT, DeepSeek, Llama, Qwen and other open-source mode
 
 **[Step-by-step tutorials on Unwind AI](https://www.theunwindai.com)** · **[Quick start](#-run-one-now)** · **[Browse all templates](#-browse-all-templates)**
 
+**[🇨🇳 中文版](README.zh-CN.md)**
+
 
 <a href="https://trendshift.io/repositories/9876" target="_blank">
   <img src="https://trendshift.io/api/badge/repositories/9876" width="220" alt="Featured on Trendshift as the #1 repository of the day">
