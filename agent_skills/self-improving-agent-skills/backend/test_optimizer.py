@@ -1513,6 +1513,39 @@ def test_default_scorer_accepts_bare_array_and_excludes_unparseable(monkeypatch)
     assert out["baseline_score"] == 100.0 and out["mutation_log"] == []
 
 
+def test_default_scorer_rejects_candidate_winning_only_shared_clean_check(monkeypatch):
+    opt = SkillOptimizer(api_key="test-key")
+    scenarios = [{"id": i, "input": f"request {i}"} for i in (1, 2)]
+    evals = [{"id": i, "name": f"e{i}", "question": f"check {i}?"} for i in (1, 2, 3)]
+    replies = iter([
+        json.dumps({"results": [{"eval_id": i, "passed": True} for i in (1, 2, 3)]}),
+        json.dumps({"results": [{"eval_id": 1, "passed": False}]}),
+        "not json",
+        json.dumps([{"eval_id": 1, "passed": True}, {"eval_id": 2, "passed": False},
+                    {"eval_id": 3, "passed": False}]),
+    ])
+
+    async def fake_ask(agent, prompt):
+        return "output" if prompt.startswith("Execute") else next(replies)
+
+    async def fake_analyze(*args, **kwargs):
+        return {"diagnosis": "d", "mutation_strategy": "s", "target_section": "t", "suggested_change": "c"}
+
+    async def fake_mutate(*args, **kwargs):
+        return {"description": "m", "reasoning": "r", "new_skill_md": SKILL_V1}
+
+    monkeypatch.setattr(opt, "_ask", fake_ask)
+    monkeypatch.setattr(opt, "_analyze_failures", fake_analyze)
+    monkeypatch.setattr(opt, "_mutate_skill", fake_mutate)
+    result = run(opt.optimize({"SKILL.md": SKILL_V0}, scenarios, evals, max_rounds=1))
+
+    assert result["mutation_log"][0]["outcome"] == "inconclusive"
+    assert result["mutation_log"][0]["score_after"] == pytest.approx(33.3)
+    assert result["mutation_log"][0]["parse_errors"] == 1
+    assert result["improved_skill_md"] == SKILL_V0
+    assert result["baseline_score"] == result["final_score"] == 75.0
+
+
 def test_lower_score_never_kept_and_min_gain_boundary_kept(monkeypatch):
     opt = SkillOptimizer(api_key="test-key")
 
@@ -1549,3 +1582,15 @@ def test_holdout_split_report_warns_on_small_sets(n, frac, holdout):
 def test_normalize_score_result_rejects_malformed(bad):
     with pytest.raises(ValueError):
         _normalize_score_result(bad)
+
+
+@pytest.mark.parametrize("bad", [-1, float("inf"), float("nan"), 1.5, True])
+def test_normalize_score_result_rejects_invalid_parse_errors(bad):
+    with pytest.raises(ValueError, match="parse_errors"):
+        _normalize_score_result({"pass_rate": 50, "parse_errors": bad})
+
+
+def test_normalize_score_result_handles_large_integer_counts():
+    huge = 10**400
+    assert _normalize_score_result({"passed": 1, "total": huge})["pass_rate"] == 0.0
+    assert _normalize_score_result({"pass_rate": 100, "passed": huge, "total": huge})["pass_rate"] == 100

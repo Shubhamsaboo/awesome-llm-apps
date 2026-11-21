@@ -179,8 +179,9 @@ def holdout_split_report(n_scenarios: int, n_holdout: int, requested: float) -> 
 
 
 def _whole_count(value: Any, key: str) -> int:
-    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) \
-            or value < 0 or value != int(value):
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or value < 0:
+        raise ValueError(f"{key} must be a non-negative whole number")
+    if isinstance(value, float) and (not math.isfinite(value) or not value.is_integer()):
         raise ValueError(f"{key} must be a non-negative whole number")
     return int(value)
 
@@ -227,14 +228,15 @@ def _normalize_score_result(result: dict) -> dict:
 
     if passed > total:
         raise ValueError("passed must be between 0 and total")
-    if has_pass_rate and has_passed and abs(pass_rate - (100.0 * passed / total if total else 0.0)) > 0.05 + 1e-9:
+    if has_pass_rate and has_passed and abs(pass_rate - (100 * passed / total if total else 0.0)) > 0.05 + 1e-9:
         raise ValueError("pass_rate is inconsistent with passed/total")
 
     if not has_pass_rate:
         pass_rate = round(100 * passed / max(total, 1), 1)
 
     per_eval = list(result["per_eval"]) if isinstance(result.get("per_eval"), list) else []
-    parse_errors = int(result["parse_errors"]) if result.get("parse_errors") is not None else 0
+    parse_errors = _whole_count(result["parse_errors"], "parse_errors") \
+        if result.get("parse_errors") is not None else 0
 
     return {
         **result,
