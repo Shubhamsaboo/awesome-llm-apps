@@ -210,6 +210,67 @@ def check_package_json(root):
     )
 
 
+def check_package_json_peer_dependencies(root):
+    manifest = root / "package.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "dependencies": {
+                    "dependency-dev-duplicate": "^1.0.0",
+                    "dependency-peer-duplicate": "^2.0.0",
+                    "three-section-duplicate": "^3.0.0",
+                },
+                "devDependencies": {
+                    "peer-dev-ranges": "^18.2.0",
+                    "peer-dev-pins": "18.3.1",
+                    "dependency-dev-duplicate": "^1.1.0",
+                    "three-section-duplicate": "^3.1.0",
+                },
+                "peerDependencies": {
+                    "peer-dev-ranges": "^18.0.0",
+                    "peer-dev-pins": "18.2.0",
+                    "dependency-peer-duplicate": "^2.1.0",
+                    "three-section-duplicate": "^3.2.0",
+                },
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    report = run_json(manifest)
+    duplicate_kinds = {"duplicate-constraint", "conflicting-constraints"}
+    check(
+        "peer and dev ranges are not duplicates",
+        finding_count(report, duplicate_kinds, "peer-dev-ranges") == 0,
+    )
+    check(
+        "peer and dev exact pins are not conflicts",
+        finding_count(report, duplicate_kinds, "peer-dev-pins") == 0,
+    )
+    check_finding(
+        report,
+        "duplicate-constraint",
+        "dependency-dev-duplicate",
+        "medium",
+        "one",
+    )
+    check_finding(
+        report,
+        "duplicate-constraint",
+        "dependency-peer-duplicate",
+        "medium",
+        "one",
+    )
+    check_finding(
+        report,
+        "duplicate-constraint",
+        "three-section-duplicate",
+        "medium",
+        "one",
+    )
+
+
 def main():
     print("dependency-doctor eval:")
     with tempfile.TemporaryDirectory(prefix="dependency-doctor-eval-") as temp_dir:
@@ -220,6 +281,7 @@ def main():
         check_platform_markers(root)
         check_url_requirements(root)
         check_package_json(root)
+        check_package_json_peer_dependencies(root)
 
     print()
     passed = sum(CHECKS)

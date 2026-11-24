@@ -49,7 +49,7 @@ def normalize_name(name):
     return re.sub(r"[-_.]+", "-", name).lower()
 
 
-def new_entry(name, spec, line, ecosystem, marker=""):
+def new_entry(name, spec, line, ecosystem, marker="", section=""):
     """Build the internal representation shared by all manifest parsers."""
     return {
         "package": normalize_name(name),
@@ -57,6 +57,7 @@ def new_entry(name, spec, line, ecosystem, marker=""):
         "line": line,
         "ecosystem": ecosystem,
         "marker": marker.strip(),
+        "section": section,
     }
 
 
@@ -182,7 +183,7 @@ def load_package_json(text):
             continue
         for name, value in dependencies.items():
             spec = value if isinstance(value, str) else ""
-            entries.append(new_entry(name, spec, locate(name), "npm"))
+            entries.append(new_entry(name, spec, locate(name), "npm", section=section))
     return entries
 
 
@@ -256,6 +257,14 @@ def has_differing_non_python_markers(left, right):
     left_marker = non_python_version_marker(left)
     right_marker = non_python_version_marker(right)
     return bool(left_marker and right_marker and left_marker != right_marker)
+
+
+def is_peer_dev_pair(left, right):
+    """Return whether npm entries are the standard peer/development pair."""
+    return {left["section"], right["section"]} == {
+        "peerDependencies",
+        "devDependencies",
+    }
 
 
 def exact_pin(entry):
@@ -343,16 +352,21 @@ def offline_findings(entries):
     for (_ecosystem, package), package_entries in sorted(grouped.items()):
         if len(package_entries) < 2:
             continue
-        conflicting_pairs = [
+        comparable_pairs = [
             (left, right)
             for left, right in combinations(package_entries, 2)
+            if not is_peer_dev_pair(left, right)
+        ]
+        if not comparable_pairs:
+            continue
+        conflicting_pairs = [
+            (left, right)
+            for left, right in comparable_pairs
             if exact_pin(left)
             and exact_pin(right)
             and exact_pin(left) != exact_pin(right)
             and not has_differing_non_python_markers(left, right)
         ]
-        lines = ", ".join(str(item["line"]) for item in package_entries)
-        representative = package_entries[1]
         if conflicting_pairs:
             conflict_entries = conflicting_pairs[0]
             conflict_lines = ", ".join(str(item["line"]) for item in conflict_entries)
@@ -366,7 +380,14 @@ def offline_findings(entries):
                 % package,
             ))
         else:
-            specs = {item["spec"] for item in package_entries}
+            duplicate_entries = [
+                entry
+                for entry in package_entries
+                if any(entry in pair for pair in comparable_pairs)
+            ]
+            lines = ", ".join(str(item["line"]) for item in duplicate_entries)
+            representative = duplicate_entries[1]
+            specs = {item["spec"] for item in duplicate_entries}
             detail = "the same constraint" if len(specs) == 1 else "separate constraints"
             findings.append(make_finding(
                 "medium",
