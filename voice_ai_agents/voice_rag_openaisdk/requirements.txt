@@ -7,3 +7,4 @@ langchain-community==0.4.1
 langchain-openai==1.0.2
 openai==2.7.1
 langchain-text-splitters==1.0.0
+python-dotenv

@@ -2,3 +2,4 @@ agno
 ollama
 fastapi
 uvicorn
+rich

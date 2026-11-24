@@ -6,3 +6,4 @@ langchain-qdrant
 langchain-community
 streamlit
 ollama
+beautifulsoup4

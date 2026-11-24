@@ -7,3 +7,4 @@ langchain-text-splitters
 tiktoken
 beautifulsoup4
 python-dotenv
+streamlit
