@@ -1,5 +1,6 @@
 import tempfile
 import csv
+import re
 import streamlit as st
 import pandas as pd
 from agno.agent import Agent
@@ -21,7 +22,7 @@ def preprocess_and_save(file):
         
         # Parse dates and numeric columns
         for col in df.columns:
-            if 'date' in col.lower():
+            if re.search(r"(?:^|[\s_-])date(?:$|[\s_-])", str(col), re.IGNORECASE):
                 df[col] = pd.to_datetime(df[col], errors='coerce')
             elif df[col].dtype == 'object':
                 try:
