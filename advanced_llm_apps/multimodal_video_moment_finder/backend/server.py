@@ -39,6 +39,7 @@ uploads_dir.mkdir(exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 store = VideoStore()
+ingestion_lock = asyncio.Lock()
 
 
 from typing import Optional
@@ -59,13 +60,22 @@ async def upload_video(
     if len(data) > 100 * 1024 * 1024:  # 100MB limit
         raise HTTPException(400, "Video too large (100MB max)")
 
-    # Save video
-    video_path = uploads_dir / f"{file.filename}"
-    with open(video_path, "wb") as f:
-        f.write(data)
-
-    # Process
-    result = store.ingest_video(str(video_path), file.filename, fps=fps)
+    # Keep upload writes and ingestion ordered when filenames coincide, while
+    # allowing searches and health checks to run during model/indexing work.
+    async with ingestion_lock:
+        video_path = uploads_dir / f"{file.filename}"
+        with open(video_path, "wb") as f:
+            f.write(data)
+        ingestion = asyncio.create_task(asyncio.to_thread(
+            store.ingest_video, str(video_path), file.filename, fps=fps
+        ))
+        try:
+            result = await asyncio.shield(ingestion)
+        except asyncio.CancelledError:
+            # Cancelling a request cannot stop its worker. Retain the lock until
+            # the worker finishes reading this filename before another upload.
+            await ingestion
+            raise
 
     if "error" in result:
         raise HTTPException(500, result["error"])
@@ -83,14 +93,14 @@ async def find_moment(
     data = await image.read()
     mime = image.content_type or "image/jpeg"
     try:
-        moments = store.find_moment(data, mime, top_k=top_k, video_id=video_id)
+        moments = await asyncio.to_thread(store.find_moment, data, mime, top_k=top_k, video_id=video_id)
     except Exception as e:
         raise HTTPException(500, f"Embedding error: {str(e)}")
 
     # Add descriptions for top moments
     for m in moments[:3]:
         try:
-            m["description"] = store.describe_moment(m["frame_path"])
+            m["description"] = await asyncio.to_thread(store.describe_moment, m["frame_path"])
         except Exception:
             m["description"] = ""
 
@@ -107,13 +117,13 @@ async def find_moment(
 @app.post("/find-moment-text")
 async def find_moment_text(req: TextSearchRequest):
     """Find video moments matching a text description."""
-    moments = store.find_moment_by_text(
-        req.query, top_k=req.top_k, video_id=req.video_id,
+    moments = await asyncio.to_thread(
+        store.find_moment_by_text, req.query, top_k=req.top_k, video_id=req.video_id,
     )
 
     for m in moments[:3]:
         try:
-            m["description"] = store.describe_moment(m["frame_path"])
+            m["description"] = await asyncio.to_thread(store.describe_moment, m["frame_path"])
         except Exception:
             m["description"] = ""
 
@@ -128,7 +138,7 @@ async def find_moment_text(req: TextSearchRequest):
 @app.get("/videos")
 async def list_videos():
     """List all processed videos."""
-    videos = store.list_videos()
+    videos = await asyncio.to_thread(store.list_videos)
     # Add video URLs
     for v in videos:
         v["video_url"] = f"/uploads/{v['filename']}"
@@ -137,7 +147,7 @@ async def list_videos():
 
 @app.delete("/videos/{video_id}")
 async def delete_video(video_id: str):
-    ok = store.delete_video(video_id)
+    ok = await asyncio.to_thread(store.delete_video, video_id)
     if not ok:
         raise HTTPException(404, "Video not found")
     return {"deleted": video_id}
@@ -145,7 +155,7 @@ async def delete_video(video_id: str):
 
 @app.get("/health")
 async def health():
-    videos = store.list_videos()
+    videos = await asyncio.to_thread(store.list_videos)
     total_frames = sum(v["total_frames"] for v in videos)
     return {
         "status": "ok",
