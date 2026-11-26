@@ -70,11 +70,18 @@ class VideoStore:
 
         for i in range(0, len(images), batch_size):
             batch = images[i:i + batch_size]
-            parts = [types.Part.from_bytes(data=data, mime_type=mime) for data, mime in batch]
+            contents = [
+                types.Content(parts=[types.Part.from_bytes(
+                    data=self._resize_image(data), mime_type="image/jpeg"
+                )])
+                for data, _ in batch
+            ]
             result = self.client.models.embed_content(
                 model=EMBED_MODEL,
-                contents=parts,
+                contents=contents,
             )
+            if not result.embeddings or len(result.embeddings) != len(batch):
+                raise ValueError("The embedding response must contain one vector per frame")
             all_embeddings.extend([e.values for e in result.embeddings])
 
         return all_embeddings
@@ -140,12 +147,7 @@ class VideoStore:
 
         for i in range(0, total, batch_size):
             batch = frame_data[i:i + batch_size]
-            parts = [types.Part.from_bytes(data=self._resize_image(data), mime_type="image/jpeg") for data, mime in batch]
-            result = self.client.models.embed_content(
-                model=EMBED_MODEL,
-                contents=parts,
-            )
-            embeddings.extend([e.values for e in result.embeddings])
+            embeddings.extend(self._embed_images_batch(batch))
             if on_progress:
                 on_progress(min(i + batch_size, total), total)
 
