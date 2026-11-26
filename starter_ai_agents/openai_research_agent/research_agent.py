@@ -10,7 +10,6 @@ from agents import (
     Runner, 
     WebSearchTool, 
     function_tool, 
-    handoff, 
     trace,
 )
 
@@ -114,15 +113,9 @@ triage_agent = Agent(
        - topic: A clear statement of the research topic
        - search_queries: A list of 3-5 specific search queries that will help gather information
        - focus_areas: A list of 3-5 key aspects of the topic to investigate
-    3. Hand off to the Research Agent to collect information
-    4. After research is complete, hand off to the Editor Agent who will write a comprehensive report
     
     Make sure to return your plan in the expected structured format with topic, search_queries, and focus_areas.
     """,
-    handoffs=[
-        handoff(research_agent),
-        handoff(editor_agent)
-    ],
     model="gpt-4o-mini",
     output_type=ResearchPlan,
 )
@@ -207,20 +200,28 @@ async def run_research(topic):
             st.write("📋 **Research Plan**:")
             st.json(plan_display)
         
-        # Display facts as they're collected
+        # Execute every planned search before asking the editor to synthesize it.
+        search_queries = plan_display["search_queries"] or [topic]
+        with message_container:
+            st.write("🌐 **Research Agent**: Gathering evidence for each search query...")
+        research_results = await asyncio.gather(*(
+            Runner.run(research_agent, query) for query in search_queries
+        ))
+        editor_input = triage_result.to_input_list() + [
+            {
+                "role": "user",
+                "content": f"Research query: {query}\n\nFindings:\n{result.final_output}",
+            }
+            for query, result in zip(search_queries, research_results)
+        ]
+
+        # Display facts saved by the completed research runs.
         fact_placeholder = message_container.empty()
-        
-        # Check for new facts periodically
-        previous_fact_count = 0
-        for i in range(15):  # Check more times to allow for more comprehensive research
-            current_facts = len(st.session_state.collected_facts)
-            if current_facts > previous_fact_count:
-                with fact_placeholder.container():
-                    st.write("📚 **Collected Facts**:")
-                    for fact in st.session_state.collected_facts:
-                        st.info(f"**Fact**: {fact['fact']}\n\n**Source**: {fact['source']}")
-                previous_fact_count = current_facts
-            await asyncio.sleep(1)
+        if st.session_state.collected_facts:
+            with fact_placeholder.container():
+                st.write("📚 **Collected Facts**:")
+                for fact in st.session_state.collected_facts:
+                    st.info(f"**Fact**: {fact['fact']}\n\n**Source**: {fact['source']}")
         
         # Editor Agent phase
         with message_container:
@@ -229,7 +230,7 @@ async def run_research(topic):
         try:
             report_result = await Runner.run(
                 editor_agent,
-                triage_result.to_input_list()
+                editor_input
             )
             
             st.session_state.report_result = report_result.final_output
