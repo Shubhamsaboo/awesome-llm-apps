@@ -62,7 +62,7 @@ def safe_number(value: Any) -> float:
     except (TypeError, ValueError):
         if isinstance(value, str):
             stripped = value
-            for token in [",", "$", "€", "£", "₹", "C$", "A$"]:
+            for token in ["C$", "A$", ",", "$", "€", "£", "₹"]:
                 stripped = stripped.replace(token, "")
             stripped = stripped.strip()
             try:
