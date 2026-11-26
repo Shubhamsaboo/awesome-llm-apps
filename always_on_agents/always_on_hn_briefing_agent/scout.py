@@ -151,8 +151,14 @@ def _first_int(text: str) -> int:
 
 
 def _keyword_hits(title: str) -> set[str]:
-    normalized = re.sub(r"[^a-z0-9]+", " ", title.lower())
-    return {keyword for keyword in AGENT_KEYWORDS if keyword in normalized}
+    words = set(re.findall(r"[a-z0-9]+", title.lower()))
+    # Keep plural tools/workflows without matching coding inside decoding or
+    # agent inside reagent, and count singular/plural aliases only once.
+    normalized = {
+        word[:-1] if word.endswith("s") and word[:-1] in AGENT_KEYWORDS else word
+        for word in words
+    }
+    return AGENT_KEYWORDS & normalized
 
 
 def _is_noise(title: str) -> bool:
