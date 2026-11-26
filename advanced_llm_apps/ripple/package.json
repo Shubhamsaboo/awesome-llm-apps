@@ -1,0 +1,16 @@
+{
+  "name": "ripple",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "package": "node package.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "description": "Find related inconsistencies and suggested fixes as you edit a Google Doc, using TypeSafe Jev and Gemini.",
+  "license": "Apache-2.0"
+}

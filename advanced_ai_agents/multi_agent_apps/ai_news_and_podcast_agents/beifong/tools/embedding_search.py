@@ -12,6 +12,17 @@ import json
 EMBEDDING_MODEL = "text-embedding-3-small"
 
 
+def l2_distance_to_cosine_similarity(distance: float) -> float:
+    """Convert FAISS L2 distance to cosine similarity for unit-normalized embeddings.
+
+    OpenAI text-embedding-3 vectors are length-1, so:
+        ||a - b||^2 = 2 - 2 * cos(a, b)
+        cos(a, b) = 1 - ||a - b||^2 / 2
+    """
+    similarity = 1.0 - (float(distance) ** 2) / 2.0
+    return float(max(0.0, min(1.0, similarity)))
+
+
 def generate_query_embedding(query_text, model=EMBEDDING_MODEL):
     try:
         api_key = load_api_key("OPENAI_API_KEY")
@@ -116,7 +127,7 @@ def embedding_search(agent: Agent, prompt: str) -> str:
         for i, idx in enumerate(indices[0]):
             if idx >= 0 and idx < len(id_map):
                 distance = float(distances[0][i])
-                similarity = float(np.exp(-distance)) if distance > 0 else 0
+                similarity = l2_distance_to_cosine_similarity(distance)
                 if similarity >= similarity_threshold:
                     article_id = id_map[idx]
                     results_with_metrics.append((idx, distance, similarity, article_id))

@@ -1,6 +1,7 @@
 langchain==0.3.12
 langchain-community==0.3.12
 langchain-core==0.3.28
+langchain-text-splitters==0.3.4
 qdrant-client==1.12.1
 streamlit>=1.29.0
 pypdf>=4.0.0

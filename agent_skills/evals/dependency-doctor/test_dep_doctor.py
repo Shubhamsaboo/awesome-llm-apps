@@ -180,6 +180,22 @@ def check_platform_markers(root):
     check_finding(report, "conflicting-constraints", "requests", "high", "choose")
 
 
+def check_url_requirements(root):
+    manifest = root / "url-requirements.txt"
+    manifest.write_text(
+        "git+https://github.com/example/alpha.git@v1.0#egg=alpha\n"
+        "git+https://github.com/example/beta.git@v2.0#egg=beta\n"
+        "http://example.com/packages/gamma-1.0.tar.gz\n",
+        encoding="utf-8",
+    )
+    report = run_json(manifest)
+    check(
+        "URL schemes are not read as package names",
+        all(item.get("package") not in {"git", "http"} for item in report.get("findings", [])),
+    )
+    check("distinct URL requirements are not duplicates", not report.get("findings"))
+
+
 def check_package_json(root):
     manifest = root / "package.json"
     manifest.write_text(
@@ -202,6 +218,7 @@ def main():
         check_pyproject(root)
         check_version_marker(root)
         check_platform_markers(root)
+        check_url_requirements(root)
         check_package_json(root)
 
     print()

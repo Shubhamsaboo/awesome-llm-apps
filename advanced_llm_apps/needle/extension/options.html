@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><title>Needle settings</title
+  ><link rel="stylesheet" href="options.css" />
+  <body>
+    <main>
+      <span class="brand"
+        ><img
+          src="icons/needle.svg"
+          alt=""
+          width="36"
+          height="36"
+        />needle.</span
+      >
+      <h1>A new way to find.<br /><em>On your own pages.</em></h1>
+      <p>
+        Start <code>npm run dev</code> from the Needle project folder, then
+        connect to <code>http://127.0.0.1:4199</code>. Add your Gateway API key
+        to the project’s <code>.env</code> file. Leave the access token blank
+        for local use.
+      </p>
+      <form id="settings">
+        <label
+          >NEEDLE SERVER URL<input
+            id="server"
+            type="url"
+            required
+            placeholder="http://127.0.0.1:4199" /></label
+        ><label
+          >SERVER ACCESS TOKEN <span>(optional)</span
+          ><input
+            id="token"
+            type="password"
+            autocomplete="off"
+            placeholder="Only for a protected deployment" /></label
+        ><button>Save connection ↗</button>
+        <p id="status" role="status"></p>
+      </form>
+      <hr />
+      <p>
+        Click the Needle toolbar icon on a webpage, or press
+        <strong>⌘⇧F</strong> on Mac / <strong>Ctrl+Shift+F</strong> elsewhere.
+      </p>
+      <small
+        >Search sends the page's readable passages and your query to your
+        server, then to Jev through Vercel AI Gateway. Chrome system pages and
+        built-in PDF viewers are not supported. For selectable PDF text, copy it
+        into the React app using “Bring your own text”.</small
+      >
+    </main>
+    <script src="options.js"></script>
+  </body>
+</html>

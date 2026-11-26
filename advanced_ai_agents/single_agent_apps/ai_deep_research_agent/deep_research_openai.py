@@ -3,7 +3,8 @@ import streamlit as st
 from typing import Dict, Any, List
 from agents import Agent, Runner, trace
 from agents import set_default_openai_key
-from firecrawl import FirecrawlApp
+from firecrawl import AsyncFirecrawl
+from firecrawl.types import Document, ScrapeOptions
 from agents.tool import function_tool
 
 # Set page configuration
@@ -46,43 +47,45 @@ st.markdown("This OpenAI Agent from the OpenAI Agents SDK performs deep research
 # Research topic input
 research_topic = st.text_input("Enter your research topic:", placeholder="e.g., Latest developments in AI")
 
-# Keep the original deep_research tool
+# Firecrawl search tool: finds sources and returns each page as markdown
 @function_tool
-async def deep_research(query: str, max_depth: int, time_limit: int, max_urls: int) -> Dict[str, Any]:
+async def search_web(query: str) -> Dict[str, Any]:
     """
-    Perform comprehensive web research using Firecrawl's deep research endpoint.
+    Search the web with Firecrawl and return the title, URL and page content of the top 5 results.
     """
     try:
-        # Initialize FirecrawlApp with the API key from session state
-        firecrawl_app = FirecrawlApp(api_key=st.session_state.firecrawl_api_key)
-        
-        # Define research parameters
-        params = {
-            "maxDepth": max_depth,
-            "timeLimit": time_limit,
-            "maxUrls": max_urls
-        }
-        
-        # Set up a callback for real-time updates
-        def on_activity(activity):
-            st.write(f"[{activity['type']}] {activity['message']}")
-        
-        # Run deep research
-        with st.spinner("Performing deep research..."):
-            results = firecrawl_app.deep_research(
-                query=query,
-                params=params,
-                on_activity=on_activity
+        # Initialize Firecrawl with the API key from session state
+        firecrawl_app = AsyncFirecrawl(api_key=st.session_state.firecrawl_api_key, origin="awesome-llm-apps")
+
+        # Search and scrape the result pages in one call
+        with st.spinner(f"Searching: {query}"):
+            results = await firecrawl_app.search(
+                query,
+                limit=5,
+                scrape_options=ScrapeOptions(formats=["markdown"], only_main_content=True)
             )
-        
+
+        sources = []
+        for result in results.web or []:
+            if isinstance(result, Document):  # page was scraped
+                meta = result.metadata
+                title = meta.title if meta else None
+                url = (meta.url or meta.source_url) if meta else None
+                content = result.markdown or ""
+            else:  # page could not be scraped, keep the search snippet
+                title, url, content = result.title, result.url, result.description or ""
+            if url:
+                # Truncate each page so the agent's context stays bounded
+                sources.append({"title": title, "url": url, "content": content[:4000]})
+
+        st.write(f"[search] {query}: {len(sources)} sources")
         return {
             "success": True,
-            "final_analysis": results['data']['finalAnalysis'],
-            "sources_count": len(results['data']['sources']),
-            "sources": results['data']['sources']
+            "sources_count": len(sources),
+            "sources": sources
         }
     except Exception as e:
-        st.error(f"Deep research error: {str(e)}")
+        st.error(f"Search error: {str(e)}")
         return {"error": str(e), "success": False}
 
 # Keep the original agents
@@ -91,17 +94,16 @@ research_agent = Agent(
     instructions="""You are a research assistant that can perform deep web research on any topic.
 
     When given a research topic or question:
-    1. Use the deep_research tool to gather comprehensive information
-       - Always use these parameters:
-         * max_depth: 3 (for moderate depth)
-         * time_limit: 180 (3 minutes)
-         * max_urls: 10 (sufficient sources)
-    2. The tool will search the web, analyze multiple sources, and provide a synthesis
-    3. Review the research results and organize them into a well-structured report
-    4. Include proper citations for all sources
+    1. Break the topic into 3 to 5 focused search queries that cover different angles
+    2. Use the search_web tool for each query
+       - Each result includes the page title, URL and page content
+       - Run follow-up searches if the first results leave gaps
+       - Run at most 6 searches in total
+    3. Read and compare the sources, then organize the findings into a well-structured report
+    4. Include proper citations (title and URL) for all sources
     5. Highlight key findings and insights
     """,
-    tools=[deep_research]
+    tools=[search_web]
 )
 
 elaboration_agent = Agent(

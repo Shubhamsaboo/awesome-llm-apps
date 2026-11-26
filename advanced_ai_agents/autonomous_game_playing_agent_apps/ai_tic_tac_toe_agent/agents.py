@@ -79,7 +79,7 @@ def get_model_for_provider(provider: str, model_name: str):
 
 def get_tic_tac_toe_players(
     model_x: str = "openai:gpt-4o",
-    model_o: str = "openai:o3-mini",
+    model_o: str = "openai:gpt-5.6-sol",
     debug_mode: bool = True,
 ) -> Tuple[Agent, Agent]:
     """

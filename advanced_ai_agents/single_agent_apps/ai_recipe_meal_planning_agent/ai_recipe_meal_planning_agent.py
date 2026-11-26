@@ -62,7 +62,7 @@ def search_recipes(ingredients: str, diet_type: Optional[str] = None) -> Dict:
             "recipes": detailed_recipes,
             "total_found": len(recipes)
         }
-    except:
+    except Exception:
         return {"error": "Recipe search failed"}
 
 @tool
@@ -126,7 +126,7 @@ def analyze_nutrition(recipe_name: str) -> Dict:
             "sodium": sodium,
             "health_insights": health_insights
         }
-    except:
+    except Exception:
         return {"error": "Nutrition analysis failed"}
 
 @tool
@@ -175,7 +175,10 @@ def estimate_costs(ingredients: List[str], servings: int = 4) -> Dict:
 
 @tool
 def create_meal_plan(dietary_preference: str = "balanced", people: int = 2, days: int = 7, budget: str = "moderate") -> Dict:
-    """Create comprehensive weekly meal plan with nutrition and shopping list."""
+    """Create comprehensive weekly meal plan (1-7 days) with nutrition and shopping list."""
+    # The plan covers at most one week (day_names below), so clamp days to 1-7.
+    # Otherwise days > 7 divides 7 days of totals by days, and days <= 0 divides by zero.
+    days = max(1, min(int(days), 7))
     
     meals = {
         "breakfast": [

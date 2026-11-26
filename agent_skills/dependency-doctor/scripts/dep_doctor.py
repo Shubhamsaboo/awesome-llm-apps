@@ -20,6 +20,8 @@ import sys
 PYTHON_NAME_RE = re.compile(
     r"^([A-Za-z0-9][A-Za-z0-9._-]*)(?:\[[^\]]+\])?\s*(.*)$"
 )
+URL_REQUIREMENT_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*://")
+EGG_NAME_RE = re.compile(r"[#&]egg=([A-Za-z0-9][A-Za-z0-9._-]*)")
 EXACT_PIN_RE = re.compile(r"(?:^|,)\s*==\s*([^,;\s]+)")
 NPM_UNPINNED_RE = re.compile(r"^(?:|\*|latest|[xX](?:\.[xX*]){0,2})$")
 PYTHON_MARKER_RE = re.compile(
@@ -66,6 +68,12 @@ def parse_python_requirement(value, line, ecosystem="python"):
     parts = value.split(";", 1)
     requirement = parts[0].strip()
     marker = parts[1].strip() if len(parts) == 2 else ""
+    if URL_REQUIREMENT_RE.match(requirement):
+        # A bare VCS or archive URL names its package only in #egg=.
+        egg = EGG_NAME_RE.search(requirement)
+        if not egg:
+            return None
+        return new_entry(egg.group(1), requirement, line, ecosystem, marker)
     match = PYTHON_NAME_RE.match(requirement)
     if not match:
         return None

@@ -63,7 +63,8 @@ def initialize_faiss_index(dimension=1536, index_path=None, index_type="hnsw", n
 def save_faiss_index(index, index_path):
     try:
         index_dir = os.path.dirname(index_path)
-        os.makedirs(index_dir, exist_ok=True)
+        if index_dir:
+            os.makedirs(index_dir, exist_ok=True)
         temp_path = f"{index_path}.tmp"
         faiss.write_index(index, temp_path)
         os.replace(temp_path, index_path)
@@ -75,9 +76,11 @@ def save_faiss_index(index, index_path):
 
 
 def save_id_mapping(id_map, mapping_path):
+    mapping_dir = ""
     try:
         mapping_dir = os.path.dirname(mapping_path)
-        os.makedirs(mapping_dir, exist_ok=True)
+        if mapping_dir:
+            os.makedirs(mapping_dir, exist_ok=True)
         np.save(mapping_path, np.array(id_map))
         print(f"ID mapping saved to {mapping_path}")
         return True

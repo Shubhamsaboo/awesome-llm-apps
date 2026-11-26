@@ -140,6 +140,9 @@ async def stream_recording(session_id: str, filename: str, request: Request):
     return StreamingResponse(file_streamer(), status_code=status_code, headers=headers)
 
 
+os.makedirs("podcasts/audio", exist_ok=True)
+os.makedirs("podcasts/images", exist_ok=True)
+os.makedirs("static", exist_ok=True)
 app.mount("/audio", StaticFiles(directory="podcasts/audio"), name="audio")
 app.mount("/server_static", StaticFiles(directory="static"), name="server_static")
 app.mount("/podcast_img", StaticFiles(directory="podcasts/images"), name="podcast_img")

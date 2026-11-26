@@ -9,6 +9,7 @@ import requests
 import openai  
 import json
 import inspect
+from typing import Optional
 from llama_index.core import StorageContext,load_index_from_storage
 from dotenv import load_dotenv
 from llama_index.vector_stores.qdrant import QdrantVectorStore
@@ -48,7 +49,15 @@ def query_kb(question: str):
 
     return matched_text, similarity
 
-def query_web(question: str):
+WEB_SEARCH_TIMEOUT = 20  # seconds
+
+
+def query_web(question: str) -> Optional[str]:
+    """Return Tavily's answer, or None if the search failed or found nothing."""
+    if not TAVILY_API_KEY:
+        print("⚠️ Web search skipped: TAVILY_API_KEY is not set")
+        return None
+
     url = "https://api.tavily.com/search"
     headers = {"Content-Type": "application/json"}
     payload = {
@@ -58,11 +67,23 @@ def query_web(question: str):
         "include_answer": True,
         "include_raw_content": False
     }
-    response = requests.post(url, json=payload, headers=headers)
-    data = response.json()
-    return data.get("answer", "No answer found.")
+    try:
+        response = requests.post(url, json=payload, headers=headers, timeout=WEB_SEARCH_TIMEOUT)
+        response.raise_for_status()
+        data = response.json()
+    except (requests.RequestException, ValueError) as e:
+        print(f"⚠️ Web search failed: {e}")
+        return None
 
-def explain_with_openai(question: str, web_content: str):
+    answer = data.get("answer") if isinstance(data, dict) else None
+    if not isinstance(answer, str) or not answer.strip():
+        print("⚠️ Web search returned no answer")
+        return None
+    return answer
+
+def explain_with_openai(question: str, web_content: Optional[str]):
+    if not web_content:
+        web_content = "(No web content was found. Answer from your own math knowledge.)"
     prompt = f"""
 You are a friendly and precise math tutor.
 
@@ -83,6 +104,13 @@ Only include valid math steps — do not guess or make up answers.
     return response.text
 
 
+def answer_from_web(question: str):
+    """Answer via the web fallback. Returns (answer, source label)."""
+    web_content = query_web(question)
+    source = "Web" if web_content else "Model only (web search unavailable)"
+    return explain_with_openai(question, web_content), source
+
+
 # query_kb returns a cosine similarity (higher = better); with OpenAI embeddings
 # almost any two English texts score well above 0, so `> 0.` accepted every query
 # and served an arbitrary KB answer as authoritative. Require a real match.
@@ -96,7 +124,7 @@ def answer_math_question(question: str):
         return "⚠️ This assistant only answers math-related academic questions."
 
     answer = ""
-    from_kb = False
+    source = "KB"
 
     try:
         kb_answer, similarity = query_kb(question)
@@ -126,25 +154,28 @@ Use the KB content as your only source. Do not guess or recalculate.
 
             llm = OpenAI(api_key=OPENAI_API_KEY, model="gpt-4o")
             answer = llm.complete(prompt).text
-            from_kb = True
         else:
             raise ValueError("Low similarity match or empty")
 
     except Exception as e:
         print("⚠️ Using Web fallback because:", e)
-        web_content = query_web(question)
-        answer = explain_with_openai(question, web_content)
-        from_kb = False
+        answer, source = answer_from_web(question)
 
-    print(f"📦 Answer Source: {'KB' if from_kb else 'Web'}")
+    print(f"📦 Answer Source: {source}")
 
     # Final Output Guardrail Check
     if not output_validator.forward(question, answer):
         print("⚠️ Final answer failed validation — retrying with web content...")
+        answer, source = answer_from_web(question)
+        print(f"📦 Answer Source: {source}")
 
-        web_content = query_web(question)
-        answer = explain_with_openai(question, web_content)
-        from_kb = False
+        # Re-check the retry instead of returning it unvalidated
+        if not output_validator.forward(question, answer):
+            print("⚠️ Retried answer also failed validation.")
+            answer = (
+                "⚠️ This answer could not be verified by the output guardrail. "
+                "Please double-check it.\n\n" + answer
+            )
 
     return answer
 

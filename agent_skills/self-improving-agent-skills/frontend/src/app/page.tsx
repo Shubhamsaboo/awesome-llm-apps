@@ -11,6 +11,7 @@ export default function Home() {
   const [currentStep, setCurrentStep] = useState(1);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [apiKey, setApiKey] = useState("");
+  const [model, setModel] = useState(""); // Gemini model id; "" means the backend's default
   const [metadata, setMetadata] = useState<any>(null);
   const [scenarios, setScenarios] = useState<any[]>([]);
   const [evals, setEvals] = useState<any[]>([]);
@@ -19,12 +20,14 @@ export default function Home() {
   const handleUploadComplete = (
     sid: string,
     key: string,
+    chosenModel: string,
     meta: any,
     initialScenarios: any[],
     initialEvals: any[]
   ) => {
     setSessionId(sid);
     setApiKey(key);
+    setModel(chosenModel);
     setMetadata(meta);
     setScenarios(initialScenarios);
     setEvals(initialEvals);
@@ -44,6 +47,7 @@ export default function Home() {
     setCurrentStep(1);
     setSessionId(null);
     setApiKey("");
+    setModel("");
     setMetadata(null);
     setScenarios([]);
     setEvals([]);
@@ -78,6 +82,7 @@ export default function Home() {
             <ConfigStep
               sessionId={sessionId}
               apiKey={apiKey}
+              model={model}
               scenarios={scenarios}
               evals={evals}
               onScenariosChange={setScenarios}
@@ -90,6 +95,7 @@ export default function Home() {
             <RunningStep
               sessionId={sessionId}
               apiKey={apiKey}
+              model={model}
               scenarios={scenarios}
               evals={evals}
               onComplete={handleOptimizationComplete}

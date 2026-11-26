@@ -1,0 +1,2 @@
+export const logo =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="32" height="32" fill="none" aria-hidden="true"><rect x="1" y="1" width="62" height="62" rx="19" fill="#183D40"/><circle cx="32" cy="32" r="22" stroke="#FFBA71" stroke-width="5" stroke-dasharray="92 47" transform="rotate(-90 32 32)" stroke-linecap="round"/><circle cx="32" cy="32" r="14" stroke="#65D9CC" stroke-width="5" stroke-dasharray="57 31" transform="rotate(90 32 32)" stroke-linecap="round"/><circle cx="32" cy="32" r="5.5" fill="#FF8175"/></svg>';

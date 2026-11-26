@@ -3,3 +3,6 @@ ollama
 langchain 
 langchain_community
 langchain_ollama
+langchain_text_splitters
+langchain_chroma
+beautifulsoup4

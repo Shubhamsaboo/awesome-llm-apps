@@ -1,0 +1,51 @@
+{
+  "manifest_version": 3,
+  "name": "ripple",
+  "version": "0.0.1",
+  "description": "See which sentences may need updating when you change a fact in your Google Doc.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkvXsMFhyCapxno8MJJvYKW70uBi0Fn/vSjMxtEIom8+CfbjS0ovDwHfwK6Gt+bYPyJpxmJv3nX+nc3F/PBGow+2QjjymreDVSjZACsj0QVGWIcBfoFWDJrZKth6HNEL7GDdmvexUe3WSyOOEevhkrKS/s06zDS4trsfPIH+U8GwOP5V8UGdrmcz+XvbwIhWfgLsN6a84GqknO0XxvBK+856OJ1C4CP6qvcv/2MGATSOD5IWw7XNKd5mnWE0B8vpUzvu4+TamJfZ/RomonWOfbevNjqiAAR7L8n0igsCE6E2yKCa/kDkkiFwo/vLuYj0LLNxQf+SuM10x1y1iHFFsmwIDAQAB",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://docs.google.com/document/*",
+    "http://127.0.0.1:4212/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "ripple",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://docs.google.com/document/d/*/edit*"],
+      "js": ["correction.js", "bootstrap.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["https://docs.google.com/document/d/*/edit*"],
+      "js": ["correction.js", "content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["core.js", "ui.js", "logo.js"],
+      "matches": ["https://docs.google.com/*"]
+    }
+  ],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  }
+}

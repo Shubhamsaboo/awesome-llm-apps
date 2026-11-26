@@ -1,0 +1,14 @@
+{
+  "name": "excaliflow",
+  "version": "1.0.0",
+  "description": "Hand-drawn system diagrams with live animated data flows and video export",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node verify.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "Apache-2.0"
+}

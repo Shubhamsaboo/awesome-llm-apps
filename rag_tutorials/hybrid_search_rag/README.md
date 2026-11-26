@@ -15,7 +15,7 @@ A powerful document Q&A application that leverages Hybrid Search (RAG) and Claud
   - Reranking for better context selection
 
 - **Multi-Model Integration**:
-  - Claude for text generation - tested with Claude 3 Opus 
+  - Claude for text generation - Claude Opus 4.8 by default
   - OpenAI for embeddings - tested with text-embedding-3-large
   - Cohere for reranking - tested with Cohere 3.5 reranker
 

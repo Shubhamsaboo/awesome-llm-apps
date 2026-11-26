@@ -45,7 +45,7 @@ def initialize_config(openai_key: str, anthropic_key: str, cohere_key: str, db_u
         
         return RAGLiteConfig(
             db_url=db_url,
-            llm="claude-3-opus-20240229",
+            llm="claude-opus-4-8",
             embedder="text-embedding-3-large",
             embedder_normalize=True,
             chunk_max_size=2000,
@@ -107,11 +107,10 @@ def handle_fallback(query: str) -> str:
         is not related to any specific document, use your general knowledge to answer."""
         
         message = client.messages.create(
-            model="claude-3-sonnet-20240229",
+            model="claude-sonnet-5-5",
             max_tokens=1024,
             system=system_prompt,
             messages=[{"role": "user", "content": query}],
-            temperature=0.7
         )
         return message.content[0].text
     except Exception as e:

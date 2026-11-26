@@ -14,6 +14,44 @@ def _get_llm():
     return ChatOpenAI(model=model_name, temperature=0.3)
 
 
+def _strip_code_fence(content: str) -> str:
+    """Remove a leading ```/```json fence and trailing ``` if present."""
+    content = content.strip()
+    if content.startswith("```"):
+        _, _, rest = content.partition("\n")
+        content = rest.rsplit("```", 1)[0]
+    return content.strip()
+
+
+def _items(data: dict, key: str) -> list:
+    """Return the objects in a list field of a parsed reply, skipping anything else."""
+    value = data.get(key)
+    if not isinstance(value, list):
+        return []
+    return [item for item in value if isinstance(item, dict)]
+
+
+def _label(item: dict, *keys: str) -> str:
+    """Return the first string value among `keys`, or "" when the reply has none."""
+    for key in keys:
+        value = item.get(key)
+        if isinstance(value, str):
+            return value
+    return ""
+
+
+def _edge_labels(edge_data: dict) -> tuple[str, str]:
+    """Read an edge's endpoint labels.
+
+    The prompts ask for `source_label` and `target_label`, but the graph state stores
+    edges with `source` and `target`, and a model may answer in that shape too.
+    """
+    return (
+        _label(edge_data, "source_label", "source"),
+        _label(edge_data, "target_label", "target"),
+    )
+
+
 @tool
 def extract_knowledge(runtime: ToolRuntime[Any]) -> Command:
     """Extract entities and relationships from uploaded documents or source code files. ALWAYS call this tool when the user adds files. Do not extract knowledge yourself."""
@@ -27,6 +65,8 @@ def extract_knowledge(runtime: ToolRuntime[Any]) -> Command:
     upload_dir = os.path.join(tempfile.gettempdir(), "knowledge-explorer-uploads")
     all_content = ""
     doc_names = []
+    source_content = {}
+    consumed_uploads = []
 
     if os.path.isdir(upload_dir):
         for fpath in sorted(glob.glob(os.path.join(upload_dir, "*"))):
@@ -36,7 +76,8 @@ def extract_knowledge(runtime: ToolRuntime[Any]) -> Command:
                 name = os.path.basename(fpath).split("-", 1)[-1] if "-" in os.path.basename(fpath) else os.path.basename(fpath)
                 all_content += f"\n\n--- {name} ---\n{content}"
                 doc_names.append(name)
-                os.remove(fpath)
+                source_content.setdefault(name, content)
+                consumed_uploads.append(fpath)
             except Exception as e:
                 print(f"[knowledge-explorer] Skipping unreadable file {fpath}: {e}")
                 continue
@@ -48,6 +89,7 @@ def extract_knowledge(runtime: ToolRuntime[Any]) -> Command:
                 if hasattr(msg, "type") and msg.type == "human":
                     all_content = msg.content
                     doc_names = ["pasted content"]
+                    source_content["pasted content"] = msg.content
                     break
 
     if not all_content.strip():
@@ -144,12 +186,13 @@ RULES:
     response = llm.invoke(extraction_prompt)
     content = response.content.strip()
 
-    if content.startswith("```"):
-        content = content.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+    content = _strip_code_fence(content)
 
     try:
         data = json.loads(content)
     except json.JSONDecodeError:
+        data = None
+    if not isinstance(data, dict):
         return Command(update={
             "messages": [ToolMessage(
                 content="Failed to parse extraction results. Try again.",
@@ -160,9 +203,9 @@ RULES:
     new_nodes = []
     label_to_id = {n["label"].lower(): n["id"] for n in existing_nodes}
 
-    for node_data in data.get("nodes", []):
-        label = node_data["label"]
-        if label.lower() in existing_labels:
+    for node_data in _items(data, "nodes"):
+        label = _label(node_data, "label")
+        if not label or label.lower() in existing_labels:
             continue
         node_id = str(uuid.uuid4())[:8]
         label_to_id[label.lower()] = node_id
@@ -177,9 +220,10 @@ RULES:
         })
 
     new_edges = []
-    for edge_data in data.get("edges", []):
-        src_id = label_to_id.get(edge_data["source_label"].lower())
-        tgt_id = label_to_id.get(edge_data["target_label"].lower())
+    for edge_data in _items(data, "edges"):
+        source_label, target_label = _edge_labels(edge_data)
+        src_id = label_to_id.get(source_label.lower())
+        tgt_id = label_to_id.get(target_label.lower())
         if src_id and tgt_id:
             new_edges.append({
                 "id": str(uuid.uuid4())[:8],
@@ -194,20 +238,14 @@ RULES:
     updated_docs = list(existing_docs)
     for name in doc_names:
         if name not in existing_doc_names:
-            section = ""
-            marker = f"--- {name} ---"
-            if marker in all_content:
-                start = all_content.index(marker) + len(marker)
-                next_marker = all_content.find("\n\n---", start)
-                section = all_content[start:next_marker].strip() if next_marker != -1 else all_content[start:].strip()
             updated_docs.append({
                 "id": str(uuid.uuid4())[:8],
                 "name": name,
-                "content": section,
+                "content": source_content[name],
                 "status": "extracted",
             })
 
-    return Command(update={
+    result = Command(update={
         "documents": updated_docs,
         "nodes": existing_nodes + new_nodes,
         "edges": existing_edges + new_edges,
@@ -217,6 +255,16 @@ RULES:
             tool_call_id=runtime.tool_call_id
         )]
     })
+
+    # Keep source files available for a retry if the model call, parsing, or
+    # graph construction fails. Only clean up files included in this result.
+    for fpath in consumed_uploads:
+        try:
+            os.remove(fpath)
+        except OSError as e:
+            print(f"[knowledge-explorer] Could not remove processed upload {fpath}: {e}")
+
+    return result
 
 
 @tool
@@ -265,12 +313,13 @@ Focus on non-obvious connections. Prefer "contradicts", "extends", "causes" over
 
     response = llm.invoke(prompt)
     content = response.content.strip()
-    if content.startswith("```"):
-        content = content.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+    content = _strip_code_fence(content)
 
     try:
         data = json.loads(content)
     except json.JSONDecodeError:
+        data = None
+    if not isinstance(data, dict):
         return Command(update={
             "messages": [ToolMessage(
                 content="Failed to parse connections.",
@@ -280,9 +329,10 @@ Focus on non-obvious connections. Prefer "contradicts", "extends", "causes" over
 
     label_to_id = {n["label"].lower(): n["id"] for n in nodes}
     new_edges = []
-    for edge_data in data.get("edges", []):
-        src_id = label_to_id.get(edge_data["source_label"].lower())
-        tgt_id = label_to_id.get(edge_data["target_label"].lower())
+    for edge_data in _items(data, "edges"):
+        source_label, target_label = _edge_labels(edge_data)
+        src_id = label_to_id.get(source_label.lower())
+        tgt_id = label_to_id.get(target_label.lower())
         if src_id and tgt_id and (src_id, tgt_id) not in existing_pairs:
             new_edges.append({
                 "id": str(uuid.uuid4())[:8],
@@ -391,12 +441,13 @@ Existing node labels: {json.dumps([n['label'] for n in nodes])}"""
 
     response = llm.invoke(prompt)
     content = response.content.strip()
-    if content.startswith("```"):
-        content = content.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+    content = _strip_code_fence(content)
 
     try:
         data = json.loads(content)
     except json.JSONDecodeError:
+        data = None
+    if not isinstance(data, dict):
         return Command(update={
             "messages": [ToolMessage(
                 content="Failed to parse expansion results.",
@@ -415,14 +466,15 @@ Existing node labels: {json.dumps([n['label'] for n in nodes])}"""
             updated_nodes.append(n)
 
     new_nodes = []
-    for sub in data.get("sub_nodes", []):
-        if sub["label"].lower() not in existing_labels:
+    for sub in _items(data, "sub_nodes"):
+        label = _label(sub, "label")
+        if label and label.lower() not in existing_labels:
             nid = str(uuid.uuid4())[:8]
-            label_to_id[sub["label"].lower()] = nid
-            existing_labels.add(sub["label"].lower())
+            label_to_id[label.lower()] = nid
+            existing_labels.add(label.lower())
             new_nodes.append({
                 "id": nid,
-                "label": sub["label"],
+                "label": label,
                 "type": sub.get("type", "concept"),
                 "description": sub.get("description", ""),
                 "detail": "",
@@ -430,9 +482,10 @@ Existing node labels: {json.dumps([n['label'] for n in nodes])}"""
             })
 
     new_edges = []
-    for edge_data in data.get("sub_edges", []):
-        src_id = label_to_id.get(edge_data["source_label"].lower())
-        tgt_id = label_to_id.get(edge_data["target_label"].lower())
+    for edge_data in _items(data, "sub_edges"):
+        source_label, target_label = _edge_labels(edge_data)
+        src_id = label_to_id.get(source_label.lower())
+        tgt_id = label_to_id.get(target_label.lower())
         if src_id and tgt_id:
             new_edges.append({
                 "id": str(uuid.uuid4())[:8],

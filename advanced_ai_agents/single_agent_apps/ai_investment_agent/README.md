@@ -45,5 +45,5 @@ To manage, monitor, and interact with your financial agent through the AgentOS C
 
 **Step-by-step guide:**
 
-- Visit the official documentation: [Connecting Your OS](https://docs.agno.com/agent-os/connecting-your-os)
+- Visit the official documentation: [Connecting Your OS](https://docs.agno.com/agent-os/connect-your-os)
 - Follow the steps in the guide to register your local AgentOS and establish the connection.

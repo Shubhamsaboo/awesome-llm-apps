@@ -1,0 +1,32 @@
+{
+  "name": "needle-meaning-find",
+  "version": "1.1.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "npm run package:extension",
+    "dev": "node server/dev.mjs",
+    "build": "npm run package:extension && vite build",
+    "package:extension": "node scripts/package-extension.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "preview": "node server/dev.mjs --production",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "lucide-react": "^0.468.0"
+  },
+  "devDependencies": {
+    "vite": "^6.1.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "fflate": "^0.8.2",
+    "prettier": "^3.6.2"
+  },
+  "description": "Semantic find-in-page with Jev via Vercel AI Gateway",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

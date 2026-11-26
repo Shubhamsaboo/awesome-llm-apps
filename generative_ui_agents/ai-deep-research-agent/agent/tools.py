@@ -12,7 +12,7 @@ import os
 from typing import Any
 from concurrent.futures import ThreadPoolExecutor
 from langchain_core.tools import tool
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import AIMessage, HumanMessage
 from tavily import TavilyClient
 
 
@@ -28,11 +28,11 @@ def _do_internet_search(query: str, max_results: int = 5) -> list[dict[str, Any]
     """
     print(f"[TOOL] internet_search: query='{query}', max_results={max_results}")
 
-    tavily_key = os.environ.get("TAVILY_API_KEY")
-    if not tavily_key:
-        raise RuntimeError("TAVILY_API_KEY not set")
-
     try:
+        # A missing key is reported like any other failed search.
+        tavily_key = os.environ.get("TAVILY_API_KEY")
+        if not tavily_key:
+            raise RuntimeError("TAVILY_API_KEY not set")
         client = TavilyClient(api_key=tavily_key)
         results = client.search(
             query=query,
@@ -59,7 +59,20 @@ def _do_internet_search(query: str, max_results: int = 5) -> list[dict[str, Any]
 
     except Exception as e:
         print(f"[TOOL] internet_search error: {e}")
-        return [{"error": str(e)}]
+        return [{"error": str(e), "query": query}]
+
+
+def _final_text(result: Any) -> str:
+    """Text of the sub-agent's last AI message, or "" if it has none."""
+    messages = result.get("messages") if isinstance(result, dict) else None
+    last = next((m for m in reversed(messages or []) if isinstance(m, AIMessage)), None)
+    content = last.content if last is not None else ""
+    if isinstance(content, list):
+        content = "".join(
+            block.get("text", "") if isinstance(block, dict) else str(block)
+            for block in content
+        )
+    return content.strip() if isinstance(content, str) else ""
 
 
 @tool
@@ -153,19 +166,28 @@ Rules:
         # Run in isolated thread context - no callback inheritance possible
         result = research_agent.invoke({"messages": [HumanMessage(content=query)]})
 
-        summary = result["messages"][-1].content
+        summary = _final_text(result) or "The research returned no findings."
 
-        # Format sources for frontend
-        sources = [
-            {
-                "url": r["url"],
-                "title": r.get("title", ""),
-                "content": r.get("content", "")[:3000],  # Include content preview
-                "status": "found",
-            }
-            for r in search_results
-            if "url" in r and not r.get("error")
-        ]
+        # Format sources for frontend; a failed search is listed as a failed source.
+        sources = []
+        for r in search_results:
+            if r.get("error"):
+                source = {
+                    "url": "",
+                    "title": f"Search failed: {r.get('query', '')}",
+                    "content": r["error"],
+                    "status": "failed",
+                }
+            elif "url" in r:
+                source = {
+                    "url": r["url"],
+                    "title": r.get("title", ""),
+                    "content": r.get("content", "")[:3000],  # Include content preview
+                    "status": "found",
+                }
+            else:
+                continue
+            sources.append(source)
 
         return {"summary": summary, "sources": sources}
 

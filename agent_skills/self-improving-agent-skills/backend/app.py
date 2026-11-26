@@ -15,7 +15,8 @@ import shutil
 import re
 import logging
 import traceback
-from adk_optimizer import SkillOptimizer
+from adk_optimizer import SkillOptimizer, DEFAULT_MODEL
+from contextlib import asynccontextmanager
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -29,7 +30,66 @@ ALLOWED_EXTENSIONS = {
     ".html", ".css", ".xml", ".toml", ".cfg", ".ini", ".sh",
 }
 
-app = FastAPI()
+sessions: Dict[str, dict] = {}
+
+# Model selection. Every request that runs the agents may name a Gemini
+# model. Otherwise the server default applies: GEMINI_MODEL when set, else
+# DEFAULT_MODEL. The suggestions are ids known to work with this app and are
+# offered in the UI; any Gemini model id is accepted.
+MODEL_SUGGESTIONS = ["gemini-3.8-flash", "gemini-3-flash-preview", "gemini-3.1-pro-preview"]
+MODEL_NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._\-/]{0,127}")
+
+
+def default_model() -> str:
+    """The model used when a request names none."""
+    return os.environ.get("GEMINI_MODEL", "").strip() or DEFAULT_MODEL
+
+
+def resolve_model(requested: Optional[str]) -> str:
+    """The model a request runs on: the one it names, else the server default.
+
+    A value that does not look like a model id is refused rather than quietly
+    replaced, so a typo in the UI shows up as an error, not as a run on the
+    wrong model.
+    """
+    name = (requested or "").strip()
+    if not name:
+        return default_model()
+    if not MODEL_NAME_RE.fullmatch(name):
+        raise HTTPException(status_code=400, detail="Invalid model name")
+    return name
+
+
+async def _cleanup_expired_sessions():
+    """Periodically remove sessions older than SESSION_TTL."""
+    while True:
+        await asyncio.sleep(300)  # every 5 minutes
+        now = time.time()
+        expired = [
+            sid for sid, s in sessions.items()
+            if now - s.get("created_at", now) > SESSION_TTL
+            and s.get("status") not in ("running",)
+        ]
+        for sid in expired:
+            del sessions[sid]
+        if expired:
+            logger.info(f"Cleaned up {len(expired)} expired session(s)")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Starting background session cleanup task via lifespan.")
+    cleanup_task = asyncio.create_task(_cleanup_expired_sessions())
+    yield
+    logger.info("Shutting down background session cleanup task via lifespan.")
+    cleanup_task.cancel()
+    try:
+        await cleanup_task
+    except asyncio.CancelledError:
+        logger.info("Background session cleanup task cancelled.")
+
+
+app = FastAPI(title="Skill Optimizer API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -39,12 +99,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-sessions: Dict[str, dict] = {}
 
 
 class AnalyzeRequest(BaseModel):
     session_id: str
     gemini_api_key: str
+    model: Optional[str] = None  # Gemini model id; the server default when omitted
 
 
 class SessionConfig(BaseModel):
@@ -56,11 +116,13 @@ class SessionConfig(BaseModel):
 class RegenerateRequest(BaseModel):
     session_id: str
     gemini_api_key: str
+    model: Optional[str] = None
 
 
 class StartRequest(BaseModel):
     gemini_api_key: str
     max_rounds: Optional[int] = Field(default=20, gt=0, le=50)
+    model: Optional[str] = None
 
 
 def parse_skill_frontmatter(content: str) -> dict:
@@ -208,19 +270,28 @@ async def upload_files(files: List[UploadFile] = File(...)):
     return create_session_from_files(skill_files, file_list)
 
 
+@app.get("/api/models")
+async def list_models():
+    """The default Gemini model and suggested alternatives, for the UI's picker"""
+    default = default_model()
+    return {"default": default, "suggestions": [default] + [m for m in MODEL_SUGGESTIONS if m != default]}
+
+
 @app.post("/api/analyze")
 async def analyze_skill(request: AnalyzeRequest):
     """Generate scenarios + evals using Gemini"""
     if request.session_id not in sessions:
         raise HTTPException(status_code=404, detail="Session not found")
     session = sessions[request.session_id]
+    model = resolve_model(request.model)
     try:
-        optimizer = SkillOptimizer(api_key=request.gemini_api_key)
+        optimizer = SkillOptimizer(api_key=request.gemini_api_key, model=model)
         analysis = await optimizer.analyze_skill(session["skill_files"])
         session["scenarios"] = analysis["scenarios"]
         session["evals"] = analysis["evals"]
+        session["model"] = model
         session["status"] = "analyzed"
-        return {"scenarios": analysis["scenarios"], "evals": analysis["evals"]}
+        return {"scenarios": analysis["scenarios"], "evals": analysis["evals"], "model": model}
     except Exception as e:
         logger.error(f"Analysis error: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail="Analysis failed. Check your API key and try again.")
@@ -229,7 +300,9 @@ async def analyze_skill(request: AnalyzeRequest):
 @app.post("/api/regenerate")
 async def regenerate_config(request: RegenerateRequest):
     """Regenerate scenarios/evals for a session"""
-    analyze_req = AnalyzeRequest(session_id=request.session_id, gemini_api_key=request.gemini_api_key)
+    analyze_req = AnalyzeRequest(
+        session_id=request.session_id, gemini_api_key=request.gemini_api_key, model=request.model
+    )
     return await analyze_skill(analyze_req)
 
 
@@ -285,16 +358,19 @@ async def start_optimization(session_id: str, request: StartRequest):
         raise HTTPException(status_code=400, detail="Must configure scenarios and evals first")
     if session.get("status") == "running":
         raise HTTPException(status_code=400, detail="Optimization already running")
+    # Refuse a bad model name before the session is marked running.
+    model = resolve_model(request.model)
 
     session["status"] = "running"
     session["stop_requested"] = False
+    session["model"] = model
     # Pre-create the event queue so events aren't lost before SSE connects
     session["event_queue"] = asyncio.Queue()
     gemini_key = request.gemini_api_key
 
     async def run_optimization():
-        logger.info(f"Starting optimization for session {session_id}")
-        optimizer = SkillOptimizer(api_key=gemini_key)
+        logger.info(f"Starting optimization for session {session_id} on {model}")
+        optimizer = SkillOptimizer(api_key=gemini_key, model=model)
 
         async def callback(event):
             logger.info(f"Callback event: {event['type']}")
@@ -393,7 +469,7 @@ async def start_optimization(session_id: str, request: StartRequest):
                 await session["event_queue"].put(None)
 
     asyncio.create_task(run_optimization())
-    return {"status": "started"}
+    return {"status": "started", "model": model}
 
 
 @app.post("/api/stop/{session_id}")
@@ -494,6 +570,7 @@ async def get_status(session_id: str):
     session = sessions[session_id]
     return {
         "status": session.get("status", "unknown"),
+        "model": session.get("model"),
         "experiments": session.get("experiments", []),
         "error": session.get("error"),
         "final_result": session.get("final_result"),
@@ -505,25 +582,6 @@ async def health_check():
     return {"status": "healthy"}
 
 
-async def _cleanup_expired_sessions():
-    """Periodically remove sessions older than SESSION_TTL."""
-    while True:
-        await asyncio.sleep(300)  # every 5 minutes
-        now = time.time()
-        expired = [
-            sid for sid, s in sessions.items()
-            if now - s.get("created_at", now) > SESSION_TTL
-            and s.get("status") not in ("running",)
-        ]
-        for sid in expired:
-            del sessions[sid]
-        if expired:
-            logger.info(f"Cleaned up {len(expired)} expired session(s)")
-
-
-@app.on_event("startup")
-async def startup():
-    asyncio.create_task(_cleanup_expired_sessions())
 
 
 if __name__ == "__main__":

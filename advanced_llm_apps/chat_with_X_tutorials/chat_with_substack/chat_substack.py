@@ -6,7 +6,7 @@ import tempfile
 def embedchain_bot(db_path, api_key):
     return App.from_config(
         config={
-            "llm": {"provider": "openai", "config": {"model": "gpt-4-turbo", "temperature": 0.5, "api_key": api_key}},
+            "llm": {"provider": "openai", "config": {"model": "gpt-5.6-sol", "temperature": 0.5, "api_key": api_key}},
             "vectordb": {"provider": "chroma", "config": {"dir": db_path}},
             "embedder": {"provider": "openai", "config": {"api_key": api_key}},
         }
