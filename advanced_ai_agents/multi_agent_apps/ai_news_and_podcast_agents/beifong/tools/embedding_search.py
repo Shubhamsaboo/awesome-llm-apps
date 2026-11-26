@@ -135,7 +135,17 @@ def embedding_search(agent: Agent, prompt: str) -> str:
         result_article_ids = [item[3] for item in results_with_metrics]
         if not result_article_ids:
             return "No high-quality semantic matches found (threshold: 85%). Continuing with other search methods."
-        results = get_article_details(tracking_db_path, result_article_ids)
+        articles_by_id = {
+            article["id"]: article
+            for article in get_article_details(tracking_db_path, result_article_ids)
+        }
+        # SQL IN does not retain the vector search order. Keep the best match
+        # first, and omit articles removed after the index was built.
+        results = [
+            articles_by_id[article_id]
+            for article_id in dict.fromkeys(result_article_ids)
+            if article_id in articles_by_id
+        ]
         source_ids = [result.get("source_id") for result in results if result.get("source_id")]
         source_names = get_source_names(source_ids)
         formatted_results = []
