@@ -114,20 +114,32 @@ def upload_documents(client, datastore_id: str, files: List[bytes], filenames: L
     return doc_ids
 
 
-def wait_until_documents_ready(api_key: str, datastore_id: str, base_url: str, max_checks: int = 30, interval_sec: float = 5.0) -> None:
+def wait_until_documents_ready(api_key: str, datastore_id: str, base_url: str, max_checks: int = 30, interval_sec: float = 5.0, document_ids: Optional[List[str]] = None) -> bool:
+    """Report readiness only after the requested ingestion jobs complete."""
     url = f"{base_url.rstrip('/')}/datastores/{datastore_id}/documents"
     headers = {"Authorization": f"Bearer {api_key}"}
+    urls = [f"{url}/{doc_id}/metadata" for doc_id in document_ids] if document_ids else [url]
 
-    for _ in range(max_checks):
+    for attempt in range(max_checks):
         try:
-            resp = requests.get(url, headers=headers, timeout=30)
-            if resp.status_code == 200:
-                docs = resp.json().get("documents", [])
-                if not any(d.get("status") in ("processing", "pending") for d in docs):
-                    return
+            docs = []
+            for status_url in urls:
+                resp = requests.get(status_url, headers=headers, timeout=30)
+                if resp.status_code != 200:
+                    docs = []
+                    break
+                payload = resp.json()
+                docs.extend([payload] if document_ids else payload.get("documents", []))
+            if any(d.get("status") in ("failed", "cancelled") for d in docs):
+                st.error("Document ingestion failed or was cancelled. Check the datastore before retrying.")
+                return False
+            if docs and all(d.get("status") == "completed" for d in docs):
+                return True
+        except (requests.RequestException, ValueError, TypeError, AttributeError):
+            pass
+        if attempt + 1 < max_checks:
             time.sleep(interval_sec)
-        except Exception:
-            time.sleep(interval_sec)
+    return False
 
 
 def create_agent(client, name: str, description: str, datastore_id: str) -> Optional[str]:
@@ -248,8 +260,16 @@ with st.expander("2) Upload Documents", expanded=True):
             ids = upload_documents(client, st.session_state.datastore_id, contents, names, parsed_metadata)
             if ids:
                 st.success(f"Uploaded {len(ids)} document(s)")
-                wait_until_documents_ready(st.session_state.contextual_api_key, st.session_state.datastore_id, st.session_state.base_url)
-                st.info("Documents are ready.")
+                ready = wait_until_documents_ready(
+                    st.session_state.contextual_api_key,
+                    st.session_state.datastore_id,
+                    st.session_state.base_url,
+                    document_ids=ids,
+                )
+                if ready:
+                    st.info("Documents are ready.")
+                else:
+                    st.warning("Document readiness was not confirmed. Check ingestion status before querying.")
 
 with st.expander("3) Create or Select Agent", expanded=True):
     if not st.session_state.agent_id and st.session_state.datastore_id:
