@@ -92,7 +92,8 @@ TARGET_OK = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._+-]{0,63}$")
 
 def _pypi_version(spec: str) -> str:
     """First version in a requirement specifier that says what is used today ("" if none)."""
-    for op, version in _SPECIFIER.findall(spec):
+    # PEP 508 markers describe the Python/runtime environment, not the package.
+    for op, version in _SPECIFIER.findall(spec.split(";", 1)[0]):
         if op in _CURRENT_OPERATORS:
             return version
     return ""
