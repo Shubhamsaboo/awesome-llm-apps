@@ -1,18 +1,19 @@
 import feedparser
 from datetime import datetime
 import hashlib
+import json
 from typing import List, Dict, Any, Optional
 
 
 def get_hash(entries: List[Dict[str, str]]) -> str:
-    texts = ""
-    for entry in entries:
-        texts += (
-            str(entry.get("id", ""))
-            + str(entry.get("title", ""))
-            + str(entry.get("published_date", ""))
-        )
-    return hashlib.md5(texts.encode()).hexdigest()
+    # parse_feed_entries exposes the feed's stable identity as entry_id.
+    # Preserve field boundaries so different entries cannot concatenate alike.
+    values = [
+        [entry.get("entry_id", ""), entry.get("title", ""), entry.get("published_date", "")]
+        for entry in entries
+    ]
+    payload = json.dumps(values, ensure_ascii=False, separators=(",", ":"))
+    return hashlib.md5(payload.encode()).hexdigest()
 
 
 def parse_feed_entries(entries: List[Dict[str, Any]]) -> List[Dict[str, str]]:
