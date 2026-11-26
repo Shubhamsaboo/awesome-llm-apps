@@ -9,6 +9,7 @@ Zero transcription. Pure visual matching.
 import hashlib
 import io
 import os
+import shutil
 import subprocess
 import tempfile
 import uuid
@@ -288,8 +289,12 @@ class VideoStore:
         """Delete all frames for a video."""
         try:
             all_data = self.collection.get(where={"video_id": video_id})
-            if all_data["ids"]:
-                self.collection.delete(ids=all_data["ids"])
+            if not all_data["ids"]:
+                return False
+            self.collection.delete(ids=all_data["ids"])
+            frame_dir = self.frames_dir / video_id
+            if frame_dir.is_dir():
+                shutil.rmtree(frame_dir)
             return True
         except Exception:
             return False
