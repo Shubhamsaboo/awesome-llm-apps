@@ -1,5 +1,6 @@
 import requests
 import os
+import tempfile
 import io
 import base64
 import PIL
@@ -163,8 +164,10 @@ def process_pdf_file(pdf_file, cohere_client, base_output_folder="pdf_pages") ->
     page_image_paths = []
     page_embeddings = []
     pdf_filename = pdf_file.name
-    output_folder = os.path.join(base_output_folder, os.path.splitext(pdf_filename)[0])
-    os.makedirs(output_folder, exist_ok=True)
+    os.makedirs(base_output_folder, exist_ok=True)
+    # Uploaded filenames are labels, not identities. Keep prior indexed pages
+    # intact when another document has the same name.
+    output_folder = tempfile.mkdtemp(prefix="document-", dir=base_output_folder)
 
     try:
         # Open PDF from stream
