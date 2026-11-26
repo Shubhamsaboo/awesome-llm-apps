@@ -93,7 +93,7 @@ def dry_run_preview(top_n: int = 5, live: Optional[bool] = None) -> dict[str, An
 @app.post("/agent-scout/trigger")
 async def scheduler_trigger(request: Request) -> dict[str, Any]:
     try:
-        payload = await request.json() if request.headers.get("content-length") else {}
+        payload = await request.json()
     except JSONDecodeError:
         payload = {}
     return run_scheduled_scout(payload)

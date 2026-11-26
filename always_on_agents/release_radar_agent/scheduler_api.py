@@ -100,7 +100,7 @@ def dry_run_preview(
 @app.post("/release-radar/trigger")
 async def scheduler_trigger(request: Request) -> dict[str, Any]:
     try:
-        payload = await request.json() if request.headers.get("content-length") else {}
+        payload = await request.json()
     except JSONDecodeError:
         payload = {}
     return await run_in_threadpool(run_scheduled_radar, payload)
