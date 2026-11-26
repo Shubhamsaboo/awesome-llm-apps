@@ -18,7 +18,7 @@ class RAGPipeline:
         self.RAGIE_UPLOAD_URL = "https://api.ragie.ai/documents/url"
         self.RAGIE_RETRIEVAL_URL = "https://api.ragie.ai/retrievals"
     
-    def upload_document(self, url: str, name: Optional[str] = None, mode: str = "fast") -> Dict:
+    def upload_document(self, url: str, name: Optional[str] = None, mode: str = "fast", scope: str = "tutorial") -> Dict:
         """
         Upload a document to Ragie from a URL.
         """
@@ -28,7 +28,8 @@ class RAGPipeline:
         payload = {
             "mode": mode,
             "name": name,
-            "url": url
+            "url": url,
+            "metadata": {"scope": scope},
         }
         
         headers = {
@@ -55,7 +56,7 @@ class RAGPipeline:
         
         payload = {
             "query": query,
-            "filters": {
+            "filter": {
                 "scope": scope
             }
         }
