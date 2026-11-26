@@ -164,8 +164,9 @@ def _document_chunks(
 ) -> list[DocumentChunk]:
     texts = chunk_text(text, chunk_size=chunk_size, overlap=overlap)
     prefix = f"{source}:{locator}" if locator else source
+    document_digest = hashlib.sha256(text.encode("utf-8")).hexdigest()[:12]
     return [
-        DocumentChunk(source=source, chunk_id=f"{prefix}:c{index}", text=value)
+        DocumentChunk(source=source, chunk_id=f"{prefix}:c{index}:{document_digest}", text=value)
         for index, value in enumerate(texts, start=1)
     ]
 

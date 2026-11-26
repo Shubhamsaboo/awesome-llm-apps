@@ -121,7 +121,7 @@ class TypedRagTests(unittest.TestCase):
         results = self.run_async(store.search("When are travel receipts required?"))
 
         self.assertEqual(1, added)
-        self.assertEqual("policy.pdf:p1:c1", results[0].chunk.chunk_id)
+        self.assertTrue(results[0].chunk.chunk_id.startswith("policy.pdf:p1:c1:"))
         self.assertGreater(results[0].score, 0.2)
 
     def test_answer_model_requires_citations_when_answered(self):
