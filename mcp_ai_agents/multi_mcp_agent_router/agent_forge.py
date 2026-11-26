@@ -235,6 +235,7 @@ async def run_agent_async(client: Anthropic, agent: Agent, query: str, history: 
                         "type": "tool_result",
                         "tool_use_id": tool_use.id,
                         "content": result_text,
+                        "is_error": bool(result.isError),
                     })
                 except Exception as e:
                     tool_results.append({
