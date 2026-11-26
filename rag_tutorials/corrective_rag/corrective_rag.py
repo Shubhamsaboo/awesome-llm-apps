@@ -192,9 +192,11 @@ else:
         # Create a temporary file to store the upload
         with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(uploaded_file.name)[1]) as tmp_file:
             tmp_file.write(uploaded_file.getvalue())
+        # Close the writer before the loader opens the file, including on Windows.
+        try:
             docs = load_documents(tmp_file.name, is_url=False)
-        # Clean up the temporary file
-        os.unlink(tmp_file.name)
+        finally:
+            os.unlink(tmp_file.name)
 
 # Streamlit re-runs this whole script on every widget interaction (e.g. asking a
 # question), so ingest only when the source actually changes — otherwise every

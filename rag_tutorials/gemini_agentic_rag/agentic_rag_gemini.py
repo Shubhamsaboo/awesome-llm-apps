@@ -139,9 +139,11 @@ def init_qdrant():
 def process_pdf(file) -> List:
     """Process PDF file and add source metadata."""
     try:
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
-            tmp_file.write(file.getvalue())
-            loader = PyPDFLoader(tmp_file.name)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = os.path.join(tmp_dir, "upload.pdf")
+            with open(tmp_path, "wb") as tmp_file:
+                tmp_file.write(file.getvalue())
+            loader = PyPDFLoader(tmp_path)
             documents = loader.load()
             
             # Add source metadata
