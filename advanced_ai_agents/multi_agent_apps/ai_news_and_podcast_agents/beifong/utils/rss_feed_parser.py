@@ -18,7 +18,14 @@ def get_hash(entries: List[Dict[str, str]]) -> str:
 def parse_feed_entries(entries: List[Dict[str, Any]]) -> List[Dict[str, str]]:
     parsed_entries = []
     for entry in entries:
-        content = entry.get("content") or entry.get("description") or ""
+        content = entry.get("content")
+        if isinstance(content, list):
+            content = "\n".join(
+                part["value"]
+                for part in content
+                if isinstance(part, dict) and isinstance(part.get("value"), str)
+            )
+        content = content or entry.get("description") or ""
         published = (
             entry.get("published")
             or entry.get("updated")
