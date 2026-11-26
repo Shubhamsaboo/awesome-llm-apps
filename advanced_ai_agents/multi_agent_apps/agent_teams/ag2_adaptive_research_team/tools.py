@@ -26,7 +26,7 @@ def _clean_text(text: str) -> str:
 
 
 def _tokenize(text: str) -> List[str]:
-    return re.findall(r"[a-zA-Z0-9]+", text.lower())
+    return re.findall(r"[^\W_]+", text.casefold())
 
 
 def load_documents(uploaded_files: Iterable) -> List[Document]:
