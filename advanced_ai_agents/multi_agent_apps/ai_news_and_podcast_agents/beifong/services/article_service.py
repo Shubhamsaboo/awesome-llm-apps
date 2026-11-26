@@ -50,7 +50,11 @@ class ArticleService:
                 query_parts.append("AND datetime(ca.published_date) >= datetime(?)")
                 query_params.append(date_from)
             if date_to:
-                query_parts.append("AND datetime(ca.published_date) <= datetime(?)")
+                if len(date_to) == 10:
+                    # The API accepts YYYY-MM-DD, including that whole day.
+                    query_parts.append("AND datetime(ca.published_date) < datetime(?, '+1 day')")
+                else:
+                    query_parts.append("AND datetime(ca.published_date) <= datetime(?)")
                 query_params.append(date_to)
             if search:
                 query_parts.append("AND (ca.title LIKE ? OR ca.summary LIKE ?)")
