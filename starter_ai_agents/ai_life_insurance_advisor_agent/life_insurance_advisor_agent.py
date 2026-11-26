@@ -114,10 +114,13 @@ def parse_percentage(value: Any, fallback: float = 0.02) -> float:
         # assume already decimal if less than 1, otherwise treat as percentage value
         return float(value) if value < 1 else float(value) / 100
     if isinstance(value, str):
-        cleaned = value.strip().replace("%", "")
+        cleaned = value.strip()
+        explicit_percent = cleaned.endswith("%")
+        if explicit_percent:
+            cleaned = cleaned[:-1].strip()
         try:
             numeric = float(cleaned)
-            return numeric if numeric < 1 else numeric / 100
+            return numeric / 100 if explicit_percent or numeric >= 1 else numeric
         except ValueError:
             return fallback
     return fallback
