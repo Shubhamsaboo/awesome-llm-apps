@@ -120,20 +120,26 @@ async def _run_adk_agent(question: str, retrieval: dict[str, Any]) -> str:
     request_agent = build_agent(retrieve_relevant_context)
     request_runner = Runner(agent=request_agent, app_name=APP_NAME, session_service=session_service)
     session = await session_service.create_session(app_name=APP_NAME, user_id=USER_ID)
-    content = genai_types.Content(
-        role="user",
-        parts=[genai_types.Part(text=f"Question: {question}\nUse the retrieval tool result for this exact question.")],
-    )
-    final_text = ""
-    async for event in request_runner.run_async(
-        user_id=USER_ID,
-        session_id=session.id,
-        new_message=content,
-    ):
-        text = _event_text(event)
-        if text:
-            final_text = text
-    return final_text
+    try:
+        content = genai_types.Content(
+            role="user",
+            parts=[genai_types.Part(text=f"Question: {question}\nUse the retrieval tool result for this exact question.")],
+        )
+        final_text = ""
+        async for event in request_runner.run_async(
+            user_id=USER_ID,
+            session_id=session.id,
+            new_message=content,
+        ):
+            text = _event_text(event)
+            if text:
+                final_text = text
+        return final_text
+    finally:
+        # Each request owns a fresh session; no later request reuses its history.
+        await session_service.delete_session(
+            app_name=APP_NAME, user_id=USER_ID, session_id=session.id
+        )
 
 
 @app.get("/health")
