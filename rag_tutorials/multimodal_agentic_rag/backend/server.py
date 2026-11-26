@@ -35,6 +35,7 @@ if not os.getenv("GOOGLE_API_KEY"):
 
 APP_NAME = "multimodal_agentic_rag"
 USER_ID = "demo-user"
+MAX_UPLOAD_BYTES = 120 * 1024 * 1024
 
 app = FastAPI(title="Multimodal Agentic RAG ADK")
 allowed_origins = [
@@ -184,8 +185,8 @@ async def add_file_source(
     title: str = Form(""),
     notes: str = Form(""),
 ):
-    data = await file.read()
-    if len(data) > 120 * 1024 * 1024:
+    data = await file.read(MAX_UPLOAD_BYTES + 1)
+    if len(data) > MAX_UPLOAD_BYTES:
         raise HTTPException(400, "File too large for this demo. Keep uploads under 120 MB.")
     try:
         source = await run_in_threadpool(
