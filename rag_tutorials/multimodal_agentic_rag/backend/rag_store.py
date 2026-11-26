@@ -281,7 +281,17 @@ class MultimodalRagStore:
         return [value / norm for value in vector]
 
     def _source_vectors(self) -> dict[str, list[float]]:
-        return {source.id: self._source_vector(source.id) for source in self.sources}
+        # Aggregate once instead of rescanning all chunks for every source.
+        vectors = {source.id: [0.0] * self.dimensions for source in self.sources}
+        for chunk in self.chunks:
+            vector = vectors.get(chunk.source_id)
+            if vector is not None:
+                for index, value in enumerate(chunk.vector[: self.dimensions]):
+                    vector[index] += value
+        for source_id, vector in vectors.items():
+            norm = math.sqrt(sum(value * value for value in vector)) or 1.0
+            vectors[source_id] = [value / norm for value in vector]
+        return vectors
 
     def _source_point(self, source: RackSource, projection: dict[str, float]) -> dict[str, Any]:
         return {
