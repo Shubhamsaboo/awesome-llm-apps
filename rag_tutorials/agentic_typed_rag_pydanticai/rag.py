@@ -378,6 +378,12 @@ async def ingest_pdf(store: InMemoryVectorStore, source: str, data: bytes) -> in
 
 
 class _ReadableHTMLParser(HTMLParser):
+    _TEXT_BOUNDARIES = {
+        "address", "article", "aside", "blockquote", "caption", "dd", "div", "dl", "dt",
+        "figcaption", "figure", "footer", "h1", "h2", "h3", "h4", "h5", "h6", "header",
+        "li", "main", "nav", "ol", "p", "pre", "section", "table", "td", "th", "tr", "ul",
+    }
+
     def __init__(self):
         super().__init__(convert_charrefs=True)
         self.parts: list[str] = []
@@ -386,13 +392,13 @@ class _ReadableHTMLParser(HTMLParser):
     def handle_starttag(self, tag: str, attrs) -> None:
         if tag in {"script", "style", "noscript"}:
             self._ignored_depth += 1
-        elif tag in {"br", "p", "div", "article", "section", "li", "h1", "h2", "h3"}:
+        elif tag == "br" or tag in self._TEXT_BOUNDARIES:
             self.parts.append("\n")
 
     def handle_endtag(self, tag: str) -> None:
         if tag in {"script", "style", "noscript"} and self._ignored_depth:
             self._ignored_depth -= 1
-        elif tag in {"p", "div", "article", "section", "li", "h1", "h2", "h3"}:
+        elif tag in self._TEXT_BOUNDARIES:
             self.parts.append("\n")
 
     def handle_data(self, data: str) -> None:
