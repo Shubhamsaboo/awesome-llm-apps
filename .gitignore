@@ -1,21 +1,8 @@
-# Python bytecode
+.env
+.streamlit/secrets.toml
 __pycache__/
 *.pyc
-*.pyo
-
-# Environment files
-.env
-.env.local
-
-# Virtual environments
-venv/
 .venv/
-
-# Node
-node_modules/
-.next/
-dist/
-*.tsbuildinfo
-
-# JetBrains IDEs
-.idea/
+venv/
+*.mp4
+*.mov

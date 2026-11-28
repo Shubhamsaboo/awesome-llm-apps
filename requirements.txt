@@ -1,0 +1,4 @@
+streamlit
+google-genai
+pillow
+pydantic
