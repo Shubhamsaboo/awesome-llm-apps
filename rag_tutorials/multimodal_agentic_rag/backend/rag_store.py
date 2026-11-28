@@ -308,8 +308,7 @@ class MultimodalRagStore:
                 summary=_clean_text(text)[:220],
                 chunks=len(chunks),
             )
-            self.sources.append(source)
-
+            pending_chunks = []
             for index, chunk_text in enumerate(chunks):
                 vector = self._embed_text(chunk_text, "task: retrieval document")
                 chunk = RackChunk(
@@ -321,7 +320,12 @@ class MultimodalRagStore:
                     vector=vector,
                     metadata={"chunk_index": index + 1},
                 )
-                self.chunks.append(chunk)
+                pending_chunks.append(chunk)
+
+            # Publish only after every embedding succeeds, so failed requests
+            # cannot leave partial evidence in the retrieval store.
+            self.sources.append(source)
+            self.chunks.extend(pending_chunks)
 
             if not seed:
                 self._emit("source_added", {"source_id": source_id, "title": source.title, "chunks": len(chunks)})

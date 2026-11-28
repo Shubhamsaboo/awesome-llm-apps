@@ -35,6 +35,7 @@ if not os.getenv("GOOGLE_API_KEY"):
 
 APP_NAME = "multimodal_agentic_rag"
 USER_ID = "demo-user"
+MAX_UPLOAD_BYTES = 120 * 1024 * 1024
 
 app = FastAPI(title="Multimodal Agentic RAG ADK")
 allowed_origins = [
@@ -120,20 +121,26 @@ async def _run_adk_agent(question: str, retrieval: dict[str, Any]) -> str:
     request_agent = build_agent(retrieve_relevant_context)
     request_runner = Runner(agent=request_agent, app_name=APP_NAME, session_service=session_service)
     session = await session_service.create_session(app_name=APP_NAME, user_id=USER_ID)
-    content = genai_types.Content(
-        role="user",
-        parts=[genai_types.Part(text=f"Question: {question}\nUse the retrieval tool result for this exact question.")],
-    )
-    final_text = ""
-    async for event in request_runner.run_async(
-        user_id=USER_ID,
-        session_id=session.id,
-        new_message=content,
-    ):
-        text = _event_text(event)
-        if text:
-            final_text = text
-    return final_text
+    try:
+        content = genai_types.Content(
+            role="user",
+            parts=[genai_types.Part(text=f"Question: {question}\nUse the retrieval tool result for this exact question.")],
+        )
+        final_text = ""
+        async for event in request_runner.run_async(
+            user_id=USER_ID,
+            session_id=session.id,
+            new_message=content,
+        ):
+            text = _event_text(event)
+            if text:
+                final_text = text
+        return final_text
+    finally:
+        # A request owns a fresh session; later requests never reuse it.
+        await session_service.delete_session(
+            app_name=APP_NAME, user_id=USER_ID, session_id=session.id
+        )
 
 
 @app.get("/health")
@@ -184,8 +191,8 @@ async def add_file_source(
     title: str = Form(""),
     notes: str = Form(""),
 ):
-    data = await file.read()
-    if len(data) > 120 * 1024 * 1024:
+    data = await file.read(MAX_UPLOAD_BYTES + 1)
+    if len(data) > MAX_UPLOAD_BYTES:
         raise HTTPException(400, "File too large for this demo. Keep uploads under 120 MB.")
     try:
         source = await run_in_threadpool(
