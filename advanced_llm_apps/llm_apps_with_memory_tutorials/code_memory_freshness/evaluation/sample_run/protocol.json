@@ -1,0 +1,25 @@
+{
+  "provider": "Bedrock",
+  "model": "us.anthropic.claude-sonnet-5-5",
+  "region": "us-east-1",
+  "repeats": 3,
+  "seed": 23,
+  "cases_sha256": "dfa45c5fda0956712a9424972f97797c51455db3f1cd9b59c9a9f4ee1c2fb96d",
+  "source_sha256": "9ab5f2bf8f07d987ebbe236fafbea337e530699a3078e2ccb4e94c994b1d62dc",
+  "evaluator_sha256": "3217140168eaddcd339d646c7e04b5820fccc7de1d0a2f815d161a109f65e241",
+  "python_version": "3.12.13",
+  "packages": {
+    "streamlit": "1.67.0",
+    "openai": "2.54.0",
+    "anthropic": "0.125.0",
+    "boto3": "1.44.4"
+  },
+  "max_output_tokens_per_call": 900,
+  "modes": [
+    "blind",
+    "always",
+    "freshness"
+  ],
+  "started_at": "2026-11-18T21:31:04.180336+00:00",
+  "scope": "Six authored teaching examples; not a public-repository benchmark"
+}

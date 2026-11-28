@@ -1,0 +1,92 @@
+{
+  "unchanged": {
+    "title": "Unchanged code: saved evidence still matches",
+    "path": "payments.py",
+    "symbol": "charge",
+    "note": "After a completed charge, repeating its request_id returns the cached result without another external side effect.",
+    "before": {
+      "payments.py": "_seen = {}\n\ndef charge(request_id, send):\n    if request_id in _seen:\n        return _seen[request_id]\n    result = send()\n    _seen[request_id] = result\n    return result\n"
+    },
+    "after": {
+      "payments.py": "_seen = {}\n\ndef charge(request_id, send):\n    if request_id in _seen:\n        return _seen[request_id]\n    result = send()\n    _seen[request_id] = result\n    return result\n"
+    },
+    "question": "Can a reviewer reuse this finding about a completed, cached request? Do not extend it to concurrency, crashes or durable idempotency.",
+    "expected_action": "reuse",
+    "expected_state": "unchanged"
+  },
+  "changed_valid": {
+    "title": "Changed function: the finding remains valid",
+    "path": "payments.py",
+    "symbol": "charge",
+    "note": "After a completed charge, repeating its request_id returns the cached result without another external side effect.",
+    "before": {
+      "payments.py": "_seen = {}\n\ndef charge(request_id, send):\n    if request_id in _seen:\n        return _seen[request_id]\n    result = send()\n    _seen[request_id] = result\n    return result\n"
+    },
+    "after": {
+      "payments.py": "_seen = {}\n\ndef charge(request_id, send):\n    if request_id in _seen:\n        cached = _seen[request_id]\n        return cached\n    result = send()\n    _seen[request_id] = result\n    return result\n"
+    },
+    "question": "Does this refactor preserve the saved finding for completed cached requests? Do not assume that changed means wrong.",
+    "expected_action": "reuse",
+    "expected_state": "changed"
+  },
+  "changed_unsafe": {
+    "title": "Changed function: a side effect escapes the cache guard",
+    "path": "payments.py",
+    "symbol": "charge",
+    "note": "After a completed charge, repeating its request_id returns the cached result without another external side effect.",
+    "before": {
+      "payments.py": "_seen = {}\n\ndef charge(request_id, send):\n    if request_id in _seen:\n        return _seen[request_id]\n    result = send()\n    _seen[request_id] = result\n    return result\n"
+    },
+    "after": {
+      "payments.py": "_seen = {}\n\ndef charge(request_id, send, notify):\n    notify()\n    if request_id in _seen:\n        return _seen[request_id]\n    result = send()\n    _seen[request_id] = result\n    return result\n"
+    },
+    "question": "Would reusing the saved finding be safe after this change? Account for every external callback, not only send.",
+    "expected_action": "reject",
+    "expected_state": "changed"
+  },
+  "moved": {
+    "title": "Moved and renamed: same body, new location",
+    "path": "payments.py",
+    "symbol": "charge",
+    "note": "After a completed charge, repeating its request_id returns the cached result without another external side effect.",
+    "before": {
+      "payments.py": "_seen = {}\n\ndef charge(request_id, send):\n    if request_id in _seen:\n        return _seen[request_id]\n    result = send()\n    _seen[request_id] = result\n    return result\n"
+    },
+    "after": {
+      "service.py": "_seen = {}\n\ndef charge_cached(request_id, send):\n    if request_id in _seen:\n        return _seen[request_id]\n    result = send()\n    _seen[request_id] = result\n    return result\n"
+    },
+    "question": "Can the saved finding be reused for the uniquely matching moved function, within its original sequential completed-request scope?",
+    "expected_action": "reuse",
+    "expected_state": "moved"
+  },
+  "dependency_changed": {
+    "title": "Same function: its helper stopped deduplicating",
+    "path": "payments.py",
+    "symbol": "charge",
+    "note": "After a completed charge, repeating its request_id returns the cached result without another external side effect.",
+    "before": {
+      "payments.py": "from helpers import run_once\n\ndef charge(request_id, send):\n    return run_once(request_id, send)\n",
+      "helpers.py": "_seen = {}\n\ndef run_once(request_id, send):\n    if request_id in _seen:\n        return _seen[request_id]\n    result = send()\n    _seen[request_id] = result\n    return result\n"
+    },
+    "after": {
+      "payments.py": "from helpers import run_once\n\ndef charge(request_id, send):\n    return run_once(request_id, send)\n",
+      "helpers.py": "def run_once(request_id, send):\n    return send()\n"
+    },
+    "question": "The anchored charge function is byte-for-byte unchanged. Does its current helper still support the saved finding?",
+    "expected_action": "reject",
+    "expected_state": "context_changed"
+  },
+  "removed": {
+    "title": "Missing target: insufficient evidence to reuse",
+    "path": "payments.py",
+    "symbol": "charge",
+    "note": "After a completed charge, repeating its request_id returns the cached result without another external side effect.",
+    "before": {
+      "payments.py": "_seen = {}\n\ndef charge(request_id, send):\n    if request_id in _seen:\n        return _seen[request_id]\n    result = send()\n    _seen[request_id] = result\n    return result\n"
+    },
+    "after": {},
+    "question": "The target was removed. There is no current implementation to inspect. Should this saved finding be reused?",
+    "expected_action": "recheck",
+    "expected_state": "unresolved"
+  }
+}
