@@ -10,6 +10,7 @@ interface RunningStepProps {
   model: string; // Gemini model id; "" means the backend's default
   scenarios: any[];
   evals: any[];
+  guards: { min_gain: number; holdout_fraction: number };
   onComplete: (result: any) => void;
 }
 
@@ -21,6 +22,8 @@ interface Experiment {
   max_score: number;
   pass_rate: number;
   per_eval: any[];
+  outcome?: string;
+  parse_errors?: number;
 }
 
 export default function RunningStep({
@@ -29,6 +32,7 @@ export default function RunningStep({
   model,
   scenarios,
   evals,
+  guards,
   onComplete,
 }: RunningStepProps) {
   const [experiments, setExperiments] = useState<Experiment[]>([]);
@@ -60,6 +64,7 @@ export default function RunningStep({
             gemini_api_key: apiKey,
             max_rounds: 20,
             model: model.trim() || undefined,
+            ...guards,
           }),
         }
       );
@@ -269,7 +274,10 @@ export default function RunningStep({
                         ? "Baseline"
                         : exp.status === "keep"
                         ? "Keep ✓"
+                        : exp.outcome && exp.outcome !== "discarded"
+                        ? exp.outcome
                         : "Discard ✗"}
+                      {exp.parse_errors ? ` · ${exp.parse_errors} parse error(s)` : ""}
                     </span>
                     <span className="text-lg font-bold text-violet-400">
                       {exp.pass_rate}%

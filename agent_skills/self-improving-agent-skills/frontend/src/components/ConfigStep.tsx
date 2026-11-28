@@ -11,6 +11,8 @@ interface ConfigStepProps {
   evals: any[];
   onScenariosChange: (scenarios: any[]) => void;
   onEvalsChange: (evals: any[]) => void;
+  guards: { min_gain: number; holdout_fraction: number };
+  onGuardsChange: (g: { min_gain: number; holdout_fraction: number }) => void;
   onComplete: () => void;
 }
 
@@ -22,6 +24,8 @@ export default function ConfigStep({
   evals: initialEvals,
   onScenariosChange,
   onEvalsChange,
+  guards,
+  onGuardsChange,
   onComplete,
 }: ConfigStepProps) {
   const [scenarios, setScenarios] = useState(
@@ -351,6 +355,17 @@ export default function ConfigStep({
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="glass rounded-2xl p-6 grid grid-cols-2 gap-4 text-sm">
+        {([["min_gain", "Min gain (points, 0-100)", 100, 1], ["holdout_fraction", "Holdout fraction (0-0.9)", 0.9, 0.1]] as const).map(([key, label, max, step]) => (
+          <label key={key} className="flex flex-col gap-1 text-zinc-400">
+            {label}
+            <input type="number" min={0} max={max} step={step} value={guards[key]}
+              onChange={(e) => onGuardsChange({ ...guards, [key]: Math.min(max, Math.max(0, Number(e.target.value) || 0)) })}
+              className="px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white" />
+          </label>
+        ))}
       </div>
 
       <button

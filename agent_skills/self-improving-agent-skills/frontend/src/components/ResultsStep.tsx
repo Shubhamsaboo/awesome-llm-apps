@@ -78,6 +78,17 @@ export default function ResultsStep({
           +{improvementPercent.toFixed(1)}%
         </div>
         <p className="text-zinc-400">Improvement achieved</p>
+        {result.stopped_reason === "parse_errors" && (
+          <p className="text-amber-400 mt-4">Stopped early: the judge returned no usable verdicts.</p>
+        )}
+        {result.parse_errors > 0 && <p className="text-amber-400 mt-2">{result.parse_errors} unparseable judge verdict(s) excluded from scores.</p>}
+        {result.holdout && (
+          <p className="text-zinc-400 mt-2">
+            Holdout: {result.holdout.baseline}% → {result.holdout.final}%
+            {result.holdout.regressed ? " (regressed)" : result.holdout.inconclusive ? " (inconclusive)" : ""}
+          </p>
+        )}
+        {result.holdout_split?.warning && <p className="text-amber-400 mt-2">{result.holdout_split.warning}</p>}
       </div>
 
       <div className="grid grid-cols-3 gap-6">

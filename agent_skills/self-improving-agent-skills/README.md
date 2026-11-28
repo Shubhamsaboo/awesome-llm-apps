@@ -182,7 +182,7 @@ For each round, the three agents collaborate:
 | `POST` | `/api/analyze` | Generate scenarios and evals (requires Gemini API key; optional `model`) |
 | `POST` | `/api/regenerate` | Regenerate scenarios and evals (optional `model`) |
 | `POST` | `/api/update-config` | Save user's selected/edited config |
-| `POST` | `/api/start/{session_id}` | Start optimization (optional `model`) |
+| `POST` | `/api/start/{session_id}` | Start optimization (optional `model`, `max_rounds`, `min_gain`, `holdout_fraction`) |
 | `GET` | `/api/stream/{session_id}` | SSE stream of optimization progress |
 | `POST` | `/api/stop/{session_id}` | Stop optimization |
 | `GET` | `/api/download/{session_id}` | Download improved skill |
@@ -232,6 +232,17 @@ The model comes from the UI field or `GEMINI_MODEL` (see Configuration above); `
 ```python
 DEFAULT_MODEL = "gemini-3.8-flash"
 ```
+
+### Optimizer Guards & Pluggable Scorers
+
+`adk_optimizer.py` and `POST /api/start/{session_id}` support additional evaluation guards and custom scoring:
+
+- **Minimum gain threshold (`min_gain`)**: Require a candidate mutation to beat the current best score by at least `min_gain` percentage points (`0.0`–`100.0`, default `0.0`) before keeping it — pass `min_gain` in `POST /api/start/{session_id}` or `optimizer.optimize(..., min_gain=5.0)`.
+- **Held-out scenario validation (`holdout` / `holdout_fraction` & `split_holdout`)**: Reserve held-out scenarios that never guide Analyst/Mutator decisions to check generalization. Pass `holdout_fraction` (`[0.0, 1.0)`, deterministic split via `split_holdout(scenarios, holdout_fraction, seed=0)`) to `/api/start/{session_id}` or `optimize(...)`, or pass an explicit `holdout=[...]` list to `optimize(...)`. Results include `holdout` (`baseline`, `final`, `total`, `regressed`, `inconclusive`, `baseline_parse_errors`, `parse_errors`), where `regressed` is `True` when a regression is proven (including on shared clean checks), `False` for clean non-regression, and `None` when parse errors make holdout comparison inconclusive.
+- **Parse-error separation (`PARSE_ERROR`, `parse_errors`)**: The judge may reply with `{"results": [...]}` or a bare array. Checks with no usable verdict are counted in `parse_errors` and excluded from `pass_rate`, so noise never counts as a failure. A candidate with more parse errors than the baseline, or whose full score does not beat the baseline by `min_gain`, is not kept (`outcome="inconclusive"`), so the final score is never below the baseline. Unparseable Analyst/Mutator replies mark the round `outcome="skipped"`.
+- **Early stops (`stopped_reason`)**: `"parse_errors"` when the baseline has no clean verdicts at all; `"converged"` when the baseline is already 100% (no candidate can beat it). Identical candidates are not re-scored (`outcome="unchanged"`).
+- **Holdout split report (`holdout_split`)**: With `holdout_fraction > 0`, results include `requested_fraction`, `effective_fraction`, `train`, `holdout`, and a `warning` when small scenario sets make the effective split differ by more than 10 points (e.g. 3 scenarios at `0.5` holds out 2) or nothing can be held out.
+- **Pluggable skill scorers (`Scorer` / `BaseScorer` / `ExecutorScorer`)**: Replace the default LLM-judge `ExecutorScorer` by passing a `BaseScorer` subclass, `Scorer` implementation, or `(skill_md, scenarios, evals) -> dict` callable to `SkillOptimizer(..., scorer=...)` or `optimizer.optimize(..., scorer=...)`. Callable scorer dicts can return aggregate keys like `{"pass_rate": float}` or `{"passed": int, "total": int}`, plus optional `"failures"`, `"per_eval"`, and `"parse_errors"` fields. Results are validated: counts must be non-negative whole numbers, `passed <= total`, and `pass_rate` must match `passed/total` when both are given. `pass_rate` is a percentage in the `0.0`–`100.0` range (the same unit as `min_gain` percentage points).
 
 ## Development
 
