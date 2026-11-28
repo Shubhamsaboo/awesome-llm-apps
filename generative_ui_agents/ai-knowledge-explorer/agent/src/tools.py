@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import uuid
 from typing import Any
 
@@ -52,6 +53,26 @@ def _edge_labels(edge_data: dict) -> tuple[str, str]:
     )
 
 
+def _weight(value: Any, default: int) -> int:
+    """Return an integer edge weight on the 1-3 scale the prompts describe.
+
+    Models sometimes answer with a string ("3") or an out-of-range number, and a
+    non-numeric value must not reach the graph renderer.
+    """
+    if isinstance(value, bool):
+        return default
+    try:
+        weight = int(float(value))
+    except (TypeError, ValueError, OverflowError):
+        return default
+    return min(3, max(1, weight))
+
+
+def _upload_name(path: str) -> str:
+    """Drop only the generated ``<timestamp>-`` prefix from an upload filename."""
+    return re.sub(r"^\d+-", "", os.path.basename(path))
+
+
 @tool
 def extract_knowledge(runtime: ToolRuntime[Any]) -> Command:
     """Extract entities and relationships from uploaded documents or source code files. ALWAYS call this tool when the user adds files. Do not extract knowledge yourself."""
@@ -73,7 +94,7 @@ def extract_knowledge(runtime: ToolRuntime[Any]) -> Command:
             try:
                 with open(fpath, "r") as f:
                     content = f.read()
-                name = os.path.basename(fpath).split("-", 1)[-1] if "-" in os.path.basename(fpath) else os.path.basename(fpath)
+                name = _upload_name(fpath)
                 all_content += f"\n\n--- {name} ---\n{content}"
                 doc_names.append(name)
                 source_content.setdefault(name, content)
@@ -230,7 +251,7 @@ RULES:
                 "source": src_id,
                 "target": tgt_id,
                 "label": edge_data.get("label", "related_to"),
-                "weight": edge_data.get("weight", 1),
+                "weight": _weight(edge_data.get("weight"), 1),
             })
 
     existing_docs = runtime.state.get("documents", [])
@@ -339,7 +360,7 @@ Focus on non-obvious connections. Prefer "contradicts", "extends", "causes" over
                 "source": src_id,
                 "target": tgt_id,
                 "label": edge_data.get("label", "related_to"),
-                "weight": edge_data.get("weight", 1),
+                "weight": _weight(edge_data.get("weight"), 1),
             })
             existing_pairs.add((src_id, tgt_id))
 
@@ -492,7 +513,7 @@ Existing node labels: {json.dumps([n['label'] for n in nodes])}"""
                 "source": src_id,
                 "target": tgt_id,
                 "label": edge_data.get("label", "part_of"),
-                "weight": edge_data.get("weight", 2),
+                "weight": _weight(edge_data.get("weight"), 2),
             })
 
     return Command(update={
