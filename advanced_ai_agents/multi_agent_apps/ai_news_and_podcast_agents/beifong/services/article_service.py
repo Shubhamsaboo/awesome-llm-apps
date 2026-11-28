@@ -30,6 +30,7 @@ class ArticleService:
             if source:
                 source_id_query = "SELECT id FROM sources WHERE name = ?"
                 source_id_result = await sources_db.execute_query(source_id_query, (source,), fetch=True, fetch_one=True)
+                feed_ids_result = []
                 if source_id_result and source_id_result.get("id"):
                     feed_ids_query = "SELECT id FROM source_feeds WHERE source_id = ?"
                     feed_ids_result = await sources_db.execute_query(feed_ids_query, (source_id_result["id"],), fetch=True)
@@ -38,6 +39,8 @@ class ArticleService:
                         placeholders = ",".join(["?" for _ in feed_ids])
                         query_parts.append(f"AND ca.feed_id IN ({placeholders})")
                         query_params.extend(feed_ids)
+                if not feed_ids_result:
+                    query_parts.append("AND 0")
             if category:
                 query_parts.append("""
                     AND EXISTS (
@@ -50,7 +53,11 @@ class ArticleService:
                 query_parts.append("AND datetime(ca.published_date) >= datetime(?)")
                 query_params.append(date_from)
             if date_to:
-                query_parts.append("AND datetime(ca.published_date) <= datetime(?)")
+                if len(date_to) == 10:
+                    # The API accepts YYYY-MM-DD, including that whole day.
+                    query_parts.append("AND datetime(ca.published_date) < datetime(?, '+1 day')")
+                else:
+                    query_parts.append("AND datetime(ca.published_date) <= datetime(?)")
                 query_params.append(date_to)
             if search:
                 query_parts.append("AND (ca.title LIKE ? OR ca.summary LIKE ?)")
