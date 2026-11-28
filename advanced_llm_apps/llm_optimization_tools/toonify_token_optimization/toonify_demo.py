@@ -200,8 +200,8 @@ Provide: 1) Total revenue, 2) Orders by status, 3) Average order value"""
             client = Anthropic(api_key=anthropic_key)
             
             response = client.messages.create(
-                model="claude-3-5-sonnet-20241022",
-                max_tokens=200,
+                model="claude-sonnet-5-5",
+                max_tokens=1024,
                 messages=[{
                     "role": "user",
                     "content": f"""Analyze these customer orders and provide a brief summary:
@@ -213,7 +213,7 @@ Provide: 1) Total revenue, 2) Orders by status, 3) Average order value"""
             )
             
             print("\n✅ Claude Response:")
-            print(response.content[0].text)
+            print(next(b.text for b in response.content if b.type == "text"))
             
             # Show token usage
             print(f"\n📊 Token Usage:")
