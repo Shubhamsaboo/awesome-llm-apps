@@ -18,12 +18,14 @@ What it proves (each caught a real bug during development, or guards one):
   - the shiny_object kill-chain names the right killer
   - config-touch ratio stays sane (once reported 111%)
   - --redact renames projects but keeps the kill-chain intact
+  - --redact keeps skipped repo names, relapse names and remote URLs out of the report
   - --state + --mark-resurrected + relapse detection
   - --json report structure
 """
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -46,11 +48,11 @@ def days_ago(n):
     return (datetime.now() - timedelta(days=n)).strftime("%Y-%m-%dT10:00:00")
 
 
-def repo(root, name):
+def repo(root, name, email=EMAIL):
     d = os.path.join(root, name)
     os.makedirs(d)
     subprocess.run(["git", "init", "-q"], cwd=d, check=True)
-    subprocess.run(["git", "config", "user.email", EMAIL], cwd=d, check=True)
+    subprocess.run(["git", "config", "user.email", email], cwd=d, check=True)
     subprocess.run(["git", "config", "user.name", "eval"], cwd=d, check=True)
     return d
 
@@ -100,6 +102,8 @@ def build_graveyard(root):
     commit(d, days_ago(105), "users", ["app/users.py"])
     commit(d, days_ago(91), "start stripe integration", ["app/stripe_checkout.py"])
     commit(d, days_ago(90), "fight stripe webhooks", ["app/billing.py"])
+    subprocess.run(["git", "remote", "add", "origin",
+                    "https://example.com/x/pay-wall-private.git"], cwd=d, check=True)
 
     # finished, not dead: silent 150d but deployed + pushed + documented
     # unversioned: a project folder that never got a git init
@@ -116,8 +120,11 @@ def build_graveyard(root):
 
 def main():
     root = tempfile.mkdtemp(prefix="graveyard-eval-")
+    foreign_root = tempfile.mkdtemp(prefix="graveyard-foreign-eval-")
     try:
         build_graveyard(root)
+        d = repo(foreign_root, "payroll-internal-work", "boss@corp.example")
+        commit(d, days_ago(90), "init", ["README.md"])
 
         print("classification:")
         out = run(root, "--days", "45")
@@ -133,11 +140,36 @@ def main():
         check("config ratio is sane (<=100%)", "111%" not in out and "1.0%%" not in out)
         check("unversioned folder counted, not autopsied",
               "never-born" in out and "no git" in out)
+        plain_out = out
 
         print("redaction:")
         out = run(root, "--days", "45", "--redact")
         check("names are redacted", "project-1" in out and "almost-shipped" not in out)
         check("kill-chain survives redaction", "killed by `project-" in out)
+        census = r"alive: \d+\s+finished: \d+\s+dead: \d+"
+        check("redaction preserves census and pulse scores",
+              re.findall(census, out) == re.findall(census, plain_out)
+              and re.findall(r"pulse \d+/100", out) == re.findall(r"pulse \d+/100", plain_out))
+
+        out = run(foreign_root, "--days", "45", "--redact")
+        check("redacted foreign skip shows count, not name",
+              "skipped as not-yours (by commit email): 1 repo(s)" in out
+              and "payroll-internal-work" not in out)
+        out = run(foreign_root, "--days", "45")
+        check("unredacted foreign skip still names repo",
+              "skipped as not-yours (by commit email): payroll-internal-work" in out)
+
+        no_repo_root = os.path.join(foreign_root, "no-repos")
+        unversioned_secret = os.path.join(no_repo_root, "unversioned-secret")
+        os.makedirs(unversioned_secret)
+        open(os.path.join(unversioned_secret, "package.json"), "w").write("{}\n")
+        out = run(no_repo_root, "--redact")
+        check("redacted no-repo branch counts unversioned folders without names",
+              "But 1 project folder(s) with no git at all" in out
+              and "unversioned-secret" not in out)
+        out = run(no_repo_root)
+        check("unredacted no-repo branch still names unversioned folders",
+              "But 1 project folder(s) with no git at all: unversioned-secret" in out)
 
         print("state and relapse:")
         state = os.path.join(root, "state.json")
@@ -157,6 +189,22 @@ def main():
         out = run(root, "--days", "45", "--state", state)
         check("relapse is detected and named",
               "RELAPSE WATCH" in out and "almost-shipped" in out and "dying again" in out)
+        out = run(root, "--days", "45", "--state", state, "--redact")
+        check("redacted relapse uses project label",
+              "RELAPSE WATCH" in out
+              and re.search(r"- project-\d+: resurrected .* dying again", out) is not None
+              and "almost-shipped" not in out)
+
+        with open(state) as f:
+            s = json.load(f)
+        s["resurrections"].append({"path": os.path.join(root, "acme-secret-client"),
+                                   "name": "acme-secret-client", "date": days_ago(30)[:10]})
+        with open(state, "w") as f:
+            json.dump(s, f)
+        out = run(root, "--days", "45", "--state", state, "--redact")
+        check("missing redacted resurrection uses neutral label",
+              "a resurrected project" in out and "no longer found on disk" in out
+              and "acme-secret-client" not in out)
 
         print("json report:")
         rpt = os.path.join(root, "report.json")
@@ -167,6 +215,13 @@ def main():
               all(k in r for k in ("alive", "finished", "dead")))
         check("dead entries carry causes and pulse",
               all("causes" in d and "pulse" in d for d in r["dead"]))
+        redacted_rpt = os.path.join(root, "redacted-report.json")
+        run(root, "--days", "45", "--json", redacted_rpt, "--redact")
+        with open(redacted_rpt) as f:
+            redacted = json.load(f)
+        check("redacted JSON hides remote project identifiers",
+              "pay-wall-private" not in json.dumps(redacted)
+              and any(d["remote"] == "(redacted)" for d in redacted["dead"]))
 
         print()
         if all(checks):
@@ -176,6 +231,7 @@ def main():
         return 1
     finally:
         shutil.rmtree(root, ignore_errors=True)
+        shutil.rmtree(foreign_root, ignore_errors=True)
 
 
 if __name__ == "__main__":

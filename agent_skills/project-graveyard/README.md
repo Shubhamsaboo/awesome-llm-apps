@@ -52,12 +52,12 @@ python3 project-graveyard/scripts/graveyard.py ~/dev ~/projects
 
 ## Scope and privacy
 
-Everything runs locally: one plain-Python file, stdlib only, zero network calls, read-only. It reads git metadata (commit dates, messages, filenames), never your code's contents. Name folders and it scans only those; given none, it checks a fixed list of usual project spots (`DEFAULT_ROOTS`, line 30 of the script), never "everything on your machine." Want to post your report? `--redact` swaps project names for `project-1..n`.
+Everything runs locally: one plain-Python file, stdlib only, zero network calls, read-only. It reads git metadata (commit dates, messages, filenames), never your code's contents. Name folders and it scans only those; given none, it checks a fixed list of usual project spots (`DEFAULT_ROOTS`, line 30 of the script), never "everything on your machine." Want to post your report? `--redact` swaps project names for `project-1..n` and leaves out other repo names and remote URLs.
 
 Prove it works before installing, from a clone of this repo:
 
 ```bash
-python3 agent_skills/evals/project-graveyard/test_graveyard.py   # 16 checks, ~10 seconds
+python3 agent_skills/evals/project-graveyard/test_graveyard.py   # 24 checks, ~10 seconds
 ```
 
 Limits: no git means no autopsy (counted, not diagnosed). "Dead" is 45+ days silent, tunable with `--days`. Tested on macOS and Linux.

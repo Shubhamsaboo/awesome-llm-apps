@@ -316,7 +316,7 @@ def main(argv=None):
                     help="include repos where you authored <20%% of commits (clones, forks, work checkouts)")
     ap.add_argument("--max", type=int, default=60, dest="max_repos", help="stop after N repos (default 60)")
     ap.add_argument("--redact", action="store_true",
-                    help="replace project names with project-1..n (for sharing the report)")
+                    help="replace project names with project-1..n and hide other repo names and remote URLs (for sharing the report)")
     ap.add_argument("--me", action="append", default=[], metavar="EMAIL",
                     help="extra email(s) you commit under (work address, web edits, "
                          "builder tools). Repeatable. Repos authored by these count as yours.")
@@ -364,8 +364,11 @@ def main(argv=None):
     if not paths:
         print("No git repos found under: %s" % ", ".join(roots))
         if unversioned:
-            print("But %d project folder(s) with no git at all: %s"
-                  % (len(unversioned), ", ".join(p.name for p in unversioned[:8])))
+            if args.redact:
+                print("But %d project folder(s) with no git at all" % len(unversioned))
+            else:
+                print("But %d project folder(s) with no git at all: %s"
+                      % (len(unversioned), ", ".join(p.name for p in unversioned[:8])))
             print("No history means no autopsy — get them under git before they rot further.")
         print("Pass the directories where your projects actually live.")
         return 1
@@ -397,6 +400,8 @@ def main(argv=None):
             r["real_path"] = r["path"]
             r["name"] = "project-%d" % i
             r["path"] = "(redacted)"
+            if r["remote"]:
+                r["remote"] = "(redacted)"
 
     cutoff = datetime.now().timestamp() - args.days * 86400
     silent = [r for r in repos if r["last"] < cutoff]
@@ -437,8 +442,11 @@ def main(argv=None):
         print("finished (shipped, just stable — not corpses): %s"
               % ", ".join(r["name"] for r in finished[:8]))
     if skipped:
-        print("skipped as not-yours (by commit email): %s" % ", ".join(s.split(" (")[0] for s in skipped[:10])
-              + (" …" if len(skipped) > 10 else ""))
+        if args.redact:
+            print("skipped as not-yours (by commit email): %d repo(s)" % len(skipped))
+        else:
+            print("skipped as not-yours (by commit email): %s" % ", ".join(s.split(" (")[0] for s in skipped[:10])
+                  + (" …" if len(skipped) > 10 else ""))
         print("  (yours under another email? rerun with --me that@email.com, or --include-foreign)")
     if unversioned:
         if args.redact:
@@ -493,15 +501,16 @@ def main(argv=None):
             r = by_path.get(res["path"])
             if r is None:
                 lines.append("- %s: resurrected %s, no longer found on disk. Buried for good, or moved."
-                             % (res["name"], res["date"]))
+                             % ("a resurrected project" if args.redact else res["name"], res["date"]))
                 continue
+            name = r["name"] if args.redact else res["name"]
             silent_days = int((datetime.now().timestamp() - r["last"]) / 86400)
             if silent_days > 14:
                 lines.append("- %s: resurrected %s, silent for %d days since. It's dying again — "
-                             "decide: recommit or bury it honestly." % (res["name"], res["date"], silent_days))
+                             "decide: recommit or bury it honestly." % (name, res["date"], silent_days))
             else:
                 lines.append("- %s: resurrected %s, last commit %dd ago. Holding."
-                             % (res["name"], res["date"], silent_days))
+                             % (name, res["date"], silent_days))
         print("\nRELAPSE WATCH")
         print("-" * 60)
         for l in lines:
