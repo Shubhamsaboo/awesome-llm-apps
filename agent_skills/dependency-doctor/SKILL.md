@@ -97,6 +97,9 @@ The offline checks cover:
 
 For `package.json`, Python-specific standard-library and backport checks do not
 apply. The doctor still checks unpinned values and repeated dependency entries.
+A package listed in `peerDependencies` and `devDependencies`, and nowhere else,
+is not a duplicate: the peer range is what consumers must provide, and the
+development entry is the copy the project installs to test against.
 
 ## Explain the diagnosis
 
