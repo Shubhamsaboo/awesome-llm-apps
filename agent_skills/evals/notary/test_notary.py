@@ -1,0 +1,309 @@
+#!/usr/bin/env python3
+"""Deterministic tests for notary.py. No model, no network, no randomness.
+
+Fixtures are hand-written: a metrics.json with val_acc 0.8472, a logged command
+output "accuracy 0.8290 (829/1000)", and reports that state these values honestly,
+rounded dishonestly (85.2% from 0.8472), from a changed file, from a fabricated
+command output, or as a bare 0 for an unmeasured run. Run: python3 agent_skills/evals/notary/test_notary.py
+"""
+import json, os, subprocess, sys, tempfile
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+SCRIPT = os.path.join(HERE, "..", "..", "notary", "scripts", "notary.py")
+sys.path.insert(0, os.path.dirname(SCRIPT))
+import notary as R  # noqa: E402
+
+_made = []
+_mkdtemp = tempfile.mkdtemp
+tempfile.mkdtemp = lambda *a, **k: _made.append(_mkdtemp(*a, **k)) or _made[-1]
+__import__("atexit").register(lambda: [__import__("shutil").rmtree(d, ignore_errors=True) for d in _made])  # leave no test dirs behind
+
+CASES = []
+case = lambda f: CASES.append(f) or f
+
+
+def project(receipts, files=None, log=None):
+    d = tempfile.mkdtemp()
+    os.makedirs(os.path.join(d, ".notary"))
+    for path, body in (files or {"runs/aug/metrics.json": '{\n  "val_acc": 0.8472,\n  "train_time_s": 3985\n}\n'}).items():
+        os.makedirs(os.path.dirname(os.path.join(d, path)), exist_ok=True)
+        open(os.path.join(d, path), "w").write(body)
+    with open(os.path.join(d, ".notary", "log.jsonl"), "w") as f:
+        for out in (log if log is not None else ["accuracy 0.8290 (829/1000)\nmacro_f1 0.8011\n"]):
+            cmd, out = out if isinstance(out, tuple) else ("python eval_test.py", out)
+            f.write(json.dumps({"output": out, "input": {"command": cmd}}) + "\n")
+    json.dump({"receipts": receipts}, open(os.path.join(d, ".notary", "turn.json"), "w"))
+    return d
+
+
+FILE_OK = {"id": "r1", "value": "84.7%", "kind": "file", "path": "runs/aug/metrics.json", "quote": '"val_acc": 0.8472'}
+CMD_OK = {"id": "r2", "value": "0.829", "kind": "cmd", "command": "python eval_test.py", "quote": "accuracy 0.8290"}
+
+
+def bad_ids(d, msg="", transcript=None):
+    return R.report(msg, d, transcript, strong_only=True)[2]
+
+
+@case
+def extraction_skips_code_dates_versions_refs():
+    msg = ("1. Ran `python train.py --lr 0.003` on 2026-10-27 with v2.1.92 at 14:05.\n"
+           "See train.py:120 and step 3. Accuracy 84.7%, 1,203 rows, 47/50 tests, loss 0.31, 0 errors.\n"
+           "```\nval 0.99\n```\n🧾 3/3 receipts check out")
+    raws = [n[0] for n in R.numbers(msg, strong_only=True)]
+    assert raws == ["84.7%", "1,203", "47/50", "0.31", "0"], raws
+
+
+@case
+def file_and_cmd_receipts_pass():
+    assert bad_ids(project([FILE_OK, CMD_OK])) == {}
+
+
+@case
+def dishonest_rounding_fails():
+    d = project([dict(FILE_OK, value="85.2%")])
+    assert "r1" in bad_ids(d)
+
+
+@case
+def changed_file_fails():
+    d = project([FILE_OK], files={"runs/aug/metrics.json": '{"val_acc": 0.8391}'})
+    assert "quote not in" in bad_ids(d)["r1"]
+
+
+@case
+def fabricated_command_output_fails():
+    d = project([dict(CMD_OK, quote="accuracy 0.9100")])
+    assert "logged tool output" in bad_ids(d)["r2"]
+
+
+@case
+def cmd_receipt_expires_when_its_input_changes():
+    import time
+    d = project([dict(CMD_OK, command="python eval_test.py runs/aug/preds.csv")], files={"runs/aug/preds.csv": "y_true,y_pred\n1,1\n"}, log=[])
+    row = {"output": "accuracy 0.8290 (829/1000)", "input": {"command": "python eval_test.py runs/aug/preds.csv"}}
+    with open(os.path.join(d, ".notary", "log.jsonl"), "w") as f:
+        f.write(json.dumps(dict(row, ts=time.time() + 60)) + "\n")  # output logged after the file was written
+    assert bad_ids(d) == {}
+    with open(os.path.join(d, ".notary", "log.jsonl"), "w") as f:
+        f.write(json.dumps(dict(row, ts=time.time() - 60)) + "\n")  # file rewritten after the output
+    assert "expired" in bad_ids(d)["r2"] and "preds.csv" in bad_ids(d)["r2"]
+
+
+@case
+def scientific_notation():
+    raws = [(n[0], n[1]) for n in R.numbers("lr 1.0e-4 and 3e-5 for 2.5E3 steps", strong_only=True)]
+    assert raws == [("1.0e-4", 1e-4), ("3e-5", 3e-5), ("2.5E3", 2500.0)], raws
+    d = project([{"id": "r7", "value": "1.0e-4", "kind": "file", "path": "cfg.yaml", "quote": "lr: 1.0e-4"}],
+                files={"cfg.yaml": "lr: 1.0e-4\n"})
+    assert bad_ids(d) == {}
+
+
+@case
+def run_wrapper_logs_output_without_hooks():
+    cmd = subprocess.list2cmdline([sys.executable, "ev.py"]) if os.name == "nt" else __import__("shlex").join([sys.executable, "ev.py"])
+    d = project([dict(CMD_OK, command=cmd)], log=[])
+    open(os.path.join(d, "ev.py"), "w").write("print('accuracy 0.8290 (829/1000)')\n")
+    assert "r2" in bad_ids(d)  # nothing logged yet
+    p = subprocess.run([sys.executable, SCRIPT, "run", "--", cmd], cwd=d, capture_output=True, text=True)
+    assert p.returncode == 0 and "accuracy 0.8290" in p.stdout, p.stderr
+    assert bad_ids(d) == {}
+
+
+@case
+def fraction_receipt():
+    d = project([{"id": "r3", "value": "829/1000", "kind": "cmd", "command": "python eval_test.py", "quote": "(829/1000)"}])
+    assert bad_ids(d) == {}
+    d = project([{"id": "r3", "value": "839/1000", "kind": "cmd", "command": "python eval_test.py", "quote": "(829/1000)"}])
+    assert "r3" in bad_ids(d)
+
+
+@case
+def calc_checks_arithmetic_and_dependencies():
+    base = {"id": "r0", "value": "0.806", "kind": "cmd", "command": "python eval_test.py", "quote": "accuracy 0.8060"}
+    log = ["accuracy 0.8290 (829/1000)", "accuracy 0.8060 (806/1000)"]
+    good = {"id": "r4", "value": "2.3", "kind": "calc", "expr": "(r2 - r0) * 100"}
+    assert bad_ids(project([CMD_OK, base, good], log=log)) == {}
+    wrong = dict(good, value="3.1")
+    assert "r4" in bad_ids(project([CMD_OK, base, wrong], log=log))
+    na = {"id": "r0", "value": "N/A", "kind": "na", "why": "run crashed"}
+    assert "r4" in bad_ids(project([CMD_OK, na, good], log=log))
+
+
+@case
+def na_needs_why_and_na_value():
+    assert bad_ids(project([{"id": "r5", "value": "N/A", "kind": "na", "why": "OOM at epoch 7"}])) == {}
+    assert "r5" in bad_ids(project([{"id": "r5", "value": "N/A", "kind": "na"}]))
+    assert "r5" in bad_ids(project([{"id": "r5", "value": "0", "kind": "na", "why": "x"}]))
+
+
+@case
+def coverage_and_zero_message():
+    d = project([FILE_OK])
+    rs, res, bad, unc = R.report("aug reached 84.7% val, aug-lr test acc 0%, time 66.4 min", d, strong_only=True)
+    assert unc == ["0%", "66.4"], unc
+    assert "write N/A" in R.explain(bad, unc, rs)
+
+
+@case
+def user_receipt_checked_against_transcript():
+    d = project([{"id": "r6", "value": "0.003", "kind": "user", "quote": "use lr 0.003"}])
+    t = os.path.join(d, "t.jsonl")
+    open(t, "w").write(json.dumps({"type": "user", "message": {"content": "please use lr 0.003 this time"}}) + "\n")
+    assert bad_ids(d, transcript=t) == {}
+    open(t, "w").write(json.dumps({"type": "user", "message": {"content": "use the default"}}) + "\n")
+    assert "r6" in bad_ids(d, transcript=t)
+
+
+@case
+def cmd_receipt_must_match_the_logged_command():
+    log = [("cat old_notes.txt", "accuracy 0.8290 (829/1000)")]
+    d = project([dict(CMD_OK, command="python never_ran.py")], log=log)
+    assert "different command: cat old_notes.txt" in bad_ids(d)["r2"]
+    assert bad_ids(project([dict(CMD_OK, command="cat  old_notes.txt")], log=log)) == {}  # whitespace is normalized
+
+
+@case
+def user_receipt_without_transcript_is_unchecked_not_ok():
+    d = project([{"id": "r6", "value": "0.003", "kind": "user", "quote": "use lr 0.003"}])
+    rs, res, bad, unc = R.report("", d, None, strong_only=True)
+    assert res["r6"][0] is None and bad == {}, res
+    p = subprocess.run([sys.executable, SCRIPT, "check", "--dir", d], capture_output=True, text=True, encoding="utf-8")
+    assert "??" in p.stdout and "0/1 receipts check out, 1 unchecked" in p.stdout, p.stdout
+
+
+@case
+def small_integers_need_receipts_only_with_all():
+    d = project([FILE_OK])
+    msg = os.path.join(d, "m.md")
+    open(msg, "w").write("val 84.7% over 3 seeds\n")
+    run = lambda *a: subprocess.run([sys.executable, SCRIPT, "check", "--dir", d, "--message", msg, *a],
+                                    capture_output=True, text=True, encoding="utf-8")
+    assert run().returncode == 0
+    p = run("--all")
+    assert p.returncode == 1 and "no receipt: 3" in p.stdout, p.stdout
+
+
+@case
+def calc_overflow_and_broken_turn_json_are_bad_lines():
+    for expr in ("10 ** 400", "9 ** 9 ** 9", "(1 / r2) ** 1e6 ** 9"):
+        d = project([CMD_OK, {"id": "r9", "value": "1", "kind": "calc", "expr": expr}])
+        assert "OverflowError" in bad_ids(d)["r9"], (expr, bad_ids(d))
+    d = project([])
+    open(os.path.join(d, ".notary", "turn.json"), "w").write('{"receipts": [ {"id": "r1",')
+    p = subprocess.run([sys.executable, SCRIPT, "check", "--dir", d], capture_output=True, text=True, encoding="utf-8")
+    assert p.returncode == 1 and "BAD turn.json" in p.stdout and "Traceback" not in p.stderr, (p.stdout, p.stderr)
+
+
+@case
+def only_the_exact_footer_line_is_skipped():
+    for line in ("Receipts: test accuracy 91.0%", "🧾 accuracy 91.0%", "receipt: 91.0%", "🧾 3/3 receipts check out; accuracy 91.0%"):
+        assert "91.0%" in [n[0] for n in R.numbers(line, strong_only=True)], line
+    for line in ("🧾 3/3 receipts check out (.notary/turn.json)", "🧾 2/3 receipts check out, 1 unchecked; 0 numbers uncovered"):
+        assert R.numbers(line, strong_only=True) == [], line
+    out = hook("hook-stop", {"cwd": project([FILE_OK]), "stop_hook_active": False,
+                             "last_assistant_message": "Val 84.7%.\nReceipts: test accuracy 91.0%"})
+    assert json.loads(out)["decision"] == "block" and "91.0%" in json.loads(out)["reason"]
+
+
+@case
+def percent_scaling_only_for_values_written_with_percent():
+    files = {"cfg.json": '{"lr": 0.0085, "loss": 0.0031}\n'}
+    rc = lambda v, q: {"id": "r8", "value": v, "kind": "file", "path": "cfg.json", "quote": q}
+    assert "r8" in bad_ids(project([rc("0.85", '"lr": 0.0085')], files=files))
+    assert "r8" in bad_ids(project([rc("0.31", '"loss": 0.0031')], files=files))
+    assert bad_ids(project([rc("0.85%", '"lr": 0.0085')], files=files)) == {}
+    assert bad_ids(project([rc("0.0085", '"lr": 0.0085')], files=files)) == {}
+
+
+@case
+def numbers_with_unit_suffixes_need_and_take_receipts():
+    msg = "Training took 3985s, model 1.2GB, latency 250ms, 0.5x faster, 45s per epoch."
+    assert [n[0] for n in R.numbers(msg, strong_only=True)] == ["3985s", "1.2GB", "250ms", "0.5x", "45s"]
+    assert [n[0] for n in R.numbers("3 files, 1st run, 2026", strong_only=True)] == []  # no unit, ordinal, bare year
+    assert [n[0] for n in R.numbers("Latency 2000ms, memory 2048MB, 2026s", strong_only=True)] == ["2000ms", "2048MB", "2026s"]
+    d = project([{"id": "r0", "value": "2000ms", "kind": "file", "path": "m.txt", "quote": "latency 2000ms"}], files={"m.txt": "latency 2000ms\n"})
+    assert bad_ids(d, "Latency 2000ms.") == {}
+    log = [("python bench.py", "elapsed 66.4s")]
+    for v in ("66.4", "66.4s"):
+        d = project([{"id": "r9", "value": v, "kind": "cmd", "command": "python bench.py", "quote": "elapsed 66.4s"}], log=log)
+        assert bad_ids(d, "The run took 66.4s.") == {}, v
+    d = project([FILE_OK])
+    assert R.report("val 84.7%, took 3985s", d, strong_only=True)[3] == ["3985s"]
+    d = project([{"id": "r9", "value": "66.4", "kind": "cmd", "command": "python bench.py", "quote": "elapsed 66.4s"}], log=log)
+    assert R.report("The run took 66.4s.", d, strong_only=True)[3] == []  # value 66.4 covers 66.4s
+
+
+@case
+def a_receipt_id_that_is_not_a_string_is_a_bad_line():
+    d = project([dict(FILE_OK, id=["r1"])])
+    p = subprocess.run([sys.executable, SCRIPT, "check", "--dir", d], capture_output=True, text=True, encoding="utf-8")
+    assert p.returncode == 1 and "BAD turn.json" in p.stdout and "Traceback" not in p.stderr, (p.stdout, p.stderr)
+
+
+@case
+def missing_or_duplicate_receipt_ids_are_bad_lines():
+    bogus = dict(FILE_OK, id="r1", quote="not in the file")
+    for rs in ([bogus, dict(FILE_OK, id="r1")], [bogus, {k: v for k, v in FILE_OK.items() if k != "id"}], [dict(FILE_OK, id="")]):
+        d = project(rs)
+        p = subprocess.run([sys.executable, SCRIPT, "check", "--dir", d], capture_output=True, text=True, encoding="utf-8")
+        assert p.returncode == 1 and "BAD turn.json" in p.stdout, (rs, p.stdout, p.stderr)
+
+
+def hook(cmd, payload, env=None):
+    p = subprocess.run([sys.executable, SCRIPT, cmd], input=json.dumps(payload), capture_output=True, text=True,
+                       encoding="utf-8", env=dict(os.environ, **(env or {})))
+    assert p.returncode == 0, p.stderr
+    return p.stdout
+
+
+@case
+def stop_hook_blocks_then_lets_go():
+    d = project([FILE_OK])
+    base = {"cwd": d, "stop_hook_active": False}
+    out = hook("hook-stop", dict(base, last_assistant_message="Val accuracy 84.7%, test accuracy 91.0%."))
+    assert json.loads(out)["decision"] == "block" and "91.0%" in json.loads(out)["reason"]
+    assert hook("hook-stop", dict(base, last_assistant_message="Val accuracy 84.7%.")) == ""
+    assert hook("hook-stop", dict(base, last_assistant_message="Done, I edited 3 files.")) == ""
+    assert hook("hook-stop", dict(base, stop_hook_active=True, last_assistant_message="test 91.0%")) == ""
+    assert hook("hook-stop", dict(base, last_assistant_message="test 91.0%"), env={"NOTARY": "off"}) == ""
+
+
+@case
+def stop_hook_reads_transcript_when_no_last_message():
+    d = project([FILE_OK])
+    t = os.path.join(d, "t.jsonl")
+    open(t, "w").write(json.dumps({"type": "assistant", "message": {"content": [{"type": "text", "text": "test acc 91.0%"}]}}) + "\n")
+    out = hook("hook-stop", {"cwd": d, "stop_hook_active": False, "transcript_path": t})
+    assert json.loads(out)["decision"] == "block"
+
+
+@case
+def stop_hook_fails_open_on_garbage():
+    p = subprocess.run([sys.executable, SCRIPT, "hook-stop"], input="not json", capture_output=True, text=True)
+    assert p.returncode == 0 and p.stdout == ""
+
+
+@case
+def log_hook_records_bash_stdout():
+    d = tempfile.mkdtemp()
+    hook("hook-log", {"cwd": d, "tool_name": "Bash", "tool_use_id": "t1", "tool_input": {"command": "python e.py"},
+                      "tool_response": {"stdout": "accuracy 0.8290", "stderr": "", "interrupted": False}})
+    row = json.loads(open(os.path.join(d, ".notary", "log.jsonl")).read())
+    assert "accuracy 0.8290" in row["output"] and row["tool"] == "Bash"
+
+
+if __name__ == "__main__":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except AttributeError:
+        pass
+    bad = 0
+    for c in CASES:
+        try:
+            c()
+            print("ok  ", c.__name__)
+        except Exception as e:
+            bad += 1
+            print("FAIL", c.__name__, type(e).__name__, e)
+    print(f"{len(CASES) - bad}/{len(CASES)} passed")
+    sys.exit(1 if bad else 0)
