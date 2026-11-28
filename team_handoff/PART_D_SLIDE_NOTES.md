@@ -74,6 +74,7 @@ Map our studio directly to the **3 Pillars of Modern CRM + Governance** taught i
 - **Live 3:4 Portrait Cover Visual Studio:**
   - Pre-filled, editable cover prompt + **`Generate Xiaohongshu Cover Image`** button powered by `gemini-nano-banana-2.1` (auto-fallback: `gemini-3.1-flash-lite-image`).
   - Wrapped in `@st.fragment` so generating and downloading the PNG never resets Tab 2.
+  - **Starbucks Siren Watermark:** Toggle (on by default) overlays the official Siren logo in a chosen corner (bottom-right default) with a soft shadow, so the downloaded PNG looks like a real Starbucks China brand post.
 
 ---
 

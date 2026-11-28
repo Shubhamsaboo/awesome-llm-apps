@@ -1040,6 +1040,45 @@ def generate_xiaohongshu_cover(api_key: str, image_prompt: str) -> Tuple[bytes, 
     )
 
 
+WATERMARK_CORNERS = ["Bottom-right", "Bottom-left", "Top-right", "Top-left"]
+
+
+@st.cache_data(show_spinner=False)
+def apply_starbucks_watermark(png_bytes: bytes, corner: str = "Bottom-right", opacity: float = 0.92) -> bytes:
+    """Overlay the local Siren logo (assets/starbucks_logo.png) in a corner of the cover PNG."""
+    logo_path = Path(__file__).resolve().parent / "assets" / "starbucks_logo.png"
+    if not logo_path.exists():
+        return png_bytes
+
+    with Image.open(io.BytesIO(png_bytes)) as base_img:
+        base = base_img.convert("RGBA")
+    with Image.open(logo_path) as logo_img:
+        logo = logo_img.convert("RGBA")
+
+    # Logo ~13% of image width, margin ~3.5% — discreet like an official brand post
+    size = max(32, int(base.width * 0.13))
+    margin = max(8, int(base.width * 0.035))
+    logo = logo.resize((size, size), Image.LANCZOS)
+
+    if opacity < 1.0:
+        alpha = logo.getchannel("A").point(lambda a: int(a * opacity))
+        logo.putalpha(alpha)
+
+    x = margin if "left" in corner.lower() else base.width - size - margin
+    y = margin if "top" in corner.lower() else base.height - size - margin
+
+    # Soft shadow so the Siren stays legible on light or busy backgrounds
+    shadow = Image.new("RGBA", logo.size, (0, 0, 0, 0))
+    shadow.putalpha(logo.getchannel("A").point(lambda a: int(a * 0.35)))
+    offset = max(2, size // 40)
+    base.alpha_composite(shadow, (x + offset, y + offset))
+    base.alpha_composite(logo, (x, y))
+
+    out = io.BytesIO()
+    base.convert("RGB").save(out, format="PNG")
+    return out.getvalue()
+
+
 @st.fragment
 def render_cover_visual_studio(
     default_prompt: str, run_id: int, drink_label: str, active_api_key: Optional[str]
@@ -1084,8 +1123,30 @@ def render_cover_visual_studio(
         st.info(st.session_state.cover_image_note)
 
     if st.session_state.cover_image_bytes:
+        wm_cols = st.columns([1, 1], gap="small")
+        with wm_cols[0]:
+            add_watermark = st.toggle(
+                "Starbucks Siren watermark",
+                value=True,
+                key=f"cover_watermark_on_{run_id}",
+                help="Overlays the official Siren logo (assets/starbucks_logo.png) for a realistic brand-post look.",
+            )
+        with wm_cols[1]:
+            watermark_corner = st.selectbox(
+                "Watermark corner",
+                options=WATERMARK_CORNERS,
+                key=f"cover_watermark_corner_{run_id}",
+                disabled=not add_watermark,
+            )
+        display_bytes = st.session_state.cover_image_bytes
+        if add_watermark:
+            try:
+                display_bytes = apply_starbucks_watermark(display_bytes, watermark_corner)
+            except Exception as wm_exc:
+                st.warning(f"Watermark could not be applied: {wm_exc}")
+
         st.image(
-            st.session_state.cover_image_bytes,
+            display_bytes,
             caption=f"Generated 3:4 Xiaohongshu Cover • Model: {st.session_state.cover_image_model}",
             width="stretch",
         )
@@ -1097,7 +1158,7 @@ def render_cover_visual_studio(
         )
         st.download_button(
             label="⬇️ Download PNG",
-            data=st.session_state.cover_image_bytes,
+            data=display_bytes,
             file_name=f"rednote_cover_{safe_slug}.png",
             mime="image/png",
             width="stretch",
