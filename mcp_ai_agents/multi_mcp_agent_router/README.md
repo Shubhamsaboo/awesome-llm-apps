@@ -77,4 +77,4 @@ AGENTS["my_agent"] = Agent(
 
 ## Credits
 
-Inspired by [cadre-ai/Agent Forge](https://github.com/WeberG619/cadre-ai) — a production multi-agent framework for Claude Code with 17 specialized agents, persistent memory, and desktop automation.
+Inspired by cadre-ai/Agent Forge — a production multi-agent framework for Claude Code with 17 specialized agents, persistent memory, and desktop automation.
