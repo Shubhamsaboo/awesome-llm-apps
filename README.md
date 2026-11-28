@@ -233,6 +233,7 @@ streamlit run travel_agent.py
 *   [🖼️ Vision RAG](rag_tutorials/vision_rag/) - Ask questions about images and PDF pages with Embed-4
 *   [🩺 RAG Failure Diagnostics Clinic](rag_tutorials/rag_failure_diagnostics_clinic/) - Find out why your RAG pipeline is wrong, systematically
 *   [🕸️ Knowledge Graph RAG with Citations](rag_tutorials/knowledge_graph_rag_citations/) - Multi-hop answers with verifiable source attribution
+*   [📑 Progressive PDF RAG & Verifier](rag_tutorials/progressive_pdf_rag_verifier/) - No-vector-DB long-PDF navigation with deterministic quote, number, and formula verification
 
 ### 💾 LLM Apps with Memory
 
