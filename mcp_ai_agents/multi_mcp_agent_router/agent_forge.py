@@ -159,26 +159,30 @@ async def connect_mcp_servers(agent: Agent) -> tuple[AsyncExitStack, list[dict],
     all_tools = []
     session_map = {}
 
-    for srv_config in agent.mcp_servers:
-        env = {**os.environ}
-        if "env" in srv_config:
-            env.update(srv_config["env"])
+    try:
+        for srv_config in agent.mcp_servers:
+            env = {**os.environ}
+            if "env" in srv_config:
+                env.update(srv_config["env"])
 
-        params = StdioServerParameters(
-            command=srv_config["command"],
-            args=srv_config.get("args", []),
-            env=env,
-        )
+            params = StdioServerParameters(
+                command=srv_config["command"],
+                args=srv_config.get("args", []),
+                env=env,
+            )
 
-        stdio_transport = await stack.enter_async_context(stdio_client(params))
-        read_stream, write_stream = stdio_transport
-        session = await stack.enter_async_context(ClientSession(read_stream, write_stream))
-        await session.initialize()
+            stdio_transport = await stack.enter_async_context(stdio_client(params))
+            read_stream, write_stream = stdio_transport
+            session = await stack.enter_async_context(ClientSession(read_stream, write_stream))
+            await session.initialize()
 
-        result = await session.list_tools()
-        for tool in result.tools:
-            all_tools.append(mcp_tool_to_anthropic(tool))
-            session_map[tool.name] = session
+            result = await session.list_tools()
+            for tool in result.tools:
+                all_tools.append(mcp_tool_to_anthropic(tool))
+                session_map[tool.name] = session
+    except BaseException:
+        await stack.aclose()
+        raise
 
     return stack, all_tools, session_map
 
@@ -235,6 +239,7 @@ async def run_agent_async(client: Anthropic, agent: Agent, query: str, history: 
                         "type": "tool_result",
                         "tool_use_id": tool_use.id,
                         "content": result_text,
+                        "is_error": bool(result.isError),
                     })
                 except Exception as e:
                     tool_results.append({
