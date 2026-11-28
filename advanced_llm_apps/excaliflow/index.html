@@ -560,6 +560,48 @@
       margin: 4px 2px;
     }
 
+    /* Text to Flow panel */
+    #textFlowPanel {
+      position: fixed;
+      top: 64px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(520px, calc(100vw - 32px));
+      z-index: 40;
+      padding: 12px;
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    #textFlowPanel.open {
+      display: flex;
+    }
+
+    #textFlowInput {
+      height: 220px;
+      resize: vertical;
+      font: 12px/1.5 'Geist Mono', ui-monospace, monospace;
+      color: var(--text-primary);
+      background: transparent;
+      border: 1px solid var(--panel-border);
+      border-radius: 6px;
+      padding: 8px;
+    }
+
+    #textFlowMsg {
+      min-height: 16px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      white-space: pre-wrap;
+    }
+
+    #textFlowPanel .row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+
     /* Left Properties Panel (#leftSidebar) - Clean Excaliflow Inspector */
     #leftSidebar {
       position: fixed;
@@ -845,6 +887,8 @@
           <button class="ui-btn menu-item" data-template="How Browsers Work"><span>How Browsers Work</span><span style="opacity:0.5">5 nodes</span></button>
           <button class="ui-btn menu-item" data-template="RAG Pipeline"><span>RAG Pipeline</span><span style="opacity:0.5">5 nodes</span></button>
           <button class="ui-btn menu-item" data-template="Microservices"><span>Microservices</span><span style="opacity:0.5">6 nodes</span></button>
+          <div class="menu-sep"></div>
+          <button id="textFlowMenuBtn" class="ui-btn menu-item"><span>From Mermaid text…</span><span style="opacity:0.5">flowchart</span></button>
         </div>
       </div>
     </div>
@@ -1088,6 +1132,19 @@
   <!-- Inline Text Editor -->
   <div id="inlineEditorWrap">
     <textarea id="inlineTextEditor" rows="1" spellcheck="false"></textarea>
+
+    <div id="textFlowPanel" class="glass-panel" role="dialog" aria-label="Text to Flow">
+      <textarea id="textFlowInput" spellcheck="false">flowchart LR
+  A[Change ticket] --> B{Admitted?}
+  B -->|yes| C[Build]
+  B -.->|no| D(Blocked)
+  C ==> E([Durable code])</textarea>
+      <div id="textFlowMsg">Mermaid flowchart: [box] (rounded) {decision} ([oval]); arrows --> -.-> ==> with |labels|. Ctrl+Enter draws.</div>
+      <div class="row">
+        <button id="textFlowCloseBtn" class="ui-btn">Close</button>
+        <button id="textFlowDrawBtn" class="ui-btn">Draw</button>
+      </div>
+    </div>
   </div>
 
   <!-- Toast Status Pill -->
@@ -2584,7 +2641,7 @@
       if (state.editingId === el.id && !opts.forExport) return;
 
       const canvasBg = opts.canvasBg || state.canvasBg;
-      const strokeColor = resolveStrokeColor(el.strokeColor, canvasBg);
+      const strokeColor = resolveStrokeColor(el.textColor || el.strokeColor, canvasBg);
       const fontSize = Number(el.fontSize) || 16;
       const lineHeight = Math.round(fontSize * EXCALIDRAW_LINE_HEIGHT);
       const lines = String(el.text).split('\n');
@@ -2934,6 +2991,7 @@
         width: props.width ?? defaultSize.width,
         height: props.height ?? defaultSize.height,
         strokeColor: props.strokeColor || d.strokeColor,
+        textColor: props.textColor || null,  // null: text takes the stroke colour
         fillStyle: props.fillStyle ?? (type === 'sticky' ? 'solid' : d.fillStyle),
         fontFamily: normalizeFontFamily(props.fontFamily || d.fontFamily),
         fontSize: Number(props.fontSize || d.fontSize),
@@ -3192,6 +3250,404 @@
         }
       }
       syncUIWithSelection();
+    }
+
+    /* -------------------------------------------------------------------------
+     * 10b. Text to Flow: a Mermaid flowchart subset, laid out in layers
+     *   parseMermaidFlow(text) -> { direction, nodes, edges, warnings }   (throws "Line n: ...")
+     *   textToFlow(text, { aspect }) -> { elements, warnings }            (pure; nothing drawn)
+     *   loadTextFlow(text, { aspect }) -> warnings                        (replaces the active canvas)
+     *   aspect (width / height, e.g. 1.414 for A4 landscape) wraps the layers into snaking bands to fit that shape;
+     *   maxPerBand caps the layers per band (boxes across a row in LR, down a column in TD).
+     * ------------------------------------------------------------------------- */
+    const MERMAID_SHAPES = [
+      ['((', '))', 'ellipse'], ['([', '])', 'ellipse'], ['{{', '}}', 'diamond'], ['[[', ']]', 'rectangle'],
+      ['[(', ')]', 'rectangle'], ['[', ']', 'rectangle'], ['(', ')', 'rectangle'], ['{', '}', 'diamond'], ['>', ']', 'rectangle']
+    ];
+    const MERMAID_LINK = /^(?:(--|-\.|==)\s+([^|]+?)\s+)?<?(-{2,}>|-{3,}|-\.+->|-\.+-|\.-+>|={2,}>|={3,}|-{2,}[xo]|={2,}[xo])(?:\s*\|([^|]*)\|)?/;
+    const MERMAID_IGNORED = /^(subgraph|end|classDef|class|linkStyle|click|direction)\b/;
+
+    function splitMermaidStatements(text) {
+      const out = [];
+      String(text || '').split(/\r?\n/).forEach((raw, i) => {
+        const line = raw.replace(/%%.*$/, '');
+        let cur = '';
+        let quoted = false;
+        for (const ch of line) {
+          if (ch === '"') quoted = !quoted;
+          if (ch === ';' && !quoted) {
+            out.push({ line: i + 1, src: cur.trim() });
+            cur = '';
+          } else {
+            cur += ch;
+          }
+        }
+        out.push({ line: i + 1, src: cur.trim() });
+      });
+      return out.filter(s => s.src);
+    }
+
+    // The renderer knows only the SEMANTIC_COLORS palette (anything else draws as Carbon), so snap to the nearest one.
+    function nearestPaletteColor(hex) {
+      let h = hex.slice(1);
+      if (h.length <= 4) h = [...h.slice(0, 3)].map(c => c + c).join('');
+      const rgb = s => [0, 2, 4].map(i => parseInt(s.slice(i, i + 2), 16));
+      const [r, g, b] = rgb(h);
+      let best = SEMANTIC_COLORS[0];
+      let bestD = Infinity;
+      for (const c of SEMANTIC_COLORS) {
+        const [cr, cg, cb] = rgb(c.hex.slice(1));
+        const d = (r - cr) ** 2 + (g - cg) ** 2 + (b - cb) ** 2;
+        if (d < bestD) {
+          bestD = d;
+          best = c;
+        }
+      }
+      return best.hex;
+    }
+
+    function mermaidLabel(s) {
+      let t = s.trim();
+      if (t.length >= 2 && t.startsWith('"') && t.endsWith('"')) t = t.slice(1, -1);
+      return t.replace(/<br\s*\/?>/gi, '\n');
+    }
+
+    function parseMermaidFlow(text) {
+      const nodes = new Map();
+      const edges = [];
+      const warnings = [];
+      let direction = 'TD';
+      let first = true;
+
+      for (const { line, src } of splitMermaidStatements(text)) {
+        const fail = msg => { throw new Error(`Line ${line}: ${msg}`); };
+        const header = src.match(/^(flowchart|graph)\b\s*(TD|TB|BT|LR|RL)?\s*$/i);
+        if (header) {
+          if (!first) fail('the flowchart header must come first');
+          direction = (header[2] || 'TD').toUpperCase();
+          first = false;
+          continue;
+        }
+        first = false;
+        if (MERMAID_IGNORED.test(src)) {
+          warnings.push(`Line ${line}: "${src.split(/\s+/)[0]}" is not supported yet and was skipped`);
+          continue;
+        }
+        const style = src.match(/^style\s+(\w+)\s+(.*)$/);
+        if (style) {
+          const stroke = style[2].match(/stroke\s*:\s*(#[0-9a-fA-F]{3,8})/);
+          const color = style[2].match(/(?:^|[\s,;])color\s*:\s*(#[0-9a-fA-F]{3,8})/);
+          const node = nodes.get(style[1]) || {};
+          if (stroke) node.strokeColor = nearestPaletteColor(stroke[1]);
+          if (color) node.textColor = nearestPaletteColor(color[1]);
+          if ((!stroke && !color) || !nodes.has(style[1])) {
+            warnings.push(`Line ${line}: only "style <id> stroke:#hex,color:#hex" on a known node is used`);
+          }
+          continue;
+        }
+
+        let rest = src;
+        const readNode = () => {
+          const m = rest.match(/^([A-Za-z0-9_]+)/);
+          if (!m) fail(`expected a node id at "${rest.slice(0, 20)}"`);
+          const id = m[1];
+          rest = rest.slice(id.length);
+          const shape = MERMAID_SHAPES.find(([open]) => rest.startsWith(open));
+          let label = null;
+          let type = 'rectangle';
+          if (shape) {
+            const [open, close] = shape;
+            let body = rest.slice(open.length);
+            let end;
+            if (body.trimStart().startsWith('"')) {
+              const q = body.indexOf('"');
+              const q2 = body.indexOf('"', q + 1);
+              if (q2 < 0) fail(`unclosed quote in node ${id}`);
+              end = body.indexOf(close, q2);
+            } else {
+              end = body.indexOf(close);
+            }
+            if (end < 0) fail(`node ${id} opens "${open}" but never closes it with "${close}"`);
+            label = mermaidLabel(body.slice(0, end));
+            type = shape[2];
+            rest = body.slice(end + close.length);
+          }
+          const known = nodes.get(id);
+          if (!known) nodes.set(id, { id, text: label ?? id, type, order: nodes.size });
+          else if (label !== null) Object.assign(known, { text: label, type });
+          rest = rest.trimStart();
+          return id;
+        };
+        const readGroup = () => {
+          const ids = [readNode()];
+          while (rest.startsWith('&')) {
+            rest = rest.slice(1).trimStart();
+            ids.push(readNode());
+          }
+          return ids;
+        };
+
+        let from = readGroup();
+        while (rest) {
+          const link = rest.match(MERMAID_LINK);
+          if (!link) fail(`expected an arrow such as --> at "${rest.slice(0, 20)}"`);
+          rest = rest.slice(link[0].length).trimStart();
+          const token = link[3];
+          const label = mermaidLabel(link[4] ?? link[2] ?? '');
+          const to = readGroup();
+          for (const a of from) {
+            for (const b of to) {
+              edges.push({ from: a, to: b, label, dotted: token.includes('.'), thick: token.includes('=') });
+            }
+          }
+          from = to;
+        }
+      }
+      if (nodes.size === 0) throw new Error('No nodes found: write e.g. "flowchart LR" then "A[Start] --> B[End]"');
+      return { direction, nodes, edges, warnings };
+    }
+
+    function textToFlow(text, opts = {}) {
+      const { direction, nodes, edges, warnings } = parseMermaidFlow(text);
+      const GAP_MAIN = 110;
+      const GAP_CROSS = 46;
+      const BAND_GAP = 90;
+      const horizontal = direction === 'LR' || direction === 'RL';
+      const reversed = direction === 'RL' || direction === 'BT';
+      const list = [...nodes.values()];
+
+      // Break cycles: edges join in the order they are written, and one that would close a loop (its target already
+      // reaches its source) is the loop-back. It is drawn but not ranked, so "retry" arrows written last point back.
+      const back = new Set();
+      const joined = new Set();
+      const reaches = (from, to, seen = new Set()) => {
+        if (from === to) return true;
+        if (seen.has(from)) return false;
+        seen.add(from);
+        return [...joined].some(e => e.from === from && reaches(e.to, to, seen));
+      };
+      edges.forEach(e => (reaches(e.to, e.from) ? back : joined).add(e));
+      const forward = edges.filter(e => !back.has(e));
+
+      // Rank = longest path from a source, so every forward arrow points one or more layers ahead.
+      const rank = new Map(list.map(n => [n.id, 0]));
+      const inDeg = new Map(list.map(n => [n.id, 0]));
+      forward.forEach(e => inDeg.set(e.to, inDeg.get(e.to) + 1));
+      const queue = list.filter(n => inDeg.get(n.id) === 0).map(n => n.id);
+      while (queue.length) {
+        const id = queue.shift();
+        for (const e of forward.filter(f => f.from === id)) {
+          rank.set(e.to, Math.max(rank.get(e.to), rank.get(id) + 1));
+          inDeg.set(e.to, inDeg.get(e.to) - 1);
+          if (inDeg.get(e.to) === 0) queue.push(e.to);
+        }
+      }
+
+      // Layers in order of appearance, then one pass ordering each layer by its parents' positions.
+      const layers = [];
+      list.forEach(n => (layers[rank.get(n.id)] ||= []).push(n.id));
+      const pos = new Map();
+      layers.forEach((layer, r) => {
+        if (r > 0) {
+          const bary = id => {
+            const ps = forward.filter(e => e.to === id).map(e => pos.get(e.from)).filter(p => p !== undefined);
+            return ps.length ? ps.reduce((a, b) => a + b, 0) / ps.length : nodes.get(id).order;
+          };
+          layer.sort((a, b) => bary(a) - bary(b));
+        }
+        layer.forEach((id, i) => pos.set(id, i - (layer.length - 1) / 2));
+      });
+
+      // Size each node to its text, then place layers along the main axis and stack them across it.
+      const byId = new Map();
+      list.forEach(n => {
+        const el = createElement(n.type, {
+          id: n.id,
+          text: n.text,
+          textColor: n.textColor || '#171717',  // ink: dark on a light canvas, light on a dark one
+          ...(n.strokeColor ? { strokeColor: n.strokeColor } : {})
+        });
+        byId.set(n.id, el);
+      });
+      const mainSize = el => (horizontal ? el.width : el.height);
+      const crossSize = el => (horizontal ? el.height : el.width);
+      // Arrows carry no text in Excaliflow, so a label is a small text element beside the arrow's middle. In LR / RL
+      // it sits across the gap after its source's layer, so that gap widens to fit it. Created at 1 x 1 so it fits its
+      // text (the default shape size would leave the word adrift in a large invisible box).
+      const labels = new Map(edges.filter(e => e.label).map(e => [e, createElement('text', { text: e.label, fontSize: 13, width: 1, height: 1 })]));
+      const info = layers.map(layer => {
+        const els = layer.map(id => byId.get(id));
+        const widest = horizontal
+          ? Math.max(0, ...[...labels].filter(([e]) => layer.includes(e.from) && !back.has(e)).map(([, t]) => t.width + 40))
+          : 0;
+        return {
+          els,
+          depth: Math.max(...els.map(mainSize)),
+          span: els.reduce((s, el) => s + crossSize(el), 0) + GAP_CROSS * (els.length - 1),
+          after: Math.max(GAP_MAIN, widest)
+        };
+      });
+
+      // Layers go in bands of perBand layers. Bands stack across the main axis and snake (every second band runs
+      // backwards), so the arrow from one band to the next is a short drop rather than a long diagonal.
+      const place = perBand => {
+        const bands = [];
+        for (let b0 = 0; b0 < info.length; b0 += perBand) {
+          const band = info.slice(b0, b0 + perBand);
+          const centers = [];
+          let main = 0;
+          band.forEach((l, i) => {
+            centers.push(main + l.depth / 2);
+            main += l.depth + (i < band.length - 1 ? l.after : 0);
+          });
+          bands.push({ band, centers, length: main, span: Math.max(...band.map(l => l.span)) });
+        }
+        const longest = Math.max(...bands.map(b => b.length));
+        const at = new Map();
+        let bandCross = 0;
+        bands.forEach(({ band, centers, span }, b) => {
+          band.forEach((l, i) => {
+            const m = b % 2 ? longest - centers[i] : centers[i];
+            let cross = bandCross + (span - l.span) / 2;
+            l.els.forEach(el => {
+              at.set(el, { m: (reversed ? -1 : 1) * m, c: cross + crossSize(el) / 2 });
+              cross += crossSize(el) + GAP_CROSS;
+            });
+          });
+          bandCross += span + BAND_GAP;
+        });
+        return { at, mainLen: longest, crossLen: bandCross - BAND_GAP };
+      };
+
+      // At most maxPerBand layers per band (default: all in one). With a target aspect (width / height), pick the band
+      // size up to that limit whose drawing comes closest to it.
+      const maxK = Math.max(1, Math.min(info.length, Math.floor(opts.maxPerBand) || info.length));
+      let best = place(maxK);
+      if (opts.aspect > 0) {
+        const score = p => {
+          const w = horizontal ? p.mainLen : p.crossLen;
+          const h = horizontal ? p.crossLen : p.mainLen;
+          return Math.abs(Math.log(w / h) - Math.log(opts.aspect));
+        };
+        for (let k = 1; k < maxK; k++) {
+          const p = place(k);
+          if (score(p) < score(best)) best = p;
+        }
+      }
+      best.at.forEach(({ m, c }, el) => {
+        el.x = (horizontal ? m : c) - el.width / 2;
+        el.y = (horizontal ? c : m) - el.height / 2;
+      });
+
+      const elements = [...byId.values()];
+      const boxes = [...elements];
+      const nodeMap = new Map(boxes.map(el => [el.id, el]));
+      // How many boxes, other than its own two, a drawn path crosses (with a small margin), checking four points
+      // between each pair of the renderer's samples.
+      const crossings = (arr, pts) => {
+        let n = 0;
+        for (const box of boxes) {
+          if (box.id === arr.startBinding.elementId || box.id === arr.endBinding.elementId) continue;
+          const inside = p => p.x > box.x - 10 && p.x < box.x + box.width + 10 && p.y > box.y - 10 && p.y < box.y + box.height + 10;
+          const hit = pts.some((p, i) => i > 0 && [0.25, 0.5, 0.75, 1].some(t => inside({
+            x: pts[i - 1].x + (p.x - pts[i - 1].x) * t,
+            y: pts[i - 1].y + (p.y - pts[i - 1].y) * t
+          })));
+          if (hit) n++;
+        }
+        return n;
+      };
+      // How much of a path runs along arrows already placed (their ends excepted: arrows meet at shared boxes; and a
+      // brief crossing, up to three samples, is fine).
+      const placed = [];
+      const placedLabels = [];
+      const overlaps = pts => Math.max(0, pts.slice(4, -4).filter(p =>
+        placed.some(q => Math.abs(p.x - q.x) < 14 && Math.abs(p.y - q.y) < 14)).length - 3);
+      // Arrows go around boxes, never across them, and keep off each other. Every route is tried: straight, bent
+      // either way and further, and leaving / entering by other sides so it loops round. The cheapest wins: a box
+      // crossed costs most, then running along another arrow, then the size of the detour.
+      const SIDES = { right: 0, bottom: Math.PI / 2, left: Math.PI, top: -Math.PI / 2 };
+      const BENDS = [0, 50, -50, 90, -90, 140, -140, 200, -200, 280, -280];
+      const route = arr => {
+        const keep = { s: { ...arr.startBinding }, e: { ...arr.endBinding }, type: arr.curveType, off: arr.curveOffset };
+        let best = null;
+        const tryIt = (s, e, type, off, resided) => {
+          Object.assign(arr, { startBinding: { ...s }, endBinding: { ...e }, curveType: type, curveOffset: off });
+          const pts = getArrowGeometry(arr, nodeMap).samples;
+          const cost = crossings(arr, pts) * 1000 + overlaps(pts) * 5 + Math.abs(off) / 40 + (resided ? 2 : 0);
+          if (!best || cost < best.cost) best = { cost, pts, s: { ...s }, e: { ...e }, type, off };
+        };
+        tryIt(keep.s, keep.e, keep.type, keep.off, false);
+        BENDS.forEach(off => tryIt(keep.s, keep.e, 'curved', off, false));
+        for (const [ss, sa] of Object.entries(SIDES)) {
+          for (const [es, ea] of Object.entries(SIDES)) {
+            BENDS.forEach(off => tryIt({ ...keep.s, focusAngle: sa, side: ss }, { ...keep.e, focusAngle: ea, side: es }, 'curved', off, true));
+          }
+        }
+        Object.assign(arr, { startBinding: best.s, endBinding: best.e, curveType: best.type, curveOffset: best.off });
+        placed.push(...best.pts);
+      };
+      edges.forEach(e => {
+        const a = byId.get(e.from);
+        const b = byId.get(e.to);
+        const fc = { x: a.x + a.width / 2, y: a.y + a.height / 2 };
+        const tc = { x: b.x + b.width / 2, y: b.y + b.height / 2 };
+        const angOut = Math.atan2(tc.y - fc.y, tc.x - fc.x);
+        const angIn = Math.atan2(fc.y - tc.y, fc.x - tc.x);
+        const curveOffset = back.has(e) || e.from === e.to ? 60 : 0;
+        const arrow = createElement('arrow', {
+          x: fc.x,
+          y: fc.y,
+          x2: tc.x,
+          y2: tc.y,
+          curveOffset,
+          curveType: curveOffset ? 'curved' : state.defaults.curveType,
+          strokeColor: a.strokeColor,
+          strokeStyle: e.dotted ? 'dashed' : 'solid',
+          strokeWidth: e.thick ? 3.6 : state.defaults.strokeWidth,
+          startBinding: { elementId: a.id, focusAngle: angOut, side: angleToSide(angOut), gap: 4 },
+          endBinding: { elementId: b.id, focusAngle: angIn, side: angleToSide(angIn), gap: 4 }
+        });
+        route(arrow);
+        elements.push(arrow);
+        if (e.label) {
+          const t = labels.get(e);
+          t.textColor = '#171717';
+          const pts = getArrowGeometry(arrow, nodeMap).samples;
+          // Beside the arrow, on the outer side of a branch: a mostly-horizontal arrow gets it above (below if heading
+          // down), a mostly-vertical one to its right (left if heading left). Tried at the middle of the drawn path,
+          // then further along either way, on the preferred side then the others, until it is clear of every box and
+          // label; if nothing is clear it stays at the first spot.
+          const flat = Math.abs(tc.x - fc.x) >= Math.abs(tc.y - fc.y);
+          const sides = flat
+            ? (tc.y > fc.y + 1 ? ['below', 'above', 'right', 'left'] : ['above', 'below', 'right', 'left'])
+            : (tc.x < fc.x - 1 ? ['left', 'right', 'above', 'below'] : ['right', 'left', 'above', 'below']);
+          const spot = ({ x, y }, side) => ({
+            x: side === 'right' ? x + 8 : side === 'left' ? x - t.width - 8 : x - t.width / 2,
+            y: side === 'below' ? y + 4 : side === 'above' ? y - t.height - 4 : y - t.height / 2
+          });
+          const clear = r => [...boxes, ...placedLabels].every(b =>
+            r.x + t.width < b.x - 6 || r.x > b.x + b.width + 6 || r.y + t.height < b.y - 6 || r.y > b.y + b.height + 6);
+          const spots = [0.5, 0.38, 0.62, 0.26, 0.74].flatMap(f => sides.map(side => spot(pts[Math.round(f * (pts.length - 1))], side)));
+          Object.assign(t, spots.find(clear) || spots[0]);
+          placedLabels.push(t);
+          elements.push(t);
+        }
+      });
+      return { elements, warnings };
+    }
+
+    function loadTextFlow(text, opts = {}) {
+      const { elements, warnings } = textToFlow(text, opts);
+      pushHistory();
+      state.elements = elements;
+      state.selectedIds.clear();
+      state.activePulses = [];
+      ShapeCache.clear();
+      fitToScreen();
+      syncUIWithSelection();
+      scheduleWorkspaceSave();
+      return warnings;
     }
 
     /* -------------------------------------------------------------------------
@@ -5628,6 +6084,31 @@
         });
       });
 
+      const textFlowPanel = document.getElementById('textFlowPanel');
+      const textFlowInput = document.getElementById('textFlowInput');
+      const textFlowMsg = document.getElementById('textFlowMsg');
+      const drawTextFlow = () => {
+        try {
+          const warnings = loadTextFlow(textFlowInput.value);
+          textFlowMsg.textContent = warnings.length ? warnings.join('\n') : 'Drawn.';
+        } catch (err) {
+          textFlowMsg.textContent = err.message;
+        }
+      };
+      document.getElementById('textFlowMenuBtn')?.addEventListener('click', () => {
+        closeAllDropdowns();
+        textFlowPanel.classList.add('open');
+        textFlowInput.focus();
+      });
+      document.getElementById('textFlowCloseBtn')?.addEventListener('click', () => textFlowPanel.classList.remove('open'));
+      document.getElementById('textFlowDrawBtn')?.addEventListener('click', drawTextFlow);
+      // Typing here must not reach the canvas shortcuts (V, R, Space, ...).
+      textFlowInput?.addEventListener('keydown', e => {
+        e.stopPropagation();
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) drawTextFlow();
+        if (e.key === 'Escape') textFlowPanel.classList.remove('open');
+      });
+
       document.querySelectorAll('#hudNodeControls [data-hud-morph]').forEach(btn => {
         btn.addEventListener('click', () => {
           const newType = btn.getAttribute('data-hud-morph');
@@ -5778,6 +6259,9 @@
         setTool,
         toggleToolLock,
         loadTemplate,
+        parseMermaidFlow,
+        textToFlow,
+        loadTextFlow,
         quickAddShape,
         createElement,
         cloneElementsWithBindings,

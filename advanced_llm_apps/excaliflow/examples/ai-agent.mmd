@@ -1,0 +1,18 @@
+flowchart TD
+  %% An AI agent answering a question with tools; render: node flow2gif.mjs examples/ai-agent.mmd examples/ai-agent.gif --dark --mode neon
+  U([User question]) --> R{Needs tools?}
+  R -->|no| A[Draft answer]
+  R -->|yes| P[Plan the steps]
+  P --> W[Web search] & C[Code runner] & V[Vector DB]
+  W & C & V --> S[Synthesise findings]
+  S --> A
+  A --> G{Good enough?}
+  G -- retry --> P
+  G ==>|yes| O([Reply to user])
+  style U stroke:#0070f3
+  style R stroke:#7928ca
+  style G stroke:#7928ca
+  style W stroke:#06b6d4
+  style C stroke:#06b6d4
+  style V stroke:#06b6d4
+  style O stroke:#10b981
