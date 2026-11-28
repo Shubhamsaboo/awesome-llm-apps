@@ -121,8 +121,31 @@ class TypedRagTests(unittest.TestCase):
         results = self.run_async(store.search("When are travel receipts required?"))
 
         self.assertEqual(1, added)
-        self.assertEqual("policy.pdf:p1:c1", results[0].chunk.chunk_id)
+        self.assertTrue(results[0].chunk.chunk_id.startswith("policy.pdf:p1:c1"))
         self.assertGreater(results[0].score, 0.2)
+
+    def test_same_named_pdfs_keep_distinct_citation_targets(self):
+        store = self.make_store()
+        texts = (
+            "Apples are shipped every Monday.",
+            "Bananas are shipped every Friday.",
+        )
+        for text in texts:
+            self.run_async(ingest_pdf(store, "report.pdf", self.make_pdf(text)))
+
+        self.assertNotEqual(store.chunks[0].chunk_id, store.chunks[1].chunk_id)
+        for chunk, text in zip(store.chunks, texts):
+            self.assertEqual(text, store.find_chunk(chunk.source, chunk.chunk_id).text)
+
+    def test_identical_document_ids_remain_deterministic(self):
+        stores = [self.make_store(), self.make_store()]
+        for store in stores:
+            self.run_async(
+                store.add_document(
+                    "policy.pdf", "Travel receipts are required.", locator="p2"
+                )
+            )
+        self.assertEqual(stores[0].chunks[0].chunk_id, stores[1].chunks[0].chunk_id)
 
     def test_answer_model_requires_citations_when_answered(self):
         from pydantic import ValidationError
@@ -213,7 +236,7 @@ class TypedRagTests(unittest.TestCase):
         self.assertEqual("atlas-handbook.pdf", answer.citations[0].source)
         self.assertIn("retrieve", tool_names)
 
-    def test_forged_citation_forces_refusal(self):
+    def test_any_forged_citation_forces_refusal(self):
         from pydantic_ai import models
         from pydantic_ai.models.test import TestModel
 
@@ -226,33 +249,40 @@ class TypedRagTests(unittest.TestCase):
         )
         chunk = store.chunks[0]
         deps = RagDependencies(store=store, min_relevance=0.2, top_k=3)
-        model = TestModel(
-            call_tools=["retrieve"],
-            custom_output_args={
-                "text": "The allowance is one hundred dollars.",
-                "citations": [
-                    {
-                        "source": chunk.source,
-                        "chunk_id": chunk.chunk_id,
-                        "quoted_span": "one hundred dollars per day",
-                    }
-                ],
-                "confidence": 0.95,
-                "answered": True,
-            },
-        )
-        previous = models.ALLOW_MODEL_REQUESTS
-        models.ALLOW_MODEL_REQUESTS = False
-        try:
-            with rag_agent.override(model=model):
-                answer = self.run_async(
-                    answer_question("What is the daily meal allowance?", deps)
+        valid = {
+            "source": chunk.source,
+            "chunk_id": chunk.chunk_id,
+            "quoted_span": "seventy dollars per day",
+        }
+        forged = {
+            "source": chunk.source,
+            "chunk_id": chunk.chunk_id,
+            "quoted_span": "Taxi reimbursement is unlimited",
+        }
+        for citations in ([forged], [valid, forged]):
+            with self.subTest(citations=citations):
+                model = TestModel(
+                    call_tools=["retrieve"],
+                    custom_output_args={
+                        "text": "Meals are seventy dollars per day, and taxis are unlimited.",
+                        "citations": citations,
+                        "confidence": 0.95,
+                        "answered": True,
+                    },
                 )
-        finally:
-            models.ALLOW_MODEL_REQUESTS = previous
+                previous = models.ALLOW_MODEL_REQUESTS
+                models.ALLOW_MODEL_REQUESTS = False
+                try:
+                    with rag_agent.override(model=model):
+                        answer = self.run_async(
+                            answer_question("What is the daily meal allowance?", deps)
+                        )
+                finally:
+                    models.ALLOW_MODEL_REQUESTS = previous
 
-        self.assertFalse(answer.answered)
-        self.assertEqual([], answer.citations)
+                self.assertFalse(answer.answered)
+                self.assertEqual([], answer.citations)
+                self.assertNotIn("taxis are unlimited", answer.text)
 
     def test_model_resolution_supports_both_providers(self):
         with patch.dict(os.environ, {"OPENAI_API_KEY": "key"}, clear=True):
@@ -274,6 +304,31 @@ class TypedRagTests(unittest.TestCase):
         self.assertIn("Travel receipts are required.", text)
         self.assertNotIn("window.secret", text)
         self.assertNotIn("display: none", text)
+
+    def test_html_table_cells_remain_searchable_words(self):
+        text = html_to_text(
+            "<table><tr><th>Plan</th><th>Monthly price</th></tr>"
+            "<tr><td>Starter</td><td>10</td></tr>"
+            "<tr><td>Pro</td><td>25</td></tr></table>"
+        )
+        self.assertEqual(
+            ["Plan", "Monthly", "price", "Starter", "10", "Pro", "25"], text.split()
+        )
+        store = self.make_store()
+        self.run_async(store.add_document("prices", text))
+        results = self.run_async(store.search("Starter"))
+        self.assertGreater(results[0].score, 0)
+
+    def test_html_block_boundaries_preserve_inline_word_fragments(self):
+        text = html_to_text(
+            "<h4>Features</h4><dl><dt>Protocol</dt>"
+            "<dd><strong>inter</strong>operability</dd></dl>"
+            "<script>ignored()</script><pre>Example</pre><footer>Contact</footer>"
+        )
+        self.assertEqual(
+            ["Features", "Protocol", "interoperability", "Example", "Contact"],
+            text.split(),
+        )
 
     def test_private_docs_urls_are_rejected(self):
         private_urls = (

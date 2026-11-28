@@ -212,7 +212,8 @@ def validate_grounded_answer(
         return Answer.insufficient_evidence(preflight.top_score)
 
     citations = _valid_citations(answer, deps)
-    if not citations:
+    # Dropping a bad citation does not remove its unsupported claim from text.
+    if not citations or len(citations) != len(answer.citations):
         return Answer.insufficient_evidence(preflight.top_score)
     return answer.model_copy(update={"citations": citations})
 
